@@ -1,0 +1,66 @@
+[project]
+name = "iltero-schemas"
+version = "0.1.0"
+description = "Shared contract for Iltero: schemas, canonicalization, assertion compiler and the pinned OPA evaluator"
+authors = [{name = "Iltero Team"}]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "Apache-2.0"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.3",
+    "mypy>=1.11.0",
+    "ruff>=0.5.0",
+]
+
+[project.urls]
+Repository = "https://github.com/ilterohq/iltero-schemas"
+
+[tool.pdm.scripts]
+lint = "ruff check src tests scripts"
+format = "ruff format --check src tests scripts"
+typecheck = "mypy src tests"
+test = "pytest tests"
+gate = "bash scripts/check-public-surface.sh"
+check = {composite = ["lint", "format", "typecheck", "test", "gate"]}
+
+[build-system]
+requires = ["hatchling>=1.25,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/iltero_schemas"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["tests/", "scripts/", "docs/", ".github/", ".gitignore", ".gitattributes"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "S", "T20", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S603", "S607"]  # asserts and real spawns are the tests' job
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]

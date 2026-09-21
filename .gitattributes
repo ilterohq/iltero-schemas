@@ -1,0 +1,4 @@
+# Line endings are normalised to LF everywhere so that scripts run under Git
+# Bash on Windows and test vectors keep the digest they were recorded with.
+* text=auto eol=lf
+tests/vectors/** -text

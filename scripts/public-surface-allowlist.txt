@@ -1,0 +1,4 @@
+# Tokens the public-surface gate accepts although they match a forbidden
+# pattern: one per line, exactly as matched. Each is a documented test
+# constant, never a real value, and must occur in a tracked file under src/
+# or tests/.

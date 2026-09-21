@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Nothing in this workflow needs to write to the repository.
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHON_VERSION: "3.11"
+  PDM_VERSION: "2.26.2"
+  PDM_NO_CACHE: "1"
+  PDM_CHECK_UPDATE: "false"
+
+jobs:
+  quality:
+    name: Lint, format, types, gate, lock
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      - run: pdm lock --check
+      - run: pdm install -G dev
+      - run: pdm run lint
+      - run: pdm run format
+      - run: pdm run typecheck
+      # The words that name internal material live in a repository secret, not
+      # in the tree. A fork's pull request cannot read it and runs the generic
+      # rules only.
+      - name: Pre-publication gate over the tree
+        env:
+          PUBLIC_SURFACE_PRIVATE_PATTERNS: ${{ secrets.PUBLIC_SURFACE_PRIVATE_PATTERNS }}
+          PUBLIC_SURFACE_PRIVATE_PATTERNS_OPTIONAL: ${{ github.event.pull_request.head.repo.fork && '1' || '' }}
+        run: pdm run gate
+      - name: Workflow lint
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+        with:
+          version: "1.30.1"
+          persona: pedantic
+          advanced-security: false
+          annotations: true
+      - name: Documentation lint
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+        with:
+          globs: |
+            **/*.md
+            !.venv
+
+  test:
+    name: Tests (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
+        with:
+          python-version: ${{ matrix.python-version }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      - run: pdm install -G dev
+      - run: pdm run test
+
+  build:
+    name: Build and check the distributions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      - run: pdm install -G dev
+      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      - run: pdm build -d dist
+      - name: The distributions carry nothing the tree may not
+        env:
+          PUBLIC_SURFACE_PRIVATE_PATTERNS: ${{ secrets.PUBLIC_SURFACE_PRIVATE_PATTERNS }}
+          PUBLIC_SURFACE_PRIVATE_PATTERNS_OPTIONAL: ${{ github.event.pull_request.head.repo.fork && '1' || '' }}
+        run: |
+          pip install "twine==6.1.0"
+          twine check --strict dist/*
+          pdm run gate dist
+
+  summary:
+    name: CI summary
+    runs-on: ubuntu-24.04
+    needs: [quality, test, build]
+    if: always()
+    permissions: {}
+    steps:
+      - name: Every job must have succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS"
+          if echo "$RESULTS" | grep -Eq '"result": *"(failure|cancelled|skipped)"'; then
+            echo "::error::a required job did not succeed"
+            exit 1
+          fi

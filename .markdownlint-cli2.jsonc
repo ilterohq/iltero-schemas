@@ -1,0 +1,12 @@
+{
+  // markdownlint-cli2 configuration, used by CI and pre-commit.
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules/**", ".venv/**", "docs/adr/**", "docs/business_values/**", "implementation_docs/**", "AGENTS.md"],
+  "config": {
+    // A changelog repeats the same headings under every version; only
+    // duplicate siblings under one parent are a mistake.
+    "MD024": { "siblings_only": true },
+    // Same line-length budget as the code; tables are exempt.
+    "MD013": { "line_length": 120, "tables": false }
+  }
+}

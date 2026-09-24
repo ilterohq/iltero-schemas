@@ -1,0 +1,24 @@
+{
+  "ast_version": 1,
+  "id": "VEC.TRUTH.NEGATION",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "not": {
+      "predicate": {
+        "path": "resource.after.a",
+        "op": "equal",
+        "literal": true
+      }
+    }
+  }
+}

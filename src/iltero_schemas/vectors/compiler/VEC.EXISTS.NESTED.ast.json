@@ -1,0 +1,43 @@
+{
+  "ast_version": 1,
+  "id": "VEC.EXISTS.NESTED",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "resource.related",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.type",
+              "op": "equal",
+              "literal": "attachment"
+            }
+          },
+          {
+            "exists": {
+              "in": "item.resource.after.rules",
+              "where": {
+                "predicate": {
+                  "path": "item.port",
+                  "op": "equal",
+                  "literal": 443
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

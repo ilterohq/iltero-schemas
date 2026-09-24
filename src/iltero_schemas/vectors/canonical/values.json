@@ -1,0 +1,11 @@
+{
+  "empty_object": {},
+  "empty_array": [],
+  "key_order": {"z": 1, "a": 2, "m": {"y": true, "b": null}},
+  "array_order_kept": [3, 1, 2, [2, 1]],
+  "integral_floats": {"seven": 7.0, "zero": 0.0, "negative_zero": -0.0, "big": 1e21, "small": 1e-7, "tenth": 0.1},
+  "integers": {"max": 9007199254740991, "min": -9007199254740991, "one": 1},
+  "strings": {"escapes": "tab\t newline\n quote\" backslash\\ control\u0001", "unicode": "café – 😀", "sorted_by_utf16": {"é": 1, "z": 2, "😀": 3, "A": 4}},
+  "digest_string": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sentinel_nodes": {"master_password": {"__redacted": true, "reason": "terraform_sensitive", "present": true, "type": "string"}, "kms_key_id": {"__unknown": true, "reason": "known_after_apply", "present": true}}
+}

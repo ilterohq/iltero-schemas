@@ -45,6 +45,13 @@ jobs:
       - run: pdm run lint
       - run: pdm run format
       - run: pdm run typecheck
+      # Dependabot does not read the PDM lock, so the locked runtime
+      # dependencies are audited here against known vulnerabilities.
+      - name: Audit locked dependencies
+        run: |
+          pdm export -G dev --format requirements --output "$RUNNER_TEMP/requirements.txt"
+          pip install "pip-audit==2.9.0"
+          pip-audit --strict --require-hashes -r "$RUNNER_TEMP/requirements.txt"
       # The words that name internal material live in a repository secret, not
       # in the tree. A fork's pull request cannot read it and runs the generic
       # rules only.
@@ -88,7 +95,17 @@ jobs:
           version: ${{ env.PDM_VERSION }}
           cache: false
       - run: pdm install -G dev
+      # The evaluator-backed tests need exactly the pinned OPA release: the
+      # download is verified against PIN.json, and the tests fail rather than
+      # skip when it is missing (ILTERO_OPA_REQUIRED).
+      - name: Fetch the pinned evaluator
+        run: |
+          opa_path=$(pdm run python scripts/fetch_opa.py "$RUNNER_TEMP/opa" | tr -d '\r')
+          test -x "$opa_path"
+          echo "ILTERO_OPA_PATH=$opa_path" >> "$GITHUB_ENV"
       - run: pdm run test
+        env:
+          ILTERO_OPA_REQUIRED: "1"
 
   build:
     name: Build and check the distributions

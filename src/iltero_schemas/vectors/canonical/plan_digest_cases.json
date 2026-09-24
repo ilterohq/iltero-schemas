@@ -1,0 +1,168 @@
+{
+  "version": "1",
+  "cases": [
+    {
+      "name": "empty_object",
+      "description": "An empty plan is digested as an empty object.",
+      "plan": {},
+      "canonical": "{}",
+      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "name": "only_excluded_keys",
+      "description": "A plan that holds only the keys the digest ignores is digested as an empty object.",
+      "plan": {
+        "timestamp": "2026-06-25T00:00:00Z",
+        "terraform_version": "1.5.7",
+        "format_version": "1.2",
+        "prior_state": {
+          "x": 1
+        },
+        "resource_drift": [
+          {
+            "a": 1
+          }
+        ],
+        "relevant_attributes": [
+          {
+            "resource": "aws_kms_key.k",
+            "attribute": [
+              "arn"
+            ]
+          }
+        ]
+      },
+      "canonical": "{}",
+      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "name": "excluded_keys_stripped_around_content",
+      "description": "The keys the digest ignores are dropped; resource_changes is kept with its order.",
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.5.7",
+        "timestamp": "2026-06-25T00:00:00Z",
+        "prior_state": {
+          "values": {
+            "refreshed_at": "t"
+          }
+        },
+        "resource_drift": [
+          {
+            "address": "aws_s3_bucket.x"
+          }
+        ],
+        "resource_changes": [
+          {
+            "address": "aws_s3_bucket.a",
+            "change": {
+              "actions": [
+                "create"
+              ]
+            }
+          },
+          {
+            "address": "aws_s3_bucket.b",
+            "change": {
+              "actions": [
+                "create"
+              ]
+            }
+          }
+        ]
+      },
+      "canonical": "{\"resource_changes\":[{\"address\":\"aws_s3_bucket.a\",\"change\":{\"actions\":[\"create\"]}},{\"address\":\"aws_s3_bucket.b\",\"change\":{\"actions\":[\"create\"]}}]}",
+      "digest": "sha256:7419ed8af78e9e7731464d5394dead0dbf686a3e330c30649b1de638d75e1223"
+    },
+    {
+      "name": "numbers_bool_null",
+      "description": "Whole-number floats are written as integers (1.0 becomes 1), -0.0 becomes 0; true, false and null are kept.",
+      "plan": {
+        "resource_changes": [
+          {
+            "values": {
+              "count": 1,
+              "ratio": 1.0,
+              "neg_zero": -0.0,
+              "frac": 0.5,
+              "enabled": true,
+              "disabled": false,
+              "note": null
+            }
+          }
+        ]
+      },
+      "canonical": "{\"resource_changes\":[{\"values\":{\"count\":1,\"disabled\":false,\"enabled\":true,\"frac\":0.5,\"neg_zero\":0,\"note\":null,\"ratio\":1}}]}",
+      "digest": "sha256:05b964040c49fc52aa3ab56394978ebe5daa34aafa12b5047133fddcc0136e24"
+    },
+    {
+      "name": "nested_key_sorting",
+      "description": "Object keys are sorted at every level; the order of arrays is kept.",
+      "plan": {
+        "planned_values": {
+          "root_module": {
+            "resources": [
+              {
+                "name": "x",
+                "values": {
+                  "tags": {
+                    "b": "2",
+                    "a": "1"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"planned_values\":{\"root_module\":{\"resources\":[{\"name\":\"x\",\"values\":{\"tags\":{\"a\":\"1\",\"b\":\"2\"}}}]}}}",
+      "digest": "sha256:4f7ce37f925ae2be1656bd8fffb6c31cf248260b5b558f99093a677a6196fca2"
+    },
+    {
+      "name": "non_ascii_values",
+      "description": "Characters outside ASCII are written as themselves, not escaped.",
+      "plan": {
+        "resource_changes": [
+          {
+            "values": {
+              "note": "café-η",
+              "emoji": "🔒"
+            }
+          }
+        ]
+      },
+      "canonical": "{\"resource_changes\":[{\"values\":{\"emoji\":\"🔒\",\"note\":\"café-η\"}}]}",
+      "digest": "sha256:de5768ce2a1a612c60038bb4c308a05d71fd3900fdeeb0833163fda362f92330"
+    },
+    {
+      "name": "non_ascii_keys",
+      "description": "Object keys outside ASCII are sorted by code point.",
+      "plan": {
+        "resource_changes": [],
+        "é": 1,
+        "a": 2
+      },
+      "canonical": "{\"a\":2,\"resource_changes\":[],\"é\":1}",
+      "digest": "sha256:ba8bf264f08bd6531924f8abdf630c50fa9c0ded7c413895484c2f3f755d4759"
+    },
+    {
+      "name": "array_order_significant",
+      "description": "The order of resource_changes is kept exactly as Terraform wrote it; it is meaningful.",
+      "plan": {
+        "resource_changes": [
+          {
+            "address": "z"
+          },
+          {
+            "address": "a"
+          },
+          {
+            "address": "m"
+          }
+        ]
+      },
+      "canonical": "{\"resource_changes\":[{\"address\":\"z\"},{\"address\":\"a\"},{\"address\":\"m\"}]}",
+      "digest": "sha256:909713d8c1be9121ec60460d8b123b985a94709cf8bd14f48dbb5ca1ad1c3bed"
+    }
+  ]
+}

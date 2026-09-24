@@ -1,0 +1,18 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.ITEM.BARE
+  version: "1.0.0"
+  title: A bare item path names the element itself
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    exists:
+      in: resource.after.tags
+      where:
+        path: item
+        equal: owner

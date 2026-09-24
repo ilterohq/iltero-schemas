@@ -1,0 +1,22 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.LITERALS.LONG
+  version: "1.0.0"
+  title: Long literals are recorded by shape
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    all:
+      - path: resource.after.kind
+        in: [a, b, c, d, e, f]
+      - path: resource.after.text
+        equal: "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
+      - path: resource.after.ratio
+        greater_than: 0.5
+      - path: resource.after.bare
+        equal: true

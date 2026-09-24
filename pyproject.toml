@@ -16,13 +16,19 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+    "pydantic>=2.8.0",   # models that read external input (extra="forbid")
+    "pyyaml>=6.0",       # assertion documents (safe loader only)
+    "rfc8785>=0.1.4",    # RFC 8785 JSON canonicalization
+    "packaging>=23.0",   # PEP 440 version specifiers in evaluator bindings
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=9.0.3",
     "mypy>=1.11.0",
     "ruff>=0.5.0",
+    "types-PyYAML>=6.0.12",
 ]
 
 [project.urls]
@@ -31,7 +37,7 @@ Repository = "https://github.com/ilterohq/iltero-schemas"
 [tool.pdm.scripts]
 lint = "ruff check src tests scripts"
 format = "ruff format --check src tests scripts"
-typecheck = "mypy src tests"
+typecheck = "mypy src tests scripts"
 test = "pytest tests"
 gate = "bash scripts/check-public-surface.sh"
 check = {composite = ["lint", "format", "typecheck", "test", "gate"]}
@@ -55,6 +61,7 @@ select = ["E", "F", "I", "N", "W", "UP", "S", "T20", "B"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S603", "S607"]  # asserts and real spawns are the tests' job
+"scripts/**" = ["T201", "S603"]  # maintenance scripts report on stdout and spawn the pinned evaluator
 
 [tool.mypy]
 python_version = "3.11"

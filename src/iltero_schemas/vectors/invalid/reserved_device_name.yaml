@@ -1,0 +1,12 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: CON.AWS.X
+  version: "1.0.0"
+  title: An id Windows would take for a device
+spec:
+  stage: plan
+  target: {kind: resource, provider: aws, resource_types: [aws_db_instance]}
+  assert:
+    path: resource.after.name
+    equal: x

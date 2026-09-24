@@ -1,0 +1,25 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.AWS.RDS.PRODUCTION_BASELINE
+  version: "1.0.0"
+  title: Production RDS instances are encrypted, private, backed up and not on a burstable class
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: aws
+    resource_types: [aws_db_instance]
+  when:
+    path: context.environment.name
+    equal: production
+  assert:
+    all:
+      - path: resource.after.storage_encrypted
+        equal: true
+      - path: resource.after.publicly_accessible
+        equal: false
+      - path: resource.after.backup_retention_period
+        greater_than_or_equal: 7
+      - path: resource.after.instance_class
+        not_in: [db.t3.micro, db.t3.small]

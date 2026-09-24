@@ -1,0 +1,66 @@
+{
+  "ast_version": 1,
+  "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "aws",
+    "resource_types": [
+      "aws_s3_bucket"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "resource.related",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.relation",
+              "op": "equal",
+              "literal": "configures"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.type",
+              "op": "equal",
+              "literal": "aws_s3_bucket_public_access_block"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.resource.after.block_public_acls",
+              "op": "equal",
+              "literal": true
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.resource.after.ignore_public_acls",
+              "op": "equal",
+              "literal": true
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.resource.after.block_public_policy",
+              "op": "equal",
+              "literal": true
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.resource.after.restrict_public_buckets",
+              "op": "equal",
+              "literal": true
+            }
+          }
+        ]
+      }
+    }
+  }
+}

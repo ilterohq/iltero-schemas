@@ -82,9 +82,13 @@ def test_a_clean_tree_passes(repo: Path) -> None:
     ("rel", "content", "message"),
     [
         ("notes.txt", "x", "not on the allowlist"),
+        ("docs/CLAUDE.md", "x", "agent instruction file is tracked"),
+        ("docs/" + "AGENTS" + ".md", "x", "agent instruction file is tracked"),
         ("scripts/deploy.pem", "x", "credential file is tracked"),
         ("docs/secret_garden.md", "x", "tracked path matches a private pattern"),
         ("src/iltero_schemas/policy.rego", "package x", "tracked Rego outside"),
+        ("src/iltero_schemas/compiler/lib.rego", "package x", "tracked Rego outside"),
+        ("tests/vectors/x.rego", "package x", "tracked Rego outside"),
         ("tests/x.py", "\x7fELF" + "\0" * 8, "tracked executable image"),
         ("tests/x.py", "x = " + "1" * 12, r"pattern \b[0-9]{12}\b"),
         ("tests/x.py", "k = 'AKIA' + 'Z' * 16", "pattern AKIA"),

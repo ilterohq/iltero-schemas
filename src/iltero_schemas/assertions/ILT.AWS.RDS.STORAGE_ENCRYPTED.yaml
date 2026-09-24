@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.AWS.RDS.STORAGE_ENCRYPTED
+  version: "1.0.0"
+  title: RDS storage encryption enabled
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: aws
+    resource_types: [aws_db_instance]
+  assert:
+    path: resource.after.storage_encrypted
+    equal: true

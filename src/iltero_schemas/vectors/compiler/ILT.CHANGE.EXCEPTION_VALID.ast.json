@@ -1,0 +1,41 @@
+{
+  "ast_version": 1,
+  "id": "ILT.CHANGE.EXCEPTION_VALID",
+  "version": "1.0.0",
+  "type": "process",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change"
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "exceptions",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.status",
+              "op": "equal",
+              "literal": "approved"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.scope.assertion.id",
+              "op": "equal",
+              "ref": "evaluation.assertion.id"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.expires_at",
+              "op": "greater_than",
+              "ref": "reference_time.value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

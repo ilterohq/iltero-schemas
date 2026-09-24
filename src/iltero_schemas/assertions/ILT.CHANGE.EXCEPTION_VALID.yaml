@@ -1,0 +1,23 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.CHANGE.EXCEPTION_VALID
+  version: "1.0.0"
+  title: An approved, unexpired exception names the assertion being evaluated
+spec:
+  stage: pre_deploy
+  target:
+    kind: change
+  assert:
+    exists:
+      in: exceptions
+      where:
+        all:
+          - path: item.status
+            equal: approved
+          - path: item.scope.assertion.id
+            equal:
+              path: evaluation.assertion.id
+          - path: item.expires_at
+            greater_than:
+              path: reference_time.value

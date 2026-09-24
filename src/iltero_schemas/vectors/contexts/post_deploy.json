@@ -1,0 +1,138 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "eval_002",
+    "stage": "post_deploy",
+    "timestamp": "2026-09-16T18:40:00Z",
+    "assertion": {
+      "id": "ILT.DEPLOYMENT.PLAN_BINDING",
+      "version": "1.0.0"
+    }
+  },
+  "context": {
+    "organization": {
+      "id": "acme"
+    },
+    "workspace": {
+      "id": "production"
+    },
+    "environment": {
+      "name": "production"
+    }
+  },
+  "reference_time": {
+    "value": "2026-09-16T18:40:00Z",
+    "source": "runner_clock",
+    "trust": "asserted"
+  },
+  "source": {
+    "vcs": "git",
+    "repository": {
+      "name": "acme/platform-infra"
+    },
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    },
+    "pull_request": {
+      "id": "842"
+    }
+  },
+  "change": {
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      }
+    ]
+  },
+  "plan": {
+    "format": "terraform",
+    "format_version": "1.2",
+    "terraform_version": "1.14.0",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest_version": "1",
+    "artifact_digest": null,
+    "artifact_digest_basis": "not_provided",
+    "source_commit": "c84e7a1000000000000000000000000000000000",
+    "complete": true,
+    "applyable": true,
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      }
+    ]
+  },
+  "subject": {
+    "kind": "deployment",
+    "id": "root",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "root"
+      }
+    ],
+    "authority": "unresolved"
+  },
+  "deployment": {
+    "plan": {
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digest_version": "1",
+      "artifact_digest": null,
+      "artifact_digest_basis": "not_provided"
+    },
+    "apply": {
+      "source": {
+        "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "terraform_version": "1.14.0",
+        "noise_lines": 0,
+        "damaged_lines": 0,
+        "interrupted_operations": 0
+      },
+      "state": {
+        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "terraform_version": "1.14.0"
+      },
+      "basis": "log_held_to_plan_and_state_presence",
+      "changes": [
+        {
+          "address": "aws_db_instance.payments",
+          "action": "update",
+          "required": [
+            "update"
+          ],
+          "basis": "log",
+          "outcome": "applied",
+          "moved_from": null,
+          "imported": false,
+          "completed": [
+            "update"
+          ]
+        }
+      ],
+      "summary": {
+        "added": 0,
+        "changed": 1,
+        "imported": 0,
+        "removed": 0
+      },
+      "timing": {
+        "started_at": "2026-09-16T18:38:00Z",
+        "ended_at": "2026-09-16T18:39:30Z",
+        "source": "terraform_log",
+        "trust": "asserted"
+      }
+    },
+    "superseded_by": null
+  }
+}

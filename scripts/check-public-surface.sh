@@ -63,6 +63,8 @@ fi
 #    private-pattern match, or a policy file outside the test fixtures.
 allowed_paths='^(src/iltero_schemas/|tests/|docs/|scripts/|\.github/|pyproject\.toml$|pdm\.lock$|README\.md$|CHANGELOG\.md$|CONTRIBUTING\.md$|CODE_OF_CONDUCT\.md$|SECURITY\.md$|LICENSE$|\.gitignore$|\.gitattributes$|\.markdownlint-cli2\.jsonc$|\.pre-commit-config\.yaml$)'
 credential_files='(^|/)(\.env[^/]*|[^/]*\.(pem|key|p12|pfx)|id_(rsa|ed25519|ecdsa)[^/]*)$'
+# Instructions written for coding agents are internal to how the project is worked on, never published.
+agent_files='(^|/)(CLAUDE|AGENTS)\.md$'
 while IFS= read -r -d '' path; do
   if ! [[ "$path" =~ $allowed_paths ]]; then
     fail "tracked path is not on the allowlist: $path"
@@ -73,12 +75,17 @@ while IFS= read -r -d '' path; do
   if [[ "$path" =~ $credential_files ]]; then
     fail "credential file is tracked: $path"
   fi
+  if [[ "$path" =~ $agent_files ]]; then
+    fail "agent instruction file is tracked: $path"
+  fi
   for pattern in "${private_patterns[@]+"${private_patterns[@]}"}"; do
     if [[ "$path" =~ $pattern ]]; then fail "tracked path matches a private pattern: $path"; fi
   done
-  # A policy file outside the test fixtures is a hand-maintained policy library.
-  if [[ "$path" == *.rego && "$path" != tests/fixtures/* ]]; then
-    fail "tracked Rego outside tests/fixtures/: $path"
+  # A policy file is a hand-maintained policy library, which this package
+  # never carries. The two exceptions are the compiler's own runtime and the
+  # expected output of the compiler vectors.
+  if [[ "$path" == *.rego && "$path" != "src/iltero_schemas/compiler/runtime.rego" && "$path" != src/iltero_schemas/vectors/* && "$path" != tests/fixtures/* ]]; then
+    fail "tracked Rego outside the compiler runtime and the vectors: $path"
   fi
 done < <(tracked)
 

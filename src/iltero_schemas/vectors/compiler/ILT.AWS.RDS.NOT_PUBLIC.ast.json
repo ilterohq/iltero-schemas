@@ -1,0 +1,22 @@
+{
+  "ast_version": 1,
+  "id": "ILT.AWS.RDS.NOT_PUBLIC",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "aws",
+    "resource_types": [
+      "aws_db_instance"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "predicate": {
+      "path": "resource.after.publicly_accessible",
+      "op": "equal",
+      "literal": false
+    }
+  }
+}

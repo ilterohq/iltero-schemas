@@ -1,0 +1,56 @@
+{
+  "ast_version": 1,
+  "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "aws",
+    "resource_types": [
+      "aws_db_instance"
+    ]
+  },
+  "when": {
+    "predicate": {
+      "path": "context.environment.name",
+      "op": "equal",
+      "literal": "production"
+    }
+  },
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "literal": true
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.publicly_accessible",
+          "op": "equal",
+          "literal": false
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.backup_retention_period",
+          "op": "greater_than_or_equal",
+          "literal": 7
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.instance_class",
+          "op": "not_in",
+          "literal": [
+            "db.t3.micro",
+            "db.t3.small"
+          ]
+        }
+      }
+    ]
+  }
+}

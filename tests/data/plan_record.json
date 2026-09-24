@@ -1,0 +1,1610 @@
+{
+  "apiVersion": "iltero.io/car/v1",
+  "assurance_level": "self_attested",
+  "assurance_status": {
+    "value": "complete",
+    "reason": null,
+    "detail": null
+  },
+  "change": {
+    "digest": null,
+    "units": [
+      {
+        "plan": {
+          "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
+        },
+        "unit": "root"
+      }
+    ]
+  },
+  "complete": false,
+  "coverage": {
+    "subjects_in_scope": {
+      "value": 20,
+      "basis": "plan_resource_enumeration",
+      "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+      "removed_by_plan": 0,
+      "excluded": []
+    },
+    "subjects_evaluated": 2,
+    "assertions_expected": {
+      "value": 5,
+      "basis": "locally_derived",
+      "required_assertion_digest": "sha256:d737d547b09ab40280125f1c12e8bb90a7d9181bb8f3b69281bffd5db2554ae2"
+    },
+    "assertions_evaluated": 5,
+    "subjects_per_assertion": {
+      "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+      "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+      "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+      "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+      "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+    },
+    "status_counts": {
+      "pass": 2,
+      "fail": 3,
+      "unknown": 0,
+      "not_applicable": 0,
+      "not_evaluated": 0,
+      "error": 0
+    },
+    "checks": 5,
+    "gaps": [],
+    "truncated": {
+      "value": false,
+      "limit": null,
+      "reason": null
+    },
+    "sampled": false
+  },
+  "events": [
+    {
+      "assertion": {
+        "digest": "sha256:43d8092c3fee90fef01c29592c5ecb2c407178206ce8e55ed78f4c0772efc16a",
+        "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+        "version": "1.0.0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": 3,
+              "clause": "assert",
+              "expected": 7,
+              "index": 0,
+              "op": "greater_than_or_equal",
+              "path": "resource.after.backup_retention_period",
+              "status": "false"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        },
+        "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "stage": "plan",
+        "status": "fail",
+        "status_detail": null,
+        "status_reason": null
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "provenance": {
+        "assertion_source": "local",
+        "assertion_source_digest": "sha256:b1cbaf3d01c6824cb45ae69920dd688fd918d3d910ea2e9d4b03f0c933b0ff2a",
+        "bundle": {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "binding": null,
+        "ci_context": {
+          "basis": "none",
+          "integrity": "absent"
+        },
+        "compiled_digest": "sha256:d502f174ceaef9cafda8bc471554c0aa259660219f90645d909e242a4d741e6e",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "locally_derived",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "authority": "unresolved",
+        "id": "aws_db_instance.payments",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "scope": {
+              "unit": "root"
+            },
+            "value": "aws_db_instance.payments"
+          }
+        ],
+        "kind": "resource"
+      }
+    },
+    {
+      "assertion": {
+        "digest": "sha256:8dc1dea745ba37d09c053e45250612059aaa8e75dea04f6ddaf78af0bdaea12e",
+        "id": "ILT.AWS.RDS.NOT_PUBLIC",
+        "version": "1.0.0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": false,
+              "clause": "assert",
+              "expected": false,
+              "index": 0,
+              "op": "equal",
+              "path": "resource.after.publicly_accessible",
+              "status": "true"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        },
+        "reason": "assert: true",
+        "stage": "plan",
+        "status": "pass",
+        "status_detail": null,
+        "status_reason": null
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "provenance": {
+        "assertion_source": "local",
+        "assertion_source_digest": "sha256:37e929aba9537b805f8abf2ff813120f9d8a7a0e2ce7b80f31112966b2c8b765",
+        "bundle": {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "binding": null,
+        "ci_context": {
+          "basis": "none",
+          "integrity": "absent"
+        },
+        "compiled_digest": "sha256:f579c290581a7ccd7a9a399f2fdce6fa1f5a8753ef7d979bb12dd2e8e287a2f9",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "locally_derived",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "authority": "unresolved",
+        "id": "aws_db_instance.payments",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "scope": {
+              "unit": "root"
+            },
+            "value": "aws_db_instance.payments"
+          }
+        ],
+        "kind": "resource"
+      }
+    },
+    {
+      "assertion": {
+        "digest": "sha256:6774e5b2a20ef3e565a4cf5d831d081728c4e66c02b93e5d6b4cd2e942ef7a7f",
+        "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+        "version": "1.0.0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": "production",
+              "clause": "when",
+              "expected": "production",
+              "index": 0,
+              "op": "equal",
+              "path": "context.environment.name",
+              "status": "true"
+            },
+            {
+              "actual": true,
+              "clause": "assert",
+              "expected": true,
+              "index": 1,
+              "op": "equal",
+              "path": "resource.after.storage_encrypted",
+              "status": "true"
+            },
+            {
+              "actual": false,
+              "clause": "assert",
+              "expected": false,
+              "index": 2,
+              "op": "equal",
+              "path": "resource.after.publicly_accessible",
+              "status": "true"
+            },
+            {
+              "actual": 3,
+              "clause": "assert",
+              "expected": 7,
+              "index": 3,
+              "op": "greater_than_or_equal",
+              "path": "resource.after.backup_retention_period",
+              "status": "false"
+            },
+            {
+              "actual": "db.t3.micro",
+              "clause": "assert",
+              "expected": [
+                "db.t3.micro",
+                "db.t3.small"
+              ],
+              "index": 4,
+              "op": "not_in",
+              "path": "resource.after.instance_class",
+              "status": "false"
+            }
+          ],
+          "unknown": null,
+          "when": "true"
+        },
+        "reason": "assert: false; predicate 3 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "stage": "plan",
+        "status": "fail",
+        "status_detail": null,
+        "status_reason": null
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "provenance": {
+        "assertion_source": "local",
+        "assertion_source_digest": "sha256:9ef9de66f7199dbae4412cae33363ce86f4123e107c5088d978b1badb9718f83",
+        "bundle": {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "binding": null,
+        "ci_context": {
+          "basis": "none",
+          "integrity": "absent"
+        },
+        "compiled_digest": "sha256:dae954c4ac013bb9f4641a6a46ec20ce8e8a237bf4ed933f3bacb66b8dc45bd5",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "locally_derived",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "authority": "unresolved",
+        "id": "aws_db_instance.payments",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "scope": {
+              "unit": "root"
+            },
+            "value": "aws_db_instance.payments"
+          }
+        ],
+        "kind": "resource"
+      }
+    },
+    {
+      "assertion": {
+        "digest": "sha256:26d43666bac3337acdf33f1ae65381d6389b49f846f228f9be3c85792162060f",
+        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+        "version": "1.0.0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": true,
+              "clause": "assert",
+              "expected": true,
+              "index": 0,
+              "op": "equal",
+              "path": "resource.after.storage_encrypted",
+              "status": "true"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        },
+        "reason": "assert: true",
+        "stage": "plan",
+        "status": "pass",
+        "status_detail": null,
+        "status_reason": null
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "provenance": {
+        "assertion_source": "local",
+        "assertion_source_digest": "sha256:c3bd61ded0c70ef783237263e6319e9f82a0b8c3b92a614768324350a7399140",
+        "bundle": {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "binding": null,
+        "ci_context": {
+          "basis": "none",
+          "integrity": "absent"
+        },
+        "compiled_digest": "sha256:22213d00978771245aa21969949f965e79f1bfa641ba9c434b1641ecbf4072b0",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "locally_derived",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "authority": "unresolved",
+        "id": "aws_db_instance.payments",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "scope": {
+              "unit": "root"
+            },
+            "value": "aws_db_instance.payments"
+          }
+        ],
+        "kind": "resource"
+      }
+    },
+    {
+      "assertion": {
+        "digest": "sha256:46a5e1a3b3aa27ec10deb893929915b6b6a75fd4505235f214b174bb14277600",
+        "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+        "version": "1.0.0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": {
+                "count": 3,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "matched": 0,
+              "op": "exists",
+              "path": "resource.related",
+              "status": "false"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        },
+        "reason": "assert: false; predicate 0 is false: resource.related exists",
+        "stage": "plan",
+        "status": "fail",
+        "status_detail": null,
+        "status_reason": null
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "provenance": {
+        "assertion_source": "local",
+        "assertion_source_digest": "sha256:c8394d0e2bd76588568a0ef0c31b051a6502e31ec65c69d3b02a214a3043a8b2",
+        "bundle": {
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "binding": null,
+        "ci_context": {
+          "basis": "none",
+          "integrity": "absent"
+        },
+        "compiled_digest": "sha256:51bdcc563374caeb53d22225d587b0db3efea6e01d4918969c90310854362dc2",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "locally_derived",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "authority": "unresolved",
+        "id": "aws_s3_bucket.logs",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "scope": {
+              "unit": "root"
+            },
+            "value": "aws_s3_bucket.logs"
+          }
+        ],
+        "kind": "resource"
+      }
+    }
+  ],
+  "evidence_refs": [
+    {
+      "canonicalization": "RFC8785",
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "terraform_plan",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
+      "media_type": "application/json",
+      "path": "units/root/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
+      "redaction_applied": {
+        "policy_id": "iltero.redaction",
+        "version": "1"
+      },
+      "ref_id": "sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
+      "retention_until": null,
+      "size_bytes": 61075,
+      "source": {
+        "digest": "sha256:62372246774ac5e1c1622ab1d2ba32dc509fc378eefbe369a61f4a3b4148f6f4",
+        "name": "plan-create.json"
+      },
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "media_type": "application/json",
+      "path": "units/root/plan/contexts/sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "redaction_applied": null,
+      "ref_id": "sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "retention_until": null,
+      "size_bytes": 11245,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "media_type": "application/json",
+      "path": "units/root/plan/contexts/sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "redaction_applied": null,
+      "ref_id": "sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "retention_until": null,
+      "size_bytes": 11239,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "media_type": "application/json",
+      "path": "units/root/plan/contexts/sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "redaction_applied": null,
+      "ref_id": "sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "retention_until": null,
+      "size_bytes": 11248,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "media_type": "application/json",
+      "path": "units/root/plan/contexts/sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "redaction_applied": null,
+      "ref_id": "sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "retention_until": null,
+      "size_bytes": 11246,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "media_type": "application/json",
+      "path": "units/root/plan/contexts/sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "redaction_applied": null,
+      "ref_id": "sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "retention_until": null,
+      "size_bytes": 13080,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:bd386d1957f8089b27935b689ce8cd2279dcbe81c78ead0e3de4debb1dae8043",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 361,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:d502f174ceaef9cafda8bc471554c0aa259660219f90645d909e242a4d741e6e",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11333,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:6db8e9e404d0c1fea1b801ec24058dd76cfb253f27f134c4b0a325fd109d4425",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 415,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:efe585a2c81f6aca28995d55e60b538f2af5c088be7fc3bc985294901dcf641f",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 331,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:f579c290581a7ccd7a9a399f2fdce6fa1f5a8753ef7d979bb12dd2e8e287a2f9",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11305,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:db4e5b50a7b848f320cae8823cf8cab97b0c4228fba4588dc29bace826b04b75",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 393,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:c529004d4ef9ffce9dc138a1322d4473465042968e2df82aad633fa6867d90c0",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 713,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:dae954c4ac013bb9f4641a6a46ec20ce8e8a237bf4ed933f3bacb66b8dc45bd5",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11691,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:1adcf62f2ee6c8aeaa8e32a321c4ced03a09731bc9f93e400d2109a64f136fb0",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 1120,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:f6ab964e6fcf678934b96e10468152c523c7e1e7567d79eee3b5745fd2a94d84",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 329,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:22213d00978771245aa21969949f965e79f1bfa641ba9c434b1641ecbf4072b0",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11316,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:0c53c3fe2249d24a6a0e97d333e98d92d34efdbce0f1f4da666b3ddfd0edc9c0",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 397,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:98e0b72be15f3c0eff88f3a65d3d2ab9f59e59cd93c6711d60ea5d90879eac3c",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 812,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:51bdcc563374caeb53d22225d587b0db3efea6e01d4918969c90310854362dc2",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11949,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:5a73fd342151249eb41f07239a9f4f137e8a0c5e83a40007fd28df40ae71af78",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 1509,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:c19b618bb26b5c173411715c569a9f73b13579c15c5454da00bbea6c1231404d",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/compiled.json",
+      "redaction_applied": null,
+      "ref_id": "compiled.json",
+      "retention_until": null,
+      "size_bytes": 4549,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:733815065e8aa8dcd060ee4bca020304dc4f467c2e0506b65b77df0df1c01a7c",
+      "media_type": "application/json",
+      "path": "units/root/plan/events.json",
+      "redaction_applied": null,
+      "ref_id": "events.json",
+      "retention_until": null,
+      "size_bytes": 11217,
+      "source": null,
+      "storage_uri": null
+    }
+  ],
+  "expected_stages": [
+    "plan",
+    "pre_deploy",
+    "post_deploy"
+  ],
+  "not_in_scope": [
+    {
+      "stage": "post_verify",
+      "basis": "not_supported",
+      "declared_in": null
+    }
+  ],
+  "expires_at": null,
+  "governance": {
+    "managed_by_compass": false
+  },
+  "deployment": null,
+  "identity": null,
+  "integrity": {
+    "scheme": "digest_linkage",
+    "signature": null
+  },
+  "issuer": {
+    "identity_verified": false,
+    "type": "local"
+  },
+  "plan": {
+    "applyable": true,
+    "artifact_digest": null,
+    "artifact_digest_basis": "not_provided",
+    "complete": true,
+    "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+    "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+    "digest_version": "1",
+    "format_version": "1.2",
+    "terraform_version": "1.14.0"
+  },
+  "retention_basis": "no_server_scope",
+  "retention_class": null,
+  "run_id": {
+    "basis": "locally_derived",
+    "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+  },
+  "stages": {
+    "plan": {
+      "assertions": {
+        "count": 5,
+        "digest": "sha256:c19b618bb26b5c173411715c569a9f73b13579c15c5454da00bbea6c1231404d",
+        "index": "units/root/plan/assertions/compiled.json"
+      },
+      "compiler": {
+        "contract_digest": null,
+        "contract_version": "0.1.0",
+        "install": "editable",
+        "version": "1.0.0"
+      },
+      "events": {
+        "count": 5,
+        "digest": "sha256:733815065e8aa8dcd060ee4bca020304dc4f467c2e0506b65b77df0df1c01a7c",
+        "path": "units/root/plan/events.json"
+      },
+      "observed_at": "2026-09-22T13:00:13.568Z",
+      "ran": {
+        "bundle": {
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
+        },
+        "detail": null,
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "version": "1.20.2"
+        },
+        "reason": null
+      },
+      "redaction_applied": {
+        "allowed": [],
+        "policy": {
+          "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+          "id": "iltero.redaction",
+          "version": "1"
+        },
+        "redacted": [
+          {
+            "path": "resources[0].after.password",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[0].after.password_wo",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[1].after.secret",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[1].after.ses_smtp_password_v4",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[2].after.secret",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[2].after.ses_smtp_password_v4",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[3].related[0].resource.after.secret",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[3].related[0].resource.after.ses_smtp_password_v4",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[4].related[0].resource.after.secret",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[4].related[0].resource.after.ses_smtp_password_v4",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[5].after.user_data",
+            "reason": "deny_key"
+          },
+          {
+            "path": "resources[6].related[0].resource.after.password",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[6].related[0].resource.after.password_wo",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[7].related[1].resource.after.tags.login",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[7].related[1].resource.after.tags_all.login",
+            "reason": "sensitive_value_reuse"
+          },
+          {
+            "path": "resources[7].related[2].resource.after.tags.login",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[7].related[2].resource.after.tags_all.login",
+            "reason": "sensitive_value_reuse"
+          },
+          {
+            "path": "resources[10].after.value",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[10].after.value_wo",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[14].after.tags.login",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[14].after.tags_all.login",
+            "reason": "sensitive_value_reuse"
+          },
+          {
+            "path": "resources[16].after.tags.login",
+            "reason": "terraform_sensitive"
+          },
+          {
+            "path": "resources[16].after.tags_all.login",
+            "reason": "sensitive_value_reuse"
+          }
+        ],
+        "subject": {
+          "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+          "kind": "observation"
+        },
+        "unknown": [
+          "resources[0].after.address",
+          "resources[0].after.arn",
+          "resources[0].after.availability_zone",
+          "resources[0].after.backup_target",
+          "resources[0].after.backup_window",
+          "resources[0].after.ca_cert_identifier",
+          "resources[0].after.character_set_name",
+          "resources[0].after.database_insights_mode",
+          "resources[0].after.db_name",
+          "resources[0].after.db_subnet_group_name",
+          "resources[0].after.domain_fqdn",
+          "resources[0].after.endpoint",
+          "resources[0].after.engine_lifecycle_support",
+          "resources[0].after.engine_version_actual",
+          "resources[0].after.hosted_zone_id",
+          "resources[0].after.id",
+          "resources[0].after.identifier_prefix",
+          "resources[0].after.iops",
+          "resources[0].after.kms_key_id",
+          "resources[0].after.latest_restorable_time",
+          "resources[0].after.license_model",
+          "resources[0].after.listener_endpoint",
+          "resources[0].after.maintenance_window",
+          "resources[0].after.master_user_secret",
+          "resources[0].after.master_user_secret_kms_key_id",
+          "resources[0].after.monitoring_role_arn",
+          "resources[0].after.multi_az",
+          "resources[0].after.nchar_character_set_name",
+          "resources[0].after.network_type",
+          "resources[0].after.option_group_name",
+          "resources[0].after.parameter_group_name",
+          "resources[0].after.performance_insights_kms_key_id",
+          "resources[0].after.performance_insights_retention_period",
+          "resources[0].after.port",
+          "resources[0].after.replica_mode",
+          "resources[0].after.replicas",
+          "resources[0].after.resource_id",
+          "resources[0].after.snapshot_identifier",
+          "resources[0].after.status",
+          "resources[0].after.storage_throughput",
+          "resources[0].after.storage_type",
+          "resources[0].after.timezone",
+          "resources[0].after.vpc_security_group_ids",
+          "resources[1].after.create_date",
+          "resources[1].after.encrypted_secret",
+          "resources[1].after.encrypted_ses_smtp_password_v4",
+          "resources[1].after.id",
+          "resources[1].after.key_fingerprint",
+          "resources[1].after.secret",
+          "resources[1].after.ses_smtp_password_v4",
+          "resources[2].after.create_date",
+          "resources[2].after.encrypted_secret",
+          "resources[2].after.encrypted_ses_smtp_password_v4",
+          "resources[2].after.id",
+          "resources[2].after.key_fingerprint",
+          "resources[2].after.secret",
+          "resources[2].after.ses_smtp_password_v4",
+          "resources[3].after.arn",
+          "resources[3].after.id",
+          "resources[3].after.tags_all",
+          "resources[3].after.unique_id",
+          "resources[3].related[0].resource.after.create_date",
+          "resources[3].related[0].resource.after.encrypted_secret",
+          "resources[3].related[0].resource.after.encrypted_ses_smtp_password_v4",
+          "resources[3].related[0].resource.after.id",
+          "resources[3].related[0].resource.after.key_fingerprint",
+          "resources[3].related[0].resource.after.secret",
+          "resources[3].related[0].resource.after.ses_smtp_password_v4",
+          "resources[4].after.arn",
+          "resources[4].after.id",
+          "resources[4].after.tags_all",
+          "resources[4].after.unique_id",
+          "resources[4].related[0].resource.after.create_date",
+          "resources[4].related[0].resource.after.encrypted_secret",
+          "resources[4].related[0].resource.after.encrypted_ses_smtp_password_v4",
+          "resources[4].related[0].resource.after.id",
+          "resources[4].related[0].resource.after.key_fingerprint",
+          "resources[4].related[0].resource.after.secret",
+          "resources[4].related[0].resource.after.ses_smtp_password_v4",
+          "resources[5].after.arn",
+          "resources[5].after.associate_public_ip_address",
+          "resources[5].after.availability_zone",
+          "resources[5].after.capacity_reservation_specification",
+          "resources[5].after.cpu_core_count",
+          "resources[5].after.cpu_options",
+          "resources[5].after.cpu_threads_per_core",
+          "resources[5].after.disable_api_stop",
+          "resources[5].after.disable_api_termination",
+          "resources[5].after.ebs_block_device",
+          "resources[5].after.ebs_optimized",
+          "resources[5].after.enable_primary_ipv6",
+          "resources[5].after.enclave_options",
+          "resources[5].after.ephemeral_block_device",
+          "resources[5].after.host_id",
+          "resources[5].after.host_resource_group_arn",
+          "resources[5].after.iam_instance_profile",
+          "resources[5].after.id",
+          "resources[5].after.instance_initiated_shutdown_behavior",
+          "resources[5].after.instance_lifecycle",
+          "resources[5].after.instance_market_options",
+          "resources[5].after.instance_state",
+          "resources[5].after.ipv6_address_count",
+          "resources[5].after.ipv6_addresses",
+          "resources[5].after.key_name",
+          "resources[5].after.maintenance_options",
+          "resources[5].after.metadata_options",
+          "resources[5].after.monitoring",
+          "resources[5].after.network_interface",
+          "resources[5].after.outpost_arn",
+          "resources[5].after.password_data",
+          "resources[5].after.placement_group",
+          "resources[5].after.placement_partition_number",
+          "resources[5].after.primary_network_interface_id",
+          "resources[5].after.private_dns",
+          "resources[5].after.private_dns_name_options",
+          "resources[5].after.private_ip",
+          "resources[5].after.public_dns",
+          "resources[5].after.public_ip",
+          "resources[5].after.root_block_device",
+          "resources[5].after.secondary_private_ips",
+          "resources[5].after.security_groups",
+          "resources[5].after.spot_instance_request_id",
+          "resources[5].after.subnet_id",
+          "resources[5].after.tenancy",
+          "resources[5].after.user_data_base64",
+          "resources[5].after.vpc_security_group_ids",
+          "resources[6].after.arn",
+          "resources[6].after.id",
+          "resources[6].after.key_id",
+          "resources[6].after.multi_region",
+          "resources[6].after.policy",
+          "resources[6].after.rotation_period_in_days",
+          "resources[6].after.tags_all",
+          "resources[6].related[0].resource.after.address",
+          "resources[6].related[0].resource.after.arn",
+          "resources[6].related[0].resource.after.availability_zone",
+          "resources[6].related[0].resource.after.backup_target",
+          "resources[6].related[0].resource.after.backup_window",
+          "resources[6].related[0].resource.after.ca_cert_identifier",
+          "resources[6].related[0].resource.after.character_set_name",
+          "resources[6].related[0].resource.after.database_insights_mode",
+          "resources[6].related[0].resource.after.db_name",
+          "resources[6].related[0].resource.after.db_subnet_group_name",
+          "resources[6].related[0].resource.after.domain_fqdn",
+          "resources[6].related[0].resource.after.endpoint",
+          "resources[6].related[0].resource.after.engine_lifecycle_support",
+          "resources[6].related[0].resource.after.engine_version_actual",
+          "resources[6].related[0].resource.after.hosted_zone_id",
+          "resources[6].related[0].resource.after.id",
+          "resources[6].related[0].resource.after.identifier_prefix",
+          "resources[6].related[0].resource.after.iops",
+          "resources[6].related[0].resource.after.kms_key_id",
+          "resources[6].related[0].resource.after.latest_restorable_time",
+          "resources[6].related[0].resource.after.license_model",
+          "resources[6].related[0].resource.after.listener_endpoint",
+          "resources[6].related[0].resource.after.maintenance_window",
+          "resources[6].related[0].resource.after.master_user_secret",
+          "resources[6].related[0].resource.after.master_user_secret_kms_key_id",
+          "resources[6].related[0].resource.after.monitoring_role_arn",
+          "resources[6].related[0].resource.after.multi_az",
+          "resources[6].related[0].resource.after.nchar_character_set_name",
+          "resources[6].related[0].resource.after.network_type",
+          "resources[6].related[0].resource.after.option_group_name",
+          "resources[6].related[0].resource.after.parameter_group_name",
+          "resources[6].related[0].resource.after.performance_insights_kms_key_id",
+          "resources[6].related[0].resource.after.performance_insights_retention_period",
+          "resources[6].related[0].resource.after.port",
+          "resources[6].related[0].resource.after.replica_mode",
+          "resources[6].related[0].resource.after.replicas",
+          "resources[6].related[0].resource.after.resource_id",
+          "resources[6].related[0].resource.after.snapshot_identifier",
+          "resources[6].related[0].resource.after.status",
+          "resources[6].related[0].resource.after.storage_throughput",
+          "resources[6].related[0].resource.after.storage_type",
+          "resources[6].related[0].resource.after.timezone",
+          "resources[6].related[0].resource.after.vpc_security_group_ids",
+          "resources[7].after.acceleration_status",
+          "resources[7].after.acl",
+          "resources[7].after.arn",
+          "resources[7].after.bucket_domain_name",
+          "resources[7].after.bucket_prefix",
+          "resources[7].after.bucket_regional_domain_name",
+          "resources[7].after.cors_rule",
+          "resources[7].after.grant",
+          "resources[7].after.hosted_zone_id",
+          "resources[7].after.id",
+          "resources[7].after.lifecycle_rule",
+          "resources[7].after.logging",
+          "resources[7].after.object_lock_configuration",
+          "resources[7].after.object_lock_enabled",
+          "resources[7].after.policy",
+          "resources[7].after.region",
+          "resources[7].after.replication_configuration",
+          "resources[7].after.request_payer",
+          "resources[7].after.server_side_encryption_configuration",
+          "resources[7].after.versioning",
+          "resources[7].after.website",
+          "resources[7].after.website_domain",
+          "resources[7].after.website_endpoint",
+          "resources[7].related[0].resource.after.bucket",
+          "resources[7].related[0].resource.after.id",
+          "resources[7].related[1].resource.after.arn",
+          "resources[7].related[1].resource.after.beginning_archive_time",
+          "resources[7].related[1].resource.after.display_name",
+          "resources[7].related[1].resource.after.fifo_throughput_scope",
+          "resources[7].related[1].resource.after.id",
+          "resources[7].related[1].resource.after.name_prefix",
+          "resources[7].related[1].resource.after.owner",
+          "resources[7].related[1].resource.after.policy",
+          "resources[7].related[1].resource.after.signature_version",
+          "resources[7].related[1].resource.after.tracing_config",
+          "resources[7].related[2].resource.after.arn",
+          "resources[7].related[2].resource.after.beginning_archive_time",
+          "resources[7].related[2].resource.after.display_name",
+          "resources[7].related[2].resource.after.fifo_throughput_scope",
+          "resources[7].related[2].resource.after.id",
+          "resources[7].related[2].resource.after.name_prefix",
+          "resources[7].related[2].resource.after.owner",
+          "resources[7].related[2].resource.after.policy",
+          "resources[7].related[2].resource.after.signature_version",
+          "resources[7].related[2].resource.after.tracing_config",
+          "resources[8].after.bucket",
+          "resources[8].after.id",
+          "resources[9].after.arn",
+          "resources[9].after.egress",
+          "resources[9].after.id",
+          "resources[9].after.name_prefix",
+          "resources[9].after.owner_id",
+          "resources[9].after.tags_all",
+          "resources[9].after.vpc_id",
+          "resources[10].after.arn",
+          "resources[10].after.data_type",
+          "resources[10].after.has_value_wo",
+          "resources[10].after.id",
+          "resources[10].after.insecure_value",
+          "resources[10].after.key_id",
+          "resources[10].after.tags_all",
+          "resources[10].after.tier",
+          "resources[10].after.version",
+          "resources[11].after.arn",
+          "resources[11].after.availability_zone",
+          "resources[11].after.availability_zone_id",
+          "resources[11].after.id",
+          "resources[11].after.ipv6_cidr_block_association_id",
+          "resources[11].after.owner_id",
+          "resources[11].after.private_dns_hostname_type_on_launch",
+          "resources[11].after.tags_all",
+          "resources[11].after.vpc_id",
+          "resources[12].after.arn",
+          "resources[12].after.availability_zone",
+          "resources[12].after.availability_zone_id",
+          "resources[12].after.id",
+          "resources[12].after.ipv6_cidr_block_association_id",
+          "resources[12].after.owner_id",
+          "resources[12].after.private_dns_hostname_type_on_launch",
+          "resources[12].after.tags_all",
+          "resources[12].after.vpc_id",
+          "resources[13].after.arn",
+          "resources[13].after.default_network_acl_id",
+          "resources[13].after.default_route_table_id",
+          "resources[13].after.default_security_group_id",
+          "resources[13].after.dhcp_options_id",
+          "resources[13].after.enable_dns_hostnames",
+          "resources[13].after.enable_network_address_usage_metrics",
+          "resources[13].after.id",
+          "resources[13].after.ipv6_association_id",
+          "resources[13].after.ipv6_cidr_block",
+          "resources[13].after.ipv6_cidr_block_network_border_group",
+          "resources[13].after.main_route_table_id",
+          "resources[13].after.owner_id",
+          "resources[13].after.tags_all",
+          "resources[13].related[0].resource.after.arn",
+          "resources[13].related[0].resource.after.availability_zone",
+          "resources[13].related[0].resource.after.availability_zone_id",
+          "resources[13].related[0].resource.after.id",
+          "resources[13].related[0].resource.after.ipv6_cidr_block_association_id",
+          "resources[13].related[0].resource.after.owner_id",
+          "resources[13].related[0].resource.after.private_dns_hostname_type_on_launch",
+          "resources[13].related[0].resource.after.tags_all",
+          "resources[13].related[0].resource.after.vpc_id",
+          "resources[13].related[1].resource.after.arn",
+          "resources[13].related[1].resource.after.availability_zone",
+          "resources[13].related[1].resource.after.availability_zone_id",
+          "resources[13].related[1].resource.after.id",
+          "resources[13].related[1].resource.after.ipv6_cidr_block_association_id",
+          "resources[13].related[1].resource.after.owner_id",
+          "resources[13].related[1].resource.after.private_dns_hostname_type_on_launch",
+          "resources[13].related[1].resource.after.tags_all",
+          "resources[13].related[1].resource.after.vpc_id",
+          "resources[14].after.arn",
+          "resources[14].after.beginning_archive_time",
+          "resources[14].after.display_name",
+          "resources[14].after.fifo_throughput_scope",
+          "resources[14].after.id",
+          "resources[14].after.name_prefix",
+          "resources[14].after.owner",
+          "resources[14].after.policy",
+          "resources[14].after.signature_version",
+          "resources[14].after.tracing_config",
+          "resources[14].related[0].resource.after.arn",
+          "resources[14].related[0].resource.after.id",
+          "resources[14].related[0].resource.after.owner",
+          "resources[15].after.arn",
+          "resources[15].after.id",
+          "resources[15].after.owner",
+          "resources[16].after.arn",
+          "resources[16].after.beginning_archive_time",
+          "resources[16].after.display_name",
+          "resources[16].after.fifo_throughput_scope",
+          "resources[16].after.id",
+          "resources[16].after.name_prefix",
+          "resources[16].after.owner",
+          "resources[16].after.policy",
+          "resources[16].after.signature_version",
+          "resources[16].after.tracing_config",
+          "resources[16].related[0].resource.after.arn",
+          "resources[16].related[0].resource.after.id",
+          "resources[16].related[0].resource.after.owner",
+          "resources[17].after.arn",
+          "resources[17].after.id",
+          "resources[17].after.owner",
+          "resources[18].after.arn",
+          "resources[18].after.deduplication_scope",
+          "resources[18].after.fifo_throughput_limit",
+          "resources[18].after.id",
+          "resources[18].after.kms_data_key_reuse_period_seconds",
+          "resources[18].after.name_prefix",
+          "resources[18].after.policy",
+          "resources[18].after.redrive_allow_policy",
+          "resources[18].after.redrive_policy",
+          "resources[18].after.sqs_managed_sse_enabled",
+          "resources[18].after.tags_all",
+          "resources[18].after.url",
+          "resources[19].after.arn",
+          "resources[19].after.deduplication_scope",
+          "resources[19].after.fifo_throughput_limit",
+          "resources[19].after.id",
+          "resources[19].after.kms_data_key_reuse_period_seconds",
+          "resources[19].after.name_prefix",
+          "resources[19].after.policy",
+          "resources[19].after.redrive_allow_policy",
+          "resources[19].after.redrive_policy",
+          "resources[19].after.sqs_managed_sse_enabled",
+          "resources[19].after.tags_all",
+          "resources[19].after.url"
+        ]
+      },
+      "reference_time": {
+        "source": "runner_clock",
+        "trust": "asserted",
+        "value": "2026-09-22T13:00:13.568Z"
+      },
+      "stage": "plan",
+      "scanners": null,
+      "coverage": {
+        "assertions_evaluated": 5,
+        "assertions_expected": {
+          "basis": "locally_derived",
+          "required_assertion_digest": "sha256:f67cc77e1744d16c7902461a4230c98d71e3fa5075275858df514587e1005ee3",
+          "value": 5
+        },
+        "checks": 5,
+        "gaps": [],
+        "sampled": false,
+        "status_counts": {
+          "error": 0,
+          "fail": 3,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "pass": 2,
+          "unknown": 0
+        },
+        "subjects_evaluated": 2,
+        "subjects_in_scope": {
+          "basis": "plan_resource_enumeration",
+          "excluded": [],
+          "removed_by_plan": 0,
+          "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+          "value": 20
+        },
+        "subjects_per_assertion": {
+          "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+          "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+          "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+          "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+          "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+        },
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
+        }
+      },
+      "verdict": {
+        "basis": "status_counts",
+        "exit_code": 1,
+        "value": "fail",
+        "stage": null
+      },
+      "assurance_status": {
+        "detail": null,
+        "reason": null,
+        "value": "complete"
+      }
+    }
+  },
+  "subject": {
+    "environment": "production",
+    "kind": "change",
+    "source": {
+      "commit": {
+        "sha": "c84e7a1000000000000000000000000000000000"
+      },
+      "ref": {
+        "name": "main",
+        "type": "branch"
+      },
+      "vcs": "git"
+    },
+    "unit": "root"
+  },
+  "unit": "root",
+  "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
+  "verdict": {
+    "value": "fail",
+    "exit_code": 1,
+    "basis": "stage_precedence",
+    "stage": "plan"
+  }
+}

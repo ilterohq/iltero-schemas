@@ -1,0 +1,47 @@
+{
+  "ast_version": 1,
+  "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+  "version": "1.0.0",
+  "type": "process",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change"
+  },
+  "when": {
+    "predicate": {
+      "path": "context.environment.name",
+      "op": "equal",
+      "literal": "production"
+    }
+  },
+  "assert": {
+    "exists": {
+      "in": "approvals",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.status",
+              "op": "equal",
+              "literal": "approved"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.roles",
+              "op": "contains",
+              "literal": "security"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.subject.digest",
+              "op": "equal",
+              "ref": "change.digest"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

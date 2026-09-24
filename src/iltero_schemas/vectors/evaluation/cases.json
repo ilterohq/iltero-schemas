@@ -1,0 +1,3933 @@
+[
+  {
+    "name": "pass",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "clause": "assert",
+          "index": 0,
+          "actual": true,
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "fail",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": false
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "clause": "assert",
+          "index": 0,
+          "actual": false,
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "known_after_apply",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: known_after_apply",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "known_after_apply"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "clause": "assert",
+          "index": 0,
+          "actual": null,
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "redacted",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__redacted": true,
+            "reason": "terraform_sensitive",
+            "present": true,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: redacted",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "path_missing",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "publicly_accessible": false
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: path_missing",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "sentinel_on_the_way",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_db_instance",
+        "after": {
+          "__redacted": true,
+          "reason": "terraform_sensitive",
+          "present": true,
+          "type": "string"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: redacted",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "unknown_marker_without_reason",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: unspecified",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "unspecified"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "unknown_marker_reason_not_a_token",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true,
+            "reason": "line1\nline2 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: unspecified",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "unspecified"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "unknown_marker_reason_not_a_string",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true,
+            "reason": 5
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: unspecified",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "unspecified"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "redacted_marker_present_false",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__redacted": true,
+            "reason": "deny_key",
+            "present": false,
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: redacted",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "intermediate_not_an_object",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_db_instance",
+        "after": "opaque"
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: path_missing",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "intermediate_is_a_list",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_db_instance",
+        "after": [
+          {
+            "storage_encrypted": true
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: path_missing",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "null_is_a_known_value",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": null
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "clause": "assert",
+          "index": 0,
+          "actual": null,
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "subject_absent_still_evaluates",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "after": {
+          "storage_encrypted": true
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "subject": null
+    }
+  },
+  {
+    "name": "subject_is_echoed_as_identity_only",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "identities": [
+          {
+            "scheme": "arn",
+            "value": "secret"
+          }
+        ]
+      },
+      "resource": {
+        "after": {
+          "storage_encrypted": true
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "subject": {
+        "kind": "resource",
+        "id": {
+          "type": "string",
+          "length": 200
+        }
+      }
+    }
+  },
+  {
+    "name": "subject_not_an_object",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": "aws_db_instance.payments",
+      "resource": {
+        "after": {
+          "storage_encrypted": true
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "subject": null
+    }
+  },
+  {
+    "name": "input_not_an_object",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": [
+      "not",
+      "a",
+      "context"
+    ],
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: path_missing",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "path_missing"
+      },
+      "when": null,
+      "subject": null
+    }
+  },
+  {
+    "name": "actual_object_by_shape",
+    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "nested": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "clause": "assert",
+          "index": 0,
+          "actual": {
+            "type": "object"
+          },
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "not_public_pass",
+    "assertion": "ILT.AWS.RDS.NOT_PUBLIC",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "publicly_accessible": false
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "not_public_fail",
+    "assertion": "ILT.AWS.RDS.NOT_PUBLIC",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "publicly_accessible": true
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.publicly_accessible equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "backup_retention_pass",
+    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "backup_retention_period": 7
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "backup_retention_fail",
+    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "backup_retention_period": 0
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "backup_retention_float_equal_int",
+    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "backup_retention_period": 7.0
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "guard_true_all_pass",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "guard_false_not_applicable",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "staging"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "guard_false_hides_unknown_check",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "staging"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "guard_unknown",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": {
+            "__redacted": true,
+            "reason": "terraform_sensitive",
+            "present": true,
+            "type": "string"
+          }
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.name: redacted",
+      "unknown": {
+        "path": "context.environment.name",
+        "reason": "redacted"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "guard_path_missing",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {},
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.name: path_missing",
+      "unknown": {
+        "path": "context.environment.name",
+        "reason": "path_missing"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "false_beats_unknown",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "publicly_accessible": true,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 2 is false: resource.after.publicly_accessible equal",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "unknown_beats_true",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.backup_retention_period: known_after_apply",
+      "unknown": {
+        "path": "resource.after.backup_retention_period",
+        "reason": "known_after_apply"
+      },
+      "when": "true"
+    }
+  },
+  {
+    "name": "first_unknown_is_reported",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": {
+            "__redacted": true,
+            "reason": "terraform_sensitive",
+            "present": true,
+            "type": "string"
+          },
+          "publicly_accessible": false,
+          "backup_retention_period": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.storage_encrypted: redacted",
+      "unknown": {
+        "path": "resource.after.storage_encrypted",
+        "reason": "redacted"
+      },
+      "when": "true"
+    }
+  },
+  {
+    "name": "not_in_small_instance",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.t3.micro"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 4 is false: resource.after.instance_class not_in",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "string_where_number_expected_is_false",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": "14",
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 3 is false: resource.after.backup_retention_period greater_than_or_equal",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "index_counts_when_predicates_first",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": false,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: resource.after.storage_encrypted equal",
+      "unknown": null,
+      "when": "true",
+      "predicates": [
+        {
+          "path": "context.environment.name",
+          "op": "equal",
+          "expected": "production",
+          "actual": "production",
+          "status": "true",
+          "clause": "when",
+          "index": 0
+        },
+        {
+          "path": "resource.after.storage_encrypted",
+          "op": "equal",
+          "expected": true,
+          "actual": false,
+          "status": "false",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.publicly_accessible",
+          "op": "equal",
+          "expected": false,
+          "actual": false,
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.backup_retention_period",
+          "op": "greater_than_or_equal",
+          "expected": 7,
+          "actual": 14,
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        },
+        {
+          "path": "resource.after.instance_class",
+          "op": "not_in",
+          "expected": [
+            "db.t3.micro",
+            "db.t3.small"
+          ],
+          "actual": "db.r6g.large",
+          "status": "true",
+          "clause": "assert",
+          "index": 4
+        }
+      ]
+    }
+  },
+  {
+    "name": "any_true_beats_unknown",
+    "assertion": "VEC.TRUTH.ANY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "b": true
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "any_unknown_beats_false",
+    "assertion": "VEC.TRUTH.ANY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": false,
+          "b": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.b: known_after_apply",
+      "unknown": {
+        "path": "resource.after.b",
+        "reason": "known_after_apply"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "any_all_false",
+    "assertion": "VEC.TRUTH.ANY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": false,
+          "b": false
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.a equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "not_true_is_false",
+    "assertion": "VEC.TRUTH.NEGATION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": true
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; a negated expression held",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.a",
+          "op": "equal",
+          "expected": true,
+          "actual": true,
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        }
+      ]
+    }
+  },
+  {
+    "name": "not_false_is_true",
+    "assertion": "VEC.TRUTH.NEGATION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": false
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "not_unknown_is_unknown",
+    "assertion": "VEC.TRUTH.NEGATION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.a: known_after_apply",
+      "unknown": {
+        "path": "resource.after.a",
+        "reason": "known_after_apply"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "all_unknown_and_false_is_false",
+    "assertion": "VEC.TRUTH.ALL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          },
+          "b": false
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: resource.after.b equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "all_unknown_and_true_is_unknown",
+    "assertion": "VEC.TRUTH.ALL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": true,
+          "b": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.b: known_after_apply",
+      "unknown": {
+        "path": "resource.after.b",
+        "reason": "known_after_apply"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "ordering_numbers_and_strings",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": 2,
+          "t": "2026-06-01T00:00:00.000Z"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T00:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "ordering_ref_unknown",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": 2,
+          "t": "2026-06-01T00:00:00.000Z"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "reference_time.value: path_missing",
+      "unknown": {
+        "path": "reference_time.value",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "ordering_mixed_types_is_false",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": "2",
+          "t": "2026-06-01T00:00:00.000Z"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T00:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.n greater_than",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "ordering_ref_records_resolved_value",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": 2,
+          "t": "2026-09-22T00:00:00.000Z"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T00:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 5 is false: resource.after.t less_than",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.n",
+          "op": "greater_than",
+          "expected": 1,
+          "actual": 2,
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.n",
+          "op": "greater_than_or_equal",
+          "expected": 2,
+          "actual": 2,
+          "status": "true",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.n",
+          "op": "less_than",
+          "expected": 3,
+          "actual": 2,
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.n",
+          "op": "less_than_or_equal",
+          "expected": 2,
+          "actual": 2,
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        },
+        {
+          "path": "resource.after.t",
+          "op": "greater_than",
+          "expected": "2026-01-01T00:00:00.000Z",
+          "actual": "2026-09-22T00:00:00.000Z",
+          "status": "true",
+          "clause": "assert",
+          "index": 4
+        },
+        {
+          "path": "resource.after.t",
+          "op": "less_than",
+          "expected": {
+            "ref": "reference_time.value"
+          },
+          "resolved": "2026-09-21T00:00:00.000Z",
+          "actual": "2026-09-22T00:00:00.000Z",
+          "status": "false",
+          "clause": "assert",
+          "index": 5
+        }
+      ]
+    }
+  },
+  {
+    "name": "timestamps_compare_as_text",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": 2,
+          "t": "2026-01-01T00:00:00Z"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T00:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "timestamp_offset_is_not_understood",
+    "assertion": "VEC.OPS.ORDERING",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "n": 2,
+          "t": "2026-09-20T23:00:00.000-02:00"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T00:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "membership_pass",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner",
+            "team"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": [
+            "a",
+            "b",
+            "c"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_in",
+          "expected": [
+            "x",
+            "y"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.tags",
+          "op": "contains",
+          "expected": "owner",
+          "actual": [
+            "owner",
+            "team"
+          ],
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_equal",
+          "expected": "z",
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": {
+            "ref": "plan.allowed_kinds"
+          },
+          "resolved": [
+            "a",
+            "b"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 4
+        }
+      ]
+    }
+  },
+  {
+    "name": "contains_on_non_list_is_false",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": "owner"
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 2 is false: resource.after.tags contains",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "in_ref_not_a_list_is_unknown",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": "a"
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "plan.allowed_kinds: not_a_list",
+      "unknown": {
+        "path": "plan.allowed_kinds",
+        "reason": "not_a_list"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "in_with_a_list_on_the_left_is_false",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": [
+            "a"
+          ],
+          "tags": [
+            "owner"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.kind in",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "not_equal_type_mismatch_is_true",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "contains_ref_resolving_to_list",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "list_of_five_by_shape",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner",
+            "b",
+            "c",
+            "d",
+            "e"
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": [
+            "a",
+            "b",
+            "c"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_in",
+          "expected": [
+            "x",
+            "y"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.tags",
+          "op": "contains",
+          "expected": "owner",
+          "actual": {
+            "type": "array",
+            "count": 5
+          },
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_equal",
+          "expected": "z",
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": {
+            "ref": "plan.allowed_kinds"
+          },
+          "resolved": [
+            "a"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 4
+        }
+      ]
+    }
+  },
+  {
+    "name": "list_with_an_object_by_shape",
+    "assertion": "VEC.OPS.MEMBERSHIP",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "tags": [
+            "owner",
+            {
+              "k": 1
+            }
+          ]
+        }
+      },
+      "plan": {
+        "allowed_kinds": [
+          "a"
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": [
+            "a",
+            "b",
+            "c"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_in",
+          "expected": [
+            "x",
+            "y"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.tags",
+          "op": "contains",
+          "expected": "owner",
+          "actual": {
+            "type": "array",
+            "count": 2
+          },
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "not_equal",
+          "expected": "z",
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        },
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": {
+            "ref": "plan.allowed_kinds"
+          },
+          "resolved": [
+            "a"
+          ],
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 4
+        }
+      ]
+    }
+  },
+  {
+    "name": "exists_match",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "relation": "targets",
+            "type": "aws_iam_policy"
+          },
+          {
+            "relation": "configures",
+            "type": "aws_s3_bucket_public_access_block",
+            "resource": {
+              "after": {
+                "block_public_acls": true,
+                "ignore_public_acls": true,
+                "block_public_policy": true,
+                "restrict_public_buckets": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.related",
+          "op": "exists",
+          "expected": null,
+          "actual": {
+            "type": "array",
+            "count": 2
+          },
+          "status": "true",
+          "matched": 1,
+          "clause": "assert",
+          "index": 0
+        }
+      ]
+    }
+  },
+  {
+    "name": "exists_no_match",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "relation": "targets",
+            "type": "aws_iam_policy"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exists_empty",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": []
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exists_collection_missing",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {}
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.related: path_missing",
+      "unknown": {
+        "path": "resource.related",
+        "reason": "path_missing"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.related",
+          "op": "exists",
+          "expected": null,
+          "actual": null,
+          "status": "unknown",
+          "matched": null,
+          "clause": "assert",
+          "index": 0
+        }
+      ]
+    }
+  },
+  {
+    "name": "exists_collection_not_a_list_is_unknown",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": "none"
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.related: not_a_list",
+      "unknown": {
+        "path": "resource.related",
+        "reason": "not_a_list"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "exists_collection_is_a_marker",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": {
+          "__redacted": true,
+          "reason": "terraform_sensitive",
+          "present": true,
+          "type": "string"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.related: redacted",
+      "unknown": {
+        "path": "resource.related",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "exists_unknown_element_no_match",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "relation": "configures",
+            "type": "aws_s3_bucket_public_access_block",
+            "resource": {
+              "__unknown": true,
+              "reason": "path_missing",
+              "present": true
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.resource.after.block_public_acls: path_missing",
+      "unknown": {
+        "path": "item.resource.after.block_public_acls",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "exists_match_beats_unknown_element",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "relation": "configures",
+            "type": "aws_s3_bucket_public_access_block",
+            "resource": {
+              "__unknown": true,
+              "reason": "path_missing",
+              "present": true
+            }
+          },
+          {
+            "relation": "configures",
+            "type": "aws_s3_bucket_public_access_block",
+            "resource": {
+              "after": {
+                "block_public_acls": true,
+                "ignore_public_acls": true,
+                "block_public_policy": true,
+                "restrict_public_buckets": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exists_element_is_a_marker",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "__unknown": true,
+            "reason": "path_missing",
+            "present": true
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.relation: path_missing",
+      "unknown": {
+        "path": "item.relation",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "exists_element_is_redacted",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_s3_bucket.logs"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "__redacted": true,
+            "reason": "terraform_sensitive",
+            "present": true,
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.relation: redacted",
+      "unknown": {
+        "path": "item.relation",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "nested_exists_match",
+    "assertion": "VEC.EXISTS.NESTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": [
+          {
+            "type": "attachment",
+            "resource": {
+              "after": {
+                "rules": [
+                  {
+                    "port": 80
+                  },
+                  {
+                    "port": 443
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "nested_exists_inner_no_match",
+    "assertion": "VEC.EXISTS.NESTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": [
+          {
+            "type": "attachment",
+            "resource": {
+              "after": {
+                "rules": [
+                  {
+                    "port": 80
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "nested_exists_inner_unknown",
+    "assertion": "VEC.EXISTS.NESTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": [
+          {
+            "type": "attachment",
+            "resource": {
+              "after": {
+                "rules": [
+                  {
+                    "port": {
+                      "__unknown": true,
+                      "reason": "known_after_apply",
+                      "present": true
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.port: known_after_apply",
+      "unknown": {
+        "path": "item.port",
+        "reason": "known_after_apply"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "nested_exists_inner_not_a_list",
+    "assertion": "VEC.EXISTS.NESTED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": [
+          {
+            "type": "attachment",
+            "resource": {
+              "after": {
+                "rules": "443"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.resource.after.rules: not_a_list",
+      "unknown": {
+        "path": "item.resource.after.rules",
+        "reason": "not_a_list"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "bare_item_path_matches_element",
+    "assertion": "VEC.ITEM.BARE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "tags": [
+            "owner",
+            "team"
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "bare_item_path_no_match",
+    "assertion": "VEC.ITEM.BARE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "tags": [
+            "team"
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.tags exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "bare_item_marker_element",
+    "assertion": "VEC.ITEM.BARE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "tags": [
+            {
+              "__redacted": true,
+              "reason": "terraform_sensitive",
+              "present": true,
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item: redacted",
+      "unknown": {
+        "path": "item",
+        "reason": "redacted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "nonempty_list_of_markers_passes",
+    "assertion": "VEC.EXISTS.NONEMPTY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": [
+          {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "nonempty_over_non_list_is_unknown",
+    "assertion": "VEC.EXISTS.NONEMPTY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": {
+          "a": 1
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.related: not_a_list",
+      "unknown": {
+        "path": "resource.related",
+        "reason": "not_a_list"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "not_exists_over_empty_passes",
+    "assertion": "VEC.EXISTS.NONEMPTY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": []
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "guard_unknown_hides_check",
+    "assertion": "VEC.GUARD.UNKNOWN",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": {
+            "__unknown": true,
+            "reason": "known_after_apply",
+            "present": true
+          }
+        }
+      },
+      "resource": {
+        "after": {
+          "a": false
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.name: known_after_apply",
+      "unknown": {
+        "path": "context.environment.name",
+        "reason": "known_after_apply"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "approval_bound_to_change",
+    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa"
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "security"
+          ],
+          "subject": {
+            "digest": "sha256:aaaa"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "approval_for_other_change",
+    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa"
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "security"
+          ],
+          "subject": {
+            "digest": "sha256:bbbb"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "approval_without_security_role",
+    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa"
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "platform"
+          ],
+          "subject": {
+            "digest": "sha256:aaaa"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "no_approvals_outside_production",
+    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "staging"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa"
+      },
+      "approvals": []
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "sensitive_change_approved",
+    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa",
+        "resources": [
+          {
+            "type": "aws_iam_policy"
+          }
+        ]
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "security"
+          ],
+          "subject": {
+            "digest": "sha256:aaaa"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "sensitive_change_unapproved",
+    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa",
+        "resources": [
+          {
+            "type": "aws_kms_key"
+          }
+        ]
+      },
+      "approvals": []
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "no_sensitive_resource_not_applicable",
+    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa",
+        "resources": [
+          {
+            "type": "aws_s3_bucket"
+          }
+        ]
+      },
+      "approvals": []
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "sensitive_guard_unknown_element",
+    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa",
+        "resources": [
+          {
+            "type": {
+              "__unknown": true,
+              "reason": "known_after_apply",
+              "present": true
+            }
+          }
+        ]
+      },
+      "approvals": []
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.type: known_after_apply",
+      "unknown": {
+        "path": "item.type",
+        "reason": "known_after_apply"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "sensitive_guard_resources_not_a_list",
+    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa",
+        "resources": {
+          "aws_iam_policy.x": {
+            "type": "aws_iam_policy"
+          }
+        }
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "security"
+          ],
+          "subject": {
+            "digest": "sha256:aaaa"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "change.resources: not_a_list",
+      "unknown": {
+        "path": "change.resources",
+        "reason": "not_a_list"
+      },
+      "when": "unknown",
+      "predicates": [
+        {
+          "path": "change.resources",
+          "op": "exists",
+          "expected": null,
+          "actual": {
+            "type": "object"
+          },
+          "status": "unknown",
+          "matched": null,
+          "clause": "when",
+          "index": 0
+        },
+        {
+          "path": "approvals",
+          "op": "exists",
+          "expected": null,
+          "actual": {
+            "type": "array",
+            "count": 1
+          },
+          "status": "true",
+          "matched": 1,
+          "clause": "assert",
+          "index": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "exception_unexpired",
+    "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "evaluation": {
+        "id": "eval_1",
+        "stage": "pre_deploy",
+        "assertion": {
+          "id": "ILT.CHANGE.EXCEPTION_VALID",
+          "version": "1.0.0"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T10:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      },
+      "exceptions": [
+        {
+          "status": "approved",
+          "scope": {
+            "assertion": {
+              "id": "ILT.CHANGE.EXCEPTION_VALID"
+            }
+          },
+          "expires_at": "2026-12-31T00:00:00.000Z"
+        }
+      ]
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exception_expired",
+    "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "evaluation": {
+        "id": "eval_1",
+        "stage": "pre_deploy",
+        "assertion": {
+          "id": "ILT.CHANGE.EXCEPTION_VALID",
+          "version": "1.0.0"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T10:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      },
+      "exceptions": [
+        {
+          "status": "approved",
+          "scope": {
+            "assertion": {
+              "id": "ILT.CHANGE.EXCEPTION_VALID"
+            }
+          },
+          "expires_at": "2026-01-01T00:00:00.000Z"
+        }
+      ]
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: exceptions exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exception_for_another_assertion",
+    "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "evaluation": {
+        "id": "eval_1",
+        "stage": "pre_deploy",
+        "assertion": {
+          "id": "ILT.CHANGE.EXCEPTION_VALID",
+          "version": "1.0.0"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T10:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      },
+      "exceptions": [
+        {
+          "status": "approved",
+          "scope": {
+            "assertion": {
+              "id": "ILT.AWS.RDS.NOT_PUBLIC"
+            }
+          },
+          "expires_at": "2026-12-31T00:00:00.000Z"
+        }
+      ]
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: exceptions exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exception_rejected",
+    "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "evaluation": {
+        "id": "eval_1",
+        "stage": "pre_deploy",
+        "assertion": {
+          "id": "ILT.CHANGE.EXCEPTION_VALID",
+          "version": "1.0.0"
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-21T10:00:00.000Z",
+        "source": "compass_server",
+        "trust": "attested"
+      },
+      "exceptions": [
+        {
+          "status": "rejected",
+          "scope": {
+            "assertion": {
+              "id": "ILT.CHANGE.EXCEPTION_VALID"
+            }
+          },
+          "expires_at": "2026-12-31T00:00:00.000Z"
+        }
+      ]
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: exceptions exists",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "exception_reference_time_untrusted",
+    "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "evaluation": {
+        "id": "eval_1",
+        "stage": "pre_deploy",
+        "assertion": {
+          "id": "ILT.CHANGE.EXCEPTION_VALID",
+          "version": "1.0.0"
+        }
+      },
+      "reference_time": {
+        "value": {
+          "__unknown": true,
+          "reason": "reference_time_untrusted",
+          "present": true
+        },
+        "source": "compass_server",
+        "trust": "attested"
+      },
+      "exceptions": [
+        {
+          "status": "approved",
+          "scope": {
+            "assertion": {
+              "id": "ILT.CHANGE.EXCEPTION_VALID"
+            }
+          },
+          "expires_at": "2026-12-31T00:00:00.000Z"
+        }
+      ]
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "reference_time.value: reference_time_untrusted",
+      "unknown": {
+        "path": "reference_time.value",
+        "reason": "reference_time_untrusted"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "applied_plan_is_evaluated_plan",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "id": "dep_1"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": "sha256:b"
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "applied_plan_differs",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "id": "dep_1"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": "sha256:c"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "deployment.plan.digest",
+          "op": "equal",
+          "expected": {
+            "ref": "plan.digest"
+          },
+          "resolved": "sha256:a",
+          "actual": "sha256:a",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "deployment.plan.artifact_digest",
+          "op": "equal",
+          "expected": {
+            "ref": "plan.artifact_digest"
+          },
+          "resolved": "sha256:b",
+          "actual": "sha256:c",
+          "status": "false",
+          "clause": "assert",
+          "index": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "artifact_digest_unavailable",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "id": "dep_1"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": null
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": "sha256:b"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "regression_without_deployment",
+    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "res_01"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "assurance": {
+        "previous": {
+          "status": "pass"
+        },
+        "current": {
+          "status": "fail"
+        },
+        "since_previous": {
+          "deployments": [],
+          "exceptions": []
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 2 is false: assurance.since_previous.deployments exists",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "regression_explained_by_deployment",
+    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "res_01"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "assurance": {
+        "previous": {
+          "status": "pass"
+        },
+        "current": {
+          "status": "fail"
+        },
+        "since_previous": {
+          "deployments": [
+            {
+              "id": "dep_1"
+            }
+          ],
+          "exceptions": []
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "regression_explained_by_approved_exception",
+    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "res_01"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "assurance": {
+        "previous": {
+          "status": "pass"
+        },
+        "current": {
+          "status": "fail"
+        },
+        "since_previous": {
+          "deployments": [],
+          "exceptions": [
+            {
+              "status": "approved"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "rejected_exception_does_not_explain",
+    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "res_01"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "assurance": {
+        "previous": {
+          "status": "pass"
+        },
+        "current": {
+          "status": "fail"
+        },
+        "since_previous": {
+          "deployments": [],
+          "exceptions": [
+            {
+              "status": "rejected"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 2 is false: assurance.since_previous.deployments exists",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "no_regression",
+    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "res_01"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "assurance": {
+        "previous": {
+          "status": "pass"
+        },
+        "current": {
+          "status": "pass"
+        },
+        "since_previous": {
+          "deployments": [],
+          "exceptions": []
+        }
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "long_literals",
+    "assertion": "VEC.LITERALS.LONG",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "kind": "a",
+          "text": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "ratio": 0.75,
+          "bare": true
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: resource.after.text equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.kind",
+          "op": "in",
+          "expected": {
+            "type": "array",
+            "count": 6
+          },
+          "actual": "a",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.text",
+          "op": "equal",
+          "expected": {
+            "type": "string",
+            "length": 130
+          },
+          "actual": {
+            "type": "string",
+            "length": 130
+          },
+          "status": "false",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.ratio",
+          "op": "greater_than",
+          "expected": 0.5,
+          "actual": 0.75,
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        },
+        {
+          "path": "resource.after.bare",
+          "op": "equal",
+          "expected": true,
+          "actual": true,
+          "status": "true",
+          "clause": "assert",
+          "index": 3
+        }
+      ]
+    }
+  },
+  {
+    "name": "string_of_128_is_kept_129_by_shape",
+    "assertion": "VEC.LITERALS.EDGE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "thing.a"
+      },
+      "context": {
+        "environment": {
+          "name": "production"
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "s128": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "s129": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "l4": [
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "path": "resource.after.s128",
+          "op": "equal",
+          "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "actual": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "true",
+          "clause": "assert",
+          "index": 0
+        },
+        {
+          "path": "resource.after.s129",
+          "op": "equal",
+          "expected": {
+            "type": "string",
+            "length": 129
+          },
+          "actual": {
+            "type": "string",
+            "length": 129
+          },
+          "status": "true",
+          "clause": "assert",
+          "index": 1
+        },
+        {
+          "path": "resource.after.l4",
+          "op": "contains",
+          "expected": 4,
+          "actual": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "status": "true",
+          "clause": "assert",
+          "index": 2
+        }
+      ]
+    }
+  }
+]

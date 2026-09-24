@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.EXISTS.NONEMPTY
+  version: "1.0.0"
+  title: A collection is non-empty
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    exists:
+      in: resource.related

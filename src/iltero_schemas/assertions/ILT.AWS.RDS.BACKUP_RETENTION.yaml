@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.AWS.RDS.BACKUP_RETENTION
+  version: "1.0.0"
+  title: RDS backups retained for at least seven days
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: aws
+    resource_types: [aws_db_instance]
+  assert:
+    path: resource.after.backup_retention_period
+    greater_than_or_equal: 7

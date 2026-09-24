@@ -1,0 +1,61 @@
+{
+  "ast_version": 1,
+  "id": "VEC.OPS.MEMBERSHIP",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "resource.after.kind",
+          "op": "in",
+          "literal": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.kind",
+          "op": "not_in",
+          "literal": [
+            "x",
+            "y"
+          ]
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.tags",
+          "op": "contains",
+          "literal": "owner"
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.kind",
+          "op": "not_equal",
+          "literal": "z"
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.kind",
+          "op": "in",
+          "ref": "plan.allowed_kinds"
+        }
+      }
+    ]
+  }
+}

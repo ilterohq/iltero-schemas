@@ -1,0 +1,12 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.INVALID.CASE
+  version: "1.0.0"
+  title: An invalid document
+spec:
+  stage: plan
+  target: {kind: resource, provider: aws, resource_types: [aws_db_instance]}
+  assert:
+    path: resource.after.name
+    matches: "^prod-"

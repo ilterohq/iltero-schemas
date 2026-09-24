@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.AWS.RDS.NOT_PUBLIC
+  version: "1.0.0"
+  title: RDS instance not publicly accessible
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: aws
+    resource_types: [aws_db_instance]
+  assert:
+    path: resource.after.publicly_accessible
+    equal: false

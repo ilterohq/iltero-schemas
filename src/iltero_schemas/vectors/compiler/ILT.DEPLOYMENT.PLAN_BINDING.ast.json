@@ -1,0 +1,29 @@
+{
+  "ast_version": 1,
+  "id": "ILT.DEPLOYMENT.PLAN_BINDING",
+  "version": "1.0.0",
+  "type": "process",
+  "stage": "post_deploy",
+  "target": {
+    "kind": "deployment"
+  },
+  "when": null,
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "deployment.plan.digest",
+          "op": "equal",
+          "ref": "plan.digest"
+        }
+      },
+      {
+        "predicate": {
+          "path": "deployment.plan.artifact_digest",
+          "op": "equal",
+          "ref": "plan.artifact_digest"
+        }
+      }
+    ]
+  }
+}

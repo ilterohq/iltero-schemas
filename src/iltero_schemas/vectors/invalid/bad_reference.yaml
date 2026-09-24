@@ -1,0 +1,14 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.INVALID.CASE
+  version: "1.0.0"
+  title: An invalid document
+spec:
+  stage: post_deploy
+  target: {kind: deployment}
+  assert:
+    path: deployment.plan.digest
+    equal:
+      path: plan.digest
+      default: none

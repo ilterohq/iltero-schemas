@@ -1,0 +1,116 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "eval_001",
+    "stage": "plan",
+    "timestamp": "2026-09-16T18:05:00Z",
+    "assertion": {
+      "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+      "version": "1.0.0"
+    }
+  },
+  "context": {
+    "organization": {
+      "id": "acme"
+    },
+    "workspace": {
+      "id": "production"
+    },
+    "environment": {
+      "name": "production"
+    }
+  },
+  "reference_time": {
+    "value": "2026-09-16T18:05:00Z",
+    "source": "runner_clock",
+    "trust": "asserted"
+  },
+  "source": {
+    "vcs": "git",
+    "repository": {
+      "name": "acme/platform-infra"
+    },
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    },
+    "pull_request": {
+      "id": "842"
+    }
+  },
+  "subject": {
+    "kind": "resource",
+    "id": "aws_db_instance.payments",
+    "identities": [
+      {
+        "scheme": "terraform_resource",
+        "value": "aws_db_instance.payments",
+        "scope": {
+          "unit": "root"
+        }
+      }
+    ],
+    "authority": "unresolved"
+  },
+  "change": {
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      }
+    ]
+  },
+  "plan": {
+    "format": "terraform",
+    "format_version": "1.2",
+    "terraform_version": "1.14.0",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest_version": "1",
+    "artifact_digest": null,
+    "artifact_digest_basis": "not_provided",
+    "source_commit": "c84e7a1000000000000000000000000000000000",
+    "complete": true,
+    "applyable": true,
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      }
+    ]
+  },
+  "resource": {
+    "id": "aws_db_instance.payments",
+    "provider": "aws",
+    "provider_source": "registry.terraform.io/hashicorp/aws",
+    "type": "aws_db_instance",
+    "name": "payments",
+    "module": null,
+    "action": "update",
+    "action_reason": null,
+    "previous_address": null,
+    "importing": null,
+    "replace_paths": null,
+    "before": {
+      "identifier": "payments-prod",
+      "storage_encrypted": true,
+      "publicly_accessible": false,
+      "backup_retention_period": 7
+    },
+    "after": {
+      "identifier": "payments-prod",
+      "storage_encrypted": true,
+      "publicly_accessible": false,
+      "backup_retention_period": 14
+    },
+    "related": []
+  }
+}

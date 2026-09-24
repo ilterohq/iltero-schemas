@@ -1,0 +1,25 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.OPS.MEMBERSHIP
+  version: "1.0.0"
+  title: Membership operators
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    all:
+      - path: resource.after.kind
+        in: [a, b, c]
+      - path: resource.after.kind
+        not_in: [x, y]
+      - path: resource.after.tags
+        contains: owner
+      - path: resource.after.kind
+        not_equal: z
+      - path: resource.after.kind
+        in:
+          path: plan.allowed_kinds

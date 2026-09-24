@@ -1,0 +1,20 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.LITERALS.EDGE
+  version: "1.0.0"
+  title: Values at the observation bounds
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    all:
+      - path: resource.after.s128
+        equal: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      - path: resource.after.s129
+        equal: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      - path: resource.after.l4
+        contains: 4

@@ -1,0 +1,18 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.GUARD.UNKNOWN
+  version: "1.0.0"
+  title: A guard that cannot be resolved
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  when:
+    path: context.environment.name
+    equal: production
+  assert:
+    path: resource.after.a
+    equal: true

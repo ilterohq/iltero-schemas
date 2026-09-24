@@ -1,0 +1,27 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.OPS.ORDERING
+  version: "1.0.0"
+  title: Ordering operators over numbers and strings
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    all:
+      - path: resource.after.n
+        greater_than: 1
+      - path: resource.after.n
+        greater_than_or_equal: 2
+      - path: resource.after.n
+        less_than: 3
+      - path: resource.after.n
+        less_than_or_equal: 2
+      - path: resource.after.t
+        greater_than: "2026-01-01T00:00:00.000Z"
+      - path: resource.after.t
+        less_than:
+          path: reference_time.value

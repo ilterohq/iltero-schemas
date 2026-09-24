@@ -1,0 +1,28 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.CHANGE.SENSITIVE_CHANGE_APPROVED
+  version: "1.0.0"
+  title: Changes to IAM, network or key resources approved by a security reviewer
+spec:
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    exists:
+      in: change.resources
+      where:
+        path: item.type
+        in: [aws_iam_policy, aws_iam_role_policy, aws_security_group, aws_security_group_rule, aws_kms_key]
+  assert:
+    exists:
+      in: approvals
+      where:
+        all:
+          - path: item.status
+            equal: approved
+          - path: item.roles
+            contains: security
+          - path: item.subject.digest
+            equal:
+              path: change.digest

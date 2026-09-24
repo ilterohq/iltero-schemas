@@ -1,0 +1,40 @@
+{
+  "ast_version": 1,
+  "id": "VEC.LITERALS.EDGE",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "resource.after.s128",
+          "op": "equal",
+          "literal": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.s129",
+          "op": "equal",
+          "literal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.l4",
+          "op": "contains",
+          "literal": 4
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.TRUTH.ALL
+  version: "1.0.0"
+  title: Truth table of all
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    all:
+      - path: resource.after.a
+        equal: true
+      - path: resource.after.b
+        equal: true

@@ -1,0 +1,27 @@
+{
+  "ast_version": 1,
+  "id": "VEC.ITEM.BARE",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "resource.after.tags",
+      "where": {
+        "predicate": {
+          "path": "item",
+          "op": "equal",
+          "literal": "owner"
+        }
+      }
+    }
+  }
+}

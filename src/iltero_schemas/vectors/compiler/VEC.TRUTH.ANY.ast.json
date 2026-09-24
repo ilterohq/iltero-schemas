@@ -1,0 +1,33 @@
+{
+  "ast_version": 1,
+  "id": "VEC.TRUTH.ANY",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "any": [
+      {
+        "predicate": {
+          "path": "resource.after.a",
+          "op": "equal",
+          "literal": true
+        }
+      },
+      {
+        "predicate": {
+          "path": "resource.after.b",
+          "op": "equal",
+          "literal": true
+        }
+      }
+    ]
+  }
+}

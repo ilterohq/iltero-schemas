@@ -1,0 +1,141 @@
+{
+  "empty_object": {
+    "description": "An empty plan is digested as an empty object.",
+    "plan": {}
+  },
+  "only_excluded_keys": {
+    "description": "A plan that holds only the keys the digest ignores is digested as an empty object.",
+    "plan": {
+      "timestamp": "2026-06-25T00:00:00Z",
+      "terraform_version": "1.5.7",
+      "format_version": "1.2",
+      "prior_state": {
+        "x": 1
+      },
+      "resource_drift": [
+        {
+          "a": 1
+        }
+      ],
+      "relevant_attributes": [
+        {
+          "resource": "aws_kms_key.k",
+          "attribute": [
+            "arn"
+          ]
+        }
+      ]
+    }
+  },
+  "excluded_keys_stripped_around_content": {
+    "description": "The keys the digest ignores are dropped; resource_changes is kept with its order.",
+    "plan": {
+      "format_version": "1.2",
+      "terraform_version": "1.5.7",
+      "timestamp": "2026-06-25T00:00:00Z",
+      "prior_state": {
+        "values": {
+          "refreshed_at": "t"
+        }
+      },
+      "resource_drift": [
+        {
+          "address": "aws_s3_bucket.x"
+        }
+      ],
+      "resource_changes": [
+        {
+          "address": "aws_s3_bucket.a",
+          "change": {
+            "actions": [
+              "create"
+            ]
+          }
+        },
+        {
+          "address": "aws_s3_bucket.b",
+          "change": {
+            "actions": [
+              "create"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "numbers_bool_null": {
+    "description": "Whole-number floats are written as integers (1.0 becomes 1), -0.0 becomes 0; true, false and null are kept.",
+    "plan": {
+      "resource_changes": [
+        {
+          "values": {
+            "count": 1,
+            "ratio": 1.0,
+            "neg_zero": -0.0,
+            "frac": 0.5,
+            "enabled": true,
+            "disabled": false,
+            "note": null
+          }
+        }
+      ]
+    }
+  },
+  "nested_key_sorting": {
+    "description": "Object keys are sorted at every level; the order of arrays is kept.",
+    "plan": {
+      "planned_values": {
+        "root_module": {
+          "resources": [
+            {
+              "name": "x",
+              "values": {
+                "tags": {
+                  "b": "2",
+                  "a": "1"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "non_ascii_values": {
+    "description": "Characters outside ASCII are written as themselves, not escaped.",
+    "plan": {
+      "resource_changes": [
+        {
+          "values": {
+            "note": "café-η",
+            "emoji": "🔒"
+          }
+        }
+      ]
+    }
+  },
+  "non_ascii_keys": {
+    "description": "Object keys outside ASCII are sorted by code point.",
+    "plan": {
+      "resource_changes": [],
+      "é": 1,
+      "a": 2
+    }
+  },
+  "array_order_significant": {
+    "description": "The order of resource_changes is kept exactly as Terraform wrote it; it is meaningful.",
+    "plan": {
+      "resource_changes": [
+        {
+          "address": "z"
+        },
+        {
+          "address": "a"
+        },
+        {
+          "address": "m"
+        }
+      ]
+    }
+  }
+}

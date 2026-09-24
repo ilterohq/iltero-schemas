@@ -1,0 +1,28 @@
+{
+  "ast_version": 1,
+  "id": "VEC.GUARD.UNKNOWN",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": {
+    "predicate": {
+      "path": "context.environment.name",
+      "op": "equal",
+      "literal": "production"
+    }
+  },
+  "assert": {
+    "predicate": {
+      "path": "resource.after.a",
+      "op": "equal",
+      "literal": true
+    }
+  }
+}

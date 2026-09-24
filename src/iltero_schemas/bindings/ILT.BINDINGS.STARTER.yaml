@@ -1,0 +1,40 @@
+apiVersion: iltero.io/v1
+kind: EvaluatorBindingSet
+metadata:
+  id: ILT.BINDINGS.STARTER
+  version: "1.0.0"
+# An entry says: this check of this tool decides exactly what this assertion
+# says, so the tool's result may stand as the assertion's verdict. The set is
+# short on purpose — a check that decides something near the assertion, but
+# not the same thing, is not a licence to answer for it.
+bindings:
+  - id: ILT.BINDING.CHECKOV.CKV_AWS_16
+    version: "1.0.0"
+    tool: checkov
+    # Checkov 3 writes the result shape this binding reads: a version, and
+    # each check with the resource address it was decided about.
+    tool_version_constraint: ">=3,<4"
+    check_id: CKV_AWS_16
+    # The configuration scan would decide `storage_encrypted = var.encrypt` on the
+    # variable; only the plan scan decides the value the plan settled on.
+    framework: terraform_plan
+    assertion:
+      id: ILT.AWS.RDS.STORAGE_ENCRYPTED
+      version: "1.0.0"
+    stage: plan
+    status_map:
+      PASSED: pass
+      FAILED: fail
+  - id: ILT.BINDING.CHECKOV.CKV_AWS_17
+    version: "1.0.0"
+    tool: checkov
+    tool_version_constraint: ">=3,<4"
+    check_id: CKV_AWS_17
+    framework: terraform_plan
+    assertion:
+      id: ILT.AWS.RDS.NOT_PUBLIC
+      version: "1.0.0"
+    stage: plan
+    status_map:
+      PASSED: pass
+      FAILED: fail

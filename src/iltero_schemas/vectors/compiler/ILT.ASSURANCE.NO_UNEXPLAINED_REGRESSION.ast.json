@@ -1,0 +1,50 @@
+{
+  "ast_version": 1,
+  "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+  "version": "1.0.0",
+  "type": "process",
+  "stage": "runtime",
+  "target": {
+    "kind": "assurance"
+  },
+  "when": {
+    "all": [
+      {
+        "predicate": {
+          "path": "assurance.previous.status",
+          "op": "equal",
+          "literal": "pass"
+        }
+      },
+      {
+        "predicate": {
+          "path": "assurance.current.status",
+          "op": "equal",
+          "literal": "fail"
+        }
+      }
+    ]
+  },
+  "assert": {
+    "any": [
+      {
+        "exists": {
+          "in": "assurance.since_previous.deployments",
+          "where": null
+        }
+      },
+      {
+        "exists": {
+          "in": "assurance.since_previous.exceptions",
+          "where": {
+            "predicate": {
+              "path": "item.status",
+              "op": "equal",
+              "literal": "approved"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

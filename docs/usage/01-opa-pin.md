@@ -30,4 +30,19 @@ the identity of the evaluator that a record was produced with.
 `src/iltero_schemas/opa/PIN.json` is the only place the release and its
 digests are written. A change is a reviewed pull request that updates the
 file and bumps this package's version; consumers pick it up by moving their
-exact pin. The digests are those published with the OPA release itself.
+exact pin. Whoever changes the pin takes the digests from the OPA release
+itself, after checking each file against GitHub's signed record of that
+release — never from a plain download:
+
+```bash
+tag=v1.20.2
+assets="opa_linux_amd64_static opa_linux_arm64_static opa_darwin_amd64 opa_darwin_arm64_static opa_windows_amd64.exe"
+for asset in $assets; do
+  gh release download "$tag" --repo open-policy-agent/opa --pattern "$asset" -D /tmp/opa-pin
+  gh release verify-asset "$tag" "/tmp/opa-pin/$asset" --repo open-policy-agent/opa
+  sha256sum "/tmp/opa-pin/$asset"
+done
+```
+
+The same bump refreshes the capabilities allowlist (see
+[conformance vectors](../development/03-conformance-vectors.md)).

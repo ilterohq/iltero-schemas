@@ -1,0 +1,25 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION
+  version: "1.0.0"
+  title: An assurance regression corresponds to a recorded deployment or an approved exception
+spec:
+  stage: runtime
+  target:
+    kind: assurance
+  when:
+    all:
+      - path: assurance.previous.status
+        equal: pass
+      - path: assurance.current.status
+        equal: fail
+  assert:
+    any:
+      - exists:
+          in: assurance.since_previous.deployments
+      - exists:
+          in: assurance.since_previous.exceptions
+          where:
+            path: item.status
+            equal: approved

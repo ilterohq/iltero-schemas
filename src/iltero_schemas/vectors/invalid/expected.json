@@ -1,0 +1,66 @@
+{
+  "two_operators": {
+    "path": "spec.assert",
+    "message": "exactly one operator"
+  },
+  "unknown_operator": {
+    "path": "spec.assert",
+    "message": "exactly one operator"
+  },
+  "root_not_at_stage": {
+    "path": "spec.assert.exists.in",
+    "message": "not available at this stage"
+  },
+  "item_outside_where": {
+    "path": "spec.assert.path",
+    "message": "only valid inside exists.where"
+  },
+  "stage_target_mismatch": {
+    "path": "spec",
+    "message": "is not valid for target kind"
+  },
+  "type_mismatch": {
+    "path": "spec",
+    "message": "does not match target kind"
+  },
+  "bad_reference": {
+    "path": "spec.assert.equal",
+    "message": "only 'path'"
+  },
+  "registry_supplied": {
+    "path": "registry",
+    "message": "Extra inputs are not permitted"
+  },
+  "null_operand": {
+    "path": "spec.assert.equal",
+    "message": "quote dates and null"
+  },
+  "empty_in_list": {
+    "path": "spec.assert.in",
+    "message": "non-empty list or a reference"
+  },
+  "duplicate_key": {
+    "path": "document",
+    "message": "duplicate key 'stage'"
+  },
+  "lone_surrogate": {
+    "path": "spec.assert.equal",
+    "message": "valid Unicode"
+  },
+  "anchor": {
+    "path": "document",
+    "message": "anchors are not allowed"
+  },
+  "deep_nesting": {
+    "path": "document",
+    "message": "nested deeper than"
+  },
+  "tagged_scalar": {
+    "path": "document",
+    "message": "tags are not allowed"
+  },
+  "reserved_device_name": {
+    "path": "metadata",
+    "message": "reserves for a device"
+  }
+}

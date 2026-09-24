@@ -1,0 +1,21 @@
+{
+  "ast_version": 1,
+  "id": "VEC.EXISTS.NONEMPTY",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "vec",
+    "resource_types": [
+      "thing"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "resource.related",
+      "where": null
+    }
+  }
+}

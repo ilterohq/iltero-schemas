@@ -1,0 +1,29 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED
+  version: "1.0.0"
+  title: S3 bucket blocks all public access
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: aws
+    resource_types: [aws_s3_bucket]
+  assert:
+    exists:
+      in: resource.related
+      where:
+        all:
+          - path: item.relation
+            equal: configures
+          - path: item.type
+            equal: aws_s3_bucket_public_access_block
+          - path: item.resource.after.block_public_acls
+            equal: true
+          - path: item.resource.after.ignore_public_acls
+            equal: true
+          - path: item.resource.after.block_public_policy
+            equal: true
+          - path: item.resource.after.restrict_public_buckets
+            equal: true

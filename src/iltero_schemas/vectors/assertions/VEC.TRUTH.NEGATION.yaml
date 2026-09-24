@@ -1,0 +1,16 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.TRUTH.NEGATION
+  version: "1.0.0"
+  title: Truth table of not
+spec:
+  stage: plan
+  target:
+    kind: resource
+    provider: vec
+    resource_types: [thing]
+  assert:
+    not:
+      path: resource.after.a
+      equal: true

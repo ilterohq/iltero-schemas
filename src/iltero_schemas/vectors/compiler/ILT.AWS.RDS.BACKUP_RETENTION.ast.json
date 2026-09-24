@@ -1,0 +1,22 @@
+{
+  "ast_version": 1,
+  "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+  "version": "1.0.0",
+  "type": "state",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "provider": "aws",
+    "resource_types": [
+      "aws_db_instance"
+    ]
+  },
+  "when": null,
+  "assert": {
+    "predicate": {
+      "path": "resource.after.backup_retention_period",
+      "op": "greater_than_or_equal",
+      "literal": 7
+    }
+  }
+}

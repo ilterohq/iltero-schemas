@@ -1,0 +1,6 @@
+{
+  "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+  "environment": "production",
+  "stage": "plan",
+  "oidc_token": "the-ci-identity-token"
+}

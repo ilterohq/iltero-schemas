@@ -24,7 +24,7 @@ from iltero_schemas.compiler.limits import (
     REASON_MAX_BYTES,
     nesting_depth,
 )
-from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
+from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
@@ -261,8 +261,21 @@ class Executor(StrictModel):
 
 
 class CiContext(StrictModel):
+    """Whether the CI context file was checked, and how. Only a check with the run's context key verifies it."""
+
     integrity: Literal["verified", "unverified", "absent"]
     basis: Literal["context_key_mac", "none"]
+
+    @model_validator(mode="after")
+    def _verified_only_with_the_context_key(self) -> CiContext:
+        if (self.integrity == "verified") != (self.basis == "context_key_mac"):
+            raise ValueError("a CI context is verified exactly when it was checked with the run's context key")
+        return self
+
+
+# Where the facts document a pre-deploy check read came from: Iltero Compass, a file given to the tool, or none.
+# It names the document's origin, not whether its parts held values or unknown markers.
+FactsSource = Literal["server", "local_file", "none"]
 
 
 class Provenance(StrictModel):
@@ -284,6 +297,8 @@ class Provenance(StrictModel):
     compiler: Compiler | None
     executor: Executor
     ci_context: CiContext
+    # Present exactly for a pre_deploy check, the one stage that reads server facts.
+    facts_source: FactsSource | None
     fs_hardening: Literal["posix", "windows_profile_acl", "none"]
 
 
@@ -305,6 +320,8 @@ class AssuranceEvent(StrictModel):
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
+        if (self.provenance.facts_source is not None) != (self.evaluation.stage == Stage.PRE_DEPLOY):
+            raise ValueError("facts_source is present exactly when the check ran at pre_deploy")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
                 f"a check with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"

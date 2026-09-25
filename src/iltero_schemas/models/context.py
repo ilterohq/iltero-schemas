@@ -18,7 +18,8 @@ as the plan adapter observed them, ``address`` included. ``provider`` is the
 short name an assertion targets (``aws``); the provider's full source
 address is ``provider_source``. A value hidden by redaction is a marker
 (``__redacted``), and the fields where a hidden value may legitimately sit
-accept one.
+accept one. A fact the server could not supply is an unknown marker
+(``__unknown``, see ``models.facts``) in place of the list it would have filled.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded
+from iltero_schemas.models.facts import UnknownMarker
 from iltero_schemas.models.fields import (
     Action,
     Address,
@@ -246,10 +248,10 @@ class AssuranceContext(StrictModel):
     subject: Subject | None = None
     resource: PlanResource | None = None
     deployment: Deployment | None = None
-    # Parts whose shape lands with the stage that fills them.
-    evaluations: list[Any] | None = None
-    approvals: list[Any] | None = None
-    exceptions: list[Any] | None = None
+    # Parts whose shape lands with the stage that fills them; a marker when the server could not supply them.
+    evaluations: list[Any] | UnknownMarker | None = None
+    approvals: list[Any] | UnknownMarker | None = None
+    exceptions: list[Any] | UnknownMarker | None = None
     verification: dict[str, Any] | None = None
     assurance: dict[str, Any] | None = None
 

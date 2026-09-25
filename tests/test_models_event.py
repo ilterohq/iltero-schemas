@@ -9,7 +9,13 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.event import NO_EVALUATOR_REASONS, POLICY_STATUSES, STATUS_REASONS, AssuranceEvent
+from iltero_schemas.models.event import (
+    NO_EVALUATOR_REASONS,
+    POLICY_STATUSES,
+    STATUS_REASONS,
+    AssuranceEvent,
+    CiContext,
+)
 from tests.conftest import VECTORS
 
 VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "plan_pass.json").read_text(encoding="utf-8"))
@@ -143,3 +149,46 @@ def test_an_editable_contract_install_may_have_no_digest() -> None:
     AssuranceEvent.model_validate(
         _event(**{"provenance.compiler.contract_digest": None, "provenance.compiler.install": "editable"})
     )
+
+
+@pytest.mark.parametrize("source", ["server", "local_file", "none"])
+def test_a_pre_deploy_check_says_where_its_server_facts_came_from(source: str) -> None:
+    AssuranceEvent.model_validate(_event(**{"evaluation.stage": "pre_deploy", "provenance.facts_source": source}))
+    with pytest.raises(ValidationError, match="facts_source is present exactly when"):
+        AssuranceEvent.model_validate(_event(**{"evaluation.stage": "pre_deploy", "provenance.facts_source": None}))
+
+
+@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify", "runtime"])
+def test_only_a_pre_deploy_check_names_a_facts_source(stage: str) -> None:
+    AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage}))
+    with pytest.raises(ValidationError, match="facts_source is present exactly when"):
+        AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": "server"}))
+
+
+def test_facts_source_is_always_stated() -> None:
+    document = _event()
+    del document["provenance"]["facts_source"]
+    with pytest.raises(ValidationError, match="facts_source"):
+        AssuranceEvent.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("integrity", "basis", "valid"),
+    [
+        ("verified", "context_key_mac", True),
+        ("unverified", "none", True),
+        ("absent", "none", True),
+        ("verified", "none", False),
+        ("unverified", "context_key_mac", False),
+        ("absent", "context_key_mac", False),
+    ],
+)
+def test_a_ci_context_is_verified_exactly_when_checked_with_the_context_key(
+    integrity: str, basis: str, valid: bool
+) -> None:
+    document = {"integrity": integrity, "basis": basis}
+    if valid:
+        CiContext.model_validate(document)
+    else:
+        with pytest.raises(ValidationError, match="checked with the run's context key"):
+            CiContext.model_validate(document)

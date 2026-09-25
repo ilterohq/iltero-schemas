@@ -38,7 +38,7 @@ be able to reproduce.
 ## Development
 
 ```bash
-pdm install -G dev
+pdm install -G dev --no-isolation
 pdm run check        # lint, format, types, tests, public-surface gate
 ```
 

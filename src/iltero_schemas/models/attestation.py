@@ -28,7 +28,7 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.context import ReferenceTimeTrust
-from iltero_schemas.models.fields import Digest, Identifier, Timestamp, plain_text
+from iltero_schemas.models.fields import Digest, Identifier, Timestamp, Uuid, plain_text
 
 # A document a person authors the content of, so it sits in the same namespace as
 # the others and says which it is in ``kind``. The files this tool writes for itself
@@ -39,7 +39,6 @@ KIND = "Attestation"
 # every path, so this is what a reader has left to tell a claim from any other
 # document the record cites: it is part of the record format, not of any one writer.
 MEDIA_TYPE = "application/vnd.iltero.attestation+json"
-UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 # Long enough for the claim itself; a claim that needs more than this is a document, and the
 # attestation should point at it through ``supporting_evidence`` instead.
 STATEMENT_MAX_LENGTH = 4096
@@ -52,7 +51,6 @@ IdentitySource = Literal["ci_oidc", "asserted"]
 MAX_SUPPORTING_EVIDENCE = 256
 
 Statement = Annotated[str, Field(min_length=1, max_length=STATEMENT_MAX_LENGTH), AfterValidator(plain_text)]
-Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 
 
 class Scope(StrictModel):

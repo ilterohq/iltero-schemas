@@ -1,0 +1,7 @@
+{
+  "assurance_facts.json": "sha256:167344da21c271f2eb9563c55b3db6a51348670136c6e8bfcd22400a279f36fb",
+  "run_open_request.json": "sha256:be9259fbef9867aaca90eef901f8394e7b01b53ebc0e454d3d4b5f46682bb356",
+  "run_open_response.json": "sha256:bf9029b72b0bb7c6312a692c60698df935d8e8fe72a045d8912baa88d8a07be2",
+  "token_refresh_request.json": "sha256:13e2cfab001b6557c4c785185430f558d2f4d88f982358bd5b269a629a83e6a7",
+  "token_refresh_response.json": "sha256:b5838f499c2525f4741d4065f4731871144e6434decd1c6bac043c4b05609cdf"
+}

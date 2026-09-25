@@ -77,6 +77,15 @@ one resource: `id`, `provider`, `type`, `action`, `before`, `after`,
 `related`, …). `src/iltero_schemas/vectors/contexts/plan_resource.json` is a
 complete example, and `digests.json` next to it records its `input_digest`.
 
+At the `pre_deploy` stage the subject is the change, and the profile adds
+`evaluations`, `approvals` and `exceptions`: facts only Iltero Compass holds.
+Each is a list, or the unknown marker
+`{"__unknown": true, "reason": "server_facts_unavailable"}` when the fact
+could not be supplied, so a check that reads it is `unknown` rather than
+failed — see [facts only Iltero Compass holds](10-server-facts.md).
+`src/iltero_schemas/vectors/contexts/pre_deploy_change.json` is a complete
+example.
+
 At the `post_deploy` stage the subject is the deployment rather than a
 resource, and the profile adds `deployment` (`iltero_schemas.models.deployment`):
 

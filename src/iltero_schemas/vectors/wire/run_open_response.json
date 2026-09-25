@@ -1,0 +1,75 @@
+{
+  "apiVersion": "iltero.io/run/v1",
+  "run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+  "stage": "plan",
+  "run_token": "irt_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "context_key": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+  "expires_at": "2026-09-16T19:30:00Z",
+  "server_time": "2026-09-16T18:30:00Z",
+  "pins": {
+    "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+    "environment": "production",
+    "bundle": {
+      "revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "required_assertions": [
+      {
+        "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+        "version": "1.0.0",
+        "digest": "sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc"
+      },
+      {
+        "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+        "version": "1.0.0",
+        "digest": "sha256:43d8092c3fee90fef01c29592c5ecb2c407178206ce8e55ed78f4c0772efc16a"
+      },
+      {
+        "id": "ILT.AWS.RDS.NOT_PUBLIC",
+        "version": "1.0.0",
+        "digest": "sha256:8dc1dea745ba37d09c053e45250612059aaa8e75dea04f6ddaf78af0bdaea12e"
+      },
+      {
+        "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+        "version": "1.0.0",
+        "digest": "sha256:6774e5b2a20ef3e565a4cf5d831d081728c4e66c02b93e5d6b4cd2e942ef7a7f"
+      },
+      {
+        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+        "version": "1.0.0",
+        "digest": "sha256:26d43666bac3337acdf33f1ae65381d6389b49f846f228f9be3c85792162060f"
+      },
+      {
+        "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+        "version": "1.0.0",
+        "digest": "sha256:46a5e1a3b3aa27ec10deb893929915b6b6a75fd4505235f214b174bb14277600"
+      },
+      {
+        "id": "ILT.CHANGE.EXCEPTION_VALID",
+        "version": "1.0.0",
+        "digest": "sha256:87da242f7a5cdc7a941091d84e710b50c16a2935fb9b40e9255f162242c89de6"
+      },
+      {
+        "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:0177ca859da715c89142cdf1ed5cf0ad39cbf19bf1a5e660f783802eb51c0ff9"
+      },
+      {
+        "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:758389bea217e28b31c0207c5434ec282eb130619b764a4225b7f1241051e8a0"
+      },
+      {
+        "id": "ILT.DEPLOYMENT.PLAN_BINDING",
+        "version": "1.0.0",
+        "digest": "sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb"
+      }
+    ],
+    "required_assertion_digest": "sha256:8b00df78e43bc2c974c036ecec84818bfb61ca64dd53b6f412d487c9a32d7978",
+    "policy": {
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "gate_mode": "enforcing"
+    },
+    "min_cli_version": "0.2.0"
+  }
+}

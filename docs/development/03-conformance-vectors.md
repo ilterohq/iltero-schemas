@@ -9,13 +9,14 @@ the contract. If not, that build must fail.
 
 | Folder | What it holds | How it is made |
 | --- | --- | --- |
-| `canonical/` | `values.json`: sample values. `cases.json`: their canonical bytes and fingerprints | `scripts/refresh_vectors.py` |
+| `canonical/` | `values.json`: sample values. `cases.json`: their canonical bytes and fingerprints. `plan_digest_cases.json`, `assertion_set_cases.json` and `change_digest_cases.json`: inputs to the plan, assertion-set and change digests, with the canonical bytes and digest of each. The `starter_set` case is the shipped assertions as a tool reads them, and a test keeps it so | the inputs by hand; the bytes and digests by `scripts/refresh_vectors.py` |
 | `assertions/` | Small assertions written only to exercise the language (truth tables, each comparison, nesting) | by hand |
 | `compiler/` | For every shipped and vector assertion: the AST as JSON (`.ast.json`), its fingerprint (`.digest`), the compiled program (`.rego`) and its fingerprint (`.rego.digest`). Also `COMPILER_VERSION` and `RUNTIME.digest`, the fingerprint of the shared runtime | `scripts/refresh_vectors.py` |
 | `invalid/` | Documents that must be rejected, with `expected.json` naming the key and the message of the first problem | by hand |
-| `evaluation/` | `cases.json`: an assertion, an input, and the status, reason, unknown value and (for some) observations OPA must return | by hand |
-| `contexts/` | One complete assurance context per profile (`plan_resource.json`: a production RDS change at the `plan` stage) and `digests.json`, the `input_digest` of each. The tests also run the scenario's assertions against it | the contexts by hand; `digests.json` by `scripts/refresh_vectors.py` |
+| `evaluation/` | `cases.json`: an assertion, an input, and the status, reason, unknown value and (for some) observations OPA must return. `facts_unknown.json`: the approval and exception assertions over `contexts/pre_deploy_change.json`, `unknown` with the facts markers and `fail` with empty lists | by hand |
+| `contexts/` | One complete assurance context per profile (`plan_resource.json`: a production RDS change at the `plan` stage; `pre_deploy_change.json`: the same change at `pre_deploy`, its facts all unknown markers; `post_deploy.json`) and `digests.json`, the `input_digest` of each. The tests also run the scenario's assertions against it | the contexts by hand; `digests.json` by `scripts/refresh_vectors.py` |
 | `events/` | A complete assurance event (`plan_pass.json`: the verdict for the context above) and `digests.json` | the event by hand; `digests.json` by `scripts/refresh_vectors.py` |
+| `wire/` | One document per run message (`run_open_request.json`, `run_open_response.json`, `token_refresh_request.json`, `token_refresh_response.json`, `assurance_facts.json`), each read as the model its name gives, and `digests.json` | the documents by hand; `digests.json` by `scripts/refresh_vectors.py` |
 | `opa/` | `not_allowed.txt`: every built-in function of the pinned OPA release that the allowlist leaves out | `scripts/refresh_capabilities.py` |
 
 `tests/test_vectors.py` reproduces all of them.
@@ -28,12 +29,17 @@ the contract. If not, that build must fail.
 
 ## Running the tests that need OPA
 
-The evaluation cases, and the checks that each compiled program is accepted
-by OPA (`opa check --strict --capabilities`, `opa fmt`, `opa build`), need the
-pinned OPA binary. Point `ILTERO_OPA_PATH` at it, or put `opa` on `PATH`.
-The tests hash the binary first: a different release fails the tests; no
-binary at all skips them. In CI `ILTERO_OPA_REQUIRED=1` is set, so a missing
-binary fails instead of skipping.
+The evaluation cases, the checks that each compiled program is accepted
+by OPA (`opa check --strict --capabilities`, `opa fmt`, `opa build`), and the
+signed-bundle tests (`tests/test_bundle.py`: OPA verifies a bundle this
+package built and refuses a tampered one) need the pinned OPA binary. Point `ILTERO_OPA_PATH` at the binary, or put
+`opa` on `PATH`. The tests hash the binary first: a different release fails
+the tests; no binary at all skips them. In CI `ILTERO_OPA_REQUIRED=1` is set,
+so a missing binary fails instead of skipping.
+
+The bundle tests sign with a throwaway key made for each run, using the
+`cryptography` development dependency. There is no signed-bundle vector,
+because an ES256 signature differs every time it is made.
 
 To get the binary, run `python scripts/fetch_opa.py DIR`. It downloads the
 release for your machine, checks the download against `PIN.json`, and only

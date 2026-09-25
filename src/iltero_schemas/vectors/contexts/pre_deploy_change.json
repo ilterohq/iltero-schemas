@@ -1,0 +1,111 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "eval_003",
+    "stage": "pre_deploy",
+    "timestamp": "2026-09-16T18:30:00Z",
+    "assertion": {
+      "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "version": "1.0.0"
+    }
+  },
+  "context": {
+    "organization": {
+      "id": "acme"
+    },
+    "workspace": {
+      "id": "production"
+    },
+    "environment": {
+      "name": "production"
+    }
+  },
+  "reference_time": {
+    "value": "2026-09-16T18:30:00Z",
+    "source": "compass_server",
+    "trust": "attested"
+  },
+  "source": {
+    "vcs": "git",
+    "repository": {
+      "name": "acme/platform-infra"
+    },
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    }
+  },
+  "change": {
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      },
+      {
+        "id": "aws_iam_policy.deployer",
+        "provider": "aws",
+        "type": "aws_iam_policy",
+        "action": "update",
+        "module": null
+      }
+    ],
+    "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
+  },
+  "plan": {
+    "format": "terraform",
+    "format_version": "1.2",
+    "terraform_version": "1.14.0",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest_version": "1",
+    "artifact_digest": null,
+    "artifact_digest_basis": "not_provided",
+    "source_commit": "c84e7a1000000000000000000000000000000000",
+    "complete": true,
+    "applyable": true,
+    "resources": [
+      {
+        "id": "aws_db_instance.payments",
+        "provider": "aws",
+        "type": "aws_db_instance",
+        "action": "update",
+        "module": null
+      },
+      {
+        "id": "aws_iam_policy.deployer",
+        "provider": "aws",
+        "type": "aws_iam_policy",
+        "action": "update",
+        "module": null
+      }
+    ]
+  },
+  "subject": {
+    "kind": "change",
+    "id": "root",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "root"
+      }
+    ],
+    "authority": "unresolved"
+  },
+  "evaluations": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "approvals": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "exceptions": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  }
+}

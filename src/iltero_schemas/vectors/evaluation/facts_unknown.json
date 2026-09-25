@@ -1,0 +1,75 @@
+{
+  "description": "Each case evaluates one assertion over contexts/pre_deploy_change.json. With unknown_marker the server facts are the markers the vector holds; with empty_list each is replaced by []. A missing fact must give unknown, never fail, which is why the facts carry a marker and not an empty list.",
+  "context": "pre_deploy_change.json",
+  "cases": [
+    {
+      "name": "exception_valid_unknown_marker",
+      "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "exceptions: server_facts_unavailable",
+        "unknown": {
+          "path": "exceptions",
+          "reason": "server_facts_unavailable"
+        }
+      }
+    },
+    {
+      "name": "exception_valid_empty_list",
+      "assertion": "ILT.CHANGE.EXCEPTION_VALID",
+      "facts": "empty_list",
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 0 is false: exceptions exists",
+        "unknown": null
+      }
+    },
+    {
+      "name": "production_approved_unknown_marker",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "approvals: server_facts_unavailable",
+        "unknown": {
+          "path": "approvals",
+          "reason": "server_facts_unavailable"
+        }
+      }
+    },
+    {
+      "name": "production_approved_empty_list",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "facts": "empty_list",
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "unknown": null
+      }
+    },
+    {
+      "name": "sensitive_change_approved_unknown_marker",
+      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "approvals: server_facts_unavailable",
+        "unknown": {
+          "path": "approvals",
+          "reason": "server_facts_unavailable"
+        }
+      }
+    },
+    {
+      "name": "sensitive_change_approved_empty_list",
+      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "facts": "empty_list",
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "unknown": null
+      }
+    }
+  ]
+}

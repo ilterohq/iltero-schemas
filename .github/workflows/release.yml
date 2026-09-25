@@ -1,0 +1,186 @@
+name: Release
+
+# Pushing a tag vX.Y.Z on main is the release. Nothing is published by hand.
+on:
+  push:
+    tags: ["v[0-9]*.[0-9]*.[0-9]*"]
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHON_VERSION: "3.11"
+  PDM_VERSION: "2.26.2"
+  PDM_NO_CACHE: "1"
+  PDM_CHECK_UPDATE: "false"
+
+jobs:
+  verify:
+    name: Release rules and the full check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      - run: pdm lock --check
+      # --no-isolation: the project's own editable install uses the hash-pinned hatchling and editables too.
+      - run: pdm install -G dev --no-isolation
+      # The tag is on main, is the declared and dated version, is higher than
+      # every earlier release, and the trusted keys only moved forward.
+      - name: Release rules
+        env:
+          TAG: ${{ github.ref_name }}
+        run: pdm run python scripts/check_release.py "$TAG" origin/main
+      - name: Fetch the pinned evaluator
+        run: |
+          opa_path=$(pdm run python scripts/fetch_opa.py "$RUNNER_TEMP/opa" | tr -d '\r')
+          test -x "$opa_path"
+          echo "ILTERO_OPA_PATH=$opa_path" >> "$GITHUB_ENV"
+      - run: pdm run lint
+      - run: pdm run format
+      - run: pdm run typecheck
+      - run: pdm run test
+        env:
+          ILTERO_OPA_REQUIRED: "1"
+      - name: Pre-publication gate over the tree
+        env:
+          PUBLIC_SURFACE_PRIVATE_PATTERNS: ${{ secrets.PUBLIC_SURFACE_PRIVATE_PATTERNS }}
+        run: pdm run gate
+
+  build:
+    name: Build and check the distributions
+    needs: [verify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      # --no-isolation: the project's own editable install uses the hash-pinned hatchling and editables too.
+      - run: pdm install -G dev --no-isolation
+      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      # The backend comes from the hash-pinned lock (pdm install above), not from an isolated, unpinned install.
+      - run: pdm build --no-isolation -d dist
+      - run: pdm run twine check --strict dist/*
+      - name: The distributions carry nothing the tree may not
+        env:
+          PUBLIC_SURFACE_PRIVATE_PATTERNS: ${{ secrets.PUBLIC_SURFACE_PRIVATE_PATTERNS }}
+        run: pdm run gate dist
+      - name: Record the digests
+        run: |
+          (cd dist && sha256sum -- *) > SHA256SUMS
+          pdm run python -c 'import pathlib; from iltero_schemas.distribution import wheel_digest; print(wheel_digest(next(pathlib.Path("dist").glob("*.whl"))))' > CONTRACT_DIGEST
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: |
+            dist/
+            SHA256SUMS
+            CONTRACT_DIGEST
+          if-no-files-found: error
+          retention-days: 7
+
+  attest:
+    name: Attest the build provenance
+    needs: [build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      id-token: write # signs the build provenance attestation with the workflow's identity
+      attestations: write # stores that attestation for the repository
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+      - id: provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*
+      - name: Keep the attestation for offline checks
+        env:
+          BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+        run: cp "$BUNDLE" provenance.sigstore.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: provenance
+          path: provenance.sigstore.json
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish to PyPI
+    needs: [attest]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # A maintainer approves this environment before anything is published.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/iltero-schemas/
+    permissions:
+      id-token: write # PyPI Trusted Publishing: the workflow's identity, not a stored token
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist/
+
+  github-release:
+    name: GitHub release with the digests and the attestation
+    needs: [publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write # creates the GitHub release and uploads the distributions to it
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: provenance
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          {
+            echo "SHA-256 of each distribution, as published to PyPI:"
+            echo
+            echo '```text'
+            cat SHA256SUMS
+            echo '```'
+            echo
+            echo "Contract digest (what a record's \`compiler.contract_digest\` names for this release):"
+            echo
+            echo '```text'
+            cat CONTRACT_DIGEST
+            echo '```'
+          } > notes.md
+          gh release create "$TAG" dist/* SHA256SUMS provenance.sigstore.json \
+            --title "$TAG" --notes-file notes.md --verify-tag

@@ -3,9 +3,12 @@
 ```bash
 git clone https://github.com/ilterohq/iltero-schemas.git
 cd iltero-schemas
-pdm install -G dev
+pdm install -G dev --no-isolation
 pdm run check
 ```
+
+`--no-isolation` makes the project's own editable install use the build tools
+from the lock, each pinned by hash, as CI does.
 
 | Command | What it runs |
 | --- | --- |

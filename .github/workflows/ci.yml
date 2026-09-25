@@ -35,23 +35,30 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # The release tags, for the key-history check below.
+          fetch-depth: 0
       - uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           version: ${{ env.PDM_VERSION }}
           cache: false
       - run: pdm lock --check
-      - run: pdm install -G dev
+      # --no-isolation: the project's own editable install uses the hash-pinned hatchling and editables too.
+      - run: pdm install -G dev --no-isolation
       - run: pdm run lint
       - run: pdm run format
       - run: pdm run typecheck
+      # The trusted bundle keys may only move forward from the newest release;
+      # a change that breaks that is refused here, before review, not at release.
+      - name: Trusted-key history
+        run: pdm run python scripts/check_release.py --keys
       # Dependabot does not read the PDM lock, so the locked runtime
       # dependencies are audited here against known vulnerabilities.
       - name: Audit locked dependencies
         run: |
           pdm export -G dev --format requirements --output "$RUNNER_TEMP/requirements.txt"
-          pip install "pip-audit==2.9.0"
-          pip-audit --strict --require-hashes -r "$RUNNER_TEMP/requirements.txt"
+          pip install --require-hashes --no-deps -r .github/requirements/pip-audit.txt
+          pip-audit --strict --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements.txt"
       # The words that name internal material live in a repository secret, not
       # in the tree. A fork's pull request cannot read it and runs the generic
       # rules only.
@@ -94,7 +101,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           version: ${{ env.PDM_VERSION }}
           cache: false
-      - run: pdm install -G dev
+      # --no-isolation: the project's own editable install uses the hash-pinned hatchling and editables too.
+      - run: pdm install -G dev --no-isolation
       # The evaluator-backed tests need exactly the pinned OPA release: the
       # download is verified against PIN.json, and the tests fail rather than
       # skip when it is missing (ILTERO_OPA_REQUIRED).
@@ -122,17 +130,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           version: ${{ env.PDM_VERSION }}
           cache: false
-      - run: pdm install -G dev
+      # --no-isolation: the project's own editable install uses the hash-pinned hatchling and editables too.
+      - run: pdm install -G dev --no-isolation
       - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
-      - run: pdm build -d dist
+      # The backend comes from the hash-pinned lock (pdm install above), not from an isolated, unpinned install.
+      - run: pdm build --no-isolation -d dist
+      - run: pdm run twine check --strict dist/*
       - name: The distributions carry nothing the tree may not
         env:
           PUBLIC_SURFACE_PRIVATE_PATTERNS: ${{ secrets.PUBLIC_SURFACE_PRIVATE_PATTERNS }}
           PUBLIC_SURFACE_PRIVATE_PATTERNS_OPTIONAL: ${{ github.event.pull_request.head.repo.fork && '1' || '' }}
-        run: |
-          pip install "twine==6.1.0"
-          twine check --strict dist/*
-          pdm run gate dist
+        run: pdm run gate dist
 
   summary:
     name: CI summary

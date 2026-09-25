@@ -1,0 +1,23 @@
+{
+  "apiVersion": "iltero.io/assurance-facts/v1",
+  "run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+  "stage": "pre_deploy",
+  "scope": {
+    "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+    "environment": "production",
+    "change_digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
+  },
+  "issued_at": "2026-09-16T18:45:00Z",
+  "approvals": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "exceptions": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "evaluations": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  }
+}

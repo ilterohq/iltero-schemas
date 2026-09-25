@@ -14,7 +14,7 @@ from collections import Counter
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from iltero_schemas.canonical import digest_of
+from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
 
@@ -87,12 +87,20 @@ def _check_plan_of_events(car: CAR) -> None:
         raise ValueError("every event names the plan the record evaluated")
 
 
+def _check_run_of_events(car: CAR) -> None:
+    """Every event belongs to the record's run and unit, so no check from another run can be added to it."""
+    own = (car.run_id.value, car.run_id.basis, car.unit)
+    if any((e.provenance.run.id, e.provenance.run.basis, e.provenance.run.unit) != own for e in car.events):
+        raise ValueError("every event names the record's run, how that run was opened, and the record's unit")
+
+
 def check_structure(car: CAR) -> None:
     """Raise ``ValueError`` unless the stages hold together, whatever values they carry."""
     _check_plan_first(car)
     _check_scope(car)
     _check_deployment(car)
     _check_plan_of_events(car)
+    _check_run_of_events(car)
     for stage, record in car.stages.items():
         if stage not in car.expected_stages:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
@@ -137,6 +145,9 @@ def derived_problems(car: CAR) -> list[tuple[str, str]]:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
+    units = {unit.unit: unit.plan.digest for unit in car.change.units}
+    if car.change.digest is not None and car.change.digest != change_digest(units):
+        problems.append(("change.digest", "is not the digest of the change's units"))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)
     for key in ("coverage", "verdict", "assurance_status"):

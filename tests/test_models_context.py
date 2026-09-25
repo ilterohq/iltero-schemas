@@ -169,3 +169,18 @@ def test_an_artifact_digest_is_present_exactly_when_a_binary_was_given(part: str
     target.update(artifact_digest=digest, artifact_digest_basis=basis)
     with pytest.raises(ValidationError, match="present exactly when artifact_digest_basis is plan_binary"):
         AssuranceContext.model_validate(document)
+
+
+PRE_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+MARKER = {"__unknown": True, "reason": "server_facts_unavailable"}
+
+
+@pytest.mark.parametrize("part", ["evaluations", "approvals", "exceptions"])
+def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
+    assert PRE_DEPLOY[part] == MARKER
+    AssuranceContext.model_validate(PRE_DEPLOY)
+    AssuranceContext.model_validate({**PRE_DEPLOY, part: []})
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**PRE_DEPLOY, part: {**MARKER, "reason": "redacted"}})
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**PRE_DEPLOY, part: {"__redacted": True}})

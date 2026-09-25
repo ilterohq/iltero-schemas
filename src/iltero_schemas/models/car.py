@@ -22,12 +22,14 @@ from typing import Annotated, Any, Literal
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
-from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.base import StageValue, StrictModel, sorted_unique
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded
-from iltero_schemas.models.event import AssuranceEvent
-from iltero_schemas.models.fields import Count, Digest, Identifier, Timestamp, check_artifact_digest, plain_text
+from iltero_schemas.models.event import AssuranceEvent, Compiler
+from iltero_schemas.models.fields import Count, Digest, Identifier, Timestamp, Uuid, check_artifact_digest, plain_text
 from iltero_schemas.models.identity import IdentityRecord
+from iltero_schemas.models.pins import check_pins
+from iltero_schemas.models.run import RunPins
 from iltero_schemas.models.stages import check_structure, derived_problems
 
 API_VERSION = "iltero.io/car/v1"
@@ -42,7 +44,6 @@ MAX_PATH_COMPONENTS = 6
 MAX_PATH_LENGTH = 1024
 # Components that name a directory rather than a file, whatever the pattern allows.
 _NOT_A_COMPONENT = frozenset({".", ".."})
-UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 # A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
@@ -62,7 +63,6 @@ def _member_path(value: str) -> str:
 
 
 MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_member_path)]
-Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 
 
 class RunId(StrictModel):
@@ -153,15 +153,6 @@ class Ran(StrictModel):
         if (self.evaluator is None) != (self.reason is not None):
             raise ValueError("a stage that ran nothing says why, and one that ran gives no reason")
         return self
-
-
-class Compiler(StrictModel):
-    """The compiler that produced the stage's programs."""
-
-    version: Identifier
-    contract_version: Identifier
-    contract_digest: Digest | None
-    install: Literal["wheel", "editable"]
 
 
 class ScannerReport(StrictModel):
@@ -269,14 +260,26 @@ class PlanRecord(StrictModel):
         return self
 
 
+class UnitPlan(StrictModel):
+    digest: Digest
+
+
 class ChangeUnit(StrictModel):
     unit: Identifier
-    plan: dict[Literal["digest"], Digest]
+    plan: UnitPlan
 
 
 class Change(StrictModel):
+    """Every unit of the change with its plan; ``digest`` binds them together once it is known."""
+
     digest: Digest | None
-    units: list[ChangeUnit]
+    units: Annotated[list[ChangeUnit], Field(min_length=1)]
+
+    @model_validator(mode="after")
+    def _units_sorted_once(self) -> Change:
+        if not sorted_unique([unit.unit for unit in self.units]):
+            raise ValueError("change.units must be sorted by unit with no unit twice")
+        return self
 
 
 class Integrity(StrictModel):
@@ -334,6 +337,9 @@ class CAR(StrictModel):
     api_version: Literal["iltero.io/car/v1"] = Field(alias="apiVersion")
     uuid: Uuid
     run_id: RunId
+    # What Iltero Compass fixed when it opened the run — the bundle, the checks owed, the environment policy
+    # and whether a failed check stops the pipeline — present exactly for a run Compass issued.
+    pins: RunPins | None
     unit: Identifier
     assurance_level: Literal["self_attested"]
     issuer: Issuer
@@ -379,7 +385,13 @@ class CAR(StrictModel):
         if (self.deployment is None) == (Stage.POST_DEPLOY in self.stages):
             raise ValueError("a record describes the deployment exactly when its post-deploy stage has reported")
         check_superseded(self.plan.digest, self.deployment)
+        if Stage.PRE_DEPLOY in self.stages and self.change.digest is None:
+            raise ValueError("a record with a pre-deploy stage names the change digest its approvals were issued for")
+        own = [unit for unit in self.change.units if unit.unit == self.unit]
+        if not own or own[0].plan.digest != self.plan.digest:
+            raise ValueError("the change lists the record's own unit with the plan the record names")
         self._check_identity()
+        check_pins(self)
         # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.
         if not (info.context or {}).get(DERIVED_CHECKED_BY_READER):
             for where, problem in derived_problems(self):

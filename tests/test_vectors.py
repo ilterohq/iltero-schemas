@@ -21,15 +21,21 @@ from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_js
 from iltero_schemas.ast.parse import parse_document
 from iltero_schemas.canonical import (
     PLAN_DIGEST_VERSION,
+    canonical_assertion_set_bytes,
     canonical_bytes,
+    canonical_change_bytes,
     canonical_plan_bytes,
+    change_digest,
     digest,
     digest_of,
     plan_digest,
+    required_assertion_digest,
 )
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_of
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.facts import AssuranceFacts
+from iltero_schemas.models.run import RunOpenRequest, RunOpenResponse, TokenRefreshRequest, TokenRefreshResponse
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
@@ -38,15 +44,33 @@ COMPILER = VECTORS / "compiler"
 ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
 CANONICAL_CASES = json.loads((VECTORS / "canonical" / "cases.json").read_text(encoding="utf-8"))
 PLAN_DIGEST_DOCUMENT = json.loads((VECTORS / "canonical" / "plan_digest_cases.json").read_text(encoding="utf-8"))
+ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.json").read_text(encoding="utf-8"))
+CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
+FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
-DOCUMENT_VECTORS: dict[str, type[BaseModel]] = {"contexts": AssuranceContext, "events": AssuranceEvent}
+# The model each document vector is read as: one per folder, or one per file where a folder holds several kinds.
+WIRE_VECTORS: dict[str, type[BaseModel]] = {
+    "assurance_facts.json": AssuranceFacts,
+    "run_open_request.json": RunOpenRequest,
+    "run_open_response.json": RunOpenResponse,
+    "token_refresh_request.json": TokenRefreshRequest,
+    "token_refresh_response.json": TokenRefreshResponse,
+}
+DOCUMENT_FOLDERS = ("contexts", "events", "wire")
 DOCUMENT_FILES = sorted(
     (folder, path.name)
-    for folder in DOCUMENT_VECTORS
+    for folder in DOCUMENT_FOLDERS
     for path in (VECTORS / folder).glob("*.json")
     if path.name != "digests.json"
 )
+
+
+def _document_model(folder: str, name: str) -> type[BaseModel]:
+    by_folder: dict[str, type[BaseModel]] = {"contexts": AssuranceContext, "events": AssuranceEvent}
+    return by_folder[folder] if folder in by_folder else WIRE_VECTORS[name]
+
+
 # The three state assertions of the plan-stage scenario the context vector describes.
 CONTEXT_SCENARIO = ("ILT.AWS.RDS.STORAGE_ENCRYPTED", "ILT.AWS.RDS.NOT_PUBLIC", "ILT.AWS.RDS.BACKUP_RETENTION")
 
@@ -66,6 +90,31 @@ def test_canonical_vector_is_reproduced(case: dict[str, Any]) -> None:
 def test_plan_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
     assert canonical_plan_bytes(case["plan"]).decode("utf-8") == case["canonical"]
     assert plan_digest(case["plan"]) == case["digest"]
+
+
+@pytest.mark.parametrize("case", ASSERTION_SET_CASES["cases"], ids=[c["name"] for c in ASSERTION_SET_CASES["cases"]])
+def test_required_assertion_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    triples = [tuple(triple) for triple in case["assertions"]]
+    assert canonical_assertion_set_bytes(triples).decode("utf-8") == case["canonical"]
+    assert required_assertion_digest(tuple(triple) for triple in case["assertions"]) == case["digest"]
+
+
+@pytest.mark.parametrize("case", CHANGE_DIGEST_CASES["cases"], ids=[c["name"] for c in CHANGE_DIGEST_CASES["cases"]])
+def test_change_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    assert canonical_change_bytes(case["units"]).decode("utf-8") == case["canonical"]
+    assert change_digest(case["units"]) == case["digest"]
+
+
+def test_the_starter_set_vector_holds_every_starter_assertion() -> None:
+    starter = next(c for c in ASSERTION_SET_CASES["cases"] if c["name"] == "starter_set")
+    assert sorted(triple[0] for triple in starter["assertions"]) == sorted(
+        p.stem for p in STARTER_ASSERTIONS.glob("*.yaml")
+    )
+
+
+def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
+    context = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+    assert context["change"]["digest"] == change_digest({"root": context["plan"]["digest"]})
 
 
 def test_plan_digest_vectors_record_the_current_version() -> None:
@@ -121,13 +170,14 @@ def test_every_invalid_document_is_listed() -> None:
 @pytest.mark.parametrize(("folder", "name"), DOCUMENT_FILES, ids=str)
 def test_document_vector_validates_and_its_digest_is_reproduced(folder: str, name: str) -> None:
     document = json.loads((VECTORS / folder / name).read_text(encoding="utf-8"))
-    DOCUMENT_VECTORS[folder].model_validate(document)
+    _document_model(folder, name).model_validate(document)
     digests = json.loads((VECTORS / folder / "digests.json").read_text(encoding="utf-8"))
     assert digest_of(document) == digests[name]
 
 
 def test_every_document_vector_has_its_digest_and_nothing_else() -> None:
-    for folder in DOCUMENT_VECTORS:
+    assert {name for folder, name in DOCUMENT_FILES if folder == "wire"} == set(WIRE_VECTORS)
+    for folder in DOCUMENT_FOLDERS:
         digests = json.loads((VECTORS / folder / "digests.json").read_text(encoding="utf-8"))
         assert {name for f, name in DOCUMENT_FILES if f == folder} == set(digests)
 
@@ -239,6 +289,35 @@ def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: di
     assert result["observations"]["when"] == expected["when"]
     if "predicates" in expected:
         assert result["observations"]["predicates"] == expected["predicates"]
+
+
+@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
+def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    assert case["facts"] in ("unknown_marker", "empty_list")
+    if case["facts"] == "empty_list":
+        for part in ("evaluations", "approvals", "exceptions"):
+            context[part] = []
+    evaluated = _run(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(COMPILER / f"{case['assertion']}.rego"),
+        "--stdin-input",
+        f"data.{package_of(case['assertion'])}.evaluate",
+        stdin=json.dumps(context),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+    expected = case["expected"]
+    assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
+    assert result["observations"]["unknown"] == expected["unknown"]
 
 
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)

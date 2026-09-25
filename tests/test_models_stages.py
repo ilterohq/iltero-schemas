@@ -3,28 +3,21 @@
 from __future__ import annotations
 
 import copy
-import json
-from pathlib import Path
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.stages import LIFECYCLE, derived_problems
+from tests.records import RECORD
+from tests.records import set_path as _set
+from tests.records import stage as _stage
 
-RECORD: dict[str, Any] = json.loads((Path(__file__).parent / "data" / "plan_record.json").read_text(encoding="utf-8"))
 _READER = {DERIVED_CHECKED_BY_READER: True}
 CONFIG = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
-
-
-def _set(document: dict[str, Any], dotted: str, value: Any) -> None:
-    node = document
-    *path, last = dotted.split(".")
-    for key in path:
-        node = node[int(key)] if isinstance(node, list) else node[key]
-    node[last] = value
 
 
 def _with_top_level(document: dict[str, Any]) -> dict[str, Any]:
@@ -38,20 +31,6 @@ def _with_top_level(document: dict[str, Any]) -> dict[str, Any]:
     except ValueError:
         return document  # stages that cannot be combined: the structure is what is under test
     return {**document, **combined.model_dump(mode="json")}
-
-
-def _stage(name: str, **changes: Any) -> dict[str, Any]:
-    """The plan stage copied under another name, counting one deployment and no check."""
-    stage = copy.deepcopy(RECORD["stages"]["plan"])
-    stage["stage"] = name
-    stage["events"] = {**stage["events"], "count": 0, "path": f"units/root/{name}/events.json"}
-    coverage = stage["coverage"]
-    coverage["subjects_in_scope"].update(value=1, basis="deployment_unit", removed_by_plan=0, excluded=[])
-    coverage.update(subjects_per_assertion={}, checks=0, status_counts=dict.fromkeys(coverage["status_counts"], 0))
-    for dotted, value in changes.items():
-        _set(stage, dotted, value)
-    outcome = stage_outcome(Coverage.model_validate(stage["coverage"])).model_dump(mode="json")
-    return {**stage, **{key: outcome[key] for key in ("verdict", "assurance_status")}}
 
 
 def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) -> dict[str, Any]:
@@ -73,6 +52,7 @@ def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) 
 def _moved_event(index: int, stage: str) -> dict[str, Any]:
     event: dict[str, Any] = copy.deepcopy(RECORD["events"][index])
     event["evaluation"]["stage"] = stage
+    event["provenance"]["facts_source"] = "none" if stage == "pre_deploy" else None
     return event
 
 
@@ -309,3 +289,45 @@ def test_a_stage_left_out_says_why_in_a_way_that_holds(entry: dict[str, Any], me
 def test_a_record_always_expects_its_post_deploy_stage() -> None:
     with pytest.raises(ValidationError, match="always expects its post-deploy stage"):
         CAR.model_validate(_record(expected_stages=["plan"]), context=_READER)
+
+
+def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
+    units = RECORD["change"]["units"]
+    change_digest_value = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    with pytest.raises(ValidationError, match="names the change digest"):
+        CAR.model_validate(with_stage, context=_READER)
+    with_stage["change"]["digest"] = change_digest_value
+    CAR.model_validate(with_stage, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("basis", "server_issued"), ("unit", "network")],
+    ids=["another run", "another way of opening it", "another unit"],
+)
+def test_every_event_names_the_records_run(field: str, value: str) -> None:
+    document = _record()
+    _set(document, f"events.0.provenance.run.{field}", value)
+    with pytest.raises(ValidationError, match="every event names the record's run"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_an_offline_record_has_no_facts_from_compass() -> None:
+    units = RECORD["change"]["units"]
+    pre_deploy = _stage("pre_deploy")
+    event = _moved_event(-1, "pre_deploy")
+    moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
+    plan = copy.deepcopy(RECORD["stages"]["plan"])
+    del plan["coverage"]["subjects_per_assertion"][moved]
+    document = _record(
+        {"plan": plan, "pre_deploy": pre_deploy},
+        expected_stages=["plan", "pre_deploy", "post_deploy"],
+        complete=False,
+        events=[*RECORD["events"][:-1], event],
+        **{"change.digest": change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})},
+    )
+    CAR.model_validate(document, context=_READER)
+    document["events"][-1]["provenance"]["facts_source"] = "server"
+    with pytest.raises(ValidationError, match="has no facts from Iltero Compass"):
+        CAR.model_validate(document, context=_READER)

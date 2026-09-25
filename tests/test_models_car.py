@@ -3,31 +3,18 @@
 from __future__ import annotations
 
 import copy
-import json
-from pathlib import Path
 from typing import Any
 
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from iltero_schemas.canonical import digest_of
+from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, MAX_PATH_COMPONENTS, MemberPath, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-
-RECORD: dict[str, Any] = json.loads((Path(__file__).parent / "data" / "plan_record.json").read_text(encoding="utf-8"))
-
-
-def _record(**changes: Any) -> dict[str, Any]:
-    document: dict[str, Any] = copy.deepcopy(RECORD)
-    for dotted, value in changes.items():
-        node = document
-        parts = dotted.split(".")
-        for key in parts[:-1]:
-            node = node[key]
-        node[parts[-1]] = value
-    return document
+from tests.records import RECORD
+from tests.records import record as _record
 
 
 def test_a_record_a_run_wrote_validates() -> None:
@@ -408,3 +395,42 @@ def test_every_event_names_the_plan_the_record_evaluated() -> None:
     document["events"][0]["provenance"]["plan_digest"]["value"] = "sha256:" + "a" * 64
     with pytest.raises(ValidationError, match="every event names the plan the record evaluated"):
         CAR.model_validate(document)
+
+
+OWN_PLAN = RECORD["plan"]["digest"]
+OTHER_PLAN = "sha256:" + "e" * 64
+
+
+@pytest.mark.parametrize(
+    ("units", "message"),
+    [
+        ([{"unit": "root", "plan": {}}], "digest"),
+        ([], "at least 1"),
+        (
+            [{"unit": "root", "plan": {"digest": OWN_PLAN}}, {"unit": "app", "plan": {"digest": OTHER_PLAN}}],
+            "sorted by unit",
+        ),
+        ([{"unit": "root", "plan": {"digest": OWN_PLAN}}] * 2, "sorted by unit"),
+        ([{"unit": "app", "plan": {"digest": OWN_PLAN}}], "the record's own unit"),
+        ([{"unit": "root", "plan": {"digest": OTHER_PLAN}}], "the record's own unit"),
+    ],
+    ids=["a unit with no plan digest", "no unit", "units out of order", "a unit twice", "own unit missing", "own plan"],
+)
+def test_the_change_lists_every_unit_once_in_order_including_its_own(units: list[Any], message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(_record(**{"change.units": units}))
+
+
+def test_a_change_digest_is_the_digest_of_its_units() -> None:
+    units = [{"unit": "app", "plan": {"digest": OTHER_PLAN}}, {"unit": "root", "plan": {"digest": OWN_PLAN}}]
+    right = change_digest({"app": OTHER_PLAN, "root": OWN_PLAN})
+    CAR.model_validate(_record(**{"change.units": units, "change.digest": right}))
+    with pytest.raises(ValidationError, match="not the digest of the change's units"):
+        CAR.model_validate(_record(**{"change.units": units, "change.digest": change_digest({"root": OWN_PLAN})}))
+
+
+def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:
+    stage = copy.deepcopy(RECORD["stages"]["plan"])
+    stage["compiler"] = {**stage["compiler"], "install": "wheel", "contract_digest": None}
+    with pytest.raises(ValidationError, match="an installed contract package has a digest"):
+        StageRecord.model_validate(stage)

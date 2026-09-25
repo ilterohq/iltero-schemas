@@ -99,6 +99,7 @@
           "basis": "none",
           "integrity": "absent"
         },
+        "facts_source": null,
         "compiled_digest": "sha256:d502f174ceaef9cafda8bc471554c0aa259660219f90645d909e242a4d741e6e",
         "compiler": {
           "contract_digest": null,
@@ -198,6 +199,7 @@
           "basis": "none",
           "integrity": "absent"
         },
+        "facts_source": null,
         "compiled_digest": "sha256:f579c290581a7ccd7a9a399f2fdce6fa1f5a8753ef7d979bb12dd2e8e287a2f9",
         "compiler": {
           "contract_digest": null,
@@ -336,6 +338,7 @@
           "basis": "none",
           "integrity": "absent"
         },
+        "facts_source": null,
         "compiled_digest": "sha256:dae954c4ac013bb9f4641a6a46ec20ce8e8a237bf4ed933f3bacb66b8dc45bd5",
         "compiler": {
           "contract_digest": null,
@@ -435,6 +438,7 @@
           "basis": "none",
           "integrity": "absent"
         },
+        "facts_source": null,
         "compiled_digest": "sha256:22213d00978771245aa21969949f965e79f1bfa641ba9c434b1641ecbf4072b0",
         "compiler": {
           "contract_digest": null,
@@ -538,6 +542,7 @@
           "basis": "none",
           "integrity": "absent"
         },
+        "facts_source": null,
         "compiled_digest": "sha256:51bdcc563374caeb53d22225d587b0db3efea6e01d4918969c90310854362dc2",
         "compiler": {
           "contract_digest": null,
@@ -1039,6 +1044,7 @@
     "basis": "locally_derived",
     "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
+  "pins": null,
   "stages": {
     "plan": {
       "assertions": {

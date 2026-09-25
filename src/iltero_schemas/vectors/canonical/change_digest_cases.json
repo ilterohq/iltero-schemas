@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "name": "one_unit",
+      "description": "A change of one unit, named root.",
+      "units": {
+        "root": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "canonical": "[{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"root\"}]",
+      "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
+    },
+    {
+      "name": "units_sorted_by_name",
+      "description": "Units are listed by name in code-point order, whatever order they are given in.",
+      "units": {
+        "network": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "database": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "app": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "canonical": "[{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"app\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"database\"},{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"network\"}]",
+      "digest": "sha256:7a63bd6473a738a62038be8aae3e6a8a0142279e6fd2ed36a4d36be264c87c4a"
+    },
+    {
+      "name": "replanned_unit",
+      "description": "Re-planning one unit gives another change digest.",
+      "units": {
+        "network": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "database": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "app": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "canonical": "[{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"app\"},{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"database\"},{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"network\"}]",
+      "digest": "sha256:0f561254af123d3739c0d2b62f05b7f274e6a4ea35002cbab12981c2faf270a2"
+    },
+    {
+      "name": "uppercase_sorts_first",
+      "description": "Code-point order puts an upper-case name before a lower-case one.",
+      "units": {
+        "b": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "B": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "canonical": "[{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"B\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"b\"}]",
+      "digest": "sha256:47f0daf49cc4996bc8626ff2722fd4698e391e770d9c3582d7bd6ece9818cad7"
+    },
+    {
+      "name": "code_point_order",
+      "description": "Names are sorted by Unicode code point: U+FF61 sorts before U+1F600, although UTF-16 order would put it after.",
+      "units": {
+        "😀": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "｡": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "canonical": "[{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"｡\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"😀\"}]",
+      "digest": "sha256:8a38b021dd23eb527595c28027f2dc6c3d1b68ccc85c38a458dd3cf0359eaeb0"
+    }
+  ]
+}

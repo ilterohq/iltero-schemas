@@ -194,7 +194,7 @@ class Repo:
         trust.parent.mkdir(parents=True, exist_ok=True)
         trust.write_bytes(_file(*keys))
         self.git("add", "-A")
-        self.git("commit", "-q", "-m", version)
+        self.git("commit", "-q", "--allow-empty", "-m", version)
 
 
 @pytest.fixture
@@ -297,7 +297,114 @@ def test_a_pending_change_is_checked_against_the_newest_release(repo: Repo) -> N
     assert "key k1: status moved from retired to active" in RELEASE.pending_key_problems(repo.path)
 
 
+def _change(repo: Repo, version: str, *keys: dict[str, Any]) -> None:
+    """A change on a branch off ``main``, left in the working tree as a pull request's checkout would be."""
+    repo.git("checkout", "-q", "-b", "change")
+    repo.commit(version, *keys)
+
+
+def test_a_key_change_without_a_higher_version_is_refused(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.1.0", _key(**RETIRED))
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
+    ]
+
+
+def test_a_key_change_with_a_higher_version_passes(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.2.0", _key(**RETIRED))
+    assert RELEASE.version_bump_problems(repo.path, "main") == []
+
+
+def test_a_change_that_leaves_the_keys_alone_needs_no_new_version(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.1.0", _key())
+    assert RELEASE.version_bump_problems(repo.path, "main") == []
+
+
+def test_a_change_may_never_lower_the_version(repo: Repo) -> None:
+    repo.commit("0.3.0", _key())
+    _change(repo, "0.2.0", _key())
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the version 0.2.0 is lower than 0.3.0, the version at main"
+    ]
+
+
+def test_an_uncommitted_key_change_counts(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    (repo.path / RELEASE.TRUST_FILE).write_bytes(_file(_key(**RETIRED)))
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
+    ]
+
+
+def test_any_change_in_the_trust_folder_counts_as_a_key_change(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    repo.git("checkout", "-q", "-b", "change")
+    (repo.path / RELEASE.TRUST_DIR / "other-keys.json").write_text("{}", encoding="utf-8")
+    repo.git("add", "-A")
+    repo.git("commit", "-q", "-m", "another key file")
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
+    ]
+
+
+def test_adding_the_key_file_counts_as_a_key_change(repo: Repo) -> None:
+    (repo.path / "pyproject.toml").write_text('[project]\nversion = "0.1.0"\n', encoding="utf-8")
+    repo.git("add", "-A")
+    repo.git("commit", "-q", "-m", "no keys yet")
+    _change(repo, "0.1.0", _key())
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
+    ]
+
+
+def test_a_key_change_already_on_the_base_is_not_counted(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.2.0", _key())
+    repo.git("checkout", "-q", "main")
+    repo.commit("0.2.0", _key(**RETIRED))
+    repo.git("checkout", "-q", "change")
+    assert RELEASE.version_bump_problems(repo.path, "main") == []
+
+
+def test_the_version_must_beat_the_base_not_where_the_change_began(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.2.0", _key(**RETIRED))
+    repo.git("checkout", "-q", "main")
+    repo.commit("0.2.0", _key())
+    repo.git("checkout", "-q", "change")
+    assert RELEASE.version_bump_problems(repo.path, "main") == [
+        "the trusted keys changed, so the version must be higher than 0.2.0, the version at main"
+    ]
+
+
+@pytest.mark.parametrize("version", ["not a version", "0.2.0.post1", "0.2.0rc1", "0.2.0+local", "1!0.2.0"])
+def test_only_a_plain_version_is_accepted(repo: Repo, version: str) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, version, _key(**RETIRED))
+    with pytest.raises(RELEASE.ReleaseError, match="does not declare a plain X.Y.Z version"):
+        RELEASE.version_bump_problems(repo.path, "main")
+
+
+def test_a_base_with_no_shared_history_refuses(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    with pytest.raises(RELEASE.ReleaseError, match="cannot find where HEAD left no-such-branch"):
+        RELEASE.version_bump_problems(repo.path, "no-such-branch")
+
+
+def test_a_pending_key_change_must_raise_the_minor_version_over_the_release(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
+    _change(repo, "0.1.1", _key(**RETIRED))
+    assert RELEASE.pending_key_problems(repo.path) == [
+        "the trusted keys changed, so v0.1.1 must raise the major or minor version of v0.1.0"
+    ]
+    assert RELEASE.version_bump_problems(repo.path, "main") == []
+
+
 def test_the_script_rejects_the_wrong_arguments() -> None:
-    for args in ((), ("v0.2.0",), ("--keys", "x"), ("--other", "main")):
+    for args in ((), ("v0.2.0",), ("--keys",), ("--keys", "--x"), ("--keys", "main", "x"), ("--other", "main")):
         run = subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True, check=False)
         assert run.returncode == 2

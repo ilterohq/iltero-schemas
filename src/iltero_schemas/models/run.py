@@ -7,14 +7,18 @@ its own identity token for a fresh run token for its stage, so no token ever
 travels between jobs; only the run id does, and a refresh names the run
 alongside its request body rather than inside it.
 
+Each job sends its identity token only in the ``Authorization`` header of its
+request (``Authorization: Bearer <token>``). A request body names only what it
+asks for, so a body that still carries a token is refused as an unknown field.
+
 Every response for a run repeats the run's **pins** — the stack and
 environment, the bundle, the checks the run owes, the environment's policy and
 the oldest tool version allowed — exactly as they were fixed when the run
 opened. A tool can therefore compare the pins of any two responses and know
 that nothing was changed under it between stages.
 
-No field of a response can hold an identity token: each string a response
-carries has a fixed shape that a JSON Web Token does not fit.
+No field of a response can hold an identity token. Each string a response
+carries has a fixed shape, and a JSON Web Token does not fit any of them.
 """
 
 from __future__ import annotations
@@ -33,7 +37,6 @@ from iltero_schemas.models.fields import (
     Digest,
     EnvironmentKey,
     GateMode,
-    OidcToken,
     RunStage,
     RunToken,
     Timestamp,
@@ -50,14 +53,12 @@ class RunOpenRequest(StrictModel):
     stack_id: Uuid
     environment: EnvironmentKey
     stage: RunStage
-    oidc_token: OidcToken
 
 
 class TokenRefreshRequest(StrictModel):
     """A later job's request for a run token for its own stage of an open run."""
 
     stage: RunStage
-    oidc_token: OidcToken
 
 
 class BundleRef(StrictModel):

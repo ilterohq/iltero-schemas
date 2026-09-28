@@ -23,10 +23,13 @@ refuses unknown keys and coerces nothing.
 
 | Document | Fields |
 | --- | --- |
-| `RunOpenRequest` | `stack_id`, `environment`, the `stage` to start at, and `oidc_token` |
+| `RunOpenRequest` | `stack_id`, `environment` and the `stage` to start at |
 | `RunOpenResponse` | `apiVersion: iltero.io/run/v1`, `run_id`, `stage`, `run_token`, `context_key`, `expires_at`, `server_time` (when the run opened), `pins` |
-| `TokenRefreshRequest` | the `stage` a later job needs, and that job's own `oidc_token` |
+| `TokenRefreshRequest` | the `stage` a later job needs |
 | `TokenRefreshResponse` | the same fields as the open response; `server_time` is when this token was issued |
+
+Each job sends its own identity token only in the request's `Authorization`
+header (`Authorization: Bearer <token>`).
 
 The stages of a run are `plan`, `pre_deploy`, `post_deploy` and
 `post_verify`. CI pipelines usually run each stage in its own job. Each job

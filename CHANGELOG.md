@@ -65,6 +65,8 @@ keep, so any two tools agree on what a record means.
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.
   The set is empty until the first signing key is published.
+  CI refuses a change to the set that does not raise the version, and a
+  release that changes it raises the major or minor version.
 - Signed assertion bundles: building one from assertion sources (the files
   and the bytes a key signs are reproducible), and a check that rebuilds a
   served bundle from its sources and compares it byte for byte before

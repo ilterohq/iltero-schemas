@@ -48,10 +48,15 @@ jobs:
       - run: pdm run lint
       - run: pdm run format
       - run: pdm run typecheck
-      # The trusted bundle keys may only move forward from the newest release;
-      # a change that breaks that is refused here, before review, not at release.
-      - name: Trusted-key history
-        run: pdm run python scripts/check_release.py --keys
+      # The trusted bundle keys may only move forward from the newest release. A
+      # change to them must raise the version over the base and, as the release
+      # will, the major or minor version over the newest release. A change that
+      # breaks a rule is refused here, before review, not at release. The base is
+      # the pull request's target, the previous main commit on a push, or the parent.
+      - name: Trusted-key history and version
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
+        run: pdm run python scripts/check_release.py --keys "$BASE"
       # Dependabot does not read the PDM lock, so the locked runtime
       # dependencies are audited here against known vulnerabilities.
       - name: Audit locked dependencies

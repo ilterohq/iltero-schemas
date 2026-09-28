@@ -37,8 +37,18 @@ the package. Nothing is built or published by hand.
      changes the key file raises the major or minor version.
 
    CI runs the key rules on every pull request too
-   (`check_release.py --keys`), so a change that breaks them fails CI before
-   it merges.
+   (`check_release.py --keys BASE`), so a change that breaks them fails CI
+   before it merges. A key change must already raise the major or minor
+   version over the newest release, as the release will require.
+
+   CI also checks the version against the base branch. A change may never
+   lower it. A change that edits anything under `trust/` must raise it. So
+   every commit a pull request brings to `main` that changes the trusted keys
+   carries a higher version than `main` had before. This holds only for
+   squash merges, a required CI check and branches kept up to date with
+   `main`, which are repository settings. The version is a label, not proof:
+   a consumer also records `TRUST_FILE_DIGEST`, the digest of the key file it
+   actually read.
 2. **The full check** under the pinned OPA, as CI runs it, with the lock file
    checked first.
 3. **Build** with `SOURCE_DATE_EPOCH` set to the tagged commit's time. The

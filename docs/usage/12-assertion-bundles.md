@@ -86,15 +86,16 @@ over the bytes that were served.
 
 Before anything in a bundle is evaluated, a tool:
 
-1. takes the key the descriptor's `key_id` names from
+1. refuses the bundle if the tool's own version is older than either the
+   descriptor's `min_cli_version` or the run's;
+2. calls `check_descriptor(descriptor, keys)`, where `keys` is
    `iltero_schemas.trust.BUNDLE_KEYS` (see [trusted bundle
-   keys](11-bundle-keys.md)), refusing one that may not verify;
-2. verifies the signature: `signature_of(descriptor)` gives the signed bytes
-   and the raw 64-byte signature to check against the key's `public_key_der`,
-   or OPA verifies it (below);
-3. calls `check_descriptor(descriptor, keys)`;
-4. refuses the bundle if the tool's own version is older than either the
-   descriptor's `min_cli_version` or the run's.
+   keys](11-bundle-keys.md)). It takes the key the descriptor's `key_id` names
+   and refuses one that may not verify, then checks everything below;
+3. verifies the signature with the key `check_descriptor` returned:
+   `signature_of(descriptor)` gives the signed bytes and the raw 64-byte
+   signature to check against the key's `public_key_der`, or OPA verifies it
+   (below).
 
 `check_descriptor` raises `BundleError` unless:
 
@@ -110,7 +111,7 @@ Before anything in a bundle is evaluated, a tool:
 
 It returns an `UnverifiedBundle`: the key and the files it compared.
 `check_descriptor` does not verify the signature itself, so nothing in the
-result may be evaluated until step 2 has passed. The tool then evaluates those
+result may be evaluated until step 3 has passed. The tool then evaluates those
 files, or checks the tarball's signature with OPA (below) and evaluates that
 same file with `opa eval --bundle`. Either way every module it evaluates is one it compiled itself from the
 sources it was given, signed by a key the trust set names.

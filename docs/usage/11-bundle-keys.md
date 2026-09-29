@@ -3,7 +3,7 @@
 Iltero Compass signs every assertion bundle it serves (see [governed
 runs](09-governed-runs.md#the-bundle-a-run-is-pinned-to)). A tool accepts a
 bundle only if its signature verifies under a key it trusts. The trusted keys
-ship inside this package, in `src/iltero_schemas/trust/bundle-keys.json`, so
+ship inside this package, in one file, so
 a tool that pins one exact version of the package also pins which keys it
 trusts. It never fetches trust over the network.
 
@@ -15,6 +15,7 @@ trusts. It never fetches trust over the network.
 - [Reading the keys](#reading-the-keys)
 - [How the set changes](#how-the-set-changes)
 - [Accepted risks](#accepted-risks)
+- [For developers](#for-developers)
 
 ## The file
 
@@ -86,14 +87,13 @@ be a `dev-` key.
 
 ## Reading the keys
 
-`iltero_schemas.trust` gives:
-
-| Name | What it is |
-| --- | --- |
-| `BUNDLE_KEYS` | The shipped keys by key id, read-only. Each is a `BundleKey` with the fields above, except that the key itself is held as its DER bytes, `public_key_der`, and with two answers: `can_sign` (only when `active`) and `can_verify` (unless `revoked`) |
-| `TRUST_FILE_DIGEST` | The digest of the shipped file's exact bytes, so a consumer can compare the set it loaded with the one a pinned package version ships |
-| `DEV_KEY_PREFIX` | `dev-` |
-| `parse_bundle_keys(raw, dev=...)` | Reads a trust file with every rule on this page; `dev=True` only for a development tool's own file. A broken rule raises `TrustFileError`, naming the key and the rule |
+A tool that reads the keys gets each trusted key by its key id, and two
+answers about it: whether it may sign (only when it is `active`) and whether
+it may verify (unless it is `revoked`). It also gets the digest of the file's
+exact bytes, so it can compare the key set it loaded with the one a given
+package version ships. Reading a trust
+file applies every rule on this page. A broken rule is refused, and the error
+names the key and the rule.
 
 ## How the set changes
 
@@ -120,3 +120,14 @@ bundle it was pinned to.
 Local (self-attested) runs have no such check. A bundle signed with the
 revoked key and passed to an old CLI directly is still accepted until that
 CLI is upgraded.
+
+## For developers
+
+The keys ship in `src/iltero_schemas/trust/bundle-keys.json`. `iltero_schemas.trust` gives:
+
+| Name | What it is |
+| --- | --- |
+| `BUNDLE_KEYS` | The shipped keys by key id, read-only. Each is a `BundleKey` with the fields above, except that the key itself is held as its DER bytes, `public_key_der`, and with two answers: `can_sign` (only when `active`) and `can_verify` (unless `revoked`) |
+| `TRUST_FILE_DIGEST` | The digest of the shipped file's exact bytes, so a consumer can compare the set it loaded with the one a pinned package version ships |
+| `DEV_KEY_PREFIX` | `dev-` |
+| `parse_bundle_keys(raw, dev=...)` | Reads a trust file with every rule on this page; `dev=True` only for a development tool's own file. A broken rule raises `TrustFileError`, naming the key and the rule |

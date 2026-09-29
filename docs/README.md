@@ -1,8 +1,9 @@
 # iltero-schemas documentation
 
-**Using the contract** — `docs/usage/`
+**Using the contract** — `docs/usage/`. Each page describes the contract in plain words and ends
+with a "For developers" section naming the package's code.
 
-- [The OPA pin](usage/01-opa-pin.md) — what `PIN` is, how a consumer verifies an evaluator, how the pin changes
+- [The OPA pin](usage/01-opa-pin.md) — which OPA release is pinned, how a consumer verifies an evaluator, how the pin changes
 - [Writing an assertion](usage/02-assertions.md) — the YAML document, the checks you can write, which paths
   exist at each stage, why a result can be "unknown", limits
 - [How an assertion is checked](usage/03-compiler-and-evaluation.md) — compiling to an OPA program, what goes

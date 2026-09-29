@@ -9,8 +9,7 @@ account — can only be tied back to the plan that was approved if something
 records which cloud resource each address became.
 
 An **identity binding** records that, and only when it can be sure.
-`iltero_schemas.models.identity.IdentityBindings` is the shape of the
-document one unit's state produces.
+This package defines the shape of the document one unit's state produces.
 
 ## On this page
 
@@ -19,6 +18,7 @@ document one unit's state produces.
 - [Bound or unresolved, never guessed](#bound-or-unresolved-never-guessed)
 - [Who wrote it](#who-wrote-it)
 - [What the document never carries](#what-the-document-never-carries)
+- [For developers](#for-developers)
 
 ## What a binding holds
 
@@ -116,3 +116,9 @@ The state file a binding is read from holds every attribute of every
 resource, secrets included. It never leaves the machine that read it: the
 document carries the address and the identifier, and the model refuses any
 other key.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| The document | `models.identity.IdentityBindings` |

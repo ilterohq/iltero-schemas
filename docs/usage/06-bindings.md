@@ -10,7 +10,7 @@ in this range, decides exactly what this assertion says*.
 Nothing is executed for a bound check. The tool already ran, somewhere
 else, and its result is **credited** to the assertion. That is a strong
 claim, so a record made this way says which permission it rested on.
-`iltero_schemas.models.binding` is the shape; the package ships one set,
+This package defines the shape of a binding set, and ships one set,
 `ILT.BINDINGS.STARTER`.
 
 ## On this page
@@ -20,6 +20,7 @@ claim, so a record made this way says which permission it rested on.
 - [Which version of the tool counts](#which-version-of-the-tool-counts)
 - [What the record carries](#what-the-record-carries)
 - [Why the starter set is short](#why-the-starter-set-is-short)
+- [For developers](#for-developers)
 
 ## What one entry says
 
@@ -124,3 +125,10 @@ passing and failing checks alike. Trivy's configuration report names a
 resource only for a finding; its passing checks are reported for the scan as
 a whole. So a Trivy result can be kept as evidence and counted, but it
 cannot establish that one named resource passed.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| A binding set | `models.binding` |
+| The starter set, and reading a set | `bindings.starter_set`, `bindings.load_binding_set`, `bindings.STARTER_SET_ID` |

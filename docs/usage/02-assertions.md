@@ -31,20 +31,6 @@ spec:
         equal: false
 ```
 
-In Python:
-
-```python
-from iltero_schemas.ast import parse, source_digest, AssertionSyntaxError
-
-try:
-    assertion = parse(text)
-except AssertionSyntaxError as error:
-    for issue in error.issues:      # every problem found, with the key it was found at
-        print(issue.path, issue.message)
-
-source_digest(assertion)            # "sha256:..." — the fingerprint evidence refers to
-```
-
 ## On this page
 
 - [The top of the document](#the-top-of-the-document)
@@ -52,6 +38,7 @@ source_digest(assertion)            # "sha256:..." — the fingerprint evidence 
 - [Paths](#paths)
 - [Three possible answers, not two](#three-possible-answers-not-two)
 - [Limits](#limits)
+- [For developers](#for-developers)
 
 ## The top of the document
 
@@ -197,3 +184,19 @@ Documents are read as YAML 1.1: unquoted `yes`, `no`, `on`, `off` become
 When a file is not valid YAML, the error names the line and the parser's
 problem, never the text around it, so a value from the file cannot end up
 in a log.
+
+## For developers
+
+Reading an assertion, and computing the fingerprint evidence refers to:
+
+```python
+from iltero_schemas.ast import parse, source_digest, AssertionSyntaxError
+
+try:
+    assertion = parse(text)
+except AssertionSyntaxError as error:
+    for issue in error.issues:      # every problem found, with the key it was found at
+        print(issue.path, issue.message)
+
+source_digest(assertion)            # "sha256:..." — the fingerprint evidence refers to
+```

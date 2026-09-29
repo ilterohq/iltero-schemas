@@ -15,22 +15,13 @@ and re-checked later.
 - [A rule written by hand](#a-rule-written-by-hand)
 - [What is recorded with a result](#what-is-recorded-with-a-result)
 - [The assertions that ship with the package](#the-assertions-that-ship-with-the-package)
+- [For developers](#for-developers)
 
 ## Compiling
 
-```python
-from iltero_schemas.ast import parse
-from iltero_schemas.compiler import COMPILER_VERSION, compile
-
-module = compile(parse(text))
-module.assertion_id   # "ACME.AWS.RDS.PRODUCTION_BASELINE"
-module.package        # 'iltero.assertions["ACME.AWS.RDS.PRODUCTION_BASELINE"]'
-module.entrypoint     # 'data.iltero.assertions["ACME.AWS.RDS.PRODUCTION_BASELINE"].evaluate'
-module.source         # the program, as bytes
-module.digest         # "sha256:..." — the fingerprint of those bytes
-```
-
-Two properties matter:
+The package's compiler turns one assertion into one OPA program. The program
+names the assertion it came from, where OPA should look for its answer, and
+the fingerprint of its own bytes. Two properties matter:
 
 - **Same assertion, same bytes.** Compiling an assertion always produces the
   exact same program. So anyone who receives a program can compile the
@@ -38,8 +29,8 @@ Two properties matter:
   it claims to be and is refused. A signature says *who* published a program;
   recompiling says *what it does*.
 - **Each program stands alone.** It contains the assertion's own rules
-  followed by a copy of the shared runtime (`compiler/runtime.rego`), which
-  does the looking-up of values and the combining of results. There is no
+  followed by a copy of the shared runtime, which does the looking-up of
+  values and the combining of results. There is no
   separate library to ship or trust. The program also states the assertion
   id, version and source fingerprint it was made from.
 
@@ -54,12 +45,11 @@ context** — whose top-level keys are the parts listed for the stage in
 [writing an assertion](02-assertions.md#paths). For a resource, `resource`
 holds that one resource's state.
 
-`iltero_schemas.models.context.AssuranceContext` is the shape of that
-document. Every part is a model that refuses unknown keys, and the parts
-present must be exactly what the stage's **profile** provides
-(`iltero_schemas.profiles.profile_for(stage, target_kind)`): a required
-part missing, or a part the stage cannot know, is refused by name. Three
-parts are always there:
+The package defines the shape of that document. Every part refuses unknown
+keys, and the parts present must be exactly what the stage's **profile**
+provides. The profile depends on the stage and on what kind of thing the
+check is about. A required part that is missing, or a part the stage cannot
+know, is refused by name. Three parts are always there:
 
 | Part | What it says |
 | --- | --- |
@@ -74,8 +64,8 @@ repository, branch and pull request when the runner is told them), `change`
 about it, plus the same table for every resource it covers), `subject` (the
 resource's local `id` and the identities known for it) and `resource` (that
 one resource: `id`, `provider`, `type`, `action`, `before`, `after`,
-`related`, …). `src/iltero_schemas/vectors/contexts/plan_resource.json` is a
-complete example, and `digests.json` next to it records its `input_digest`.
+`related`, …). The conformance vectors include a complete example, with its
+`input_digest` (see [conformance vectors](../development/03-conformance-vectors.md)).
 
 At the `pre_deploy` stage the subject is the change, and the profile adds
 `evaluations`, `approvals` and `exceptions`: facts only Iltero Compass holds.
@@ -83,20 +73,19 @@ Each is a list, or the unknown marker
 `{"__unknown": true, "reason": "server_facts_unavailable"}` when the fact
 could not be supplied, so a check that reads it is `unknown` rather than
 failed — see [facts only Iltero Compass holds](10-server-facts.md).
-`src/iltero_schemas/vectors/contexts/pre_deploy_change.json` is a complete
-example.
+The conformance vectors include a complete example.
 
 At the `post_deploy` stage the subject is the deployment rather than a
-resource, and the profile adds `deployment` (`iltero_schemas.models.deployment`):
+resource, and the profile adds `deployment`:
 
 - `plan`: the plan the pipeline says it gave Terraform to apply, by the same
   fingerprints the plan stage recorded. `ILT.DEPLOYMENT.PLAN_BINDING` checks
   it is the evaluated plan; that proves the file the pipeline supplied
   matches the approved one, not that Terraform read it. It ships with the
-  package (`iltero_schemas.assertions.PLAN_BINDING`), and a runner evaluates
+  package, and a runner evaluates
   it at every post-deploy stage, whatever a project's own assertions are.
   When it fails, the runner records `plan_superseded`: another plan was
-  applied (`iltero_schemas.assertions.FAIL_REASONS`).
+  applied.
 - `apply`: the apply log it was read from (`source`: the digest of its bytes,
   the Terraform version that wrote it, and the lines it could not read:
   `noise_lines`, output the pipeline mixed in, and `damaged_lines`, messages
@@ -137,7 +126,7 @@ resource, and the profile adds `deployment` (`iltero_schemas.models.deployment`)
   `log_and_state_where_log_incomplete`.
 - `superseded_by`: the reason the pipeline gives for applying a plan other
   than the evaluated one. It is the pipeline's word, and it does not make the
-  applied plan an approved one: `PLAN_BINDING` still fails. It is refused
+  applied plan an approved one: `ILT.DEPLOYMENT.PLAN_BINDING` still fails. It is refused
   when the applied plan is the evaluated one.
 
 In both `plan` parts the binary's `artifact_digest` is present exactly when
@@ -215,11 +204,11 @@ Asking for `evaluate` returns a list with exactly one result:
 | `expected` / `resolved` / `actual` | What the check compared with, and what it found. A comparison with another path shows `{"ref": path}` and, under `resolved`, the value found there |
 | `observations.unknown` | The first value that could not be resolved, as `{path, reason}`, or `null` |
 
-How large an answer can be is fixed by the language's own limits and
-exported as `iltero_schemas.compiler` constants: `REASON_MAX_BYTES` (2 KiB),
-`OBSERVATIONS_MAX_BYTES` (512 KiB of canonical JSON), `OBSERVATIONS_MAX_DEPTH`
-(4) and `SUBJECT_FIELD_MAX_CHARS` (128). Every assertion the parser accepts
-answers within them; a consumer refuses anything larger.
+How large an answer can be is fixed by the language's own limits. A `reason`
+is at most 2 KiB. The observations are at most 512 KiB of canonical JSON and
+at most 4 levels deep. Each subject field is at most 128 characters. Every
+assertion the parser accepts answers within these limits, and a consumer
+refuses anything larger.
 
 Values in observations are kept small on purpose. Short texts (up to 128
 characters), numbers, `true`/`false`, and lists of up to four such values are
@@ -232,8 +221,8 @@ bound on the whole result.)
 ## What the program may call
 
 OPA offers about two hundred built-in functions, including ones that talk to
-the network or read the clock. Iltero only allows 83 of them:
-`iltero_schemas.opa.CAPABILITIES`. The list was built from nothing, adding
+the network or read the clock. Iltero only allows 83 of them, listed in the
+package's capabilities allowlist. The list was built from nothing, adding
 only comparison, arithmetic, text, list, type-check, `object.*`, `json.*`
 (object operations only) and `semver.*` functions. Nothing in it can reach
 the network, the clock, random numbers, the machine it runs on, regular
@@ -241,44 +230,43 @@ expressions, tokens, certificates, or parse text formats.
 
 This list must be given to OPA both when building a bundle
 (`opa build --capabilities`) and when running it (`opa eval --capabilities`),
-for generated and hand-written programs alike. Its fingerprint,
-`CAPABILITIES_DIGEST`, is recorded with every evaluation so a later re-check
-uses the same list. `vectors/opa/not_allowed.txt` lists every function of the
-pinned OPA release that is left out.
+for generated and hand-written programs alike. Its fingerprint is recorded
+with every evaluation (`capabilities_digest`), so a later re-check uses the
+same list. The conformance vectors list every function of the pinned OPA
+release that is left out.
 
 ## A rule written by hand
 
 Some rules need logic the language does not have. Those are written in Rego
 and kept as a **custom policy source**: a directory of `.rego` files with a
-`PolicySourceManifest` (`iltero_schemas.models.policy_source`) saying which
-assertion each one decides, at which stage and about what. The assertion
+manifest saying which assertion each one decides, at which stage and about what. The assertion
 document stays engine-neutral — it never carries a package, a query or a
 Rego field — and the manifest carries everything an assertion carries except
 the logic.
 
-Such a policy answers in the shape described above, declares the package
-`package_of` gives the assertion's id, and is bound by the same capability
-list. What a tool then does with it — how a record says which of its rules
-were compiled and which were written — is that tool's business; the CLI
+Such a policy answers in the shape described above. It declares the same
+package a compiled program for that assertion id would declare
+(`iltero.assertions["<ID>"]`), and it is bound by the same capability list.
+What a tool then does with it is that tool's business, for example how a
+record says which of its rules were compiled and which were written. The CLI
 describes it under "When the assertion language is not enough".
 
 ## What is recorded with a result
 
 | Fingerprint | Taken over |
 | --- | --- |
-| `assertion_source_digest` | the assertion's logic: id, version, type, stage, target, `when`, `assert` (`iltero_schemas.ast.source_digest`). The title is not part of it; the tool records the title next to it |
-| `compiled_digest` | the program's bytes (`module.digest`). Must equal a fresh compilation |
-| `compiler.version` | `COMPILER_VERSION`, together with this package's version |
-| `capabilities_digest` | `CAPABILITIES_DIGEST` |
-| `plan.digest` | a Terraform plan as `terraform show -json` renders it, minus the keys that describe the rendering rather than the change (`timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift`, `relevant_attributes`) — `iltero_schemas.canonical.plan_digest`, version `PLAN_DIGEST_VERSION`. The CLI computes it from the plan it evaluates and again from the plan the apply used; the two must match. It binds to the saved plan file: a plan made again from the same code can differ. Iltero Compass records the value; it cannot recompute it from the redacted artifact it receives |
+| `assertion_source_digest` | the assertion's logic: id, version, type, stage, target, `when`, `assert`. The title is not part of it; the tool records the title next to it |
+| `compiled_digest` | the program's bytes. Must equal a fresh compilation |
+| `compiler.version` | the compiler's version, together with this package's version |
+| `capabilities_digest` | the capabilities allowlist |
+| `plan.digest` | a Terraform plan as `terraform show -json` renders it, minus the keys that describe the rendering rather than the change (`timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift`, `relevant_attributes`). The rule has a version of its own, recorded with the digest. The CLI computes it from the plan it evaluates and again from the plan the apply used; the two must match. It binds to the saved plan file: a plan made again from the same code can differ. Iltero Compass records the value; it cannot recompute it from the redacted artifact it receives |
 
 All fingerprints are computed over bytes produced the same way everywhere:
-RFC 8785 canonical JSON (`iltero_schemas.canonical.canonical_bytes`) and
-written as `sha256:<lowercase hex>` (`digest`, `digest_of`).
+RFC 8785 canonical JSON. Each is written as `sha256:<lowercase hex>`.
 
 ## The assertions that ship with the package
 
-`src/iltero_schemas/assertions/` holds ten ready-made assertions:
+The package holds ten ready-made assertions:
 
 - for a Terraform plan: RDS storage is encrypted, RDS is not public, RDS
   backups are kept at least seven days, and a production baseline combining
@@ -294,3 +282,37 @@ written as `sha256:<lowercase hex>` (`digest`, `digest_of`).
 
 They are also part of the conformance vectors (see
 [conformance vectors](../development/03-conformance-vectors.md)).
+
+## For developers
+
+Compiling an assertion:
+
+```python
+from iltero_schemas.ast import parse
+from iltero_schemas.compiler import COMPILER_VERSION, compile
+
+module = compile(parse(text))
+module.assertion_id   # "ACME.AWS.RDS.PRODUCTION_BASELINE"
+module.package        # 'iltero.assertions["ACME.AWS.RDS.PRODUCTION_BASELINE"]'
+module.entrypoint     # 'data.iltero.assertions["ACME.AWS.RDS.PRODUCTION_BASELINE"].evaluate'
+module.source         # the program, as bytes
+module.digest         # "sha256:..." — the fingerprint of those bytes
+```
+
+Where each part of this page lives:
+
+| On this page | In the package |
+| --- | --- |
+| The shared runtime | `compiler/runtime.rego` |
+| The assurance context and a stage's profile | `models.context.AssuranceContext`, `profiles.profile_for(stage, target_kind)` |
+| The `deployment` part | `models.deployment` |
+| The built-in plan check and its failure reason | `assertions.PLAN_BINDING`, `assertions.FAIL_REASONS` |
+| The answer's limits | `compiler.REASON_MAX_BYTES`, `OBSERVATIONS_MAX_BYTES`, `OBSERVATIONS_MAX_DEPTH`, `SUBJECT_FIELD_MAX_CHARS` |
+| The capabilities allowlist and its fingerprint | `opa.CAPABILITIES`, `opa.CAPABILITIES_DIGEST`; the functions left out are in `vectors/opa/not_allowed.txt` |
+| A custom policy source's manifest, and its package | `models.policy_source.PolicySourceManifest`, `compiler.package_of` |
+| The fingerprints | `ast.source_digest`, `module.digest`, `compiler.COMPILER_VERSION`, `canonical.plan_digest` (`PLAN_DIGEST_VERSION`), `canonical.canonical_bytes`, `canonical.digest`, `canonical.digest_of` |
+| The ready-made assertions | `src/iltero_schemas/assertions/` |
+| The example contexts | `src/iltero_schemas/vectors/contexts/`: `plan_resource.json`, `pre_deploy_change.json`, `post_deploy.json`, and their digests in `digests.json` |
+
+Module names are under `iltero_schemas`. `module.digest` is a property of
+the compiled result.

@@ -2,8 +2,8 @@
 
 An **assertion bundle** is how Iltero Compass hands a pipeline the checks it
 must evaluate: an Open Policy Agent (OPA) bundle, signed, holding one
-compiled module per assertion. `iltero_schemas.bundle` builds one and checks
-a served one before anything in it is evaluated.
+compiled module per assertion. This package builds a bundle, and checks a
+served one before anything in it is evaluated.
 
 ## On this page
 
@@ -20,7 +20,7 @@ A bundle is a gzip-compressed tar file of plain files at the top level:
 | File | What it holds |
 | --- | --- |
 | `.manifest` | `revision`; `roots`, one `iltero/assertions/<ID>` per assertion; `rego_version: 1`; and `metadata.iltero` (below) |
-| `<ID>.rego` | The compiled module of each assertion, exactly as `iltero_schemas.compiler.compile` writes it |
+| `<ID>.rego` | The compiled module of each assertion, exactly as this package's compiler writes it |
 | `.signatures.json` | One ES256 signature over the digest of every other file |
 
 `metadata.iltero` holds the `apiVersion` (`iltero.io/assertion-bundle/v1`),
@@ -84,39 +84,48 @@ over the bytes that were served.
 
 ## Checking a served bundle
 
-Before anything in a bundle is evaluated, a tool:
+A tool checks a served bundle in three steps before it evaluates anything in
+it:
 
-1. takes the key the descriptor's `key_id` names from
-   `iltero_schemas.trust.BUNDLE_KEYS` (see [trusted bundle
-   keys](11-bundle-keys.md)), refusing one that may not verify;
-2. verifies the signature: `signature_of(descriptor)` gives the signed bytes
-   and the raw 64-byte signature to check against the key's `public_key_der`,
-   or OPA verifies it (below);
-3. calls `check_descriptor(descriptor, keys)`;
-4. refuses the bundle if the tool's own version is older than either the
-   descriptor's `min_cli_version` or the run's.
+1. It refuses the bundle if the tool is older than the version the bundle
+   asks for (`min_cli_version`), or than the version the run asks for.
+2. It checks the bundle against the trusted keys that ship with this package
+   (see [trusted bundle keys](11-bundle-keys.md)) and against the bundle's own
+   sources. The list below says what this step checks.
+3. It verifies the bundle's signature with the trusted key that step 2 found.
+   It can use a signature library or OPA (below).
 
-`check_descriptor` raises `BundleError` unless:
+Step 2 refuses the bundle unless all of these hold:
 
-- the descriptor's key id is in `keys` and its key may verify (active or
-  retired);
-- the bundle was built by this package's compiler version;
-- every source compiles, and rebuilding the bundle from the sources gives the
-  same digests, the same revision, and, byte for byte, the same manifest and
-  modules as the tarball holds, with no other file but `.signatures.json`;
-- `.signatures.json` is exactly the file a signer of these files writes: one
-  signature, in its low-S form, whose key id and signed bytes are those of
-  this bundle under the descriptor's key id.
+- The key the bundle names (`key_id`) is a trusted key that may still verify
+  signatures: it is active or retired, not revoked.
+- The bundle was built by the same compiler version as this package's.
+- Every assertion source in the bundle compiles. Rebuilding the bundle from
+  those sources gives the same digests and the same revision. The tarball
+  holds exactly the rebuilt manifest and modules, byte for byte, and no other
+  file except `.signatures.json`.
+- `.signatures.json` is exactly the file a signer of these files writes. It
+  holds one signature, in its low-S form, made under the bundle's key id over
+  exactly these files.
 
-It returns an `UnverifiedBundle`: the key and the files it compared.
-`check_descriptor` does not verify the signature itself, so nothing in the
-result may be evaluated until step 2 has passed. The tool then evaluates those
-files, or checks the tarball's signature with OPA (below) and evaluates that
-same file with `opa eval --bundle`. Either way every module it evaluates is one it compiled itself from the
-sources it was given, signed by a key the trust set names.
+Step 2 does not verify the signature itself. So nothing in the bundle may be
+evaluated until step 3 has passed. The tool then evaluates the files step 2
+compared, or the same tarball with `opa eval --bundle`. Either way, every
+module the tool evaluates is one it compiled itself from the sources it was
+given, signed by a trusted key.
 
-The tarball is read within fixed limits: at most 1026 files, 64 MiB unpacked,
-only plain files at the top level (the entry types OPA loads), none twice.
+The tarball is read within fixed limits: at most 1026 files and 64 MiB
+unpacked. Only plain files at the top level are accepted (the kinds of entry
+OPA loads), and no file may appear twice.
+
+### For developers
+
+- Step 2 is `iltero_schemas.bundle.check_descriptor(descriptor, keys)`, with
+  `keys` set to `iltero_schemas.trust.BUNDLE_KEYS`. It raises `BundleError`
+  naming the first rule that fails. Otherwise it returns an
+  `UnverifiedBundle`, which holds the key and the files it compared.
+- For step 3, `signature_of(descriptor)` returns the signed bytes and the raw
+  64-byte signature. Check them against the key's `public_key_der`.
 
 ## Verifying the signature with OPA
 
@@ -130,12 +139,12 @@ opa build --bundle bundle.tar.gz \
 ```
 
 On Windows, write the output to `NUL` or a temporary file instead of
-`/dev/null`. `key.pem` is the public key `check_descriptor` returned, never one chosen
-from the descriptor. The scope must be asked for: a bundle checked without
-`--scope iltero-assertions`, or with another scope, is refused.
-`check_descriptor` requires the key id inside the signature to equal the
-descriptor's `key_id`, and that key id to be trusted. The verified tarball
-itself is then evaluated with `opa eval --bundle bundle.tar.gz`.
+`/dev/null`. `key.pem` is the trusted public key that step 2 found, never a
+key taken from the bundle. The scope must be asked for: a bundle checked
+without `--scope iltero-assertions`, or with another scope, is refused.
+Step 2 has already checked that the key id inside the signature is the
+bundle's `key_id`, and that this key is trusted. The verified tarball itself
+is then evaluated with `opa eval --bundle bundle.tar.gz`.
 
 The package's tests build a bundle with a throwaway key and show that the
 pinned OPA accepts and evaluates it, and refuses a changed module, a changed

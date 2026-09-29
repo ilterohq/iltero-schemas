@@ -72,11 +72,22 @@ GitHub Actions identity tokens, the only CI system supported so far.
 No value may contain a JSON Web Token, so no field can carry the identity
 token itself.
 
-The stages of one run must share the CI system, the repository, its owner and
-the commit. They may come from different workflows, branches, CI runs or
-attempts on that commit. So a run cannot plan a pull request's commit and
-deploy the merge commit: planning and deploying must happen on the same
-commit.
+The stages of one run must share the CI system, the repository's and owner's
+ids, and the commit. Ids are compared rather than names, because a repository
+or its owner can be renamed while a run is in progress. The service that
+opened the run may require more. Iltero Compass requires every stage to come
+from the same CI run (a re-run of failed jobs, with a new attempt number,
+continues it). So within one run only the job's workflow file, its
+deployment environment, its runner and the attempt can differ. A run
+therefore cannot plan a pull request's commit and deploy the merge commit:
+planning and deploying happen in one CI run, on one commit.
+
+A governed run supports branch and tag names made of ASCII letters, digits,
+`_`, `.`, `-` and `/`, and deployment environment names made of ASCII
+letters, digits, spaces, `_`, `.` and `-`. A CI job on a branch or in an
+environment with any other character cannot open a run. Iltero Compass
+refuses its identity token, and the pipeline sees only that authentication
+failed.
 
 ## The pins
 

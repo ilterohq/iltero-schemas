@@ -41,7 +41,8 @@ keep, so any two tools agree on what a record means.
   checked with the run's context key. These rules check that a record is
   consistent. They cannot prove that Compass opened the run. A pinned record
   names its commit, each of its stages names the CI job Compass verified for
-  it, and its stages agree on the CI system, repository, owner and commit.
+  it, and its stages agree on the CI system, repository id, owner id and
+  commit.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

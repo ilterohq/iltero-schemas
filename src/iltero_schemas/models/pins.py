@@ -8,13 +8,11 @@ from Compass, a CI context verified with a run's context key, or a CI job
 Compass verified.
 
 Each stage of a pinned record names the CI job Compass verified for it. The
-stages of one run share its CI system, repository, owner and commit. A pinned
-record names that commit as the one it is about. The stages may come from
-different workflows, branches, CI runs or attempts on that commit.
-
-These rules check that a record is consistent. They cannot prove that Compass
-really opened the run: the record is not signed, so whoever writes it can
-write pins that agree with it. Only Compass can confirm a run, from its id.
+stages of one run share its CI system, the ids of its repository and of the
+repository's owner, and its commit. Ids are compared rather than names,
+because a repository or its owner can be renamed while a run is in progress.
+A pinned record names that commit as the one it is about. The service that
+opened the run may require more of its stages than these rules check.
 """
 
 from __future__ import annotations
@@ -97,9 +95,9 @@ def _check_ci_identities(car: CAR) -> None:
         if record.ci_identity is None:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job Compass verified")
         identities.append(record.ci_identity)
-    shared = {(i.issuer, i.repository, i.repository_owner_id, i.commit) for i in identities}
+    shared = {(i.issuer, i.repository_id, i.repository_owner_id, i.commit) for i in identities}
     if len(shared) > 1:
-        raise ValueError("the stages of one run share one CI system, repository, owner and commit")
+        raise ValueError("the stages of one run share one CI system, repository id, owner id and commit")
     commit = car.subject.source.get("commit")
     sha = commit.get("sha") if isinstance(commit, dict) else None
     if not isinstance(sha, str):

@@ -200,14 +200,19 @@ def test_every_stage_of_a_pinned_record_names_its_verified_ci_job() -> None:
     ("field", "value"),
     [
         ("issuer", "https://gitlab.example"),
-        ("repository", "acme/other"),
+        ("repository_id", "7002"),
         ("repository_owner_id", "4243"),
         ("commit", "0" * 40),
     ],
 )
 def test_the_stages_of_one_run_share_its_ci_system_repository_owner_and_commit(field: str, value: str) -> None:
-    with pytest.raises(ValidationError, match="share one CI system, repository, owner and commit"):
+    with pytest.raises(ValidationError, match="share one CI system, repository id, owner id and commit"):
         CAR.model_validate(_with_second_stage(**{field: value}), context=_READER)
+
+
+def test_a_repository_renamed_during_the_run_is_still_the_same_repository() -> None:
+    document = _with_second_stage(repository="acme-corp/app-renamed", subject="repo:acme-corp/app-renamed")
+    CAR.model_validate(document, context=_READER)
 
 
 def test_the_stages_of_one_run_may_come_from_other_workflows_and_attempts() -> None:

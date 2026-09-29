@@ -129,8 +129,8 @@ A record with `pins` agrees with them:
 - no pre-deploy check read its facts from a local file;
 - it names the commit it is about (`subject.source.commit.sha`);
 - every stage names the CI job Iltero Compass verified for it
-  (`ci_identity`). All its stages share one CI system, repository, owner
-  and commit, and that commit is the one the record is about.
+  (`ci_identity`). All its stages share one CI system, repository id,
+  owner id and commit, and that commit is the one the record is about.
 
 A record without pins claims nothing only Iltero Compass can give. It is not
 managed by Iltero Compass. It names no Iltero Compass bundle and no check

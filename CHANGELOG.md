@@ -52,7 +52,8 @@ keep, so any two tools agree on what a record means.
   moving to a later stage, with the pins (stack, environment, bundle, the
   checks owed, the environment policy, the oldest tool version) repeated
   unchanged on every response, and a token that expires after it was issued;
-  the signed bundle's descriptor.
+  the signed bundle's descriptor. Each job sends its CI identity token as
+  `Authorization: Bearer`, never in a request body.
 - The digest of an assertion set and the digest of a change across every
   unit's plan, with vectors. A record's change lists its units sorted and
   once each, includes its own unit, and its digest is checked by readers.

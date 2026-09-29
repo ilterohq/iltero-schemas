@@ -1,7 +1,7 @@
 """The run contract.
 
 The pins are one sorted set matching its digest. A token expires after it was
-issued. No response can carry an identity token.
+issued. No response can carry an identity token, and no request body can either.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pydantic import ValidationError
 from iltero_schemas.canonical import required_assertion_digest
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS
-from iltero_schemas.models.fields import OIDC_TOKEN_MAX_LENGTH, RunStage
+from iltero_schemas.models.fields import RunStage
 from iltero_schemas.models.run import (
     API_VERSION,
     RunOpenRequest,
@@ -31,6 +31,7 @@ WIRE = VECTORS / "wire"
 OPEN: dict[str, Any] = json.loads((WIRE / "run_open_response.json").read_text(encoding="utf-8"))
 REFRESH: dict[str, Any] = json.loads((WIRE / "token_refresh_response.json").read_text(encoding="utf-8"))
 REQUEST: dict[str, Any] = json.loads((WIRE / "run_open_request.json").read_text(encoding="utf-8"))
+REFRESH_REQUEST: dict[str, Any] = json.loads((WIRE / "token_refresh_request.json").read_text(encoding="utf-8"))
 PINS: dict[str, Any] = OPEN["pins"]
 # A JSON Web Token's shape: three base64url parts joined by dots, the first two starting with ``{"``.
 JWT = ".".join(("eyJhbGciOiJSUzI1NiJ9", "eyJzdWIiOiJyZXBvIn0", "c2lnbmF0dXJl"))
@@ -158,11 +159,16 @@ def test_an_environment_key_is_short_and_lowercase(environment: str) -> None:
         RunOpenRequest.model_validate({**REQUEST, "environment": environment})
 
 
-def test_the_identity_token_is_bounded() -> None:
-    RunOpenRequest.model_validate({**REQUEST, "oidc_token": "t" * OIDC_TOKEN_MAX_LENGTH})
-    for value in ("", "t" * (OIDC_TOKEN_MAX_LENGTH + 1)):
-        with pytest.raises(ValidationError):
-            TokenRefreshRequest.model_validate({"stage": "plan", "oidc_token": value})
+@pytest.mark.parametrize(
+    ("request_model", "body"), [(RunOpenRequest, REQUEST), (TokenRefreshRequest, REFRESH_REQUEST)], ids=str
+)
+def test_a_request_body_carrying_the_identity_token_is_refused(
+    request_model: type[RunOpenRequest | TokenRefreshRequest], body: dict[str, Any]
+) -> None:
+    request_model.model_validate(body)
+    with pytest.raises(ValidationError) as refused:
+        request_model.model_validate({**body, "oidc_token": JWT})
+    assert [(e["type"], e["loc"]) for e in refused.value.errors()] == [("extra_forbidden", ("oidc_token",))]
 
 
 def test_an_unknown_key_is_refused() -> None:

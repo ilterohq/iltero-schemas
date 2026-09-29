@@ -1,4 +1,3 @@
 {
-  "stage": "pre_deploy",
-  "oidc_token": "the-ci-identity-token"
+  "stage": "pre_deploy"
 }

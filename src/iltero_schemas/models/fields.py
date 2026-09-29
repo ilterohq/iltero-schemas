@@ -29,8 +29,6 @@ RUN_TOKEN_PATTERN = r"^irt_[A-Za-z0-9_-]{43}$"  # noqa: S105 - the shape of a to
 CONTEXT_KEY_PATTERN = r"^[A-Za-z0-9_-]{43}$"
 # An environment's key: short, lowercase, the same in every place it is named.
 ENVIRONMENT_KEY_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,49}$"
-# A CI identity token is a few kilobytes; this leaves room for large claim sets and nothing more.
-OIDC_TOKEN_MAX_LENGTH = 16_384
 IDENTIFIER_MAX_LENGTH = 256
 # A Terraform address carries module and instance keys and can be much longer than an id.
 ADDRESS_MAX_LENGTH = 2048
@@ -79,4 +77,3 @@ Version = Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_L
 EnvironmentKey = Annotated[str, Field(pattern=ENVIRONMENT_KEY_PATTERN)]
 RunToken = Annotated[str, Field(pattern=RUN_TOKEN_PATTERN)]
 ContextKey = Annotated[str, Field(pattern=CONTEXT_KEY_PATTERN)]
-OidcToken = Annotated[str, Field(min_length=1, max_length=OIDC_TOKEN_MAX_LENGTH)]

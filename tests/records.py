@@ -22,6 +22,10 @@ PINS: dict[str, Any] = {
     "required_assertion_digest": required_assertion_digest(PINNED_ASSERTIONS),
 }
 PINNED_BUNDLE = PINS["bundle"]["digest"]
+# The CI job Compass verified for a stage of the pinned run.
+CI_IDENTITY: dict[str, Any] = json.loads((VECTORS / "wire" / "run_open_response.json").read_text(encoding="utf-8"))[
+    "ci_identity"
+]
 
 
 def set_path(document: dict[str, Any], dotted: str, value: Any) -> None:
@@ -56,9 +60,10 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
 
 
 def pinned(**changes: Any) -> dict[str, Any]:
-    """The record as a run Compass opened would write it: pinned, governed, and evaluated with the pinned bundle."""
+    """The record as a run Compass opened would write it: pinned, governed, and run by verified CI jobs."""
     document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.managed_by_compass": True})
     document["stages"]["plan"]["coverage"]["assertions_expected"]["basis"] = "server_pinned"
+    document["stages"]["plan"]["ci_identity"] = copy.deepcopy(CI_IDENTITY)
     document["coverage"]["assertions_expected"]["basis"] = "server_pinned"
     document["stages"]["plan"]["ran"]["bundle"] = {
         **document["stages"]["plan"]["ran"]["bundle"],

@@ -4,7 +4,13 @@ A run Iltero Compass opened carries pins: what Compass fixed when the run
 opened. A record of that run must agree with them. A record of a run the tool
 opened on its own has no pins, and must not claim anything only Compass can
 give: a Compass bundle, Compass as issuer, a verified issuer identity, facts
-from Compass, or a CI context verified with a run's context key.
+from Compass, a CI context verified with a run's context key, or a CI job
+Compass verified.
+
+Each stage of a pinned record names the CI job Compass verified for it. The
+stages of one run share its CI system, repository, owner and commit. A pinned
+record names that commit as the one it is about. The stages may come from
+different workflows, branches, CI runs or attempts on that commit.
 
 These rules check that a record is consistent. They cannot prove that Compass
 really opened the run: the record is not signed, so whoever writes it can
@@ -60,6 +66,8 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no facts from Iltero Compass")
     if any(p.ci_context.basis == "context_key_mac" for p in provenance):
         raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
+    if any(record.ci_identity is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no CI job verified by Iltero Compass")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
@@ -79,3 +87,22 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
     expected = sum(record.coverage.assertions_expected.value for record in car.stages.values())
     if expected > len(required):
         raise ValueError("the stages expect no more checks than the run was pinned to")
+    _check_ci_identities(car)
+
+
+def _check_ci_identities(car: CAR) -> None:
+    """Every stage of a pinned record names its verified CI job, and all agree on what was built."""
+    identities = []
+    for stage, record in car.stages.items():
+        if record.ci_identity is None:
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job Compass verified")
+        identities.append(record.ci_identity)
+    shared = {(i.issuer, i.repository, i.repository_owner_id, i.commit) for i in identities}
+    if len(shared) > 1:
+        raise ValueError("the stages of one run share one CI system, repository, owner and commit")
+    commit = car.subject.source.get("commit")
+    sha = commit.get("sha") if isinstance(commit, dict) else None
+    if not isinstance(sha, str):
+        raise ValueError("a pinned record names the commit it is about (subject.source.commit.sha)")
+    if any(i.commit != sha for i in identities):
+        raise ValueError("the verified CI jobs ran on the commit the record is about")

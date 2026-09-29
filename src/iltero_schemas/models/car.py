@@ -23,6 +23,7 @@ from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel, sorted_unique
+from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded
 from iltero_schemas.models.event import AssuranceEvent, Compiler
@@ -226,6 +227,8 @@ class StageRecord(StrictModel):
     observed_at: Timestamp
     reference_time: dict[str, Any]
     ran: Ran
+    # The CI job Iltero Compass verified for this stage; null for a run the tool opened on its own.
+    ci_identity: CiIdentity | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
     events: Written

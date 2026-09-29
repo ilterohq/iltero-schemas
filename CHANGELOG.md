@@ -39,7 +39,10 @@ keep, so any two tools agree on what a record means.
   pre-deploy checks read no facts from a local file. Every event names the
   record's own run and unit. A CI context counts as verified only when it was
   checked with the run's context key. These rules check that a record is
-  consistent. They cannot prove that Compass opened the run.
+  consistent. They cannot prove that Compass opened the run. A pinned record
+  names its commit, each of its stages names the CI job Compass verified for
+  it, and its stages agree on the CI system, repository id, owner id and
+  commit.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release
@@ -53,7 +56,10 @@ keep, so any two tools agree on what a record means.
   checks owed, the environment policy, the oldest tool version) repeated
   unchanged on every response, and a token that expires after it was issued;
   the signed bundle's descriptor. Each job sends its CI identity token as
-  `Authorization: Bearer`, never in a request body.
+  `Authorization: Bearer`, never in a request body. Each response names the
+  CI job Iltero Compass verified (`ci_identity`): its CI system, repository,
+  workflows, branch, commit, event, environment, run and runner. The shapes
+  follow GitHub Actions identity tokens.
 - The digest of an assertion set and the digest of a change across every
   unit's plan, with vectors. A record's change lists its units sorted and
   once each, includes its own unit, and its digest is checked by readers.

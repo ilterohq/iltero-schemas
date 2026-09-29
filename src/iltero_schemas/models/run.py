@@ -11,6 +11,9 @@ Each job sends its identity token only in the ``Authorization`` header of its
 request (``Authorization: Bearer <token>``). A request body names only what it
 asks for, so a body that still carries a token is refused as an unknown field.
 
+Every response also names the job whose identity token it answered
+(``ci_identity``), as Compass verified it. That changes from job to job.
+
 Every response for a run repeats the run's **pins** — the stack and
 environment, the bundle, the checks the run owes, the environment's policy and
 the oldest tool version allowed — exactly as they were fixed when the run
@@ -31,6 +34,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS
+from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.event import AssertionRef
 from iltero_schemas.models.fields import (
     ContextKey,
@@ -108,6 +112,8 @@ class _RunCredentials(StrictModel):
     expires_at: Timestamp
     server_time: Timestamp
     pins: RunPins
+    # The job whose identity token this response answered.
+    ci_identity: CiIdentity
 
     @model_validator(mode="after")
     def _expires_after_it_was_issued(self) -> _RunCredentials:

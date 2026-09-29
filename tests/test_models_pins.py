@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest, required_assertion_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
-from tests.records import PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, stage
+from tests.records import CI_IDENTITY, PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, stage
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
 VERIFIED_CI = {"integrity": "verified", "basis": "context_key_mac"}
@@ -36,6 +36,7 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         "pre_deploy",
         **{"coverage.assertions_expected.basis": plan["coverage"]["assertions_expected"]["basis"]},
         **{"ran.bundle": plan["ran"]["bundle"], "coverage.assertions_expected.value": 0},
+        **{"ci_identity": copy.deepcopy(plan["ci_identity"])},
     )
     changed["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
     changed["not_in_scope"] = [
@@ -53,8 +54,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         (_with_event(record(), assertion_source="compass_bundle"), "no checks from an Iltero Compass bundle"),
         (record(**{"issuer.identity_verified": True}), "no verified issuer identity"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
+        (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by Iltero Compass"),
     ],
-    ids=["a check from a Compass bundle", "a verified issuer identity", "a CI context verified with the key"],
+    ids=[
+        "a check from a Compass bundle",
+        "a verified issuer identity",
+        "a CI context verified with the key",
+        "a CI job Compass verified",
+    ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_compass_gives(
     document: dict[str, Any], message: str
@@ -175,3 +182,58 @@ def test_an_offline_record_counts_its_checks_as_locally_derived() -> None:
     document["stages"]["plan"]["coverage"]["assertions_expected"]["basis"] = "server_pinned"
     with pytest.raises(ValidationError, match="server_pinned exactly when pinned"):
         CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+
+
+def _with_second_stage(**identity: str) -> dict[str, Any]:
+    """The pinned record with a pre-deploy stage, run by the verified CI job changed as ``identity`` says."""
+    document = _with_pre_deploy(pinned(), "server")
+    document["stages"]["pre_deploy"]["ci_identity"].update(identity)
+    return document
+
+
+def test_every_stage_of_a_pinned_record_names_its_verified_ci_job() -> None:
+    with pytest.raises(ValidationError, match="stages.plan: a stage of a pinned record names the CI job"):
+        CAR.model_validate(pinned(**{"stages.plan.ci_identity": None}), context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("issuer", "https://gitlab.example"),
+        ("repository_id", "7002"),
+        ("repository_owner_id", "4243"),
+        ("commit", "0" * 40),
+    ],
+)
+def test_the_stages_of_one_run_share_its_ci_system_repository_owner_and_commit(field: str, value: str) -> None:
+    with pytest.raises(ValidationError, match="share one CI system, repository id, owner id and commit"):
+        CAR.model_validate(_with_second_stage(**{field: value}), context=_READER)
+
+
+def test_a_repository_renamed_during_the_run_is_still_the_same_repository() -> None:
+    document = _with_second_stage(repository="acme-corp/app-renamed", subject="repo:acme-corp/app-renamed")
+    CAR.model_validate(document, context=_READER)
+
+
+def test_the_stages_of_one_run_may_come_from_other_workflows_and_attempts() -> None:
+    document = _with_second_stage(
+        workflow_ref="acme/app/.github/workflows/apply.yml@refs/heads/main", ci_run_attempt="2", subject="repo:acme/app"
+    )
+    CAR.model_validate(document, context=_READER)
+
+
+def test_the_verified_ci_jobs_ran_on_the_commit_the_record_is_about() -> None:
+    document = pinned(**{"subject.source.commit.sha": "d" * 40})
+    with pytest.raises(ValidationError, match="ran on the commit the record is about"):
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize("commit", [None, "c84e7a1", {"sha": None}, {}])
+def test_a_pinned_record_names_the_commit_it_is_about(commit: Any) -> None:
+    document = pinned()
+    if commit is None:
+        del document["subject"]["source"]["commit"]
+    else:
+        document["subject"]["source"]["commit"] = commit
+    with pytest.raises(ValidationError, match="names the commit it is about"):
+        CAR.model_validate(document, context=_READER)

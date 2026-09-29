@@ -5,8 +5,8 @@ needed to say who produced it and to reproduce it. The evaluator's answer
 is not the event — the tool that ran the evaluator wraps the answer with
 provenance, and nothing in the event is set by the policy program itself.
 
-`iltero_schemas.models.event.AssuranceEvent` is the shape of an event as a
-tool submits it. It refuses unknown keys and coerces nothing.
+This package defines the shape of an event as a tool submits it. It refuses
+unknown keys and changes no value's type.
 
 ## On this page
 
@@ -14,6 +14,7 @@ tool submits it. It refuses unknown keys and coerces nothing.
 - [Six statuses, each with its reasons](#six-statuses-each-with-its-reasons)
   - [Who produced the verdict](#who-produced-the-verdict)
 - [What is not in an event](#what-is-not-in-an-event)
+- [For developers](#for-developers)
 
 ## The parts of an event
 
@@ -31,7 +32,7 @@ A status is never a bare boolean. Four can come from a policy answer —
 `pass`, `fail`, `unknown`, `not_applicable` — and two only from the runner's
 own observation: `not_evaluated` (the check could not be run) and `error`
 (it ran and went wrong). Every status but `pass` and `fail` carries a
-`status_reason` from a closed list (`STATUS_REASONS`):
+`status_reason` from a closed list:
 
 | Status | Reasons |
 | --- | --- |
@@ -70,10 +71,20 @@ assertion](06-bindings.md).
 Whatever Iltero Compass assigns to an event when it receives one is not
 part of a submission; any key beyond the ones above is refused.
 
-`src/iltero_schemas/vectors/events/plan_pass.json` is a complete example,
-and `digests.json` next to it records its digest. Timestamps are written
-by `iltero_schemas.canonical.now_rfc3339_ms`: UTC, millisecond precision,
-`Z`, so values it wrote compare correctly as text. A policy's `reason` and
-`observations` are bounded the same way the evaluator's output contract
-bounds them (`iltero_schemas.compiler.limits`), and no string anywhere in an
-event may hold a control character.
+The conformance vectors include a complete example event, with its digest.
+Timestamps this package writes are in UTC, to the millisecond, ending in
+`Z`, so they compare correctly as text. An event may hold any UTC timestamp
+ending in `Z`, with up to nine digits after the second. A policy's `reason` and `observations` have the
+same limits as a compiled program's answer (see [how an assertion is
+checked](03-compiler-and-evaluation.md#what-comes-out)). No string anywhere in
+an event may hold a control character.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| An event | `models.event.AssuranceEvent` |
+| The example event | `src/iltero_schemas/vectors/events/plan_pass.json`, with `digests.json` |
+| The closed list of status reasons | `models.event.STATUS_REASONS` |
+| Writing a timestamp | `canonical.now_rfc3339_ms` |
+| The limits on `reason` and `observations` | `compiler.limits` |

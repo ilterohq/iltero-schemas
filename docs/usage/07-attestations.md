@@ -8,13 +8,14 @@ an audit with no evidence at all.
 
 An **attestation** is how a person says it instead, written down in a shape
 a record can carry and an auditor can test.
-`iltero_schemas.models.attestation.Attestation` is that shape.
+This package defines that shape.
 
 ## On this page
 
 - [What one claim holds](#what-one-claim-holds)
 - [Three rules that make it evidence](#three-rules-that-make-it-evidence)
 - [How sure the record is of who wrote it](#how-sure-the-record-is-of-who-wrote-it)
+- [For developers](#for-developers)
 
 ## What one claim holds
 
@@ -61,3 +62,9 @@ nothing writes it yet. Every attestation written today is `asserted`, and a
 verifier says so in those words rather than implying more. `signature` stays
 empty for the same reason: an unsigned claim is one a reader has to weigh,
 and the record should not hide that.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| An attestation | `models.attestation.Attestation` |

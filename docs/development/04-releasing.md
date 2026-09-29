@@ -46,9 +46,9 @@ the package. Nothing is built or published by hand.
    every commit a pull request brings to `main` that changes the trusted keys
    carries a higher version than `main` had before. This holds only for
    squash merges, a required CI check and branches kept up to date with
-   `main`, which are repository settings. The version is a label, not proof:
-   a consumer also records `TRUST_FILE_DIGEST`, the digest of the key file it
-   actually read.
+   `main`, which are repository settings. The version is a label, not proof.
+   A consumer that needs proof should also keep `TRUST_FILE_DIGEST`, the
+   digest of the key file it actually read.
 2. **The full check** under the pinned OPA, as CI runs it, with the lock file
    checked first.
 3. **Build** with `SOURCE_DATE_EPOCH` set to the tagged commit's time. The

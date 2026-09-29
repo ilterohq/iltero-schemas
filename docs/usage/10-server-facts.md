@@ -3,13 +3,14 @@
 Some checks need facts a pipeline cannot state about itself: who approved a
 change, which exceptions are in force, earlier evaluations. Iltero Compass
 serves them for one run and one stage as an **assurance facts** document,
-`iltero_schemas.models.facts.AssuranceFacts`.
+whose shape this package defines.
 
 ## On this page
 
 - [The document](#the-document)
 - [Why a missing fact is a marker, not an empty list](#why-a-missing-fact-is-a-marker-not-an-empty-list)
 - [Recording where the facts came from](#recording-where-the-facts-came-from)
+- [For developers](#for-developers)
 
 ## The document
 
@@ -71,3 +72,9 @@ markers: facts from Iltero Compass whose parts are all markers are still
 a record of a run the tool opened never has `server`. Events of every other
 stage carry `facts_source: null`. See
 [what is recorded with a verdict](04-events.md).
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| The document | `models.facts.AssuranceFacts` |

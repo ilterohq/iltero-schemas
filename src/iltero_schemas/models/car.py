@@ -424,3 +424,6 @@ class CAR(StrictModel):
         left = {change.address: change.fate for change in self.deployment.apply.changes if change.left_the_state}
         if self.identity.left_the_state() != left:
             raise ValueError("what the identities list as removed is exactly what left the state, and how")
+        destroyed = sum(change.destroyed_deposed for change in self.deployment.apply.changes)
+        if self.identity.deposed_destroyed != destroyed:
+            raise ValueError("the identities count exactly the deposed objects the apply destroyed")

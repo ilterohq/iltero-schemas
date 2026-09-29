@@ -178,4 +178,4 @@ reported. Its identities are read from the applied plan its deployment names
 and from the state its deployment was held to,
 list each resource at most once in each half, all of its own unit, and name
 as removed exactly the objects its deployment says left the state, with how
-each left.
+each left. They count exactly the deposed objects the deployment destroyed.

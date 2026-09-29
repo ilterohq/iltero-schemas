@@ -104,7 +104,8 @@ resource, and the profile adds `deployment`:
   the address it came from (`moved_from`); `imported` says the change
   brought an existing resource under management. `summary` holds
   Terraform's own counts, present only when every change was made and equal
-  to what the changes show; `timing` holds when the first operation started
+  to what the changes show (for deposed objects, see below);
+  `timing` holds when the first operation started
   and the last message about any operation, by the clock that wrote the log
   (`trust: asserted`), and is present exactly when an operation ran. The outcomes are the log's word, held to the
   applied plan by address, action and operation and to the state by which
@@ -124,6 +125,28 @@ resource, and the profile adds `deployment`:
   from the state never does. `summary` is that marker when the log lost
   messages and holds none. The apply's `basis` is then
   `log_and_state_where_log_incomplete`.
+
+  A **deposed object** is an old copy of a resource that a replacement set
+  aside, because the replacement's new object was created first. The applied
+  plan may delete it. Its delete is a change of its own, named by the
+  resource's address and the object's `deposed` key (8 lowercase hex
+  characters), and listed after the change to the resource's current object.
+  Every other change has `deposed: null`. Terraform's apply log names the
+  object when its delete starts, but not when the delete finishes. So the
+  state after the apply always settles it (`basis: state`), whether or not
+  the log lost messages. The object is `applied` when it is gone from the
+  state, `errored` when it is still there after its delete started, and
+  `not_attempted` when its delete never started. When the log lost messages
+  and the object is still there, a failed delete and one never started look
+  the same, so its outcome is the unknown marker. "Gone from the state" means
+  Terraform dropped the object after its delete returned. That is the same
+  trust as a delete the log reports, not a check of the cloud. To find which
+  cloud object it was, read the old object's values in the applied plan.
+  A deposed object does not count as leaving the state; the identities count
+  it instead (see [identity bindings](08-identity-bindings.md)). Terraform
+  counts the operations it ran by address. So its count of removed objects
+  includes a deposed object's delete when that delete is the only change at
+  its address, and may leave it out when another change shares the address.
 - `superseded_by`: the reason the pipeline gives for applying a plan other
   than the evaluated one. It is the pipeline's word, and it does not make the
   applied plan an approved one: `ILT.DEPLOYMENT.PLAN_BINDING` still fails. It is refused

@@ -434,3 +434,12 @@ def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:
     stage["compiler"] = {**stage["compiler"], "install": "wheel", "contract_digest": None}
     with pytest.raises(ValidationError, match="an installed contract package has a digest"):
         StageRecord.model_validate(stage)
+
+
+def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() -> None:
+    gone = change("aws_db_instance.db", "delete", ["delete"], "applied", basis="state", deposed="bb9fd791")
+    left = change("aws_db_instance.db", "delete", ["delete"], "errored", basis="state", deposed="cc0a1b2d")
+    assert CAR.model_validate(_with_changes(gone, left, deposed_destroyed=1)).identity is not None
+    for counted in (0, 2):
+        with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
+            CAR.model_validate(_with_changes(gone, left, deposed_destroyed=counted))

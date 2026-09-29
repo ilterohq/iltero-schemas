@@ -24,7 +24,7 @@ refuses unknown keys and coerces nothing.
 | Document | Fields |
 | --- | --- |
 | `RunOpenRequest` | `stack_id`, `environment` and the `stage` to start at |
-| `RunOpenResponse` | `apiVersion: iltero.io/run/v1`, `run_id`, `stage`, `run_token`, `context_key`, `expires_at`, `server_time` (when the run opened), `pins` |
+| `RunOpenResponse` | `apiVersion: iltero.io/run/v1`, `run_id`, `stage`, `run_token`, `context_key`, `expires_at`, `server_time` (when the run opened), `pins`, `ci_identity` |
 | `TokenRefreshRequest` | the `stage` a later job needs |
 | `TokenRefreshResponse` | the same fields as the open response; `server_time` is when this token was issued |
 
@@ -47,6 +47,47 @@ run's output directory. In GitHub Actions, exchange the identity token in
 the step that uses the result (the job needs `permissions: id-token: write`).
 If a value must reach a later step, mask it first with `::add-mask::` and
 pass it through `$GITHUB_ENV`, never through step or job outputs.
+
+## The CI job Iltero Compass verified
+
+Every response also carries `ci_identity`: the job whose identity token it
+answered, as Iltero Compass verified it. It changes from job to job, unlike
+the pins. The tool copies it into the record's stage, so an auditor can see
+which workflow, on which branch, produced each stage. The shapes follow
+GitHub Actions identity tokens, the only CI system supported so far.
+
+| Field | What it says |
+| --- | --- |
+| `issuer` | The CI system that issued the token, as an `https://` host with an optional short path |
+| `subject` | The CI system's own name for the job, such as `repo:acme/app:environment:production` |
+| `repository`, `repository_id`, `repository_owner_id` | The repository as `owner/name`, and the numbers of the repository and its owner, which stay the same if either is renamed |
+| `workflow_ref` | The workflow the CI run started from, as `owner/name/path@ref` |
+| `job_workflow_ref`, `job_workflow_commit` | The workflow file that ran this job, and its commit. They differ from `workflow_ref` when the job runs a workflow shared from another file or repository |
+| `ref`, `commit` | The branch or tag (`refs/…`) and the commit the job ran on |
+| `event` | What started the CI run, such as `push` or `workflow_dispatch` |
+| `environment` | The deployment environment the job ran in, or `null` when it named none |
+| `ci_run_id`, `ci_run_attempt` | The CI system's run number and attempt, written as decimal strings |
+| `runner_environment` | `github-hosted` or `self-hosted`, or `null` when the token does not say |
+
+No value may contain a JSON Web Token, so no field can carry the identity
+token itself.
+
+The stages of one run must share the CI system, the repository's and owner's
+ids, and the commit. Ids are compared rather than names, because a repository
+or its owner can be renamed while a run is in progress. The service that
+opened the run may require more. Iltero Compass requires every stage to come
+from the same CI run (a re-run of failed jobs, with a new attempt number,
+continues it). So within one run only the job's workflow file, its
+deployment environment, its runner and the attempt can differ. A run
+therefore cannot plan a pull request's commit and deploy the merge commit:
+planning and deploying happen in one CI run, on one commit.
+
+A governed run supports branch and tag names made of ASCII letters, digits,
+`_`, `.`, `-` and `/`, and deployment environment names made of ASCII
+letters, digits, spaces, `_`, `.` and `-`. A CI job on a branch or in an
+environment with any other character cannot open a run. Iltero Compass
+refuses its identity token, and the pipeline sees only that authentication
+failed.
 
 ## The pins
 

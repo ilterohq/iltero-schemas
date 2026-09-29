@@ -1078,6 +1078,7 @@
         },
         "reason": null
       },
+      "ci_identity": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {

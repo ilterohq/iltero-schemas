@@ -71,5 +71,22 @@
       "gate_mode": "enforcing"
     },
     "min_cli_version": "0.2.0"
+  },
+  "ci_identity": {
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:acme/app:environment:production",
+    "repository": "acme/app",
+    "repository_id": "7001",
+    "repository_owner_id": "4242",
+    "workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+    "job_workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+    "job_workflow_commit": "c84e7a1000000000000000000000000000000000",
+    "ref": "refs/heads/main",
+    "commit": "c84e7a1000000000000000000000000000000000",
+    "event": "push",
+    "environment": "production",
+    "ci_run_id": "9876543",
+    "ci_run_attempt": "1",
+    "runner_environment": "github-hosted"
   }
 }

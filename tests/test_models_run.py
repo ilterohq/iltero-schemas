@@ -171,6 +171,14 @@ def test_a_request_body_carrying_the_identity_token_is_refused(
     assert [(e["type"], e["loc"]) for e in refused.value.errors()] == [("extra_forbidden", ("oidc_token",))]
 
 
+@pytest.mark.parametrize("model", [RunOpenResponse, TokenRefreshResponse], ids=str)
+def test_a_response_names_the_ci_job_it_answered(model: type[RunOpenResponse | TokenRefreshResponse]) -> None:
+    document = {k: v for k, v in (OPEN if model is RunOpenResponse else REFRESH).items() if k != "ci_identity"}
+    with pytest.raises(ValidationError) as refused:
+        model.model_validate(document)
+    assert [(e["type"], e["loc"]) for e in refused.value.errors()] == [("missing", ("ci_identity",))]
+
+
 def test_an_unknown_key_is_refused() -> None:
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         RunOpenRequest.model_validate({**REQUEST, "organization_id": "acme"})

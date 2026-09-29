@@ -26,7 +26,7 @@ document once, then works with values whose shape it knows.
 | `pins` | For a run Iltero Compass opened, what it fixed when the run opened: the bundle, the checks owed, the environment policy's digest and whether a failed check stops the pipeline (`gate_mode`), and the oldest tool allowed — see [governed runs](09-governed-runs.md#the-pins). `null` for a run the tool opened on its own |
 | `assurance_level`, `issuer`, `governance` | That this record is self-attested, who wrote it, and whether Iltero Compass manages the run. `governance.managed_by_compass` is true exactly when the record has `pins`. Only a record with `pins` may name Iltero Compass as its `issuer` |
 | `subject`, `change`, `plan` | What the record is about: the environment, the unit and the commit; the change — every unit of it with its plan digest, sorted by unit name with none twice and the record's own unit among them, and its `digest` once known, which a record with a pre-deploy stage always names (see [the two digests](09-governed-runs.md#the-two-digests)); the plan's fingerprints and what Terraform said about it |
-| `stages` | Per stage: what ran it, under which limits, what it hid, the files it wrote (the events, and the index of the assertions it compiled), and its own `coverage`, `verdict` and `assurance_status`. A stage given a scanner report also says which binding catalogue was in force and, per report, the tool, its version, what it was reading, and how many checks it held and left unbound |
+| `stages` | Per stage: what ran it, the CI job Iltero Compass verified for it (`ci_identity`, `null` for a run the tool opened on its own), under which limits, what it hid, the files it wrote (the events, and the index of the assertions it compiled), and its own `coverage`, `verdict` and `assurance_status`. A stage given a scanner report also says which binding catalogue was in force and, per report, the tool, its version, what it was reading, and how many checks it held and left unbound |
 | `events` | One event per check — see [what is recorded with a verdict](04-events.md) |
 | `coverage` | The stages' coverage combined (see below): the resources in scope and how they were enumerated, assertions expected and where that set came from, how many of each were evaluated, the counts per status, and the gaps, each naming its stage when there are several |
 | `verdict`, `assurance_status`, `complete` | The verdict and the exit code it produced; whether the evaluation finished; whether every expected stage has reported |
@@ -126,19 +126,24 @@ A record with `pins` agrees with them:
   every check is of an assertion from that bundle
   (`assertion_source: compass_bundle`);
 - every check is of a pinned assertion;
-- no pre-deploy check read its facts from a local file.
+- no pre-deploy check read its facts from a local file;
+- it names the commit it is about (`subject.source.commit.sha`);
+- every stage names the CI job Iltero Compass verified for it
+  (`ci_identity`). All its stages share one CI system, repository id,
+  owner id and commit, and that commit is the one the record is about.
 
 A record without pins claims nothing only Iltero Compass can give. It is not
 managed by Iltero Compass. It names no Iltero Compass bundle and no check
 from one. It does not name Iltero Compass as its issuer, and its issuer's
 identity is not verified. It has no facts from Iltero Compass
-(`facts_source: server`), and no CI context verified with a run's context
-key. It counts its expected checks as `locally_derived`.
+(`facts_source: server`), no CI context verified with a run's context
+key, and no CI job verified by Iltero Compass. It counts its expected checks as `locally_derived`.
 
 These rules check that a record is consistent. They cannot prove that
 Iltero Compass really opened the run: the record is not signed, so whoever
-writes it can also write pins that agree with it. Only Iltero Compass can
-confirm a run, by looking up its `run_id`.
+writes it can also write pins, and a verified CI job for each stage, that
+agree with it. Only Iltero Compass can confirm a run, and the CI jobs it
+verified, by looking up its `run_id`.
 
 Which pinned assertions belong to which stage is written in the signed
 bundle, not in the record. So the model cannot compare a stage's own set of

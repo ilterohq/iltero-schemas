@@ -1,19 +1,24 @@
 """Checking a served bundle before anything in it is evaluated.
 
-A tool that receives a bundle descriptor, before evaluating anything:
+A tool that receives a bundle descriptor does this, in order, before it
+evaluates anything:
 
-1. takes the key the descriptor names from the trust set, refusing one that
-   may not verify, and verifies the ES256 signature over :func:`signature_of`'s
-   bytes with it — with a signature library, or with OPA's own verification;
-2. calls :func:`check_descriptor`, which rebuilds the bundle from the
-   assertion sources the descriptor carries, with this package's compiler,
-   and requires the tarball to hold exactly those files, byte for byte, and a
+0. It refuses the bundle if the tool is older than the descriptor's
+   ``min_cli_version``. This package does not check that, because it does not
+   know the tool's version.
+1. It calls :func:`check_descriptor`. That takes the key the descriptor names
+   from the trust set and refuses a key that may not verify. It refuses a
+   bundle built by another compiler version. It rebuilds the bundle from the
+   assertion sources the descriptor carries, with this package's compiler, and
+   requires the tarball to hold exactly those files, byte for byte, and a
    ``.signatures.json`` that is exactly the one a signer of those files under
-   that key writes.
+   that key writes. It returns an :class:`UnverifiedBundle`.
+2. It verifies the ES256 signature with the key that result holds. It can do
+   this with a signature library over :func:`signature_of`'s bytes, or with
+   OPA (``opa build --verification-key``) over the tarball.
 
-It then evaluates the files :func:`check_descriptor` returns, or checks the
-tarball's signature with OPA (``opa build --verification-key``) and evaluates
-that same file with ``opa eval --bundle``. Either way every
+Only then does it evaluate the files: the ones :func:`check_descriptor`
+returned, or the same tarball with ``opa eval --bundle``. Either way every
 module it evaluates is one it compiled itself from the sources it was given,
 signed by a key the trust set names.
 """

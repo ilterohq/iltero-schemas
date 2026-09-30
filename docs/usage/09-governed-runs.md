@@ -8,16 +8,18 @@ Web Token naming the repository, branch and workflow). In return it gets a
 also fixes, once, what the pipeline is judged against. Those are its
 **pins**.
 
-`iltero_schemas.models.run` holds the four documents of the exchange. Each
-refuses unknown keys and coerces nothing.
+This package defines the four documents of the exchange. Each refuses
+unknown keys and changes no value's type.
 
 ## On this page
 
 - [Opening a run and moving to the next stage](#opening-a-run-and-moving-to-the-next-stage)
+- [The CI job Iltero Compass verified](#the-ci-job-iltero-compass-verified)
 - [The pins](#the-pins)
 - [The run token and the context key](#the-run-token-and-the-context-key)
 - [The two digests](#the-two-digests)
 - [The bundle a run is pinned to](#the-bundle-a-run-is-pinned-to)
+- [For developers](#for-developers)
 
 ## Opening a run and moving to the next stage
 
@@ -121,11 +123,9 @@ identity token, and a test checks every string field of both responses.
 
 ## The two digests
 
-Both are in `iltero_schemas.canonical`, and both have conformance vectors
-(`vectors/canonical/assertion_set_cases.json`,
-`vectors/canonical/change_digest_cases.json`).
+Both have conformance vectors.
 
-**`required_assertion_digest(triples)`** is the digest of a set of
+**The assertion set digest** (`required_assertion_digest`) is the digest of a set of
 assertions: `sha256` over the RFC 8785 canonical JSON (a byte-exact JSON
 form) of the sorted `[id, version, document digest]` triples. The triples
 are sorted as text, so `1.10.0` sorts before `1.2.0`. The set names each
@@ -133,7 +133,7 @@ assertion's exact document, so only the version that was pinned matches.
 A record carries this digest in its coverage, so a reader can tell whether
 two runs owed the same checks.
 
-**`change_digest(units)`** is the digest of a change: `sha256` over the
+**The change digest** (`change.digest`) is the digest of a change: `sha256` over the
 canonical JSON of `[{"unit": name, "plan": {"digest": plan digest}}]`,
 sorted by unit name in Unicode code-point order (not UTF-16 order). That is
 the shape of a record's `change.units`, so a reader recomputes it from the
@@ -144,9 +144,9 @@ units has no digest.
 
 ## The bundle a run is pinned to
 
-`iltero_schemas.models.bundle.BundleDescriptor` is the signed bundle as it
-is served: the base64 `tarball` itself; its `digest` (of the decoded tarball
-bytes, never of the base64 text) and `revision` (see [a bundle's
+The **bundle descriptor** is the signed bundle as it is served: the base64
+`tarball` itself; its `digest` (of the decoded tarball bytes, never of the
+base64 text) and `revision` (see [a bundle's
 identity](12-assertion-bundles.md#a-bundles-identity)); the `key_id` and
 `algorithm` (`ES256`) of its signature; the compiler version it was built
 with; its `min_cli_version`; and every assertion it holds, each with its
@@ -163,8 +163,8 @@ A bundle may hold more assertions than one run owes. Its
 
 The model checks what it can on its own: the assertions are sorted by id,
 one version of each, `assertion_set_digest` is their digest, and `digest` is the
-digest of the tarball it carries. `iltero_schemas.bundle.check_descriptor`
-checks the rest of the bundle itself — see [assertion
+digest of the tarball it carries. A separate check covers the rest of the
+bundle itself — see [assertion
 bundles](12-assertion-bundles.md#checking-a-served-bundle). Before evaluating
 anything, a tool also checks the bundle against the run:
 
@@ -176,3 +176,12 @@ anything, a tool also checks the bundle against the run:
   the run's;
 - each source, recompiled, gives the module in the tarball byte for byte,
   and the signature verifies under a trusted key.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| The four documents of the exchange, and the verified CI job | `models.run` (`RunOpenRequest`, `RunOpenResponse`, `TokenRefreshRequest`, `TokenRefreshResponse`), `models.ci_identity.CiIdentity` |
+| The two digests | `canonical.required_assertion_digest(triples)`, `canonical.change_digest(units)`; vectors in `vectors/canonical/assertion_set_cases.json` and `vectors/canonical/change_digest_cases.json` |
+| The bundle descriptor | `models.bundle.BundleDescriptor` |
+| Checking the rest of the bundle | `bundle.check_descriptor` |

@@ -2,8 +2,8 @@
 
 A **Compliance Assurance Record** (CAR) says what was checked, against
 what, and with which result — for one unit of one run. It is the document a
-tool hands on: to an auditor, to a colleague, or to Iltero Compass.
-`iltero_schemas.models.car.CAR` is its shape.
+tool hands on: to an auditor, to a colleague, or to Iltero Compass. This
+package defines its shape.
 
 A record is read by whoever receives it, including a verifier running on
 someone else's machine against a record they were given. So the model
@@ -17,6 +17,7 @@ document once, then works with values whose shape it knows.
 - [Several stages, one record](#several-stages-one-record)
 - [The record checks itself](#the-record-checks-itself)
 - [Which package checked the record](#which-package-checked-the-record)
+- [For developers](#for-developers)
 
 ## What a record holds
 
@@ -57,9 +58,9 @@ is the digest of the record's `deployment` part). Only the plan stage
 counts the plan's resources.
 
 A stage's verdict follows from its own counts by one rule
-(`iltero_schemas.models.coverage.stage_outcome`, `basis: status_counts`),
-and names no stage. The exit code is the one that wins by
-`VERDICT_PRECEDENCE` among:
+(`basis: status_counts`), and names no stage. The exit code is the one that
+comes first in the fixed precedence `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`,
+among:
 
 - `6` (coverage gap) when nothing was expected, no subject was evaluated,
   fewer assertions were evaluated than expected, a check was not evaluated,
@@ -71,17 +72,16 @@ and names no stage. The exit code is the one that wins by
 - `0` otherwise.
 
 The record's `coverage`, `verdict` and `assurance_status` are never counted
-again; they are the stages combined by one rule
-(`iltero_schemas.models.coverage.combine`), in the order the record expects
-its stages:
+again; they are the stages combined by one rule, in the order the record
+expects its stages:
 
 - the resources in scope are the plan's;
 - the checks, the assertions and the counts per status are summed;
 - the assertion set is named by a digest over each stage's own set, so it
   is not the digest any one stage's set was pinned under (see below);
 - the gaps are kept, each naming its stage;
-- the verdict is the stage verdict whose exit code wins by
-  `VERDICT_PRECEDENCE`, and names that stage (`basis: stage_precedence`) —
+- the verdict is the stage verdict whose exit code comes first in the same
+  precedence, and names that stage (`basis: stage_precedence`) —
   a gap one stage found is never cured by another stage's checks. When two
   stages tie, the earlier one is named; read each stage for its own verdict;
 - the record is incomplete when any stage is, and names the first that is.
@@ -110,9 +110,8 @@ stage record under its own name, every event belonging to a stage the record
 has and grouped in stage order, each assertion evaluated by one stage
 only, and every event naming the plan the record evaluated. Every event also
 names the record's own run, how that run was opened (`run_id.basis`) and the
-record's unit. It also recomputes every value a reader can
-(`iltero_schemas.models.stages.derived_problems`): each stage carries one
-event per check, its status counts are its events', its verdict and status
+record's unit. It also recomputes every value a reader can. Each stage
+carries one event per check, its status counts are its events', its verdict and status
 are the ones its counts give, and the record's top level is its stages
 combined.
 
@@ -156,11 +155,10 @@ Each stage's `compiler`, and each event's, names the `iltero-schemas` package
 it was checked with: its `contract_version`, how it was installed, and its
 `contract_digest` — SHA-256 over the sorted `path,hash` lines the wheel's
 `RECORD` file gives for the package's own files. It is the same value from the
-published wheel as from its installation, and each release prints it.
-`iltero_schemas.distribution.installed_identity()` reports it only after every
-file `RECORD` lists hashes to its entry and the package directory holds no
-other file (bytecode caches aside); an editable development install has no
-digest. A tool that computes the digest from `RECORD` alone, without hashing
+published wheel as from its installation, and each release prints it. The
+package reports its own digest only after every file `RECORD` lists hashes
+to its entry, and the package directory holds no other file (bytecode caches
+aside). An editable development install has no digest. A tool that computes the digest from `RECORD` alone, without hashing
 the files, names the same value but has not checked it.
 
 A reader that reports an edited value as tampering, rather than as a record
@@ -179,3 +177,14 @@ and from the state its deployment was held to,
 list each resource at most once in each half, all of its own unit, and name
 as removed exactly the objects its deployment says left the state, with how
 each left.
+
+## For developers
+
+| On this page | In the package (`iltero_schemas`) |
+| --- | --- |
+| A record | `models.car.CAR` |
+| A stage's verdict from its counts | `models.coverage.stage_outcome` |
+| The exit-code precedence | `models.coverage.VERDICT_PRECEDENCE` |
+| Combining the stages | `models.coverage.combine` |
+| The values a reader recomputes | `models.stages.derived_problems` |
+| The installed package's digest | `distribution.installed_identity()` |

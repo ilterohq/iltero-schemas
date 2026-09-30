@@ -185,7 +185,9 @@ class IdentityRecord(StrictModel):
     ``deleted`` (destroyed in the cloud) or ``forgotten`` (still in the cloud,
     no longer managed). A replacement's old object appears there while its
     new one is bound. A deposed object — an old copy a failed replacement
-    left — is a real resource no list names, so the count says how many.
+    left — is a real resource no list names, so ``deposed_destroyed`` says how
+    many the apply destroyed, and ``deposed_objects`` how many the state still
+    holds.
     """
 
     sources: IdentitySources
@@ -195,7 +197,7 @@ class IdentityRecord(StrictModel):
     # These three are null when no applied plan was read: what left the state was not checked.
     removed: Annotated[list[RemovedBinding], Field(max_length=MAX_RESOURCES)] | None
     removed_unresolved: Annotated[list[RemovedUnresolved], Field(max_length=MAX_RESOURCES)] | None
-    # Old copies of resources the applied plan destroyed: real cloud resources no list names.
+    # Old copies of resources the apply destroyed, as the state after it shows: real cloud resources no list names.
     deposed_destroyed: Annotated[int, Field(ge=0, le=MAX_RESOURCES)] | None
     deposed_objects: Annotated[int, Field(ge=0, le=MAX_RESOURCES)]
 

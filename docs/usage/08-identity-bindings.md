@@ -65,9 +65,13 @@ with the rule it was computed by (`plan`). When no applied plan was given,
 what left the state was not checked, which is not the same as nothing having
 left. A digest of the whole state reveals none of its values, and lets anyone
 who kept the exact `terraform show -json` output prove it is the one read.
-`deposed_objects` counts the old copies a failed replacement left behind, and
-`deposed_destroyed` the ones the applied plan destroyed: each is a real
-resource no list names.
+`deposed_objects` counts the old copies a failed replacement left behind in
+the state, and `deposed_destroyed` the ones the apply destroyed: gone from
+the state after their delete, which is Terraform's word, not a check of the
+cloud. Each is a real resource no list names. The applied plan holds the old
+object's values, which say which cloud resource it was. A record's
+`deposed_destroyed` equals the number of its deployment's deposed changes
+that were applied.
 
 A resource that is in neither half was not in the state after the apply and
 did not leave it — for example one whose create failed.

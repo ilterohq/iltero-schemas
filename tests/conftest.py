@@ -116,4 +116,12 @@ def change(address: str, action: str, required: list[str], outcome: str, **field
     """
     completed = sorted(required) if outcome == "applied" else []
     entry = {"address": address, "action": action, "required": required, "basis": "log"}
-    return {**entry, "completed": completed, "outcome": outcome, "moved_from": None, "imported": False, **fields}
+    return {
+        **entry,
+        "completed": completed,
+        "outcome": outcome,
+        "moved_from": None,
+        "imported": False,
+        "deposed": None,
+        **fields,
+    }

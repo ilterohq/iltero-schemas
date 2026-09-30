@@ -22,7 +22,9 @@ keep, so any two tools agree on what a record means.
 - The Compliance Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
   v1): each stage's coverage and verdict, the rules that tie the stages
   together, what a deployment did, the resources' cloud identities, and which
-  stages are in scope.
+  stages are in scope. A deployment lists the delete of each deposed object
+  (an old copy a replacement set aside) as its own change, settled by the
+  state after the apply.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold.
 - Attestations, hand-written policy sources and scanner binding sets.

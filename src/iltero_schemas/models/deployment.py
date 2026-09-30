@@ -42,6 +42,9 @@ ALLOWED_OPERATIONS: dict[str, tuple[tuple[str, ...], ...]] = {
 }
 # How an object that left the state left it: destroyed in the cloud, or still there but no longer managed.
 Fate = Literal["deleted", "forgotten"]
+# The key Terraform gives a deposed object: an old copy of a resource that a replacement set aside.
+DEPOSED_KEY_PATTERN = r"^[0-9a-f]{8}$"
+DeposedKey = Annotated[str, Field(pattern=DEPOSED_KEY_PATTERN)]
 
 
 class AppliedPlan(StrictModel):
@@ -82,8 +85,9 @@ class Unsettled(StrictModel):
 
 
 # How a change's outcome is known. ``log``: the log's word, held to the plan and to the state's presence.
-# ``state``: the log lost what happened to it, and the state settled which operations completed (the outcome
-# may stay unsettled: a failure and an attempt never made look the same). ``unsettled``: nothing settles it.
+# ``state``: the state settled which operations completed. That happens when the log lost what happened to a
+# change (the outcome may then stay unsettled: a failure and an attempt never made look the same), and always for
+# a deposed object: its delete's start names the object, but its end does not. ``unsettled``: nothing settles it.
 ChangeBasis = Literal["log", "state", "unsettled"]
 # What the state can settle: whether an object was made or removed. An update leaves the object either way.
 STATE_SETTLES = frozenset({"create", "delete", "replace"})
@@ -103,6 +107,8 @@ class AppliedChange(StrictModel):
     moved_from: Address | None
     # Whether this change brought an existing cloud resource under Terraform's management.
     imported: bool
+    # The key of the deposed object this change deletes; null for a change to the resource's current object.
+    deposed: DeposedKey | None
 
     @model_validator(mode="after")
     def _a_change_terraform_can_make(self) -> AppliedChange:
@@ -116,7 +122,24 @@ class AppliedChange(StrictModel):
             raise ValueError("a rename moves an existing resource to another address")
         if self.imported and self.action not in ("no-op", "update"):
             raise ValueError("an import brings in a resource that is then kept or updated")
+        if self.deposed is not None:
+            self._check_deposed()
         return self
+
+    def _check_deposed(self) -> None:
+        """A deposed object is only ever deleted, and the state says whether it went.
+
+        Terraform's apply log names a deposed object's delete like any other
+        delete at that address, and does not say which delete finished. So the
+        state after the apply settles it: gone, still there after its delete
+        started, or still there because its delete never started. When the log
+        lost lines, a failed delete and one never started look the same, so the
+        outcome of an object the state still holds may stay unsettled.
+        """
+        if self.action != "delete":
+            raise ValueError("a deposed object is only ever deleted")
+        if self.basis != "state":
+            raise ValueError("the state settles what happened to a deposed object")
 
     def _check_basis(self) -> None:
         """What is unsettled follows from how the change is known; only an update's operations may stay unsettled.
@@ -132,9 +155,9 @@ class AppliedChange(StrictModel):
             raise ValueError("a change known from the log has a settled outcome")
         if unsettled_completed and (self.action != "update" or not isinstance(self.outcome, Unsettled)):
             raise ValueError("only an update's operations may stay unsettled, and then its outcome too")
-        if self.basis == "state" and (
-            self.action not in STATE_SETTLES or self.outcome in ("not_attempted", "no_operation")
-        ):
+        # A deposed object's delete may never have started: the state still holds it, and the log names no start.
+        never_started = ("no_operation",) if self.deposed is not None else ("not_attempted", "no_operation")
+        if self.basis == "state" and (self.action not in STATE_SETTLES or self.outcome in never_started):
             raise ValueError("the state settles only a create, delete or replace, as applied, errored or unknown")
 
     def _check_completed(self) -> None:
@@ -157,7 +180,7 @@ class AppliedChange(StrictModel):
 
     @property
     def left_the_state(self) -> bool:
-        """Whether an object at this address left Terraform's state: deleted, replaced, or forgotten.
+        """Whether the object at this address left Terraform's state: deleted, replaced, or forgotten.
 
         A delete that completed counts even when the rest of the change did not:
         the old object is gone although its replacement never came. A
@@ -165,11 +188,17 @@ class AppliedChange(StrictModel):
         """
         if self.action == "forget":
             return self.outcome == "no_operation"
-        if self.action not in ("delete", "replace"):
+        # A deposed object is counted, not listed: the address's current object is the one a list names.
+        if self.action not in ("delete", "replace") or self.deposed is not None:
             return False
         if not isinstance(self.completed, list):
             raise ValueError("only an update's operations may be unsettled, and an update leaves nothing")
         return "delete" in self.completed or (self.required == ["create"] and self.completed == ["create"])
+
+    @property
+    def destroyed_deposed(self) -> bool:
+        """Whether this change destroyed a deposed object."""
+        return self.deposed is not None and self.outcome == "applied"
 
     @property
     def fate(self) -> Fate:
@@ -234,8 +263,10 @@ class Apply(StrictModel):
     @model_validator(mode="after")
     def _one_story(self) -> Apply:
         changes = self.changes
-        if not sorted_unique([change.address for change in changes]):
-            raise ValueError("changes are sorted by address and name each resource once")
+        # The current object sorts before the deposed objects at its address. An address holds no control
+        # character, so joining with NUL keeps the order of the addresses themselves.
+        if not sorted_unique([f"{change.address}\x00{change.deposed or ''}" for change in changes]):
+            raise ValueError("changes are sorted by address, then deposed key, and name each object once")
         renamed = [change.moved_from for change in changes if change.moved_from is not None]
         if len(set(renamed)) != len(renamed):
             raise ValueError("two changes cannot be renamed from one address")
@@ -249,8 +280,14 @@ class Apply(StrictModel):
         return self
 
     def _check_damage(self) -> None:
-        """Only an apply log that lost messages leaves anything to the state, or unsettled, and says so."""
-        incomplete = isinstance(self.summary, Unsettled) or any(c.basis != "log" for c in self.changes)
+        """Only an apply log that lost messages leaves anything to the state, or unsettled, and says so.
+
+        A deposed object is always settled by the state, so that alone says nothing about the log. Its
+        outcome stays unsettled only when the log lost lines.
+        """
+        incomplete = isinstance(self.summary, Unsettled) or any(
+            c.basis != "log" and (c.deposed is None or isinstance(c.outcome, Unsettled)) for c in self.changes
+        )
         lost = self.source.damaged_lines or self.source.interrupted_operations
         if incomplete and not lost:
             raise ValueError("only a log that lost messages leaves a change to the state or unsettled")
@@ -258,17 +295,24 @@ class Apply(StrictModel):
             raise ValueError("the apply's basis says whether the state settled what the log lost")
 
     def _check_summary(self, summary: ApplySummary) -> None:
-        """Terraform reports its counts only when the apply ran to its end, and they are the changes' own."""
+        """Terraform reports its counts only when the apply ran to its end, and they are the changes' own.
+
+        Terraform counts the operations it ran by address. So a deposed object's delete is counted when it
+        is the only one at its address, and may be lost behind another change there. Its count of removed
+        objects therefore lies between the current objects' deletes and those plus every deposed delete.
+        """
         if any(not isinstance(c.outcome, str) or c.outcome in ("errored", "not_attempted") for c in self.changes):
             raise ValueError("Terraform reports its counts only when every change was made")
-        applied = [change for change in self.changes if change.outcome == "applied"]
+        applied = [change for change in self.changes if change.outcome == "applied" and change.deposed is None]
         expected = {
             "added": sum("create" in change.required for change in applied),
             "changed": sum("update" in change.required for change in applied),
-            "removed": sum("delete" in change.required for change in applied),
             "imported": sum(change.imported for change in self.changes),
         }
-        if summary.model_dump() != expected:
+        removed = sum("delete" in change.required for change in applied)
+        deposed = sum(change.destroyed_deposed for change in self.changes)
+        reported = summary.model_dump()
+        if reported.pop("removed") not in range(removed, removed + deposed + 1) or reported != expected:
             raise ValueError("the summary's counts are not what the changes show")
 
 

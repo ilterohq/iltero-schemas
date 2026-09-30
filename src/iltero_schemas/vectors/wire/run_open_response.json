@@ -88,5 +88,11 @@
     "ci_run_id": "9876543",
     "ci_run_attempt": "1",
     "runner_environment": "github-hosted"
+  },
+  "artifact_store": {
+    "uri_prefix": "s3://acme-iltero-evidence/runs/0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43/",
+    "retention_until": "2033-09-14T18:40:00Z",
+    "lock_mode": "COMPLIANCE",
+    "kms_key_id": "1234abcd-12ab-34cd-56ef-1234567890ab"
   }
 }

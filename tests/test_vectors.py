@@ -10,12 +10,13 @@ allowlist and compare the result.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_json
 from iltero_schemas.ast.parse import parse_document
@@ -34,10 +35,9 @@ from iltero_schemas.canonical import (
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_of
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
-from iltero_schemas.models.facts import AssuranceFacts
-from iltero_schemas.models.run import RunOpenRequest, RunOpenResponse, TokenRefreshRequest, TokenRefreshResponse
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
+from iltero_schemas.vectors.wire_models import WIRE_MODELS
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
 COMPILER = VECTORS / "compiler"
@@ -48,15 +48,8 @@ ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.j
 CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
+WIRE_INVALID_CASES = json.loads((VECTORS / "wire_invalid" / "cases.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
-# The model each document vector is read as: one per folder, or one per file where a folder holds several kinds.
-WIRE_VECTORS: dict[str, type[BaseModel]] = {
-    "assurance_facts.json": AssuranceFacts,
-    "run_open_request.json": RunOpenRequest,
-    "run_open_response.json": RunOpenResponse,
-    "token_refresh_request.json": TokenRefreshRequest,
-    "token_refresh_response.json": TokenRefreshResponse,
-}
 DOCUMENT_FOLDERS = ("contexts", "events", "wire")
 DOCUMENT_FILES = sorted(
     (folder, path.name)
@@ -68,7 +61,7 @@ DOCUMENT_FILES = sorted(
 
 def _document_model(folder: str, name: str) -> type[BaseModel]:
     by_folder: dict[str, type[BaseModel]] = {"contexts": AssuranceContext, "events": AssuranceEvent}
-    return by_folder[folder] if folder in by_folder else WIRE_VECTORS[name]
+    return by_folder[folder] if folder in by_folder else WIRE_MODELS[name]
 
 
 # The three state assertions of the plan-stage scenario the context vector describes.
@@ -176,10 +169,42 @@ def test_document_vector_validates_and_its_digest_is_reproduced(folder: str, nam
 
 
 def test_every_document_vector_has_its_digest_and_nothing_else() -> None:
-    assert {name for folder, name in DOCUMENT_FILES if folder == "wire"} == set(WIRE_VECTORS)
+    assert {name for folder, name in DOCUMENT_FILES if folder == "wire"} == set(WIRE_MODELS)
     for folder in DOCUMENT_FOLDERS:
         digests = json.loads((VECTORS / folder / "digests.json").read_text(encoding="utf-8"))
         assert {name for f, name in DOCUMENT_FILES if f == folder} == set(digests)
+
+
+def _step(document: Any, token: str) -> Any:
+    return document[int(token)] if isinstance(document, list) else document[token]
+
+
+def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
+    """Set or remove the value at a JSON Pointer (RFC 6901) whose parent exists."""
+    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
+    for token in parents:
+        document = _step(document, token)
+    key: int | str = int(last) if isinstance(document, list) else last
+    if remove:
+        del document[key]
+    else:
+        document[key] = value
+
+
+@pytest.mark.parametrize("case", WIRE_INVALID_CASES, ids=[c["name"] for c in WIRE_INVALID_CASES])
+def test_invalid_wire_document_is_rejected(case: dict[str, Any]) -> None:
+    document = json.loads((VECTORS / "wire" / case["vector"]).read_text(encoding="utf-8"))
+    for pointer, value in case["set"].items():
+        _changed(document, pointer, value, remove=False)
+    for pointer in case["remove"]:
+        _changed(document, pointer, None, remove=True)
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        WIRE_MODELS[case["vector"]].model_validate(document)
+
+
+def test_every_invalid_wire_case_has_a_unique_name() -> None:
+    names = [case["name"] for case in WIRE_INVALID_CASES]
+    assert len(names) == len(set(names))
 
 
 # --- under the pinned evaluator ---------------------------------------------

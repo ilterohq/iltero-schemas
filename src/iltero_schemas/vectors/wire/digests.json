@@ -1,7 +1,10 @@
 {
+  "assurance_event_batch.json": "sha256:b66d74222ffc9a97e34289c199cdf53b5073e7e9ddcf9b858fdb26ec547e30f8",
   "assurance_facts.json": "sha256:167344da21c271f2eb9563c55b3db6a51348670136c6e8bfcd22400a279f36fb",
+  "run_close_response.json": "sha256:1bc6b702546833405259f5103f7d16a2aff276c7df383e0b2ac44e37f326f6be",
   "run_open_request.json": "sha256:e87b57b763da45d8132504813e2b6770e7d0ad95862eee5c59c84b74f3e2537d",
-  "run_open_response.json": "sha256:ccb4f6c1c9c3cdf703e1e3d9ee8abdae56335a969e4198363e567d91a325a28e",
+  "run_open_response.json": "sha256:4d9968de6b2cecda943ef7b758e493271944185cbe4c0b8e2dc351832f337238",
+  "submission_outcome.json": "sha256:527142979d0468a11cd936e7a1a0c2beb6a5c32e7bc08bde76f807bf0b039593",
   "token_refresh_request.json": "sha256:5d56868a42a1e92282b8db48062ff6f35143bbb0f598f37e7252d15b89f79378",
-  "token_refresh_response.json": "sha256:f18a01bb8db9241f7fc3c5bccc19f829314cc327f5be382c837bbdb701b49840"
+  "token_refresh_response.json": "sha256:cec9d68525c3e543d7b7765dfa7f0fd4d1d70ab8e016cea79e86f0f3c82f8ebb"
 }

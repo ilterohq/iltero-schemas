@@ -26,6 +26,8 @@ with a "For developers" section naming the package's code.
   and revoked allow, development keys, and how the set changes
 - [Assertion bundles](usage/12-assertion-bundles.md) — what a signed bundle holds, its revision and digest,
   building and signing one, checking a served one, and verifying its signature with OPA
+- [Uploads, closing a run, and where artifacts go](usage/13-uploads.md) — what a pipeline sends Iltero Compass,
+  the answer for each event, which checks count, closing a run, and storing artifacts in the organization's bucket
 
 **Developing the contract** — `docs/development/`
 

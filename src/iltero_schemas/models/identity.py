@@ -45,13 +45,15 @@ _ACCOUNT = re.compile(r"[0-9]{12}")
 # An IAM path segment: printable ASCII except "/" and the wildcards "*" and "?".
 _IAM_PATH_SEGMENT = r"[!-)+-.0->@-~]+"
 _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+# A KMS key id: a UUID, or "mrk-" and 32 hex digits for a key that spans regions.
+KMS_KEY_ID = rf"({_UUID}|mrk-[0-9a-f]{{32}})"
 # Per type: the service, whether the ARN names a region, and the full rule for its resource part.
 _ARN_SHAPES: dict[AwsResourceType, tuple[str, bool, re.Pattern[str]]] = {
     "s3_bucket": ("s3", False, re.compile(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]")),
     "rds_instance": ("rds", True, re.compile(r"db:[A-Za-z][A-Za-z0-9-]{0,62}")),
     "security_group": ("ec2", True, re.compile(r"security-group/sg-[0-9a-f]{8}([0-9a-f]{9})?")),
     "iam_role": ("iam", False, re.compile(rf"role/({_IAM_PATH_SEGMENT}/)*[\w+=,.@-]{{1,64}}", re.ASCII)),
-    "kms_key": ("kms", True, re.compile(rf"key/({_UUID}|mrk-[0-9a-f]{{32}})")),
+    "kms_key": ("kms", True, re.compile(rf"key/{KMS_KEY_ID}")),
 }
 
 

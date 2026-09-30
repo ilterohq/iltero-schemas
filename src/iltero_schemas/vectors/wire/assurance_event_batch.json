@@ -1,0 +1,112 @@
+{
+  "apiVersion": "iltero.io/assurance-event-batch/v1",
+  "run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+  "stage": "plan",
+  "unit": "root",
+  "events": [
+    {
+      "assertion": {
+        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+        "version": "1.0.0",
+        "digest": "sha256:26d43666bac3337acdf33f1ae65381d6389b49f846f228f9be3c85792162060f"
+      },
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments",
+        "identities": [
+          {
+            "scheme": "terraform_resource",
+            "value": "aws_db_instance.payments",
+            "scope": {
+              "unit": "root"
+            }
+          }
+        ],
+        "authority": "unresolved"
+      },
+      "evaluation": {
+        "stage": "plan",
+        "status": "pass",
+        "status_reason": null,
+        "status_detail": null,
+        "reason": "assert: true",
+        "observations": {
+          "subject": {
+            "kind": "resource",
+            "id": "aws_db_instance.payments"
+          },
+          "when": null,
+          "unknown": null,
+          "predicates": [
+            {
+              "path": "resource.after.storage_encrypted",
+              "op": "equal",
+              "expected": true,
+              "clause": "assert",
+              "index": 0,
+              "actual": true,
+              "status": "true"
+            }
+          ]
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+          "basis": "server_issued",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "plan_digest": {
+          "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "version": "1"
+        },
+        "input_digest": "sha256:634949b8b2ce11c8bf968dd798be85b9236901a7284637cc935df9be409e5bfe",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "environment": {
+            "timeout_s": 30.0,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": true,
+              "kind": "rlimit_as"
+            },
+            "output_bytes_per_answer": 1054720,
+            "contexts_per_process": 64,
+            "capabilities_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-x86_64",
+            "python_platform": "linux"
+          }
+        },
+        "bundle": {
+          "kind": "compass",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "binding": null,
+        "assertion_source": "compass_bundle",
+        "assertion_source_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "compiled_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "compiler": {
+          "version": "1",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
+        },
+        "ci_context": {
+          "integrity": "absent",
+          "basis": "none"
+        },
+        "facts_source": null,
+        "fs_hardening": "posix"
+      },
+      "observed_at": "2026-09-16T18:05:00.000Z"
+    }
+  ]
+}

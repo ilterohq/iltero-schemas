@@ -26,12 +26,16 @@ unknown keys and changes no value's type.
 | Document | Fields |
 | --- | --- |
 | `RunOpenRequest` | `stack_id`, `environment` and the `stage` to start at |
-| `RunOpenResponse` | `apiVersion: iltero.io/run/v1`, `run_id`, `stage`, `run_token`, `context_key`, `expires_at`, `server_time` (when the run opened), `pins`, `ci_identity` |
+| `RunOpenResponse` | `apiVersion: iltero.io/run/v1`, `run_id`, `stage`, `run_token`, `context_key`, `expires_at`, `server_time` (when the run opened), `pins`, `ci_identity`, `artifact_store` |
 | `TokenRefreshRequest` | the `stage` a later job needs |
 | `TokenRefreshResponse` | the same fields as the open response; `server_time` is when this token was issued |
 
 Each job sends its own identity token only in the request's `Authorization`
 header (`Authorization: Bearer <token>`).
+
+`artifact_store` says where the run's artifacts go. What a pipeline uploads,
+how it closes the run, and how it stores artifacts are described in
+[uploads, closing a run, and where artifacts go](13-uploads.md).
 
 The stages of a run are `plan`, `pre_deploy`, `post_deploy` and
 `post_verify`. CI pipelines usually run each stage in its own job. Each job

@@ -1,53 +1,40 @@
 # iltero-schemas
 
-`iltero-schemas` is the shared contract of Iltero. Iltero checks
-infrastructure changes against compliance rules and writes down what it
-found. Several programs take part in that work, and this package is what
-they agree on.
+`iltero-schemas` is the shared contract between the Iltero CLI, Iltero Cloud and third parties. Any program that
+writes or checks an Iltero record uses it to agree on what the record means.
 
-Every consumer pins one exact published version of this package. A consumer
-is the Iltero CLI, Iltero Cloud, or anything else that writes or checks a
-record. Because both sides use the same version, a record written with it
-can be checked with it.
+The package contains:
 
-## What is in the package
+- **Document models.** Pydantic models for every document Iltero reads or writes, such as the assertion, the
+  assurance event and the Change Assurance Record (CAR).
+- **Canonical digests.** RFC 8785 canonical JSON and SHA-256 digests, so the same document gives the same bytes and
+  the same digest on every machine.
+- **The assertion compiler.** It turns an assertion, a compliance rule written in YAML, into a policy program for
+  Open Policy Agent (OPA). The same assertion always compiles to the same bytes.
+- **The OPA pin.** The one OPA release every Iltero component runs, with the SHA-256 digest of its binary for each
+  supported platform, and the allowlist of OPA functions a program may call.
+- **Conformance vectors.** Known inputs with their exact expected outputs.
 
-- **Record shapes.** The package defines each document Iltero writes, such
-  as an assurance event (the result of one check) and a Change Assurance
-  Record (everything checked for one infrastructure change).
-- **Fingerprints.** The package turns a document into the same bytes on
-  every machine. It then takes a SHA-256 digest (a fingerprint) of them.
-- **Assertions and their compiler.** An assertion is a compliance rule
-  written in YAML. The compiler turns it into a small program for Open
-  Policy Agent (OPA), a widely used policy engine. The same assertion
-  always gives the same program, so anyone can compile it again and compare.
-- **The OPA pin.** The package names the one OPA release every Iltero
-  component runs, and the fingerprint of its binary for each platform.
-- **Conformance vectors.** These are example inputs with their expected
-  outputs. A consumer that reproduces all of them is conformant.
+## Install
+
+```bash
+pip install "iltero-schemas==X.Y.Z"
+```
+
+Python 3.11 or later is required.
+
+## Version rule
+
+Every consumer pins one exact version. A record checked with a different version of the contract may give different
+digests or a different compiled program. Before 1.0, any change to a computed result (a digest, a canonical form, a
+compiled program or the OPA pin) raises the minor version. To upgrade, a consumer moves its exact pin and reproduces
+the conformance vectors of the new version.
 
 ## Documentation
 
-Start with [the documentation index](docs/README.md). It lists one page per
-concept, in reading order. [The glossary](GLOSSARY.md) defines the terms.
-
-## For developers
-
-```python
-import platform
-
-from iltero_schemas.opa import PIN, platform_key
-
-PIN.version                                    # "1.20.2"
-key = platform_key(platform.system(), platform.machine())
-PIN.binaries[key].sha256                       # the digest for this host
-```
-
-```bash
-pdm install -G dev --no-isolation
-pdm run check        # lint, format, types, tests, public-surface gate
-```
+- [Document formats](docs/01-document-formats.md)
+- [Conformance vectors](docs/02-conformance-vectors.md)
 
 ## License
 
-Apache-2.0.
+Apache-2.0. See [LICENSE](LICENSE).

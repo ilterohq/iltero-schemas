@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 from typing import Any
 
 from iltero_schemas.canonical import required_assertion_digest
 from iltero_schemas.models.coverage import Coverage, stage_outcome
 from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((Path(__file__).parent / "data" / "plan_record.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "wire" / "change_assurance_record.json").read_text(encoding="utf-8"))
 
 PINNED_ASSERTIONS = sorted(
     {(e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"]) for e in RECORD["events"]}
@@ -22,7 +21,7 @@ PINS: dict[str, Any] = {
     "required_assertion_digest": required_assertion_digest(PINNED_ASSERTIONS),
 }
 PINNED_BUNDLE = PINS["bundle"]["digest"]
-# The CI job Compass verified for a stage of the pinned run.
+# The CI job the server verified for a stage of the pinned run.
 CI_IDENTITY: dict[str, Any] = json.loads((VECTORS / "wire" / "run_open_response.json").read_text(encoding="utf-8"))[
     "ci_identity"
 ]
@@ -60,21 +59,21 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
 
 
 def pinned(**changes: Any) -> dict[str, Any]:
-    """The record as a run Compass opened would write it: pinned, governed, and run by verified CI jobs."""
-    document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.managed_by_compass": True})
+    """The record as a run the server opened would write it: pinned, governed, and run by verified CI jobs."""
+    document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.run_opened_by": "server"})
     document["stages"]["plan"]["coverage"]["assertions_expected"]["basis"] = "server_pinned"
     document["stages"]["plan"]["ci_identity"] = copy.deepcopy(CI_IDENTITY)
     document["coverage"]["assertions_expected"]["basis"] = "server_pinned"
     document["stages"]["plan"]["ran"]["bundle"] = {
         **document["stages"]["plan"]["ran"]["bundle"],
-        "kind": "compass",
+        "kind": "server",
         "digest": PINNED_BUNDLE,
     }
     for event in document["events"]:
         event["provenance"]["run"]["basis"] = "server_issued"
-        event["provenance"]["assertion_source"] = "compass_bundle"
+        event["provenance"]["assertion_source"] = "server_bundle"
         if event["provenance"]["bundle"] is not None:
-            event["provenance"]["bundle"] = {"kind": "compass", "digest": PINNED_BUNDLE}
+            event["provenance"]["bundle"] = {"kind": "server", "digest": PINNED_BUNDLE}
     for dotted, value in changes.items():
         set_path(document, dotted, value)
     return document

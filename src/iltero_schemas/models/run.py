@@ -1,4 +1,4 @@
-"""The governed run: how a pipeline opens one with Iltero Compass, and what the run is pinned to.
+"""The governed run: how a pipeline opens one with the server, and what the run is pinned to.
 
 A pipeline job exchanges its CI identity token (an OIDC token, the signed
 JSON Web Token its CI system issues to the job) for a run token: a short-lived
@@ -12,7 +12,7 @@ request (``Authorization: Bearer <token>``). A request body names only what it
 asks for, so a body that still carries a token is refused as an unknown field.
 
 Every response also names the job whose identity token it answered
-(``ci_identity``), as Compass verified it. That changes from job to job.
+(``ci_identity``), as the server verified it. That changes from job to job.
 
 Every response for a run repeats the run's **pins** — the stack and
 environment, the bundle, the checks the run owes, the environment's policy and
@@ -21,9 +21,10 @@ opened. A tool can therefore compare the pins of any two responses and know
 that nothing was changed under it between stages.
 
 Every response also says where the run's artifacts go (``artifact_store``):
-an S3 prefix, the date until which each file stays locked, and the
-encryption key. The prefix and the key never change within a run. The date
-may move later from one stage to the next, never earlier. When the
+a storage prefix and the date until which each file stays locked, with what
+the storage provider needs besides, such as an S3 bucket's encryption key.
+Nothing about the store changes within a run except the date, which may move
+later from one stage to the next, never earlier. When the
 organization keeps no artifacts with the run, the field is null in every
 response, and the artifacts stay with the pipeline.
 
@@ -39,14 +40,14 @@ not pass.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
-from pydantic import AfterValidator, Field, model_validator
+from pydantic import Field, model_validator
 
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS
-from iltero_schemas.models.ci_identity import CiIdentity, NoToken
+from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.event import AssertionRef
 from iltero_schemas.models.fields import (
     ContextKey,
@@ -59,36 +60,12 @@ from iltero_schemas.models.fields import (
     Uuid,
     Version,
 )
-from iltero_schemas.models.identity import KMS_KEY_ID
+from iltero_schemas.models.providers.aws import S3ArtifactStore
 
 API_VERSION = "iltero.io/run/v1"
-# An S3 bucket, then one or more folder names, ending in "/". The bucket name has no dots. A folder
-# name never starts with a dot, so "." and ".." cannot appear. The prefix holds no query, fragment or space.
-ARTIFACT_PREFIX_PATTERN = r"^s3://[a-z0-9][a-z0-9-]{1,61}[a-z0-9]/([A-Za-z0-9_=-][A-Za-z0-9_.=-]*/)+$"
-# Leaves room under S3's 1,024-byte key limit for the 64 hex digits of an artifact's digest.
-ARTIFACT_PREFIX_MAX_LENGTH = 512
-# Bucket names S3 keeps for access points, directory buckets and other special kinds. None of them
-# is an ordinary bucket that can hold a locked object.
-RESERVED_BUCKET_PREFIXES = ("xn--", "sthree-", "amzn-s3-demo-")
-RESERVED_BUCKET_SUFFIXES = ("-s3alias", "--ol-s3", "--x-s3", "--table-s3")
-
-
-def _ordinary_bucket(value: str) -> str:
-    """``value`` when its bucket is an ordinary S3 bucket; raises ``ValueError`` otherwise."""
-    bucket = value.removeprefix("s3://").split("/", 1)[0]
-    if bucket.startswith(RESERVED_BUCKET_PREFIXES) or bucket.endswith(RESERVED_BUCKET_SUFFIXES):
-        raise ValueError("must name an ordinary S3 bucket")
-    return value
-
-
-ArtifactPrefix = Annotated[
-    str,
-    Field(pattern=ARTIFACT_PREFIX_PATTERN, max_length=ARTIFACT_PREFIX_MAX_LENGTH),
-    AfterValidator(_ordinary_bucket),
-    NoToken,
-]
-# A KMS key named by its id alone, so it is always a key in the account the pipeline runs in.
-KmsKeyId = Annotated[str, Field(pattern=rf"^{KMS_KEY_ID}$")]
+# Where a run's artifacts go. There is one variant per storage provider, chosen by its ``provider`` key.
+# Every variant has a ``uri_prefix`` and a ``retention_until``. The shared rules below check those two.
+ArtifactStore: TypeAlias = Annotated[S3ArtifactStore, Field(discriminator="provider")]
 
 
 class RunOpenRequest(StrictModel):
@@ -143,18 +120,6 @@ class RunPins(StrictModel):
         return self
 
 
-class ArtifactStore(StrictModel):
-    """Where the pipeline puts the run's artifacts, and until when each stays locked."""
-
-    # Each artifact goes to this prefix followed by the lowercase hex sha256 of its bytes.
-    # The prefix's last folder is the run's id.
-    uri_prefix: ArtifactPrefix
-    retention_until: Timestamp
-    lock_mode: Literal["COMPLIANCE"]
-    # The key the bucket encrypts with. It is null when the bucket uses its default encryption.
-    kms_key_id: KmsKeyId | None
-
-
 class _RunCredentials(StrictModel):
     api_version: Literal["iltero.io/run/v1"] = Field(alias="apiVersion")
     run_id: Uuid
@@ -205,7 +170,7 @@ class NotEvaluatedCheck(StrictModel):
     stage: RunStage
     # stage_not_run: the run never reached that stage. scanner_not_run: it did, but no result came.
     reason: Literal["stage_not_run", "scanner_not_run"]
-    # The not_evaluated record Compass stored for this check, so it can be found later.
+    # The not_evaluated record the server stored for this check, so it can be found later.
     event_id: Uuid
 
 
@@ -237,8 +202,8 @@ class RunCloseResponse(StrictModel):
 def check_continues(earlier: RunOpenResponse | TokenRefreshResponse, later: TokenRefreshResponse) -> None:
     """Raise ``ValueError`` unless ``later`` continues the run ``earlier`` answered for, with nothing changed under it.
 
-    The run, its pins, its repository and its artifact store stay the same.
-    The only change the store allows is a lock date that moves later.
+    The run, its pins, its CI system, its source and its artifact store stay
+    the same. The only change the store allows is a lock date that moves later.
     """
     if later.run_id != earlier.run_id:
         raise ValueError("a later response is for the same run")
@@ -247,8 +212,8 @@ def check_continues(earlier: RunOpenResponse | TokenRefreshResponse, later: Toke
     if datetime.fromisoformat(later.server_time) < datetime.fromisoformat(earlier.server_time):
         raise ValueError("a later response was not issued before an earlier one")
     before, after = earlier.ci_identity, later.ci_identity
-    if (after.repository_id, after.repository_owner_id) != (before.repository_id, before.repository_owner_id):
-        raise ValueError("a later response is for a job of the same repository and owner")
+    if (after.provider, after.source_key()) != (before.provider, before.source_key()):
+        raise ValueError("a later response is for a job of the same CI system and the same source")
     _check_same_store(earlier.artifact_store, later.artifact_store)
 
 
@@ -257,7 +222,7 @@ def _check_same_store(earlier: ArtifactStore | None, later: ArtifactStore | None
         raise ValueError("a run names an artifact store in every response, or in none")
     if earlier is None or later is None:
         return
-    if (later.uri_prefix, later.kms_key_id) != (earlier.uri_prefix, earlier.kms_key_id):
-        raise ValueError("the artifact store's prefix and key never change within a run")
+    if later.model_dump(exclude={"retention_until"}) != earlier.model_dump(exclude={"retention_until"}):
+        raise ValueError("nothing about the artifact store but its lock date changes within a run")
     if datetime.fromisoformat(later.retention_until) < datetime.fromisoformat(earlier.retention_until):
         raise ValueError("the artifact store's lock date never moves earlier within a run")

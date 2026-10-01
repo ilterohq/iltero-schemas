@@ -1,5 +1,5 @@
 {
-  "ast_version": 1,
+  "ast_version": 2,
   "id": "ILT.DEPLOYMENT.PLAN_BINDING",
   "version": "1.0.0",
   "type": "process",

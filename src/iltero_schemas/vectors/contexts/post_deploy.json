@@ -53,9 +53,9 @@
     ]
   },
   "plan": {
-    "format": "terraform",
+    "tool": "terraform",
     "format_version": "1.2",
-    "terraform_version": "1.14.0",
+    "tool_version": "1.14.0",
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,
@@ -94,14 +94,16 @@
     "apply": {
       "source": {
         "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-        "terraform_version": "1.14.0",
+        "tool": "terraform",
+        "tool_version": "1.14.0",
         "noise_lines": 0,
         "damaged_lines": 0,
         "interrupted_operations": 0
       },
       "state": {
         "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
-        "terraform_version": "1.14.0"
+        "tool": "terraform",
+        "tool_version": "1.14.0"
       },
       "basis": "log_held_to_plan_and_state_presence",
       "changes": [
@@ -130,7 +132,7 @@
       "timing": {
         "started_at": "2026-09-16T18:38:00Z",
         "ended_at": "2026-09-16T18:39:30Z",
-        "source": "terraform_log",
+        "source": "apply_log",
         "trust": "asserted"
       }
     },

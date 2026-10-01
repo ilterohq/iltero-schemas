@@ -46,7 +46,7 @@
     "id": "aws_db_instance.payments",
     "identities": [
       {
-        "scheme": "terraform_resource",
+        "scheme": "terraform_address",
         "value": "aws_db_instance.payments",
         "scope": {
           "unit": "root"
@@ -67,9 +67,9 @@
     ]
   },
   "plan": {
-    "format": "terraform",
+    "tool": "terraform",
     "format_version": "1.2",
-    "terraform_version": "1.14.0",
+    "tool_version": "1.14.0",
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,

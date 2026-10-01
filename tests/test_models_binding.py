@@ -16,12 +16,12 @@ from iltero_schemas.bindings import STARTER_SET, load_binding_set, starter_set
 from iltero_schemas.models.binding import (
     MAX_BINDINGS,
     MAX_STATUS_MAP,
-    TOOLS,
     EvaluatorBinding,
     EvaluatorBindingSet,
     constraint_met,
 )
 from iltero_schemas.models.event import POLICY_STATUSES, Evaluation
+from iltero_schemas.models.scanners import SCANNER_TOOLS
 
 ASSERTIONS = Path(__file__).resolve().parent.parent / "src" / "iltero_schemas" / "assertions"
 
@@ -199,7 +199,7 @@ def test_a_set_outside_the_shape_is_refused(changes: dict[str, Any], message: st
 
 
 def test_the_tools_a_binding_may_cite_are_the_documented_three() -> None:
-    for tool in TOOLS:
+    for tool in SCANNER_TOOLS:
         assert EvaluatorBinding.model_validate({**ENTRY, "tool": tool}).tool == tool
 
 

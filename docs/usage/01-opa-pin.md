@@ -1,10 +1,15 @@
 # The OPA pin
 
-Every Iltero component evaluates compliance assertions with the same Open
-Policy Agent (OPA) release. This package names that release, and the SHA-256
-digest (fingerprint) of its published binary for each supported platform:
+Iltero checks compliance rules with Open Policy Agent (OPA), a widely used
+policy engine. Every Iltero component must run the same OPA release. If two
+components ran different releases, the same rule could give two different
+answers, and nobody could tell which one a record meant.
 
-| Key | Asset |
+So this package pins one release. The pin names the release and the SHA-256
+digest (fingerprint) of its published binary for each supported platform.
+The current release is OPA 1.20.2.
+
+| Platform key | Release file |
 | --- | --- |
 | `linux-x86_64` | `opa_linux_amd64_static` |
 | `linux-aarch64` | `opa_linux_arm64_static` |
@@ -14,19 +19,25 @@ digest (fingerprint) of its published binary for each supported platform:
 
 ## What a consumer must do
 
-Before every run of OPA, a tool computes the digest of the binary it is about
-to run and compares it with the pinned digest for its platform. It refuses to
-run the binary when they differ. The digest identifies the evaluator a record
-was produced with.
+A consumer checks the binary every time, before it runs it:
+
+1. Compute the SHA-256 digest of the OPA binary it is about to run.
+2. Compare it with the pinned digest for its platform.
+3. Refuse to run the binary when the two differ.
+
+The digest also identifies the evaluator in the record. A reader can then
+tell exactly which program produced a result.
 
 ## How the pin changes
 
 The pin file is the only place the release and its digests are written. A
-change is a reviewed pull request that updates the file and bumps this
-package's version; consumers pick it up by moving their exact pin. Whoever
-changes the pin takes the digests from the OPA release itself, after
-checking each file against GitHub's signed record of that release — never
-from a plain download:
+change to it is a reviewed pull request that edits the file and bumps this
+package's version. Consumers pick it up when they move their own exact pin
+to that version.
+
+Whoever changes the pin takes the digests from the OPA release itself. They
+first check each file against GitHub's signed record of that release. They
+never take a digest from a plain download.
 
 ```bash
 tag=v1.20.2
@@ -38,16 +49,23 @@ for asset in $assets; do
 done
 ```
 
-The same bump refreshes the capabilities allowlist (see
+The same change refreshes the capabilities allowlist, the list of OPA
+functions a policy may call (see
 [conformance vectors](../development/03-conformance-vectors.md)).
 
 ## For developers
 
-The pin is `iltero_schemas.opa.PIN`, read from `src/iltero_schemas/opa/PIN.json`:
+| What | Where |
+| --- | --- |
+| The pin, as data | `src/iltero_schemas/opa/PIN.json` |
+| The pin, loaded | `iltero_schemas.opa.PIN` (`version`, `release_tag`, `binaries`) |
+| This host's key | `iltero_schemas.opa.platform_key(system, machine)`. It raises `KeyError` for an unsupported host |
 
 ```python
+import platform
+
 from iltero_schemas.opa import PIN, platform_key
 
-entry = PIN.binaries[platform_key()]   # raises for an unsupported host
+entry = PIN.binaries[platform_key(platform.system(), platform.machine())]
 entry.asset, entry.sha256, PIN.version, PIN.release_tag
 ```

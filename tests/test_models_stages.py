@@ -313,7 +313,7 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
         CAR.model_validate(document, context=_READER)
 
 
-def test_an_offline_record_has_no_facts_from_compass() -> None:
+def test_an_offline_record_has_no_facts_from_the_server() -> None:
     units = RECORD["change"]["units"]
     pre_deploy = _stage("pre_deploy")
     event = _moved_event(-1, "pre_deploy")
@@ -329,5 +329,5 @@ def test_an_offline_record_has_no_facts_from_compass() -> None:
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"
-    with pytest.raises(ValidationError, match="has no facts from Iltero Compass"):
+    with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)

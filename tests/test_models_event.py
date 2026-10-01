@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.models.ci_identity import CI_PROVIDERS
 from iltero_schemas.models.event import (
     NO_EVALUATOR_REASONS,
     POLICY_STATUSES,
@@ -192,3 +193,14 @@ def test_a_ci_context_is_verified_exactly_when_checked_with_the_context_key(
     else:
         with pytest.raises(ValidationError, match="checked with the run's context key"):
             CiContext.model_validate(document)
+
+
+@pytest.mark.parametrize("provider", ["local", "ci", *CI_PROVIDERS])
+def test_an_executor_ran_locally_or_in_a_ci_system(provider: str) -> None:
+    AssuranceEvent.model_validate(_event(**{"provenance.executor.provider": provider}))
+
+
+@pytest.mark.parametrize("provider", ["github-actions", "gitlab", ""])
+def test_an_executor_in_an_unnamed_ci_system_is_refused(provider: str) -> None:
+    with pytest.raises(ValidationError, match="Input should be"):
+        AssuranceEvent.model_validate(_event(**{"provenance.executor.provider": provider}))

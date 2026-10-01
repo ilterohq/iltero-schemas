@@ -11,15 +11,17 @@ metadata, no bundle digests, no provenance. Every model refuses unknown
 keys and coerces nothing, and the parts present must match the profile
 exactly.
 
-Two conventions hold throughout. A resource is named by its Terraform
-address: ``id`` on the subject, on the resource and on the plan's table of
-contents; the resources that refer to it (``resource.related``) are embedded
-as the plan adapter observed them, ``address`` included. ``provider`` is the
-short name an assertion targets (``aws``); the provider's full source
-address is ``provider_source``. A value hidden by redaction is a marker
-(``__redacted``), and the fields where a hidden value may legitimately sit
-accept one. A fact the server could not supply is an unknown marker
-(``__unknown``, see ``models.facts``) in place of the list it would have filled.
+Two conventions hold throughout. A resource is named by its address in the
+configuration of the infrastructure-as-code (IaC) tool, which is Terraform in
+the current implementation. That address is the ``id`` on the subject, on the
+resource and on the plan's table of contents. The resources that refer to it
+(``resource.related``) are embedded as the plan adapter observed them,
+``address`` included. ``provider`` is the short name an assertion targets
+(``aws``); the provider's full source address is ``provider_source``. A
+value hidden by redaction is a marker (``__redacted``), and the fields where
+a hidden value may legitimately sit accept one. A fact the server could not
+supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
+the list it would have filled.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.deployment import Deployment, check_superseded
+from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.facts import UnknownMarker
 from iltero_schemas.models.fields import (
     Action,
@@ -42,13 +44,14 @@ from iltero_schemas.models.fields import (
     Timestamp,
     check_artifact_digest,
 )
+from iltero_schemas.models.iac import IacTool
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
 # The marker's reason: a short token, as the evaluator's runtime accepts it.
 REASON_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
-ReferenceTimeSource = Literal["compass_server", "timestamp_authority", "rekor", "runner_clock"]
+ReferenceTimeSource = Literal["server", "timestamp_authority", "rekor", "runner_clock"]
 ReferenceTimeTrust = Literal["attested", "corroborated", "asserted"]
 Authority = Literal["authoritative", "unresolved"]
 # The parts a profile may name, whether or not this version specifies their shape.
@@ -185,11 +188,12 @@ class Change(StrictModel):
 
 
 class Plan(StrictModel):
-    """The plan artifact: fingerprints, what Terraform said about it, and every resource it covers."""
+    """The plan artifact: fingerprints, what the IaC tool said about it, and every resource it covers."""
 
-    format: Literal["terraform"]
+    # The IaC tool that wrote the plan, and the version of its plan format and of the tool itself.
+    tool: IacTool
     format_version: Identifier
-    terraform_version: Identifier | None
+    tool_version: Identifier | None
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
@@ -271,4 +275,5 @@ class AssuranceContext(StrictModel):
             raise ValueError("plan.source_commit must be the source commit")
         if self.plan is not None:
             check_superseded(self.plan.digest, self.deployment)
+            check_tool(self.plan.tool, self.deployment)
         return self

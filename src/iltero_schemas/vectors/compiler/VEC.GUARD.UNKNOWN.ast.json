@@ -1,11 +1,12 @@
 {
-  "ast_version": 1,
+  "ast_version": 2,
   "id": "VEC.GUARD.UNKNOWN",
   "version": "1.0.0",
   "type": "state",
   "stage": "plan",
   "target": {
     "kind": "resource",
+    "tool": "terraform",
     "provider": "vec",
     "resource_types": [
       "thing"

@@ -22,7 +22,7 @@
   },
   "reference_time": {
     "value": "2026-09-16T18:30:00Z",
-    "source": "compass_server",
+    "source": "server",
     "trust": "attested"
   },
   "source": {
@@ -58,9 +58,9 @@
     "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
   },
   "plan": {
-    "format": "terraform",
+    "tool": "terraform",
     "format_version": "1.2",
-    "terraform_version": "1.14.0",
+    "tool_version": "1.14.0",
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,

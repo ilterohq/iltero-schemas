@@ -13,9 +13,10 @@ from enum import StrEnum
 from typing import Any, TypeAlias
 
 from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind
+from iltero_schemas.models.iac import IacTool
 
 # Bumped when the JSON form below changes shape; part of every digest.
-AST_VERSION = 1
+AST_VERSION = 2
 
 Scalar: TypeAlias = str | int | float | bool
 
@@ -97,6 +98,7 @@ Expr: TypeAlias = Predicate | All | AnyOf | Not | Exists
 @dataclass(frozen=True)
 class Target:
     kind: TargetKind
+    tool: IacTool | None
     provider: str | None
     resource_types: tuple[str, ...]
 
@@ -138,6 +140,7 @@ def to_json(assertion: Assertion) -> dict[str, Any]:
     """The one JSON form of the AST; its canonical bytes are the assertion's source digest."""
     target: dict[str, Any] = {"kind": assertion.target.kind.value}
     if assertion.target.kind is TargetKind.RESOURCE:
+        target["tool"] = assertion.target.tool
         target["provider"] = assertion.target.provider
         target["resource_types"] = list(assertion.target.resource_types)
     return {

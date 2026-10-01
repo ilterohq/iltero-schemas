@@ -6,9 +6,9 @@ assertion_id := "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION"
 
 assertion_version := "1.0.0"
 
-ast_version := 1
+ast_version := 2
 
-assertion_source_digest := "sha256:e665c126ad7318e59971d943dd280f7acc0291dd27efc010f0bf81cb4782023e"
+assertion_source_digest := "sha256:8b4c1a1aa5039e5a3959503947edbeeddceb36404156113ff3df4056820cbe6c"
 
 _has_when := true
 

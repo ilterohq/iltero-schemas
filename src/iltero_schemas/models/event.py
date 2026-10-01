@@ -26,8 +26,10 @@ from iltero_schemas.compiler.limits import (
 )
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.ci_identity import CiProvider
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
+from iltero_schemas.models.scanners import ScannerTool
 
 Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
 # Why a status is what it is; the runner sets it, a policy never does.
@@ -225,7 +227,7 @@ class ScannerEvaluator(StrictModel):
     no digest: the version is the one the tool wrote into its own output.
     """
 
-    engine: Literal["checkov", "trivy", "prowler"]
+    engine: ScannerTool
     version: Identifier
     digest: Digest | None
     basis: Literal["not_executed_by_cli"]
@@ -243,7 +245,7 @@ class BindingRef(StrictModel):
 
 
 class Bundle(StrictModel):
-    kind: Literal["compass", "local_bundle"]
+    kind: Literal["server", "local_bundle"]
     digest: Digest
 
 
@@ -263,11 +265,16 @@ class Compiler(StrictModel):
         return self
 
 
+# Where an evaluation ran: on a person's machine (``local``), in a job of a CI system the tool could not
+# name (``ci``), or in a job of a named CI system.
+ExecutorProvider = Literal["local", "ci"] | CiProvider
+
+
 class Executor(StrictModel):
     """Who ran the evaluation: a person on a machine, or a pipeline workload."""
 
     type: Literal["human", "workload"]
-    provider: Identifier
+    provider: ExecutorProvider
     run_id: Identifier | None
 
 
@@ -284,7 +291,7 @@ class CiContext(StrictModel):
         return self
 
 
-# Where the facts document a pre-deploy check read came from: Iltero Compass, a file given to the tool, or none.
+# Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
 
@@ -302,7 +309,7 @@ class Provenance(StrictModel):
     bundle: Bundle | None
     # Present exactly when a scanner's result was read for this check (see ``ScannerEvaluator``).
     binding: BindingRef | None
-    assertion_source: Literal["compass_bundle", "local", "custom_rego"]
+    assertion_source: Literal["server_bundle", "local", "custom_rego"]
     assertion_source_digest: Digest
     compiled_digest: Digest | None
     compiler: Compiler | None

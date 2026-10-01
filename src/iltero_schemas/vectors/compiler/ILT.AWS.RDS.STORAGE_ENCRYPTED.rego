@@ -6,9 +6,9 @@ assertion_id := "ILT.AWS.RDS.STORAGE_ENCRYPTED"
 
 assertion_version := "1.0.0"
 
-ast_version := 1
+ast_version := 2
 
-assertion_source_digest := "sha256:c3bd61ded0c70ef783237263e6319e9f82a0b8c3b92a614768324350a7399140"
+assertion_source_digest := "sha256:7d0e58fd64fad627fc20be7a6c45da5a483572aa79b977fd8b6cf86b2ad71d0a"
 
 _has_when := false
 

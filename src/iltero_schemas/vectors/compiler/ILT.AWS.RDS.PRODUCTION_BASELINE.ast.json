@@ -1,11 +1,12 @@
 {
-  "ast_version": 1,
+  "ast_version": 2,
   "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
   "version": "1.0.0",
   "type": "state",
   "stage": "plan",
   "target": {
     "kind": "resource",
+    "tool": "terraform",
     "provider": "aws",
     "resource_types": [
       "aws_db_instance"

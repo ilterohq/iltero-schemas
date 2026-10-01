@@ -6,7 +6,7 @@ metadata:
   title: An invalid document
 spec:
   stage: plan
-  target: {kind: resource, provider: aws, resource_types: [aws_db_instance]}
+  target: {kind: resource, tool: terraform, provider: aws, resource_types: [aws_db_instance]}
   assert:
     exists:
       in: approvals

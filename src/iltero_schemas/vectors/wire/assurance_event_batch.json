@@ -15,7 +15,7 @@
         "id": "aws_db_instance.payments",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "value": "aws_db_instance.payments",
             "scope": {
               "unit": "root"
@@ -81,11 +81,11 @@
           }
         },
         "bundle": {
-          "kind": "compass",
+          "kind": "server",
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "assertion_source": "compass_bundle",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
         "compiled_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
         "compiler": {

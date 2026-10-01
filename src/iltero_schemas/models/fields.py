@@ -8,6 +8,7 @@ carry a plan by the same four fields.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -30,7 +31,7 @@ CONTEXT_KEY_PATTERN = r"^[A-Za-z0-9_-]{43}$"
 # An environment's key: short, lowercase, the same in every place it is named.
 ENVIRONMENT_KEY_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,49}$"
 IDENTIFIER_MAX_LENGTH = 256
-# A Terraform address carries module and instance keys and can be much longer than an id.
+# A resource address, such as Terraform's, carries module and instance keys and can be much longer than an id.
 ADDRESS_MAX_LENGTH = 2048
 # The most resources one list of a deployment or its identities may name.
 MAX_RESOURCES = 100_000
@@ -43,6 +44,8 @@ ArtifactDigestBasis = Literal["plan_binary", "not_provided"]
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed check stops the pipeline (``enforcing``) or is only reported (``advisory``).
 GateMode = Literal["enforcing", "advisory"]
+# The start of a JSON Web Token: a base64url header, a dot, and a base64url payload, both JSON objects.
+_JSON_WEB_TOKEN = re.compile(r"eyJ[A-Za-z0-9_-]*\.eyJ")
 
 
 def plain_text(value: str) -> str:
@@ -56,6 +59,17 @@ def check_artifact_digest(digest: str | None, basis: str) -> None:
     """Raise ``ValueError`` unless the plan binary's digest is present exactly when its basis says it was given."""
     if (digest is not None) != (basis == "plan_binary"):
         raise ValueError("artifact_digest is present exactly when artifact_digest_basis is plan_binary")
+
+
+def _no_token(value: str) -> str:
+    """``value`` when no JSON Web Token appears anywhere in it; raises ``ValueError`` otherwise."""
+    if _JSON_WEB_TOKEN.search(value):
+        raise ValueError("must not contain a JSON Web Token")
+    return value
+
+
+# A value a CI system or the server supplies: it must never carry an identity token.
+NoToken = AfterValidator(_no_token)
 
 
 def _timestamp(value: str) -> str:

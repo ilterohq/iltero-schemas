@@ -19,7 +19,8 @@ from tests.records import record as _record
 
 def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
-    assert car.assurance_level == "self_attested" and car.complete is False
+    assert car.trust_level == "self_attested" and car.complete is False
+    assert car.compliance_determination is None and car.plan.tool == "terraform"
     assert len(car.events) == car.coverage.checks == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
@@ -56,7 +57,12 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
     ("change", "message"),
     [
         ({"coverage.checks": 4}, "add up to the number of checks"),
-        ({"assurance_level": "governed"}, "Input should be 'self_attested'"),
+        ({"trust_level": "server_governed"}, "Input should be 'self_attested'"),
+        ({"trust_level": "governed"}, "a record without a signature is self_attested"),
+        ({"trust_level": "authority_accepted"}, "a record without a signature is self_attested"),
+        ({"compliance_determination": "compliant"}, "Input should be None"),
+        ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
+        ({"plan.tool": "pulumi"}, "Input should be 'terraform'"),
         ({"run_id.basis": "guessed"}, "Input should be"),
         ({"uuid": "not-a-uuid"}, "String should match pattern"),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
@@ -188,6 +194,13 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
 def test_a_scanner_block_whose_counts_do_not_add_up_is_refused(change: dict[str, Any], message: str) -> None:
     scanners = {**copy.deepcopy(SCANNERS), **change}
     with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
+
+
+def test_a_report_of_a_scanner_outside_the_list_is_refused() -> None:
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["reports"][0]["tool"] = "tfsec"
+    with pytest.raises(ValidationError, match="Input should be"):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 

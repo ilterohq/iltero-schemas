@@ -114,6 +114,10 @@ keep, so any two tools agree on what a record means.
 
 These changes break documents written before them.
 
+- An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
+  could issue. A bucket name that looks like an IP address, holds two dots in a
+  row or uses a reserved prefix or suffix is refused. So is an RDS identifier
+  that ends with a hyphen or holds two hyphens in a row.
 - CAR now stands for Change Assurance Record: the record of one attempted
   infrastructure change, whatever its outcome. It records assurance facts and
   does not, by itself, establish certification or compliance with a

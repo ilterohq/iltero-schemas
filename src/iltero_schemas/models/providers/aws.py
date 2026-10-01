@@ -35,12 +35,29 @@ _IAM_PATH_SEGMENT = r"[!-)+-.0->@-~]+"
 _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 # A KMS key id: a UUID, or "mrk-" and 32 hex digits for a key that spans regions.
 KMS_KEY_ID = rf"({_UUID}|mrk-[0-9a-f]{{32}})"
+# Bucket names S3 keeps for access points, directory buckets and other special kinds. None of them
+# is an ordinary bucket that can hold a locked object, and no ordinary bucket has one.
+RESERVED_BUCKET_PREFIXES = ("xn--", "sthree-", "amzn-s3-demo-")
+RESERVED_BUCKET_SUFFIXES = ("-s3alias", "--ol-s3", ".mrap", "--x-s3", "--table-s3")
+# An S3 bucket name as S3 issues it: 3 to 63 lowercase letters, digits, dots and hyphens, starting and
+# ending with a letter or a digit. It never holds two dots in a row, never looks like an IP address, and
+# never uses a reserved prefix or suffix.
+_S3_BUCKET = (
+    r"(?!.*\.\.)"
+    r"(?![0-9]{1,3}(\.[0-9]{1,3}){3}$)"
+    + "".join(rf"(?!{re.escape(prefix)})" for prefix in RESERVED_BUCKET_PREFIXES)
+    + r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]"
+    + "".join(rf"(?<!{re.escape(suffix)})" for suffix in RESERVED_BUCKET_SUFFIXES)
+)
+# An RDS instance identifier as RDS issues it: 1 to 63 letters, digits and hyphens, starting with a letter.
+# It never ends with a hyphen and never holds two hyphens in a row.
+_RDS_INSTANCE = r"(?![A-Za-z0-9-]*--)[A-Za-z][A-Za-z0-9-]{0,62}(?<!-)"
 # Per type: the service, whether the ARN names a region, and the full rule for its resource part.
 # The mapping is read-only, so no consumer can change a rule at run time.
 ARN_SHAPES: Mapping[AwsResourceType, tuple[str, bool, re.Pattern[str]]] = MappingProxyType(
     {
-        "s3_bucket": ("s3", False, re.compile(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]")),
-        "rds_instance": ("rds", True, re.compile(r"db:[A-Za-z][A-Za-z0-9-]{0,62}")),
+        "s3_bucket": ("s3", False, re.compile(_S3_BUCKET)),
+        "rds_instance": ("rds", True, re.compile(rf"db:{_RDS_INSTANCE}")),
         "security_group": ("ec2", True, re.compile(r"security-group/sg-[0-9a-f]{8}([0-9a-f]{9})?")),
         "iam_role": ("iam", False, re.compile(rf"role/({_IAM_PATH_SEGMENT}/)*[\w+=,.@-]{{1,64}}", re.ASCII)),
         "kms_key": ("kms", True, re.compile(rf"key/{KMS_KEY_ID}")),
@@ -111,10 +128,6 @@ class AwsResolver(StrictModel):
 ARTIFACT_PREFIX_PATTERN = r"^s3://[a-z0-9][a-z0-9-]{1,61}[a-z0-9]/([A-Za-z0-9_=-][A-Za-z0-9_.=-]*/)+$"
 # Leaves room under S3's 1,024-byte key limit for the 64 hex digits of an artifact's digest.
 ARTIFACT_PREFIX_MAX_LENGTH = 512
-# Bucket names S3 keeps for access points, directory buckets and other special kinds. None of them
-# is an ordinary bucket that can hold a locked object.
-RESERVED_BUCKET_PREFIXES = ("xn--", "sthree-", "amzn-s3-demo-")
-RESERVED_BUCKET_SUFFIXES = ("-s3alias", "--ol-s3", "--x-s3", "--table-s3")
 
 
 def _ordinary_bucket(value: str) -> str:

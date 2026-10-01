@@ -11,6 +11,10 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [VerificationReport](#verificationreport)
 - [IdentityBindings](#identitybindings)
 - [Attestation](#attestation)
+- [EvaluatorBindingSet](#evaluatorbindingset)
+- [PolicySourceManifest](#policysourcemanifest)
+- [BundleDescriptor](#bundledescriptor)
+- [Trusted bundle keys](#trusted-bundle-keys)
 - [Run and upload documents](#run-and-upload-documents)
 
 ## Conventions
@@ -19,7 +23,9 @@ Every model applies the same rules:
 
 - A key the model does not define is refused.
 - No value is converted. The string `"true"` is not a boolean, and `"7"` is not a number.
-- Text never contains a control character, a zero-width character or a bidirectional formatting character.
+- A text field the model types (a name, an identifier, an address, a title) never contains a control character,
+  a zero-width character or a bidirectional formatting character. Fields that carry data as another tool wrote it,
+  such as a resource's planned values in an AssuranceContext, accept any JSON value.
 - A list of names that the model keeps sorted is sorted by Unicode code point, with no name twice.
 
 The tables below use these value types:
@@ -405,6 +411,125 @@ Key rules:
 - `identity_source: asserted` means the tool recorded a name it was given and verified nothing.
 - A record lists an attestation in `evidence_refs` with `media_type: application/vnd.iltero.attestation+json`.
 
+## EvaluatorBindingSet
+
+An evaluator binding set is a catalogue of licences. Each entry says that one check of one scanner, at a version
+inside a stated range, establishes one assertion at one stage. A bound check is not run again. The scanner's result
+is credited to the assertion the entry names.
+
+- **apiVersion:** `iltero.io/v1`, with `kind: EvaluatorBindingSet`
+- **Model:** `iltero_schemas.models.binding.EvaluatorBindingSet`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion`, `kind` | string | `iltero.io/v1` and `EvaluatorBindingSet`. |
+| `metadata` | object | The catalogue's `id` and `version`. |
+| `bindings` | list | 1 to 10,000 entries, each described below. |
+
+Each entry:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `id`, `version` | string | The entry's own id and version. |
+| `tool` | string | `checkov`, `trivy` or `prowler`. |
+| `tool_version_constraint` | string | A PEP 440 version specifier, such as `>=3,<4`. |
+| `check_id` | string | The scanner's own check id, such as `CKV_AWS_16`. |
+| `framework` | string or null | What the scanner must have been reading, in its own words, such as `terraform_plan`. Null for a scanner that reads one kind of input. |
+| `assertion` | object | The `id` and `version` of the assertion the check establishes. |
+| `stage` | stage | The stage the credit applies to. |
+| `status_map` | object | 1 to 32 of the scanner's status words, each mapped to `pass` or `fail`. |
+
+Key rules:
+
+- Ids are unique. A scanner's check is bound once per stage. A scanner establishes an assertion with one check per
+  stage.
+- Only `pass` and `fail` are credited. A status word the map does not list leaves the check uncredited.
+- A pre-release scanner version, or a version string that is not a version, satisfies no constraint.
+- An event credited through an entry names the entry's id, its version and the digest of the entry's canonical
+  JSON.
+
+## PolicySourceManifest
+
+A policy source manifest describes a directory of hand-written Rego policies, for rules the assertion language
+cannot express. Each entry names the assertion a policy decides, the stage, the target and the one `.rego` file it
+is written in.
+
+- **apiVersion:** `iltero.io/v1`, with `kind: PolicySourceManifest`
+- **Model:** `iltero_schemas.models.policy_source.PolicySourceManifest`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion`, `kind` | string | `iltero.io/v1` and `PolicySourceManifest`. |
+| `policies` | list | 1 to 512 entries, each described below. |
+
+Each entry:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `title` | string | What the policy claims, at most 200 characters. |
+| `assertion` | object | The `id` and `version` of the assertion the policy decides. |
+| `stage` | stage | When the policy is evaluated. |
+| `target` | object | The same shape as a TechnicalAssertion's `spec.target`. |
+| `file` | string | A plain `.rego` file name inside the directory, with no directory part. |
+
+Key rules:
+
+- The stage and the target kind form a combination a TechnicalAssertion also allows.
+- One policy decides an assertion at a stage. Two policies are never written in the same file.
+- Each file declares the package `iltero.assertions["<id>"]` of the assertion it decides.
+- A record that ran a hand-written policy says so, and a replay runs the retained code, because nothing can derive
+  it again.
+
+## BundleDescriptor
+
+A bundle descriptor is how Iltero Cloud serves a signed assertion bundle. It carries the signed Open Policy Agent
+(OPA) bundle tarball and each assertion's source, so a tool can recompile every assertion and compare the result
+with the module in the tarball before it runs anything.
+
+- **apiVersion:** `iltero.io/assertion-bundle/v1`
+- **Model:** `iltero_schemas.models.bundle.BundleDescriptor`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion` | string | `iltero.io/assertion-bundle/v1`. |
+| `revision` | digest | The address of the bundle's content. |
+| `digest` | digest | The SHA-256 of the decoded tarball bytes. |
+| `key_id` | identifier | The key that signed the bundle. |
+| `algorithm` | string | `ES256`. |
+| `compiler_version` | identifier | The compiler version the modules were built with. |
+| `min_cli_version` | string | The oldest CLI version able to evaluate the bundle. |
+| `assertion_set_digest` | digest | The digest of every assertion in the bundle, by id, version and document digest. |
+| `assertions` | list | 1 to 1,024 assertions, sorted by id: `id`, `version`, `digest`, `source_digest`, `compiled_digest` and the YAML `source`. |
+| `tarball` | string | The signed tarball, standard base64 with padding, at most 16 MiB decoded. |
+
+Key rules:
+
+- The same content signed under two keys has one `revision` and two `digest` values.
+- `assertion_set_digest` names everything in the bundle. A run's pins name the subset the run owes.
+- The signing key must be in the trusted keys and must not be revoked.
+
+## Trusted bundle keys
+
+The trusted bundle keys file lists the public keys that may sign an assertion bundle. It ships inside the package
+as `iltero_schemas/trust/bundle-keys.json`, so a tool that pins one package version also pins the keys it trusts.
+
+- **apiVersion:** `iltero.io/bundle-keys/v1`
+- **Reader:** `iltero_schemas.trust.parse_bundle_keys`, with the shipped set in `iltero_schemas.trust.BUNDLE_KEYS`
+  and the digest of the file's bytes in `iltero_schemas.trust.TRUST_FILE_DIGEST`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion` | string | `iltero.io/bundle-keys/v1`. |
+| `keys` | list | Each key's `keyid`, `algorithm` (`ES256`), `public_key` (an uncompressed P-256 SubjectPublicKeyInfo, base64), `spki_sha256`, `status`, `valid_from`, `retired_at`, `revoked_at` and `revocation_reason`. |
+
+Key rules:
+
+- `active` keys sign and verify. `retired` keys only verify. `revoked` keys never verify again, whenever the
+  signature was made.
+- Keys are never removed. A status only moves forward: `active` to `retired` or `revoked`, `retired` to `revoked`.
+- A key id starting with `dev-` is a development key and is refused.
+- Any change to the keys requires a new package version.
+
 ## Run and upload documents
 
 A pipeline exchanges these documents with Iltero Cloud during a run Iltero Cloud opens. A run token is a
@@ -474,8 +599,9 @@ The pins fix what a run is judged against. Model: `iltero_schemas.models.run.Run
 
 ### Run close response
 
-The pipeline closes the run with a request that has no body. The response lists every pinned check that had no
-accepted result. Each is recorded as `not_evaluated`.
+The pipeline closes the run with a request that has no body. The response lists every pinned check that has no
+counting result. A check has a counting result when an event for it was `accepted`, `duplicate` or `conflict`.
+Each remaining check is recorded as `not_evaluated`.
 
 | Field | Type | Meaning |
 | --- | --- | --- |

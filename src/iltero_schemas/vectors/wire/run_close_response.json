@@ -12,7 +12,8 @@
         "digest": "sha256:43d8092c3fee90fef01c29592c5ecb2c407178206ce8e55ed78f4c0772efc16a"
       },
       "stage": "plan",
-      "reason": "scanner_not_run"
+      "reason": "scanner_not_run",
+      "event_id": "4e5f6a7b-8c9d-4e0f-9a1b-2c3d4e5f6a7b"
     },
     {
       "assertion": {
@@ -21,7 +22,8 @@
         "digest": "sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb"
       },
       "stage": "post_deploy",
-      "reason": "stage_not_run"
+      "reason": "stage_not_run",
+      "event_id": "5f6a7b8c-9d0e-4f1a-8b2c-3d4e5f6a7b8c"
     }
   ]
 }

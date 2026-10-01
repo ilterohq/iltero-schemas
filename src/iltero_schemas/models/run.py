@@ -205,6 +205,8 @@ class NotEvaluatedCheck(StrictModel):
     stage: RunStage
     # stage_not_run: the run never reached that stage. scanner_not_run: it did, but no result came.
     reason: Literal["stage_not_run", "scanner_not_run"]
+    # The not_evaluated record Compass stored for this check, so it can be found later.
+    event_id: Uuid
 
 
 class RunCloseResponse(StrictModel):
@@ -226,6 +228,9 @@ class RunCloseResponse(StrictModel):
         ids = [check.assertion.id for check in self.not_evaluated]
         if not sorted_unique(ids):
             raise ValueError("not_evaluated is sorted by assertion id, with no assertion twice")
+        records = [check.event_id for check in self.not_evaluated]
+        if len(set(records)) != len(records):
+            raise ValueError("each check in not_evaluated names its own stored record")
         return self
 
 

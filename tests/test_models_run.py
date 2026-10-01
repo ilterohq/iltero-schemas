@@ -322,3 +322,10 @@ def test_a_close_names_each_check_once() -> None:
     twice = [CLOSE["not_evaluated"][0]] * 2
     with pytest.raises(ValidationError, match="no assertion twice"):
         RunCloseResponse.model_validate({**CLOSE, "materialized_not_evaluated": 2, "not_evaluated": twice})
+
+
+def test_each_unevaluated_check_names_its_own_record() -> None:
+    first, second = CLOSE["not_evaluated"]
+    shared = [first, {**second, "event_id": first["event_id"]}]
+    with pytest.raises(ValidationError, match="names its own stored record"):
+        RunCloseResponse.model_validate({**CLOSE, "not_evaluated": shared})

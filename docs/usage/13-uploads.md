@@ -192,15 +192,22 @@ names an `artifact_store`, or `null` when the organization keeps no
 artifacts with the run. A run names a store in every
 response or in none. With `null`, the artifacts stay with the pipeline.
 
-The store is an Amazon S3 bucket (Amazon's object storage service). Its files
-are encrypted with a key held in AWS KMS (Key Management Service).
+Each storage provider has its own kind of store, and the store's
+`provider` field says which one it is. Every kind names a `uri_prefix` and a
+`retention_until`. The only provider so far is `aws`. Its store is an
+Amazon S3 bucket (Amazon's object storage service). Its files are encrypted
+with a key held in AWS KMS (Key Management Service).
+
+Nothing about the store changes within a run, except its lock date. That
+date may move later from one stage to the next, never earlier.
 
 | Field | What it says |
 | --- | --- |
-| `uri_prefix` | Where the files go. It is `s3://`, then an ordinary bucket whose name has no dots, then one or more folder names, ending in `/`. The last folder is the run's id. It never changes within a run |
+| `provider` | The storage provider. It is `aws` |
+| `uri_prefix` | Where the files go. It is `s3://`, then an ordinary bucket whose name has no dots, then one or more folder names, ending in `/`. The last folder is the run's id |
 | `retention_until` | The date until which each file stays locked. It is later than the response's `server_time`. A later stage's response may name a later date, never an earlier one |
 | `lock_mode` | Always `COMPLIANCE`. No one can shorten the lock or delete the file before that date |
-| `kms_key_id` | The KMS key the bucket encrypts with, given by its key id alone. It is `null` when the bucket uses its default encryption. A key id always names a key in the account the pipeline runs in. It never changes within a run |
+| `kms_key_id` | The KMS key the bucket encrypts with, given by its key id alone. It is `null` when the bucket uses its default encryption. A key id always names a key in the account the pipeline runs in |
 
 ### Uploading an artifact
 
@@ -304,7 +311,8 @@ Before you use the policy, make these replacements:
 | The digest of a stored event | `models.ingest.document_digest` |
 | Which of two statuses stands | `models.event.STATUS_SEVERITY`, `models.event.worse_status` |
 | The dispositions and reasons | `models.ingest.Disposition`, `models.ingest.RejectReason` |
-| The artifact store | `models.run.ArtifactStore` |
+| The artifact store, one variant per provider | `models.run.ArtifactStore` (a union keyed by `provider`) |
+| The S3 store | `models.providers.aws.S3ArtifactStore` |
 | A later response continues the run | `models.run.check_continues` |
 | The answer to closing a run | `models.run.RunCloseResponse`, `models.run.NotEvaluatedCheck` |
 

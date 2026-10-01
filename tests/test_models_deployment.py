@@ -9,7 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.deployment import AppliedChange, Apply, Unsettled
+from iltero_schemas.models.deployment import AppliedChange, Apply, Unsettled, check_one_tool, check_tool
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
@@ -25,7 +25,7 @@ def test_the_post_deploy_vector_describes_the_apply() -> None:
     assert context.deployment is not None and context.plan is not None
     assert context.deployment.plan.digest == context.plan.digest
     apply = context.deployment.apply
-    assert apply.source.terraform_version == "1.14.0" and apply.changes[0].required == ["update"]
+    assert apply.source.tool_version == "1.14.0" and apply.changes[0].required == ["update"]
 
 
 def test_every_kind_of_change_has_its_place() -> None:
@@ -170,7 +170,10 @@ UPDATED = change("a.x", "update", ["update"], "applied")
         ({"summary": {"add": 1, "change": 0, "import": 0, "remove": 0}}, "Extra inputs are not permitted"),
         ({"timing": {**TIMING, "ended_at": "2026-09-16T18:37:00Z"}}, "ended before it started"),
         ({"timing": {**TIMING, "trust": "attested"}}, "Input should be"),
-        ({"source": {"digest": "sha256:abc", "terraform_version": "1.14.0"}}, "String should match pattern"),
+        (
+            {"source": {"digest": "sha256:abc", "tool": "terraform", "tool_version": "1.14.0"}},
+            "String should match pattern",
+        ),
         ({"basis": "log_only"}, "Input should be 'log_held_to_plan_and_state_presence'"),
     ],
     ids=[
@@ -459,3 +462,25 @@ def test_a_deposed_object_still_held_after_the_log_lost_lines_may_stay_unsettled
     whole = _apply(changes=[unknown], summary=None)
     with pytest.raises(ValidationError, match="only a log that lost messages"):
         Apply.model_validate(whole)
+
+
+def test_the_apply_log_and_the_state_name_the_same_tool() -> None:
+    """Only one tool exists yet, so the rule is reached with a value no document can carry."""
+    apply = Apply.model_validate(_apply())
+    check_one_tool(apply.source, apply.state)
+    other = apply.state.model_construct(**{**apply.state.model_dump(), "tool": "another"})
+    with pytest.raises(ValueError, match="written by the same tool"):
+        check_one_tool(apply.source, other)
+
+
+def test_a_deployment_is_of_the_tool_that_wrote_the_plan() -> None:
+    deployment = AssuranceContext.model_validate(POST_DEPLOY).deployment
+    check_tool("terraform", deployment)
+    check_tool("another", None)  # type: ignore[arg-type]  # a tool no document can name
+    with pytest.raises(ValueError, match="written by the tool that wrote the plan"):
+        check_tool("another", deployment)  # type: ignore[arg-type]
+
+
+def test_a_deployment_read_from_a_log_names_the_log_as_the_source_of_its_times() -> None:
+    with pytest.raises(ValidationError, match="Input should be 'apply_log'"):
+        Apply.model_validate(_apply(timing={**TIMING, "source": "terraform_log"}))

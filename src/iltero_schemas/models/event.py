@@ -26,6 +26,7 @@ from iltero_schemas.compiler.limits import (
 )
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.ci_identity import CiProvider
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
 from iltero_schemas.models.scanners import ScannerTool
@@ -264,11 +265,16 @@ class Compiler(StrictModel):
         return self
 
 
+# Where an evaluation ran: on a person's machine (``local``), in a job of a CI system the tool could not
+# name (``ci``), or in a job of a named CI system.
+ExecutorProvider = Literal["local", "ci"] | CiProvider
+
+
 class Executor(StrictModel):
     """Who ran the evaluation: a person on a machine, or a pipeline workload."""
 
     type: Literal["human", "workload"]
-    provider: Identifier
+    provider: ExecutorProvider
     run_id: Identifier | None
 
 

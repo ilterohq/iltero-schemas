@@ -27,17 +27,17 @@ DOCUMENT: dict[str, Any] = {
 
 def test_a_document_of_bound_and_unresolved_resources_validates() -> None:
     bindings = IdentityBindings.model_validate(DOCUMENT)
-    addresses = [entry.terraform.address for entry in bindings.bindings]
+    addresses = [entry.iac.address for entry in bindings.bindings]
     assert addresses == ["aws_db_instance.payments", "aws_s3_bucket.logs"]
     assert bindings.unresolved[0].reason == "no_resolver"
-    assert bindings.sources.state.terraform_version == "1.14.0" and bindings.deposed_objects == 1
+    assert bindings.sources.state.tool_version == "1.14.0" and bindings.deposed_objects == 1
 
 
 def test_a_replacement_old_object_is_removed_while_its_new_one_is_bound() -> None:
     """One address in both halves: the list of what the state holds, and the list of what the apply removed."""
     document = IdentityBindings.model_validate(DOCUMENT)
     assert document.removed is not None
-    assert document.removed[0].terraform.address == document.bindings[0].terraform.address
+    assert document.removed[0].iac.address == document.bindings[0].iac.address
 
 
 def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> None:
@@ -64,18 +64,18 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d["bindings"].append(binding("aws_s3_bucket.logs", "s3_bucket")), "name each resource once"),
         (lambda d: d["unresolved"].insert(0, {"address": "zz.x", "reason": "no_resolver"}), "sorted by address"),
         (lambda d: d["unresolved"].append({"address": "aws_s3_bucket.logs", "reason": "no_resolver"}), "never both"),
-        (lambda d: d["bindings"][0]["terraform"].update(unit="network"), "belongs to the unit"),
+        (lambda d: d["bindings"][0]["iac"].update(unit="network"), "belongs to the unit"),
         (lambda d: d["bindings"][0]["cloud"].update(resource_type="kms_key"), "not the ARN of a kms_key"),
         (lambda d: d["bindings"][0]["cloud"]["primary"].update(value="x" * 2049), "at most 2048"),
         (lambda d: d["bindings"][0].update(authority="heuristic"), "Input should be 'authoritative'"),
-        (lambda d: d["resolver"].update(version="latest build"), "String should match pattern"),
+        (lambda d: d["resolvers"][0].update(version="latest build"), "String should match pattern"),
         (lambda d: d["generator"].update(name="terraform"), "Input should be 'iltero'"),
         (lambda d: d.pop("generator"), "Field required"),
-        (lambda d: d["resolver"].update(verified=["s3_bucket"]), "only a verified resource type is ever bound"),
-        (lambda d: d["resolver"].update(verified=[]), "only a verified resource type is ever bound"),
-        (lambda d: d["resolver"].update(verified=["s3_bucket", "rds_instance"]), "sorted and named once"),
-        (lambda d: d["resolver"].update(verified=["rds_instance", "rds_instance"]), "sorted and named once"),
-        (lambda d: d["bindings"][0].update(resolver={"name": "aws", "version": "1.0.0"}), "Extra inputs"),
+        (lambda d: d["resolvers"][0].update(verified=["s3_bucket"]), "only a resource type verified for its provider"),
+        (lambda d: d["resolvers"][0].update(verified=[]), "only a resource type verified for its provider"),
+        (lambda d: d["resolvers"][0].update(verified=["s3_bucket", "rds_instance"]), "sorted and named once"),
+        (lambda d: d["resolvers"][0].update(verified=["rds_instance", "rds_instance"]), "sorted and named once"),
+        (lambda d: d["bindings"][0].update(resolver={"provider": "aws", "version": "1.0.0"}), "Extra inputs"),
         (lambda d: d["unresolved"][0].update(reason="guessed"), "Input should be"),
         (lambda d: d["bindings"][0].update(state={"password": "x"}), "Extra inputs are not permitted"),
         (lambda d: d.update(unresolved=[{"address": "x", "reason": "no_resolver"}] * 100_001), "at most 100000"),
@@ -90,8 +90,13 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d.update(deposed_objects=100_001), "less than or equal to 100000"),
         (lambda d: d["removed"][0].update(fate="vanished"), "Input should be"),
         (lambda d: d["removed"][0].pop("fate"), "Field required"),
-        (lambda d: d["removed"][0]["terraform"].update(unit="network"), "belongs to the unit"),
+        (lambda d: d["removed"][0]["iac"].update(unit="network"), "belongs to the unit"),
         (lambda d: d["sources"]["state"].update(digest="sha256:abc"), "String should match pattern"),
+        (lambda d: d.update(resolvers=[]), "only a resource type verified for its provider"),
+        (lambda d: d["resolvers"].append(d["resolvers"][0]), "sorted by provider, one for each"),
+        (lambda d: d["bindings"][0]["cloud"].update(provider="gcp"), "'aws'"),
+        (lambda d: d["bindings"][0]["iac"].update(tool="pulumi"), "Input should be 'terraform'"),
+        (lambda d: d["sources"]["state"].pop("tool"), "Field required"),
     ],
     ids=[
         "unsorted",
@@ -121,6 +126,11 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         "no fate",
         "removed from another unit",
         "state digest",
+        "no resolver for a bound provider",
+        "a resolver twice",
+        "an unknown cloud provider",
+        "an unknown IaC tool",
+        "a state that names no tool",
     ],
 )
 def test_a_document_that_does_not_hold_together_is_refused(change: Any, message: str) -> None:

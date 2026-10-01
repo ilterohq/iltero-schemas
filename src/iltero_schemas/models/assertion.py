@@ -21,6 +21,8 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
+
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
 # customer one: upper-case segments joined by dots, at least two of them.
 ID_PATTERN = r"^[A-Z][A-Z0-9_]*(\.[A-Z][A-Z0-9_]*)+$"
@@ -131,17 +133,25 @@ class Metadata(_Strict):
 
 
 class ResourceTarget(_Strict):
-    """A state assertion's target: resources of the named types from one provider."""
+    """A state assertion's target: resources of the named types, from one provider, as one IaC tool names them.
+
+    Each IaC tool spells resource types its own way, so a type is checked
+    against the rule of the tool the target names.
+    """
 
     kind: Literal["resource"]
+    tool: IacTool
     provider: Annotated[str, Field(pattern=NAME_PATTERN, max_length=PROVIDER_MAX_LENGTH)]
     resource_types: Annotated[
-        list[Annotated[str, Field(pattern=NAME_PATTERN, max_length=RESOURCE_TYPE_MAX_LENGTH)]],
+        list[Annotated[str, Field(min_length=1, max_length=RESOURCE_TYPE_MAX_LENGTH)]],
         Field(min_length=1, max_length=RESOURCE_TYPES_MAX),
     ]
 
     @model_validator(mode="after")
-    def _unique(self) -> ResourceTarget:
+    def _types(self) -> ResourceTarget:
+        rule = re.compile(RESOURCE_TYPE_PATTERNS[self.tool])
+        if not all(rule.fullmatch(name) for name in self.resource_types):
+            raise ValueError(f"resource_types must be {self.tool} resource types")
         if len(set(self.resource_types)) != len(self.resource_types):
             raise ValueError("resource_types must not repeat a type")
         return self

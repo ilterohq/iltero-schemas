@@ -1,9 +1,11 @@
-"""The naming rules of Amazon Web Services (AWS), the first cloud provider the contract supports.
+"""Amazon Web Services (AWS), the first cloud provider the contract supports.
 
 AWS names each resource by an Amazon Resource Name (ARN). This module holds
-the rules an ARN must follow for each resource type a resolver may bind. Each
-cloud provider keeps its own rules in its own module, so another provider adds
-a module and changes none here.
+the rules an ARN must follow for each resource type a resolver may bind. It
+also holds the AWS variants of three shared shapes: the cloud side of an
+identity binding, the resolver that wrote it, and the artifact store of a run,
+which is an S3 bucket. Each cloud provider keeps its own rules and variants in
+its own module, so another provider adds a module and changes none here.
 """
 
 from __future__ import annotations
@@ -11,7 +13,13 @@ from __future__ import annotations
 import re
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Final, Literal
+from typing import Annotated, Final, Literal
+
+from pydantic import AfterValidator, Field, model_validator
+
+from iltero_schemas.models.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
+from iltero_schemas.models.base import StrictModel, sorted_unique
+from iltero_schemas.models.fields import NoToken, Timestamp
 
 # The scheme a cloud identifier is written in when it is an ARN.
 SCHEME_AWS_ARN: Final = "aws_arn"
@@ -53,3 +61,89 @@ def arn_matches(resource_type: AwsResourceType, arn: str) -> bool:
         return bool(_REGION.fullmatch(region) and _ACCOUNT.fullmatch(account))
     # S3 names neither a region nor an account; IAM is global but names its account.
     return region == "" and (account == "" if service == "s3" else bool(_ACCOUNT.fullmatch(account)))
+
+
+Arn = Annotated[str, Field(min_length=1, max_length=ARN_MAX_LENGTH)]
+
+
+class ArnIdentifier(StrictModel):
+    """A cloud resource's identifier, written as an ARN."""
+
+    scheme: Literal["aws_arn"]
+    value: Arn
+
+
+class AwsCloudSide(StrictModel):
+    """An AWS resource, by the one identifier AWS guarantees is unique: its ARN."""
+
+    provider: Literal["aws"]
+    resource_type: AwsResourceType
+    primary: ArnIdentifier
+
+    @model_validator(mode="after")
+    def _arn_is_of_the_type(self) -> AwsCloudSide:
+        if not arn_matches(self.resource_type, self.primary.value):
+            raise ValueError(f"primary is not the ARN of a {self.resource_type}")
+        return self
+
+
+class AwsResolver(StrictModel):
+    """The AWS resolver that bound resources: its version, and the resource types verified for it at the time.
+
+    Only a verified type is ever bound, so the list says which resources the
+    resolver could have bound at all. An empty list means it bound none by
+    design.
+    """
+
+    provider: Literal["aws"]
+    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
+    verified: list[AwsResourceType]
+
+    @model_validator(mode="after")
+    def _sorted_once(self) -> AwsResolver:
+        if not sorted_unique(self.verified):
+            raise ValueError("the verified types are sorted and named once")
+        return self
+
+
+# An S3 bucket, then one or more folder names, ending in "/". The bucket name has no dots. A folder
+# name never starts with a dot, so "." and ".." cannot appear. The prefix holds no query, fragment or space.
+ARTIFACT_PREFIX_PATTERN = r"^s3://[a-z0-9][a-z0-9-]{1,61}[a-z0-9]/([A-Za-z0-9_=-][A-Za-z0-9_.=-]*/)+$"
+# Leaves room under S3's 1,024-byte key limit for the 64 hex digits of an artifact's digest.
+ARTIFACT_PREFIX_MAX_LENGTH = 512
+# Bucket names S3 keeps for access points, directory buckets and other special kinds. None of them
+# is an ordinary bucket that can hold a locked object.
+RESERVED_BUCKET_PREFIXES = ("xn--", "sthree-", "amzn-s3-demo-")
+RESERVED_BUCKET_SUFFIXES = ("-s3alias", "--ol-s3", "--x-s3", "--table-s3")
+
+
+def _ordinary_bucket(value: str) -> str:
+    """``value`` when its bucket is an ordinary S3 bucket; raises ``ValueError`` otherwise."""
+    bucket = value.removeprefix("s3://").split("/", 1)[0]
+    if bucket.startswith(RESERVED_BUCKET_PREFIXES) or bucket.endswith(RESERVED_BUCKET_SUFFIXES):
+        raise ValueError("must name an ordinary S3 bucket")
+    return value
+
+
+ArtifactPrefix = Annotated[
+    str,
+    Field(pattern=ARTIFACT_PREFIX_PATTERN, max_length=ARTIFACT_PREFIX_MAX_LENGTH),
+    AfterValidator(_ordinary_bucket),
+    NoToken,
+]
+# A KMS key named by its id alone, so it is always a key in the account the pipeline runs in.
+KmsKeyId = Annotated[str, Field(pattern=rf"^{KMS_KEY_ID}$")]
+
+
+class S3ArtifactStore(StrictModel):
+    """A run's artifact store in an S3 bucket, whose objects S3 Object Lock keeps until a date."""
+
+    provider: Literal["aws"]
+    # Each artifact goes to this prefix followed by the lowercase hex sha256 of its bytes.
+    # The prefix's last folder is the run's id.
+    uri_prefix: ArtifactPrefix
+    retention_until: Timestamp
+    # The S3 Object Lock mode under which no one, not even the account's root user, can shorten the lock.
+    lock_mode: Literal["COMPLIANCE"]
+    # The key the bucket encrypts with. It is null when the bucket uses its default encryption.
+    kms_key_id: KmsKeyId | None

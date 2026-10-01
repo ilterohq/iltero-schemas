@@ -11,24 +11,30 @@ The document carries identifiers only. The state file they were read from
 never leaves the machine that read it, and an identifier must follow its
 type's naming rule exactly, so it cannot carry anything else.
 
-The current implementation binds Terraform resources to AWS resources. The
-AWS naming rules live in ``models.providers.aws``.
+Each side names its own kind. The configuration side names its IaC tool
+(``iac.tool``), and the cloud side names its provider (``cloud.provider``).
+A cloud provider's shape is one variant, chosen by that key. One unit may
+use several clouds, so the record lists one resolver per provider. The
+current implementation binds Terraform resources to AWS resources, by the
+rules in ``models.providers.aws``.
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.deployment import Fate, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
-from iltero_schemas.models.providers.aws import ARN_MAX_LENGTH, AwsResourceType, arn_matches
+from iltero_schemas.models.iac import IacTool
+from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
 
 API_VERSION = "iltero.io/identity-bindings/v1"
+# More cloud providers than one unit's configuration ever uses.
+MAX_RESOLVERS = 16
 # Why a resource was not bound. A resolver checks them in this order, and says the first that holds.
 UnresolvedReason = Literal[
     "no_resolver",
@@ -39,60 +45,24 @@ UnresolvedReason = Literal[
     "identifier_missing",
     "identifier_ambiguous",
 ]
-Arn = Annotated[str, Field(min_length=1, max_length=ARN_MAX_LENGTH)]
+# The resource in the cloud, by the one identifier its provider guarantees is unique. One variant per provider.
+CloudSide: TypeAlias = Annotated[AwsCloudSide, Field(discriminator="provider")]
+# The resolver of one cloud provider: its version, and the resource types verified for it at the time.
+Resolver: TypeAlias = Annotated[AwsResolver, Field(discriminator="provider")]
 
 
-class TerraformSide(StrictModel):
-    """The resource as the configuration names it, in the unit whose state it was read from."""
+class IacSide(StrictModel):
+    """The resource as the IaC tool's configuration names it, in the unit whose state it was read from."""
 
+    tool: IacTool
     unit: Identifier
     address: Address
 
 
-class CloudIdentifier(StrictModel):
-    """One identifier and the scheme it is written in."""
-
-    scheme: Literal["aws_arn"]
-    value: Arn
-
-
-class CloudSide(StrictModel):
-    """The resource in the cloud, by the one identifier the provider guarantees is unique."""
-
-    provider: Literal["aws"]
-    resource_type: AwsResourceType
-    primary: CloudIdentifier
-
-    @model_validator(mode="after")
-    def _arn_is_of_the_type(self) -> CloudSide:
-        if not arn_matches(self.resource_type, self.primary.value):
-            raise ValueError(f"primary is not the ARN of a {self.resource_type}")
-        return self
-
-
-class Resolver(StrictModel):
-    """The resolver that made a record: its version, and the resource types verified for it at the time.
-
-    Only a verified type is ever bound, so the list says which resources a
-    record could have bound at all; an empty list means every resource is
-    unresolved by design.
-    """
-
-    name: Literal["aws"]
-    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    verified: list[AwsResourceType]
-
-    @model_validator(mode="after")
-    def _sorted_once(self) -> Resolver:
-        if not sorted_unique(self.verified):
-            raise ValueError("the verified types are sorted and named once")
-        return self
-
-
 class IdentityBinding(StrictModel):
-    """One resource of the configuration and the cloud resource it created, as the record's resolver read them."""
+    """One resource of the configuration and the cloud resource it created, as its provider's resolver read them."""
 
-    terraform: TerraformSide
+    iac: IacSide
     cloud: CloudSide
     authority: Literal["authoritative"]
 
@@ -122,7 +92,7 @@ UnresolvedList = Annotated[list[Unresolved], Field(max_length=MAX_RESOURCES)]
 
 def _one_list_each(bindings: Sequence[IdentityBinding], unresolved: Sequence[Unresolved]) -> None:
     """Raise ``ValueError`` unless both lists are sorted by address and name each resource once between them."""
-    bound = [binding.terraform.address for binding in bindings]
+    bound = [binding.iac.address for binding in bindings]
     left = [entry.address for entry in unresolved]
     if not sorted_unique(bound) or not sorted_unique(left):
         raise ValueError("bindings and unresolved are sorted by address and name each resource once")
@@ -160,7 +130,8 @@ class IdentityRecord(StrictModel):
     """
 
     sources: IdentitySources
-    resolver: Resolver
+    # One resolver per cloud provider, sorted by provider. Each says which resource types it could bind.
+    resolvers: Annotated[list[Resolver], Field(max_length=MAX_RESOLVERS)]
     bindings: Bindings
     unresolved: UnresolvedList
     # These three are null when no applied plan was read: what left the state was not checked.
@@ -177,19 +148,24 @@ class IdentityRecord(StrictModel):
         if set(checked) != {self.sources.plan is not None}:
             raise ValueError("what left the state is listed exactly when the applied plan was read, and null otherwise")
         _one_list_each(self.removed or [], self.removed_unresolved or [])
-        types = set(self.resolver.verified)
-        if any(entry.cloud.resource_type not in types for entry in [*self.bindings, *(self.removed or [])]):
-            raise ValueError("only a verified resource type is ever bound")
+        if not sorted_unique([resolver.provider for resolver in self.resolvers]):
+            raise ValueError("the resolvers are sorted by provider, one for each")
+        verified = {(resolver.provider, kind) for resolver in self.resolvers for kind in resolver.verified}
+        bound = [*self.bindings, *(self.removed or [])]
+        if any((entry.cloud.provider, entry.cloud.resource_type) not in verified for entry in bound):
+            raise ValueError("only a resource type verified for its provider's resolver is ever bound")
+        if any(entry.iac.tool != self.sources.state.tool for entry in bound):
+            raise ValueError("every binding names the tool that wrote the state it was read from")
         return self
 
     def check_unit(self, unit: str) -> None:
         """Raise ``ValueError`` unless every binding belongs to ``unit``."""
-        if any(binding.terraform.unit != unit for binding in [*self.bindings, *(self.removed or [])]):
+        if any(binding.iac.unit != unit for binding in [*self.bindings, *(self.removed or [])]):
             raise ValueError("every binding belongs to the unit")
 
     def left_the_state(self) -> dict[str, Fate]:
         """Every address listed as having left the state, with how it left."""
-        return {entry.terraform.address: entry.fate for entry in self.removed or []} | {
+        return {entry.iac.address: entry.fate for entry in self.removed or []} | {
             entry.address: entry.fate for entry in self.removed_unresolved or []
         }
 

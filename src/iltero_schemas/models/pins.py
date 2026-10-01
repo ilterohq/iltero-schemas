@@ -3,14 +3,12 @@
 A run Iltero Compass opened carries pins: what Compass fixed when the run
 opened. A record of that run must agree with them. A record of a run the tool
 opened on its own has no pins, and must not claim anything only Compass can
-give: a Compass bundle, Compass as issuer, a verified issuer identity, facts
-from Compass, a CI context verified with a run's context key, or a CI job
-Compass verified.
+give: a Compass bundle, facts from Compass, a CI context verified with a
+run's context key, or a CI job Compass verified.
 
 Each stage of a pinned record names the CI job Compass verified for it. The
-stages of one run share its CI system, the ids of its repository and of the
-repository's owner, and its commit. Ids are compared rather than names,
-because a repository or its owner can be renamed while a run is in progress.
+stages of one run share its CI system, its token issuer, its source (for
+GitHub Actions, the ids of the repository and of its owner) and its commit.
 A pinned record names that commit as the one it is about. The service that
 opened the run may require more of its stages than these rules check.
 """
@@ -29,8 +27,8 @@ def check_pins(car: CAR) -> None:
     pinned = car.pins is not None
     if pinned != (car.run_id.basis == "server_issued"):
         raise ValueError("a record names the run's pins exactly when Iltero Compass issued the run")
-    if car.governance.managed_by_compass != pinned:
-        raise ValueError("a record is managed by Iltero Compass exactly when Iltero Compass issued the run")
+    if (car.governance.run_opened_by == "compass") != pinned:
+        raise ValueError("a record says Iltero Compass opened its run exactly when Iltero Compass issued the run")
     for stage, record in car.stages.items():
         if (record.coverage.assertions_expected.basis == "server_pinned") != pinned:
             raise ValueError(f"stages.{stage.value}: counts its checks as server_pinned exactly when pinned")
@@ -56,10 +54,6 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened names no Iltero Compass bundle")
     if any(p.assertion_source == "compass_bundle" for p in provenance):
         raise ValueError("a record of a run the tool opened has no checks from an Iltero Compass bundle")
-    if car.issuer.type == "compass":
-        raise ValueError("a record of a run the tool opened is not issued by Iltero Compass")
-    if car.issuer.identity_verified:
-        raise ValueError("a record of a run the tool opened has no verified issuer identity")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from Iltero Compass")
     if any(p.ci_context.basis == "context_key_mac" for p in provenance):
@@ -95,9 +89,9 @@ def _check_ci_identities(car: CAR) -> None:
         if record.ci_identity is None:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job Compass verified")
         identities.append(record.ci_identity)
-    shared = {(i.issuer, i.repository_id, i.repository_owner_id, i.commit) for i in identities}
+    shared = {(i.provider, i.issuer, i.source_key(), i.commit) for i in identities}
     if len(shared) > 1:
-        raise ValueError("the stages of one run share one CI system, repository id, owner id and commit")
+        raise ValueError("the stages of one run share one CI system, token issuer, source and commit")
     commit = car.subject.source.get("commit")
     sha = commit.get("sha") if isinstance(commit, dict) else None
     if not isinstance(sha, str):

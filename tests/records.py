@@ -61,7 +61,7 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
 
 def pinned(**changes: Any) -> dict[str, Any]:
     """The record as a run Compass opened would write it: pinned, governed, and run by verified CI jobs."""
-    document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.managed_by_compass": True})
+    document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.run_opened_by": "compass"})
     document["stages"]["plan"]["coverage"]["assertions_expected"]["basis"] = "server_pinned"
     document["stages"]["plan"]["ci_identity"] = copy.deepcopy(CI_IDENTITY)
     document["coverage"]["assertions_expected"]["basis"] = "server_pinned"

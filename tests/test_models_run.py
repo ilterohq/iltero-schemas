@@ -3,8 +3,8 @@
 The pins are one sorted set matching its digest. A token expires after it was
 issued. No response can carry an identity token, and no request body can either.
 A run keeps one artifact store, or none, from start to end. Its prefix ends
-with the run's id, its prefix and key never change, and its lock date never
-moves earlier.
+with the run's id, nothing about it but its lock date changes, and its lock
+date never moves earlier.
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ from iltero_schemas.canonical import required_assertion_digest
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS
 from iltero_schemas.models.fields import RunStage
+from iltero_schemas.models.providers.aws import S3ArtifactStore
 from iltero_schemas.models.run import (
     API_VERSION,
-    ArtifactStore,
     RunCloseResponse,
     RunOpenRequest,
     RunOpenResponse,
@@ -127,6 +127,19 @@ def _set(document: dict[str, Any], path: tuple[str | int, ...], value: Any) -> d
     return changed
 
 
+# Fields whose shape is chosen by their ``provider`` key. An error inside one names the provider after the field.
+_VARIANTS = ("ci_identity", "artifact_store")
+
+
+def _location(document: dict[str, Any], path: tuple[str | int, ...]) -> tuple[str | int, ...]:
+    """Where a validation error for the value at ``path`` is reported."""
+    if path[0] not in _VARIANTS:
+        return path
+    if path[1] == "provider":
+        return path[:1]
+    return (path[0], document[str(path[0])]["provider"], *path[1:])
+
+
 @pytest.mark.parametrize(
     ("model", "path"),
     [(RunOpenResponse, p) for p in _string_paths(OPEN)]
@@ -140,7 +153,8 @@ def test_no_response_string_can_carry_an_identity_token(
     document = {RunOpenResponse: OPEN, TokenRefreshResponse: REFRESH, RunCloseResponse: CLOSE}[model]
     with pytest.raises(ValidationError) as refused:
         model.model_validate(_set(document, path, JWT))
-    assert path in [error["loc"] for error in refused.value.errors()]  # the field's own shape refused it
+    # The field's own shape refused it.
+    assert _location(document, path) in [error["loc"] for error in refused.value.errors()]
 
 
 @pytest.mark.parametrize(
@@ -205,7 +219,7 @@ def test_a_token_expires_after_it_was_issued(model: type[RunOpenResponse], expir
 
 @pytest.mark.parametrize("key", ["mrk-" + "0123456789abcdef" * 2, "1234abcd-12ab-34cd-56ef-1234567890ab", None])
 def test_an_artifact_store_names_a_kms_key_by_its_id_or_none(key: str | None) -> None:
-    assert ArtifactStore.model_validate({**STORE, "kms_key_id": key}).kms_key_id == key
+    assert S3ArtifactStore.model_validate({**STORE, "kms_key_id": key}).kms_key_id == key
 
 
 @pytest.mark.parametrize(
@@ -219,13 +233,13 @@ def test_an_artifact_store_names_a_kms_key_by_its_id_or_none(key: str | None) ->
 )
 def test_an_artifact_store_refuses_anything_else_as_a_kms_key(key: str) -> None:
     with pytest.raises(ValidationError, match="String should match pattern"):
-        ArtifactStore.model_validate({**STORE, "kms_key_id": key})
+        S3ArtifactStore.model_validate({**STORE, "kms_key_id": key})
 
 
 def test_an_artifact_prefix_is_bounded() -> None:
     long_prefix = "s3://acme-iltero-evidence/" + "a" * 500 + "/"
     with pytest.raises(ValidationError, match="at most 512"):
-        ArtifactStore.model_validate({**STORE, "uri_prefix": long_prefix})
+        S3ArtifactStore.model_validate({**STORE, "uri_prefix": long_prefix})
 
 
 @pytest.mark.parametrize("model", [RunOpenResponse, TokenRefreshResponse], ids=["open", "refresh"])
@@ -237,7 +251,7 @@ def test_a_response_may_name_no_artifact_store(model: type[RunOpenResponse | Tok
 def test_the_artifact_prefix_may_not_hold_an_identity_token_in_a_folder() -> None:
     prefix = f"s3://acme-iltero-evidence/{JWT}/{OPEN['run_id']}/"
     with pytest.raises(ValidationError, match="must not contain a JSON Web Token"):
-        ArtifactStore.model_validate({**STORE, "uri_prefix": prefix})
+        S3ArtifactStore.model_validate({**STORE, "uri_prefix": prefix})
 
 
 def test_the_artifact_prefix_may_not_hold_the_context_key() -> None:
@@ -281,8 +295,8 @@ def test_a_refresh_is_not_issued_before_the_earlier_response() -> None:
 
 
 @pytest.mark.parametrize("claim", ["repository_id", "repository_owner_id"])
-def test_a_refresh_is_for_a_job_of_the_same_repository(claim: str) -> None:
-    with pytest.raises(ValueError, match="same repository and owner"):
+def test_a_refresh_is_for_a_job_of_the_same_source(claim: str) -> None:
+    with pytest.raises(ValueError, match="same CI system and the same source"):
         _continues(_refresh(ci_identity={**REFRESH["ci_identity"], claim: "42"}))
 
 
@@ -291,8 +305,8 @@ def test_a_refresh_is_for_a_job_of_the_same_repository(claim: str) -> None:
     [{"uri_prefix": f"s3://acme-iltero-evidence/other/{OPEN['run_id']}/"}, {"kms_key_id": "mrk-" + "0" * 32}],
     ids=["prefix", "key"],
 )
-def test_the_artifact_prefix_and_key_never_change_within_a_run(store: dict[str, str]) -> None:
-    with pytest.raises(ValueError, match="prefix and key never change"):
+def test_nothing_about_the_artifact_store_but_its_lock_date_changes_within_a_run(store: dict[str, str]) -> None:
+    with pytest.raises(ValueError, match="nothing about the artifact store but its lock date changes"):
         _continues(_refresh(store=store))
 
 
@@ -329,3 +343,9 @@ def test_each_unevaluated_check_names_its_own_record() -> None:
     shared = [first, {**second, "event_id": first["event_id"]}]
     with pytest.raises(ValidationError, match="names its own stored record"):
         RunCloseResponse.model_validate({**CLOSE, "not_evaluated": shared})
+
+
+def test_an_artifact_store_is_read_by_its_provider_and_an_unknown_one_is_refused() -> None:
+    with pytest.raises(ValidationError) as refused:
+        RunOpenResponse.model_validate({**OPEN, "artifact_store": {**STORE, "provider": "gcp"}})
+    assert [error["loc"] for error in refused.value.errors()] == [("artifact_store",)]

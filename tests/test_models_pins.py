@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest, required_assertion_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
-from tests.records import CI_IDENTITY, PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, stage
+from tests.records import CI_IDENTITY, PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, set_path, stage
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
 VERIFIED_CI = {"integrity": "verified", "basis": "context_key_mac"}
@@ -52,13 +52,11 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
     ("document", "message"),
     [
         (_with_event(record(), assertion_source="compass_bundle"), "no checks from an Iltero Compass bundle"),
-        (record(**{"issuer.identity_verified": True}), "no verified issuer identity"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by Iltero Compass"),
     ],
     ids=[
         "a check from a Compass bundle",
-        "a verified issuer identity",
         "a CI context verified with the key",
         "a CI job Compass verified",
     ],
@@ -132,10 +130,10 @@ def _pinned_to_fewer() -> dict[str, Any]:
         (_with_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
         (_with_bundle("compass", "sha256:" + "9" * 64), "the bundle the run was pinned to"),
         (_with_stage_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
-        (pinned(**{"governance.managed_by_compass": False}), "managed by Iltero Compass exactly when"),
+        (pinned(**{"governance.run_opened_by": "local"}), "says Iltero Compass opened its run exactly when"),
         (_pinned_to_fewer(), "an assertion the run was pinned to"),
         (pinned(**{"stages.plan.coverage.assertions_expected.value": 6}), "no more checks than"),
-        (record(**{"issuer.type": "compass"}), "not issued by Iltero Compass"),
+        (record(**{"governance.run_opened_by": "compass"}), "says Iltero Compass opened its run exactly when"),
     ],
     ids=[
         "pins on an offline run",
@@ -145,10 +143,10 @@ def _pinned_to_fewer() -> dict[str, Any]:
         "a local bundle",
         "another Compass bundle",
         "a stage that loaded another bundle",
-        "not managed by Compass",
+        "a Compass run said to be opened locally",
         "a check outside the pinned set",
         "more checks expected than pinned",
-        "Compass as issuer of an offline run",
+        "an offline run said to be opened by Compass",
     ],
 )
 def test_a_record_that_disagrees_with_its_pins_is_refused(document: dict[str, Any], message: str) -> None:
@@ -156,10 +154,18 @@ def test_a_record_that_disagrees_with_its_pins_is_refused(document: dict[str, An
         CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
 
 
-@pytest.mark.parametrize("issuer", ["local", "compass"])
-def test_a_pinned_record_may_name_either_issuer(issuer: str) -> None:
-    """The tool writes a governed record too, so a pinned record is not required to name Compass as its issuer."""
-    CAR.model_validate(pinned(**{"issuer.type": issuer}), context={DERIVED_CHECKED_BY_READER: True})
+@pytest.mark.parametrize("document", [record(), pinned()], ids=["offline", "pinned"])
+@pytest.mark.parametrize(
+    ("field", "value"), [("issuer.type", "compass"), ("issuer.identity_verified", True)], ids=["compass", "verified"]
+)
+def test_no_record_names_compass_as_its_issuer_or_a_verified_issuer(
+    document: dict[str, Any], field: str, value: object
+) -> None:
+    """A record carries no signature, so whoever opened its run, it can only be the tool's own unverified claim."""
+    changed = copy.deepcopy(document)
+    set_path(changed, field, value)
+    with pytest.raises(ValidationError, match="issuer"):
+        CAR.model_validate(changed, context={DERIVED_CHECKED_BY_READER: True})
 
 
 @pytest.mark.parametrize(
@@ -205,8 +211,8 @@ def test_every_stage_of_a_pinned_record_names_its_verified_ci_job() -> None:
         ("commit", "0" * 40),
     ],
 )
-def test_the_stages_of_one_run_share_its_ci_system_repository_owner_and_commit(field: str, value: str) -> None:
-    with pytest.raises(ValidationError, match="share one CI system, repository id, owner id and commit"):
+def test_the_stages_of_one_run_share_its_ci_system_source_and_commit(field: str, value: str) -> None:
+    with pytest.raises(ValidationError, match="share one CI system, token issuer, source and commit"):
         CAR.model_validate(_with_second_stage(**{field: value}), context=_READER)
 
 

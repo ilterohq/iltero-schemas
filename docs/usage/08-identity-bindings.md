@@ -1,9 +1,11 @@
-# Which cloud resource a Terraform resource is
+# Which cloud resource an address became
 
-A Terraform address such as `aws_db_instance.payments` names a resource in a
-configuration. It is not the database in the cloud. Two different databases
-can have the same address one after the other, when Terraform replaces one.
-One database can also change address, when someone moves it in the code.
+An infrastructure-as-code (IaC) tool, such as Terraform, plans and applies
+changes to cloud resources. It names each resource of its configuration by
+an address, such as `aws_db_instance.payments`. The address is not the
+database in the cloud. Two different databases can have the same address one
+after the other, when the tool replaces one. One database can also change
+address, when someone moves it in the code.
 
 A check that runs against the cloud later, such as a scanner reading the live
 account, needs to be tied back to the plan that was approved. That only works
@@ -27,21 +29,24 @@ implementation binds Terraform resources to AWS resources.
 
 | Part | What it says |
 | --- | --- |
-| `terraform` | The `unit` whose state the binding was read from, and the resource's `address` there |
-| `cloud` | The `provider` (`aws`), the `resource_type`, and the `primary` identifier. The identifier gives its `scheme` (`aws_arn`) and its `value`, the resource's Amazon Resource Name (ARN). An ARN is the one name AWS guarantees is unique |
+| `iac` | The IaC `tool` that wrote the state (`terraform`), the `unit` whose state the binding was read from, and the resource's `address` there. The `tool` is always the tool the state names |
+| `cloud` | The resource in the cloud. Its `provider` says which cloud it is in, and each provider has its own shape. For `aws`, the only provider so far, it holds the `resource_type` and the `primary` identifier. The identifier gives its `scheme` (`aws_arn`) and its `value`, the resource's Amazon Resource Name (ARN). An ARN is the one name AWS guarantees is unique |
 | `authority` | Always `authoritative`. The tool read the identifier exactly from the state or applied plan the pipeline supplied. It never inferred it |
 
-### The resolver
+### The resolvers
 
-The **resolver** is the part of the tool that reads identifiers for one
-cloud provider. The document names its resolver once, with its `name`, its
-`version` and the resource types `verified` for it when the document was
-made.
+A **resolver** is the part of the tool that reads identifiers for one cloud
+provider. One unit may use several clouds, so the document lists its
+resolvers in `resolvers`. It has one entry for each provider, sorted by
+provider, and at most 16. Each entry names its `provider`, its `version`
+and the resource types `verified` for it when the document was made.
 
-A resource type becomes verified only when real output from Terraform and
-from a cloud-side tool has shown that both give the same identity. The
-resolver binds only a verified type. So an empty `verified` list means every
-resource is unresolved by design, and the document says so itself.
+A resource type becomes verified only when real output from the IaC tool
+and from a cloud-side tool has shown that both give the same identity. A
+resolver binds only a verified type. So the document refuses a binding
+unless its provider's resolver lists its type as verified. An empty
+`verified` list means that resolver bound nothing by design, and the
+document says so itself.
 
 This package does not decide which types are verified. Each tool's resolver
 does, and each document lists its own `verified` types. So whether anything
@@ -52,9 +57,8 @@ instances.
 ### Which resource types can be bound
 
 This version of the package can bind five resource types. Their names are
-the package's own, not Terraform's, so that another IaC (infrastructure as
-code) tool can use them too. A resolver maps each Terraform type to one of
-them:
+the package's own, not Terraform's, so that another IaC tool can use them
+too. A resolver maps each Terraform type to one of them:
 
 | Type in the document | Terraform type (AWS provider) |
 | --- | --- |
@@ -102,8 +106,8 @@ did not leave it. One example is a resource whose create failed.
 
 `sources` says what the tool read the identities from.
 
-- `state` gives the digest of the state's bytes, and the Terraform version
-  that wrote it.
+- `state` gives the digest of the state's bytes, the IaC tool that wrote it
+  (`tool`) and that tool's version (`tool_version`).
 - `plan` gives the applied plan's digest and the rule it was computed by.
 
 When no applied plan was given, `plan`, `removed`, `removed_unresolved` and
@@ -194,4 +198,7 @@ and the identifier, and it refuses any other key.
 | On this page | In the package (`iltero_schemas`) |
 | --- | --- |
 | The document | `models.identity.IdentityBindings` |
+| One binding, and its two sides | `models.identity.IdentityBinding`, `IacSide`, `CloudSide` (a union keyed by `provider`) |
+| A resolver | `models.identity.Resolver` (a union keyed by `provider`) |
+| The AWS variants | `models.providers.aws` (`AwsCloudSide`, `ArnIdentifier`, `AwsResolver`) |
 | The AWS resource types and ARN rules | `models.providers.aws` (`AwsResourceType`, `arn_matches`) |

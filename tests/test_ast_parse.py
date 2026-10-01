@@ -34,7 +34,7 @@ from iltero_schemas.ast.parse import (
 from iltero_schemas.canonical import INT_MAX
 from iltero_schemas.models.assertion import Stage, TargetKind
 
-RESOURCE = {"kind": "resource", "provider": "aws", "resource_types": ["aws_db_instance"]}
+RESOURCE = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}
 
 
 def _document(
@@ -82,11 +82,16 @@ def test_combinators_and_exists_without_where() -> None:
 
 
 def test_type_is_derived_and_resource_types_are_sorted() -> None:
-    target = {"kind": "resource", "provider": "aws", "resource_types": ["b", "a"]}
+    target = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["b", "a"]}
     ast = parse_document(_document({"path": "resource.x", "equal": 1}, target=target))
     assert ast.type.value == "state"
     assert ast.target.resource_types == ("a", "b")
-    assert to_json(ast)["target"] == {"kind": "resource", "provider": "aws", "resource_types": ["a", "b"]}
+    assert to_json(ast)["target"] == {
+        "kind": "resource",
+        "tool": "terraform",
+        "provider": "aws",
+        "resource_types": ["a", "b"],
+    }
 
 
 def test_process_target_has_no_provider_in_the_ast() -> None:
@@ -281,7 +286,7 @@ def test_parse_reads_yaml_text_and_reports_document_errors() -> None:
     ast = parse(
         "apiVersion: iltero.io/v1\nkind: TechnicalAssertion\n"
         "metadata: {id: A.B, version: '1.0.0', title: t}\n"
-        "spec:\n  stage: plan\n  target: {kind: resource, provider: aws, resource_types: [x]}\n"
+        "spec:\n  stage: plan\n  target: {kind: resource, tool: terraform, provider: aws, resource_types: [x]}\n"
         "  assert: {path: resource.x, equal: 1}\n"
     )
     assert ast.id == "A.B"

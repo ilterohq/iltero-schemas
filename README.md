@@ -13,8 +13,8 @@ can be checked with it.
 ## What is in the package
 
 - **Record shapes.** The package defines each document Iltero writes, such
-  as an assurance event (the result of one check) and a Compliance Assurance
-  Record (everything checked for one deployment).
+  as an assurance event (the result of one check) and a Change Assurance
+  Record (everything checked for one infrastructure change).
 - **Fingerprints.** The package turns a document into the same bytes on
   every machine. It then takes a SHA-256 digest (a fingerprint) of them.
 - **Assertions and their compiler.** An assertion is a compliance rule
@@ -29,7 +29,7 @@ can be checked with it.
 ## Documentation
 
 Start with [the documentation index](docs/README.md). It lists one page per
-concept, in reading order.
+concept, in reading order. [The glossary](GLOSSARY.md) defines the terms.
 
 ## For developers
 

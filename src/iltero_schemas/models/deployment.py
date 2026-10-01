@@ -6,7 +6,9 @@ with the operations it needed and what happened to them; the counts and the
 times the IaC tool reported must agree with that list, so a document that
 tells two stories about one apply is refused.
 
-The current implementation reads Terraform's apply log and state.
+The apply log and the state each name the infrastructure-as-code (IaC) tool
+that wrote them, and both must name the same one. The current implementation
+reads Terraform's apply log and state.
 """
 
 from __future__ import annotations
@@ -28,6 +30,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     check_artifact_digest,
 )
+from iltero_schemas.models.iac import IacTool
 
 # What Terraform runs on a resource. A replacement needs a create, and a delete unless it only forgets its old object.
 Operation = Literal["create", "update", "delete"]
@@ -50,7 +53,7 @@ DeposedKey = Annotated[str, Field(pattern=DEPOSED_KEY_PATTERN)]
 
 
 class AppliedPlan(StrictModel):
-    """The plan the pipeline says it gave Terraform to apply, by the fingerprints the plan stage recorded."""
+    """The plan the pipeline says it gave the IaC tool to apply, by the fingerprints the plan stage recorded."""
 
     digest: Digest
     digest_version: Identifier
@@ -64,7 +67,7 @@ class AppliedPlan(StrictModel):
 
 
 class ApplySummary(StrictModel):
-    """The counts Terraform reported when the apply ran to its end."""
+    """The counts the IaC tool reported when the apply ran to its end."""
 
     added: Annotated[int, Field(ge=0)]
     changed: Annotated[int, Field(ge=0)]
@@ -107,7 +110,7 @@ class AppliedChange(StrictModel):
     outcome: ChangeOutcome | Unsettled
     # The address the resource had before a rename in this change.
     moved_from: Address | None
-    # Whether this change brought an existing cloud resource under Terraform's management.
+    # Whether this change brought an existing cloud resource under the IaC tool's management.
     imported: bool
     # The key of the deposed object this change deletes; null for a change to the resource's current object.
     deposed: DeposedKey | None
@@ -182,7 +185,7 @@ class AppliedChange(StrictModel):
 
     @property
     def left_the_state(self) -> bool:
-        """Whether the object at this address left Terraform's state: deleted, replaced, or forgotten.
+        """Whether the object at this address left the state: deleted, replaced, or forgotten.
 
         A delete that completed counts even when the rest of the change did not:
         the old object is gone although its replacement never came. A
@@ -213,7 +216,7 @@ class ApplyTiming(StrictModel):
 
     started_at: Timestamp
     ended_at: Timestamp
-    source: Literal["terraform_log"]
+    source: Literal["apply_log"]
     # The runner's clock wrote it; nothing corroborates it.
     trust: Literal["asserted"]
 
@@ -225,24 +228,35 @@ class ApplyTiming(StrictModel):
 
 
 class ApplySource(StrictModel):
-    """The apply log the changes were read from: the digest of its bytes, the Terraform that wrote it,
+    """The apply log the changes were read from: the digest of its bytes, the tool that wrote it,
     and the lines it could not read."""
 
     digest: Digest
-    terraform_version: Identifier
-    # Lines that are not JSON and carry no mark of Terraform: output the pipeline mixed in. Nothing was lost.
+    tool: IacTool
+    tool_version: Identifier
+    # Lines that are not JSON and carry no mark of the tool: output the pipeline mixed in. Nothing was lost.
     noise_lines: Count
-    # Lines that are not JSON but carry Terraform's mark: a message of Terraform's own was lost or damaged.
+    # Lines that are not JSON but carry the tool's mark: a message of the tool's own was lost or damaged.
     damaged_lines: Count
     # Operations the log shows starting and never ending: the log stopped, or their end was lost.
     interrupted_operations: Count
 
 
 class StateSource(StrictModel):
-    """A state file: the digest of its bytes and the Terraform that wrote it (none when it holds nothing)."""
+    """A state file: the digest of its bytes and the tool that wrote it.
+
+    The tool's version is null when the state holds nothing.
+    """
 
     digest: Digest
-    terraform_version: Identifier | None
+    tool: IacTool
+    tool_version: Identifier | None
+
+
+def check_one_tool(log: ApplySource, state: StateSource) -> None:
+    """Raise ``ValueError`` unless the apply log and the state were written by the same tool."""
+    if log.tool != state.tool:
+        raise ValueError("the apply log and the state were written by the same tool")
 
 
 class Apply(StrictModel):
@@ -256,7 +270,7 @@ class Apply(StrictModel):
     # where the log lost messages, the state's word where it settles a change (each change says which).
     basis: Literal["log_held_to_plan_and_state_presence", "log_and_state_where_log_incomplete"]
     changes: Annotated[list[AppliedChange], Field(max_length=MAX_RESOURCES)]
-    # Null when Terraform stopped before reporting one: the apply did not run to its end. Unsettled when the
+    # Null when the tool stopped before reporting one: the apply did not run to its end. Unsettled when the
     # log lost messages and has none: it may have been one of them.
     summary: ApplySummary | Unsettled | None
     # Null exactly when no operation ran.
@@ -264,6 +278,7 @@ class Apply(StrictModel):
 
     @model_validator(mode="after")
     def _one_story(self) -> Apply:
+        check_one_tool(self.source, self.state)
         changes = self.changes
         # The current object sorts before the deposed objects at its address. An address holds no control
         # character, so joining with NUL keeps the order of the addresses themselves.
@@ -304,7 +319,7 @@ class Apply(StrictModel):
         objects therefore lies between the current objects' deletes and those plus every deposed delete.
         """
         if any(not isinstance(c.outcome, str) or c.outcome in ("errored", "not_attempted") for c in self.changes):
-            raise ValueError("Terraform reports its counts only when every change was made")
+            raise ValueError("the tool reports its counts only when every change was made")
         applied = [change for change in self.changes if change.outcome == "applied" and change.deposed is None]
         expected = {
             "added": sum("create" in change.required for change in applied),
@@ -341,3 +356,9 @@ def check_superseded(evaluated: str, deployment: Deployment | None) -> None:
     """Raise ``ValueError`` when the deployment names a re-plan but applied the evaluated plan itself."""
     if deployment is not None and deployment.superseded_by is not None and deployment.plan.digest == evaluated:
         raise ValueError("a re-plan is a plan other than the evaluated one")
+
+
+def check_tool(tool: IacTool, deployment: Deployment | None) -> None:
+    """Raise ``ValueError`` when the deployment was read from output of a tool other than the plan's."""
+    if deployment is not None and deployment.apply.source.tool != tool:
+        raise ValueError("the deployment was written by the tool that wrote the plan")

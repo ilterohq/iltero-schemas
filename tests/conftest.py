@@ -14,7 +14,7 @@ import os
 import platform
 import shutil
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 
 import pytest
 
@@ -48,7 +48,7 @@ ARNS: dict[str, str] = {
 def binding(address: str, resource_type: str = "rds_instance", unit: str = "root") -> dict[str, Any]:
     """An identity binding of ``address`` to the stand-in ARN of ``resource_type``."""
     return {
-        "terraform": {"unit": unit, "address": address},
+        "iac": {"tool": "terraform", "unit": unit, "address": address},
         "cloud": {
             "provider": "aws",
             "resource_type": resource_type,
@@ -89,10 +89,10 @@ def identity_record(**fields: Any) -> dict[str, Any]:
     """An identity record of one state and applied plan, with nothing listed unless ``fields`` says so."""
     record: dict[str, Any] = {
         "sources": {
-            "state": {"digest": STATE_DIGEST, "terraform_version": "1.14.0"},
+            "state": {"digest": STATE_DIGEST, "tool": "terraform", "tool_version": "1.14.0"},
             "plan": {"digest": PLAN_DIGEST, "digest_version": "1"},
         },
-        "resolver": {"name": "aws", "version": "1.0.0", "verified": sorted(ARNS)},
+        "resolvers": [{"provider": "aws", "version": "1.0.0", "verified": sorted(ARNS)}],
         "bindings": [],
         "unresolved": [],
         "removed": [],
@@ -125,3 +125,10 @@ def change(address: str, action: str, required: list[str], outcome: str, **field
         "deposed": None,
         **fields,
     }
+
+
+def variant_providers(alias: Any) -> set[str]:
+    """The ``provider`` value of every variant a provider-keyed type alias accepts."""
+    (chosen, *_) = get_args(alias)
+    variants = get_args(chosen) or (chosen,)
+    return {value for variant in variants for value in get_args(variant.model_fields["provider"].annotation)}

@@ -1,0 +1,49 @@
+{
+  "apiVersion": "iltero.io/verification-report/v1",
+  "record": {
+    "uuid": "5d2c7a1e-8b4f-4c3d-9e6a-1f0b2c3d4e5f",
+    "digest": "sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+  },
+  "verifier": {
+    "name": "iltero",
+    "version": "0.1.0"
+  },
+  "properties": {
+    "integrity": {
+      "state": "client_asserted",
+      "basis": "digest_linkage"
+    },
+    "source_identity": {
+      "state": "not_performed",
+      "basis": "run_opened_locally"
+    },
+    "approval_identity": {
+      "state": "not_assessed",
+      "basis": "pre_deploy_not_in_scope"
+    },
+    "bundle_provenance": {
+      "state": "not_performed",
+      "basis": "local_assertions"
+    },
+    "stage_completeness": {
+      "state": "failed",
+      "basis": "stages_pending"
+    },
+    "plan_apply_match": {
+      "state": "not_performed",
+      "basis": "no_post_deploy_stage"
+    },
+    "runtime_verification": {
+      "state": "not_performed",
+      "basis": "no_post_verify_stage"
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "basis": null
+    },
+    "exceptions": {
+      "state": "not_assessed",
+      "basis": "pre_deploy_not_in_scope"
+    }
+  }
+}

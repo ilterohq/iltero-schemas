@@ -1,10 +1,25 @@
 # The record
 
-A **Compliance Assurance Record** (CAR) says what was checked, against
-what, and with which result. One record covers one unit of one run. A unit
-is the part of a project that is planned and applied as one. The record is
-the document a tool hands on: to an auditor, to a colleague, or to Iltero
-Compass. This package defines its shape.
+A **Change Assurance Record** (CAR) is the record of one infrastructure
+change. It can hold the checks, the approvals, what the deployment did, and
+checks made after deployment. Each part says where it came from. It names no
+regulatory framework. A view for a framework is built from records, outside
+them.
+
+A CAR records technical and process assurance facts. It does not, by itself,
+establish certification or compliance with a regulatory framework. In plain
+words, a record says what was checked and how. On its own, it does not show
+that anything is certified or complies with a regulation or standard.
+
+One record covers one unit of one run. A unit is the part of a project that
+is planned and applied as one. A record describes one attempted change,
+whatever its outcome. The change may have been deployed, failed, been
+stopped, been refused before deployment, or had a plan that changes nothing.
+So a record is not a certificate of success. It exists even when a check
+fails.
+
+The record is the document a tool hands on: to an auditor, to a colleague,
+or to Iltero Compass. This package defines its shape.
 
 Anyone may receive a record, including a verifier on someone else's machine.
 So the package accepts exactly the fields below and nothing else. A reader
@@ -14,6 +29,7 @@ it knows.
 ## On this page
 
 - [What a record holds](#what-a-record-holds)
+- [How far a record can be trusted](#how-far-a-record-can-be-trusted)
 - [Every path stays inside the record](#every-path-stays-inside-the-record)
 - [Several stages, one record](#several-stages-one-record)
 - [The record checks itself](#the-record-checks-itself)
@@ -26,25 +42,28 @@ it knows.
 | --- | --- |
 | `uuid`, `run_id`, `unit` | Which record this is, which run it belongs to, and which unit it covers. `run_id` also says whether the run's id was derived locally or issued by a server. |
 | `pins` | For a run Iltero Compass opened, what Compass fixed when the run opened: the bundle, the checks owed, the environment policy's digest, whether a failed check stops the pipeline (`gate_mode`), and the oldest tool version allowed. See [governed runs](09-governed-runs.md#the-pins). It is `null` for a run the tool opened on its own. |
-| `assurance_level`, `issuer`, `governance` | That this record is self-attested (only its writer vouches for it), who wrote it, and whether Iltero Compass manages the run. `governance.managed_by_compass` is true exactly when the record has `pins`. Only a record with `pins` may name Iltero Compass as its `issuer`. |
+| `trust_level` | How far a reader can trust the record. It is always `self_attested`. See [how far a record can be trusted](#how-far-a-record-can-be-trusted). |
+| `compliance_determination` | Always `null`. A record never decides whether something complies with a framework. |
+| `issuer` | Who wrote the record. `type` is always `local`, the tool on the machine it ran on. `identity_verified` is always `false`, because nothing signs the record. |
+| `governance` | Who opened the run. `run_opened_by` is `compass` exactly when the record has `pins`, and `local` otherwise. |
 | `subject` | What the record is about: the environment, the unit and the commit. |
 | `change` | Every unit of the change with its plan digest, sorted by unit name, with no unit twice and the record's own unit among them. It also holds the change's `digest` once that is known. A record with a pre-deploy stage always names it (see [the two digests](09-governed-runs.md#the-two-digests)). |
-| `plan` | The plan's fingerprints and what Terraform said about it (see [the plan's fingerprints](03-compiler-and-evaluation.md#the-plans-fingerprints)). It also holds `context_digest`, the fingerprint of the plan as the tool kept it after hiding sensitive values. |
+| `plan` | The plan's fingerprints and what the infrastructure-as-code (IaC) tool said about it (see [the plan's fingerprints](03-compiler-and-evaluation.md#the-plans-fingerprints)). It names the IaC tool that wrote the plan (`tool`, such as `terraform`) and that tool's version (`tool_version`). The tool the plan names is the tool the whole record is about. It also holds `context_digest`, the fingerprint of the plan as the tool kept it after hiding sensitive values. |
 | `stages` | One entry per stage (see below). |
 | `events` | One event per check. See [what is recorded with a verdict](04-events.md). |
 | `coverage` | The stages' coverage combined (see [several stages, one record](#several-stages-one-record)). It holds the resources in scope and how they were counted, the assertions expected and where that set came from, how many of each were evaluated, the counts per status, and the gaps. When there are several stages, each gap names its stage. |
 | `verdict`, `assurance_status`, `complete` | The verdict and the exit code it produced. Whether the evaluation finished. Whether every expected stage has reported. |
 | `expected_stages`, `not_in_scope` | Which stages the record expects, and each stage it leaves out with the reason (see below). |
 | `deployment` | What the apply did, in the same shape as the [post-deploy input](03-compiler-and-evaluation.md#what-goes-in). It is `null` until the post-deploy stage has reported. |
-| `identity` | Which cloud resource each Terraform resource of the unit is, and which objects left the state in the apply and how. Each is bound, or listed with the reason it could not be. It also names the state and plan they were read from. See [identity bindings](08-identity-bindings.md). It is present exactly when `deployment` is. |
+| `identity` | Which cloud resource each resource of the unit's configuration is, and which objects left the state in the apply and how. Each is bound, or listed with the reason it could not be. It also names the state and plan they were read from. See [identity bindings](08-identity-bindings.md). It is present exactly when `deployment` is. |
 | `evidence_refs` | The record's **evidence register**: every file the record cites. Each entry gives the file's id (`ref_id`), its type (`media_type`), its digest, its size and where it sits. |
 | `integrity`, `retention_*` | How the record is bound together (by digests, with no signature), and that no server assigned it a retention period. |
 
 Each entry of `stages` says:
 
 - what ran the stage, under which limits, and what it hid;
-- the CI job Iltero Compass verified for it (`ci_identity`), or `null` for a
-  run the tool opened on its own;
+- the CI job Iltero Compass said it verified (`ci_identity`), copied into the
+  record without a signature, or `null` for a run the tool opened on its own;
 - the files it wrote: its events, and the index of the assertions it
   compiled;
 - its own `coverage`, `verdict` and `assurance_status`.
@@ -60,6 +79,37 @@ A record names a reason for each stage it leaves out (`not_in_scope`):
   names the file that says so (`declared_in`) by its path and digest. A
   project can leave out only the pre-deploy approval gate.
 - `not_supported`: the tool that wrote the record cannot run that stage.
+
+## How far a record can be trusted
+
+A record's `trust_level` says how far its facts were established. The
+contract lists five levels, from the weakest to the strongest:
+
+| Level | What it means |
+| --- | --- |
+| `self_attested` | The tool that wrote the record is its only source. |
+| `source_authenticated` | A service other than the writer confirmed where the record came from. It confirmed the repository, the CI system, and the people and jobs named in it. |
+| `compass_governed` | Iltero Compass checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
+| `assessor_reviewed` | A named external assessor reviewed the record. |
+| `authority_accepted` | A named authority accepted the record for a stated purpose. |
+
+Every level above `self_attested` needs a signature from whoever vouches
+for it. This version of the record cannot carry a signature. So the package
+accepts only `self_attested` and refuses every other level. The other four
+are listed so that a reader can see the whole scale.
+
+For the same reason, a record always names the local tool as its issuer.
+Without a signature, nobody can prove who wrote a record. So a record never
+says its issuer's identity was verified. This holds even for a record of a run
+Iltero Compass opened.
+
+A record also never decides compliance. Its `compliance_determination` is
+always `null`. A view of a framework, such as which controls a change meets,
+is built from records, outside them.
+
+A check of a record's properties, such as whether its sources were
+authenticated, is not written into the record. It goes into a separate
+[verification report](14-verification-reports.md).
 
 ## Every path stays inside the record
 
@@ -160,6 +210,8 @@ When the package reads a record, it checks that the record is consistent.
   in stage order;
 - each assertion is evaluated by one stage only;
 - every event names the plan the record evaluated;
+- the deployment was read from output of the same IaC tool that wrote the
+  plan;
 - every event names the record's own run, how that run was opened
   (`run_id.basis`), and the record's unit.
 
@@ -168,9 +220,14 @@ one event per check. Its status counts are its events' statuses. Its
 verdict and status are the ones its counts give. The change's `digest` is
 the digest of its units. The record's top level is its stages combined.
 
+**No record claims more trust than it can carry.** Its `trust_level` is
+`self_attested`. Its issuer is the local tool, and that identity is not
+verified. These rules hold whoever opened the run, so no record names
+Iltero Compass as its issuer.
+
 **A record with `pins` agrees with them.**
 
-- It says it is managed by Iltero Compass.
+- It says Iltero Compass opened its run (`governance.run_opened_by: compass`).
 - Its environment is the pinned one.
 - Every stage says its expected checks came from the pins
   (`server_pinned`). The stages together expect no more checks than were
@@ -181,17 +238,18 @@ the digest of its units. The record's top level is its stages combined.
 - Every check is of a pinned assertion.
 - No pre-deploy check read its facts from a local file.
 - It names the commit it is about (`subject.source.commit.sha`).
-- Every stage names the CI job Iltero Compass verified for it
-  (`ci_identity`). All its stages share one CI system, repository id, owner
-  id and commit, and that commit is the one the record is about.
+- Every stage names the CI job that Iltero Compass said it verified
+  (`ci_identity`). All its stages share the same CI system, the same token
+  issuer, the same repository and the same commit. GitHub Actions
+  identifies the repository by its id and its owner's id. That commit is
+  the one the record is about.
 
 **A record without pins claims nothing only Iltero Compass can give.**
 
-- It is not managed by Iltero Compass. It says the tool chose its expected
+- It says the tool opened its run on its own
+  (`governance.run_opened_by: local`). It says the tool chose its expected
   checks itself (`locally_derived`).
 - It names no Iltero Compass bundle and no check from one.
-- It does not name Iltero Compass as its issuer, and its issuer's identity
-  is not verified.
 - It has no facts from Iltero Compass (`facts_source: server`).
 - It has no CI context file checked with a run's context key, and no CI
   job verified by Iltero Compass. (The context key is a secret Compass hands
@@ -255,6 +313,8 @@ or verdict.
 | On this page | In the package (`iltero_schemas`) |
 | --- | --- |
 | A record | `models.car.CAR` |
+| The trust levels, and the only one a record may claim | `models.car.TrustLevel`, `models.car.UNSIGNED_TRUST_LEVEL` |
+| The deployment's tool matches the plan's | `models.deployment.check_tool` |
 | A stage's verdict from its counts | `models.coverage.stage_outcome` |
 | The exit-code order | `models.coverage.VERDICT_PRECEDENCE` |
 | Combining the stages | `models.coverage.combine` |

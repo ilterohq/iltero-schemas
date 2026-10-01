@@ -1,6 +1,7 @@
 {
   "apiVersion": "iltero.io/car/v1",
-  "assurance_level": "self_attested",
+  "trust_level": "self_attested",
+  "compliance_determination": null,
   "assurance_status": {
     "value": "complete",
     "reason": null,
@@ -148,7 +149,7 @@
         "id": "aws_db_instance.payments",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "scope": {
               "unit": "root"
             },
@@ -248,7 +249,7 @@
         "id": "aws_db_instance.payments",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "scope": {
               "unit": "root"
             },
@@ -387,7 +388,7 @@
         "id": "aws_db_instance.payments",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "scope": {
               "unit": "root"
             },
@@ -487,7 +488,7 @@
         "id": "aws_db_instance.payments",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "scope": {
               "unit": "root"
             },
@@ -591,7 +592,7 @@
         "id": "aws_s3_bucket.logs",
         "identities": [
           {
-            "scheme": "terraform_resource",
+            "scheme": "terraform_address",
             "scope": {
               "unit": "root"
             },
@@ -1015,7 +1016,7 @@
   ],
   "expires_at": null,
   "governance": {
-    "managed_by_compass": false
+    "run_opened_by": "local"
   },
   "deployment": null,
   "identity": null,
@@ -1035,8 +1036,9 @@
     "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
     "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
     "digest_version": "1",
+    "tool": "terraform",
     "format_version": "1.2",
-    "terraform_version": "1.14.0"
+    "tool_version": "1.14.0"
   },
   "retention_basis": "no_server_scope",
   "retention_class": null,

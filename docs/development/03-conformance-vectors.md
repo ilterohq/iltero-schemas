@@ -29,6 +29,7 @@ code, and the script also checks that they are still current.
 | `evaluation/` | `cases.json` gives an assertion, an input, and what OPA must return: the status, the reason, the unknown value and, for some, the observations. `facts_unknown.json` runs the approval and exception assertions over `contexts/pre_deploy_change.json`. They give `unknown` with the facts markers, and `fail` with empty lists | By hand |
 | `contexts/` | One complete assurance context per profile, and `digests.json` with the `input_digest` of each. `plan_resource.json` is a production RDS change at the `plan` stage. `pre_deploy_change.json` is the same change at `pre_deploy`, with all its facts set to unknown markers. `post_deploy.json` is a context at the `post_deploy` stage. The tests also check that the three RDS assertions (encryption, public access and backup retention) pass on `plan_resource.json` | Contexts by hand. `digests.json` by `scripts/refresh_vectors.py` |
 | `events/` | A complete assurance event, `plan_pass.json`, which is the verdict for the context above, and `digests.json` | The event by hand. `digests.json` by `scripts/refresh_vectors.py` |
+| `reports/` | A complete verification report, `verification_report.json`, and `digests.json` (see [verification reports](../usage/14-verification-reports.md)) | The report by hand. `digests.json` by `scripts/refresh_vectors.py` |
 | `wire/` | One document per run message, each read as the model its name gives, and `digests.json`. The messages are `run_open_request.json`, `run_open_response.json`, `token_refresh_request.json`, `token_refresh_response.json`, `run_close_response.json`, `assurance_facts.json`, `assurance_event_batch.json` and `submission_outcome.json` | Documents by hand. `digests.json` by `scripts/refresh_vectors.py` |
 | `wire_invalid/` | `cases.json` lists wire documents that must be refused. Each case names a `wire/` document, the values to change (`set`) and to remove (`remove`) by JSON Pointer, and the message of the problem | By hand |
 | `opa/` | `not_allowed.txt` lists every built-in function of the pinned OPA release that the allowlist leaves out | `scripts/refresh_capabilities.py` |
@@ -69,7 +70,7 @@ because an ES256 signature differs every time it is made.
 1. Make the change, with its tests.
 2. If any byte of a compiled program changes, bump the compiler's version.
    If the JSON form of the parsed assertion (the AST) changes, bump the AST
-   version. Both are breaking changes to the contract (see
+   version, which is 2 today. Both are breaking changes to the contract (see
    [versioning](02-versioning.md)).
 3. Run `pdm run python scripts/refresh_vectors.py`. Read the diff of the
    vectors as carefully as the code, because every user of the package will

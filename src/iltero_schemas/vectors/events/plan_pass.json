@@ -9,7 +9,7 @@
     "id": "aws_db_instance.payments",
     "identities": [
       {
-        "scheme": "terraform_resource",
+        "scheme": "terraform_address",
         "value": "aws_db_instance.payments",
         "scope": {
           "unit": "root"

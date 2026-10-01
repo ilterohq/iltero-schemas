@@ -22,7 +22,12 @@ def _document(**overrides: Any) -> dict[str, Any]:
         "metadata": {"id": "ACME.AWS.RDS.ENCRYPTED", "version": "1.0.0", "title": "RDS encrypted"},
         "spec": {
             "stage": "plan",
-            "target": {"kind": "resource", "provider": "aws", "resource_types": ["aws_db_instance"]},
+            "target": {
+                "kind": "resource",
+                "tool": "terraform",
+                "provider": "aws",
+                "resource_types": ["aws_db_instance"],
+            },
             "assert": {"path": "resource.after.storage_encrypted", "equal": True},
         },
     }
@@ -64,7 +69,7 @@ def test_explicit_type_must_match_the_derived_one() -> None:
 def test_only_listed_stage_and_target_combinations_are_accepted(stage: Stage, kind: TargetKind) -> None:
     target: dict[str, Any] = {"kind": kind.value}
     if kind is TargetKind.RESOURCE:
-        target.update(provider="aws", resource_types=["aws_db_instance"])
+        target.update(tool="terraform", provider="aws", resource_types=["aws_db_instance"])
     document = _document(spec__stage=stage.value, spec__target=target)
     allowed = (DERIVED_TYPE[kind], stage, kind) in VALID_COMBINATIONS
     if allowed:
@@ -83,11 +88,11 @@ def test_unknown_keys_are_refused_at_every_level() -> None:
 
 
 def test_provider_and_resource_type_lengths_are_bounded() -> None:
-    long_provider = {"kind": "resource", "provider": "a" * 33, "resource_types": ["a"]}
+    long_provider = {"kind": "resource", "tool": "terraform", "provider": "a" * 33, "resource_types": ["a"]}
     assert _error_locations(_document(spec__target=long_provider)) == ["spec.target.resource.provider"]
-    long_type = {"kind": "resource", "provider": "aws", "resource_types": ["a" * 129]}
+    long_type = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["a" * 129]}
     assert _error_locations(_document(spec__target=long_type)) == ["spec.target.resource.resource_types.0"]
-    many = {"kind": "resource", "provider": "aws", "resource_types": [f"t{i}" for i in range(65)]}
+    many = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": [f"t{i}" for i in range(65)]}
     assert _error_locations(_document(spec__target=many)) == ["spec.target.resource.resource_types"]
 
 
@@ -127,14 +132,35 @@ def test_title_is_a_bounded_single_line(title: str) -> None:
 
 def test_resource_target_needs_provider_and_unique_types() -> None:
     assert _error_locations(_document(spec__target={"kind": "resource", "resource_types": ["a"]}))
-    assert _error_locations(_document(spec__target={"kind": "resource", "provider": "aws", "resource_types": []}))
     assert _error_locations(
-        _document(spec__target={"kind": "resource", "provider": "aws", "resource_types": ["a", "a"]})
+        _document(spec__target={"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": []})
     )
-    assert _error_locations(_document(spec__target={"kind": "resource", "provider": "AWS", "resource_types": ["a"]}))
     assert _error_locations(
-        _document(spec__target={"kind": "resource", "provider": "aws", "resource_types": ["Aws-x"]})
+        _document(
+            spec__target={"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["a", "a"]}
+        )
     )
+    assert _error_locations(
+        _document(spec__target={"kind": "resource", "tool": "terraform", "provider": "AWS", "resource_types": ["a"]})
+    )
+    assert _error_locations(
+        _document(
+            spec__target={"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["Aws-x"]}
+        )
+    )
+
+
+def test_a_resource_target_names_a_known_iac_tool() -> None:
+    without = {"kind": "resource", "provider": "aws", "resource_types": ["aws_db_instance"]}
+    assert _error_locations(_document(spec__target=without)) == ["spec.target.resource.tool"]
+    unknown = {**without, "tool": "pulumi"}
+    assert _error_locations(_document(spec__target=unknown)) == ["spec.target.resource.tool"]
+
+
+@pytest.mark.parametrize("resource_type", ["AWS::S3::Bucket", "aws_db_instance\n"], ids=["another tool's", "newline"])
+def test_resource_types_follow_the_rule_of_the_tool_the_target_names(resource_type: str) -> None:
+    target = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": [resource_type]}
+    assert _error_locations(_document(spec__target=target)) == ["spec.target.resource"]
 
 
 def test_target_kind_is_closed() -> None:

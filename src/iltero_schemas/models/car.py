@@ -1,4 +1,21 @@
-"""``CAR`` v1: the Compliance Assurance Record — what was checked, against what, with which result.
+"""``CAR`` v1: the Change Assurance Record — what was checked about one change, against what, with which result.
+
+A Change Assurance Record (CAR) is a framework-neutral record of the
+evidence, the checks, the approvals, the deployment and the verification
+after deployment for one infrastructure change. It keeps where each piece
+came from. A CAR records technical and process assurance facts. It does not,
+by itself, establish certification or compliance with a regulatory
+framework, so ``compliance_determination`` is always null.
+
+One CAR describes one attempted change, whatever its outcome: deployed,
+failed, stopped, refused before deployment, or a plan that changes nothing.
+It is not a certificate of success. It exists even when a check fails, and it
+need not reach every stage.
+
+How far a reader can trust a record is its ``trust_level``. The contract
+lists every level, so readers can see the whole scale. A record carries no
+signature in this version, so the only level it may claim is
+``self_attested``: the tool that wrote it is its only source.
 
 A record is read by whoever receives it, including a verifier running on
 someone else's machine against a record they were handed. So every field it
@@ -17,7 +34,7 @@ instead of failing on a missing key.
 from __future__ import annotations
 
 import re
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
@@ -25,7 +42,7 @@ from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_M
 from iltero_schemas.models.base import StageValue, StrictModel, sorted_unique
 from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
-from iltero_schemas.models.deployment import Deployment, check_superseded
+from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
 from iltero_schemas.models.fields import (
     ArtifactDigestBasis,
@@ -37,6 +54,7 @@ from iltero_schemas.models.fields import (
     check_artifact_digest,
     plain_text,
 )
+from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.pins import check_pins
 from iltero_schemas.models.run import RunPins
@@ -82,12 +100,33 @@ class RunId(StrictModel):
 
 
 class Issuer(StrictModel):
-    type: Literal["local", "compass"]
-    identity_verified: bool
+    """Who wrote the record. Without a signature, it is the tool on the machine it ran on, never verified."""
+
+    type: Literal["local"]
+    identity_verified: Literal[False]
 
 
 class Governance(StrictModel):
-    managed_by_compass: bool
+    """Who opened the run the record belongs to: Iltero Compass, or the tool on its own."""
+
+    run_opened_by: Literal["compass", "local"]
+
+
+# How far a record's facts were established, from the weakest level to the strongest.
+# self_attested: written by the tool alone. source_authenticated: the issuing service authenticated the
+# repository, CI and identity sources. compass_governed: the issuing service enforced a declared assurance
+# profile and verified the evidence chain. assessor_reviewed: a named external assessor reviewed it.
+# authority_accepted: a named authority accepted it for a stated purpose. Every level above self_attested
+# needs a signature, which this version of the record cannot carry.
+TrustLevel = Literal[
+    "self_attested",
+    "source_authenticated",
+    "compass_governed",
+    "assessor_reviewed",
+    "authority_accepted",
+]
+# The only level a record without a signature may claim.
+UNSIGNED_TRUST_LEVEL: Final[TrustLevel] = "self_attested"
 
 
 class Collector(StrictModel):
@@ -262,8 +301,10 @@ class PlanRecord(StrictModel):
     artifact_digest: Digest | None
     artifact_digest_basis: ArtifactDigestBasis
     context_digest: Digest
+    # The IaC tool that wrote the plan, which is the tool the whole record is about.
+    tool: IacTool
     format_version: Identifier
-    terraform_version: Identifier | None
+    tool_version: Identifier | None
     complete: bool | None
     applyable: bool | None
 
@@ -354,7 +395,10 @@ class CAR(StrictModel):
     # and whether a failed check stops the pipeline — present exactly for a run Compass issued.
     pins: RunPins | None
     unit: Identifier
-    assurance_level: Literal["self_attested"]
+    trust_level: TrustLevel
+    # Always null: a record never determines compliance with a framework. A view of a framework is built
+    # from records, outside them.
+    compliance_determination: None
     issuer: Issuer
     governance: Governance
     subject: Subject
@@ -397,7 +441,10 @@ class CAR(StrictModel):
             raise ValueError("a record is complete exactly when every expected stage has reported")
         if (self.deployment is None) == (Stage.POST_DEPLOY in self.stages):
             raise ValueError("a record describes the deployment exactly when its post-deploy stage has reported")
+        if self.trust_level != UNSIGNED_TRUST_LEVEL:
+            raise ValueError(f"a record without a signature is {UNSIGNED_TRUST_LEVEL}")
         check_superseded(self.plan.digest, self.deployment)
+        check_tool(self.plan.tool, self.deployment)
         if Stage.PRE_DEPLOY in self.stages and self.change.digest is None:
             raise ValueError("a record with a pre-deploy stage names the change digest its approvals were issued for")
         own = [unit for unit in self.change.units if unit.unit == self.unit]

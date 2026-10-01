@@ -247,8 +247,13 @@ def _model_issues(document: dict[str, Any], error: ValidationError) -> list[Issu
 def _target(model: TechnicalAssertion) -> Target:
     target = model.spec.target
     if isinstance(target, ResourceTarget):
-        return Target(TargetKind.RESOURCE, target.provider, tuple(sorted(target.resource_types)))
-    return Target(TargetKind(target.kind), None, ())
+        return Target(
+            kind=TargetKind.RESOURCE,
+            tool=target.tool,
+            provider=target.provider,
+            resource_types=tuple(sorted(target.resource_types)),
+        )
+    return Target(kind=TargetKind(target.kind), tool=None, provider=None, resource_types=())
 
 
 def parse_document(document: dict[str, Any]) -> Assertion:

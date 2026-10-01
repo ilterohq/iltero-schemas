@@ -6,9 +6,9 @@ assertion_id := "ILT.CHANGE.EXCEPTION_VALID"
 
 assertion_version := "1.0.0"
 
-ast_version := 1
+ast_version := 2
 
-assertion_source_digest := "sha256:8fffd2386ae7e40011bef3eecf86422949f601c941df3ac928792ee5e537ac2b"
+assertion_source_digest := "sha256:c0ac4daea08999cdfba3b50b2fd9c1fe1bde014f04be1e0f6125184d6939ecd4"
 
 _has_when := false
 

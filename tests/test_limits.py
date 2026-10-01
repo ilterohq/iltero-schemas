@@ -45,7 +45,7 @@ def _maximal_document() -> dict[str, Any]:
         "metadata": {"id": "VEC.LIMITS.MAXIMAL", "version": "1.0.0", "title": "As large as the language allows"},
         "spec": {
             "stage": "plan",
-            "target": {"kind": "resource", "provider": "vec", "resource_types": ["thing"]},
+            "target": {"kind": "resource", "tool": "terraform", "provider": "vec", "resource_types": ["thing"]},
             "assert": check,
         },
     }

@@ -43,7 +43,7 @@ answer. Two properties matter.
 Each assertion gets its own name under `iltero.assertions`, so any number of
 assertions can be loaded together. A tool asks OPA for the program's answer
 at `data.iltero.assertions["<ID>"].evaluate`, with the assertion's id in
-place of `<ID>`. The [documentation index](../README.md#how-the-pieces-fit-and-what-a-record-proves)
+place of `<ID>`. The [documentation index](../README.md#how-the-pieces-fit-and-what-a-record-shows)
 shows the full `opa eval` command.
 
 ## What goes in
@@ -90,7 +90,7 @@ parts:
 | --- | --- |
 | `source` | The git commit. It also names the repository, branch and pull request when the runner is told them. |
 | `change` | The resources the plan changes, as a table of contents. Each entry has an `id`, `provider`, `type`, `action` and `module`. |
-| `plan` | The plan's fingerprints and what Terraform said about it, plus the same table of contents for every resource the plan covers. The fingerprints are explained [below](#the-plans-fingerprints). |
+| `plan` | The infrastructure-as-code (IaC) tool that wrote the plan (`tool`, such as `terraform`) and that tool's version (`tool_version`, `null` when the plan does not say). Then the plan format's version (`format_version`), the plan's fingerprints, and the same table of contents for every resource the plan covers. The fingerprints are explained [below](#the-plans-fingerprints). |
 | `subject` | The resource's local `id`, the identities known for it, and whether a cloud identity is bound to it yet (`authority`). |
 | `resource` | That one resource: `id`, `provider`, `type`, `action`, `before`, `after`, `related`, and more. |
 
@@ -164,12 +164,16 @@ state is what `terraform show -json` prints after the apply.
 
 | Field | What it says |
 | --- | --- |
-| `source` | The apply log: the digest of its bytes, the Terraform version that wrote it, and three counts of lines Iltero could not use. `noise_lines` counts lines the pipeline mixed into the log. `damaged_lines` counts Terraform messages that were cut off or broken. `interrupted_operations` counts operations the log saw start but never saw end. |
-| `state` | The state after the apply: its digest and the Terraform version that wrote it. Iltero compares the outcomes with it. |
+| `source` | The apply log: the digest of its bytes, the IaC tool that wrote it (`tool`) and its version (`tool_version`), and three counts of lines Iltero could not use. `noise_lines` counts lines the pipeline mixed into the log. `damaged_lines` counts Terraform messages that were cut off or broken. `interrupted_operations` counts operations the log saw start but never saw end. |
+| `state` | The state after the apply: its digest, the IaC tool that wrote it (`tool`) and its version (`tool_version`). The version is `null` when the state holds nothing. Iltero compares the outcomes with it. |
 | `changes` | Every change of the applied plan, once each, sorted by address. See the next table. |
 | `summary` | Terraform's own counts (`added`, `changed`, `imported`, `removed`). It is present only when every change was made and the counts equal what the changes show. It is `null` when Terraform stopped before reporting counts. |
-| `timing` | When the first operation started, and when the log last mentioned any operation. The times come from the clock of the machine that wrote the log (`trust: asserted`). The field is present exactly when an operation ran. |
+| `timing` | When the first operation started, and when the log last mentioned any operation. The times come from the apply log (`source: apply_log`), so from the clock of the machine that wrote it (`trust: asserted`). The field is present exactly when an operation ran. |
 | `basis` | How Iltero worked out the outcomes (see below). |
+
+The apply log and the state must name the same IaC tool. That tool must
+also be the one that wrote the plan. The package refuses a document that
+names two different tools.
 
 Each change says this:
 
@@ -513,6 +517,7 @@ Where each part of this page lives (module names are under `iltero_schemas`):
 | The shared runtime | `compiler/runtime.rego` |
 | The assurance context and a stage's profile | `models.context.AssuranceContext`, `profiles.profile_for(stage, target_kind)` |
 | The `deployment` part | `models.deployment` |
+| The IaC tools a plan or a deployment may name | `models.iac.IacTool` |
 | The built-in plan check and its failure reason | `assertions.PLAN_BINDING`, `assertions.FAIL_REASONS` |
 | The answer's limits | `compiler.REASON_MAX_BYTES`, `OBSERVATIONS_MAX_BYTES`, `OBSERVATIONS_MAX_DEPTH`, `SUBJECT_FIELD_MAX_CHARS` |
 | The capabilities allowlist and its fingerprint | `opa.CAPABILITIES`, `opa.CAPABILITIES_DIGEST`; the functions left out are in `vectors/opa/not_allowed.txt` |

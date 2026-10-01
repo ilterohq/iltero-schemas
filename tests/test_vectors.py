@@ -35,6 +35,7 @@ from iltero_schemas.canonical import (
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_of
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.verification import VerificationReport
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
 from iltero_schemas.vectors.wire_models import WIRE_MODELS
@@ -50,7 +51,7 @@ EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
 WIRE_INVALID_CASES = json.loads((VECTORS / "wire_invalid" / "cases.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
-DOCUMENT_FOLDERS = ("contexts", "events", "wire")
+DOCUMENT_FOLDERS = ("contexts", "events", "reports", "wire")
 DOCUMENT_FILES = sorted(
     (folder, path.name)
     for folder in DOCUMENT_FOLDERS
@@ -60,7 +61,11 @@ DOCUMENT_FILES = sorted(
 
 
 def _document_model(folder: str, name: str) -> type[BaseModel]:
-    by_folder: dict[str, type[BaseModel]] = {"contexts": AssuranceContext, "events": AssuranceEvent}
+    by_folder: dict[str, type[BaseModel]] = {
+        "contexts": AssuranceContext,
+        "events": AssuranceEvent,
+        "reports": VerificationReport,
+    }
     return by_folder[folder] if folder in by_folder else WIRE_MODELS[name]
 
 
@@ -253,7 +258,12 @@ def test_an_id_that_prefixes_another_still_bundles(opa: Path, capabilities: Path
             "metadata": {"id": assertion_id, "version": "1.0.0", "title": "t"},
             "spec": {
                 "stage": "plan",
-                "target": {"kind": "resource", "provider": "aws", "resource_types": ["aws_db_instance"]},
+                "target": {
+                    "kind": "resource",
+                    "tool": "terraform",
+                    "provider": "aws",
+                    "resource_types": ["aws_db_instance"],
+                },
                 "assert": {"path": "resource.after.x", "equal": 1},
             },
         }

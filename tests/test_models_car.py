@@ -19,7 +19,8 @@ from tests.records import record as _record
 
 def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
-    assert car.assurance_level == "self_attested" and car.complete is False
+    assert car.trust_level == "self_attested" and car.complete is False
+    assert car.compliance_determination is None and car.plan.tool == "terraform"
     assert len(car.events) == car.coverage.checks == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
@@ -56,7 +57,12 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
     ("change", "message"),
     [
         ({"coverage.checks": 4}, "add up to the number of checks"),
-        ({"assurance_level": "governed"}, "Input should be 'self_attested'"),
+        ({"trust_level": "governed"}, "Input should be 'self_attested'"),
+        ({"trust_level": "compass_governed"}, "a record without a signature is self_attested"),
+        ({"trust_level": "authority_accepted"}, "a record without a signature is self_attested"),
+        ({"compliance_determination": "compliant"}, "Input should be None"),
+        ({"governance.run_opened_by": "governed"}, "Input should be 'compass' or 'local'"),
+        ({"plan.tool": "pulumi"}, "Input should be 'terraform'"),
         ({"run_id.basis": "guessed"}, "Input should be"),
         ({"uuid": "not-a-uuid"}, "String should match pattern"),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),

@@ -8,7 +8,7 @@ registry:
   digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
 spec:
   stage: plan
-  target: {kind: resource, provider: aws, resource_types: [aws_db_instance]}
+  target: {kind: resource, tool: terraform, provider: aws, resource_types: [aws_db_instance]}
   assert:
     path: resource.after.storage_encrypted
     equal: true

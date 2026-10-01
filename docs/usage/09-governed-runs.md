@@ -3,9 +3,12 @@
 A **governed run** is one pass of a pipeline over one stack in one
 environment, opened with Iltero Compass. A **stack** is a project as Iltero
 Compass knows it, named by its `stack_id`. A stack can hold several units.
-A unit is the part of the stack that Terraform plans and applies as one. Compass decides, once, what the run
-is judged against. It also confirms which CI job ran each stage. So a record
-of a governed run says more than "the pipeline checked itself".
+A unit is the part of the stack that the infrastructure-as-code tool, such
+as Terraform, plans and applies as one. Compass decides, once, what the run
+is judged against. It also confirms which CI job ran each stage. So the run
+does not rest only on what the pipeline says about itself. The record of
+such a run still carries no signature. A reader confirms the run by asking
+Iltero Compass.
 
 The pipeline proves who it is with the identity token its CI system gives
 each job. That token is an OpenID Connect (OIDC) token. It is a signed JSON
@@ -97,11 +100,14 @@ the pins, it changes from job to job. The tool copies it into the record's
 stage. An auditor can then see which workflow, on which branch, produced each
 stage.
 
-The fields follow GitHub Actions identity tokens. GitHub Actions is the first
-CI system the contract supports.
+Each CI system names its jobs in its own way. So `ci_identity` has one
+shape for each CI system, and its `provider` field says which one it is.
+GitHub Actions is the first CI system the contract supports. Its fields
+follow GitHub Actions identity tokens:
 
 | Field | What it says |
 | --- | --- |
+| `provider` | The CI system. It is `github_actions` |
 | `issuer` | The CI system that issued the token, as an `https://` host with an optional short path |
 | `subject` | The CI system's own name for the job, such as `repo:acme/app:environment:production` |
 | `repository` | The repository, as `owner/name` |
@@ -119,9 +125,11 @@ token itself.
 
 ### What must stay the same across stages
 
-All stages of one run must share the CI system, the repository's id, the
-owner's id and the commit. The check compares ids rather than names, because
-a repository or its owner can be renamed while a run is in progress.
+All stages of one run must share the same CI system, the same token issuer,
+the same repository and the same commit. GitHub Actions identifies the
+repository by its id and its owner's id. The check compares ids rather than
+names, because a repository or its owner can be renamed while a run is in
+progress.
 
 The service that opened the run may require more. Iltero Compass requires
 every stage to come from the same CI run. A re-run of failed jobs gets a new
@@ -270,7 +278,8 @@ It goes on only when all of these hold:
 | --- | --- |
 | The four documents of the exchange | `models.run` (`RunOpenRequest`, `RunOpenResponse`, `TokenRefreshRequest`, `TokenRefreshResponse`) |
 | The pins | `models.run.RunPins` |
-| The verified CI job | `models.ci_identity.CiIdentity` |
+| The verified CI job | `models.ci_identity.CiIdentity` (a union keyed by `provider`), `CiProvider` |
+| The GitHub Actions variant, and what its source is | `models.providers.github_actions.GithubActionsIdentity`, `source_key()` |
 | A later response continues the run | `models.run.check_continues` |
 | The two digests | `canonical.required_assertion_digest(triples)`, `canonical.change_digest(units)`; vectors in `vectors/canonical/assertion_set_cases.json` and `vectors/canonical/change_digest_cases.json` |
 | The bundle descriptor | `models.bundle.BundleDescriptor` |

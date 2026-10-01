@@ -8,8 +8,9 @@ them. Canonical vectors: the canonical bytes and digest of each value in
 ``src/iltero_schemas/vectors/canonical/values.json``, and of every case of the
 assertion-set and change digests, from the inputs each case names. Document
 vectors: the digest of every context under ``vectors/contexts``, every event
-under ``vectors/events`` and every run document under ``vectors/wire``, each
-validated against its model first.
+under ``vectors/events``, every run document under ``vectors/wire`` and every
+verification report under ``vectors/reports``, each validated against its
+model first.
 
 A changed runtime under an unchanged ``COMPILER_VERSION`` is refused: every
 recorded compiled digest would change while the version that explains it
@@ -41,6 +42,7 @@ from iltero_schemas.canonical import (
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.verification import VerificationReport
 from iltero_schemas.vectors.wire_models import WIRE_MODELS
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -53,6 +55,7 @@ DOCUMENT_VECTORS: dict[Path, type[BaseModel] | dict[str, type[BaseModel]]] = {
     PACKAGE / "vectors" / "contexts": AssuranceContext,
     PACKAGE / "vectors" / "events": AssuranceEvent,
     PACKAGE / "vectors" / "wire": WIRE_MODELS,
+    PACKAGE / "vectors" / "reports": VerificationReport,
 }
 
 

@@ -6,10 +6,12 @@ import json
 from typing import Any
 
 import pytest
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
-from iltero_schemas.models.ci_identity import CI_PROVIDER_GITHUB_ACTIONS, CiIdentity
+from iltero_schemas.models.ci_identity import CI_PROVIDERS, CiIdentity
+from iltero_schemas.models.providers.github_actions import CI_PROVIDER, GithubActionsIdentity
 from iltero_schemas.vectors import VECTORS
+from tests.conftest import variant_providers
 from tests.records import CI_IDENTITY
 
 # A JSON Web Token's shape: three base64url parts joined by dots, the first two starting with ``{"``.
@@ -48,7 +50,7 @@ def _with(**changes: Any) -> dict[str, Any]:
     ],
 )
 def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(changes: dict[str, str]) -> None:
-    CiIdentity.model_validate(_with(**changes))
+    GithubActionsIdentity.model_validate(_with(**changes))
 
 
 @pytest.mark.parametrize(
@@ -78,18 +80,18 @@ def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(change
 )
 def test_a_value_outside_its_shape_is_refused(field: str, value: str) -> None:
     with pytest.raises(ValidationError) as refused:
-        CiIdentity.model_validate(_with(**{field: value}))
+        GithubActionsIdentity.model_validate(_with(**{field: value}))
     assert [e["loc"] for e in refused.value.errors()] == [(field,)]
 
 
 def test_a_number_is_written_as_the_ci_system_writes_it() -> None:
     with pytest.raises(ValidationError):
-        CiIdentity.model_validate(_with(ci_run_id=9876543))
+        GithubActionsIdentity.model_validate(_with(ci_run_id=9876543))
 
 
 def test_an_unknown_claim_is_refused() -> None:
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
-        CiIdentity.model_validate(_with(job_workflow_sha="abc"))
+        GithubActionsIdentity.model_validate(_with(job_workflow_sha="abc"))
 
 
 @pytest.mark.parametrize(
@@ -106,11 +108,27 @@ def test_an_unknown_claim_is_refused() -> None:
 )
 def test_no_value_may_contain_a_json_web_token(field: str, value: str) -> None:
     with pytest.raises(ValidationError) as refused:
-        CiIdentity.model_validate(_with(**{field: value}))
+        GithubActionsIdentity.model_validate(_with(**{field: value}))
     assert [e["loc"] for e in refused.value.errors()] == [(field,)]
 
 
 def test_the_wire_vector_names_its_ci_system_as_named() -> None:
     batch = json.loads((VECTORS / "wire" / "assurance_event_batch.json").read_text(encoding="utf-8"))
     providers = {event["provenance"]["executor"]["provider"] for event in batch["events"]}
-    assert providers == {CI_PROVIDER_GITHUB_ACTIONS}
+    assert providers == {CI_PROVIDER}
+
+
+def test_a_ci_identity_is_read_by_its_provider_and_an_unknown_one_is_refused() -> None:
+    adapter: TypeAdapter[GithubActionsIdentity] = TypeAdapter(CiIdentity)
+    assert isinstance(adapter.validate_python(_with()), GithubActionsIdentity)
+    with pytest.raises(ValidationError):
+        adapter.validate_python(_with(provider="gitlab_ci"))
+
+
+def test_every_ci_provider_named_has_its_variant() -> None:
+    assert set(CI_PROVIDERS) == variant_providers(CiIdentity) == {CI_PROVIDER}
+
+
+def test_the_source_of_a_github_actions_job_is_its_repository_and_owner_ids() -> None:
+    identity = GithubActionsIdentity.model_validate(_with())
+    assert identity.source_key() == (CI_IDENTITY["repository_id"], CI_IDENTITY["repository_owner_id"])

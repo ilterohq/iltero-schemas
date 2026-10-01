@@ -73,6 +73,7 @@
     "min_cli_version": "0.2.0"
   },
   "ci_identity": {
+    "provider": "github_actions",
     "issuer": "https://token.actions.githubusercontent.com",
     "subject": "repo:acme/app:environment:production",
     "repository": "acme/app",
@@ -90,6 +91,7 @@
     "runner_environment": "github-hosted"
   },
   "artifact_store": {
+    "provider": "aws",
     "uri_prefix": "s3://acme-iltero-evidence/runs/0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43/",
     "retention_until": "2033-09-14T18:45:00Z",
     "lock_mode": "COMPLIANCE",

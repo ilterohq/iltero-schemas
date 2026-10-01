@@ -7,9 +7,16 @@ from typing import get_args
 
 import pytest
 
-from iltero_schemas.models.identity import CloudIdentifier
-from iltero_schemas.models.providers.aws import ARN_SHAPES, SCHEME_AWS_ARN, AwsResourceType, arn_matches
-from tests.conftest import ACCOUNT, ARNS, REGION, arn
+from iltero_schemas.models.identity import CloudSide, Resolver
+from iltero_schemas.models.providers.aws import (
+    ARN_SHAPES,
+    SCHEME_AWS_ARN,
+    ArnIdentifier,
+    AwsResourceType,
+    arn_matches,
+)
+from iltero_schemas.models.run import ArtifactStore
+from tests.conftest import ACCOUNT, ARNS, REGION, arn, variant_providers
 
 
 def test_every_resource_type_has_a_naming_rule_and_a_stand_in() -> None:
@@ -108,4 +115,9 @@ def test_the_naming_rules_cannot_be_changed() -> None:
 
 
 def test_the_identity_document_writes_the_arn_scheme_as_named() -> None:
-    assert get_args(CloudIdentifier.model_fields["scheme"].annotation) == (SCHEME_AWS_ARN,)
+    assert get_args(ArnIdentifier.model_fields["scheme"].annotation) == (SCHEME_AWS_ARN,)
+
+
+def test_every_cloud_provider_has_a_cloud_side_a_resolver_and_an_artifact_store() -> None:
+    """A cloud is added as all three variants at once, so the three types always accept the same providers."""
+    assert variant_providers(CloudSide) == variant_providers(Resolver) == variant_providers(ArtifactStore) == {"aws"}

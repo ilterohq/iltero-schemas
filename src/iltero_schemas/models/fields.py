@@ -8,6 +8,7 @@ carry a plan by the same four fields.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -43,6 +44,8 @@ ArtifactDigestBasis = Literal["plan_binary", "not_provided"]
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed check stops the pipeline (``enforcing``) or is only reported (``advisory``).
 GateMode = Literal["enforcing", "advisory"]
+# The start of a JSON Web Token: a base64url header, a dot, and a base64url payload, both JSON objects.
+_JSON_WEB_TOKEN = re.compile(r"eyJ[A-Za-z0-9_-]*\.eyJ")
 
 
 def plain_text(value: str) -> str:
@@ -56,6 +59,17 @@ def check_artifact_digest(digest: str | None, basis: str) -> None:
     """Raise ``ValueError`` unless the plan binary's digest is present exactly when its basis says it was given."""
     if (digest is not None) != (basis == "plan_binary"):
         raise ValueError("artifact_digest is present exactly when artifact_digest_basis is plan_binary")
+
+
+def _no_token(value: str) -> str:
+    """``value`` when no JSON Web Token appears anywhere in it; raises ``ValueError`` otherwise."""
+    if _JSON_WEB_TOKEN.search(value):
+        raise ValueError("must not contain a JSON Web Token")
+    return value
+
+
+# A value a CI system or Iltero Compass supplies: it must never carry an identity token.
+NoToken = AfterValidator(_no_token)
 
 
 def _timestamp(value: str) -> str:

@@ -18,6 +18,7 @@ spec:
   stage: plan                              # check it when the Terraform plan is known
   target:
     kind: resource                         # it is about resources ...
+    tool: terraform                        # ... planned by this infrastructure-as-code tool
     provider: aws
     resource_types: [aws_db_instance]      # ... of this type
   when:                                    # only in production; elsewhere the result is "not applicable"
@@ -52,7 +53,7 @@ not in this table is an error.
 | `metadata.version` | Three numbers, like `1.0.0`, at most 32 characters. The version is for people. Evidence uses the rule's fingerprint instead. |
 | `metadata.title` | One line, at most 200 characters. |
 | `spec.stage` | When to check: `plan`, `pre_deploy`, `post_deploy`, `post_verify` or `runtime`. |
-| `spec.target` | What the rule is about. `kind: resource` also needs a `provider` and from 1 to 64 `resource_types`. The other kinds (`change`, `deployment`, `assurance`) take nothing else. |
+| `spec.target` | What the rule is about. `kind: resource` also needs a `tool`, a `provider` and from 1 to 64 `resource_types`. The `tool` is the infrastructure-as-code (IaC) tool whose resources the rule reads. The only tool the package knows is `terraform`. Each resource type must follow that tool's own naming rule. For Terraform, a type is lower-case letters, digits and `_`, starting with a letter, like `aws_db_instance`. A type may appear only once. The other kinds (`change`, `deployment`, `assurance`) take nothing else. |
 | `spec.type` | Optional. It is `state` for a resource target and `process` for the others. Iltero works it out from the target. If you write it, it must match. |
 | `spec.when` | Optional. A condition written like a rule. When it is false, the result is "not applicable". |
 | `spec.assert` | The rule itself. It is required. |
@@ -215,6 +216,7 @@ cannot end up in a log.
 | Reading an assertion, with every problem and the key it was found at | `iltero_schemas.ast.parse`, `AssertionSyntaxError`, `Issue` |
 | The fingerprint evidence refers to | `iltero_schemas.ast.source_digest` |
 | The document shape | `iltero_schemas.models.assertion` |
+| The IaC tools, and each tool's rule for a resource type | `iltero_schemas.models.iac.IacTool`, `RESOURCE_TYPE_PATTERNS` |
 | The limits | `iltero_schemas.ast.document` (document size and nesting), `iltero_schemas.ast.parse` (checks, paths, values) |
 | Which first names a stage allows | `iltero_schemas.ast.allowed_roots`, `iltero_schemas.profiles.profile_for` |
 

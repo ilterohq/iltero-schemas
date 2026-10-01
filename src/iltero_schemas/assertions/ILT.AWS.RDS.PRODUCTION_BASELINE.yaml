@@ -8,6 +8,7 @@ spec:
   stage: plan
   target:
     kind: resource
+    tool: terraform
     provider: aws
     resource_types: [aws_db_instance]
   when:

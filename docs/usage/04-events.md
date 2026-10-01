@@ -24,7 +24,7 @@ package refuses keys it does not know, and it never changes a value's type.
 | Part | What it says |
 | --- | --- |
 | `assertion` | The assertion's `id` and `version`, and the `digest` of the assertion document as it was read. |
-| `subject` | What the verdict is about: its `kind`, its local `id`, the `identities` known for it, and whether a cloud identity is bound to it (`authority`: `authoritative` or `unresolved`). The `id` is absent only when the assertion had no subject in scope at all. |
+| `subject` | What the verdict is about: its `kind`, its local `id`, the `identities` known for it, and whether a cloud identity is bound to it (`authority`: `authoritative` or `unresolved`). Each identity has a `scheme`, a `value` and a `scope`. A resource named by its address in the infrastructure-as-code (IaC) tool's configuration uses the tool's address scheme. For Terraform that scheme is `terraform_address`. The `id` is absent only when the assertion had no subject in scope at all. |
 | `evaluation` | The `stage` and the `status`. It also holds the runner's own `status_reason` and `status_detail`, and what the policy said: its `reason` and `observations`. |
 | `provenance` | Where the verdict came from (see the next table). |
 | `observed_at` | The run's timestamp, by the runner's clock. Every event of one run carries the same value. |
@@ -33,7 +33,7 @@ The provenance holds these fields:
 
 | Field | What it says |
 | --- | --- |
-| `run` | The run's `id`, and where that id came from. `server_issued` means Iltero Compass issued it. `locally_derived` means the tool made it up on its own. It also names the `unit`, the part of a project that Terraform plans and applies as one. |
+| `run` | The run's `id`, and where that id came from. `server_issued` means Iltero Compass issued it. `locally_derived` means the tool made it up on its own. It also names the `unit`, the part of a project that the IaC tool plans and applies as one. |
 | `source_commit`, `plan_digest` | The git commit and the plan the check is about. |
 | `input_digest` | The fingerprint of the exact document the evaluator saw. |
 | `evaluator` | Which engine ran the check, and its version and digest. For OPA run by this tool, it also holds the limits the tool applied (see below). |
@@ -41,7 +41,7 @@ The provenance holds these fields:
 | `binding` | The binding entry, when a scanner's result was read for this check. |
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and the fingerprint of its logic. `compass_bundle` means a signed bundle Iltero Compass served (see [assertion bundles](12-assertion-bundles.md)). `local` means an assertion file the tool was given. `custom_rego` means a policy written by hand in Rego. |
 | `compiled_digest`, `compiler` | The compiled program and the compiler that made it. |
-| `executor` | Who ran the evaluation: a person (`human`) or a pipeline (`workload`). |
+| `executor` | Who ran the evaluation: a person (`human`) or a pipeline (`workload`). Its `provider` says where it ran. It is `local` for a person's machine. It is `ci` for a job of a CI system the tool could not name. Otherwise it is the name of a CI system, such as `github_actions`. The package refuses any other value, including the spelling `github-actions`. |
 | `ci_context` | Whether the tool checked the CI context file, which describes the CI job. The value is `verified`, `unverified` or `absent`. It is `verified` exactly when the tool checked the file with the run's context key (`basis: context_key_mac`). The context key is a secret Iltero Compass hands out with a run (see [governed runs](09-governed-runs.md#the-run-token-and-the-context-key)). |
 | `facts_source` | For a `pre_deploy` check, where the facts document came from: `server`, `local_file` or `none`. It is `null` at every other stage. See [facts only Iltero Compass holds](10-server-facts.md). |
 | `fs_hardening` | How the tool protected the files it wrote: `posix`, `windows_profile_acl` or `none`. |
@@ -124,5 +124,7 @@ The conformance vectors include a complete example event, with its digest.
 | An event | `models.event.AssuranceEvent` |
 | The example event | `src/iltero_schemas/vectors/events/plan_pass.json`, with `digests.json` |
 | The closed list of status reasons | `models.event.STATUS_REASONS` |
+| Where an evaluation may run | `models.event.ExecutorProvider` (`local`, `ci`, or a name from `models.ci_identity.CiProvider`) |
+| Each IaC tool's address scheme | `models.iac.ADDRESS_SCHEMES` |
 | Writing a timestamp | `canonical.now_rfc3339_ms` |
 | The limits on `reason` and `observations` | `compiler.limits` |

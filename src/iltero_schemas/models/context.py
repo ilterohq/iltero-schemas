@@ -32,7 +32,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.deployment import Deployment, check_superseded
+from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.facts import UnknownMarker
 from iltero_schemas.models.fields import (
     Action,
@@ -44,6 +44,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     check_artifact_digest,
 )
+from iltero_schemas.models.iac import IacTool
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
@@ -189,9 +190,10 @@ class Change(StrictModel):
 class Plan(StrictModel):
     """The plan artifact: fingerprints, what the IaC tool said about it, and every resource it covers."""
 
-    format: Literal["terraform"]
+    # The IaC tool that wrote the plan, and the version of its plan format and of the tool itself.
+    tool: IacTool
     format_version: Identifier
-    terraform_version: Identifier | None
+    tool_version: Identifier | None
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
@@ -273,4 +275,5 @@ class AssuranceContext(StrictModel):
             raise ValueError("plan.source_commit must be the source commit")
         if self.plan is not None:
             check_superseded(self.plan.digest, self.deployment)
+            check_tool(self.plan.tool, self.deployment)
         return self

@@ -1,48 +1,52 @@
 # iltero-schemas
 
-The shared contract of Iltero: the record schemas, canonical serialization
-and digests, the assertion compiler, and the pinned Open Policy Agent (OPA)
-evaluator the CLI ships.
+`iltero-schemas` is the shared contract of Iltero. Iltero checks
+infrastructure changes against compliance rules and writes down what it
+found. Several programs take part in that work, and this package is what
+they agree on.
 
-Every consumer — the Iltero CLI, Iltero Compass, or anything else that
-produces or checks a record — pins one exact published version of this
-package, so a record produced with it is verifiable with it.
+Every consumer pins one exact published version of this package. A consumer
+is the Iltero CLI, Iltero Compass, or anything else that writes or checks a
+record. Because both sides use the same version, a record written with it
+can be checked with it.
 
-## `iltero_schemas.opa`
+## What is in the package
 
-`PIN` names the one OPA release every Iltero component evaluates with and the
-SHA-256 digest of its published binary for each supported platform:
+- **Record shapes.** The package defines each document Iltero writes, such
+  as an assurance event (the result of one check) and a Compliance Assurance
+  Record (everything checked for one deployment).
+- **Fingerprints.** The package turns a document into the same bytes on
+  every machine. It then takes a SHA-256 digest (a fingerprint) of them.
+- **Assertions and their compiler.** An assertion is a compliance rule
+  written in YAML. The compiler turns it into a small program for Open
+  Policy Agent (OPA), a widely used policy engine. The same assertion
+  always gives the same program, so anyone can compile it again and compare.
+- **The OPA pin.** The package names the one OPA release every Iltero
+  component runs, and the fingerprint of its binary for each platform.
+- **Conformance vectors.** These are example inputs with their expected
+  outputs. A consumer that reproduces all of them is conformant.
+
+## Documentation
+
+Start with [the documentation index](docs/README.md). It lists one page per
+concept, in reading order.
+
+## For developers
 
 ```python
+import platform
+
 from iltero_schemas.opa import PIN, platform_key
 
-PIN.version                                   # "1.20.2"
-PIN.binaries[platform_key()].sha256           # the digest for this host
+PIN.version                                    # "1.20.2"
+key = platform_key(platform.system(), platform.machine())
+PIN.binaries[key].sha256                       # the digest for this host
 ```
-
-A consumer verifies the binary it is about to run against the digest for its
-platform before every invocation and refuses to run on a mismatch. The pin is
-data, reviewed like code: `src/iltero_schemas/opa/PIN.json` is the only place
-it is written down, and changing it is a reviewed change plus a release.
-
-## `iltero_schemas.ast` and `iltero_schemas.compiler`
-
-An assertion is a rule written in YAML. `ast.parse` reads it and reports
-every problem with the key it was found at. `compiler.compile` turns it into
-a small program for the pinned OPA; the same assertion always gives the same
-bytes, so anyone can compile it again and check they got what they were
-handed. `opa.CAPABILITIES` is the short list of functions such a program may
-call. `iltero_schemas.vectors` holds the files every user of the package must
-be able to reproduce.
-
-## Development
 
 ```bash
 pdm install -G dev --no-isolation
 pdm run check        # lint, format, types, tests, public-surface gate
 ```
-
-See [`docs/`](docs/README.md).
 
 ## License
 

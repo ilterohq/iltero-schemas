@@ -191,6 +191,13 @@ def test_a_scanner_block_whose_counts_do_not_add_up_is_refused(change: dict[str,
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 
+def test_a_report_of_a_scanner_outside_the_list_is_refused() -> None:
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["reports"][0]["tool"] = "tfsec"
+    with pytest.raises(ValidationError, match="Input should be"):
+        CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
+
+
 def test_one_report_per_tool_per_stage() -> None:
     scanners = copy.deepcopy(SCANNERS)
     scanners["reports"] = [scanners["reports"][0], copy.deepcopy(scanners["reports"][0])]

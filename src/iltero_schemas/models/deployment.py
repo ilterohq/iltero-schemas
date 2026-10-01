@@ -3,8 +3,10 @@
 A post-deploy evaluation input carries it as ``deployment``, and the record
 carries the same shape. Every change of the applied plan is listed once,
 with the operations it needed and what happened to them; the counts and the
-times Terraform reported must agree with that list, so a document that tells
-two stories about one apply is refused.
+times the IaC tool reported must agree with that list, so a document that
+tells two stories about one apply is refused.
+
+The current implementation reads Terraform's apply log and state.
 """
 
 from __future__ import annotations

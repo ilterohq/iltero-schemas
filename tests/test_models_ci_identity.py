@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.ci_identity import CiIdentity
+from iltero_schemas.models.ci_identity import CI_PROVIDER_GITHUB_ACTIONS, CiIdentity
+from iltero_schemas.vectors import VECTORS
 from tests.records import CI_IDENTITY
 
 # A JSON Web Token's shape: three base64url parts joined by dots, the first two starting with ``{"``.
@@ -106,3 +108,9 @@ def test_no_value_may_contain_a_json_web_token(field: str, value: str) -> None:
     with pytest.raises(ValidationError) as refused:
         CiIdentity.model_validate(_with(**{field: value}))
     assert [e["loc"] for e in refused.value.errors()] == [(field,)]
+
+
+def test_the_wire_vector_names_its_ci_system_as_named() -> None:
+    batch = json.loads((VECTORS / "wire" / "assurance_event_batch.json").read_text(encoding="utf-8"))
+    providers = {event["provenance"]["executor"]["provider"] for event in batch["events"]}
+    assert providers == {CI_PROVIDER_GITHUB_ACTIONS}

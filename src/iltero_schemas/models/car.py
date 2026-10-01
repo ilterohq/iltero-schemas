@@ -27,10 +27,20 @@ from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded
 from iltero_schemas.models.event import AssuranceEvent, Compiler
-from iltero_schemas.models.fields import Count, Digest, Identifier, Timestamp, Uuid, check_artifact_digest, plain_text
+from iltero_schemas.models.fields import (
+    ArtifactDigestBasis,
+    Count,
+    Digest,
+    Identifier,
+    Timestamp,
+    Uuid,
+    check_artifact_digest,
+    plain_text,
+)
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.pins import check_pins
 from iltero_schemas.models.run import RunPins
+from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.stages import check_structure, derived_problems
 
 API_VERSION = "iltero.io/car/v1"
@@ -159,7 +169,7 @@ class Ran(StrictModel):
 class ScannerReport(StrictModel):
     """One scanner report a stage was given, and what it did with it."""
 
-    tool: Identifier
+    tool: ScannerTool
     tool_version: Identifier
     # What the tool was reading, in its own words. A tool that reads a configuration
     # and one that reads a plan answer different questions about the same resource,
@@ -245,12 +255,12 @@ class StageRecord(StrictModel):
 
 
 class PlanRecord(StrictModel):
-    """The plan the stage evaluated, by its fingerprints and by what Terraform said about it."""
+    """The plan the stage evaluated, by its fingerprints and by what the IaC tool said about it."""
 
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_basis: Literal["plan_binary", "not_provided"]
+    artifact_digest_basis: ArtifactDigestBasis
     context_digest: Digest
     format_version: Identifier
     terraform_version: Identifier | None

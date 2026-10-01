@@ -12,21 +12,23 @@ auditor can see which workflow, on which branch, produced each stage. The tool
 copies it from Compass's answer. A record is not signed, so the copy in a
 record is only a claim: Compass alone can confirm it, from the run's id.
 
-The shapes follow GitHub Actions identity tokens, the only CI system supported
-so far. No value may contain a JSON Web Token, so no field can carry the
-identity token itself.
+The shapes follow GitHub Actions identity tokens. GitHub Actions is the first
+CI system the contract supports. No value may contain a JSON Web Token, so no
+field can carry the identity token itself.
 """
 
 from __future__ import annotations
 
 import re
-from typing import Annotated, Literal
+from typing import Annotated, Final, Literal
 
 from pydantic import AfterValidator, Field
 
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.fields import Commit
 
+# The name the contract gives the CI system GitHub Actions.
+CI_PROVIDER_GITHUB_ACTIONS: Final = "github_actions"
 # The CI system's token issuer: an https host with an optional short path, such as
 # https://token.actions.githubusercontent.com.
 ISSUER_PATTERN = r"^https://[a-z0-9-]+(\.[a-z0-9-]+)+(/[A-Za-z0-9_-]{1,64}){0,4}$"

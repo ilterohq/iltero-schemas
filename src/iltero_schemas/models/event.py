@@ -28,6 +28,7 @@ from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_M
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
+from iltero_schemas.models.scanners import ScannerTool
 
 Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
 # Why a status is what it is; the runner sets it, a policy never does.
@@ -225,7 +226,7 @@ class ScannerEvaluator(StrictModel):
     no digest: the version is the one the tool wrote into its own output.
     """
 
-    engine: Literal["checkov", "trivy", "prowler"]
+    engine: ScannerTool
     version: Identifier
     digest: Digest | None
     basis: Literal["not_executed_by_cli"]

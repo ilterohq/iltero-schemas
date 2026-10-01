@@ -1,19 +1,22 @@
-"""``IdentityBindings`` v1: each Terraform resource tied to the cloud resource it created.
+"""``IdentityBindings`` v1: each resource of a configuration tied to the cloud resource it created.
 
-A Terraform address names a resource in a configuration; it is not the
-resource in the cloud. A binding ties the two together, and only a resolver
-that has been verified against real output for that resource type may write
-one. A resource no verified resolver could bind is listed as unresolved,
-with the reason, and never guessed.
+An address names a resource in the configuration of the
+infrastructure-as-code (IaC) tool. It is not the resource in the cloud. A
+binding ties the two together, and only a resolver that has been verified
+against real output for that resource type may write one. A resource no
+verified resolver could bind is listed as unresolved, with the reason, and
+never guessed.
 
 The document carries identifiers only. The state file they were read from
 never leaves the machine that read it, and an identifier must follow its
 type's naming rule exactly, so it cannot carry anything else.
+
+The current implementation binds Terraform resources to AWS resources. The
+AWS naming rules live in ``models.providers.aws``.
 """
 
 from __future__ import annotations
 
-import re
 from collections.abc import Sequence
 from typing import Annotated, Literal
 
@@ -23,10 +26,9 @@ from iltero_schemas.models.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.deployment import Fate, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
+from iltero_schemas.models.providers.aws import ARN_MAX_LENGTH, AwsResourceType, arn_matches
 
 API_VERSION = "iltero.io/identity-bindings/v1"
-# The AWS resource types a resolver may bind in this version.
-AwsResourceType = Literal["s3_bucket", "rds_instance", "security_group", "iam_role", "kms_key"]
 # Why a resource was not bound. A resolver checks them in this order, and says the first that holds.
 UnresolvedReason = Literal[
     "no_resolver",
@@ -37,41 +39,6 @@ UnresolvedReason = Literal[
     "identifier_missing",
     "identifier_ambiguous",
 ]
-# The longest ARN AWS documents for any of these types is well under this.
-ARN_MAX_LENGTH = 2048
-PARTITIONS = frozenset({"aws", "aws-cn", "aws-us-gov", "aws-iso", "aws-iso-b", "aws-iso-e", "aws-iso-f", "aws-eusc"})
-_REGION = re.compile(r"[a-z]{2}(-[a-z]+)+-[0-9]{1,2}")
-_ACCOUNT = re.compile(r"[0-9]{12}")
-# An IAM path segment: printable ASCII except "/" and the wildcards "*" and "?".
-_IAM_PATH_SEGMENT = r"[!-)+-.0->@-~]+"
-_UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-# A KMS key id: a UUID, or "mrk-" and 32 hex digits for a key that spans regions.
-KMS_KEY_ID = rf"({_UUID}|mrk-[0-9a-f]{{32}})"
-# Per type: the service, whether the ARN names a region, and the full rule for its resource part.
-_ARN_SHAPES: dict[AwsResourceType, tuple[str, bool, re.Pattern[str]]] = {
-    "s3_bucket": ("s3", False, re.compile(r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]")),
-    "rds_instance": ("rds", True, re.compile(r"db:[A-Za-z][A-Za-z0-9-]{0,62}")),
-    "security_group": ("ec2", True, re.compile(r"security-group/sg-[0-9a-f]{8}([0-9a-f]{9})?")),
-    "iam_role": ("iam", False, re.compile(rf"role/({_IAM_PATH_SEGMENT}/)*[\w+=,.@-]{{1,64}}", re.ASCII)),
-    "kms_key": ("kms", True, re.compile(rf"key/{KMS_KEY_ID}")),
-}
-
-
-def arn_matches(resource_type: AwsResourceType, arn: str) -> bool:
-    """Whether ``arn`` is an Amazon Resource Name of the kind ``resource_type`` names, and nothing more."""
-    parts = arn.split(":", 5)
-    if len(parts) != 6 or parts[0] != "arn" or parts[1] not in PARTITIONS:
-        return False
-    service, regional, resource_rule = _ARN_SHAPES[resource_type]
-    _, _, arn_service, region, account, resource = parts
-    if arn_service != service or not resource_rule.fullmatch(resource):
-        return False
-    if regional:
-        return bool(_REGION.fullmatch(region) and _ACCOUNT.fullmatch(account))
-    # S3 names neither a region nor an account; IAM is global but names its account.
-    return region == "" and (account == "" if service == "s3" else bool(_ACCOUNT.fullmatch(account)))
-
-
 Arn = Annotated[str, Field(min_length=1, max_length=ARN_MAX_LENGTH)]
 
 
@@ -123,7 +90,7 @@ class Resolver(StrictModel):
 
 
 class IdentityBinding(StrictModel):
-    """One Terraform resource and the cloud resource it created, as the record's resolver read them."""
+    """One resource of the configuration and the cloud resource it created, as the record's resolver read them."""
 
     terraform: TerraformSide
     cloud: CloudSide

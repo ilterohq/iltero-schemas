@@ -33,11 +33,10 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.canonical.encoding import digest_of
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.scanners import ScannerTool
 
 API_VERSION = "iltero.io/v1"
 KIND = "EvaluatorBindingSet"
-# The scanners a binding may cite. The CLI never runs them; it reads what they wrote.
-TOOLS = ("checkov", "trivy", "prowler")
 # A tool names its checks in its own way: Checkov's ``CKV_AWS_16``, Trivy's ``AVD-AWS-0080``.
 CHECK_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
 CHECK_ID_MAX_LENGTH = 128
@@ -49,7 +48,6 @@ MAX_BINDINGS = 10_000
 # How many of the tool's words one entry may translate.
 MAX_STATUS_MAP = 32
 
-Tool = Literal["checkov", "trivy", "prowler"]
 # What a scanner's result may be credited as. Only a decision counts: the tool
 # either found the thing true or found it false. A check the tool skipped, or
 # could not settle, is not a decision, so it leaves the assertion exactly where
@@ -116,7 +114,7 @@ class EvaluatorBinding(StrictModel):
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    tool: Tool
+    tool: ScannerTool
     # The tool's version is read from its own output; a version outside this
     # range is not evidence for this entry, and the check is not evaluated.
     tool_version_constraint: VersionConstraint

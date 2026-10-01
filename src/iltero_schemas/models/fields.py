@@ -30,7 +30,7 @@ CONTEXT_KEY_PATTERN = r"^[A-Za-z0-9_-]{43}$"
 # An environment's key: short, lowercase, the same in every place it is named.
 ENVIRONMENT_KEY_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,49}$"
 IDENTIFIER_MAX_LENGTH = 256
-# A Terraform address carries module and instance keys and can be much longer than an id.
+# A resource address, such as Terraform's, carries module and instance keys and can be much longer than an id.
 ADDRESS_MAX_LENGTH = 2048
 # The most resources one list of a deployment or its identities may name.
 MAX_RESOURCES = 100_000

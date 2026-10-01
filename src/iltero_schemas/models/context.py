@@ -11,15 +11,17 @@ metadata, no bundle digests, no provenance. Every model refuses unknown
 keys and coerces nothing, and the parts present must match the profile
 exactly.
 
-Two conventions hold throughout. A resource is named by its Terraform
-address: ``id`` on the subject, on the resource and on the plan's table of
-contents; the resources that refer to it (``resource.related``) are embedded
-as the plan adapter observed them, ``address`` included. ``provider`` is the
-short name an assertion targets (``aws``); the provider's full source
-address is ``provider_source``. A value hidden by redaction is a marker
-(``__redacted``), and the fields where a hidden value may legitimately sit
-accept one. A fact the server could not supply is an unknown marker
-(``__unknown``, see ``models.facts``) in place of the list it would have filled.
+Two conventions hold throughout. A resource is named by its address in the
+configuration of the infrastructure-as-code (IaC) tool, which is Terraform in
+the current implementation. That address is the ``id`` on the subject, on the
+resource and on the plan's table of contents. The resources that refer to it
+(``resource.related``) are embedded as the plan adapter observed them,
+``address`` included. ``provider`` is the short name an assertion targets
+(``aws``); the provider's full source address is ``provider_source``. A
+value hidden by redaction is a marker (``__redacted``), and the fields where
+a hidden value may legitimately sit accept one. A fact the server could not
+supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
+the list it would have filled.
 """
 
 from __future__ import annotations
@@ -185,7 +187,7 @@ class Change(StrictModel):
 
 
 class Plan(StrictModel):
-    """The plan artifact: fingerprints, what Terraform said about it, and every resource it covers."""
+    """The plan artifact: fingerprints, what the IaC tool said about it, and every resource it covers."""
 
     format: Literal["terraform"]
     format_version: Identifier

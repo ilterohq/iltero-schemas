@@ -59,7 +59,7 @@ from iltero_schemas.models.fields import (
     Uuid,
     Version,
 )
-from iltero_schemas.models.identity import KMS_KEY_ID
+from iltero_schemas.models.providers.aws import KMS_KEY_ID
 
 API_VERSION = "iltero.io/run/v1"
 # An S3 bucket, then one or more folder names, ending in "/". The bucket name has no dots. A folder

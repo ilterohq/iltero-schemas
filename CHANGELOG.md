@@ -27,7 +27,15 @@ keep, so any two tools agree on what a record means.
   state after the apply.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold.
-- Attestations, hand-written policy sources and scanner binding sets.
+- Attestations, hand-written policy sources and scanner binding sets. Binding
+  sets, events and records name a scanner from one list.
+- A record's scanner report now refuses any scanner other than `checkov`,
+  `trivy` and `prowler`.
+- Named constants for values consumers write as plain strings. Each constant
+  lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
+  `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
+  `iltero_schemas.models.providers.aws` and `CI_PROVIDER_GITHUB_ACTIONS` in
+  `iltero_schemas.models.ci_identity`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
   Terraform plan.
 - Conformance vectors that another implementation can test itself against.

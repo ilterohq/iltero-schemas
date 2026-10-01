@@ -1445,7 +1445,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       }
     },
@@ -1509,7 +1509,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       }
     },
@@ -1542,7 +1542,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       }
     },
@@ -1634,7 +1634,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       }
     },
@@ -1667,7 +1667,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       }
     },
@@ -3274,7 +3274,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T10:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       },
       "exceptions": [
@@ -3319,7 +3319,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T10:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       },
       "exceptions": [
@@ -3364,7 +3364,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T10:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       },
       "exceptions": [
@@ -3409,7 +3409,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T10:00:00.000Z",
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       },
       "exceptions": [
@@ -3458,7 +3458,7 @@
           "reason": "reference_time_untrusted",
           "present": true
         },
-        "source": "compass_server",
+        "source": "server",
         "trust": "attested"
       },
       "exceptions": [

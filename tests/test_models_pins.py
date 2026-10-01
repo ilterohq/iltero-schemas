@@ -1,4 +1,4 @@
-"""A record of a run the tool opened claims nothing only Iltero Compass can give; a pinned record keeps to its pins."""
+"""A record of a run the tool opened claims nothing only Iltero Cloud can give; a pinned record keeps to its pins."""
 
 from __future__ import annotations
 
@@ -51,17 +51,17 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
 @pytest.mark.parametrize(
     ("document", "message"),
     [
-        (_with_event(record(), assertion_source="compass_bundle"), "no checks from an Iltero Compass bundle"),
+        (_with_event(record(), assertion_source="server_bundle"), "no checks from an Iltero Cloud bundle"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
-        (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by Iltero Compass"),
+        (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by Iltero Cloud"),
     ],
     ids=[
-        "a check from a Compass bundle",
+        "a check from an Iltero Cloud bundle",
         "a CI context verified with the key",
-        "a CI job Compass verified",
+        "a CI job Iltero Cloud verified",
     ],
 )
-def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_compass_gives(
+def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
     document: dict[str, Any], message: str
 ) -> None:
     with pytest.raises(ValidationError, match=message):
@@ -69,8 +69,8 @@ def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_compass_gives(
 
 
 @pytest.mark.parametrize("source", ["local", "custom_rego"])
-def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_compass_bundle(source: str) -> None:
-    with pytest.raises(ValidationError, match="of an assertion from the Iltero Compass bundle"):
+def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_server_bundle(source: str) -> None:
+    with pytest.raises(ValidationError, match="of an assertion from the Iltero Cloud bundle"):
         CAR.model_validate(_with_event(pinned(), assertion_source=source), context=_READER)
 
 
@@ -88,7 +88,7 @@ def test_a_pinned_pre_deploy_check_reads_no_facts_from_a_local_file(facts_source
         CAR.model_validate(document, context=_READER)
 
 
-def test_a_record_of_a_run_compass_opened_carries_its_pins() -> None:
+def test_a_record_of_a_run_the_server_opened_carries_its_pins() -> None:
     record = CAR.model_validate(pinned())
     assert record.pins is not None and record.pins.policy.gate_mode == "enforcing"
 
@@ -123,30 +123,30 @@ def _pinned_to_fewer() -> dict[str, Any]:
 @pytest.mark.parametrize(
     ("document", "message"),
     [
-        (record(pins=PINS), "exactly when Iltero Compass issued the run"),
-        (pinned(pins=None), "exactly when Iltero Compass issued the run"),
+        (record(pins=PINS), "exactly when Iltero Cloud issued the run"),
+        (pinned(pins=None), "exactly when Iltero Cloud issued the run"),
         (pinned(**{"subject.environment": "staging"}), "the one the run was pinned to"),
         (pinned(**{"stages.plan.coverage.assertions_expected.basis": "locally_derived"}), "server_pinned exactly"),
         (_with_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
-        (_with_bundle("compass", "sha256:" + "9" * 64), "the bundle the run was pinned to"),
+        (_with_bundle("server", "sha256:" + "9" * 64), "the bundle the run was pinned to"),
         (_with_stage_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
-        (pinned(**{"governance.run_opened_by": "local"}), "says Iltero Compass opened its run exactly when"),
+        (pinned(**{"governance.run_opened_by": "local"}), "says Iltero Cloud opened its run exactly when"),
         (_pinned_to_fewer(), "an assertion the run was pinned to"),
         (pinned(**{"stages.plan.coverage.assertions_expected.value": 6}), "no more checks than"),
-        (record(**{"governance.run_opened_by": "compass"}), "says Iltero Compass opened its run exactly when"),
+        (record(**{"governance.run_opened_by": "server"}), "says Iltero Cloud opened its run exactly when"),
     ],
     ids=[
         "pins on an offline run",
-        "no pins on a Compass run",
+        "no pins on an Iltero Cloud run",
         "another environment",
         "counts not from the pins",
         "a local bundle",
-        "another Compass bundle",
+        "another Iltero Cloud bundle",
         "a stage that loaded another bundle",
-        "a Compass run said to be opened locally",
+        "an Iltero Cloud run said to be opened locally",
         "a check outside the pinned set",
         "more checks expected than pinned",
-        "an offline run said to be opened by Compass",
+        "an offline run said to be opened by Iltero Cloud",
     ],
 )
 def test_a_record_that_disagrees_with_its_pins_is_refused(document: dict[str, Any], message: str) -> None:
@@ -156,9 +156,9 @@ def test_a_record_that_disagrees_with_its_pins_is_refused(document: dict[str, An
 
 @pytest.mark.parametrize("document", [record(), pinned()], ids=["offline", "pinned"])
 @pytest.mark.parametrize(
-    ("field", "value"), [("issuer.type", "compass"), ("issuer.identity_verified", True)], ids=["compass", "verified"]
+    ("field", "value"), [("issuer.type", "server"), ("issuer.identity_verified", True)], ids=["server", "verified"]
 )
-def test_no_record_names_compass_as_its_issuer_or_a_verified_issuer(
+def test_no_record_names_the_server_as_its_issuer_or_a_verified_issuer(
     document: dict[str, Any], field: str, value: object
 ) -> None:
     """A record carries no signature, so whoever opened its run, it can only be the tool's own unverified claim."""
@@ -172,14 +172,14 @@ def test_no_record_names_compass_as_its_issuer_or_a_verified_issuer(
     "where",
     ["event", "stage"],
 )
-def test_an_offline_record_names_no_compass_bundle(where: str) -> None:
+def test_an_offline_record_names_no_server_bundle(where: str) -> None:
     document = record()
-    compass = {"kind": "compass", "digest": PINNED_BUNDLE}
+    server = {"kind": "server", "digest": PINNED_BUNDLE}
     if where == "event":
-        document["events"][0]["provenance"]["bundle"] = compass
+        document["events"][0]["provenance"]["bundle"] = server
     else:
-        document["stages"]["plan"]["ran"]["bundle"] = {**document["stages"]["plan"]["ran"]["bundle"], **compass}
-    with pytest.raises(ValidationError, match="names no Iltero Compass bundle"):
+        document["stages"]["plan"]["ran"]["bundle"] = {**document["stages"]["plan"]["ran"]["bundle"], **server}
+    with pytest.raises(ValidationError, match="names no Iltero Cloud bundle"):
         CAR.model_validate(document)
 
 

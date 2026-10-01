@@ -68,7 +68,7 @@ def _no_token(value: str) -> str:
     return value
 
 
-# A value a CI system or Iltero Compass supplies: it must never carry an identity token.
+# A value a CI system or Iltero Cloud supplies: it must never carry an identity token.
 NoToken = AfterValidator(_no_token)
 
 

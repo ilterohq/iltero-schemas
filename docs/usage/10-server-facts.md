@@ -1,8 +1,8 @@
-# Facts only Iltero Compass holds
+# Facts only Iltero Cloud holds
 
 Some checks need facts a pipeline cannot state about itself. Who approved
 this change? Which exceptions are in force? What did earlier evaluations
-find? Iltero Compass holds those facts. It serves them for one run and one
+find? Iltero Cloud holds those facts. It serves them for one run and one
 stage as an **assurance facts** document, whose shape this package defines.
 
 ## On this page
@@ -64,20 +64,20 @@ says where the facts document the check read came from.
 
 | Value | Meaning |
 | --- | --- |
-| `server` | Iltero Compass issued it for this run |
+| `server` | Iltero Cloud issued it for this run |
 | `local_file` | Someone gave the tool a facts file |
 | `none` | The tool read no facts document |
 
 The value names the document's origin. It does not say whether the facts
-held values or markers. Facts from Iltero Compass whose parts are all
+held values or markers. Facts from Iltero Cloud whose parts are all
 markers are still `server`.
 
 A tool may accept a facts file from a person, for a run it opened on its
-own. That lets someone try a pre-deploy check without Iltero Compass, for
+own. That lets someone try a pre-deploy check without Iltero Cloud, for
 example in a test. The event then says `local_file`, so no reader mistakes
-those facts for ones Compass issued.
+those facts for ones Iltero Cloud issued.
 
-- A record of a run Iltero Compass opened never has `local_file`.
+- A record of a run Iltero Cloud opened never has `local_file`.
 - A record of a run the tool opened on its own never has `server`.
 - Events of every other stage carry `facts_source: null`.
 

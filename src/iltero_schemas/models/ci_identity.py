@@ -1,14 +1,14 @@
-"""The CI job Iltero Compass verified: who ran a stage of a governed run.
+"""The CI job Iltero Cloud verified: who ran a stage of a governed run.
 
 When a pipeline job opens a run or asks for its stage's token, it sends Iltero
-Compass the identity token its CI system issued to it. Compass checks the
+Cloud the identity token its CI system issued to it. Iltero Cloud checks the
 token's signature and its claims before it answers. The answer then names the
 job that token described, as a ``CiIdentity``.
 
-A record keeps one ``CiIdentity`` for each stage of a run Compass opened, so an
+A record keeps one ``CiIdentity`` for each stage of a run Iltero Cloud opened, so an
 auditor can see which workflow, on which branch, produced each stage. The tool
-copies it from Compass's answer. A record is not signed, so the copy in a
-record is only a claim: Compass alone can confirm it, from the run's id.
+copies it from Iltero Cloud's answer. A record is not signed, so the copy in a
+record is only a claim: Iltero Cloud alone can confirm it, from the run's id.
 
 Each CI system names its jobs in its own way. So a ``CiIdentity`` has one
 variant per CI system, told apart by its ``provider`` key. Every variant names

@@ -1,6 +1,6 @@
 # Assertion bundles
 
-An **assertion bundle** is how Iltero Compass hands a pipeline the checks it
+An **assertion bundle** is how Iltero Cloud hands a pipeline the checks it
 must evaluate. It is a signed Open Policy Agent (OPA) bundle that holds one
 compiled module per assertion. This package builds a bundle. It also checks a
 served bundle before anything in it is evaluated.

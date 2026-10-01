@@ -79,7 +79,7 @@ records those around the result.
 
 Building the input, choosing the subjects and recording the input's
 fingerprint is the job of the tool that runs OPA, which is the Iltero CLI or
-Iltero Compass.
+Iltero Cloud.
 
 ### The plan stage
 
@@ -132,13 +132,13 @@ same three fields.
 
 At the `pre_deploy` stage the subject is the change. The profile adds
 `evaluations`, `approvals` and `exceptions`. These are facts only Iltero
-Compass holds.
+Cloud holds.
 
-Each of the three is a list. When Iltero Compass could not supply a fact,
+Each of the three is a list. When Iltero Cloud could not supply a fact,
 the part holds the unknown marker
 `{"__unknown": true, "reason": "server_facts_unavailable"}` instead. A check
 that reads it then comes out `unknown` rather than failed. See
-[facts only Iltero Compass holds](10-server-facts.md). The conformance
+[facts only Iltero Cloud holds](10-server-facts.md). The conformance
 vectors include a complete example.
 
 ### The post-deploy stage
@@ -454,7 +454,7 @@ than the change: `timestamp`, `terraform_version`, `format_version`,
   again from the plan the apply used, and the two must match.
 - The digest binds to the saved plan file. A plan made again from the same
   code can differ.
-- Iltero Compass records the value. It cannot recompute it, because it
+- Iltero Cloud records the value. It cannot recompute it, because it
   receives only the redacted plan.
 
 Every fingerprint is computed over bytes produced the same way everywhere,

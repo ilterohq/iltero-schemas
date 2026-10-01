@@ -4,7 +4,7 @@ A **vector** is a file with a known input and the exact output the code must
 produce for it. Vectors let two programs prove they agree on the contract.
 
 The vectors ship inside the package. Anyone who uses it can run them against
-the version they installed. That includes the Iltero CLI, Iltero Compass and
+the version they installed. That includes the Iltero CLI, Iltero Cloud and
 any third party. If every vector is reproduced, both sides agree on the
 contract. If one is not, that build must fail.
 

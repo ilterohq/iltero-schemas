@@ -2,7 +2,7 @@
 
 A record made with one version of this package must check out with that same
 version, wherever someone checks it. So every consumer pins one exact version
-(`iltero-schemas==X.Y.Z`). Consumers include the Iltero CLI, Iltero Compass,
+(`iltero-schemas==X.Y.Z`). Consumers include the Iltero CLI, Iltero Cloud,
 and anything else that produces or checks a record.
 
 What this package computes never changes under a consumer without a

@@ -3,7 +3,7 @@
 GitHub Actions gives each job an identity token. Its claims name the
 repository, the workflows, the branch or tag, the commit, the event, the CI
 run and attempt, and the runner. This module holds the shape of those claims
-as Iltero Compass reports them. Another CI system adds its own module and
+as Iltero Cloud reports them. Another CI system adds its own module and
 changes none here.
 """
 
@@ -49,7 +49,7 @@ Number = Annotated[str, Field(pattern=NUMBER_PATTERN)]
 
 
 class GithubActionsIdentity(StrictModel):
-    """A GitHub Actions job, as Iltero Compass verified it for one stage of a run."""
+    """A GitHub Actions job, as Iltero Cloud verified it for one stage of a run."""
 
     provider: Literal["github_actions"]
     issuer: IssuerUrl

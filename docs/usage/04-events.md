@@ -33,17 +33,17 @@ The provenance holds these fields:
 
 | Field | What it says |
 | --- | --- |
-| `run` | The run's `id`, and where that id came from. `server_issued` means Iltero Compass issued it. `locally_derived` means the tool made it up on its own. It also names the `unit`, the part of a project that the IaC tool plans and applies as one. |
+| `run` | The run's `id`, and where that id came from. `server_issued` means Iltero Cloud issued it. `locally_derived` means the tool made it up on its own. It also names the `unit`, the part of a project that the IaC tool plans and applies as one. |
 | `source_commit`, `plan_digest` | The git commit and the plan the check is about. |
 | `input_digest` | The fingerprint of the exact document the evaluator saw. |
 | `evaluator` | Which engine ran the check, and its version and digest. For OPA run by this tool, it also holds the limits the tool applied (see below). |
 | `bundle` | The bundle the program came from. |
 | `binding` | The binding entry, when a scanner's result was read for this check. |
-| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and the fingerprint of its logic. `compass_bundle` means a signed bundle Iltero Compass served (see [assertion bundles](12-assertion-bundles.md)). `local` means an assertion file the tool was given. `custom_rego` means a policy written by hand in Rego. |
+| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and the fingerprint of its logic. `server_bundle` means a signed bundle Iltero Cloud served (see [assertion bundles](12-assertion-bundles.md)). `local` means an assertion file the tool was given. `custom_rego` means a policy written by hand in Rego. |
 | `compiled_digest`, `compiler` | The compiled program and the compiler that made it. |
 | `executor` | Who ran the evaluation: a person (`human`) or a pipeline (`workload`). Its `provider` says where it ran. It is `local` for a person's machine. It is `ci` for a job of a CI system the tool could not name. Otherwise it is the name of a CI system, such as `github_actions`. The package refuses any other value, including the spelling `github-actions`. |
-| `ci_context` | Whether the tool checked the CI context file, which describes the CI job. The value is `verified`, `unverified` or `absent`. It is `verified` exactly when the tool checked the file with the run's context key (`basis: context_key_mac`). The context key is a secret Iltero Compass hands out with a run (see [governed runs](09-governed-runs.md#the-run-token-and-the-context-key)). |
-| `facts_source` | For a `pre_deploy` check, where the facts document came from: `server`, `local_file` or `none`. It is `null` at every other stage. See [facts only Iltero Compass holds](10-server-facts.md). |
+| `ci_context` | Whether the tool checked the CI context file, which describes the CI job. The value is `verified`, `unverified` or `absent`. It is `verified` exactly when the tool checked the file with the run's context key (`basis: context_key_mac`). The context key is a secret Iltero Cloud hands out with a run (see [governed runs](09-governed-runs.md#the-run-token-and-the-context-key)). |
+| `facts_source` | For a `pre_deploy` check, where the facts document came from: `server`, `local_file` or `none`. It is `null` at every other stage. See [facts only Iltero Cloud holds](10-server-facts.md). |
 | `fs_hardening` | How the tool protected the files it wrote: `posix`, `windows_profile_acl` or `none`. |
 
 ## Six statuses, each with its reasons
@@ -100,7 +100,7 @@ makes its verdict checkable is the binding. See
 
 ## What is not in an event
 
-Iltero Compass may assign values to an event when it receives one. Those
+Iltero Cloud may assign values to an event when it receives one. Those
 values are not part of a submission. The package refuses any key beyond the
 ones above.
 

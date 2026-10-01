@@ -1,6 +1,6 @@
 # Trusted bundle keys
 
-Iltero Compass signs every assertion bundle it serves (see [governed
+Iltero Cloud signs every assertion bundle it serves (see [governed
 runs](09-governed-runs.md#the-bundle-a-run-is-pinned-to)). A tool accepts a
 bundle only if its signature verifies under a key the tool trusts.
 
@@ -128,7 +128,7 @@ Two rules limit what an old tool can accept:
 
 - **Upgrade promptly.** When a release revokes a key, upgrade every tool
   that checks bundles to a version that depends on it.
-- **Governed runs pin the bundle by its digest.** Iltero Compass fixes each
+- **Governed runs pin the bundle by its digest.** Iltero Cloud fixes each
   run's bundle by its digest when the run opens (see
   [the pins](09-governed-runs.md#the-pins)). A tool in a governed run
   accepts only that bundle.

@@ -51,7 +51,7 @@ API_VERSION = "iltero.io/assurance-context/v1"
 # The marker's reason: a short token, as the evaluator's runtime accepts it.
 REASON_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
-ReferenceTimeSource = Literal["compass_server", "timestamp_authority", "rekor", "runner_clock"]
+ReferenceTimeSource = Literal["server", "timestamp_authority", "rekor", "runner_clock"]
 ReferenceTimeTrust = Literal["attested", "corroborated", "asserted"]
 Authority = Literal["authoritative", "unresolved"]
 # The parts a profile may name, whether or not this version specifies their shape.

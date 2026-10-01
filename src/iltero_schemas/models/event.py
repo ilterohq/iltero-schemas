@@ -245,7 +245,7 @@ class BindingRef(StrictModel):
 
 
 class Bundle(StrictModel):
-    kind: Literal["compass", "local_bundle"]
+    kind: Literal["server", "local_bundle"]
     digest: Digest
 
 
@@ -291,7 +291,7 @@ class CiContext(StrictModel):
         return self
 
 
-# Where the facts document a pre-deploy check read came from: Iltero Compass, a file given to the tool, or none.
+# Where the facts document a pre-deploy check read came from: Iltero Cloud, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
 
@@ -309,7 +309,7 @@ class Provenance(StrictModel):
     bundle: Bundle | None
     # Present exactly when a scanner's result was read for this check (see ``ScannerEvaluator``).
     binding: BindingRef | None
-    assertion_source: Literal["compass_bundle", "local", "custom_rego"]
+    assertion_source: Literal["server_bundle", "local", "custom_rego"]
     assertion_source_digest: Digest
     compiled_digest: Digest | None
     compiler: Compiler | None

@@ -6,7 +6,7 @@
       "/events/0/provenance/run/id": "1c9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
     },
     "remove": [],
-    "message": "of the Compass-issued run the batch names"
+    "message": "of the run Iltero Cloud issued the batch names"
   },
   {
     "name": "batch_event_of_a_local_run",
@@ -15,7 +15,7 @@
       "/events/0/provenance/run/basis": "locally_derived"
     },
     "remove": [],
-    "message": "of the Compass-issued run the batch names"
+    "message": "of the run Iltero Cloud issued the batch names"
   },
   {
     "name": "batch_event_of_another_unit",

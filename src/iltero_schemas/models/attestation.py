@@ -92,7 +92,7 @@ class AttestedAt(StrictModel):
     """
 
     value: Timestamp
-    source: Literal["compass_server", "timestamp_authority", "runner_clock"]
+    source: Literal["server", "timestamp_authority", "runner_clock"]
     trust: ReferenceTimeTrust
 
 

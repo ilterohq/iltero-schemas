@@ -61,7 +61,7 @@ fi
 # 1. Every tracked path must be one the repository is allowed to publish, and
 #    no tracked path may be the private pattern file, a credential file, a
 #    private-pattern match, or a policy file outside the test fixtures.
-allowed_paths='^(src/iltero_schemas/|tests/|docs/|scripts/|\.github/|pyproject\.toml$|pdm\.lock$|README\.md$|CHANGELOG\.md$|CONTRIBUTING\.md$|CODE_OF_CONDUCT\.md$|SECURITY\.md$|LICENSE$|\.gitignore$|\.gitattributes$|\.markdownlint-cli2\.jsonc$|\.pre-commit-config\.yaml$)'
+allowed_paths='^(src/iltero_schemas/|tests/|docs/|scripts/|\.github/|pyproject\.toml$|pdm\.lock$|README\.md$|CHANGELOG\.md$|GLOSSARY\.md$|CONTRIBUTING\.md$|CODE_OF_CONDUCT\.md$|SECURITY\.md$|LICENSE$|\.gitignore$|\.gitattributes$|\.markdownlint-cli2\.jsonc$|\.pre-commit-config\.yaml$)'
 credential_files='(^|/)(\.env[^/]*|[^/]*\.(pem|key|p12|pfx)|id_(rsa|ed25519|ecdsa)[^/]*)$'
 # Instructions written for coding agents are internal to how the project is worked on, never published.
 agent_files='(^|/)(CLAUDE|AGENTS)\.md$'

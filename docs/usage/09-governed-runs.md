@@ -1,14 +1,14 @@
 # Governed runs
 
 A **governed run** is one pass of a pipeline over one stack in one
-environment, opened with Iltero Compass. A **stack** is a project as Iltero
-Compass knows it, named by its `stack_id`. A stack can hold several units.
+environment, opened with Iltero Cloud. A **stack** is a project as Iltero
+Cloud knows it, named by its `stack_id`. A stack can hold several units.
 A unit is the part of the stack that the infrastructure-as-code tool, such
-as Terraform, plans and applies as one. Compass decides, once, what the run
+as Terraform, plans and applies as one. Iltero Cloud decides, once, what the run
 is judged against. It also confirms which CI job ran each stage. So the run
 does not rest only on what the pipeline says about itself. The record of
 such a run still carries no signature. A reader confirms the run by asking
-Iltero Compass.
+Iltero Cloud.
 
 The pipeline proves who it is with the identity token its CI system gives
 each job. That token is an OpenID Connect (OIDC) token. It is a signed JSON
@@ -23,7 +23,7 @@ unknown keys, and none changes the type of a value it reads.
 
 - [How a run works](#how-a-run-works)
 - [Opening a run and moving to the next stage](#opening-a-run-and-moving-to-the-next-stage)
-- [The CI job Iltero Compass verified](#the-ci-job-iltero-compass-verified)
+- [The CI job Iltero Cloud verified](#the-ci-job-iltero-cloud-verified)
 - [The pins](#the-pins)
 - [The run token and the context key](#the-run-token-and-the-context-key)
 - [The two digests](#the-two-digests)
@@ -33,7 +33,7 @@ unknown keys, and none changes the type of a value it reads.
 ## How a run works
 
 1. **The first job opens the run.** It sends its identity token and names the
-   stack, the environment and the stage to start at. Iltero Compass answers
+   stack, the environment and the stage to start at. Iltero Cloud answers
    with the run's id, a run token for that stage, and the pins.
 2. **Each later job asks for its own token.** It sends its own identity token
    and the run's id, and names its stage. Only the run's id passes between
@@ -43,7 +43,7 @@ unknown keys, and none changes the type of a value it reads.
    [the bundle a run is pinned to](#the-bundle-a-run-is-pinned-to).
 4. **Each stage uploads its results.** See
    [uploads](13-uploads.md#what-a-pipeline-uploads).
-5. **The last job closes the run.** Iltero Compass records every owed check
+5. **The last job closes the run.** Iltero Cloud records every owed check
    that got no result. See [closing a run](13-uploads.md#closing-a-run).
 
 ## Opening a run and moving to the next stage
@@ -92,10 +92,10 @@ The identity token, the run token and the context key are all credentials.
   value from a job's outputs anyway. Each job asks for its own run token, and
   only the run id travels between jobs.
 
-## The CI job Iltero Compass verified
+## The CI job Iltero Cloud verified
 
 Every response also carries `ci_identity`. It describes the job whose
-identity token the response answered, as Iltero Compass verified it. Unlike
+identity token the response answered, as Iltero Cloud verified it. Unlike
 the pins, it changes from job to job. The tool copies it into the record's
 stage. An auditor can then see which workflow, on which branch, produced each
 stage.
@@ -131,7 +131,7 @@ repository by its id and its owner's id. The check compares ids rather than
 names, because a repository or its owner can be renamed while a run is in
 progress.
 
-The service that opened the run may require more. Iltero Compass requires
+The service that opened the run may require more. Iltero Cloud requires
 every stage to come from the same CI run. A re-run of failed jobs gets a new
 attempt number and still continues the run. So within one run, only the
 job's workflow file, its deployment environment, its runner and the attempt
@@ -148,19 +148,19 @@ A governed run supports these names:
   `.` and `-`.
 
 A CI job on a branch or in an environment with any other character cannot
-open a run. Iltero Compass refuses its identity token, and the pipeline sees
+open a run. Iltero Cloud refuses its identity token, and the pipeline sees
 only that authentication failed.
 
 ## The pins
 
-Every response for a run carries the same `pins`, exactly as Iltero Compass
-fixed them when the run opened. Compass never recomputes them. So a tool can
+Every response for a run carries the same `pins`, exactly as Iltero Cloud
+fixed them when the run opened. Iltero Cloud never recomputes them. So a tool can
 compare the pins of two responses and know that nothing changed between
 stages.
 
 | Field | What it fixes |
 | --- | --- |
-| `stack_id`, `environment` | What the run is for, as Iltero Compass recorded it. A later job takes these from the pins, not from its own configuration |
+| `stack_id`, `environment` | What the run is for, as Iltero Cloud recorded it. A later job takes these from the pins, not from its own configuration |
 | `bundle` | The signed bundle of checks to evaluate, named by its `revision` and its `digest` together (see [the bundle a run is pinned to](#the-bundle-a-run-is-pinned-to)) |
 | `required_assertions` | The checks the run owes. Each entry gives an assertion's `id`, its `version` and the `digest` of its document. The list is sorted by `id`, holds one version of each assertion, and has at least 1 and at most 1024 entries |
 | `required_assertion_digest` | The digest of that list. A document whose digest does not match its list is refused |
@@ -175,7 +175,7 @@ that held nothing and still looked clean.
 A run token is `irt_` followed by 43 characters. Those characters are 32
 random bytes in URL-safe base64, without padding.
 
-The **context key** is a secret that Iltero Compass gives the pipeline with
+The **context key** is a secret that Iltero Cloud gives the pipeline with
 the run token. It is 43 such characters on their own, which encode 32 random
 bytes.
 
@@ -228,7 +228,7 @@ unit after the approval invalidates the approval.
 
 ## The bundle a run is pinned to
 
-The **bundle descriptor** is the signed bundle as Iltero Compass serves it.
+The **bundle descriptor** is the signed bundle as Iltero Cloud serves it.
 It holds:
 
 | Field | What it holds |

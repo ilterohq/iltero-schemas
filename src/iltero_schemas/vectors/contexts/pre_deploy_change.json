@@ -22,7 +22,7 @@
   },
   "reference_time": {
     "value": "2026-09-16T18:30:00Z",
-    "source": "compass_server",
+    "source": "server",
     "trust": "attested"
   },
   "source": {

@@ -1,12 +1,12 @@
-"""``AssuranceFacts`` v1: what Iltero Compass knows about a run that the pipeline cannot say for itself.
+"""``AssuranceFacts`` v1: what Iltero Cloud knows about a run that the pipeline cannot say for itself.
 
-Some checks need facts only Iltero Compass holds: who approved the change,
+Some checks need facts only Iltero Cloud holds: who approved the change,
 which exceptions are in force, earlier evaluations. The facts document carries
 them for one run and one stage, scoped to the stack, environment and change
 they were issued for. A tool places each part into the part of the evaluation
 input with the same name.
 
-Until Iltero Compass can supply a part, it sends an unknown marker in its place
+Until Iltero Cloud can supply a part, it sends an unknown marker in its place
 rather than an empty list. The difference decides the verdict: an assertion
 that looks for an approval in an empty list fails, as if the change had been
 refused; the same assertion over a marker yields ``unknown`` with the
@@ -48,7 +48,7 @@ class FactsScope(StrictModel):
 
 
 class AssuranceFacts(StrictModel):
-    """The facts for one run and one stage. Every part is a marker until Iltero Compass can fill it."""
+    """The facts for one run and one stage. Every part is a marker until Iltero Cloud can fill it."""
 
     api_version: Literal["iltero.io/assurance-facts/v1"] = Field(alias="apiVersion")
     run_id: Uuid

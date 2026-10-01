@@ -1,4 +1,4 @@
-"""The governed run: how a pipeline opens one with Iltero Compass, and what the run is pinned to.
+"""The governed run: how a pipeline opens one with Iltero Cloud, and what the run is pinned to.
 
 A pipeline job exchanges its CI identity token (an OIDC token, the signed
 JSON Web Token its CI system issues to the job) for a run token: a short-lived
@@ -12,7 +12,7 @@ request (``Authorization: Bearer <token>``). A request body names only what it
 asks for, so a body that still carries a token is refused as an unknown field.
 
 Every response also names the job whose identity token it answered
-(``ci_identity``), as Compass verified it. That changes from job to job.
+(``ci_identity``), as Iltero Cloud verified it. That changes from job to job.
 
 Every response for a run repeats the run's **pins** — the stack and
 environment, the bundle, the checks the run owes, the environment's policy and
@@ -170,7 +170,7 @@ class NotEvaluatedCheck(StrictModel):
     stage: RunStage
     # stage_not_run: the run never reached that stage. scanner_not_run: it did, but no result came.
     reason: Literal["stage_not_run", "scanner_not_run"]
-    # The not_evaluated record Compass stored for this check, so it can be found later.
+    # The not_evaluated record Iltero Cloud stored for this check, so it can be found later.
     event_id: Uuid
 
 

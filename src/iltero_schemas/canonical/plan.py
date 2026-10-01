@@ -8,7 +8,7 @@ of the same change differ. They are dropped; the rest is canonicalized (keys
 sorted, arrays kept in Terraform's order) and digested.
 
 The Iltero CLI computes this from the plan it evaluates and again from the
-plan the apply used; the two must match. Iltero Compass records both the
+plan the apply used; the two must match. Iltero Cloud records both the
 value and the version but cannot recompute it: what it receives is the
 redacted artifact, whose own digest is a different value.
 """

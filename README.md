@@ -6,7 +6,7 @@ found. Several programs take part in that work, and this package is what
 they agree on.
 
 Every consumer pins one exact published version of this package. A consumer
-is the Iltero CLI, Iltero Compass, or anything else that writes or checks a
+is the Iltero CLI, Iltero Cloud, or anything else that writes or checks a
 record. Because both sides use the same version, a record written with it
 can be checked with it.
 

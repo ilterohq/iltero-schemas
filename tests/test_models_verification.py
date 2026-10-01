@@ -54,7 +54,7 @@ def test_a_property_has_one_of_six_states() -> None:
         (lambda d: d["properties"]["integrity"].update(state="passed"), "Input should be"),
         (lambda d: d["properties"]["integrity"].pop("basis"), "Field required"),
         (lambda d: d["record"].update(digest="sha256:abc"), "String should match pattern"),
-        (lambda d: d["verifier"].update(name="compass"), "Input should be 'iltero'"),
+        (lambda d: d["verifier"].update(name="server"), "Input should be 'iltero'"),
         (
             lambda d: d["properties"]["integrity"].update(state="verified", basis="digest_linkage"),
             "verified only by a signature",

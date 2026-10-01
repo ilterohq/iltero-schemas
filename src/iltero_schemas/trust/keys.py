@@ -1,6 +1,6 @@
 """The trusted bundle keys: which public keys may sign an assertion bundle, and which no longer may.
 
-Iltero Compass signs every assertion bundle it serves. A tool that evaluates
+Iltero Cloud signs every assertion bundle it serves. A tool that evaluates
 the bundle checks the signature against the keys listed in
 ``bundle-keys.json`` next to this module. The list ships inside the package,
 so a tool that pins one exact package version also pins which keys it trusts,

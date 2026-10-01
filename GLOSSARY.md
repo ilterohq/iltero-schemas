@@ -23,7 +23,7 @@ levels, from the weakest to the strongest:
 | --- | --- |
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer confirmed where the record came from. It confirmed the repository, the CI system, and the people and jobs named in it. |
-| `compass_governed` | Iltero Compass checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
+| `server_governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
 | `assessor_reviewed` | A named external assessor reviewed the record. |
 | `authority_accepted` | A named authority accepted the record for a stated purpose. |
 
@@ -34,8 +34,8 @@ in this version, so every record is `self_attested`.
 requirements. A record never makes one, so its `compliance_determination` is
 always `null`. A view of a framework is built from records, outside them.
 
-**Governed run.** A run of a pipeline that was opened through Iltero Compass.
-Compass fixes what the run is judged against and confirms which CI job ran
+**Governed run.** A run of a pipeline that was opened through Iltero Cloud.
+Iltero Cloud fixes what the run is judged against and confirms which CI job ran
 each stage. See [governed runs](docs/usage/09-governed-runs.md).
 
 **Verification report.** A separate document that says what a verifier found
@@ -80,7 +80,7 @@ Use these words about a record, each only in the case it describes:
 | integrity verified | Only when a valid signature backs the record's integrity. |
 | source authenticated | When a service other than the writer confirmed where the record came from. |
 | assurance profile satisfied | When the record meets every rule of the organization's assurance profile. |
-| Compass-governed CAR | Only for a record whose `trust_level` is `compass_governed`. No record can have that level in this version. |
+| server-governed CAR | Only for a record whose `trust_level` is `server_governed`. No record can have that level in this version. |
 | externally reviewed | When a named external assessor or authority reviewed the record. |
 
 Do not use these words about a record:
@@ -93,4 +93,4 @@ Do not use these words about a record:
 - governed, on its own
 
 "Governed run" stays the name of the process: a run opened through Iltero
-Compass.
+Cloud.

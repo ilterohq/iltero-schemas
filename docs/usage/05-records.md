@@ -19,7 +19,7 @@ So a record is not a certificate of success. It exists even when a check
 fails.
 
 The record is the document a tool hands on: to an auditor, to a colleague,
-or to Iltero Compass. This package defines its shape.
+or to Iltero Cloud. This package defines its shape.
 
 Anyone may receive a record, including a verifier on someone else's machine.
 So the package accepts exactly the fields below and nothing else. A reader
@@ -41,11 +41,11 @@ it knows.
 | Part | What it says |
 | --- | --- |
 | `uuid`, `run_id`, `unit` | Which record this is, which run it belongs to, and which unit it covers. `run_id` also says whether the run's id was derived locally or issued by a server. |
-| `pins` | For a run Iltero Compass opened, what Compass fixed when the run opened: the bundle, the checks owed, the environment policy's digest, whether a failed check stops the pipeline (`gate_mode`), and the oldest tool version allowed. See [governed runs](09-governed-runs.md#the-pins). It is `null` for a run the tool opened on its own. |
+| `pins` | For a run Iltero Cloud opened, what Iltero Cloud fixed when the run opened: the bundle, the checks owed, the environment policy's digest, whether a failed check stops the pipeline (`gate_mode`), and the oldest tool version allowed. See [governed runs](09-governed-runs.md#the-pins). It is `null` for a run the tool opened on its own. |
 | `trust_level` | How far a reader can trust the record. It is always `self_attested`. See [how far a record can be trusted](#how-far-a-record-can-be-trusted). |
 | `compliance_determination` | Always `null`. A record never decides whether something complies with a framework. |
 | `issuer` | Who wrote the record. `type` is always `local`, the tool on the machine it ran on. `identity_verified` is always `false`, because nothing signs the record. |
-| `governance` | Who opened the run. `run_opened_by` is `compass` exactly when the record has `pins`, and `local` otherwise. |
+| `governance` | Who opened the run. `run_opened_by` is `server` exactly when the record has `pins`, and `local` otherwise. |
 | `subject` | What the record is about: the environment, the unit and the commit. |
 | `change` | Every unit of the change with its plan digest, sorted by unit name, with no unit twice and the record's own unit among them. It also holds the change's `digest` once that is known. A record with a pre-deploy stage always names it (see [the two digests](09-governed-runs.md#the-two-digests)). |
 | `plan` | The plan's fingerprints and what the infrastructure-as-code (IaC) tool said about it (see [the plan's fingerprints](03-compiler-and-evaluation.md#the-plans-fingerprints)). It names the IaC tool that wrote the plan (`tool`, such as `terraform`) and that tool's version (`tool_version`). The tool the plan names is the tool the whole record is about. It also holds `context_digest`, the fingerprint of the plan as the tool kept it after hiding sensitive values. |
@@ -62,7 +62,7 @@ it knows.
 Each entry of `stages` says:
 
 - what ran the stage, under which limits, and what it hid;
-- the CI job Iltero Compass said it verified (`ci_identity`), copied into the
+- the CI job Iltero Cloud said it verified (`ci_identity`), copied into the
   record without a signature, or `null` for a run the tool opened on its own;
 - the files it wrote: its events, and the index of the assertions it
   compiled;
@@ -89,7 +89,7 @@ contract lists five levels, from the weakest to the strongest:
 | --- | --- |
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer confirmed where the record came from. It confirmed the repository, the CI system, and the people and jobs named in it. |
-| `compass_governed` | Iltero Compass checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
+| `server_governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
 | `assessor_reviewed` | A named external assessor reviewed the record. |
 | `authority_accepted` | A named authority accepted the record for a stated purpose. |
 
@@ -101,7 +101,7 @@ are listed so that a reader can see the whole scale.
 For the same reason, a record always names the local tool as its issuer.
 Without a signature, nobody can prove who wrote a record. So a record never
 says its issuer's identity was verified. This holds even for a record of a run
-Iltero Compass opened.
+Iltero Cloud opened.
 
 A record also never decides compliance. Its `compliance_determination` is
 always `null`. A view of a framework, such as which controls a change meets,
@@ -223,43 +223,43 @@ the digest of its units. The record's top level is its stages combined.
 **No record claims more trust than it can carry.** Its `trust_level` is
 `self_attested`. Its issuer is the local tool, and that identity is not
 verified. These rules hold whoever opened the run, so no record names
-Iltero Compass as its issuer.
+Iltero Cloud as its issuer.
 
 **A record with `pins` agrees with them.**
 
-- It says Iltero Compass opened its run (`governance.run_opened_by: compass`).
+- It says Iltero Cloud opened its run (`governance.run_opened_by: server`).
 - Its environment is the pinned one.
 - Every stage says its expected checks came from the pins
   (`server_pinned`). The stages together expect no more checks than were
   pinned.
 - Every stage and every check that names a bundle names the pinned one.
   Every check is of an assertion from that bundle
-  (`assertion_source: compass_bundle`).
+  (`assertion_source: server_bundle`).
 - Every check is of a pinned assertion.
 - No pre-deploy check read its facts from a local file.
 - It names the commit it is about (`subject.source.commit.sha`).
-- Every stage names the CI job that Iltero Compass said it verified
+- Every stage names the CI job that Iltero Cloud said it verified
   (`ci_identity`). All its stages share the same CI system, the same token
   issuer, the same repository and the same commit. GitHub Actions
   identifies the repository by its id and its owner's id. That commit is
   the one the record is about.
 
-**A record without pins claims nothing only Iltero Compass can give.**
+**A record without pins claims nothing only Iltero Cloud can give.**
 
 - It says the tool opened its run on its own
   (`governance.run_opened_by: local`). It says the tool chose its expected
   checks itself (`locally_derived`).
-- It names no Iltero Compass bundle and no check from one.
-- It has no facts from Iltero Compass (`facts_source: server`).
+- It names no Iltero Cloud bundle and no check from one.
+- It has no facts from Iltero Cloud (`facts_source: server`).
 - It has no CI context file checked with a run's context key, and no CI
-  job verified by Iltero Compass. (The context key is a secret Compass hands
+  job verified by Iltero Cloud. (The context key is a secret Iltero Cloud hands
   out with a run. See
   [governed runs](09-governed-runs.md#the-run-token-and-the-context-key).)
 
 These rules check that a record is consistent. They cannot prove that
-Iltero Compass really opened the run. The record is not signed, so whoever
+Iltero Cloud really opened the run. The record is not signed, so whoever
 writes it can also write pins, and a verified CI job for each stage, that
-agree with it. Only Iltero Compass can confirm a run, and the CI jobs it
+agree with it. Only Iltero Cloud can confirm a run, and the CI jobs it
 verified, by looking up its `run_id`.
 
 The signed bundle, not the record, says which pinned assertions belong to

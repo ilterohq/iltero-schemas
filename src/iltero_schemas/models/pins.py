@@ -1,12 +1,12 @@
-"""How a record agrees with the run it belongs to: pinned by Iltero Compass, or opened by the tool on its own.
+"""How a record agrees with the run it belongs to: pinned by Iltero Cloud, or opened by the tool on its own.
 
-A run Iltero Compass opened carries pins: what Compass fixed when the run
+A run Iltero Cloud opened carries pins: what Iltero Cloud fixed when the run
 opened. A record of that run must agree with them. A record of a run the tool
-opened on its own has no pins, and must not claim anything only Compass can
-give: a Compass bundle, facts from Compass, a CI context verified with a
-run's context key, or a CI job Compass verified.
+opened on its own has no pins, and must not claim anything only Iltero Cloud can
+give: an Iltero Cloud bundle, facts from Iltero Cloud, a CI context verified with a
+run's context key, or a CI job Iltero Cloud verified.
 
-Each stage of a pinned record names the CI job Compass verified for it. The
+Each stage of a pinned record names the CI job Iltero Cloud verified for it. The
 stages of one run share its CI system, its token issuer, its source (for
 GitHub Actions, the ids of the repository and of its owner) and its commit.
 A pinned record names that commit as the one it is about. The service that
@@ -23,12 +23,12 @@ if TYPE_CHECKING:
 
 
 def check_pins(car: CAR) -> None:
-    """Raise ``ValueError`` unless the record names pins exactly when Compass opened its run, and agrees with them."""
+    """Raise ``ValueError`` unless the record names pins exactly when Iltero Cloud opened its run, and agrees."""
     pinned = car.pins is not None
     if pinned != (car.run_id.basis == "server_issued"):
-        raise ValueError("a record names the run's pins exactly when Iltero Compass issued the run")
-    if (car.governance.run_opened_by == "compass") != pinned:
-        raise ValueError("a record says Iltero Compass opened its run exactly when Iltero Compass issued the run")
+        raise ValueError("a record names the run's pins exactly when Iltero Cloud issued the run")
+    if (car.governance.run_opened_by == "server") != pinned:
+        raise ValueError("a record says Iltero Cloud opened its run exactly when Iltero Cloud issued the run")
     for stage, record in car.stages.items():
         if (record.coverage.assertions_expected.basis == "server_pinned") != pinned:
             raise ValueError(f"stages.{stage.value}: counts its checks as server_pinned exactly when pinned")
@@ -48,29 +48,29 @@ def _bundles(car: CAR) -> list[tuple[str, str]]:
 
 
 def _check_offline(car: CAR) -> None:
-    """A record of a run the tool opened claims nothing that only Iltero Compass can give."""
+    """A record of a run the tool opened claims nothing that only Iltero Cloud can give."""
     provenance = [event.provenance for event in car.events]
-    if any(kind == "compass" for kind, _ in _bundles(car)):
-        raise ValueError("a record of a run the tool opened names no Iltero Compass bundle")
-    if any(p.assertion_source == "compass_bundle" for p in provenance):
-        raise ValueError("a record of a run the tool opened has no checks from an Iltero Compass bundle")
+    if any(kind == "server" for kind, _ in _bundles(car)):
+        raise ValueError("a record of a run the tool opened names no Iltero Cloud bundle")
+    if any(p.assertion_source == "server_bundle" for p in provenance):
+        raise ValueError("a record of a run the tool opened has no checks from an Iltero Cloud bundle")
     if any(p.facts_source == "server" for p in provenance):
-        raise ValueError("a record of a run the tool opened has no facts from Iltero Compass")
+        raise ValueError("a record of a run the tool opened has no facts from Iltero Cloud")
     if any(p.ci_context.basis == "context_key_mac" for p in provenance):
         raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
     if any(record.ci_identity is not None for record in car.stages.values()):
-        raise ValueError("a record of a run the tool opened names no CI job verified by Iltero Compass")
+        raise ValueError("a record of a run the tool opened names no CI job verified by Iltero Cloud")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
-    """A record of a run Iltero Compass opened agrees with the pins it was opened under."""
+    """A record of a run Iltero Cloud opened agrees with the pins it was opened under."""
     if car.subject.environment != pins.environment:
         raise ValueError("the record's environment is the one the run was pinned to")
-    if any(bundle != ("compass", pins.bundle.digest) for bundle in _bundles(car)):
+    if any(bundle != ("server", pins.bundle.digest) for bundle in _bundles(car)):
         raise ValueError("every stage and every check used the bundle the run was pinned to")
     # The assertions of a governed run come from its bundle, whether the evaluator or a scanner decided them.
-    if any(e.provenance.assertion_source != "compass_bundle" for e in car.events):
-        raise ValueError("every check in a pinned record is of an assertion from the Iltero Compass bundle")
+    if any(e.provenance.assertion_source != "server_bundle" for e in car.events):
+        raise ValueError("every check in a pinned record is of an assertion from the Iltero Cloud bundle")
     if any(e.provenance.facts_source == "local_file" for e in car.events):
         raise ValueError("a pinned record's pre-deploy checks read no facts from a local file")
     required = {(a.id, a.version, a.digest) for a in pins.required_assertions}
@@ -87,7 +87,7 @@ def _check_ci_identities(car: CAR) -> None:
     identities = []
     for stage, record in car.stages.items():
         if record.ci_identity is None:
-            raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job Compass verified")
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job Iltero Cloud verified")
         identities.append(record.ci_identity)
     shared = {(i.provider, i.issuer, i.source_key(), i.commit) for i in identities}
     if len(shared) > 1:

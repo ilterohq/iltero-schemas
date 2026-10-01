@@ -84,10 +84,10 @@ Two examples show what `not_performed` means for a run the Iltero CLI opened
 on its own:
 
 - `source_identity` is `not_performed` with the basis `run_opened_locally`.
-  The step is source authentication by Iltero Compass. It does not happen in
+  The step is source authentication by Iltero Cloud. It does not happen in
   a run the CLI opened on its own.
 - `bundle_provenance` is `not_performed` with the basis `local_assertions`.
-  The step is checking a bundle Iltero Compass signed. A run the CLI opened
+  The step is checking a bundle Iltero Cloud signed. A run the CLI opened
   on its own uses its own assertions and no signed bundle.
 
 ## No overall verdict

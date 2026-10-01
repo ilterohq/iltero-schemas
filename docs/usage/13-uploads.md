@@ -132,7 +132,8 @@ The close request has no body. The answer holds:
   time it was `closed_at`;
 - `not_evaluated`: each pinned check that had no accepted result, sorted by
   assertion id. An entry names the `assertion` (id, version and digest), its
-  `stage`, and the `reason`;
+  `stage`, the `reason`, and `event_id`: the id of the `not_evaluated`
+  record Iltero Compass stored for it. No two entries name the same record;
 - `materialized_not_evaluated`: how many entries that list holds.
 
 Each check in that list is recorded as `not_evaluated`. The reason is
@@ -143,10 +144,10 @@ unit of the run has a stored result for it that counts: `accepted`,
 for each unit.
 
 After the close, the run's tokens work for nothing but the close itself. A
-repeated close with the same token returns the same answer, so a pipeline
-that lost the first answer can ask again. A run the pipeline never closes
-ends on its own 7 days after its last token was issued, with the same
-`not_evaluated` rule.
+repeated close with the same token returns the same answer, record ids
+included, so a pipeline that lost the first answer can ask again. A run the
+pipeline never closes ends on its own 7 days after its last token was
+issued, with the same `not_evaluated` rule.
 
 ## Where artifacts go
 

@@ -64,16 +64,16 @@ keep, so any two tools agree on what a record means.
   follow GitHub Actions identity tokens.
 - Uploads to Iltero Compass: a batch of 1 to 2,000 checks, all of the run,
   stage and unit it names, and the answer to every upload. The answer names
-  the digest of the body received, and gives one result per event:
-  `accepted`, `duplicate` (same check, same content), `conflict` (same
-  check, different content, the worse status stands), `rejected` or
-  `invalid`, with the reason for a refusal and the stored event's id and
-  digest. The fixed order of statuses, worst first. The answer to closing a
-  run, listing each pinned check that had no result. Where a run's artifacts
-  go (`artifact_store`): an ordinary S3 bucket and a prefix ending with the
-  run's id, a KMS key named by its id alone, `COMPLIANCE` lock mode, and a
-  lock date later than the response. The store, its prefix and its key never
-  change within a run, and the lock date never moves earlier.
+  the digest of the body received, and gives one result per event: `accepted`,
+  `duplicate` (same check, same content), `conflict` (same check, different
+  content, the worse status stands), `rejected` or `invalid`, with the reason
+  for a refusal and the stored event's id and digest. The fixed order of
+  statuses, worst first. The answer to closing a run, listing each pinned
+  check that had no result and the record stored for it. Where a run's
+  artifacts go (`artifact_store`): an ordinary S3 bucket and a prefix ending
+  with the run's id, a KMS key named by its id alone, `COMPLIANCE` lock mode,
+  and a lock date later than the response. The store, its prefix and its key
+  never change within a run, and the lock date never moves earlier.
 - The digest of an assertion set and the digest of a change across every
   unit's plan, with vectors. A record's change lists its units sorted and
   once each, includes its own unit, and its digest is checked by readers.

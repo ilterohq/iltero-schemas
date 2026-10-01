@@ -276,6 +276,24 @@
     "message": "Input should be 'stage_not_run' or 'scanner_not_run'"
   },
   {
+    "name": "close_check_naming_no_record",
+    "vector": "run_close_response.json",
+    "set": {},
+    "remove": [
+      "/not_evaluated/0/event_id"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "close_two_checks_one_record",
+    "vector": "run_close_response.json",
+    "set": {
+      "/not_evaluated/1/event_id": "4e5f6a7b-8c9d-4e0f-9a1b-2c3d4e5f6a7b"
+    },
+    "remove": [],
+    "message": "names its own stored record"
+  },
+  {
     "name": "store_prefix_without_a_final_slash",
     "vector": "run_open_response.json",
     "set": {

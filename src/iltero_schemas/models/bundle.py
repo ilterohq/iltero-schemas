@@ -1,6 +1,6 @@
 """``BundleDescriptor`` v1: a signed assertion bundle, and what a tool needs to check it before use.
 
-Iltero Cloud serves the checks a governed run must evaluate as a signed
+The server serves the checks a governed run must evaluate as a signed
 Open Policy Agent (OPA) bundle. The descriptor carries the bundle itself (the
 signed tarball, base64-encoded) together with each assertion's source YAML,
 so a tool can recompile every source and compare the result byte for byte

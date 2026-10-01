@@ -329,5 +329,5 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"
-    with pytest.raises(ValidationError, match="has no facts from Iltero Cloud"):
+    with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)

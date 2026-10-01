@@ -1,6 +1,7 @@
 {
   "assurance_event_batch.json": "sha256:03eeac86ef950cdc8e8cd1252d1fa2ab128942f40b583b8025cce32fc2de6e8d",
   "assurance_facts.json": "sha256:167344da21c271f2eb9563c55b3db6a51348670136c6e8bfcd22400a279f36fb",
+  "change_assurance_record.json": "sha256:d46b69c105d41f2e0f3787ea68063354178b38f887e24ca4c9a0e97ae67c4d03",
   "run_close_response.json": "sha256:2ac1cf580af38615cc206b1adf6e090f06360817b6b49cab97e9e40fc5a26734",
   "run_open_request.json": "sha256:e87b57b763da45d8132504813e2b6770e7d0ad95862eee5c59c84b74f3e2537d",
   "run_open_response.json": "sha256:81c51447b000701194f90036cbad5921128829f399fb7f52fcb18055065ee285",

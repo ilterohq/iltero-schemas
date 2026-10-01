@@ -89,7 +89,7 @@ contract lists five levels, from the weakest to the strongest:
 | --- | --- |
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer confirmed where the record came from. It confirmed the repository, the CI system, and the people and jobs named in it. |
-| `server_governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
+| `governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
 | `assessor_reviewed` | A named external assessor reviewed the record. |
 | `authority_accepted` | A named authority accepted the record for a stated purpose. |
 

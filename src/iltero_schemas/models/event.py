@@ -291,7 +291,7 @@ class CiContext(StrictModel):
         return self
 
 
-# Where the facts document a pre-deploy check read came from: Iltero Cloud, a file given to the tool, or none.
+# Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
 

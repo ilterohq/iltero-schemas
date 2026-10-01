@@ -6,7 +6,7 @@
       "/events/0/provenance/run/id": "1c9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
     },
     "remove": [],
-    "message": "of the run Iltero Cloud issued the batch names"
+    "message": "of the server-issued run the batch names"
   },
   {
     "name": "batch_event_of_a_local_run",
@@ -15,7 +15,7 @@
       "/events/0/provenance/run/basis": "locally_derived"
     },
     "remove": [],
-    "message": "of the run Iltero Cloud issued the batch names"
+    "message": "of the server-issued run the batch names"
   },
   {
     "name": "batch_event_of_another_unit",
@@ -409,5 +409,50 @@
       "/artifact_store"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "record_issued_by_the_server",
+    "vector": "change_assurance_record.json",
+    "set": {
+      "/issuer/type": "server"
+    },
+    "remove": [],
+    "message": "Input should be 'local'"
+  },
+  {
+    "name": "record_with_a_verified_issuer",
+    "vector": "change_assurance_record.json",
+    "set": {
+      "/issuer/identity_verified": true
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "record_trust_level_above_self_attested",
+    "vector": "change_assurance_record.json",
+    "set": {
+      "/trust_level": "governed"
+    },
+    "remove": [],
+    "message": "a record without a signature is self_attested"
+  },
+  {
+    "name": "record_with_a_compliance_determination",
+    "vector": "change_assurance_record.json",
+    "set": {
+      "/compliance_determination": "compliant"
+    },
+    "remove": [],
+    "message": "Input should be None"
+  },
+  {
+    "name": "record_says_the_server_opened_a_run_without_pins",
+    "vector": "change_assurance_record.json",
+    "set": {
+      "/governance/run_opened_by": "server"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
   }
 ]

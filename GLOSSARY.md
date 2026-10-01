@@ -23,7 +23,7 @@ levels, from the weakest to the strongest:
 | --- | --- |
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer confirmed where the record came from. It confirmed the repository, the CI system, and the people and jobs named in it. |
-| `server_governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
+| `governed` | Iltero Cloud checked the record against a set of rules the organization chose, and checked that each piece of evidence links to the one before it. |
 | `assessor_reviewed` | A named external assessor reviewed the record. |
 | `authority_accepted` | A named authority accepted the record for a stated purpose. |
 
@@ -80,7 +80,7 @@ Use these words about a record, each only in the case it describes:
 | integrity verified | Only when a valid signature backs the record's integrity. |
 | source authenticated | When a service other than the writer confirmed where the record came from. |
 | assurance profile satisfied | When the record meets every rule of the organization's assurance profile. |
-| server-governed CAR | Only for a record whose `trust_level` is `server_governed`. No record can have that level in this version. |
+| governed CAR | Only for a record whose `trust_level` is `governed`. No record can have that level in this version. |
 | externally reviewed | When a named external assessor or authority reviewed the record. |
 
 Do not use these words about a record:
@@ -90,7 +90,7 @@ Do not use these words about a record:
 - compliant
 - audit-ready
 - auditor-approved
-- governed, on its own
+- governed, about a record whose `trust_level` is not `governed`
 
 "Governed run" stays the name of the process: a run opened through Iltero
 Cloud.

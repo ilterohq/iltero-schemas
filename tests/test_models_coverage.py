@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.coverage import VERDICT_PRECEDENCE, StageOutcome, Verdict, combine
+from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((Path(__file__).parent / "data" / "plan_record.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "wire" / "change_assurance_record.json").read_text(encoding="utf-8"))
 PLAN_STAGE: dict[str, Any] = {key: RECORD["stages"]["plan"][key] for key in ("coverage", "verdict", "assurance_status")}
 PLAN = StageOutcome.model_validate(PLAN_STAGE)
 

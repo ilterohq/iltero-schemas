@@ -57,8 +57,8 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
     ("change", "message"),
     [
         ({"coverage.checks": 4}, "add up to the number of checks"),
-        ({"trust_level": "governed"}, "Input should be 'self_attested'"),
-        ({"trust_level": "server_governed"}, "a record without a signature is self_attested"),
+        ({"trust_level": "server_governed"}, "Input should be 'self_attested'"),
+        ({"trust_level": "governed"}, "a record without a signature is self_attested"),
         ({"trust_level": "authority_accepted"}, "a record without a signature is self_attested"),
         ({"compliance_determination": "compliant"}, "Input should be None"),
         ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),

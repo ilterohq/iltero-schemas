@@ -107,21 +107,21 @@ class Issuer(StrictModel):
 
 
 class Governance(StrictModel):
-    """Who opened the run the record belongs to: Iltero Cloud, or the tool on its own."""
+    """Who opened the run the record belongs to: the server, or the tool on its own."""
 
     run_opened_by: Literal["server", "local"]
 
 
 # How far a record's facts were established, from the weakest level to the strongest.
 # self_attested: written by the tool alone. source_authenticated: the issuing service authenticated the
-# repository, CI and identity sources. server_governed: the issuing service enforced a declared assurance
+# repository, CI and identity sources. governed: the issuing service enforced a declared assurance
 # profile and verified the evidence chain. assessor_reviewed: a named external assessor reviewed it.
 # authority_accepted: a named authority accepted it for a stated purpose. Every level above self_attested
 # needs a signature, which this version of the record cannot carry.
 TrustLevel = Literal[
     "self_attested",
     "source_authenticated",
-    "server_governed",
+    "governed",
     "assessor_reviewed",
     "authority_accepted",
 ]
@@ -276,7 +276,7 @@ class StageRecord(StrictModel):
     observed_at: Timestamp
     reference_time: dict[str, Any]
     ran: Ran
-    # The CI job Iltero Cloud verified for this stage; null for a run the tool opened on its own.
+    # The CI job the server verified for this stage; null for a run the tool opened on its own.
     ci_identity: CiIdentity | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
@@ -391,8 +391,8 @@ class CAR(StrictModel):
     api_version: Literal["iltero.io/car/v1"] = Field(alias="apiVersion")
     uuid: Uuid
     run_id: RunId
-    # What Iltero Cloud fixed when it opened the run — the bundle, the checks owed, the environment policy
-    # and whether a failed check stops the pipeline — present exactly for a run Iltero Cloud issued.
+    # What the server fixed when it opened the run — the bundle, the checks owed, the environment policy
+    # and whether a failed check stops the pipeline — present exactly for a run the server issued.
     pins: RunPins | None
     unit: Identifier
     trust_level: TrustLevel

@@ -1,4 +1,4 @@
-"""The CI job Iltero Cloud verified: each value has the one shape the CI system gives it."""
+"""The CI job the server verified: each value has the one shape the CI system gives it."""
 
 from __future__ import annotations
 

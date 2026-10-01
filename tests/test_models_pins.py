@@ -1,4 +1,4 @@
-"""A record of a run the tool opened claims nothing only Iltero Cloud can give; a pinned record keeps to its pins."""
+"""A record of a run the tool opened claims nothing only the server can give; a pinned record keeps to its pins."""
 
 from __future__ import annotations
 
@@ -51,14 +51,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
 @pytest.mark.parametrize(
     ("document", "message"),
     [
-        (_with_event(record(), assertion_source="server_bundle"), "no checks from an Iltero Cloud bundle"),
+        (_with_event(record(), assertion_source="server_bundle"), "no checks from a server bundle"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
-        (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by Iltero Cloud"),
+        (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
     ],
     ids=[
-        "a check from an Iltero Cloud bundle",
+        "a check from a server bundle",
         "a CI context verified with the key",
-        "a CI job Iltero Cloud verified",
+        "a CI job the server verified",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -70,7 +70,7 @@ def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
 
 @pytest.mark.parametrize("source", ["local", "custom_rego"])
 def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_server_bundle(source: str) -> None:
-    with pytest.raises(ValidationError, match="of an assertion from the Iltero Cloud bundle"):
+    with pytest.raises(ValidationError, match="of an assertion from the server's bundle"):
         CAR.model_validate(_with_event(pinned(), assertion_source=source), context=_READER)
 
 
@@ -123,30 +123,30 @@ def _pinned_to_fewer() -> dict[str, Any]:
 @pytest.mark.parametrize(
     ("document", "message"),
     [
-        (record(pins=PINS), "exactly when Iltero Cloud issued the run"),
-        (pinned(pins=None), "exactly when Iltero Cloud issued the run"),
+        (record(pins=PINS), "exactly when the server issued the run"),
+        (pinned(pins=None), "exactly when the server issued the run"),
         (pinned(**{"subject.environment": "staging"}), "the one the run was pinned to"),
         (pinned(**{"stages.plan.coverage.assertions_expected.basis": "locally_derived"}), "server_pinned exactly"),
         (_with_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
         (_with_bundle("server", "sha256:" + "9" * 64), "the bundle the run was pinned to"),
         (_with_stage_bundle("local_bundle", PINNED_BUNDLE), "the bundle the run was pinned to"),
-        (pinned(**{"governance.run_opened_by": "local"}), "says Iltero Cloud opened its run exactly when"),
+        (pinned(**{"governance.run_opened_by": "local"}), "says the server opened its run exactly when"),
         (_pinned_to_fewer(), "an assertion the run was pinned to"),
         (pinned(**{"stages.plan.coverage.assertions_expected.value": 6}), "no more checks than"),
-        (record(**{"governance.run_opened_by": "server"}), "says Iltero Cloud opened its run exactly when"),
+        (record(**{"governance.run_opened_by": "server"}), "says the server opened its run exactly when"),
     ],
     ids=[
         "pins on an offline run",
-        "no pins on an Iltero Cloud run",
+        "no pins on a server-opened run",
         "another environment",
         "counts not from the pins",
         "a local bundle",
-        "another Iltero Cloud bundle",
+        "another server bundle",
         "a stage that loaded another bundle",
-        "an Iltero Cloud run said to be opened locally",
+        "a server-opened run said to be opened locally",
         "a check outside the pinned set",
         "more checks expected than pinned",
-        "an offline run said to be opened by Iltero Cloud",
+        "an offline run said to be opened by the server",
     ],
 )
 def test_a_record_that_disagrees_with_its_pins_is_refused(document: dict[str, Any], message: str) -> None:
@@ -179,7 +179,7 @@ def test_an_offline_record_names_no_server_bundle(where: str) -> None:
         document["events"][0]["provenance"]["bundle"] = server
     else:
         document["stages"]["plan"]["ran"]["bundle"] = {**document["stages"]["plan"]["ran"]["bundle"], **server}
-    with pytest.raises(ValidationError, match="names no Iltero Cloud bundle"):
+    with pytest.raises(ValidationError, match="names no server bundle"):
         CAR.model_validate(document)
 
 

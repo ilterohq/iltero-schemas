@@ -1,28 +1,28 @@
-"""What a governed run sends Iltero Cloud, and the answer it gets back for each thing it sent.
+"""What a governed run sends the server, and the answer it gets back for each thing it sent.
 
-A pipeline job uploads its checks to Iltero Cloud in batches. A batch names the
+A pipeline job uploads its checks to the server in batches. A batch names the
 run, the stage and the unit it belongs to, and holds up to 2,000 events.
-Iltero Cloud answers every upload with a ``SubmissionOutcome``. The answer holds
+The server answers every upload with a ``SubmissionOutcome``. The answer holds
 one result for each event, in the order the events were sent. One bad event
 does not fail the others. The identity document and the record are uploaded
 one at a time, and each gets an answer with a single result.
 
 Two events are for the same check when they share the run, the stage, the
-unit, the assertion id and the subject's id. Each result says what Iltero Cloud
+unit, the assertion id and the subject's id. Each result says what the server
 did with the event:
 
 - ``accepted``: the event was stored.
 - ``duplicate``: an event for the same check with the same content was
   already stored. The result names that event.
 - ``conflict``: an event for the same check with different content was
-  already stored. Iltero Cloud stores the new one too and overwrites nothing. Of
+  already stored. The server stores the new one too and overwrites nothing. Of
   the two statuses, the worse one stands (see ``worse_status``).
-- ``rejected``: the event is well formed, but Iltero Cloud did not accept it for
+- ``rejected``: the event is well formed, but the server did not accept it for
   this run. The result says why. A rejected event never counts.
 - ``invalid``: the event does not match its schema. Nothing was stored.
 
 Each stored event is named by its id and by its digest, so a pipeline can
-check that Iltero Cloud stored exactly what it sent.
+check that the server stored exactly what it sent.
 """
 
 from __future__ import annotations
@@ -41,11 +41,11 @@ EVENTS_API_VERSION = "iltero.io/assurance-event-batch/v1"
 OUTCOME_API_VERSION = "iltero.io/submission-outcome/v1"
 # The most events one upload may hold.
 MAX_BATCH_EVENTS = 2000
-# The largest request body Iltero Cloud reads: 5 MiB.
+# The largest request body the server reads: 5 MiB.
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 
 Disposition = Literal["accepted", "duplicate", "conflict", "rejected", "invalid"]
-# Why Iltero Cloud refused an event or a document. ``schema_invalid`` is the only reason for ``invalid``.
+# Why the server refused an event or a document. ``schema_invalid`` is the only reason for ``invalid``.
 RejectReason = Literal[
     "stage_mismatch",
     "stage_not_allowed",
@@ -82,7 +82,7 @@ class AssuranceEventBatch(_BatchHeader):
         for index, event in enumerate(self.events):
             run = event.provenance.run
             if run.basis != "server_issued" or run.id != self.run_id:
-                raise ValueError(f"events[{index}]: every event is of the run Iltero Cloud issued the batch names")
+                raise ValueError(f"events[{index}]: every event is of the server-issued run the batch names")
             if run.unit != self.unit:
                 raise ValueError(f"events[{index}]: every event is of the unit the batch names")
             if event.evaluation.stage.value != self.stage:
@@ -103,7 +103,7 @@ class AssuranceEventBatchEnvelope(_BatchHeader):
 
 
 class EventResult(StrictModel):
-    """What Iltero Cloud did with one event or document."""
+    """What the server did with one event or document."""
 
     # The position of the event in the upload. An upload of one document is answered at 0.
     index: Annotated[int, Field(ge=0)]
@@ -137,12 +137,12 @@ class EventResult(StrictModel):
 
 
 class SubmissionOutcome(StrictModel):
-    """Iltero Cloud's answer to an upload: one result for each event, in the order they were sent."""
+    """The server's answer to an upload: one result for each event, in the order they were sent."""
 
     api_version: Literal["iltero.io/submission-outcome/v1"] = Field(alias="apiVersion")
     submission_id: Uuid
     received_at: Timestamp
-    # The sha256 of the request body exactly as Iltero Cloud received it.
+    # The sha256 of the request body exactly as the server received it.
     body_digest: Digest
     results: Annotated[list[EventResult], Field(min_length=1, max_length=MAX_BATCH_EVENTS)]
 

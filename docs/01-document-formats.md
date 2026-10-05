@@ -172,8 +172,7 @@ Key rules:
 An assurance event is one verdict: the result of one assertion about one subject, with the provenance needed to say
 who produced it and to reproduce it.
 
-- **apiVersion:** none. An event travels inside a [CAR](#change-assurance-record-car) or an
-  [event batch](#assuranceeventbatch).
+- **apiVersion:** none. An event travels inside a [CAR](#change-assurance-record-car).
 - **Model:** `iltero_schemas.models.event.AssuranceEvent`
 
 | Field | Type | Meaning |

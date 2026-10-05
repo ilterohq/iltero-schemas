@@ -2,10 +2,10 @@
 
 AWS names each resource by an Amazon Resource Name (ARN). This module holds
 the rules an ARN must follow for each resource type a resolver may bind. It
-also holds the AWS variants of three shared shapes: the cloud side of an
-identity binding, the resolver that wrote it, and the artifact store of a run,
-which is an S3 bucket. Each cloud provider keeps its own rules and variants in
-its own module, so another provider adds a module and changes none here.
+also holds the AWS variants of two shared shapes: the cloud side of an
+identity binding, and the resolver that wrote it. Each cloud provider keeps
+its own rules and variants in its own module, so another provider adds a
+module and changes none here.
 """
 
 from __future__ import annotations
@@ -15,11 +15,10 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Annotated, Final, Literal
 
-from pydantic import AfterValidator, Field, model_validator
+from pydantic import Field, model_validator
 
 from iltero_schemas.models.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.fields import NoToken, Timestamp
 
 # The scheme a cloud identifier is written in when it is an ARN.
 SCHEME_AWS_ARN: Final = "aws_arn"
@@ -36,7 +35,7 @@ _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 # A KMS key id: a UUID, or "mrk-" and 32 hex digits for a key that spans regions.
 KMS_KEY_ID = rf"({_UUID}|mrk-[0-9a-f]{{32}})"
 # Bucket names S3 keeps for access points, directory buckets and other special kinds. None of them
-# is an ordinary bucket that can hold a locked object, and no ordinary bucket has one.
+# is an ordinary bucket, and no ordinary bucket has one.
 RESERVED_BUCKET_PREFIXES = ("xn--", "sthree-", "amzn-s3-demo-")
 RESERVED_BUCKET_SUFFIXES = ("-s3alias", "--ol-s3", ".mrap", "--x-s3", "--table-s3")
 # An S3 bucket name as S3 issues it: 3 to 63 lowercase letters, digits, dots and hyphens, starting and
@@ -121,42 +120,3 @@ class AwsResolver(StrictModel):
         if not sorted_unique(self.verified):
             raise ValueError("the verified types are sorted and named once")
         return self
-
-
-# An S3 bucket, then one or more folder names, ending in "/". The bucket name has no dots. A folder
-# name never starts with a dot, so "." and ".." cannot appear. The prefix holds no query, fragment or space.
-ARTIFACT_PREFIX_PATTERN = r"^s3://[a-z0-9][a-z0-9-]{1,61}[a-z0-9]/([A-Za-z0-9_=-][A-Za-z0-9_.=-]*/)+$"
-# Leaves room under S3's 1,024-byte key limit for the 64 hex digits of an artifact's digest.
-ARTIFACT_PREFIX_MAX_LENGTH = 512
-
-
-def _ordinary_bucket(value: str) -> str:
-    """``value`` when its bucket is an ordinary S3 bucket; raises ``ValueError`` otherwise."""
-    bucket = value.removeprefix("s3://").split("/", 1)[0]
-    if bucket.startswith(RESERVED_BUCKET_PREFIXES) or bucket.endswith(RESERVED_BUCKET_SUFFIXES):
-        raise ValueError("must name an ordinary S3 bucket")
-    return value
-
-
-ArtifactPrefix = Annotated[
-    str,
-    Field(pattern=ARTIFACT_PREFIX_PATTERN, max_length=ARTIFACT_PREFIX_MAX_LENGTH),
-    AfterValidator(_ordinary_bucket),
-    NoToken,
-]
-# A KMS key named by its id alone, so it is always a key in the account the pipeline runs in.
-KmsKeyId = Annotated[str, Field(pattern=rf"^{KMS_KEY_ID}$")]
-
-
-class S3ArtifactStore(StrictModel):
-    """A run's artifact store in an S3 bucket, whose objects S3 Object Lock keeps until a date."""
-
-    provider: Literal["aws"]
-    # Each artifact goes to this prefix followed by the lowercase hex sha256 of its bytes.
-    # The prefix's last folder is the run's id.
-    uri_prefix: ArtifactPrefix
-    retention_until: Timestamp
-    # The S3 Object Lock mode under which no one, not even the account's root user, can shorten the lock.
-    lock_mode: Literal["COMPLIANCE"]
-    # The key the bucket encrypts with. It is null when the bucket uses its default encryption.
-    kms_key_id: KmsKeyId | None

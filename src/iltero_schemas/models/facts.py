@@ -1,12 +1,8 @@
-"""``AssuranceFacts`` v1: what the server knows about a run that the pipeline cannot say for itself.
+"""The unknown marker: what stands in the evaluation input where a fact could not be supplied.
 
 Some checks need facts only the server holds: who approved the change,
-which exceptions are in force, earlier evaluations. The facts document carries
-them for one run and one stage, scoped to the stack, environment and change
-they were issued for. A tool places each part into the part of the evaluation
-input with the same name.
-
-Until the server can supply a part, it sends an unknown marker in its place
+which exceptions are in force, earlier evaluations. Until the server can
+supply such a part, the evaluation input holds an unknown marker in its place
 rather than an empty list. The difference decides the verdict: an assertion
 that looks for an approval in an empty list fails, as if the change had been
 refused; the same assertion over a marker yields ``unknown`` with the
@@ -20,9 +16,7 @@ from typing import Literal
 from pydantic import ConfigDict, Field
 
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Digest, EnvironmentKey, RunStage, Timestamp, Uuid
 
-API_VERSION = "iltero.io/assurance-facts/v1"
 # Why a part of the facts is missing; the evaluator's runtime copies it into the result.
 UnknownReason = Literal["server_facts_unavailable"]
 
@@ -37,24 +31,3 @@ class UnknownMarker(StrictModel):
 
     unknown: Literal[True] = Field(alias="__unknown")
     reason: UnknownReason
-
-
-class FactsScope(StrictModel):
-    """What the facts were issued for: the change, by its digest over every unit's plan; null before a plan."""
-
-    stack_id: Uuid
-    environment: EnvironmentKey
-    change_digest: Digest | None
-
-
-class AssuranceFacts(StrictModel):
-    """The facts for one run and one stage. Every part is a marker until the server can fill it."""
-
-    api_version: Literal["iltero.io/assurance-facts/v1"] = Field(alias="apiVersion")
-    run_id: Uuid
-    stage: RunStage
-    scope: FactsScope
-    issued_at: Timestamp
-    approvals: UnknownMarker
-    exceptions: UnknownMarker
-    evaluations: UnknownMarker

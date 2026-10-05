@@ -24,10 +24,6 @@ TIMESTAMP_PATTERN = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[
 COMMIT_PATTERN = r"^[0-9a-f]{40}([0-9a-f]{24})?$"
 # A UUID in its lowercase hyphenated form.
 UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-# A run token: ``irt_`` and 32 random bytes in base64url without padding.
-RUN_TOKEN_PATTERN = r"^irt_[A-Za-z0-9_-]{43}$"  # noqa: S105 - the shape of a token, not a token
-# A run's context key: 32 random bytes in base64url without padding; the MAC key is the decoded bytes.
-CONTEXT_KEY_PATTERN = r"^[A-Za-z0-9_-]{43}$"
 # An environment's key: short, lowercase, the same in every place it is named.
 ENVIRONMENT_KEY_PATTERN = r"^[a-z0-9][a-z0-9_-]{0,49}$"
 IDENTIFIER_MAX_LENGTH = 256
@@ -89,5 +85,3 @@ Commit = Annotated[str, Field(pattern=COMMIT_PATTERN)]
 Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 Version = Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
 EnvironmentKey = Annotated[str, Field(pattern=ENVIRONMENT_KEY_PATTERN)]
-RunToken = Annotated[str, Field(pattern=RUN_TOKEN_PATTERN)]
-ContextKey = Annotated[str, Field(pattern=CONTEXT_KEY_PATTERN)]

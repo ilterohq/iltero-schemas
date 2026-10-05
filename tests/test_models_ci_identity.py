@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 import pytest
@@ -10,9 +9,8 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.models.ci_identity import CI_PROVIDERS, CiIdentity
 from iltero_schemas.models.providers.github_actions import CI_PROVIDER, GithubActionsIdentity
-from iltero_schemas.vectors import VECTORS
 from tests.conftest import variant_providers
-from tests.records import CI_IDENTITY
+from tests.records import CI_IDENTITY, GOVERNED
 
 # A JSON Web Token's shape: three base64url parts joined by dots, the first two starting with ``{"``.
 JWT = ".".join(("eyJhbGciOiJFUzI1NiJ9", "eyJzdWIiOiJyZXBvIn0", "c2ln"))
@@ -112,9 +110,8 @@ def test_no_value_may_contain_a_json_web_token(field: str, value: str) -> None:
     assert [e["loc"] for e in refused.value.errors()] == [(field,)]
 
 
-def test_the_wire_vector_names_its_ci_system_as_named() -> None:
-    batch = json.loads((VECTORS / "wire" / "assurance_event_batch.json").read_text(encoding="utf-8"))
-    providers = {event["provenance"]["executor"]["provider"] for event in batch["events"]}
+def test_the_governed_record_names_its_ci_system_as_named() -> None:
+    providers = {event["provenance"]["executor"]["provider"] for event in GOVERNED["events"]}
     assert providers == {CI_PROVIDER}
 
 

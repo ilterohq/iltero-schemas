@@ -62,34 +62,19 @@ keep, so any two tools agree on what a record means.
   the trusted-key history, builds reproducibly from hash-pinned tools, attests
   the build, and publishes through PyPI Trusted Publishing after a
   maintainer's approval.
-- Governed runs: the documents for opening a run with Iltero Cloud and
-  moving to a later stage, with the pins (stack, environment, bundle, the
-  checks owed, the environment policy, the oldest tool version) repeated
-  unchanged on every response, and a token that expires after it was issued;
-  the signed bundle's descriptor. Each job sends its CI identity token as
-  `Authorization: Bearer`, never in a request body. Each response names the
-  CI job Iltero Cloud verified (`ci_identity`): its CI system, repository,
-  workflows, branch, commit, event, environment, run and runner.
-- Uploads to Iltero Cloud: a batch of 1 to 2,000 checks, all of the run,
-  stage and unit it names, and the answer to every upload. The answer names
-  the digest of the body received, and gives one result per event: `accepted`,
-  `duplicate` (same check, same content), `conflict` (same check, different
-  content, the worse status stands), `rejected` or `invalid`, with the reason
-  for a refusal and the stored event's id and digest. The fixed order of
-  statuses, worst first. The answer to closing a run, listing each pinned
-  check that had no result and the record stored for it. Where a run's
-  artifacts go (`artifact_store`): an ordinary S3 bucket and a prefix ending
-  with the run's id, a KMS key named by its id alone, `COMPLIANCE` lock mode,
-  and a lock date later than the response. Nothing about the store but its
-  lock date changes within a run, and the lock date never moves earlier.
+- The fields of a run's pins (stack, environment, bundle, checks owed,
+  environment policy, oldest tool version) and of a stage's CI identity
+  (`ci_identity`: CI system, repository, workflows, branch, commit, event,
+  environment, run and runner).
+- The signed bundle's descriptor.
+- The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change across every
   unit's plan, with vectors. A record's change lists its units sorted and
   once each, includes its own unit, and its digest is checked by readers.
-- Facts only Iltero Cloud holds (approvals, exceptions, evaluations), each an
-  unknown marker until it can be supplied, so a condition that reads one is
-  `unknown`, never true or false. The evaluation input accepts the marker in those
-  parts, and a pre-deploy event records where its facts came from
-  (`facts_source`).
+- The unknown marker: where a fact only Iltero Cloud holds (approvals,
+  exceptions, evaluations) is missing, the evaluation input holds a marker,
+  so a condition that reads it is `unknown`, never true or false. A
+  pre-deploy event records where its facts came from (`facts_source`).
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.
@@ -131,8 +116,8 @@ These changes break documents written before them.
   whoever opened the run.
 - `governance.run_opened_by` (`server` or `local`) replaces
   the earlier field that said whether the service managed the run.
-- A CI identity, an artifact store, and the cloud side and resolver of an
-  identity binding each have one shape per provider, chosen by a `provider`
+- A CI identity, and the cloud side and resolver of an identity binding,
+  each have one shape per provider, chosen by a `provider`
   field. GitHub Actions and AWS are the first providers.
 - An identity binding's `terraform` side is now `iac`, which names its
   `tool`. A document lists its `resolvers`, one per cloud provider.
@@ -144,3 +129,10 @@ These changes break documents written before them.
   program change.
 - An event's executor provider is `local`, `ci` or a CI system's name, such
   as `github_actions`. A resource's identity scheme is `terraform_address`.
+
+### Removed
+
+- The messages a pipeline exchanges with Iltero Cloud during a run: opening
+  a run, a stage's token, closing a run, uploads and their answers, the facts
+  document, the artifact store, and their vectors. The record vectors are in
+  `vectors/records/`.

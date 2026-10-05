@@ -15,7 +15,6 @@ from iltero_schemas.models.providers.aws import (
     AwsResourceType,
     arn_matches,
 )
-from iltero_schemas.models.run import ArtifactStore
 from tests.conftest import ACCOUNT, ARNS, REGION, arn, variant_providers
 
 
@@ -138,6 +137,6 @@ def test_the_identity_document_writes_the_arn_scheme_as_named() -> None:
     assert get_args(ArnIdentifier.model_fields["scheme"].annotation) == (SCHEME_AWS_ARN,)
 
 
-def test_every_cloud_provider_has_a_cloud_side_a_resolver_and_an_artifact_store() -> None:
-    """A cloud is added as all three variants at once, so the three types always accept the same providers."""
-    assert variant_providers(CloudSide) == variant_providers(Resolver) == variant_providers(ArtifactStore) == {"aws"}
+def test_every_cloud_provider_has_a_cloud_side_and_a_resolver() -> None:
+    """A cloud is added as both variants at once, so the two types always accept the same providers."""
+    assert variant_providers(CloudSide) == variant_providers(Resolver) == {"aws"}

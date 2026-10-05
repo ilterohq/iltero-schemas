@@ -1,0 +1,110 @@
+[
+  {
+    "name": "record_issued_by_the_server",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/type": "server"
+    },
+    "remove": [],
+    "message": "Input should be 'local'"
+  },
+  {
+    "name": "record_with_a_verified_issuer",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/identity_verified": true
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "record_trust_level_above_self_attested",
+    "vector": "local_run.json",
+    "set": {
+      "/trust_level": "governed"
+    },
+    "remove": [],
+    "message": "a record without a signature is self_attested"
+  },
+  {
+    "name": "record_with_a_compliance_determination",
+    "vector": "local_run.json",
+    "set": {
+      "/compliance_determination": "compliant"
+    },
+    "remove": [],
+    "message": "Input should be None"
+  },
+  {
+    "name": "record_says_the_server_opened_a_run_without_pins",
+    "vector": "local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
+  },
+  {
+    "name": "governed_required_digest_not_of_its_list",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/required_assertion_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "digest of required_assertions"
+  },
+  {
+    "name": "governed_environment_not_the_pinned_one",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/environment": "staging"
+    },
+    "remove": [],
+    "message": "the one the run was pinned to"
+  },
+  {
+    "name": "governed_bundle_not_the_pinned_one",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/bundle/digest": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    "remove": [],
+    "message": "the bundle the run was pinned to"
+  },
+  {
+    "name": "governed_check_not_from_the_server_bundle",
+    "vector": "governed_run.json",
+    "set": {
+      "/events/0/provenance/assertion_source": "local"
+    },
+    "remove": [],
+    "message": "an assertion from the server's bundle"
+  },
+  {
+    "name": "governed_stage_names_no_verified_ci_job",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity": null
+    },
+    "remove": [],
+    "message": "names the CI job the server verified"
+  },
+  {
+    "name": "governed_ci_job_on_another_commit",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/commit": "dddddddddddddddddddddddddddddddddddddddd"
+    },
+    "remove": [],
+    "message": "ran on the commit the record is about"
+  },
+  {
+    "name": "governed_record_says_the_tool_opened_its_run",
+    "vector": "governed_run.json",
+    "set": {
+      "/governance/run_opened_by": "local"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
+  }
+]

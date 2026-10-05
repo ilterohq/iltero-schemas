@@ -8,6 +8,8 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [AssuranceContext](#assurancecontext)
 - [AssuranceEvent](#assuranceevent)
 - [Change Assurance Record (CAR)](#change-assurance-record-car)
+  - [Run pins](#run-pins)
+  - [CI identity](#ci-identity)
 - [VerificationReport](#verificationreport)
 - [IdentityBindings](#identitybindings)
 - [Attestation](#attestation)
@@ -15,7 +17,6 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [PolicySourceManifest](#policysourcemanifest)
 - [BundleDescriptor](#bundledescriptor)
 - [Trusted bundle keys](#trusted-bundle-keys)
-- [Run and upload documents](#run-and-upload-documents)
 
 ## Conventions
 
@@ -194,7 +195,7 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from (`server_bundle`, `local` or `custom_rego`), and its source digest. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `ci_context` | Whether the CI context file was checked: `integrity` (`verified`, `unverified` or `absent`) and `basis`. It is `verified` exactly when the basis is `context_key_mac`. |
+| `ci_context` | Whether the CI context file was checked: `integrity` (`verified`, `unverified` or `absent`) and `basis`. It is `verified` exactly when the basis is `context_key_mac`: the tool checked the file's HMAC-SHA256 with the context key Iltero Cloud issued for the run. A reader without that key cannot check it again. |
 | `facts_source` | For a `pre_deploy` check, where the Iltero Cloud facts came from: `server`, `local_file` or `none`. `null` at every other stage. |
 | `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 
@@ -217,8 +218,8 @@ Key rules:
 - A policy verdict names its `input_digest`. When no subject was in scope, the event has no subject `id` and no
   `input_digest`.
 - `evaluator` is `null` only for `evaluator_unavailable` and `no_subject_in_scope`.
-- From worst to best, statuses rank `not_evaluated`, `error`, `unknown`, `fail`, `not_applicable`, `pass`. When two
-  results for the same check conflict, the worse one stands.
+- From worst to best, statuses rank `not_evaluated`, `error`, `unknown`, `fail`, `not_applicable`, `pass`
+  (`iltero_schemas.models.event.STATUS_SEVERITY`).
 - A policy's `reason` is at most 2 KiB. Its `observations` are at most 512 KiB of canonical JSON, nested at most 4
   levels.
 
@@ -294,11 +295,60 @@ Key rules:
 - A record with `pins` agrees with them: its environment, the bundle every stage and check names, the pinned
   assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. A record
   without `pins` names no Iltero Cloud bundle, no facts from Iltero Cloud and no verified CI context.
+- The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
+  (`iltero_schemas.canonical.change_digest`).
 - These rules establish consistency only. An unsigned record cannot prove that Iltero Cloud opened its run. Only
   Iltero Cloud can confirm a run, by its `run_id`.
 - `compiler.contract_digest` is the SHA-256 over the sorted `path,hash` lines of the wheel's `RECORD` entries for the
   package's own files. `iltero_schemas.distribution.installed_identity()` returns it for the installed package. An
   editable install has none.
+
+### Run pins
+
+A record of a run Iltero Cloud opened carries the run's pins (`pins`): what Iltero Cloud fixed when it opened the run.
+Model: `iltero_schemas.models.run.RunPins`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `stack_id`, `environment` | UUID, string | What the run is for. |
+| `bundle` | object | The signed assertion bundle, by `revision` (content digest) and `digest` (signed tarball). |
+| `required_assertions` | list | The assertions the run owes: 1 to 1024 entries of `id`, `version` and document `digest`, sorted by `id`, one version each. |
+| `required_assertion_digest` | digest | The digest of `required_assertions`. |
+| `policy` | object | The environment policy's `digest` and `gate_mode` (`enforcing` or `advisory`). |
+| `min_cli_version` | string | The oldest tool version that may evaluate the run, compared numerically part by part. |
+
+`required_assertion_digest` is the digest of the list of `[id, version, digest]` triples, sorted as text
+(`iltero_schemas.canonical.required_assertion_digest`).
+
+### CI identity
+
+Each stage of a record of a run Iltero Cloud opened names the CI job Iltero Cloud verified for it (`ci_identity`), as
+Iltero Cloud reported it. The record is not signed, so this is the writer's copy of that report. Each CI system has one
+shape, chosen by `provider`. Model: `iltero_schemas.models.ci_identity.CiIdentity`.
+
+For `github_actions` (`iltero_schemas.models.providers.github_actions.GithubActionsIdentity`), the fields are the
+claims of the job's identity token:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `provider` | string | `github_actions`. |
+| `issuer` | string | The token issuer, an `https` URL. |
+| `subject` | string | The CI system's own name for the job, such as `repo:acme/app:environment:production`. |
+| `repository` | string | `owner/name`. |
+| `repository_id`, `repository_owner_id` | string | The ids of the repository and its owner. They stay the same when either is renamed. |
+| `workflow_ref`, `job_workflow_ref` | string | The workflow the run started from, and the workflow file that ran the job, as `owner/name/path@ref`. |
+| `job_workflow_commit` | commit | The commit of the workflow file that ran the job. |
+| `ref`, `commit` | string, commit | The Git reference and commit the job ran on. |
+| `event` | string | What started the CI run, such as `push`. |
+| `environment` | string or null | The deployment environment the job ran in. |
+| `ci_run_id`, `ci_run_attempt` | string | The CI run and its attempt, as decimal numbers. |
+| `runner_environment` | string or null | `github-hosted` or `self-hosted`. |
+
+Key rules:
+
+- No value may contain a JSON Web Token.
+- The stages of one record share `provider`, `issuer`, `commit` and the source: for `github_actions`, `repository_id`
+  and `repository_owner_id`. The commit is the record's `subject.source.commit.sha`.
 
 ## VerificationReport
 
@@ -529,142 +579,3 @@ Key rules:
 - Keys are never removed. A status only moves forward: `active` to `retired` or `revoked`, `retired` to `revoked`.
 - A key id starting with `dev-` is a development key and is refused.
 - Any change to the keys requires a new package version.
-
-## Run and upload documents
-
-A pipeline exchanges these documents with Iltero Cloud during a run Iltero Cloud opens. A run token is a
-short-lived credential for one run and one stage. It travels only in the request's `Authorization` header, never in
-a body.
-
-| Document | apiVersion | Model (`iltero_schemas.models...`) |
-| --- | --- | --- |
-| Run open request | none | `run.RunOpenRequest` |
-| Run open response | `iltero.io/run/v1` | `run.RunOpenResponse` |
-| Token refresh request | none | `run.TokenRefreshRequest` |
-| Token refresh response | `iltero.io/run/v1` | `run.TokenRefreshResponse` |
-| Run close response | `iltero.io/run/v1` | `run.RunCloseResponse` |
-| Assurance facts | `iltero.io/assurance-facts/v1` | `facts.AssuranceFacts` |
-| Event batch | `iltero.io/assurance-event-batch/v1` | `ingest.AssuranceEventBatch` |
-| Submission outcome | `iltero.io/submission-outcome/v1` | `ingest.SubmissionOutcome` |
-
-### Run open and token refresh
-
-The first job sends a run open request. Each later job sends a token refresh request for its own stage. The run's
-id travels between jobs; no credential does.
-
-| Request field | Type | Meaning |
-| --- | --- | --- |
-| `stack_id` | UUID | The stack, as Iltero Cloud knows it. Open request only. |
-| `environment` | string | The environment key: 1 to 50 characters of lowercase letters, digits, `_` and `-`, starting with a letter or digit. Open request only. |
-| `stage` | string | `plan`, `pre_deploy`, `post_deploy` or `post_verify`. |
-
-The open response and the refresh response have the same fields:
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion` | string | `iltero.io/run/v1`. |
-| `run_id` | UUID | The run. |
-| `stage` | string | The stage the token is for. |
-| `run_token` | string | `irt_` followed by 43 base64url characters. |
-| `context_key` | string | 43 base64url characters (32 bytes). The key for the HMAC-SHA256 that verifies the CI context file. |
-| `expires_at` | timestamp | When the token expires. Later than `server_time`. |
-| `server_time` | timestamp | When the run opened, or when this token was issued. |
-| `pins` | object | The [run pins](#run-pins). |
-| `ci_identity` | object | The CI job whose identity token this response answered, as Iltero Cloud verified it. One shape per CI system, chosen by `provider`. |
-| `artifact_store` | object or null | Where the run's artifacts go, or `null` when the organization keeps none with the run. For `aws`: `uri_prefix` (ending in a folder named by the run id), `retention_until`, `lock_mode: COMPLIANCE` and `kms_key_id`. |
-
-Key rules:
-
-- Every response of a run repeats the same `pins`. `iltero_schemas.models.run.check_continues` checks that a later
-  response continues the run: same run, same pins, same CI system and source, and the same artifact store, except
-  that `retention_until` may only move later.
-- No field of a response can hold a JSON Web Token.
-
-### Run pins
-
-The pins fix what a run is judged against. Model: `iltero_schemas.models.run.RunPins`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `stack_id`, `environment` | UUID, string | What the run is for. |
-| `bundle` | object | The signed assertion bundle, by `revision` (content digest) and `digest` (signed tarball). |
-| `required_assertions` | list | The assertions the run owes: 1 to 1024 entries of `id`, `version` and document `digest`, sorted by `id`, one version each. |
-| `required_assertion_digest` | digest | The digest of `required_assertions`. |
-| `policy` | object | The environment policy's `digest` and `gate_mode` (`enforcing` or `advisory`). |
-| `min_cli_version` | string | The oldest tool version that may evaluate the run, compared numerically part by part. |
-
-`required_assertion_digest` is the digest of the list of `[id, version, digest]` triples, sorted as text
-(`iltero_schemas.canonical.required_assertion_digest`). The change digest is the digest of
-`[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name (`iltero_schemas.canonical.change_digest`).
-
-### Run close response
-
-The pipeline closes the run with a request that has no body. The response lists every pinned check that has no
-counting result. A check has a counting result when an event for it was `accepted`, `duplicate` or `conflict`.
-Each remaining check is recorded as `not_evaluated`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion` | string | `iltero.io/run/v1`. |
-| `run_id` | UUID | The run. |
-| `status` | string | `closed`. |
-| `closed_at` | timestamp | When the run closed. |
-| `materialized_not_evaluated` | integer | The number of entries in `not_evaluated`. |
-| `not_evaluated` | list | Sorted by assertion id. Each entry has the `assertion`, its `stage`, a `reason` (`stage_not_run` or `scanner_not_run`) and the `event_id` of the stored `not_evaluated` event. |
-
-### AssuranceFacts
-
-The facts document carries facts only Iltero Cloud holds, for one run and one stage. A tool places each fact into
-the assurance context part of the same name.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion` | string | `iltero.io/assurance-facts/v1`. |
-| `run_id`, `stage` | UUID, string | The run and stage the facts were issued for. |
-| `scope` | object | `stack_id`, `environment` and `change_digest` (`null` before a plan exists). |
-| `issued_at` | timestamp | When the facts were issued. |
-| `approvals`, `exceptions`, `evaluations` | marker | In this version, always `{"__unknown": true, "reason": "server_facts_unavailable"}`. |
-
-### AssuranceEventBatch
-
-An event batch uploads one stage's events.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion` | string | `iltero.io/assurance-event-batch/v1`. |
-| `run_id` | UUID | The run. |
-| `stage` | string | The stage. |
-| `unit` | identifier | The unit. |
-| `events` | list | 1 to 2,000 [events](#assuranceevent). |
-
-Every event names the batch's run (with `basis: server_issued`), unit and stage. A receiver reads the batch with
-`iltero_schemas.models.ingest.AssuranceEventBatchEnvelope` and each event separately, so one malformed event gets its
-own result. An identity bindings document and a CAR are uploaded one at a time, unchanged.
-
-### SubmissionOutcome
-
-The submission outcome answers every upload.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion` | string | `iltero.io/submission-outcome/v1`. |
-| `submission_id` | UUID | The upload. |
-| `received_at` | timestamp | When it was received. |
-| `body_digest` | digest | The SHA-256 of the request body bytes exactly as received. |
-| `results` | list | One result per event, in the order sent. A single-document upload has one result at index `0`. |
-
-| Result field | Meaning |
-| --- | --- |
-| `index` | The event's position in the upload. |
-| `disposition` | `accepted`, `duplicate`, `conflict`, `rejected` or `invalid`. |
-| `reason` | Set exactly when `rejected` or `invalid`: `stage_mismatch`, `stage_not_allowed`, `bundle_not_pinned`, `run_mismatch`, `assertion_not_in_required_set`, `assertion_version_mismatch`, `unit_limit_reached`, `event_cap_reached`, `pins_mismatch`, or `schema_invalid` (for `invalid` only). |
-| `event_id`, `event_digest` | The stored event's id and the digest of the event as sent. Given together or not at all. |
-| `conflicts_with` | For a `conflict`, the event stored first. |
-
-Key rules:
-
-- Two events are for the same check when they share the run, stage, unit, assertion id and subject id. A
-  `duplicate` has the same content as a stored event. A `conflict` has different content; both are kept and the
-  worse status stands.
-- `iltero_schemas.models.ingest.check_answers` checks an outcome against the body sent: the `body_digest`, one
-  result per event, and each `event_digest`.

@@ -34,10 +34,30 @@ def test_a_document_of_bound_and_unresolved_resources_validates() -> None:
 
 
 def test_a_replacement_old_object_is_removed_while_its_new_one_is_bound() -> None:
-    """One address in both halves: the list of what the state holds, and the list of what the apply removed."""
+    """One address and one cloud identity in both halves: bindings and removed are never compared."""
     document = IdentityBindings.model_validate(DOCUMENT)
     assert document.removed is not None
     assert document.removed[0].iac.address == document.bindings[0].iac.address
+    assert document.removed[0].cloud == document.bindings[0].cloud
+
+
+@pytest.mark.parametrize("half", ["bindings", "removed"])
+def test_two_entries_of_one_list_never_name_one_cloud_identity(half: str) -> None:
+    """Two addresses on one cloud resource would make its address depend on the order of the list."""
+    document = copy.deepcopy(DOCUMENT)
+    # Sorted after aws_db_instance.payments, which names the same instance.
+    duplicate = removed("aws_db_instance.reports") if half == "removed" else binding("aws_db_instance.reports")
+    document[half].insert(1, duplicate)
+    with pytest.raises(ValidationError, match=f"no two entries of {half} name the same cloud identity"):
+        IdentityBindings.model_validate(document)
+
+
+def test_two_resources_of_one_type_with_their_own_identities_are_both_bound() -> None:
+    document = copy.deepcopy(DOCUMENT)
+    other = binding("aws_db_instance.reports")
+    other["cloud"]["primary"]["value"] = other["cloud"]["primary"]["value"].replace("db:payments", "db:reports")
+    document["bindings"].insert(1, other)
+    assert len(IdentityBindings.model_validate(document).bindings) == 3
 
 
 def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> None:

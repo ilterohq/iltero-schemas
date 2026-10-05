@@ -100,6 +100,13 @@ def _one_list_each(bindings: Sequence[IdentityBinding], unresolved: Sequence[Unr
         raise ValueError("a resource is bound or unresolved, never both")
 
 
+def _one_entry_per_cloud_identity(entries: Sequence[IdentityBinding], name: str) -> None:
+    """Raise ``ValueError`` when two of ``entries`` name one cloud identity: the same provider, scheme and value."""
+    identities = [(entry.cloud.provider, entry.cloud.primary.scheme, entry.cloud.primary.value) for entry in entries]
+    if len(set(identities)) != len(identities):
+        raise ValueError(f"no two entries of {name} name the same cloud identity")
+
+
 class PlanSource(StrictModel):
     """The applied plan what left the state was read from, by its digest and the rule it was computed by."""
 
@@ -144,10 +151,13 @@ class IdentityRecord(StrictModel):
     @model_validator(mode="after")
     def _each_half_holds_together(self) -> IdentityRecord:
         _one_list_each(self.bindings, self.unresolved)
+        _one_entry_per_cloud_identity(self.bindings, "bindings")
         checked = (self.removed is not None, self.removed_unresolved is not None, self.deposed_destroyed is not None)
         if set(checked) != {self.sources.plan is not None}:
             raise ValueError("what left the state is listed exactly when the applied plan was read, and null otherwise")
         _one_list_each(self.removed or [], self.removed_unresolved or [])
+        # A resource destroyed and created again under the same name may sit in both lists, so they are not compared.
+        _one_entry_per_cloud_identity(self.removed or [], "removed")
         if not sorted_unique([resolver.provider for resolver in self.resolvers]):
             raise ValueError("the resolvers are sorted by provider, one for each")
         verified = {(resolver.provider, kind) for resolver in self.resolvers for kind in resolver.verified}

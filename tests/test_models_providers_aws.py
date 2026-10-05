@@ -83,6 +83,7 @@ def test_an_arn_of_every_documented_form_is_accepted(resource_type: AwsResourceT
         ("rds_instance", arn("rds", REGION, ACCOUNT, "db:pay--ments")),
         ("rds_instance", arn("rds", REGION, ACCOUNT, "db:1payments")),
         ("rds_instance", arn("rds", REGION, ACCOUNT, "db:" + "a" * 64)),
+        ("rds_instance", arn("rds", REGION, ACCOUNT, "db:Payments")),
     ],
     ids=[
         "short account",
@@ -120,6 +121,7 @@ def test_an_arn_of_every_documented_form_is_accepted(resource_type: AwsResourceT
         "rds id with two hyphens",
         "rds id starting with a digit",
         "rds id too long",
+        "uppercase rds id",
     ],
 )
 def test_an_arn_that_is_not_exactly_one_resource_of_the_type_is_refused(

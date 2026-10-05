@@ -26,7 +26,8 @@ keep, so any two tools agree on what a record means.
   (an old copy a replacement set aside) as its own change, settled by the
   state after the apply.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
-  resource name (ARN) it may hold.
+  resource name (ARN) it may hold. No two of its bindings, and no two of its
+  removed entries, name the same cloud identity.
 - Attestations, hand-written policy sources and scanner binding sets. Binding
   sets, events and records name a scanner from one list.
 - A record's scanner report now refuses any scanner other than `checkov`,
@@ -102,7 +103,7 @@ These changes break documents written before them.
 - An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
   could issue. A bucket name that looks like an IP address, holds two dots in a
   row or uses a reserved prefix or suffix is refused. So is an RDS identifier
-  that ends with a hyphen or holds two hyphens in a row.
+  that is not lowercase, ends with a hyphen or holds two hyphens in a row.
 - CAR now stands for Change Assurance Record: the record of one attempted
   infrastructure change, whatever its outcome. It records assurance facts and
   does not, by itself, establish certification or compliance with a

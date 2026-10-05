@@ -419,13 +419,18 @@ with a reason. A resolver is the part of a tool that reads identifiers for one c
 Key rules:
 
 - Each resource appears once in each half, either bound or unresolved, never both. Both lists are sorted by address.
+- No two entries of `bindings` name the same cloud identity: the same `provider`, `primary.scheme` and
+  `primary.value`, compared exactly as written. The same holds within `removed`. The two lists are not compared with
+  each other: for example, a resource destroyed and created again under the same name in one apply appears in both.
+  The removed entry's `fate` says whether the old object was deleted or only forgotten.
 - A binding is accepted only for a resource type its provider's resolver lists as `verified`.
 - An unresolved `reason` is the first that holds, in this order: `no_resolver`, `provider_untrusted`,
   `resolver_unverified`, `identifier_sensitive`, `identifier_invalid`, `identifier_missing`,
   `identifier_ambiguous`.
 - For `aws`, `cloud` holds the `resource_type` (`s3_bucket`, `rds_instance`, `security_group`, `iam_role` or
   `kms_key`) and the `primary` identifier (`scheme: aws_arn`, `value`). Each ARN must match its type's published
-  naming rule and holds no wildcard.
+  naming rule and holds no wildcard. An S3 bucket name and an RDS instance identifier are lowercase, as AWS stores
+  them.
 - `removed`, `removed_unresolved` and `deposed_destroyed` are `null` exactly when `sources.plan` is `null`.
 - The document carries identifiers only. The state file it was read from never leaves the machine that read it.
 

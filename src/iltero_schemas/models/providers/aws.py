@@ -48,9 +48,10 @@ _S3_BUCKET = (
     + r"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]"
     + "".join(rf"(?<!{re.escape(suffix)})" for suffix in RESERVED_BUCKET_SUFFIXES)
 )
-# An RDS instance identifier as RDS issues it: 1 to 63 letters, digits and hyphens, starting with a letter.
-# It never ends with a hyphen and never holds two hyphens in a row.
-_RDS_INSTANCE = r"(?![A-Za-z0-9-]*--)[A-Za-z][A-Za-z0-9-]{0,62}(?<!-)"
+# An RDS instance identifier as RDS issues it: 1 to 63 lowercase letters, digits and hyphens, starting with a
+# letter. RDS stores it in lowercase, so one instance has one ARN. It never ends with a hyphen and never holds
+# two hyphens in a row.
+_RDS_INSTANCE = r"(?![a-z0-9-]*--)[a-z][a-z0-9-]{0,62}(?<!-)"
 # Per type: the service, whether the ARN names a region, and the full rule for its resource part.
 # The mapping is read-only, so no consumer can change a rule at run time.
 ARN_SHAPES: Mapping[AwsResourceType, tuple[str, bool, re.Pattern[str]]] = MappingProxyType(

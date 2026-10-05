@@ -1,4 +1,4 @@
-"""The field types every record shares: names, addresses, digests, times, commits and run credentials.
+"""The field types every record shares: names, addresses, digests, times and commits.
 
 Each is bounded and refuses control characters, so a value that reaches any
 record has already been checked the one way. The plan's fingerprint rule
@@ -74,6 +74,15 @@ def _timestamp(value: str) -> str:
     except ValueError:
         raise ValueError("must be a real date and time") from None
     return value
+
+
+def instant(timestamp: str) -> tuple[datetime, int]:
+    """A ``Timestamp`` as a value that orders to the nanosecond: its whole seconds, then its fraction in nanoseconds.
+
+    ``datetime`` keeps only microseconds, and a ``Timestamp`` may carry nine fractional digits.
+    """
+    whole, _, fraction = timestamp.removesuffix("Z").partition(".")
+    return datetime.fromisoformat(f"{whole}Z"), int(fraction.ljust(9, "0"))
 
 
 # Any name or id a record carries: bounded, never a control character.

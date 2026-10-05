@@ -22,5 +22,16 @@
       "/stages/plan/ci_identity/ci_job_id": null
     },
     "remove": []
+  },
+  {
+    "name": "governed_token_valid_for_one_nanosecond",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/authorization": {
+        "issued_at": "2026-09-22T12:59:58.000000001Z",
+        "expires_at": "2026-09-22T12:59:58.000000002Z"
+      }
+    },
+    "remove": []
   }
 ]

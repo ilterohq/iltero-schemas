@@ -11,12 +11,12 @@ value as tampering rather than as a record it cannot read.
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.fields import instant
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
@@ -48,9 +48,7 @@ def _check_plan_first(car: CAR) -> None:
     if plan_stage.coverage.subjects_in_scope.source_digest != car.plan.context_digest:
         raise ValueError("the plan stage counts the resources of the plan the record names")
     timing = car.deployment.apply.timing if car.deployment is not None else None
-    if timing is not None and datetime.fromisoformat(plan_stage.observed_at) > datetime.fromisoformat(
-        timing.started_at
-    ):
+    if timing is not None and instant(plan_stage.observed_at) > instant(timing.started_at):
         raise ValueError("the plan stage was observed no later than the apply started, by the clocks that wrote them")
 
 

@@ -13,12 +13,10 @@ from the runner's clock, which may differ, so it is not compared with them.
 
 from __future__ import annotations
 
-from datetime import datetime
-
 from pydantic import model_validator
 
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Timestamp
+from iltero_schemas.models.fields import Timestamp, instant
 
 
 class StageAuthorization(StrictModel):
@@ -29,6 +27,6 @@ class StageAuthorization(StrictModel):
 
     @model_validator(mode="after")
     def _expires_after_it_was_issued(self) -> StageAuthorization:
-        if datetime.fromisoformat(self.expires_at) <= datetime.fromisoformat(self.issued_at):
+        if instant(self.expires_at) <= instant(self.issued_at):
             raise ValueError("a stage's run token expires after it was issued")
         return self

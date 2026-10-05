@@ -34,7 +34,7 @@ The tables below use these value types:
 | Type | Form |
 | --- | --- |
 | digest | `sha256:` followed by 64 lowercase hexadecimal digits. Unless a row says otherwise, it is the SHA-256 of the value's RFC 8785 canonical JSON. |
-| timestamp | RFC 3339 in UTC, ending in `Z`, such as `2026-09-21T10:00:00.000Z`. Up to nine fractional digits are accepted. Iltero writes milliseconds. |
+| timestamp | RFC 3339 in UTC, ending in `Z`, such as `2026-09-21T10:00:00.000Z`. Up to nine fractional digits are accepted, and two timestamps compare to the nanosecond. Iltero writes milliseconds. |
 | UUID | A lowercase, hyphenated UUID. |
 | commit | A full git object id: 40 hexadecimal digits (SHA-1) or 64 (SHA-256). |
 | identifier | Text of 1 to 256 characters. |

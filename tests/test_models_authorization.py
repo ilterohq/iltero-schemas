@@ -26,3 +26,9 @@ def test_a_stage_authorization_names_both_times() -> None:
     with pytest.raises(ValidationError) as refused:
         StageAuthorization.model_validate({"issued_at": AUTHORIZATION["issued_at"]})
     assert [error["loc"] for error in refused.value.errors()] == [("expires_at",)]
+
+
+def test_a_token_valid_for_one_nanosecond_expires_after_it_was_issued() -> None:
+    StageAuthorization.model_validate(
+        {"issued_at": "2026-09-22T12:59:58.000000001Z", "expires_at": "2026-09-22T12:59:58.000000002Z"}
+    )

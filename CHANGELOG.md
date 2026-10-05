@@ -38,7 +38,7 @@ keep, so any two tools agree on what a record means.
   `iltero_schemas.models.providers.aws` and `CI_PROVIDER` in
   `iltero_schemas.models.providers.github_actions`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
-  Terraform plan.
+  Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against.
 - A record of a run Iltero Cloud opened carries the run's pins, and agrees
   with them: its environment, where its expected checks came from, and the

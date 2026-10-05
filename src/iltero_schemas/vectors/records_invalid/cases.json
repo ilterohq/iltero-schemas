@@ -106,5 +106,35 @@
     },
     "remove": [],
     "message": "exactly when the server issued the run"
+  },
+  {
+    "name": "governed_stage_names_no_authorization",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/authorization": null
+    },
+    "remove": [],
+    "message": "names when the server authorized it"
+  },
+  {
+    "name": "local_stage_names_an_authorization",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/authorization": {
+        "issued_at": "2026-09-22T12:59:58.000Z",
+        "expires_at": "2026-09-22T13:59:58.000Z"
+      }
+    },
+    "remove": [],
+    "message": "names no stage authorization from the server"
+  },
+  {
+    "name": "governed_token_expires_when_it_was_issued",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/authorization/expires_at": "2026-09-22T12:59:58.000Z"
+    },
+    "remove": [],
+    "message": "a stage's run token expires after it was issued"
   }
 ]

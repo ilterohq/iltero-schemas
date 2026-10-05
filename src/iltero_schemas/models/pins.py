@@ -6,7 +6,9 @@ opened on its own has no pins. It must not claim anything only the server can
 give: a server bundle, facts from the server, a CI context verified with a
 run's context key, or a CI job the server verified.
 
-Each stage of a pinned record names the CI job the server verified for it. The
+Each stage of a pinned record names the CI job the server verified for it, and
+when the server said it issued the stage's run token and when the token
+expires. The
 stages of one run share its CI system, its token issuer, its source (for
 GitHub Actions, the ids of the repository and of its owner) and its commit.
 A pinned record names that commit as the one it is about. The service that
@@ -60,6 +62,8 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
     if any(record.ci_identity is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no CI job verified by the server")
+    if any(record.authorization is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no stage authorization from the server")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
@@ -88,6 +92,8 @@ def _check_ci_identities(car: CAR) -> None:
     for stage, record in car.stages.items():
         if record.ci_identity is None:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job the server verified")
+        if record.authorization is None:
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record names when the server authorized it")
         identities.append(record.ci_identity)
     shared = {(i.provider, i.issuer, i.source_key(), i.commit) for i in identities}
     if len(shared) > 1:

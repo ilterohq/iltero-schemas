@@ -54,7 +54,12 @@ keep, so any two tools agree on what a record means.
   names its commit, and each of its stages names the CI job that Iltero Cloud
   said it verified. Its stages share the same CI system, the same token
   issuer, the same repository and the same commit. GitHub Actions identifies
-  the repository by its id and its owner's id.
+  the repository by its id and its owner's id. Each such stage also names
+  when Iltero Cloud authorized it (`authorization`): Iltero Cloud's time in
+  the answer that issued the stage's run token, and when that token expires.
+  A stage of a run the tool opened names neither. A stage's assertion-set
+  digest covers the pinned assertions of that stage only, so it equals the
+  pins' digest only when every pinned assertion belongs to that one stage.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

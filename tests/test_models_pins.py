@@ -10,7 +10,17 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest, required_assertion_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
-from tests.records import CI_IDENTITY, PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, set_path, stage
+from tests.records import (
+    AUTHORIZATION,
+    CI_IDENTITY,
+    PINNED_ASSERTIONS,
+    PINNED_BUNDLE,
+    PINS,
+    pinned,
+    record,
+    set_path,
+    stage,
+)
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
 VERIFIED_CI = {"integrity": "verified", "basis": "context_key_mac"}
@@ -36,7 +46,8 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         "pre_deploy",
         **{"coverage.assertions_expected.basis": plan["coverage"]["assertions_expected"]["basis"]},
         **{"ran.bundle": plan["ran"]["bundle"], "coverage.assertions_expected.value": 0},
-        **{"ci_identity": copy.deepcopy(plan["ci_identity"])},
+        **{"coverage.assertions_expected.required_assertion_digest": required_assertion_digest([])},
+        **{"ci_identity": copy.deepcopy(plan["ci_identity"]), "authorization": copy.deepcopy(plan["authorization"])},
     )
     changed["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
     changed["not_in_scope"] = [
@@ -54,11 +65,13 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         (_with_event(record(), assertion_source="server_bundle"), "no checks from a server bundle"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
+        (record(**{"stages.plan.authorization": AUTHORIZATION}), "no stage authorization from the server"),
     ],
     ids=[
         "a check from a server bundle",
         "a CI context verified with the key",
         "a CI job the server verified",
+        "a stage authorization from the server",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -195,6 +208,18 @@ def _with_second_stage(**identity: str) -> dict[str, Any]:
     document = _with_pre_deploy(pinned(), "server")
     document["stages"]["pre_deploy"]["ci_identity"].update(identity)
     return document
+
+
+def test_a_stage_observed_outside_its_token_window_is_still_valid() -> None:
+    """observed_at is the runner's clock; the token times are the server's, so the two may disagree."""
+    CAR.model_validate(pinned(**{"stages.plan.observed_at": "2026-09-22T12:59:00.000Z"}), context=_READER)
+
+
+def test_every_stage_of_a_pinned_record_names_when_the_server_authorized_it() -> None:
+    with pytest.raises(
+        ValidationError, match="stages.plan: a stage of a pinned record names when the server authorized"
+    ):
+        CAR.model_validate(pinned(**{"stages.plan.authorization": None}), context=_READER)
 
 
 def test_every_stage_of_a_pinned_record_names_its_verified_ci_job() -> None:

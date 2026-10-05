@@ -74,6 +74,15 @@ class SubjectsInScope(StrictModel):
 
 
 class AssertionsExpected(StrictModel):
+    """The assertions a stage owed, whether or not each was evaluated, and the digest of that set.
+
+    ``locally_derived``: the set as the project's files gave it.
+    ``server_pinned``: the run's pinned assertions whose ``spec.stage`` is this stage. It covers a part of the
+    pins' ``required_assertions``, so it equals the pins' ``required_assertion_digest`` only when every pinned
+    assertion belongs to this one stage. The record's top level combines the stage digests by stage name, which is
+    not the pins' digest either.
+    """
+
     value: Count
     basis: Literal["server_pinned", "locally_derived"]
     required_assertion_digest: Digest

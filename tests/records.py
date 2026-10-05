@@ -18,6 +18,8 @@ PINNED_ASSERTIONS = [(a["id"], a["version"], a["digest"]) for a in PINS["require
 PINNED_BUNDLE = PINS["bundle"]["digest"]
 # The CI job the server verified for a stage of the pinned run.
 CI_IDENTITY: dict[str, Any] = GOVERNED["stages"]["plan"]["ci_identity"]
+# When the server issued and expired the run token of that stage.
+AUTHORIZATION: dict[str, Any] = GOVERNED["stages"]["plan"]["authorization"]
 
 
 def set_path(document: dict[str, Any], dotted: str, value: Any) -> None:

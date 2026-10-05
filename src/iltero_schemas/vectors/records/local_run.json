@@ -1082,6 +1082,7 @@
       },
       "ci_identity": null,
       "access_window": null,
+      "job_check": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {

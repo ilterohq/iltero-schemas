@@ -47,7 +47,7 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         **{"coverage.assertions_expected.basis": plan["coverage"]["assertions_expected"]["basis"]},
         **{"ran.bundle": plan["ran"]["bundle"], "coverage.assertions_expected.value": 0},
         **{"coverage.assertions_expected.required_assertion_digest": required_assertion_digest([])},
-        **{"ci_identity": copy.deepcopy(plan["ci_identity"]), "access_window": copy.deepcopy(plan["access_window"])},
+        **{key: copy.deepcopy(plan[key]) for key in ("ci_identity", "access_window", "job_check")},
     )
     changed["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
     changed["not_in_scope"] = [
@@ -66,12 +66,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
         (record(**{"stages.plan.access_window": ACCESS_WINDOW}), "no stage access window from the server"),
+        (record(**{"stages.plan.job_check": "compared"}), "no check of a job the server verified"),
     ],
     ids=[
         "a check from a server bundle",
         "a CI context verified with the key",
         "a CI job the server verified",
         "a stage access window from the server",
+        "a check of a job the server verified",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -208,6 +210,37 @@ def _with_second_stage(**identity: str) -> dict[str, Any]:
     document = _with_pre_deploy(pinned(), "server")
     document["stages"]["pre_deploy"]["ci_identity"].update(identity)
     return document
+
+
+def test_every_stage_of_a_pinned_record_says_how_the_tool_checked_its_job() -> None:
+    with pytest.raises(
+        ValidationError, match="stages.plan: a stage of a pinned record says how the tool checked its job"
+    ):
+        CAR.model_validate(pinned(**{"stages.plan.job_check": None}), context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("job_check", "job_id", "valid"),
+    [
+        ("compared", "51234567890", True),
+        ("not_given", "51234567890", True),
+        ("not_named", None, True),
+        ("not_named", "51234567890", False),
+        ("compared", None, False),
+        ("not_given", None, False),
+    ],
+)
+def test_a_job_check_says_not_named_exactly_when_the_verified_job_names_no_job(
+    job_check: str, job_id: str | None, valid: bool
+) -> None:
+    document = pinned(**{"stages.plan.job_check": job_check, "stages.plan.ci_identity.ci_job_id": job_id})
+    if valid:
+        CAR.model_validate(document, context=_READER)
+    else:
+        with pytest.raises(
+            ValidationError, match="job_check is not_named exactly when the server's CI identity names no job"
+        ):
+            CAR.model_validate(document, context=_READER)
 
 
 def test_every_stage_of_a_pinned_record_names_its_access_window() -> None:

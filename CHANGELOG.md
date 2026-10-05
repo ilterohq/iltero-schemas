@@ -58,10 +58,12 @@ keep, so any two tools agree on what a record means.
   its access window (`access_window`), the period its run token is valid:
   Iltero Cloud's time in the answer that issued the token, and when the token
   expires. These are the writer's copy of Iltero Cloud's answer and say
-  nothing about approval of the change. A stage of a run the tool opened
-  names neither. A stage's assertion-set digest covers the pinned assertions
-  of that stage only, so it equals the pins' digest only when every pinned
-  assertion belongs to that one stage.
+  nothing about approval of the change. Each such stage also says how the
+  tool checked the job it ran in against the verified job (`job_check`:
+  `compared`, `not_given` or `not_named`), as the tool's own claim. A stage
+  of a run the tool opened names none of these. A stage's assertion-set
+  digest covers the pinned assertions of that stage only, so it equals the
+  pins' digest only when every pinned assertion belongs to that one stage.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

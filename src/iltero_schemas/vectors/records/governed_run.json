@@ -1144,6 +1144,7 @@
         "issued_at": "2026-09-22T12:59:58.000Z",
         "expires_at": "2026-09-22T13:59:58.000Z"
       },
+      "job_check": "compared",
       "redaction_applied": {
         "allowed": [],
         "policy": {

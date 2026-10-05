@@ -199,5 +199,69 @@
     },
     "remove": [],
     "message": "Input should be a valid string"
+  },
+  {
+    "name": "governed_job_compared_with_no_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": null
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "governed_job_not_named_with_a_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": "not_named"
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "local_stage_names_a_job_check",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/job_check": "compared"
+    },
+    "remove": [],
+    "message": "names no check of a job the server verified"
+  },
+  {
+    "name": "governed_stage_names_no_job_check",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": null
+    },
+    "remove": [],
+    "message": "says how the tool checked its job"
+  },
+  {
+    "name": "governed_job_check_unknown_value",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": "mismatched"
+    },
+    "remove": [],
+    "message": "Input should be 'compared', 'not_given' or 'not_named'"
+  },
+  {
+    "name": "governed_job_not_given_with_no_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": null,
+      "/stages/plan/job_check": "not_given"
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "local_stage_without_a_job_check_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/job_check"
+    ],
+    "message": "Field required"
   }
 ]

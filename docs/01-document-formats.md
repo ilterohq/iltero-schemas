@@ -248,7 +248,7 @@ with a regulatory framework.
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
 | `change` | object | Every unit of the change with its plan `digest`, sorted by unit, and the change `digest` once known. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -300,6 +300,13 @@ Key rules:
   `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
   them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may
   differ, so it is not required to fall between them.
+- A stage names `job_check` exactly when it names `ci_identity`. It is the tool's own claim of how it checked the job's
+  own id, as the job supplied it, against the CI job Iltero Cloud verified: `compared` (Iltero Cloud named the job and
+  the two were equal; a tool that finds them unequal writes no record), `not_given` (Iltero Cloud named the job, but the
+  job supplied no id of its own) or `not_named` (Iltero Cloud's identity names no job). In the last two, only the CI
+  run and its attempt were compared. It is `not_named` exactly when the CI identity's job is null, whether or not the job
+  supplied an id. The job's own id comes from the job's configuration, and Iltero Cloud cannot confirm the field: no
+  reader can tell `compared` from `not_given`; only `not_named` is checked, against `ci_identity`.
 - A stage's `coverage.assertions_expected.required_assertion_digest` is the digest of the assertions it owed, whether
   or not each was evaluated. For `basis: locally_derived`, as the project's files gave them. For
   `basis: server_pinned`, the run's pinned assertions whose `spec.stage` is this stage: a part of the pins'

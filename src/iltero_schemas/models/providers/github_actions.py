@@ -2,9 +2,9 @@
 
 GitHub Actions gives each job an identity token. Its claims name the
 repository, the workflows, the branch or tag, the commit, the event, the CI
-run and attempt, and the runner. This module holds the shape of those claims
-as the server reports them. Another CI system adds its own module and
-changes none here.
+run and attempt, the job, and the runner. This module holds the shape of
+those claims as the server reports them. Another CI system adds its own
+module and changes none here.
 """
 
 from __future__ import annotations
@@ -71,6 +71,9 @@ class GithubActionsIdentity(StrictModel):
     environment: DeploymentEnvironment | None
     ci_run_id: Number
     ci_run_attempt: Number
+    # The job that asked for the identity token, as the CI system numbers it (GitHub's check_run_id claim).
+    # Null only when the CI system's token does not carry it, as with GitHub Enterprise Server today.
+    ci_job_id: Number | None
     # Null when the token does not say which kind of runner ran the job.
     runner_environment: Literal["github-hosted", "self-hosted"] | None
 

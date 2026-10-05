@@ -356,7 +356,8 @@ claims of the job's identity token:
 | `ref`, `commit` | string, commit | The Git reference and commit the job ran on. |
 | `event` | string | What started the CI run, such as `push`. |
 | `environment` | string or null | The deployment environment the job ran in. |
-| `ci_run_id`, `ci_run_attempt` | string | The CI run and its attempt, as decimal numbers. |
+| `ci_run_id`, `ci_run_attempt` | string | The CI run and its attempt, as decimal numbers. Every job of one run attempt shares both. |
+| `ci_job_id` | string or null | The job that asked for the identity token, as a decimal number (GitHub's `check_run_id` claim). `null` only when the token does not carry it, as with GitHub Enterprise Server today. |
 | `runner_environment` | string or null | `github-hosted` or `self-hosted`. |
 
 Key rules:

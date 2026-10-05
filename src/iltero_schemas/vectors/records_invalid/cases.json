@@ -172,5 +172,32 @@
     },
     "remove": [],
     "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_ci_identity_names_no_job_key",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/ci_identity/ci_job_id"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "governed_ci_job_id_not_a_positive_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": "0"
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "governed_ci_job_id_written_as_a_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": 51234567890
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
   }
 ]

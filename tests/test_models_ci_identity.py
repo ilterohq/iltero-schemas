@@ -74,6 +74,7 @@ def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(change
         ("environment", " production"),
         ("repository_id", "0"),
         ("job_workflow_commit", "main"),
+        ("ci_job_id", "0"),
     ],
 )
 def test_a_value_outside_its_shape_is_refused(field: str, value: str) -> None:

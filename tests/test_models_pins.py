@@ -241,9 +241,12 @@ def test_a_repository_renamed_during_the_run_is_still_the_same_repository() -> N
     CAR.model_validate(document, context=_READER)
 
 
-def test_the_stages_of_one_run_may_come_from_other_workflows_and_attempts() -> None:
+def test_the_stages_of_one_run_may_come_from_other_workflows_attempts_and_jobs() -> None:
     document = _with_second_stage(
-        workflow_ref="acme/app/.github/workflows/apply.yml@refs/heads/main", ci_run_attempt="2", subject="repo:acme/app"
+        workflow_ref="acme/app/.github/workflows/apply.yml@refs/heads/main",
+        ci_run_attempt="2",
+        ci_job_id="51234567891",
+        subject="repo:acme/app",
     )
     CAR.model_validate(document, context=_READER)
 

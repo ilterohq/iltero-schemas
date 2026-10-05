@@ -72,7 +72,8 @@ keep, so any two tools agree on what a record means.
   environment policy, whether Iltero Cloud classified the environment as
   production, oldest tool version) and of a stage's CI identity
   (`ci_identity`: CI system, repository, workflows, branch, commit, event,
-  environment, run and runner).
+  environment, run, job and runner). The job (`ci_job_id`) is null when the
+  CI system's token does not carry it.
 - The signed bundle's descriptor.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change across every

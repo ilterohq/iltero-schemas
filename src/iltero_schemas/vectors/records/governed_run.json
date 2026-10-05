@@ -1137,6 +1137,7 @@
         "environment": "production",
         "ci_run_id": "9876543",
         "ci_run_attempt": "1",
+        "ci_job_id": "51234567890",
         "runner_environment": "github-hosted"
       },
       "authorization": {

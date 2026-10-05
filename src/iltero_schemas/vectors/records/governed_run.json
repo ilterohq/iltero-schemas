@@ -1083,7 +1083,8 @@
     "required_assertion_digest": "sha256:f67cc77e1744d16c7902461a4230c98d71e3fa5075275858df514587e1005ee3",
     "policy": {
       "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "gate_mode": "enforcing"
+      "gate_mode": "enforcing",
+      "production": true
     },
     "min_cli_version": "0.2.0"
   },

@@ -69,7 +69,8 @@ keep, so any two tools agree on what a record means.
   the build, and publishes through PyPI Trusted Publishing after a
   maintainer's approval.
 - The fields of a run's pins (stack, environment, bundle, checks owed,
-  environment policy, oldest tool version) and of a stage's CI identity
+  environment policy, whether Iltero Cloud classified the environment as
+  production, oldest tool version) and of a stage's CI identity
   (`ci_identity`: CI system, repository, workflows, branch, commit, event,
   environment, run and runner).
 - The signed bundle's descriptor.

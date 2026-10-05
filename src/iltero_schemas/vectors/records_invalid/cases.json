@@ -136,5 +136,41 @@
     },
     "remove": [],
     "message": "a stage's run token expires after it was issued"
+  },
+  {
+    "name": "governed_pins_say_nothing_about_production",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/pins/policy/production"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "governed_production_written_as_text",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": "true"
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_production_null",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": null
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_production_written_as_a_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": 1
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
   }
 ]

@@ -28,10 +28,13 @@ class BundleRef(StrictModel):
 
 
 class PolicyPin(StrictModel):
-    """The environment policy the run was opened under, and whether a failed check stops the pipeline."""
+    """The environment policy the run was opened under, whether a failed check stops the pipeline, and whether the
+    environment is production."""
 
     digest: Digest
     gate_mode: GateMode
+    # The server sets it from its own record of the environment when it opens the run; a client never sets it.
+    production: bool
 
 
 class RunPins(StrictModel):

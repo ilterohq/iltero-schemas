@@ -324,11 +324,16 @@ Model: `iltero_schemas.models.run.RunPins`.
 | `bundle` | object | The signed assertion bundle, by `revision` (content digest) and `digest` (signed tarball). |
 | `required_assertions` | list | The assertions the run owes: 1 to 1024 entries of `id`, `version` and document `digest`, sorted by `id`, one version each. |
 | `required_assertion_digest` | digest | The digest of `required_assertions`. |
-| `policy` | object | The environment policy's `digest` and `gate_mode` (`enforcing` or `advisory`). |
+| `policy` | object | The environment policy's `digest`, its `gate_mode` (`enforcing` or `advisory`) and `production`: `true` when Iltero Cloud classified the run's environment as production when it opened the run, `false` otherwise. |
 | `min_cli_version` | string | The oldest tool version that may evaluate the run, compared numerically part by part. |
 
 `required_assertion_digest` is the digest of the list of `[id, version, digest]` triples, sorted as text
 (`iltero_schemas.canonical.required_assertion_digest`).
+
+Iltero Cloud sets `production` from its own record of the environment; a client never sets it. A later change to the
+environment's classification does not change a run's pins. A record of a run the tool opened on its own has no pins,
+so it says nothing about production. The record is not signed, so its pins are the writer's copy of what Iltero Cloud
+fixed; only Iltero Cloud confirms them, by the run's `run_id`.
 
 ### CI identity
 

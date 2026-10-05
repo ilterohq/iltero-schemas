@@ -18,6 +18,7 @@ consumer that fails one must fail its build.
 | `reports/` | `verification_report.json`, a complete verification report, and `digests.json`. | Validation and the document digest. |
 | `records/` | Two complete CARs, with `digests.json`: `local_run.json`, of a run the tool opened on its own, and `governed_run.json`, of a run Iltero Cloud opened, with its pins and the CI job Iltero Cloud verified. Its plan stage owes every pinned assertion, so here the stage's assertion-set digest equals the pins'. | Validation and each document digest. |
 | `records_invalid/` | `cases.json`: records that must be refused. Each case names a `records/` document, the values to change (`set`) and remove (`remove`) by JSON Pointer, and the expected message. | The refusal. |
+| `records_valid/` | `cases.json`: changed records that must still be accepted, in the same form without a message, such as a run whose environment is not production, or a stage observed outside its token window. | Acceptance. |
 | `evaluation/` | `cases.json`: an assertion, an input, and the expected `status`, `reason`, `unknown`, `when` and, for some cases, `predicates`. `facts_unknown.json`: the approval and exception assertions over `contexts/pre_deploy_change.json`, with the facts as unknown markers and as empty lists. | The OPA result for each case. |
 | `opa/` | `not_allowed.txt`: every built-in function of the pinned OPA release that the capabilities allowlist leaves out. | The allowlist of the pinned release. |
 

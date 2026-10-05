@@ -210,11 +210,6 @@ def _with_second_stage(**identity: str) -> dict[str, Any]:
     return document
 
 
-def test_a_stage_observed_outside_its_token_window_is_still_valid() -> None:
-    """observed_at is the runner's clock; the token times are the server's, so the two may disagree."""
-    CAR.model_validate(pinned(**{"stages.plan.observed_at": "2026-09-22T12:59:00.000Z"}), context=_READER)
-
-
 def test_every_stage_of_a_pinned_record_names_when_the_server_authorized_it() -> None:
     with pytest.raises(
         ValidationError, match="stages.plan: a stage of a pinned record names when the server authorized"

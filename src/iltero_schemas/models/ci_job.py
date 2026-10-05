@@ -11,12 +11,16 @@ from __future__ import annotations
 
 from typing import Literal, NamedTuple
 
-# How the tool says it checked the job's own id, as the job supplied it, against the job the server verified:
-# compared - the server named the job and the two were equal (a tool that finds them unequal writes no record);
-# not_given - the server named the job, but the job supplied no id of its own;
+# How the tool says it checked the job it ran in against the job the server verified:
+# compared - the server named a job, the tool fetched the identity token from the CI system itself, and that token
+#   names the same job (a tool that finds another job writes no record);
+# not_given - the server named a job, but the tool did not fetch the token itself (the job handed it one), or could
+#   not read the job from the token it fetched;
 # not_named - the server's identity names no job.
 # In the last two, only the run and its attempt were compared. Only not_named can be checked by a reader, against
-# the CI identity; compared and not_given are the tool's word.
+# the CI identity; compared and not_given are the tool's word, like the rest of an unsigned record. compared says
+# where the token came from, not that two sources agree: the server reads its job from that same token. The
+# server's own record of the token is what ties it to a job.
 JobCheck = Literal["compared", "not_given", "not_named"]
 
 

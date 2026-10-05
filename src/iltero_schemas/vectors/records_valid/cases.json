@@ -36,7 +36,7 @@
     "remove": []
   },
   {
-    "name": "governed_job_supplied_no_id_of_its_own",
+    "name": "governed_job_not_checked_against_a_fetched_token",
     "vector": "governed_run.json",
     "set": {
       "/stages/plan/job_check": "not_given"

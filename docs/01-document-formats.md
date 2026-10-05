@@ -300,13 +300,15 @@ Key rules:
   `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
   them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may
   differ, so it is not required to fall between them.
-- A stage names `job_check` exactly when it names `ci_identity`. It is the tool's own claim of how it checked the job's
-  own id, as the job supplied it, against the CI job Iltero Cloud verified: `compared` (Iltero Cloud named the job and
-  the two were equal; a tool that finds them unequal writes no record), `not_given` (Iltero Cloud named the job, but the
-  job supplied no id of its own) or `not_named` (Iltero Cloud's identity names no job). In the last two, only the CI
-  run and its attempt were compared. It is `not_named` exactly when the CI identity's job is null, whether or not the job
-  supplied an id. The job's own id comes from the job's configuration, and Iltero Cloud cannot confirm the field: no
-  reader can tell `compared` from `not_given`; only `not_named` is checked, against `ci_identity`.
+- A stage names `job_check` exactly when it names `ci_identity`. It is the tool's own claim of how it checked the job
+  it ran in against the CI job Iltero Cloud verified: `compared` (Iltero Cloud named a job, the tool fetched the
+  identity token from the CI system itself, and that token names the same job; a tool that finds another job writes no
+  record), `not_given` (Iltero Cloud named a job, but the tool did not fetch the token itself because the job handed
+  it one, or could not read the job from the token it fetched) or `not_named` (Iltero Cloud's identity names no job).
+  In the last two, only the CI run and its attempt were compared. It is `not_named` exactly when the CI identity's job
+  is null. Iltero Cloud cannot confirm the field: no reader can tell `compared` from `not_given`; only `not_named` is
+  checked, against `ci_identity`. `compared` says where the token came from, not that two sources agree: Iltero Cloud
+  reads its job from that same token. Iltero Cloud's own record of the token is what ties it to a job.
 - A stage's `coverage.assertions_expected.required_assertion_digest` is the digest of the assertions it owed, whether
   or not each was evaluated. For `basis: locally_derived`, as the project's files gave them. For
   `basis: server_pinned`, the run's pinned assertions whose `spec.stage` is this stage: a part of the pins'

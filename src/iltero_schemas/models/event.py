@@ -76,15 +76,10 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
         }
     ),
 }
-# Every status, worst first. It is the order a record's verdict uses: a check that did not run is worse
-# than an error, an error worse than an unknown result, and an unknown result worse than a failure.
+# Every status, worst first: a check that did not run is worse than an error, an error worse than an
+# unknown result, and an unknown result worse than a failure.
 # ``not_applicable`` claims less than ``pass``, so it ranks as worse.
 STATUS_SEVERITY: tuple[Status, ...] = ("not_evaluated", "error", "unknown", "fail", "not_applicable", "pass")
-
-
-def worse_status(first: Status, second: Status) -> Status:
-    """The worse of two statuses for the same check. It is the one that stands when two results conflict."""
-    return min(first, second, key=STATUS_SEVERITY.index)
 
 
 # Statuses a policy answer may carry; the others come only from the runner's own observation.
@@ -279,7 +274,10 @@ class Executor(StrictModel):
 
 
 class CiContext(StrictModel):
-    """Whether the CI context file was checked, and how. Only a check with the run's context key verifies it."""
+    """Whether the CI context file was checked, and how. Only a check with the run's context key verifies it.
+
+    ``context_key_mac``: the tool checked the file's HMAC-SHA256 with the context key the server issued for the run.
+    """
 
     integrity: Literal["verified", "unverified", "absent"]
     basis: Literal["context_key_mac", "none"]

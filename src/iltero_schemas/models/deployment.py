@@ -13,7 +13,6 @@ reads Terraform's apply log and state.
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import ConfigDict, Field, model_validator
@@ -29,6 +28,7 @@ from iltero_schemas.models.fields import (
     Identifier,
     Timestamp,
     check_artifact_digest,
+    instant,
 )
 from iltero_schemas.models.iac import IacTool
 
@@ -222,7 +222,7 @@ class ApplyTiming(StrictModel):
 
     @model_validator(mode="after")
     def _in_order(self) -> ApplyTiming:
-        if datetime.fromisoformat(self.ended_at) < datetime.fromisoformat(self.started_at):
+        if instant(self.ended_at) < instant(self.started_at):
             raise ValueError("the apply ended before it started")
         return self
 

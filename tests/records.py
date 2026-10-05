@@ -6,25 +6,20 @@ import copy
 import json
 from typing import Any
 
-from iltero_schemas.canonical import required_assertion_digest
 from iltero_schemas.models.coverage import Coverage, stage_outcome
 from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((VECTORS / "wire" / "change_assurance_record.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
+# The same record as a run the server opened writes it: pinned, governed, and run by verified CI jobs.
+GOVERNED: dict[str, Any] = json.loads((VECTORS / "records" / "governed_run.json").read_text(encoding="utf-8"))
 
-PINNED_ASSERTIONS = sorted(
-    {(e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"]) for e in RECORD["events"]}
-)
-PINS: dict[str, Any] = {
-    **json.loads((VECTORS / "wire" / "run_open_response.json").read_text(encoding="utf-8"))["pins"],
-    "required_assertions": [{"id": i, "version": v, "digest": d} for i, v, d in PINNED_ASSERTIONS],
-    "required_assertion_digest": required_assertion_digest(PINNED_ASSERTIONS),
-}
+PINS: dict[str, Any] = GOVERNED["pins"]
+PINNED_ASSERTIONS = [(a["id"], a["version"], a["digest"]) for a in PINS["required_assertions"]]
 PINNED_BUNDLE = PINS["bundle"]["digest"]
 # The CI job the server verified for a stage of the pinned run.
-CI_IDENTITY: dict[str, Any] = json.loads((VECTORS / "wire" / "run_open_response.json").read_text(encoding="utf-8"))[
-    "ci_identity"
-]
+CI_IDENTITY: dict[str, Any] = GOVERNED["stages"]["plan"]["ci_identity"]
+# When the server issued and expired the run token of that stage.
+ACCESS_WINDOW: dict[str, Any] = GOVERNED["stages"]["plan"]["access_window"]
 
 
 def set_path(document: dict[str, Any], dotted: str, value: Any) -> None:
@@ -59,21 +54,8 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
 
 
 def pinned(**changes: Any) -> dict[str, Any]:
-    """The record as a run the server opened would write it: pinned, governed, and run by verified CI jobs."""
-    document = record(**{"run_id.basis": "server_issued", "pins": PINS, "governance.run_opened_by": "server"})
-    document["stages"]["plan"]["coverage"]["assertions_expected"]["basis"] = "server_pinned"
-    document["stages"]["plan"]["ci_identity"] = copy.deepcopy(CI_IDENTITY)
-    document["coverage"]["assertions_expected"]["basis"] = "server_pinned"
-    document["stages"]["plan"]["ran"]["bundle"] = {
-        **document["stages"]["plan"]["ran"]["bundle"],
-        "kind": "server",
-        "digest": PINNED_BUNDLE,
-    }
-    for event in document["events"]:
-        event["provenance"]["run"]["basis"] = "server_issued"
-        event["provenance"]["assertion_source"] = "server_bundle"
-        if event["provenance"]["bundle"] is not None:
-            event["provenance"]["bundle"] = {"kind": "server", "digest": PINNED_BUNDLE}
+    """The governed record with each dotted path in ``changes`` set to its value."""
+    document: dict[str, Any] = copy.deepcopy(GOVERNED)
     for dotted, value in changes.items():
         set_path(document, dotted, value)
     return document

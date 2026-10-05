@@ -1,0 +1,46 @@
+[
+  {
+    "name": "governed_environment_not_production",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": false
+    },
+    "remove": []
+  },
+  {
+    "name": "governed_stage_observed_outside_its_token_window",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/observed_at": "2026-09-22T12:59:00.000Z"
+    },
+    "remove": []
+  },
+  {
+    "name": "governed_ci_token_without_a_job_id",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": null,
+      "/stages/plan/job_check": "not_named"
+    },
+    "remove": []
+  },
+  {
+    "name": "governed_token_valid_for_one_nanosecond",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/access_window": {
+        "issued_at": "2026-09-22T12:59:58.000000001Z",
+        "expires_at": "2026-09-22T12:59:58.000000002Z"
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "governed_job_supplied_no_id_of_its_own",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": "not_given"
+    },
+    "remove": []
+  }
+]

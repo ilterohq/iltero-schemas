@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
-from typing import Any
+from typing import Any, get_args
 
 import pytest
 from pydantic import ValidationError
@@ -14,8 +14,10 @@ from iltero_schemas.models.event import (
     NO_EVALUATOR_REASONS,
     POLICY_STATUSES,
     STATUS_REASONS,
+    STATUS_SEVERITY,
     AssuranceEvent,
     CiContext,
+    Status,
 )
 from tests.conftest import VECTORS
 
@@ -204,3 +206,7 @@ def test_an_executor_ran_locally_or_in_a_ci_system(provider: str) -> None:
 def test_an_executor_in_an_unnamed_ci_system_is_refused(provider: str) -> None:
     with pytest.raises(ValidationError, match="Input should be"):
         AssuranceEvent.model_validate(_event(**{"provenance.executor.provider": provider}))
+
+
+def test_the_status_order_ranks_every_status_once() -> None:
+    assert sorted(STATUS_SEVERITY) == sorted(get_args(Status))

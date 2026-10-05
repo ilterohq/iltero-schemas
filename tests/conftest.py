@@ -127,8 +127,12 @@ def change(address: str, action: str, required: list[str], outcome: str, **field
     }
 
 
+def variants(alias: Any) -> tuple[Any, ...]:
+    """Every variant a provider-keyed type alias accepts."""
+    (chosen, *_) = get_args(alias)
+    return get_args(chosen) or (chosen,)
+
+
 def variant_providers(alias: Any) -> set[str]:
     """The ``provider`` value of every variant a provider-keyed type alias accepts."""
-    (chosen, *_) = get_args(alias)
-    variants = get_args(chosen) or (chosen,)
-    return {value for variant in variants for value in get_args(variant.model_fields["provider"].annotation)}
+    return {value for variant in variants(alias) for value in get_args(variant.model_fields["provider"].annotation)}

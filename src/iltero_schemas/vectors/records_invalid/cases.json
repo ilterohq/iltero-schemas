@@ -1,0 +1,267 @@
+[
+  {
+    "name": "record_issued_by_the_server",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/type": "server"
+    },
+    "remove": [],
+    "message": "Input should be 'local'"
+  },
+  {
+    "name": "record_with_a_verified_issuer",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/identity_verified": true
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "record_trust_level_above_self_attested",
+    "vector": "local_run.json",
+    "set": {
+      "/trust_level": "governed"
+    },
+    "remove": [],
+    "message": "a record without a signature is self_attested"
+  },
+  {
+    "name": "record_with_a_compliance_determination",
+    "vector": "local_run.json",
+    "set": {
+      "/compliance_determination": "compliant"
+    },
+    "remove": [],
+    "message": "Input should be None"
+  },
+  {
+    "name": "record_says_the_server_opened_a_run_without_pins",
+    "vector": "local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
+  },
+  {
+    "name": "governed_required_digest_not_of_its_list",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/required_assertion_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "digest of required_assertions"
+  },
+  {
+    "name": "governed_environment_not_the_pinned_one",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/environment": "staging"
+    },
+    "remove": [],
+    "message": "the one the run was pinned to"
+  },
+  {
+    "name": "governed_bundle_not_the_pinned_one",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/bundle/digest": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    "remove": [],
+    "message": "the bundle the run was pinned to"
+  },
+  {
+    "name": "governed_check_not_from_the_server_bundle",
+    "vector": "governed_run.json",
+    "set": {
+      "/events/0/provenance/assertion_source": "local"
+    },
+    "remove": [],
+    "message": "an assertion from the server's bundle"
+  },
+  {
+    "name": "governed_stage_names_no_verified_ci_job",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity": null
+    },
+    "remove": [],
+    "message": "names the CI job the server verified"
+  },
+  {
+    "name": "governed_ci_job_on_another_commit",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/commit": "dddddddddddddddddddddddddddddddddddddddd"
+    },
+    "remove": [],
+    "message": "ran on the commit the record is about"
+  },
+  {
+    "name": "governed_record_says_the_tool_opened_its_run",
+    "vector": "governed_run.json",
+    "set": {
+      "/governance/run_opened_by": "local"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
+  },
+  {
+    "name": "governed_stage_names_no_access_window",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/access_window": null
+    },
+    "remove": [],
+    "message": "names its access window from the server"
+  },
+  {
+    "name": "local_stage_names_an_access_window",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/access_window": {
+        "issued_at": "2026-09-22T12:59:58.000Z",
+        "expires_at": "2026-09-22T13:59:58.000Z"
+      }
+    },
+    "remove": [],
+    "message": "names no stage access window from the server"
+  },
+  {
+    "name": "governed_token_expires_when_it_was_issued",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/access_window/expires_at": "2026-09-22T12:59:58.000Z"
+    },
+    "remove": [],
+    "message": "a stage's run token expires after it was issued"
+  },
+  {
+    "name": "governed_pins_say_nothing_about_production",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/pins/policy/production"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "governed_production_written_as_text",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": "true"
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_production_null",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": null
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_production_written_as_a_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/pins/policy/production": 1
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "governed_ci_identity_names_no_job_key",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/ci_identity/ci_job_id"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "governed_ci_job_id_not_a_positive_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": "0"
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "governed_ci_job_id_written_as_a_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": 51234567890
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "governed_job_compared_with_no_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": null
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "governed_job_not_named_with_a_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": "not_named"
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "local_stage_names_a_job_check",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/job_check": "compared"
+    },
+    "remove": [],
+    "message": "names no check of a job the server verified"
+  },
+  {
+    "name": "governed_stage_names_no_job_check",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": null
+    },
+    "remove": [],
+    "message": "says how the tool checked its job"
+  },
+  {
+    "name": "governed_job_check_unknown_value",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/job_check": "mismatched"
+    },
+    "remove": [],
+    "message": "Input should be 'compared', 'not_given' or 'not_named'"
+  },
+  {
+    "name": "governed_job_not_given_with_no_job_named",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/ci_job_id": null,
+      "/stages/plan/job_check": "not_given"
+    },
+    "remove": [],
+    "message": "job_check is not_named exactly when the server's CI identity names no job"
+  },
+  {
+    "name": "local_stage_without_a_job_check_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/job_check"
+    ],
+    "message": "Field required"
+  }
+]

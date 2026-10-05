@@ -10,7 +10,17 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest, required_assertion_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
-from tests.records import CI_IDENTITY, PINNED_ASSERTIONS, PINNED_BUNDLE, PINS, pinned, record, set_path, stage
+from tests.records import (
+    ACCESS_WINDOW,
+    CI_IDENTITY,
+    PINNED_ASSERTIONS,
+    PINNED_BUNDLE,
+    PINS,
+    pinned,
+    record,
+    set_path,
+    stage,
+)
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
 VERIFIED_CI = {"integrity": "verified", "basis": "context_key_mac"}
@@ -36,7 +46,8 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         "pre_deploy",
         **{"coverage.assertions_expected.basis": plan["coverage"]["assertions_expected"]["basis"]},
         **{"ran.bundle": plan["ran"]["bundle"], "coverage.assertions_expected.value": 0},
-        **{"ci_identity": copy.deepcopy(plan["ci_identity"])},
+        **{"coverage.assertions_expected.required_assertion_digest": required_assertion_digest([])},
+        **{key: copy.deepcopy(plan[key]) for key in ("ci_identity", "access_window", "job_check")},
     )
     changed["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
     changed["not_in_scope"] = [
@@ -54,11 +65,15 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         (_with_event(record(), assertion_source="server_bundle"), "no checks from a server bundle"),
         (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
+        (record(**{"stages.plan.access_window": ACCESS_WINDOW}), "no stage access window from the server"),
+        (record(**{"stages.plan.job_check": "compared"}), "no check of a job the server verified"),
     ],
     ids=[
         "a check from a server bundle",
         "a CI context verified with the key",
         "a CI job the server verified",
+        "a stage access window from the server",
+        "a check of a job the server verified",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -197,6 +212,42 @@ def _with_second_stage(**identity: str) -> dict[str, Any]:
     return document
 
 
+def test_every_stage_of_a_pinned_record_says_how_the_tool_checked_its_job() -> None:
+    with pytest.raises(
+        ValidationError, match="stages.plan: a stage of a pinned record says how the tool checked its job"
+    ):
+        CAR.model_validate(pinned(**{"stages.plan.job_check": None}), context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("job_check", "job_id", "valid"),
+    [
+        ("compared", "51234567890", True),
+        ("not_given", "51234567890", True),
+        ("not_named", None, True),
+        ("not_named", "51234567890", False),
+        ("compared", None, False),
+        ("not_given", None, False),
+    ],
+)
+def test_a_job_check_says_not_named_exactly_when_the_verified_job_names_no_job(
+    job_check: str, job_id: str | None, valid: bool
+) -> None:
+    document = pinned(**{"stages.plan.job_check": job_check, "stages.plan.ci_identity.ci_job_id": job_id})
+    if valid:
+        CAR.model_validate(document, context=_READER)
+    else:
+        with pytest.raises(
+            ValidationError, match="job_check is not_named exactly when the server's CI identity names no job"
+        ):
+            CAR.model_validate(document, context=_READER)
+
+
+def test_every_stage_of_a_pinned_record_names_its_access_window() -> None:
+    with pytest.raises(ValidationError, match="stages.plan: a stage of a pinned record names its access window"):
+        CAR.model_validate(pinned(**{"stages.plan.access_window": None}), context=_READER)
+
+
 def test_every_stage_of_a_pinned_record_names_its_verified_ci_job() -> None:
     with pytest.raises(ValidationError, match="stages.plan: a stage of a pinned record names the CI job"):
         CAR.model_validate(pinned(**{"stages.plan.ci_identity": None}), context=_READER)
@@ -221,9 +272,12 @@ def test_a_repository_renamed_during_the_run_is_still_the_same_repository() -> N
     CAR.model_validate(document, context=_READER)
 
 
-def test_the_stages_of_one_run_may_come_from_other_workflows_and_attempts() -> None:
+def test_the_stages_of_one_run_may_come_from_other_workflows_attempts_and_jobs() -> None:
     document = _with_second_stage(
-        workflow_ref="acme/app/.github/workflows/apply.yml@refs/heads/main", ci_run_attempt="2", subject="repo:acme/app"
+        workflow_ref="acme/app/.github/workflows/apply.yml@refs/heads/main",
+        ci_run_attempt="2",
+        ci_job_id="51234567891",
+        subject="repo:acme/app",
     )
     CAR.model_validate(document, context=_READER)
 

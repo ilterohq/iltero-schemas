@@ -169,6 +169,16 @@ UPDATED = change("a.x", "update", ["update"], "applied")
         ({"summary": {"added": -1, "changed": 0, "imported": 0, "removed": 0}}, "greater than or equal to 0"),
         ({"summary": {"add": 1, "change": 0, "import": 0, "remove": 0}}, "Extra inputs are not permitted"),
         ({"timing": {**TIMING, "ended_at": "2026-09-16T18:37:00Z"}}, "ended before it started"),
+        (
+            {
+                "timing": {
+                    **TIMING,
+                    "started_at": "2026-09-16T18:39:30.0000002Z",
+                    "ended_at": "2026-09-16T18:39:30.0000001Z",
+                }
+            },
+            "ended before it started",
+        ),
         ({"timing": {**TIMING, "trust": "attested"}}, "Input should be"),
         (
             {"source": {"digest": "sha256:abc", "tool": "terraform", "tool_version": "1.14.0"}},
@@ -188,6 +198,7 @@ UPDATED = change("a.x", "update", ["update"], "applied")
         "negative count",
         "the tool's own names",
         "ended before it started",
+        "ended a fraction of a microsecond before it started",
         "the log's clock trusted",
         "source digest",
         "another basis",

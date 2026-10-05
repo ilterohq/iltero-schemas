@@ -6,7 +6,10 @@ opened on its own has no pins. It must not claim anything only the server can
 give: a server bundle, facts from the server, a CI context verified with a
 run's context key, or a CI job the server verified.
 
-Each stage of a pinned record names the CI job the server verified for it. The
+Each stage of a pinned record names the CI job the server verified for it, and
+its access window: when the server said it issued the stage's run token and
+when the token expires. It also says how the tool checked the job it ran in
+against that verified job (``job_check``), which is the tool's own claim. The
 stages of one run share its CI system, its token issuer, its source (for
 GitHub Actions, the ids of the repository and of its owner) and its commit.
 A pinned record names that commit as the one it is about. The service that
@@ -60,6 +63,10 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
     if any(record.ci_identity is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no CI job verified by the server")
+    if any(record.access_window is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no stage access window from the server")
+    if any(record.job_check is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no check of a job the server verified")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
@@ -88,6 +95,16 @@ def _check_ci_identities(car: CAR) -> None:
     for stage, record in car.stages.items():
         if record.ci_identity is None:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record names the CI job the server verified")
+        if record.access_window is None:
+            raise ValueError(
+                f"stages.{stage.value}: a stage of a pinned record names its access window from the server"
+            )
+        if record.job_check is None:
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record says how the tool checked its job")
+        if (record.job_check == "not_named") != (record.ci_identity.job_key().job_id is None):
+            raise ValueError(
+                f"stages.{stage.value}: job_check is not_named exactly when the server's CI identity names no job"
+            )
         identities.append(record.ci_identity)
     shared = {(i.provider, i.issuer, i.source_key(), i.commit) for i in identities}
     if len(shared) > 1:

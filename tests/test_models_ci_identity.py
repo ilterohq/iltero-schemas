@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 
-import json
-from typing import Any
+from typing import Any, get_type_hints
 
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.models.ci_identity import CI_PROVIDERS, CiIdentity
+from iltero_schemas.models.ci_job import JobKey
 from iltero_schemas.models.providers.github_actions import CI_PROVIDER, GithubActionsIdentity
-from iltero_schemas.vectors import VECTORS
-from tests.conftest import variant_providers
-from tests.records import CI_IDENTITY
+from tests.conftest import variant_providers, variants
+from tests.records import CI_IDENTITY, GOVERNED
 
 # A JSON Web Token's shape: three base64url parts joined by dots, the first two starting with ``{"``.
 JWT = ".".join(("eyJhbGciOiJFUzI1NiJ9", "eyJzdWIiOiJyZXBvIn0", "c2ln"))
@@ -76,6 +75,7 @@ def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(change
         ("environment", " production"),
         ("repository_id", "0"),
         ("job_workflow_commit", "main"),
+        ("ci_job_id", "0"),
     ],
 )
 def test_a_value_outside_its_shape_is_refused(field: str, value: str) -> None:
@@ -112,9 +112,8 @@ def test_no_value_may_contain_a_json_web_token(field: str, value: str) -> None:
     assert [e["loc"] for e in refused.value.errors()] == [(field,)]
 
 
-def test_the_wire_vector_names_its_ci_system_as_named() -> None:
-    batch = json.loads((VECTORS / "wire" / "assurance_event_batch.json").read_text(encoding="utf-8"))
-    providers = {event["provenance"]["executor"]["provider"] for event in batch["events"]}
+def test_the_governed_record_names_its_ci_system_as_named() -> None:
+    providers = {event["provenance"]["executor"]["provider"] for event in GOVERNED["events"]}
     assert providers == {CI_PROVIDER}
 
 
@@ -132,3 +131,21 @@ def test_every_ci_provider_named_has_its_variant() -> None:
 def test_the_source_of_a_github_actions_job_is_its_repository_and_owner_ids() -> None:
     identity = GithubActionsIdentity.model_validate(_with())
     assert identity.source_key() == (CI_IDENTITY["repository_id"], CI_IDENTITY["repository_owner_id"])
+
+
+def test_the_job_of_a_github_actions_identity_is_named_in_the_shared_shape() -> None:
+    identity = GithubActionsIdentity.model_validate(_with(ci_run_id="9876543", ci_run_attempt="3", ci_job_id="51"))
+    assert identity.job_key() == JobKey(CI_PROVIDER, "9876543", 3, "51")
+    assert GithubActionsIdentity.model_validate(_with(ci_job_id=None)).job_key().job_id is None
+
+
+def test_attempts_order_as_numbers() -> None:
+    second = GithubActionsIdentity.model_validate(_with(ci_run_attempt="2")).job_key()
+    tenth = GithubActionsIdentity.model_validate(_with(ci_run_attempt="10")).job_key()
+    assert second.attempt < tenth.attempt
+
+
+@pytest.mark.parametrize("variant", variants(CiIdentity))
+def test_every_ci_identity_variant_names_its_source_and_its_job_in_the_shared_shapes(variant: Any) -> None:
+    assert get_type_hints(variant.source_key)["return"] == tuple[str, ...]
+    assert get_type_hints(variant.job_key)["return"] is JobKey

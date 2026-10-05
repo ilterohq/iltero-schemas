@@ -8,7 +8,7 @@ them. Canonical vectors: the canonical bytes and digest of each value in
 ``src/iltero_schemas/vectors/canonical/values.json``, and of every case of the
 assertion-set and change digests, from the inputs each case names. Document
 vectors: the digest of every context under ``vectors/contexts``, every event
-under ``vectors/events``, every run document under ``vectors/wire`` and every
+under ``vectors/events``, every record under ``vectors/records`` and every
 verification report under ``vectors/reports``, each validated against its
 model first.
 
@@ -40,21 +40,21 @@ from iltero_schemas.canonical import (
     plan_digest,
 )
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile
+from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
 from iltero_schemas.models.verification import VerificationReport
-from iltero_schemas.vectors.wire_models import WIRE_MODELS
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "iltero_schemas"
 ASSERTION_DIRS = [PACKAGE / "assertions", PACKAGE / "vectors" / "assertions"]
 COMPILER_VECTORS = PACKAGE / "vectors" / "compiler"
 CANONICAL_VECTORS = PACKAGE / "vectors" / "canonical"
-# Each folder holds one kind of document, except ``wire``, whose files are named after theirs.
-DOCUMENT_VECTORS: dict[Path, type[BaseModel] | dict[str, type[BaseModel]]] = {
+# Each folder holds one kind of document.
+DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     PACKAGE / "vectors" / "contexts": AssuranceContext,
     PACKAGE / "vectors" / "events": AssuranceEvent,
-    PACKAGE / "vectors" / "wire": WIRE_MODELS,
+    PACKAGE / "vectors" / "records": CAR,
     PACKAGE / "vectors" / "reports": VerificationReport,
 }
 
@@ -117,13 +117,12 @@ def canonical_vectors() -> dict[str, bytes]:
 def document_vectors() -> dict[Path, bytes]:
     """The digest of every document vector, each validated against its model first."""
     expected = {}
-    for directory, models in DOCUMENT_VECTORS.items():
+    for directory, model in DOCUMENT_VECTORS.items():
         digests = {}
         for path in sorted(directory.glob("*.json")):
             if path.name == "digests.json":
                 continue
             document = json.loads(path.read_text(encoding="utf-8"))
-            model = models[path.name] if isinstance(models, dict) else models
             model.model_validate(document)
             digests[path.name] = digest_of(document)
         expected[directory / "digests.json"] = json.dumps(digests, indent=2).encode("utf-8") + b"\n"

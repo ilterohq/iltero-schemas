@@ -16,8 +16,9 @@ consumer that fails one must fail its build.
 | `contexts/` | One complete assurance context per profile: `plan_resource.json`, `pre_deploy_change.json` and `post_deploy.json`. `digests.json` gives each one's `input_digest`. | Validation, and each document digest. |
 | `events/` | `plan_pass.json`, a complete assurance event, and `digests.json`. | Validation and the document digest. |
 | `reports/` | `verification_report.json`, a complete verification report, and `digests.json`. | Validation and the document digest. |
-| `wire/` | One document per run and upload message, and a complete CAR (`change_assurance_record.json`), with `digests.json`. `iltero_schemas.vectors.wire_models.WIRE_MODELS` maps each file name to its model. | Validation and each document digest. |
-| `wire_invalid/` | `cases.json`: wire documents that must be refused. Each case names a `wire/` document, the values to change (`set`) and remove (`remove`) by JSON Pointer, and the expected message. | The refusal. |
+| `records/` | Two complete CARs, with `digests.json`: `local_run.json`, of a run the tool opened on its own, and `governed_run.json`, of a run Iltero Cloud opened, with its pins and the CI job Iltero Cloud verified. Its plan stage owes every pinned assertion, so here the stage's assertion-set digest equals the pins'. | Validation and each document digest. |
+| `records_invalid/` | `cases.json`: records that must be refused. Each case names a `records/` document, the values to change (`set`) and remove (`remove`) by JSON Pointer, and the expected message. | The refusal. |
+| `records_valid/` | `cases.json`: changed records that must still be accepted, in the same form without a message, such as a run whose environment is not production, a stage observed outside its token window, or a job that supplied no id of its own. | Acceptance. |
 | `evaluation/` | `cases.json`: an assertion, an input, and the expected `status`, `reason`, `unknown`, `when` and, for some cases, `predicates`. `facts_unknown.json`: the approval and exception assertions over `contexts/pre_deploy_change.json`, with the facts as unknown markers and as empty lists. | The OPA result for each case. |
 | `opa/` | `not_allowed.txt`: every built-in function of the pinned OPA release that the capabilities allowlist leaves out. | The allowlist of the pinned release. |
 

@@ -2,9 +2,9 @@
 
 GitHub Actions gives each job an identity token. Its claims name the
 repository, the workflows, the branch or tag, the commit, the event, the CI
-run and attempt, and the runner. This module holds the shape of those claims
-as the server reports them. Another CI system adds its own module and
-changes none here.
+run and attempt, the job, and the runner. This module holds the shape of
+those claims as the server reports them. Another CI system adds its own
+module and changes none here.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from typing import Annotated, Final, Literal
 from pydantic import Field
 
 from iltero_schemas.models.base import StrictModel
+from iltero_schemas.models.ci_job import JobKey
 from iltero_schemas.models.fields import Commit, NoToken
 
 # The name the contract gives the CI system GitHub Actions.
@@ -71,6 +72,10 @@ class GithubActionsIdentity(StrictModel):
     environment: DeploymentEnvironment | None
     ci_run_id: Number
     ci_run_attempt: Number
+    # The job that asked for the identity token, as the CI system numbers it (GitHub's check_run_id claim).
+    # Null only when the CI system's token does not carry it: for example, a GitHub Enterprise Server that does not
+    # issue it.
+    ci_job_id: Number | None
     # Null when the token does not say which kind of runner ran the job.
     runner_environment: Literal["github-hosted", "self-hosted"] | None
 
@@ -81,3 +86,7 @@ class GithubActionsIdentity(StrictModel):
         can be renamed while a run is in progress.
         """
         return (self.repository_id, self.repository_owner_id)
+
+    def job_key(self) -> JobKey:
+        """The job this identity names: the run, its attempt and the job, by names every CI system shares."""
+        return JobKey(self.provider, self.ci_run_id, int(self.ci_run_attempt), self.ci_job_id)

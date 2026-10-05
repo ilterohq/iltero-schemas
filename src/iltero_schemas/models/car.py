@@ -38,8 +38,8 @@ from typing import Annotated, Any, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
+from iltero_schemas.models.access_window import StageAccessWindow
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
-from iltero_schemas.models.authorization import StageAuthorization
 from iltero_schemas.models.base import StageValue, StrictModel, sorted_unique
 from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
@@ -281,7 +281,7 @@ class StageRecord(StrictModel):
     ci_identity: CiIdentity | None
     # The server's time in the answer that issued this stage's run token, and the token's expiry, from the same
     # answer as ci_identity; null exactly when ci_identity is.
-    authorization: StageAuthorization | None
+    access_window: StageAccessWindow | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
     events: Written

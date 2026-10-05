@@ -248,7 +248,7 @@ with a regulatory framework.
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
 | `change` | object | Every unit of the change with its plan `digest`, sorted by unit, and the change `digest` once known. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), when Iltero Cloud authorized the stage (`authorization`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -296,7 +296,7 @@ Key rules:
   without `pins` names no Iltero Cloud bundle, no facts from Iltero Cloud and no verified CI context.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`).
-- A stage names `authorization` exactly when it names `ci_identity`, from the same Iltero Cloud answer, and its
+- A stage names `access_window` exactly when it names `ci_identity`, from the same Iltero Cloud answer, and its
   `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
   them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may
   differ, so it is not required to fall between them.

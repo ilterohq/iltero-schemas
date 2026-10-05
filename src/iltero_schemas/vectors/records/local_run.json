@@ -1081,7 +1081,7 @@
         "reason": null
       },
       "ci_identity": null,
-      "authorization": null,
+      "access_window": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {

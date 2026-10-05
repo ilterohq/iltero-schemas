@@ -72,7 +72,8 @@ class GithubActionsIdentity(StrictModel):
     ci_run_id: Number
     ci_run_attempt: Number
     # The job that asked for the identity token, as the CI system numbers it (GitHub's check_run_id claim).
-    # Null only when the CI system's token does not carry it, as with GitHub Enterprise Server today.
+    # Null only when the CI system's token does not carry it: for example, a GitHub Enterprise Server that does not
+    # issue it.
     ci_job_id: Number | None
     # Null when the token does not say which kind of runner ran the job.
     runner_environment: Literal["github-hosted", "self-hosted"] | None

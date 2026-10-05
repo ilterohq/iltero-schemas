@@ -14,6 +14,7 @@ from typing import Annotated, Final, Literal
 from pydantic import Field
 
 from iltero_schemas.models.base import StrictModel
+from iltero_schemas.models.ci_job import JobKey
 from iltero_schemas.models.fields import Commit, NoToken
 
 # The name the contract gives the CI system GitHub Actions.
@@ -85,3 +86,7 @@ class GithubActionsIdentity(StrictModel):
         can be renamed while a run is in progress.
         """
         return (self.repository_id, self.repository_owner_id)
+
+    def job_key(self) -> JobKey:
+        """The job this identity names: the run, its attempt and the job, by names every CI system shares."""
+        return JobKey(self.provider, self.ci_run_id, int(self.ci_run_attempt), self.ci_job_id)

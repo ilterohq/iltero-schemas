@@ -13,7 +13,8 @@ record is only a claim: Only the server can confirm it, from the run's id.
 Each CI system names its jobs in its own way. So a ``CiIdentity`` has one
 variant per CI system, told apart by its ``provider`` key. Every variant names
 the commit the job ran on. Its ``source_key()`` says what stays the same for
-every job of one run. GitHub Actions is the first CI system the contract
+every job of one run, and its ``job_key()`` names the job in the shared shape
+``models.ci_job.JobKey``. GitHub Actions is the first CI system the contract
 supports (``models.providers.github_actions``). No value may contain a JSON Web
 Token, so no field can carry the identity token itself.
 """

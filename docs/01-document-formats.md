@@ -364,6 +364,10 @@ Key rules:
 - No value may contain a JSON Web Token.
 - The stages of one record share `provider`, `issuer`, `commit` and the source: for `github_actions`, `repository_id`
   and `repository_owner_id`. The commit is the record's `subject.source.commit.sha`.
+- The validating model of each variant offers `job_key()`, which names the job in one shape for every CI system
+  (`iltero_schemas.models.ci_job.JobKey`): `provider`, `run_id`, `attempt` (an integer, from `ci_run_attempt`) and
+  `job_id` (or `None`). Keys compare only for equality, and a `job_id` of `None` names no job, so it never matches
+  one: compare `job_id` only when both sides name a job.
 
 ## VerificationReport
 

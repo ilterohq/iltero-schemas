@@ -283,7 +283,7 @@ class StageRecord(StrictModel):
     # The server's time in the answer that issued this stage's run token, and the token's expiry, from the same
     # answer as ci_identity; null exactly when ci_identity is.
     access_window: StageAccessWindow | None
-    # Whether the tool compared the job's own number with the verified job; the tool's own claim. Null exactly
+    # How the tool checked the job it ran in against the verified job; the tool's own claim. Null exactly
     # when ci_identity is.
     job_check: JobCheck | None
     compiler: Compiler

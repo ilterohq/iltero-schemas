@@ -1134,6 +1134,8 @@
         "ref": "refs/heads/main",
         "commit": "c84e7a1000000000000000000000000000000000",
         "event": "push",
+        "actor": "octocat",
+        "actor_id": "583231",
         "environment": "production",
         "ci_run_id": "9876543",
         "ci_run_attempt": "1",

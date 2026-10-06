@@ -263,5 +263,50 @@
       "/stages/plan/job_check"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "governed_ci_identity_names_no_actor_key",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/ci_identity/actor"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "governed_ci_actor_not_a_login",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/actor": "octo cat"
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "governed_ci_actor_null",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/actor": null
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "governed_ci_actor_id_not_a_positive_number",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/actor_id": "0"
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "governed_ci_identity_names_no_actor_id_key",
+    "vector": "governed_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/ci_identity/actor_id"
+    ],
+    "message": "Field required"
   }
 ]

@@ -42,5 +42,22 @@
       "/stages/plan/job_check": "not_given"
     },
     "remove": []
+  },
+  {
+    "name": "governed_run_started_by_a_bot_account",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/actor": "dependabot[bot]",
+      "/stages/plan/ci_identity/actor_id": "49699333"
+    },
+    "remove": []
+  },
+  {
+    "name": "governed_ci_token_without_an_actor_id",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/ci_identity/actor_id": null
+    },
+    "remove": []
   }
 ]

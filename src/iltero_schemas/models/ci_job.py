@@ -1,10 +1,12 @@
 """The CI job a stage ran in, in names every CI system shares.
 
 Each CI system's identity names its run, its attempt and its job by its own
-field names. ``JobKey`` gives them one shape, so a reader compares the job it
-runs in with the job the server verified without knowing which CI system
-issued the token. Each ``CiIdentity`` variant returns one from ``job_key()``.
-``JobCheck`` says how the tool checked its own job against that job.
+field names. ``JobKey`` gives them one shape, so a tool compares the run and
+attempt it runs in with those the server verified without knowing which CI
+system issued the token. Each ``CiIdentity`` variant returns one from
+``job_key()``. The job itself is read from the identity token the tool sent,
+so ``JobCheck`` records where that token came from rather than a second,
+independent source.
 """
 
 from __future__ import annotations

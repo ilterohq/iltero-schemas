@@ -1,0 +1,100 @@
+{
+  "apiVersion": "iltero.io/identity-bindings/v1",
+  "unit": "root",
+  "generator": {
+    "name": "iltero",
+    "version": "0.1.0"
+  },
+  "sources": {
+    "state": {
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "tool": "terraform",
+      "tool_version": "1.14.0"
+    },
+    "plan": {
+      "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "digest_version": "1"
+    }
+  },
+  "resolvers": [
+    {
+      "provider": "aws",
+      "version": "1.0.0",
+      "verified": [
+        "iam_role",
+        "kms_key",
+        "rds_instance",
+        "s3_bucket",
+        "security_group"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "iac": {
+        "tool": "terraform",
+        "unit": "root",
+        "address": "aws_db_instance.payments"
+      },
+      "cloud": {
+        "provider": "aws",
+        "resource_type": "rds_instance",
+        "primary": {
+          "scheme": "aws_arn",
+          "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+        }
+      },
+      "authority": "authoritative"
+    },
+    {
+      "iac": {
+        "tool": "terraform",
+        "unit": "root",
+        "address": "aws_s3_bucket.logs"
+      },
+      "cloud": {
+        "provider": "aws",
+        "resource_type": "s3_bucket",
+        "primary": {
+          "scheme": "aws_arn",
+          "value": "arn:aws:s3:::logs-bucket"
+        }
+      },
+      "authority": "authoritative"
+    }
+  ],
+  "unresolved": [
+    {
+      "address": "aws_lambda_function.worker",
+      "reason": "no_resolver"
+    }
+  ],
+  "removed": [
+    {
+      "iac": {
+        "tool": "terraform",
+        "unit": "root",
+        "address": "aws_db_instance.payments"
+      },
+      "cloud": {
+        "provider": "aws",
+        "resource_type": "rds_instance",
+        "primary": {
+          "scheme": "aws_arn",
+          "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+        }
+      },
+      "authority": "authoritative",
+      "fate": "deleted"
+    }
+  ],
+  "removed_unresolved": [
+    {
+      "address": "aws_kms_key.old",
+      "reason": "identifier_missing",
+      "fate": "forgotten"
+    }
+  ],
+  "deposed_objects": 1,
+  "deposed_destroyed": 0
+}

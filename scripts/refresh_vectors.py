@@ -8,7 +8,8 @@ them. Canonical vectors: the canonical bytes and digest of each value in
 ``src/iltero_schemas/vectors/canonical/values.json``, and of every case of the
 assertion-set and change digests, from the inputs each case names. Document
 vectors: the digest of every context under ``vectors/contexts``, every event
-under ``vectors/events``, every record under ``vectors/records`` and every
+under ``vectors/events``, every identity document under
+``vectors/identities``, every record under ``vectors/records`` and every
 verification report under ``vectors/reports``, each validated against its
 model first.
 
@@ -43,6 +44,7 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.identity import IdentityBindings
 from iltero_schemas.models.verification import VerificationReport
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,6 +56,7 @@ CANONICAL_VECTORS = PACKAGE / "vectors" / "canonical"
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     PACKAGE / "vectors" / "contexts": AssuranceContext,
     PACKAGE / "vectors" / "events": AssuranceEvent,
+    PACKAGE / "vectors" / "identities": IdentityBindings,
     PACKAGE / "vectors" / "records": CAR,
     PACKAGE / "vectors" / "reports": VerificationReport,
 }

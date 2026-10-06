@@ -1,0 +1,151 @@
+[
+  {
+    "name": "two_bindings_name_one_cloud_identity",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/bindings": [
+        {
+          "iac": {
+            "tool": "terraform",
+            "unit": "root",
+            "address": "aws_db_instance.payments"
+          },
+          "cloud": {
+            "provider": "aws",
+            "resource_type": "rds_instance",
+            "primary": {
+              "scheme": "aws_arn",
+              "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+            }
+          },
+          "authority": "authoritative"
+        },
+        {
+          "iac": {
+            "tool": "terraform",
+            "unit": "root",
+            "address": "aws_db_instance.reports"
+          },
+          "cloud": {
+            "provider": "aws",
+            "resource_type": "rds_instance",
+            "primary": {
+              "scheme": "aws_arn",
+              "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+            }
+          },
+          "authority": "authoritative"
+        },
+        {
+          "iac": {
+            "tool": "terraform",
+            "unit": "root",
+            "address": "aws_s3_bucket.logs"
+          },
+          "cloud": {
+            "provider": "aws",
+            "resource_type": "s3_bucket",
+            "primary": {
+              "scheme": "aws_arn",
+              "value": "arn:aws:s3:::logs-bucket"
+            }
+          },
+          "authority": "authoritative"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "no two entries of bindings name the same cloud identity"
+  },
+  {
+    "name": "two_removed_entries_name_one_cloud_identity",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/removed": [
+        {
+          "iac": {
+            "tool": "terraform",
+            "unit": "root",
+            "address": "aws_db_instance.payments"
+          },
+          "cloud": {
+            "provider": "aws",
+            "resource_type": "rds_instance",
+            "primary": {
+              "scheme": "aws_arn",
+              "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+            }
+          },
+          "authority": "authoritative",
+          "fate": "deleted"
+        },
+        {
+          "iac": {
+            "tool": "terraform",
+            "unit": "root",
+            "address": "aws_db_instance.reports"
+          },
+          "cloud": {
+            "provider": "aws",
+            "resource_type": "rds_instance",
+            "primary": {
+              "scheme": "aws_arn",
+              "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
+            }
+          },
+          "authority": "authoritative",
+          "fate": "deleted"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "no two entries of removed name the same cloud identity"
+  },
+  {
+    "name": "a_type_bound_that_its_resolver_did_not_verify",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/resolvers/0/verified": [
+        "s3_bucket"
+      ]
+    },
+    "remove": [],
+    "message": "only a resource type verified for its provider's resolver is ever bound"
+  },
+  {
+    "name": "a_resource_both_bound_and_unresolved",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/unresolved": [
+        {
+          "address": "aws_lambda_function.worker",
+          "reason": "no_resolver"
+        },
+        {
+          "address": "aws_s3_bucket.logs",
+          "reason": "no_resolver"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a resource is bound or unresolved, never both"
+  },
+  {
+    "name": "what_left_the_state_listed_without_an_applied_plan",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/plan": null
+    },
+    "remove": [],
+    "message": "what left the state is listed exactly when the applied plan was read, and null otherwise"
+  },
+  {
+    "name": "a_binding_of_another_unit",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/bindings/0/iac/unit": "network"
+    },
+    "remove": [],
+    "message": "every binding belongs to the unit"
+  }
+]

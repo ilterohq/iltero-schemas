@@ -1,0 +1,13 @@
+[
+  {
+    "name": "no_applied_plan_read_so_what_left_the_state_is_not_listed",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/plan": null,
+      "/removed": null,
+      "/removed_unresolved": null,
+      "/deposed_destroyed": null
+    },
+    "remove": []
+  }
+]

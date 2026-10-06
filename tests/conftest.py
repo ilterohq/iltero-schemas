@@ -25,9 +25,10 @@ VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
 STARTER_ASSERTIONS = ROOT / "src" / "iltero_schemas" / "assertions"
 POST_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "post_deploy.json").read_text(encoding="utf-8"))
 
-# Cloud identifiers are built from parts, so no tracked line holds one.
+# Cloud identifiers are built from parts, so only the allowlisted placeholders appear verbatim in tracked files.
+# The account is the one AWS reserves for documentation.
 PARTITION = "aws"
-ACCOUNT = "0" * 11 + "1"
+ACCOUNT = "1111" + "2222" + "3333"
 REGION = "eu-west-1"
 
 

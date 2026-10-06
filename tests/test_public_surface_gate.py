@@ -27,6 +27,8 @@ CLEAN = "src/iltero_schemas/__init__.py"
 # Assembled so that this file passes the gate it tests.
 USERS = "/Use" + "rs/"
 HOME = "/ho" + "me/"
+# An Amazon Resource Name (ARN) prefix, assembled for the same reason.
+ARN = "arn:" + "aws:"
 # A private vocabulary for the throwaway repository only.
 PRIVATE = "# test\nsecret_garden\nProject Nightjar\n"
 
@@ -120,6 +122,19 @@ def test_an_allowlisted_token_is_exempt_and_only_that_token(repo: Path) -> None:
     _write(repo, "tests/x.py", f'p = "{USERS}alice"\nq = "{USERS}bob"\n')
     result = _gate(repo)
     assert result.returncode == 1 and f"{USERS}bob" in result.stderr and f"{USERS}alice" not in result.stderr
+
+
+def test_an_arn_is_refused_whole_and_an_allowlisted_arn_exempts_only_itself(repo: Path) -> None:
+    placeholder = f"{ARN}s3:::placeholder-bucket"
+    _write(repo, "tests/x.json", f'["{placeholder}", "{ARN}s3:::another-bucket"]\n')
+    result = _gate(repo)
+    assert result.returncode == 1
+    assert f"{ARN}s3:::another-bucket" in result.stderr and f"{ARN}s3:::placeholder-bucket" in result.stderr
+    with (repo / "scripts" / ALLOWLIST.name).open("a", encoding="utf-8") as handle:
+        handle.write(f"{placeholder}\n")
+    result = _gate(repo)
+    assert result.returncode == 1
+    assert f"{ARN}s3:::another-bucket" in result.stderr and "placeholder-bucket" not in result.stderr
 
 
 def test_the_allowlist_cannot_carry_a_token_of_its_own(repo: Path) -> None:

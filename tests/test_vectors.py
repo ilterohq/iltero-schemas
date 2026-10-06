@@ -36,6 +36,7 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.identity import IdentityBindings
 from iltero_schemas.models.verification import VerificationReport
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
@@ -51,11 +52,14 @@ EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
 RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
 RECORD_VALID_CASES = json.loads((VECTORS / "records_valid" / "cases.json").read_text(encoding="utf-8"))
+IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
+IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "contexts": AssuranceContext,
     "events": AssuranceEvent,
+    "identities": IdentityBindings,
     "records": CAR,
     "reports": VerificationReport,
 }
@@ -173,7 +177,18 @@ def test_document_vector_validates_and_its_digest_is_reproduced(folder: str, nam
 
 def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in VECTORS.iterdir() if path.is_dir() and path.name != "__pycache__"}
-    known = {"assertions", "canonical", "compiler", "evaluation", "invalid", "opa", "records_invalid", "records_valid"}
+    known = {
+        "assertions",
+        "canonical",
+        "compiler",
+        "evaluation",
+        "identities_invalid",
+        "identities_valid",
+        "invalid",
+        "opa",
+        "records_invalid",
+        "records_valid",
+    }
     assert folders == known | set(DOCUMENT_MODELS)
 
 
@@ -199,9 +214,9 @@ def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
         document[key] = value
 
 
-def _patched(case: dict[str, Any]) -> Any:
-    """The record a case names, with its values set and removed."""
-    document = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
+def _patched(case: dict[str, Any], folder: str) -> Any:
+    """The document a case names in ``folder``, with its values set and removed."""
+    document = json.loads((VECTORS / folder / case["vector"]).read_text(encoding="utf-8"))
     for pointer, value in case["set"].items():
         _changed(document, pointer, value, remove=False)
     for pointer in case["remove"]:
@@ -212,16 +227,31 @@ def _patched(case: dict[str, Any]) -> Any:
 @pytest.mark.parametrize("case", RECORD_INVALID_CASES, ids=[c["name"] for c in RECORD_INVALID_CASES])
 def test_invalid_record_is_rejected(case: dict[str, Any]) -> None:
     with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        CAR.model_validate(_patched(case))
+        CAR.model_validate(_patched(case, "records"))
 
 
 @pytest.mark.parametrize("case", RECORD_VALID_CASES, ids=[c["name"] for c in RECORD_VALID_CASES])
 def test_valid_record_case_is_accepted(case: dict[str, Any]) -> None:
-    CAR.model_validate(_patched(case))
+    CAR.model_validate(_patched(case, "records"))
 
 
-@pytest.mark.parametrize("cases", [RECORD_INVALID_CASES, RECORD_VALID_CASES], ids=["invalid", "valid"])
-def test_every_record_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
+@pytest.mark.parametrize("case", IDENTITY_INVALID_CASES, ids=[c["name"] for c in IDENTITY_INVALID_CASES])
+def test_invalid_identity_document_is_rejected(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        IdentityBindings.model_validate(_patched(case, "identities"))
+
+
+@pytest.mark.parametrize("case", IDENTITY_VALID_CASES, ids=[c["name"] for c in IDENTITY_VALID_CASES])
+def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
+    IdentityBindings.model_validate(_patched(case, "identities"))
+
+
+@pytest.mark.parametrize(
+    "cases",
+    [RECORD_INVALID_CASES, RECORD_VALID_CASES, IDENTITY_INVALID_CASES, IDENTITY_VALID_CASES],
+    ids=["records invalid", "records valid", "identities invalid", "identities valid"],
+)
+def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     names = [case["name"] for case in cases]
     assert len(names) == len(set(names))
 

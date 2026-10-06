@@ -18,6 +18,8 @@
 # Usage: scripts/check-public-surface.sh [dist-dir]
 #   With a dist directory, the sdist and pure-Python wheel listings are checked too.
 set -euo pipefail
+# Match bytes, the same way on every platform and whatever the file's encoding.
+export LC_ALL=C
 
 cd "$(git rev-parse --show-toplevel)"
 failures=0
@@ -115,7 +117,8 @@ generic_patterns=(
   '/home/[^/[:space:]"'"'"']+'
   'C:\\Users\\[^\\[:space:]"'"'"']+'
   '\b[0-9]{12}\b'
-  'arn:aws[a-z-]*:'
+  # A whole ARN, so that the allowlist can exempt one placeholder ARN and never every ARN.
+  'arn:aws[a-z-]*:[^[:space:]"'"'"'`]*'
   'AKIA[0-9A-Z]{16}'
   'ASIA[0-9A-Z]{16}'
   'gh[pousr]_[A-Za-z0-9]{20,}'
@@ -136,7 +139,7 @@ check_content() {  # $1 = path, $2 = pattern, $3 = exempt-through-allowlist (yes
     token="${hit#*:}"
     if [[ "$3" == yes ]] && allowlisted "$token"; then continue; fi
     fail "forbidden content in $1 (pattern $2): line ${hit%%:*}: ${token:0:80}"
-  done < <(grep -noE -- "$2" "$1" 2>/dev/null || true)
+  done < <(grep -anoE -- "$2" "$1" 2>/dev/null || true)
 }
 while IFS= read -r -d '' path; do
   [[ -f "$path" ]] || continue

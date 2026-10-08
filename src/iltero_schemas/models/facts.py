@@ -21,7 +21,7 @@ from typing import Literal
 from pydantic import ConfigDict, Field
 
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Digest, EnvironmentKey, Identifier, Timestamp, Uuid
+from iltero_schemas.models.fields import Digest, EnvironmentKey, Timestamp, Uuid
 
 # Why a part of the facts is missing; the evaluator's runtime copies it into the result.
 UnknownReason = Literal["server_facts_unavailable"]
@@ -40,7 +40,7 @@ class UnknownMarker(StrictModel):
 
 
 class FactsScope(StrictModel):
-    """What the facts were issued for: the stack, the environment, and the unit's change once it is fixed."""
+    """What the facts were issued for: the stack, the environment, and the unit's change; null names no change."""
 
     stack_id: Uuid
     environment: EnvironmentKey
@@ -48,10 +48,13 @@ class FactsScope(StrictModel):
 
 
 class FactsReceived(StrictModel):
-    """The envelope of the facts document a stage received: its kind, when it was issued, what for, and its digest."""
+    """The envelope of the facts document a stage received: its kind, the run and stage it was issued for, when,
+    what for, and its digest. It holds none of the facts themselves, so it proves nothing about an approval."""
 
-    api_version: Identifier
+    api_version: Literal["iltero.io/assurance-facts/v1"]
+    run_id: Uuid
+    stage: Literal["pre_deploy"]
     issued_at: Timestamp
     scope: FactsScope
-    # The digest of the document as received (``canonical.digest_of``).
+    # ``canonical.digest_of`` of the whole facts document as parsed from the response body, with its own keys.
     digest: Digest

@@ -13,6 +13,7 @@ from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
 from tests.records import (
     ACCESS_WINDOW,
     CI_IDENTITY,
+    GOVERNED,
     PINNED_ASSERTIONS,
     PINNED_BUNDLE,
     PINS,
@@ -35,6 +36,8 @@ def _with_event(document: dict[str, Any], **provenance: Any) -> dict[str, Any]:
 # The envelope of the facts a pinned pre-deploy stage received; its scope is filled from the record.
 FACTS_RECEIVED: dict[str, Any] = {
     "api_version": "iltero.io/assurance-facts/v1",
+    "run_id": GOVERNED["run_id"]["value"],
+    "stage": "pre_deploy",
     "issued_at": "2026-09-22T13:05:00.000Z",
     "digest": "sha256:" + "8" * 64,
 }
@@ -110,14 +113,21 @@ def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_server_bundl
         CAR.model_validate(_with_event(pinned(), assertion_source=source), context=_READER)
 
 
-@pytest.mark.parametrize(("facts_source", "refused"), [("server", False), ("none", False), ("local_file", True)])
-def test_a_pinned_pre_deploy_check_reads_no_facts_from_a_local_file(facts_source: str, refused: bool) -> None:
+@pytest.mark.parametrize(
+    ("facts_source", "message"),
+    [
+        ("server", None),
+        ("none", "read the facts the server served"),
+        ("local_file", "read no facts from a local file"),
+    ],
+)
+def test_a_pinned_pre_deploy_check_reads_the_facts_the_server_served(facts_source: str, message: str | None) -> None:
     document = _with_pre_deploy(pinned(), facts_source)
-    if refused:
-        with pytest.raises(ValidationError, match="read no facts from a local file"):
-            CAR.model_validate(document, context=_READER)
-    else:
+    if message is None:
         CAR.model_validate(document, context=_READER)
+    else:
+        with pytest.raises(ValidationError, match=message):
+            CAR.model_validate(document, context=_READER)
 
 
 @pytest.mark.parametrize(
@@ -130,8 +140,14 @@ def test_a_pinned_pre_deploy_check_reads_no_facts_from_a_local_file(facts_source
             "sha256:" + "e" * 64,
             "for no change, or for the change",
         ),
+        (
+            "stages.pre_deploy.facts_received.run_id",
+            "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "issued for the record's run",
+        ),
+        ("stages.pre_deploy.enforcement", "advisory", "runs in the pinned policy's gate mode"),
     ],
-    ids=["no facts envelope", "another environment", "another change"],
+    ids=["no facts envelope", "another environment", "another change", "another run", "a gate the pins do not set"],
 )
 def test_a_pinned_pre_deploy_stage_names_the_facts_it_received_for_its_run(
     dotted: str, value: Any, message: str

@@ -571,6 +571,8 @@
     "set": {
       "/stages/plan/facts_received": {
         "api_version": "iltero.io/assurance-facts/v1",
+        "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+        "stage": "pre_deploy",
         "issued_at": "2026-09-22T13:05:00.000Z",
         "scope": {
           "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
@@ -683,5 +685,61 @@
     },
     "remove": [],
     "message": "counts the change the record names"
+  },
+  {
+    "name": "governed_stage_whose_gate_is_not_the_pinned_mode",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/enforcement": "advisory"
+    },
+    "remove": [],
+    "message": "runs in the pinned policy's gate mode"
+  },
+  {
+    "name": "pre_deploy_facts_for_another_run",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    },
+    "remove": [],
+    "message": "issued for the record's run"
+  },
+  {
+    "name": "pre_deploy_event_that_read_no_facts",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": "none"
+    },
+    "remove": [],
+    "message": "read the facts the server served"
+  },
+  {
+    "name": "pre_deploy_facts_of_another_kind",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/api_version": "iltero.io/assurance-facts/v2"
+    },
+    "remove": [],
+    "message": "Input should be 'iltero.io/assurance-facts/v1'"
+  },
+  {
+    "name": "placeholders_out_of_order",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.z",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "sorted by source"
   }
 ]

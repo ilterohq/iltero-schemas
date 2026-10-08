@@ -199,7 +199,7 @@ def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
     [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"address": "a.x"}]}],
     ids=["two deployments", "a removal", "an exclusion"],
 )
-def test_a_deployment_scope_is_the_one_deployment(scope: dict[str, Any]) -> None:
+def test_a_deployment_scope_is_its_one_deployment(scope: dict[str, Any]) -> None:
     changes = {f"coverage.subjects_in_scope.{key}": value for key, value in scope.items()}
     with pytest.raises(ValidationError, match="that one subject"):
         _outcome(DEPLOYED_STAGE, **changes)
@@ -262,3 +262,27 @@ def test_an_evaluator_error_in_a_later_stage_names_the_records_reason() -> None:
     )
     status = combine([("plan", stage_outcome(_substituted())), ("post_deploy", errored)]).assurance_status
     assert (status.reason, status.detail) == (INCOMPLETE_REASON, "post_deploy: x")
+
+
+def test_a_change_scope_is_its_one_change() -> None:
+    changes = {"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
+    with pytest.raises(ValidationError, match="that one subject"):
+        _outcome(DEPLOYED_STAGE, **changes)
+
+
+def _placeholders(prefix: str) -> list[dict[str, Any]]:
+    return [{**PLACEHOLDER, "source": f"data.terraform_remote_state.{prefix}{index:03d}"} for index in range(200)]
+
+
+def test_a_record_lists_a_bounded_number_of_placeholders_across_its_stages() -> None:
+    plan = stage_outcome(_substituted(substituted_inputs=_placeholders("a")))
+    deployed_coverage = {**DEPLOYED_STAGE["coverage"], "substituted_inputs": _placeholders("b")}
+    deployed = stage_outcome(Coverage.model_validate(deployed_coverage))
+    with pytest.raises(ValueError, match="across its stages"):
+        combine([("plan", plan), ("post_deploy", deployed)])
+
+
+def test_a_stages_placeholders_are_sorted_by_source() -> None:
+    later = {**PLACEHOLDER, "source": "data.terraform_remote_state.z"}
+    with pytest.raises(ValidationError, match="sorted by source"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [later, PLACEHOLDER]})

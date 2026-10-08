@@ -25,8 +25,8 @@ STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "no
 VERDICT_PRECEDENCE = (2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0)
 
 
-# More inputs than a configuration ever reads from other units, and bounded.
-MAX_SUBSTITUTED_INPUTS = 1000
+# More inputs than a configuration reads from other units, and few enough that a record stays small.
+MAX_SUBSTITUTED_INPUTS = 256
 # Long enough for a stage name and a sentence about what stopped it.
 DETAIL_MAX_LENGTH = 1024
 # The word a verdict uses for each exit code it can carry; every other code is a failure.
@@ -71,7 +71,7 @@ class SubjectsInScope(StrictModel):
     excluded: list[dict[str, Any]]
 
     @model_validator(mode="after")
-    def _a_deployment_is_one(self) -> SubjectsInScope:
+    def _one_subject(self) -> SubjectsInScope:
         if self.basis != "plan_resource_enumeration" and (self.value, self.removed_by_plan, self.excluded) != (
             1,
             0,
@@ -106,9 +106,9 @@ class SubstitutedInput(StrictModel):
     """An input the stage could not read, which its tool replaced with a placeholder value.
 
     ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
-    ``source`` names the input as the plan names it. A stage's own entries name no stage; a record's combined
-    coverage names each entry's stage. The list is the writer's claim: an empty one does not prove that no input
-    was replaced.
+    ``source`` is the input's configuration address: its module path and the data source, with no instance key.
+    A stage's own entries name no stage; a record's combined coverage names each entry's stage. The list is the
+    writer's claim: an empty one does not prove that no input was replaced.
     """
 
     kind: Literal["upstream_state"]
@@ -137,6 +137,10 @@ class Coverage(StrictModel):
         replaced = [(entry.kind, entry.source, entry.stage) for entry in self.substituted_inputs]
         if len(set(replaced)) != len(replaced):
             raise ValueError("a substituted input is listed once")
+        if not all(entry.stage is not None for entry in self.substituted_inputs):
+            sources = [entry.source for entry in self.substituted_inputs]
+            if sources != sorted(sources):
+                raise ValueError("a stage's substituted inputs are sorted by source")
         if set(self.status_counts) != set(STATUSES):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.checks:

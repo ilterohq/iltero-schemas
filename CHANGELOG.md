@@ -40,10 +40,12 @@ keep, so any two tools agree on what a record means.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
   Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
-  including an identity document with no bindings, the identity documents
-  that must be refused, and changed ones that must still be accepted. The
-  rules about bindings have no vector, because a binding holds a cloud
-  identifier this repository does not publish.
+  including a record of a run Iltero Cloud opened with a plan and a
+  pre-deploy stage, a passing plan stage that read placeholders, an identity
+  document with no bindings, the identity documents that must be refused,
+  and changed ones that must still be accepted. The rules about bindings
+  have no vector, because a binding holds a cloud identifier this
+  repository does not publish.
 - A record of a run Iltero Cloud opened carries the run's pins, and agrees
   with them: its environment, where its expected checks came from, and the
   bundle every check was evaluated with. A record of a run the tool opened
@@ -85,10 +87,12 @@ keep, so any two tools agree on what a record means.
   system.
 - The signed bundle's descriptor.
 - A pre-deploy stage counts its one change (`basis: change_unit`), by the
-  record's change digest. Every stage says whether its gate could block
-  (`enforcement`: `enforcing` or `advisory`), and a governed pre-deploy
-  stage keeps the envelope of the facts it received from Iltero Cloud
-  (`facts_received`: kind, issue time, scope and digest).
+  record's change digest. Every stage records the mode its gate ran in
+  (`enforcement`: `enforcing` or `advisory`; the pinned mode in a run
+  Iltero Cloud opened, and always enforcing after the deployment). A
+  pre-deploy stage of a run Iltero Cloud opened keeps the envelope of the
+  facts it received (`facts_received`: kind, run, stage, issue time, scope
+  and digest), and every pre-deploy check of such a record read them.
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`). Its
   verdict still follows its checks, and it is incomplete with reason

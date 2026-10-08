@@ -2216,6 +2216,8 @@
       "enforcement": "enforcing",
       "facts_received": {
         "api_version": "iltero.io/assurance-facts/v1",
+        "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+        "stage": "pre_deploy",
         "issued_at": "2026-09-22T13:05:58.000Z",
         "scope": {
           "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",

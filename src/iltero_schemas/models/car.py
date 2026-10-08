@@ -52,6 +52,7 @@ from iltero_schemas.models.fields import (
     ArtifactDigestBasis,
     Count,
     Digest,
+    GateMode,
     Identifier,
     MemberPath,
     ProjectPath,
@@ -270,8 +271,9 @@ class StageRecord(StrictModel):
     # How the tool checked the job it ran in against the verified job; the tool's own claim. Null exactly
     # when ci_identity is.
     job_check: JobCheck | None
-    # Whether the tool's gate at this stage could block: a failed or undecided check waived as advisory says so.
-    enforcement: Literal["enforcing", "advisory"]
+    # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
+    # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
+    enforcement: GateMode
     # The envelope of the facts the stage received from the server; null unless it is a pinned pre-deploy stage.
     facts_received: FactsReceived | None
     compiler: Compiler

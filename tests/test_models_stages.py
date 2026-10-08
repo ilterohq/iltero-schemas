@@ -333,3 +333,18 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
     document["events"][-1]["provenance"]["facts_source"] = "server"
     with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)
+
+
+def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
+    units = RECORD["change"]["units"]
+    with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    with_stage["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
+    with pytest.raises(ValidationError, match="counts the change the record names"):
+        CAR.model_validate(with_stage, context=_READER)
+
+
+def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
+    document = _record({"post_deploy": _stage("post_deploy", enforcement="advisory")})
+    with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
+        CAR.model_validate(document, context=_READER)

@@ -8,7 +8,8 @@ verified.
 
 Each stage of a pinned record names the CI job the server verified for it, and
 its access window: when the server said it issued the stage's run token and
-when the token expires. It also says how the tool checked the job it ran in
+when the token expires. Its pre-deploy stage keeps the envelope of the facts
+the server served, and every pre-deploy check read them. It also says how the tool checked the job it ran in
 against that verified job (``job_check``), which is the tool's own claim. The
 stages of one run share its CI system, its token issuer, its source (for
 GitHub Actions, the ids of the repository and of its owner) and its commit.
@@ -86,6 +87,9 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
         if record.coverage.substituted_inputs:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record read no placeholder for an input")
     _check_facts_received(car, pins)
+    for stage, record in car.stages.items():
+        if record.enforcement != pins.policy.gate_mode and stage in (Stage.PLAN, Stage.PRE_DEPLOY):
+            raise ValueError(f"stages.{stage.value}: a pinned stage's gate runs in the pinned policy's gate mode")
     required = {(a.id, a.version, a.digest) for a in pins.required_assertions}
     if any((e.assertion.id, e.assertion.version, e.assertion.digest) not in required for e in car.events):
         raise ValueError("every check is of an assertion the run was pinned to")
@@ -136,3 +140,8 @@ def _check_facts_received(car: CAR, pins: RunPins) -> None:
             raise ValueError("the facts received were issued for the stack and environment the run was pinned to")
         if scope.change_digest not in (None, car.change.digest):
             raise ValueError("the facts received were issued for no change, or for the change the record names")
+        if received.run_id != car.run_id.value:
+            raise ValueError("the facts received were issued for the record's run")
+        pre_deploy = [e for e in car.events if e.evaluation.stage is Stage.PRE_DEPLOY]
+        if any(e.provenance.facts_source != "server" for e in pre_deploy):
+            raise ValueError("every pre-deploy check of a pinned record read the facts the server served")

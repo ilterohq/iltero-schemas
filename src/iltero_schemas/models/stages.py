@@ -26,7 +26,10 @@ SCOPE_BASIS = {
     Stage.PLAN: "plan_resource_enumeration",
     Stage.PRE_DEPLOY: "change_unit",
     Stage.POST_DEPLOY: "deployment_unit",
+    Stage.POST_VERIFY: "deployment_unit",
 }
+# The stages whose gate may run in advisory mode: those before the deployment.
+ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)
 _ORDER = list(Stage)
 # The stages one deployment passes through, in order. A record accounts for each: it expects the
 # stage, or says why the stage is not in scope. Runtime observations belong to no deployment.
@@ -112,6 +115,8 @@ def check_structure(car: CAR) -> None:
         scope = record.coverage.subjects_in_scope.basis
         if (basis is not None and scope != basis) or (stage is not Stage.PLAN and scope == SCOPE_BASIS[Stage.PLAN]):
             raise ValueError(f"the {stage.value} stage counts its scope as {basis or 'its own'}")
+        if record.enforcement == "advisory" and stage not in ADVISORY_STAGES:
+            raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
     digest = car.change.digest
     if pre_deploy is not None and digest is not None and pre_deploy.coverage.subjects_in_scope.source_digest != digest:

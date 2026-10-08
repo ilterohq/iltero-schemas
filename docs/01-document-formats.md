@@ -253,7 +253,7 @@ with a regulatory framework.
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a reason. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error) or `upstream_state_unavailable` (the stage read placeholders for an input). A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `not_in_scope` | list | Each lifecycle stage the record does not expect, with `basis` (`project_config` or `not_supported`). |
@@ -303,6 +303,10 @@ Key rules:
   `coverage.substituted_inputs` (`kind: upstream_state` and the input's `source`). Its verdict still follows its
   checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
   is one. A record of a run Iltero Cloud opened lists none.
+- A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
+  the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
+  incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
+  `coverage.substituted_inputs`, not by the reason.
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.

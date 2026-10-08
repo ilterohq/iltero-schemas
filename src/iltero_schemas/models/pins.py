@@ -82,8 +82,9 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
         raise ValueError("every check in a pinned record is of an assertion from the server's bundle")
     if any(e.provenance.facts_source == "local_file" for e in car.events):
         raise ValueError("a pinned record's pre-deploy checks read no facts from a local file")
-    if any(record.coverage.substituted_inputs for record in car.stages.values()):
-        raise ValueError("a stage of a pinned record read no placeholder for an input")
+    for stage, record in car.stages.items():
+        if record.coverage.substituted_inputs:
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record read no placeholder for an input")
     _check_facts_received(car, pins)
     required = {(a.id, a.version, a.digest) for a in pins.required_assertions}
     if any((e.assertion.id, e.assertion.version, e.assertion.digest) not in required for e in car.events):

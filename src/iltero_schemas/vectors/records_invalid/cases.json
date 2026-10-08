@@ -532,7 +532,7 @@
       "/stages/plan/assurance_status": {
         "value": "incomplete",
         "reason": "upstream_state_unavailable",
-        "detail": "1 upstream inputs were placeholders"
+        "detail": "upstream inputs replaced with placeholders: 1"
       },
       "/coverage/substituted_inputs": [
         {
@@ -544,7 +544,7 @@
       "/assurance_status": {
         "value": "incomplete",
         "reason": "upstream_state_unavailable",
-        "detail": "plan: 1 upstream inputs were placeholders"
+        "detail": "plan: upstream inputs replaced with placeholders: 1"
       }
     },
     "remove": [],
@@ -600,5 +600,25 @@
       "/stages/plan/enforcement"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "substituted_input_listed_twice",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a substituted input is listed once"
   }
 ]

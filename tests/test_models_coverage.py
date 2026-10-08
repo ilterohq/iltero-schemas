@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.models.coverage import (
     INCOMPLETE_REASON,
+    MAX_SUBSTITUTED_INPUTS,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
     Coverage,
@@ -232,9 +233,11 @@ def test_an_evaluator_error_outranks_a_placeholder() -> None:
 
 
 def test_combining_names_the_stage_of_each_placeholder() -> None:
-    stage = stage_outcome(_substituted())
-    combined = combine([("plan", stage)])
+    combined = combine([("plan", stage_outcome(_substituted()))])
     assert [entry.stage for entry in combined.coverage.substituted_inputs] == ["plan"]
+
+
+def test_a_stages_placeholders_name_no_stage() -> None:
     named = Coverage.model_validate(
         {**PLAN_STAGE["coverage"], "substituted_inputs": [{**PLACEHOLDER, "stage": "plan"}]}
     )
@@ -242,8 +245,20 @@ def test_combining_names_the_stage_of_each_placeholder() -> None:
         combine([("plan", stage_outcome(named))])
 
 
-def test_a_change_scope_is_its_one_change() -> None:
-    with pytest.raises(ValidationError, match="that one subject"):
-        _outcome(
-            DEPLOYED_STAGE, **{"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
-        )
+def test_a_stage_lists_a_bounded_number_of_placeholders_each_once() -> None:
+    many = [
+        {**PLACEHOLDER, "source": f"data.terraform_remote_state.u{index}"}
+        for index in range(MAX_SUBSTITUTED_INPUTS + 1)
+    ]
+    with pytest.raises(ValidationError, match=f"at most {MAX_SUBSTITUTED_INPUTS}"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": many})
+    with pytest.raises(ValidationError, match="listed once"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [PLACEHOLDER, PLACEHOLDER]})
+
+
+def test_an_evaluator_error_in_a_later_stage_names_the_records_reason() -> None:
+    errored = _outcome(
+        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": INCOMPLETE_REASON, "detail": "x"}
+    )
+    status = combine([("plan", stage_outcome(_substituted())), ("post_deploy", errored)]).assurance_status
+    assert (status.reason, status.detail) == (INCOMPLETE_REASON, "post_deploy: x")

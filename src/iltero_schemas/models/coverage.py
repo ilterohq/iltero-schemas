@@ -14,6 +14,7 @@ from typing import Annotated, Any, Literal
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.canonical import digest_of
+from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import Status
 from iltero_schemas.models.fields import Address, Count, Digest, Identifier, plain_text
@@ -106,7 +107,8 @@ class SubstitutedInput(StrictModel):
 
     ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
     ``source`` names the input as the plan names it. A stage's own entries name no stage; a record's combined
-    coverage names each entry's stage.
+    coverage names each entry's stage. The list is the writer's claim: an empty one does not prove that no input
+    was replaced.
     """
 
     kind: Literal["upstream_state"]
@@ -132,6 +134,9 @@ class Coverage(StrictModel):
 
     @model_validator(mode="after")
     def _counts_are_complete(self) -> Coverage:
+        replaced = [(entry.kind, entry.source, entry.stage) for entry in self.substituted_inputs]
+        if len(set(replaced)) != len(replaced):
+            raise ValueError("a substituted input is listed once")
         if set(self.status_counts) != set(STATUSES):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.checks:
@@ -189,7 +194,7 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
         detail = f"{errors} of {coverage.checks} checks ended in an evaluator error"
         status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
     elif substituted:
-        detail = f"{substituted} upstream inputs were placeholders"
+        detail = f"upstream inputs replaced with placeholders: {substituted}"
         status = AssuranceStatus(value="incomplete", reason=SUBSTITUTED_REASON, detail=detail)
     else:
         status = AssuranceStatus(value="complete", reason=None, detail=None)
@@ -215,6 +220,8 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         raise ValueError("a stage's gaps do not name a stage; combining names it")
     if any(entry.stage is not None for c in coverages for entry in c.substituted_inputs):
         raise ValueError("a stage's substituted inputs do not name a stage; combining names it")
+    if sum(len(c.substituted_inputs) for c in coverages) > MAX_SUBSTITUTED_INPUTS:
+        raise ValueError(f"a record lists at most {MAX_SUBSTITUTED_INPUTS} substituted inputs across its stages")
     per_assertion: dict[str, int] = {}
     for coverage in coverages:
         if set(per_assertion) & set(coverage.subjects_per_assertion):
@@ -243,7 +250,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
         sampled=any(c.sampled for c in coverages),
         substituted_inputs=[
-            SubstitutedInput.model_validate({**entry.model_dump(mode="json"), "stage": name})
+            SubstitutedInput(kind=entry.kind, source=entry.source, stage=Stage(name))
             for name, o in stages
             for entry in o.coverage.substituted_inputs
         ],
@@ -268,8 +275,9 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
     - The gaps and the substituted inputs are kept, each naming its stage; the
       record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,
-      naming that stage; the record is incomplete when any stage is, with that
-      stage's reason.
+      naming that stage; the record is incomplete when any stage is, with the
+      reason of the first stage incomplete for an evaluator error, or else of
+      the first incomplete stage.
     """
     if not stages:
         raise ValueError("a record has at least one stage")
@@ -277,7 +285,9 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
         ((name, outcome.verdict) for name, outcome in stages),
         key=lambda pair: VERDICT_PRECEDENCE.index(pair[1].exit_code),
     )
-    incomplete = next(((n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"), None)
+    incompletes = [(n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"]
+    errors = [pair for pair in incompletes if pair[1].reason == INCOMPLETE_REASON]
+    incomplete = (errors or incompletes)[0] if incompletes else None
     status = stages[0][1].assurance_status
     if incomplete is not None:
         stage, found = incomplete

@@ -10,13 +10,12 @@ allowlist and compare the result.
 from __future__ import annotations
 
 import json
-import re
 import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_json
 from iltero_schemas.ast.parse import parse_document
@@ -50,10 +49,6 @@ ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.j
 CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
-RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
-RECORD_VALID_CASES = json.loads((VECTORS / "records_valid" / "cases.json").read_text(encoding="utf-8"))
-IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
-IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
@@ -198,64 +193,6 @@ def test_every_document_vector_has_its_digest_and_nothing_else() -> None:
         assert {name for f, name in DOCUMENT_FILES if f == folder} == set(digests)
 
 
-def _step(document: Any, token: str) -> Any:
-    return document[int(token)] if isinstance(document, list) else document[token]
-
-
-def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
-    """Set or remove the value at a JSON Pointer (RFC 6901) whose parent exists."""
-    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
-    for token in parents:
-        document = _step(document, token)
-    key: int | str = int(last) if isinstance(document, list) else last
-    if remove:
-        del document[key]
-    else:
-        document[key] = value
-
-
-def _patched(case: dict[str, Any], folder: str) -> Any:
-    """The document a case names in ``folder``, with its values set and removed."""
-    document = json.loads((VECTORS / folder / case["vector"]).read_text(encoding="utf-8"))
-    for pointer, value in case["set"].items():
-        _changed(document, pointer, value, remove=False)
-    for pointer in case["remove"]:
-        _changed(document, pointer, None, remove=True)
-    return document
-
-
-@pytest.mark.parametrize("case", RECORD_INVALID_CASES, ids=[c["name"] for c in RECORD_INVALID_CASES])
-def test_invalid_record_is_rejected(case: dict[str, Any]) -> None:
-    with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        CAR.model_validate(_patched(case, "records"))
-
-
-@pytest.mark.parametrize("case", RECORD_VALID_CASES, ids=[c["name"] for c in RECORD_VALID_CASES])
-def test_valid_record_case_is_accepted(case: dict[str, Any]) -> None:
-    CAR.model_validate(_patched(case, "records"))
-
-
-@pytest.mark.parametrize("case", IDENTITY_INVALID_CASES, ids=[c["name"] for c in IDENTITY_INVALID_CASES])
-def test_invalid_identity_document_is_rejected(case: dict[str, Any]) -> None:
-    with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        IdentityBindings.model_validate(_patched(case, "identities"))
-
-
-@pytest.mark.parametrize("case", IDENTITY_VALID_CASES, ids=[c["name"] for c in IDENTITY_VALID_CASES])
-def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
-    IdentityBindings.model_validate(_patched(case, "identities"))
-
-
-@pytest.mark.parametrize(
-    "cases",
-    [RECORD_INVALID_CASES, RECORD_VALID_CASES, IDENTITY_INVALID_CASES, IDENTITY_VALID_CASES],
-    ids=["records invalid", "records valid", "identities invalid", "identities valid"],
-)
-def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
-    names = [case["name"] for case in cases]
-    assert len(names) == len(set(names))
-
-
 # --- under the pinned evaluator ---------------------------------------------
 
 
@@ -370,14 +307,7 @@ def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: di
         assert result["observations"]["predicates"] == expected["predicates"]
 
 
-@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
-def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
-    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
-    context["evaluation"]["assertion"]["id"] = case["assertion"]
-    assert case["facts"] in ("unknown_marker", "empty_list")
-    if case["facts"] == "empty_list":
-        for part in ("evaluations", "approvals", "exceptions"):
-            context[part] = []
+def _evaluate(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
     evaluated = _run(
         opa,
         "eval",
@@ -387,16 +317,48 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
         "--capabilities",
         str(capabilities),
         "--data",
-        str(COMPILER / f"{case['assertion']}.rego"),
+        str(module),
         "--stdin-input",
-        f"data.{package_of(case['assertion'])}.evaluate",
+        f"data.{package}.evaluate",
         stdin=json.dumps(context),
     )
     assert evaluated.returncode == 0, evaluated.stderr
-    result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+
+
+@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
+def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    assert case["facts"] in ("unknown_marker", "empty_list")
+    if case["facts"] == "empty_list":
+        for part in ("evaluations", "approvals", "exceptions"):
+            context[part] = []
+    result = _evaluate(
+        opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
+    )
     expected = case["expected"]
     assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
     assert result["observations"]["unknown"] == expected["unknown"]
+    assert result["observations"]["when"] == expected["when"]
+
+
+def test_the_two_stage_records_pre_deploy_results_are_what_the_evaluator_returns_over_its_inputs(
+    opa: Path, capabilities: Path
+) -> None:
+    record = json.loads((VECTORS / "records" / "governed_two_stage.json").read_text(encoding="utf-8"))
+    checks = {e["provenance"]["input_digest"]: e for e in record["events"] if e["evaluation"]["stage"] == "pre_deploy"}
+    for path in sorted((VECTORS / "contexts").glob("governed_two_stage_*.json")):
+        context = json.loads(path.read_text(encoding="utf-8"))
+        event = checks[digest_of(context)]
+        assertion = event["assertion"]["id"]
+        result = _evaluate(opa, capabilities, COMPILER / f"{assertion}.rego", package_of(assertion), context)
+        recorded = event["evaluation"]
+        assert (result["status"], result["reason"], result["observations"]) == (
+            recorded["status"],
+            recorded["reason"],
+            recorded["observations"],
+        )
 
 
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)
@@ -470,25 +432,6 @@ spec:
 """
 
 
-def _evaluate_post_deploy(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
-    evaluated = _run(
-        opa,
-        "eval",
-        "--format",
-        "json",
-        "--strict-builtin-errors",
-        "--capabilities",
-        str(capabilities),
-        "--data",
-        str(module),
-        "--stdin-input",
-        f"data.{package}.evaluate",
-        stdin=json.dumps(context),
-    )
-    assert evaluated.returncode == 0, evaluated.stderr
-    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
-
-
 def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothing_to_one_that_does_not(
     opa: Path, capabilities: Path, tmp_path: Path
 ) -> None:
@@ -497,8 +440,8 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     module = compile(parse(_READS_THE_SUMMARY))
     path = tmp_path / "one_change.rego"
     path.write_bytes(module.source)
-    reads = _evaluate_post_deploy(opa, capabilities, path, module.package, context)
+    reads = _evaluate(opa, capabilities, path, module.package, context)
     assert reads["status"] == "unknown" and "apply_log_incomplete" in json.dumps(reads)
     binding = COMPILER / "ILT.DEPLOYMENT.PLAN_BINDING.rego"
-    ignores = _evaluate_post_deploy(opa, capabilities, binding, package_of("ILT.DEPLOYMENT.PLAN_BINDING"), context)
+    ignores = _evaluate(opa, capabilities, binding, package_of("ILT.DEPLOYMENT.PLAN_BINDING"), context)
     assert ignores["status"] == "pass"

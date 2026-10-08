@@ -14,9 +14,10 @@ from typing import Annotated, Any, Literal
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.canonical import digest_of
+from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import Status
-from iltero_schemas.models.fields import Count, Digest, Identifier, plain_text
+from iltero_schemas.models.fields import Address, Count, Digest, Identifier, plain_text
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.
@@ -24,6 +25,8 @@ STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "no
 VERDICT_PRECEDENCE = (2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0)
 
 
+# More inputs than a configuration reads from other units, and few enough that a record stays small.
+MAX_SUBSTITUTED_INPUTS = 256
 # Long enough for a stage name and a sentence about what stopped it.
 DETAIL_MAX_LENGTH = 1024
 # The word a verdict uses for each exit code it can carry; every other code is a failure.
@@ -60,16 +63,21 @@ class AssuranceStatus(StrictModel):
 
 class SubjectsInScope(StrictModel):
     value: Count
-    # How the subjects were counted: each resource the plan names, or the one deployment of the unit.
-    basis: Literal["plan_resource_enumeration", "deployment_unit"]
+    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
+    # one deployment of the unit (after it).
+    basis: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
     source_digest: Digest
     removed_by_plan: Count
     excluded: list[dict[str, Any]]
 
     @model_validator(mode="after")
-    def _a_deployment_is_one(self) -> SubjectsInScope:
-        if self.basis == "deployment_unit" and (self.value, self.removed_by_plan, self.excluded) != (1, 0, []):
-            raise ValueError("a deployment's scope is the one deployment, with nothing removed or excluded")
+    def _one_subject(self) -> SubjectsInScope:
+        if self.basis != "plan_resource_enumeration" and (self.value, self.removed_by_plan, self.excluded) != (
+            1,
+            0,
+            [],
+        ):
+            raise ValueError("a change's or a deployment's scope is that one subject, with nothing removed or excluded")
         return self
 
 
@@ -94,6 +102,21 @@ class Truncated(StrictModel):
     reason: Identifier | None
 
 
+class SubstitutedInput(StrictModel):
+    """An input the stage could not read, which its tool replaced with a placeholder value.
+
+    ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
+    ``source`` is the input's configuration address: its module path and the data source, with no instance key. A
+    stage lists its entries sorted by ``source``, by Unicode code point.
+    A stage's own entries name no stage; a record's combined coverage names each entry's stage. The list is the
+    writer's claim: an empty one does not prove that no input was replaced.
+    """
+
+    kind: Literal["upstream_state"]
+    source: Address
+    stage: StageValue | None
+
+
 class Coverage(StrictModel):
     """The denominator every verdict is read against."""
 
@@ -107,9 +130,18 @@ class Coverage(StrictModel):
     gaps: list[dict[str, Any]]
     truncated: Truncated
     sampled: bool
+    # Inputs replaced with placeholders. A stage with any is incomplete; its verdict still follows its checks.
+    substituted_inputs: Annotated[list[SubstitutedInput], Field(max_length=MAX_SUBSTITUTED_INPUTS)]
 
     @model_validator(mode="after")
     def _counts_are_complete(self) -> Coverage:
+        replaced = [(entry.kind, entry.source, entry.stage) for entry in self.substituted_inputs]
+        if len(set(replaced)) != len(replaced):
+            raise ValueError("a substituted input is listed once")
+        if any(entry.stage is None for entry in self.substituted_inputs):
+            sources = [entry.source for entry in self.substituted_inputs]
+            if sources != sorted(sources):
+                raise ValueError("a stage's substituted inputs are sorted by source")
         if set(self.status_counts) != set(STATUSES):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.checks:
@@ -127,6 +159,8 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
+# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's reason wins.
+SUBSTITUTED_REASON = "upstream_state_unavailable"
 
 
 def _stage_codes(coverage: Coverage) -> list[int]:
@@ -160,15 +194,15 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
-    status = (
-        AssuranceStatus(
-            value="incomplete",
-            reason=INCOMPLETE_REASON,
-            detail=f"{errors} of {coverage.checks} checks ended in an evaluator error",
-        )
-        if errors
-        else AssuranceStatus(value="complete", reason=None, detail=None)
-    )
+    substituted = len(coverage.substituted_inputs)
+    if errors:
+        detail = f"{errors} of {coverage.checks} checks ended in an evaluator error"
+        status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
+    elif substituted:
+        detail = f"upstream inputs replaced with placeholders: {substituted}"
+        status = AssuranceStatus(value="incomplete", reason=SUBSTITUTED_REASON, detail=detail)
+    else:
+        status = AssuranceStatus(value="complete", reason=None, detail=None)
     verdict = Verdict(
         value=VERDICT_WORDS.get(code, "fail"),
         exit_code=code,
@@ -189,6 +223,10 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     plan = coverages[0]
     if any("stage" in gap for c in coverages for gap in c.gaps):
         raise ValueError("a stage's gaps do not name a stage; combining names it")
+    if any(entry.stage is not None for c in coverages for entry in c.substituted_inputs):
+        raise ValueError("a stage's substituted inputs do not name a stage; combining names it")
+    if sum(len(c.substituted_inputs) for c in coverages) > MAX_SUBSTITUTED_INPUTS:
+        raise ValueError(f"a record lists at most {MAX_SUBSTITUTED_INPUTS} substituted inputs across its stages")
     per_assertion: dict[str, int] = {}
     for coverage in coverages:
         if set(per_assertion) & set(coverage.subjects_per_assertion):
@@ -216,6 +254,11 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         gaps=[{**gap, "stage": name} for name, outcome in stages for gap in outcome.coverage.gaps],
         truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
         sampled=any(c.sampled for c in coverages),
+        substituted_inputs=[
+            SubstitutedInput(kind=entry.kind, source=entry.source, stage=Stage(name))
+            for name, o in stages
+            for entry in o.coverage.substituted_inputs
+        ],
     )
 
 
@@ -234,11 +277,12 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
       counted by one stage only.
     - The assertion set is named by the digest over each stage's, in order, and
       is ``locally_derived`` when any stage's is.
-    - The gaps are kept, each naming its stage; the record is truncated or
-      sampled when any stage is.
+    - The gaps and the substituted inputs are kept, each naming its stage; the
+      record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,
-      naming that stage; the record is incomplete when any stage is, with that
-      stage's reason.
+      naming that stage; the record is incomplete when any stage is, with the
+      reason of the first stage incomplete for an evaluator error, or else of
+      the first incomplete stage.
     """
     if not stages:
         raise ValueError("a record has at least one stage")
@@ -246,7 +290,9 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
         ((name, outcome.verdict) for name, outcome in stages),
         key=lambda pair: VERDICT_PRECEDENCE.index(pair[1].exit_code),
     )
-    incomplete = next(((n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"), None)
+    incompletes = [(n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"]
+    errors = [pair for pair in incompletes if pair[1].reason == INCOMPLETE_REASON]
+    incomplete = (errors or incompletes)[0] if incompletes else None
     status = stages[0][1].assurance_status
     if incomplete is not None:
         stage, found = incomplete

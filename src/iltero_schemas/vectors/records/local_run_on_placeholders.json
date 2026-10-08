@@ -3,9 +3,9 @@
   "trust_level": "self_attested",
   "compliance_determination": null,
   "assurance_status": {
-    "value": "complete",
-    "reason": null,
-    "detail": null
+    "value": "incomplete",
+    "reason": "upstream_state_unavailable",
+    "detail": "plan: upstream inputs replaced with placeholders: 1"
   },
   "change": {
     "digest": null,
@@ -43,8 +43,8 @@
       "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
     },
     "status_counts": {
-      "pass": 2,
-      "fail": 3,
+      "pass": 5,
+      "fail": 0,
       "unknown": 0,
       "not_applicable": 0,
       "not_evaluated": 0,
@@ -58,7 +58,13 @@
       "reason": null
     },
     "sampled": false,
-    "substituted_inputs": []
+    "substituted_inputs": [
+      {
+        "kind": "upstream_state",
+        "source": "data.terraform_remote_state.network",
+        "stage": "plan"
+      }
+    ]
   },
   "events": [
     {
@@ -71,21 +77,21 @@
         "observations": {
           "predicates": [
             {
-              "actual": 3,
+              "actual": 7,
               "clause": "assert",
               "expected": 7,
               "index": 0,
               "op": "greater_than_or_equal",
               "path": "resource.after.backup_retention_period",
-              "status": "false"
+              "status": "true"
             }
           ],
           "unknown": null,
           "when": null
         },
-        "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "reason": "assert: true",
         "stage": "plan",
-        "status": "fail",
+        "status": "pass",
         "status_detail": null,
         "status_reason": null
       },
@@ -290,16 +296,16 @@
               "status": "true"
             },
             {
-              "actual": 3,
+              "actual": 7,
               "clause": "assert",
               "expected": 7,
               "index": 3,
               "op": "greater_than_or_equal",
               "path": "resource.after.backup_retention_period",
-              "status": "false"
+              "status": "true"
             },
             {
-              "actual": "db.t3.micro",
+              "actual": "db.m5.large",
               "clause": "assert",
               "expected": [
                 "db.t3.micro",
@@ -308,15 +314,15 @@
               "index": 4,
               "op": "not_in",
               "path": "resource.after.instance_class",
-              "status": "false"
+              "status": "true"
             }
           ],
           "unknown": null,
           "when": "true"
         },
-        "reason": "assert: false; predicate 3 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "reason": "assert: true",
         "stage": "plan",
-        "status": "fail",
+        "status": "pass",
         "status_detail": null,
         "status_reason": null
       },
@@ -501,18 +507,18 @@
               "clause": "assert",
               "expected": null,
               "index": 0,
-              "matched": 0,
+              "matched": 1,
               "op": "exists",
               "path": "resource.related",
-              "status": "false"
+              "status": "true"
             }
           ],
           "unknown": null,
           "when": null
         },
-        "reason": "assert: false; predicate 0 is false: resource.related exists",
+        "reason": "assert: true",
         "stage": "plan",
-        "status": "fail",
+        "status": "pass",
         "status_detail": null,
         "status_reason": null
       },
@@ -1539,10 +1545,10 @@
         "sampled": false,
         "status_counts": {
           "error": 0,
-          "fail": 3,
+          "fail": 0,
           "not_applicable": 0,
           "not_evaluated": 0,
-          "pass": 2,
+          "pass": 5,
           "unknown": 0
         },
         "subjects_evaluated": 2,
@@ -1565,18 +1571,24 @@
           "reason": null,
           "value": false
         },
-        "substituted_inputs": []
+        "substituted_inputs": [
+          {
+            "kind": "upstream_state",
+            "source": "data.terraform_remote_state.network",
+            "stage": null
+          }
+        ]
       },
       "verdict": {
+        "value": "pass",
+        "exit_code": 0,
         "basis": "status_counts",
-        "exit_code": 1,
-        "value": "fail",
         "stage": null
       },
       "assurance_status": {
-        "detail": null,
-        "reason": null,
-        "value": "complete"
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "upstream inputs replaced with placeholders: 1"
       }
     }
   },
@@ -1598,8 +1610,8 @@
   "unit": "root",
   "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
   "verdict": {
-    "value": "fail",
-    "exit_code": 1,
+    "value": "pass",
+    "exit_code": 0,
     "basis": "stage_precedence",
     "stage": "plan"
   }

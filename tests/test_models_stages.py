@@ -106,7 +106,7 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
                     )
                 }
             ),
-            "the pre_deploy stage counts its scope as its own",
+            "the pre_deploy stage counts its scope as change_unit",
         ),
         (_record(events=[*RECORD["events"][:-1], _moved_event(-1, "pre_deploy")]), "every event belongs to a stage"),
         (
@@ -254,6 +254,20 @@ def test_an_error_marks_a_stage_incomplete_and_a_clean_run_complete() -> None:
     assert stage_outcome(_coverage({"fail": 5})).assurance_status.value == "complete"
 
 
+@pytest.mark.parametrize("path", ["C:/outside/config.yml", "D:config.yml", "../config.yml"])
+def test_the_file_that_leaves_a_stage_out_is_inside_the_project(path: str) -> None:
+    config = {"path": path, "digest": "sha256:" + "d" * 64}
+    scoped = _record(
+        expected_stages=["plan", "post_deploy"],
+        not_in_scope=[
+            {"stage": "pre_deploy", "basis": "project_config", "declared_in": config},
+            {"stage": "post_verify", "basis": "not_supported", "declared_in": None},
+        ],
+    )
+    with pytest.raises(ValidationError, match="relative path inside the project"):
+        CAR.model_validate(scoped, context=_READER)
+
+
 def test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so() -> None:
     """A project that has no approval step says so in its configuration, and the record names that file."""
     config = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
@@ -298,6 +312,7 @@ def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
     with pytest.raises(ValidationError, match="names the change digest"):
         CAR.model_validate(with_stage, context=_READER)
     with_stage["change"]["digest"] = change_digest_value
+    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = change_digest_value
     CAR.model_validate(with_stage, context=_READER)
 
 
@@ -315,7 +330,8 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
 
 def test_an_offline_record_has_no_facts_from_the_server() -> None:
     units = RECORD["change"]["units"]
-    pre_deploy = _stage("pre_deploy")
+    digest = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    pre_deploy = _stage("pre_deploy", **{"coverage.subjects_in_scope.source_digest": digest})
     event = _moved_event(-1, "pre_deploy")
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     plan = copy.deepcopy(RECORD["stages"]["plan"])
@@ -325,9 +341,24 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
         expected_stages=["plan", "pre_deploy", "post_deploy"],
         complete=False,
         events=[*RECORD["events"][:-1], event],
-        **{"change.digest": change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})},
+        **{"change.digest": digest},
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"
     with pytest.raises(ValidationError, match="has no facts from the server"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
+    units = RECORD["change"]["units"]
+    with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    with_stage["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
+    with pytest.raises(ValidationError, match="counts the change the record names"):
+        CAR.model_validate(with_stage, context=_READER)
+
+
+def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
+    document = _record({"post_deploy": _stage("post_deploy", enforcement="advisory")})
+    with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
         CAR.model_validate(document, context=_READER)

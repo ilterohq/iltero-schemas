@@ -9,7 +9,17 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.coverage import VERDICT_PRECEDENCE, StageOutcome, Verdict, combine
+from iltero_schemas.models.coverage import (
+    INCOMPLETE_REASON,
+    MAX_SUBSTITUTED_INPUTS,
+    SUBSTITUTED_REASON,
+    VERDICT_PRECEDENCE,
+    Coverage,
+    StageOutcome,
+    Verdict,
+    combine,
+    stage_outcome,
+)
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
@@ -189,12 +199,90 @@ def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
     [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"address": "a.x"}]}],
     ids=["two deployments", "a removal", "an exclusion"],
 )
-def test_a_deployment_scope_is_the_one_deployment(scope: dict[str, Any]) -> None:
+def test_a_deployment_scope_is_its_one_deployment(scope: dict[str, Any]) -> None:
     changes = {f"coverage.subjects_in_scope.{key}": value for key, value in scope.items()}
-    with pytest.raises(ValidationError, match="the one deployment"):
+    with pytest.raises(ValidationError, match="that one subject"):
         _outcome(DEPLOYED_STAGE, **changes)
 
 
 def test_the_status_counts_add_up_to_the_checks() -> None:
     with pytest.raises(ValidationError, match="add up to the number of checks"):
         _outcome(DEPLOYED_STAGE, **{"coverage.checks": 2})
+
+
+PLACEHOLDER = {"kind": "upstream_state", "source": "data.terraform_remote_state.network", "stage": None}
+
+
+def _substituted(**changes: Any) -> Coverage:
+    return Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [PLACEHOLDER], **changes})
+
+
+def test_a_stage_that_read_placeholders_is_incomplete_and_keeps_its_verdict() -> None:
+    outcome = stage_outcome(_substituted())
+    assert outcome.verdict == stage_outcome(PLAN.coverage).verdict
+    assert (outcome.assurance_status.value, outcome.assurance_status.reason) == ("incomplete", SUBSTITUTED_REASON)
+
+
+def test_an_evaluator_error_outranks_a_placeholder() -> None:
+    counts = {**PLAN_STAGE["coverage"]["status_counts"]}
+    moved = next(status for status, count in counts.items() if count)
+    counts[moved] -= 1
+    counts["error"] += 1
+    outcome = stage_outcome(_substituted(status_counts=counts))
+    assert outcome.assurance_status.reason == INCOMPLETE_REASON
+
+
+def test_combining_names_the_stage_of_each_placeholder() -> None:
+    combined = combine([("plan", stage_outcome(_substituted()))])
+    assert [entry.stage for entry in combined.coverage.substituted_inputs] == ["plan"]
+
+
+def test_a_stages_placeholders_name_no_stage() -> None:
+    named = Coverage.model_validate(
+        {**PLAN_STAGE["coverage"], "substituted_inputs": [{**PLACEHOLDER, "stage": "plan"}]}
+    )
+    with pytest.raises(ValueError, match="substituted inputs do not name a stage"):
+        combine([("plan", stage_outcome(named))])
+
+
+def test_a_stage_lists_a_bounded_number_of_placeholders_each_once() -> None:
+    many = [
+        {**PLACEHOLDER, "source": f"data.terraform_remote_state.u{index}"}
+        for index in range(MAX_SUBSTITUTED_INPUTS + 1)
+    ]
+    with pytest.raises(ValidationError, match=f"at most {MAX_SUBSTITUTED_INPUTS}"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": many})
+    with pytest.raises(ValidationError, match="listed once"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [PLACEHOLDER, PLACEHOLDER]})
+
+
+def test_an_evaluator_error_in_a_later_stage_names_the_records_reason() -> None:
+    errored = _outcome(
+        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": INCOMPLETE_REASON, "detail": "x"}
+    )
+    status = combine([("plan", stage_outcome(_substituted())), ("post_deploy", errored)]).assurance_status
+    assert (status.reason, status.detail) == (INCOMPLETE_REASON, "post_deploy: x")
+
+
+def test_a_change_scope_is_its_one_change() -> None:
+    changes = {"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
+    with pytest.raises(ValidationError, match="that one subject"):
+        _outcome(DEPLOYED_STAGE, **changes)
+
+
+def _placeholders(prefix: str) -> list[dict[str, Any]]:
+    return [{**PLACEHOLDER, "source": f"data.terraform_remote_state.{prefix}{index:03d}"} for index in range(200)]
+
+
+def test_a_record_lists_a_bounded_number_of_placeholders_across_its_stages() -> None:
+    plan = stage_outcome(_substituted(substituted_inputs=_placeholders("a")))
+    deployed_coverage = {**DEPLOYED_STAGE["coverage"], "substituted_inputs": _placeholders("b")}
+    deployed = stage_outcome(Coverage.model_validate(deployed_coverage))
+    with pytest.raises(ValueError, match="across its stages"):
+        combine([("plan", plan), ("post_deploy", deployed)])
+
+
+def test_a_stages_placeholders_are_sorted_by_source() -> None:
+    later = {**PLACEHOLDER, "source": "data.terraform_remote_state.z"}
+    with pytest.raises(ValidationError, match="sorted by source"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [later, PLACEHOLDER]})

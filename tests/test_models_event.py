@@ -16,7 +16,6 @@ from iltero_schemas.models.event import (
     STATUS_REASONS,
     STATUS_SEVERITY,
     AssuranceEvent,
-    CiContext,
     Status,
 )
 from tests.conftest import VECTORS
@@ -175,26 +174,11 @@ def test_facts_source_is_always_stated() -> None:
         AssuranceEvent.model_validate(document)
 
 
-@pytest.mark.parametrize(
-    ("integrity", "basis", "valid"),
-    [
-        ("verified", "context_key_mac", True),
-        ("unverified", "none", True),
-        ("absent", "none", True),
-        ("verified", "none", False),
-        ("unverified", "context_key_mac", False),
-        ("absent", "context_key_mac", False),
-    ],
-)
-def test_a_ci_context_is_verified_exactly_when_checked_with_the_context_key(
-    integrity: str, basis: str, valid: bool
-) -> None:
-    document = {"integrity": integrity, "basis": basis}
-    if valid:
-        CiContext.model_validate(document)
-    else:
-        with pytest.raises(ValidationError, match="checked with the run's context key"):
-            CiContext.model_validate(document)
+def test_an_event_names_no_ci_context() -> None:
+    document = _event()
+    document["provenance"]["ci_context"] = {"integrity": "absent", "basis": "none"}
+    with pytest.raises(ValidationError, match="ci_context"):
+        AssuranceEvent.model_validate(document)
 
 
 @pytest.mark.parametrize("provider", ["local", "ci", *CI_PROVIDERS])

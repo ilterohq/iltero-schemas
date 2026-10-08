@@ -3,13 +3,16 @@
 A run the server opened carries pins: what the server fixed when the run
 opened. A record of that run must agree with them. A record of a run the tool
 opened on its own has no pins. It must not claim anything only the server can
-give: a server bundle, facts from the server, a CI context verified with a
-run's context key, or a CI job the server verified.
+give: a server bundle, facts from the server, or a CI job the server
+verified.
 
 Each stage of a pinned record names the CI job the server verified for it, and
 its access window: when the server said it issued the stage's run token and
-when the token expires. It also says how the tool checked the job it ran in
-against that verified job (``job_check``), which is the tool's own claim. The
+when the token expires. Its pre-deploy stage keeps the envelope of the facts
+the server served, and every pre-deploy check read them. Its plan and
+pre-deploy gates run in the pinned gate mode. It also says how the tool
+checked the job it ran in against that verified job (``job_check``), which is
+the tool's own claim. The
 stages of one run share its CI system, its token issuer, its source (for
 GitHub Actions, the ids of the repository and of its owner) and its commit.
 A pinned record names that commit as the one it is about. The service that
@@ -19,6 +22,9 @@ opened the run may require more of its stages than these rules check.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
+from iltero_schemas.models.assertion import Stage
+from iltero_schemas.models.stages import ADVISORY_STAGES
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
@@ -59,14 +65,14 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no checks from a server bundle")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from the server")
-    if any(p.ci_context.basis == "context_key_mac" for p in provenance):
-        raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
     if any(record.ci_identity is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no CI job verified by the server")
     if any(record.access_window is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no stage access window from the server")
     if any(record.job_check is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no check of a job the server verified")
+    if any(record.facts_received is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no facts received from the server")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
@@ -80,6 +86,13 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
         raise ValueError("every check in a pinned record is of an assertion from the server's bundle")
     if any(e.provenance.facts_source == "local_file" for e in car.events):
         raise ValueError("a pinned record's pre-deploy checks read no facts from a local file")
+    for stage, record in car.stages.items():
+        if record.coverage.substituted_inputs:
+            raise ValueError(f"stages.{stage.value}: a stage of a pinned record read no placeholder for an input")
+    _check_facts_received(car, pins)
+    for stage, record in car.stages.items():
+        if stage in ADVISORY_STAGES and record.enforcement != pins.policy.gate_mode:
+            raise ValueError(f"stages.{stage.value}: a pinned stage's gate runs in the pinned policy's gate mode")
     required = {(a.id, a.version, a.digest) for a in pins.required_assertions}
     if any((e.assertion.id, e.assertion.version, e.assertion.digest) not in required for e in car.events):
         raise ValueError("every check is of an assertion the run was pinned to")
@@ -115,3 +128,23 @@ def _check_ci_identities(car: CAR) -> None:
         raise ValueError("a pinned record names the commit it is about (subject.source.commit.sha)")
     if any(i.commit != sha for i in identities):
         raise ValueError("the verified CI jobs ran on the commit the record is about")
+
+
+def _check_facts_received(car: CAR, pins: RunPins) -> None:
+    """A pinned pre-deploy stage names the facts it received, issued for this stack, environment and change."""
+    for stage, record in car.stages.items():
+        received = record.facts_received
+        if (received is not None) != (stage is Stage.PRE_DEPLOY):
+            raise ValueError(f"stages.{stage.value}: a pinned stage names facts received exactly when it is pre-deploy")
+        if received is None:
+            continue
+        scope = received.scope
+        if (scope.stack_id, scope.environment) != (pins.stack_id, pins.environment):
+            raise ValueError("the facts received were issued for the stack and environment the run was pinned to")
+        if scope.change_digest not in (None, car.change.digest):
+            raise ValueError("the facts received were issued for no change, or for the change the record names")
+        if received.run_id != car.run_id.value:
+            raise ValueError("the facts received were issued for the record's run")
+        pre_deploy = [e for e in car.events if e.evaluation.stage is Stage.PRE_DEPLOY]
+        if any(e.provenance.facts_source == "none" for e in pre_deploy):
+            raise ValueError("every pre-deploy check of a pinned record read the facts the server served")

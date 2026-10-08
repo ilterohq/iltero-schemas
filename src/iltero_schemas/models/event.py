@@ -273,22 +273,6 @@ class Executor(StrictModel):
     run_id: Identifier | None
 
 
-class CiContext(StrictModel):
-    """Whether the CI context file was checked, and how. Only a check with the run's context key verifies it.
-
-    ``context_key_mac``: the tool checked the file's HMAC-SHA256 with the context key the server issued for the run.
-    """
-
-    integrity: Literal["verified", "unverified", "absent"]
-    basis: Literal["context_key_mac", "none"]
-
-    @model_validator(mode="after")
-    def _verified_only_with_the_context_key(self) -> CiContext:
-        if (self.integrity == "verified") != (self.basis == "context_key_mac"):
-            raise ValueError("a CI context is verified exactly when it was checked with the run's context key")
-        return self
-
-
 # Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
@@ -312,7 +296,6 @@ class Provenance(StrictModel):
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    ci_context: CiContext
     # Present exactly for a pre_deploy check, the one stage that reads server facts.
     facts_source: FactsSource | None
     fs_hardening: Literal["posix", "windows_profile_acl", "none"]

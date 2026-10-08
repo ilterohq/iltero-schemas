@@ -8,7 +8,7 @@
     "detail": null
   },
   "change": {
-    "digest": null,
+    "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
     "units": [
       {
         "plan": {
@@ -30,27 +30,30 @@
     },
     "subjects_evaluated": 2,
     "assertions_expected": {
-      "value": 5,
-      "basis": "locally_derived",
-      "required_assertion_digest": "sha256:d737d547b09ab40280125f1c12e8bb90a7d9181bb8f3b69281bffd5db2554ae2"
+      "value": 8,
+      "basis": "server_pinned",
+      "required_assertion_digest": "sha256:24e6fc47feb21dba29d490a493734cafcdae302e41f6d692b9f76bc8a3df8fed"
     },
-    "assertions_evaluated": 5,
+    "assertions_evaluated": 8,
     "subjects_per_assertion": {
       "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
       "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
       "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
       "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
-      "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+      "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1,
+      "ILT.CHANGE.EXCEPTION_VALID@1.0.0": 1,
+      "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+      "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
       "fail": 3,
-      "unknown": 0,
+      "unknown": 3,
       "not_applicable": 0,
       "not_evaluated": 0,
       "error": 0
     },
-    "checks": 5,
+    "checks": 8,
     "gaps": [],
     "truncated": {
       "value": false,
@@ -91,11 +94,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "local",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:b1cbaf3d01c6824cb45ae69920dd688fd918d3d910ea2e9d4b03f0c933b0ff2a",
         "bundle": {
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
         "facts_source": null,
@@ -125,9 +128,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "provider": "local",
-          "run_id": null,
-          "type": "human"
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
@@ -136,7 +139,7 @@
           "version": "1"
         },
         "run": {
-          "basis": "locally_derived",
+          "basis": "server_issued",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
         },
@@ -187,11 +190,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "local",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:37e929aba9537b805f8abf2ff813120f9d8a7a0e2ce7b80f31112966b2c8b765",
         "bundle": {
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
         "facts_source": null,
@@ -221,9 +224,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "provider": "local",
-          "run_id": null,
-          "type": "human"
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
@@ -232,7 +235,7 @@
           "version": "1"
         },
         "run": {
-          "basis": "locally_derived",
+          "basis": "server_issued",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
         },
@@ -322,11 +325,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "local",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:9ef9de66f7199dbae4412cae33363ce86f4123e107c5088d978b1badb9718f83",
         "bundle": {
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
         "facts_source": null,
@@ -356,9 +359,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "provider": "local",
-          "run_id": null,
-          "type": "human"
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
@@ -367,7 +370,7 @@
           "version": "1"
         },
         "run": {
-          "basis": "locally_derived",
+          "basis": "server_issued",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
         },
@@ -418,11 +421,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "local",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:c3bd61ded0c70ef783237263e6319e9f82a0b8c3b92a614768324350a7399140",
         "bundle": {
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
         "facts_source": null,
@@ -452,9 +455,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "provider": "local",
-          "run_id": null,
-          "type": "human"
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
@@ -463,7 +466,7 @@
           "version": "1"
         },
         "run": {
-          "basis": "locally_derived",
+          "basis": "server_issued",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
         },
@@ -518,11 +521,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "local",
+        "assertion_source": "server_bundle",
         "assertion_source_digest": "sha256:c8394d0e2bd76588568a0ef0c31b051a6502e31ec65c69d3b02a214a3043a8b2",
         "bundle": {
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
         "facts_source": null,
@@ -552,9 +555,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "provider": "local",
-          "run_id": null,
-          "type": "human"
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
@@ -563,7 +566,7 @@
           "version": "1"
         },
         "run": {
-          "basis": "locally_derived",
+          "basis": "server_issued",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
         },
@@ -582,6 +585,328 @@
           }
         ],
         "kind": "resource"
+      }
+    },
+    {
+      "assertion": {
+        "id": "ILT.CHANGE.EXCEPTION_VALID",
+        "version": "1.0.0",
+        "digest": "sha256:87da242f7a5cdc7a941091d84e710b50c16a2935fb9b40e9255f162242c89de6"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "matched": null,
+              "op": "exists",
+              "path": "exceptions",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "exceptions",
+            "reason": "server_facts_unavailable"
+          },
+          "when": null
+        },
+        "reason": "exceptions: server_facts_unavailable",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_detail": null,
+        "status_reason": "server_facts_unavailable"
+      },
+      "observed_at": "2026-09-22T13:06:02.114Z",
+      "provenance": {
+        "assertion_source": "server_bundle",
+        "assertion_source_digest": "sha256:c0ac4daea08999cdfba3b50b2fd9c1fe1bde014f04be1e0f6125184d6939ecd4",
+        "bundle": {
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "binding": null,
+        "facts_source": "server",
+        "compiled_digest": "sha256:ec20846d776d7f3e81101dfb92686741b9d561556498fd582c4abacec1e16d34",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:9c79bf2a851b818a943c382400d68c1c5acec3341d7e556c87703ca53aaeda96",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "server_issued",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "kind": "change",
+        "id": "root",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": {
+              "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d"
+            }
+          }
+        ],
+        "authority": "unresolved"
+      }
+    },
+    {
+      "assertion": {
+        "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:0177ca859da715c89142cdf1ed5cf0ad39cbf19bf1a5e660f783802eb51c0ff9"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": "production",
+              "clause": "when",
+              "expected": "production",
+              "index": 0,
+              "op": "equal",
+              "path": "context.environment.name",
+              "status": "true"
+            },
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 1,
+              "matched": null,
+              "op": "exists",
+              "path": "approvals",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "approvals",
+            "reason": "server_facts_unavailable"
+          },
+          "when": "true"
+        },
+        "reason": "approvals: server_facts_unavailable",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_detail": null,
+        "status_reason": "server_facts_unavailable"
+      },
+      "observed_at": "2026-09-22T13:06:02.114Z",
+      "provenance": {
+        "assertion_source": "server_bundle",
+        "assertion_source_digest": "sha256:c311c395f22d4051d7894a33de4debe6e69efc01d0a09872998a9a138ef3266e",
+        "bundle": {
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "binding": null,
+        "facts_source": "server",
+        "compiled_digest": "sha256:c62be579269bb6a16942557c5683fa5aabf26c535a47fbab77bf01ed027d771f",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:37606bb2e726955caa9b9b6e4a5d44a963c6b41ce185abb5b43f736931df4e35",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "server_issued",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "kind": "change",
+        "id": "root",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": {
+              "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d"
+            }
+          }
+        ],
+        "authority": "unresolved"
+      }
+    },
+    {
+      "assertion": {
+        "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:758389bea217e28b31c0207c5434ec282eb130619b764a4225b7f1241051e8a0"
+      },
+      "evaluation": {
+        "observations": {
+          "predicates": [
+            {
+              "actual": {
+                "count": 20,
+                "type": "array"
+              },
+              "clause": "when",
+              "expected": null,
+              "index": 0,
+              "matched": 2,
+              "op": "exists",
+              "path": "change.resources",
+              "status": "true"
+            },
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 1,
+              "matched": null,
+              "op": "exists",
+              "path": "approvals",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "approvals",
+            "reason": "server_facts_unavailable"
+          },
+          "when": "true"
+        },
+        "reason": "approvals: server_facts_unavailable",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_detail": null,
+        "status_reason": "server_facts_unavailable"
+      },
+      "observed_at": "2026-09-22T13:06:02.114Z",
+      "provenance": {
+        "assertion_source": "server_bundle",
+        "assertion_source_digest": "sha256:3492352146da3275afc06b084a05cd391c76c19503f2505aac086e68f86ecd58",
+        "bundle": {
+          "kind": "server",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "binding": null,
+        "facts_source": "server",
+        "compiled_digest": "sha256:361fa14203372a659f2f0d53b7e18cda2477025a349d2ea29bb03b40c89f0979",
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "environment": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "contexts_per_process": 64,
+            "memory_cap": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "output_bytes_per_answer": 1054720,
+            "platform": "linux-x86_64",
+            "python_platform": "linux",
+            "timeout_s": 60
+          },
+          "version": "1.20.2"
+        },
+        "executor": {
+          "type": "workload",
+          "provider": "github_actions",
+          "run_id": "9876543"
+        },
+        "fs_hardening": "posix",
+        "input_digest": "sha256:4410319b82a2eebaa78aba9bcc175aa297e7f1c37c2a21c3c9a49007c8dd5fec",
+        "plan_digest": {
+          "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+          "version": "1"
+        },
+        "run": {
+          "basis": "server_issued",
+          "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+          "unit": "root"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "subject": {
+        "kind": "change",
+        "id": "root",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": {
+              "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d"
+            }
+          }
+        ],
+        "authority": "unresolved"
       }
     }
   ],
@@ -982,6 +1307,244 @@
       "size_bytes": 11217,
       "source": null,
       "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:4410319b82a2eebaa78aba9bcc175aa297e7f1c37c2a21c3c9a49007c8dd5fec",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/contexts/sha256-4410319b82a2eebaa78aba9bcc175aa297e7f1c37c2a21c3c9a49007c8dd5fec",
+      "redaction_applied": null,
+      "ref_id": "sha256-4410319b82a2eebaa78aba9bcc175aa297e7f1c37c2a21c3c9a49007c8dd5fec",
+      "retention_until": null,
+      "size_bytes": 6369,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:37606bb2e726955caa9b9b6e4a5d44a963c6b41ce185abb5b43f736931df4e35",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/contexts/sha256-37606bb2e726955caa9b9b6e4a5d44a963c6b41ce185abb5b43f736931df4e35",
+      "redaction_applied": null,
+      "ref_id": "sha256-37606bb2e726955caa9b9b6e4a5d44a963c6b41ce185abb5b43f736931df4e35",
+      "retention_until": null,
+      "size_bytes": 6363,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:9c79bf2a851b818a943c382400d68c1c5acec3341d7e556c87703ca53aaeda96",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/contexts/sha256-9c79bf2a851b818a943c382400d68c1c5acec3341d7e556c87703ca53aaeda96",
+      "redaction_applied": null,
+      "ref_id": "sha256-9c79bf2a851b818a943c382400d68c1c5acec3341d7e556c87703ca53aaeda96",
+      "retention_until": null,
+      "size_bytes": 6359,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:d475eec1596a113bb2bb356d378efe70def0a5d0bf131d122e46b0f9d74d3621",
+      "media_type": "application/yaml",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.EXCEPTION_VALID@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.EXCEPTION_VALID@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 576,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:ec20846d776d7f3e81101dfb92686741b9d561556498fd582c4abacec1e16d34",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.EXCEPTION_VALID@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.EXCEPTION_VALID@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11629,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:78f3ea0879355144c7b7db8ce44c5982fa2330806f6ee160e9b5596956817e42",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.EXCEPTION_VALID@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.EXCEPTION_VALID@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 849,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:7edf7beac9ef9b5f7d531759d31f3c810e890a426f8b56b5f0abe455287b9edf",
+      "media_type": "application/yaml",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 570,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:c62be579269bb6a16942557c5683fa5aabf26c535a47fbab77bf01ed027d771f",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11672,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:e75d1f6dd6a7496e6623e08cd2ee9e5117744b51571bb4f1ad53eedcf8bcbe01",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 940,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:fd55e1f80750cd4fd86dcea97417834b1fa24b449ac9c5cee242b0570ad35607",
+      "media_type": "application/yaml",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 726,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:361fa14203372a659f2f0d53b7e18cda2477025a349d2ea29bb03b40c89f0979",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 11891,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:aa203e279cfe1ac60f8b0709c5d972f182d799a9c6a1c1594661920738669643",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/assertions/ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
+      "redaction_applied": null,
+      "ref_id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 1192,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:92a736f1298659150d084074a891b880a39eca24b328d8547419fa79a1fc3159",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/assertions/compiled.json",
+      "redaction_applied": null,
+      "ref_id": "pre_deploy/compiled.json",
+      "retention_until": null,
+      "size_bytes": 2993,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:06:02.114Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:cccb3a61adddf75cef324de702b76a75f97c183466e9b664da5542556b919744",
+      "media_type": "application/json",
+      "path": "units/root/pre_deploy/events.json",
+      "redaction_applied": null,
+      "ref_id": "pre_deploy/events.json",
+      "retention_until": null,
+      "size_bytes": 6826,
+      "source": null,
+      "storage_uri": null
     }
   ],
   "expected_stages": [
@@ -998,7 +1561,7 @@
   ],
   "expires_at": null,
   "governance": {
-    "run_opened_by": "local"
+    "run_opened_by": "server"
   },
   "deployment": null,
   "identity": null,
@@ -1025,10 +1588,66 @@
   "retention_basis": "no_server_scope",
   "retention_class": null,
   "run_id": {
-    "basis": "locally_derived",
+    "basis": "server_issued",
     "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
-  "pins": null,
+  "pins": {
+    "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+    "environment": "production",
+    "bundle": {
+      "revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "required_assertions": [
+      {
+        "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+        "version": "1.0.0",
+        "digest": "sha256:43d8092c3fee90fef01c29592c5ecb2c407178206ce8e55ed78f4c0772efc16a"
+      },
+      {
+        "id": "ILT.AWS.RDS.NOT_PUBLIC",
+        "version": "1.0.0",
+        "digest": "sha256:8dc1dea745ba37d09c053e45250612059aaa8e75dea04f6ddaf78af0bdaea12e"
+      },
+      {
+        "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+        "version": "1.0.0",
+        "digest": "sha256:6774e5b2a20ef3e565a4cf5d831d081728c4e66c02b93e5d6b4cd2e942ef7a7f"
+      },
+      {
+        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+        "version": "1.0.0",
+        "digest": "sha256:26d43666bac3337acdf33f1ae65381d6389b49f846f228f9be3c85792162060f"
+      },
+      {
+        "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+        "version": "1.0.0",
+        "digest": "sha256:46a5e1a3b3aa27ec10deb893929915b6b6a75fd4505235f214b174bb14277600"
+      },
+      {
+        "id": "ILT.CHANGE.EXCEPTION_VALID",
+        "version": "1.0.0",
+        "digest": "sha256:87da242f7a5cdc7a941091d84e710b50c16a2935fb9b40e9255f162242c89de6"
+      },
+      {
+        "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:0177ca859da715c89142cdf1ed5cf0ad39cbf19bf1a5e660f783802eb51c0ff9"
+      },
+      {
+        "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:758389bea217e28b31c0207c5434ec282eb130619b764a4225b7f1241051e8a0"
+      }
+    ],
+    "required_assertion_digest": "sha256:62e412e97272291b981c9d51343dac4a3a7b051742318c5b5617035cc743e7ef",
+    "policy": {
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "gate_mode": "advisory",
+      "production": true
+    },
+    "min_cli_version": "0.2.0"
+  },
   "stages": {
     "plan": {
       "assertions": {
@@ -1051,8 +1670,8 @@
       "ran": {
         "bundle": {
           "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "kind": "server"
         },
         "detail": null,
         "evaluator": {
@@ -1062,10 +1681,33 @@
         },
         "reason": null
       },
-      "ci_identity": null,
-      "access_window": null,
-      "job_check": null,
-      "enforcement": "enforcing",
+      "ci_identity": {
+        "provider": "github_actions",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "subject": "repo:acme/app:environment:production",
+        "repository": "acme/app",
+        "repository_id": "7001",
+        "repository_owner_id": "4242",
+        "workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+        "job_workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+        "job_workflow_commit": "c84e7a1000000000000000000000000000000000",
+        "ref": "refs/heads/main",
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "event": "push",
+        "actor": "octocat",
+        "actor_id": "583231",
+        "environment": "production",
+        "ci_run_id": "9876543",
+        "ci_run_attempt": "1",
+        "ci_job_id": "51234567890",
+        "runner_environment": "github-hosted"
+      },
+      "access_window": {
+        "issued_at": "2026-09-22T12:59:58.000Z",
+        "expires_at": "2026-09-22T13:59:58.000Z"
+      },
+      "job_check": "compared",
+      "enforcement": "advisory",
       "facts_received": null,
       "redaction_applied": {
         "allowed": [],
@@ -1530,7 +2172,7 @@
       "coverage": {
         "assertions_evaluated": 5,
         "assertions_expected": {
-          "basis": "locally_derived",
+          "basis": "server_pinned",
           "required_assertion_digest": "sha256:f67cc77e1744d16c7902461a4230c98d71e3fa5075275858df514587e1005ee3",
           "value": 5
         },
@@ -1578,6 +2220,148 @@
         "reason": null,
         "value": "complete"
       }
+    },
+    "pre_deploy": {
+      "assertions": {
+        "count": 3,
+        "digest": "sha256:92a736f1298659150d084074a891b880a39eca24b328d8547419fa79a1fc3159",
+        "index": "units/root/pre_deploy/assertions/compiled.json"
+      },
+      "compiler": {
+        "contract_digest": null,
+        "contract_version": "0.1.0",
+        "install": "editable",
+        "version": "1.0.0"
+      },
+      "events": {
+        "count": 3,
+        "digest": "sha256:cccb3a61adddf75cef324de702b76a75f97c183466e9b664da5542556b919744",
+        "path": "units/root/pre_deploy/events.json"
+      },
+      "observed_at": "2026-09-22T13:06:02.114Z",
+      "ran": {
+        "bundle": {
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "kind": "server"
+        },
+        "detail": null,
+        "evaluator": {
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "engine": "opa",
+          "version": "1.20.2"
+        },
+        "reason": null
+      },
+      "ci_identity": {
+        "provider": "github_actions",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "subject": "repo:acme/app:environment:production",
+        "repository": "acme/app",
+        "repository_id": "7001",
+        "repository_owner_id": "4242",
+        "workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+        "job_workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
+        "job_workflow_commit": "c84e7a1000000000000000000000000000000000",
+        "ref": "refs/heads/main",
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "event": "push",
+        "actor": "octocat",
+        "actor_id": "583231",
+        "environment": "production",
+        "ci_run_id": "9876543",
+        "ci_run_attempt": "1",
+        "ci_job_id": "51234567891",
+        "runner_environment": "github-hosted"
+      },
+      "access_window": {
+        "issued_at": "2026-09-22T13:05:41.000Z",
+        "expires_at": "2026-09-22T14:05:41.000Z"
+      },
+      "job_check": "compared",
+      "enforcement": "advisory",
+      "facts_received": {
+        "api_version": "iltero.io/assurance-facts/v1",
+        "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+        "stage": "pre_deploy",
+        "issued_at": "2026-09-22T13:05:58.000Z",
+        "scope": {
+          "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+          "environment": "production",
+          "change_digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+        },
+        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "redaction_applied": {
+        "allowed": [],
+        "policy": {
+          "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+          "id": "iltero.redaction",
+          "version": "1"
+        },
+        "redacted": [],
+        "subject": {
+          "digest": "sha256:273bcd5ee9de432418c57628dc4d0c18a1137ed44f021f4e3046dba28191999a",
+          "kind": "facts"
+        },
+        "unknown": []
+      },
+      "reference_time": {
+        "source": "runner_clock",
+        "trust": "asserted",
+        "value": "2026-09-22T13:06:02.114Z"
+      },
+      "stage": "pre_deploy",
+      "scanners": null,
+      "coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "basis": "change_unit",
+          "source_digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 3,
+          "basis": "server_pinned",
+          "required_assertion_digest": "sha256:c9dc54b71ed4c917237fe39097cc7d67851eaa31ded77408a322234817bfb31e"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.EXCEPTION_VALID@1.0.0": 1,
+          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
+        },
+        "status_counts": {
+          "error": 0,
+          "fail": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "pass": 0,
+          "unknown": 3
+        },
+        "checks": 3,
+        "gaps": [],
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
+        "basis": "status_counts",
+        "stage": null
+      },
+      "assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
     }
   },
   "subject": {
@@ -1598,9 +2382,9 @@
   "unit": "root",
   "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
   "verdict": {
-    "value": "fail",
-    "exit_code": 1,
+    "value": "indeterminate",
+    "exit_code": 3,
     "basis": "stage_precedence",
-    "stage": "plan"
+    "stage": "pre_deploy"
   }
 }

@@ -59,5 +59,52 @@
       "/stages/plan/ci_identity/actor_id": null
     },
     "remove": []
+  },
+  {
+    "name": "local_plan_that_read_a_placeholder_for_upstream_state",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "upstream inputs replaced with placeholders: 1"
+      },
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ],
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "plan: upstream inputs replaced with placeholders: 1"
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "local_stage_whose_gate_was_advisory",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/enforcement": "advisory"
+    },
+    "remove": []
+  },
+  {
+    "name": "pre_deploy_facts_for_no_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/scope/change_digest": null
+    },
+    "remove": []
   }
 ]

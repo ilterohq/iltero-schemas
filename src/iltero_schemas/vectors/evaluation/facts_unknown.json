@@ -12,7 +12,8 @@
         "unknown": {
           "path": "exceptions",
           "reason": "server_facts_unavailable"
-        }
+        },
+        "when": null
       }
     },
     {
@@ -22,7 +23,8 @@
       "expected": {
         "status": "fail",
         "reason": "assert: false; predicate 0 is false: exceptions exists",
-        "unknown": null
+        "unknown": null,
+        "when": null
       }
     },
     {
@@ -35,7 +37,8 @@
         "unknown": {
           "path": "approvals",
           "reason": "server_facts_unavailable"
-        }
+        },
+        "when": "true"
       }
     },
     {
@@ -45,7 +48,8 @@
       "expected": {
         "status": "fail",
         "reason": "assert: false; predicate 1 is false: approvals exists",
-        "unknown": null
+        "unknown": null,
+        "when": "true"
       }
     },
     {
@@ -58,7 +62,8 @@
         "unknown": {
           "path": "approvals",
           "reason": "server_facts_unavailable"
-        }
+        },
+        "when": "true"
       }
     },
     {
@@ -68,7 +73,8 @@
       "expected": {
         "status": "fail",
         "reason": "assert: false; predicate 1 is false: approvals exists",
-        "unknown": null
+        "unknown": null,
+        "when": "true"
       }
     }
   ]

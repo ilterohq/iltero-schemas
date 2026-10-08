@@ -1,12 +1,12 @@
-"""The digest of a change: every unit's plan, bound together.
+"""The digest of a change: each unit's plan, bound together.
 
-A change can span several units of a stack, each with its own plan. An
-approval binds to this one digest, over every unit's plan digest, so approving
-one unit of a multi-unit change is impossible and re-planning any unit after
-the approval invalidates it. The list has the shape a record's
-``change.units`` holds (``{"unit", "plan": {"digest"}}``), sorted by unit name
-in Unicode code-point order (not UTF-16 order), so a reader recomputes the
-digest from the record without reshaping anything.
+A unit is planned, approved and applied on its own, so a record's change
+covers its own unit only, and its list holds that one entry. An approval
+binds to this digest, so re-planning the unit after the approval invalidates
+it. The list has the shape a record's ``change.units`` holds
+(``{"unit", "plan": {"digest"}}``), sorted by unit name in Unicode code-point
+order (not UTF-16 order), so a reader recomputes the digest from the record
+without reshaping anything.
 """
 
 from __future__ import annotations

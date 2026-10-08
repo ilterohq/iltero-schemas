@@ -10,8 +10,9 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, MAX_PATH_COMPONENTS, MemberPath, StageRecord
+from iltero_schemas.models.car import CAR, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
+from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, MemberPath
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
 from tests.records import record as _record
@@ -414,32 +415,10 @@ OWN_PLAN = RECORD["plan"]["digest"]
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
-@pytest.mark.parametrize(
-    ("units", "message"),
-    [
-        ([{"unit": "root", "plan": {}}], "digest"),
-        ([], "at least 1"),
-        (
-            [{"unit": "root", "plan": {"digest": OWN_PLAN}}, {"unit": "app", "plan": {"digest": OTHER_PLAN}}],
-            "sorted by unit",
-        ),
-        ([{"unit": "root", "plan": {"digest": OWN_PLAN}}] * 2, "sorted by unit"),
-        ([{"unit": "app", "plan": {"digest": OWN_PLAN}}], "the record's own unit"),
-        ([{"unit": "root", "plan": {"digest": OTHER_PLAN}}], "the record's own unit"),
-    ],
-    ids=["a unit with no plan digest", "no unit", "units out of order", "a unit twice", "own unit missing", "own plan"],
-)
-def test_the_change_lists_every_unit_once_in_order_including_its_own(units: list[Any], message: str) -> None:
-    with pytest.raises(ValidationError, match=message):
-        CAR.model_validate(_record(**{"change.units": units}))
-
-
-def test_a_change_digest_is_the_digest_of_its_units() -> None:
-    units = [{"unit": "app", "plan": {"digest": OTHER_PLAN}}, {"unit": "root", "plan": {"digest": OWN_PLAN}}]
-    right = change_digest({"app": OTHER_PLAN, "root": OWN_PLAN})
-    CAR.model_validate(_record(**{"change.units": units, "change.digest": right}))
+def test_a_change_digest_is_the_digest_of_its_unit() -> None:
+    CAR.model_validate(_record(**{"change.digest": change_digest({"root": OWN_PLAN})}))
     with pytest.raises(ValidationError, match="not the digest of the change's units"):
-        CAR.model_validate(_record(**{"change.units": units, "change.digest": change_digest({"root": OWN_PLAN})}))
+        CAR.model_validate(_record(**{"change.digest": change_digest({"root": OTHER_PLAN})}))
 
 
 def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:

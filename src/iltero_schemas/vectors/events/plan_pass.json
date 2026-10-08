@@ -93,10 +93,6 @@
       "provider": "local",
       "run_id": null
     },
-    "ci_context": {
-      "integrity": "absent",
-      "basis": "none"
-    },
     "facts_source": null,
     "fs_hardening": "posix"
   },

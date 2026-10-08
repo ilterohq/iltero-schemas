@@ -13,6 +13,7 @@ from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
 from tests.records import (
     ACCESS_WINDOW,
     CI_IDENTITY,
+    GOVERNED,
     PINNED_ASSERTIONS,
     PINNED_BUNDLE,
     PINS,
@@ -23,7 +24,6 @@ from tests.records import (
 )
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
-VERIFIED_CI = {"integrity": "verified", "basis": "context_key_mac"}
 
 
 def _with_event(document: dict[str, Any], **provenance: Any) -> dict[str, Any]:
@@ -31,6 +31,22 @@ def _with_event(document: dict[str, Any], **provenance: Any) -> dict[str, Any]:
     changed = copy.deepcopy(document)
     changed["events"][0]["provenance"].update(provenance)
     return changed
+
+
+# The envelope of the facts a pinned pre-deploy stage received; its scope is filled from the record.
+FACTS_RECEIVED: dict[str, Any] = {
+    "api_version": "iltero.io/assurance-facts/v1",
+    "run_id": GOVERNED["run_id"]["value"],
+    "stage": "pre_deploy",
+    "issued_at": "2026-09-22T13:05:00.000Z",
+    "digest": "sha256:" + "8" * 64,
+}
+
+
+FACTS_RECEIVED_IN_SCOPE: dict[str, Any] = {
+    **FACTS_RECEIVED,
+    "scope": {"stack_id": PINS["stack_id"], "environment": PINS["environment"], "change_digest": None},
+}
 
 
 def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, Any]:
@@ -56,6 +72,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
     changed["complete"] = False
     units = changed["change"]["units"]
     changed["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    pre_deploy = changed["stages"]["pre_deploy"]
+    pre_deploy["coverage"]["subjects_in_scope"]["source_digest"] = changed["change"]["digest"]
+    if changed["pins"] is not None:
+        scope = {"stack_id": changed["pins"]["stack_id"], "environment": changed["pins"]["environment"]}
+        pre_deploy["facts_received"] = {
+            **FACTS_RECEIVED,
+            "scope": {**scope, "change_digest": changed["change"]["digest"]},
+        }
     return changed
 
 
@@ -63,17 +87,17 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
     ("document", "message"),
     [
         (_with_event(record(), assertion_source="server_bundle"), "no checks from a server bundle"),
-        (_with_event(record(), ci_context=VERIFIED_CI), "no CI context verified with a run's context key"),
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
         (record(**{"stages.plan.access_window": ACCESS_WINDOW}), "no stage access window from the server"),
         (record(**{"stages.plan.job_check": "compared"}), "no check of a job the server verified"),
+        (record(**{"stages.plan.facts_received": FACTS_RECEIVED_IN_SCOPE}), "no facts received from the server"),
     ],
     ids=[
         "a check from a server bundle",
-        "a CI context verified with the key",
         "a CI job the server verified",
         "a stage access window from the server",
         "a check of a job the server verified",
+        "facts received from the server",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -89,17 +113,59 @@ def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_server_bundl
         CAR.model_validate(_with_event(pinned(), assertion_source=source), context=_READER)
 
 
-def test_a_pinned_record_may_carry_a_ci_context_verified_with_the_key() -> None:
-    CAR.model_validate(_with_event(pinned(), ci_context=VERIFIED_CI), context=_READER)
-
-
-@pytest.mark.parametrize(("facts_source", "refused"), [("server", False), ("none", False), ("local_file", True)])
-def test_a_pinned_pre_deploy_check_reads_no_facts_from_a_local_file(facts_source: str, refused: bool) -> None:
+@pytest.mark.parametrize(
+    ("facts_source", "message"),
+    [
+        ("server", None),
+        ("none", "read the facts the server served"),
+        ("local_file", "read no facts from a local file"),
+    ],
+)
+def test_a_pinned_pre_deploy_check_reads_the_facts_the_server_served(facts_source: str, message: str | None) -> None:
     document = _with_pre_deploy(pinned(), facts_source)
-    if refused:
-        with pytest.raises(ValidationError, match="read no facts from a local file"):
-            CAR.model_validate(document, context=_READER)
+    if message is None:
+        CAR.model_validate(document, context=_READER)
     else:
+        with pytest.raises(ValidationError, match=message):
+            CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("dotted", "value", "message"),
+    [
+        ("stages.pre_deploy.facts_received", None, "names facts received exactly when it is pre-deploy"),
+        ("stages.pre_deploy.facts_received.scope.environment", "staging", "the stack and environment the run was"),
+        (
+            "stages.pre_deploy.facts_received.scope.change_digest",
+            "sha256:" + "e" * 64,
+            "for no change, or for the change",
+        ),
+        (
+            "stages.pre_deploy.facts_received.run_id",
+            "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "issued for the record's run",
+        ),
+    ],
+    ids=["no facts envelope", "another environment", "another change", "another run"],
+)
+def test_a_pinned_pre_deploy_stage_names_the_facts_it_received_for_its_run(
+    dotted: str, value: Any, message: str
+) -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, dotted, value)
+    with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_facts_received_before_the_change_is_fixed_name_no_change() -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, "stages.pre_deploy.facts_received.scope.change_digest", None)
+    CAR.model_validate(document, context=_READER)
+
+
+def test_only_the_pre_deploy_stage_names_facts_received() -> None:
+    document = pinned(**{"stages.plan.facts_received": FACTS_RECEIVED_IN_SCOPE})
+    with pytest.raises(ValidationError, match="names facts received exactly when it is pre-deploy"):
         CAR.model_validate(document, context=_READER)
 
 
@@ -243,6 +309,13 @@ def test_a_job_check_says_not_named_exactly_when_the_verified_job_names_no_job(
             CAR.model_validate(document, context=_READER)
 
 
+def test_a_pinned_record_read_no_placeholder_for_an_input() -> None:
+    placeholder = [{"kind": "upstream_state", "source": "data.terraform_remote_state.network", "stage": None}]
+    document = pinned(**{"stages.plan.coverage.substituted_inputs": placeholder})
+    with pytest.raises(ValidationError, match="read no placeholder for an input"):
+        CAR.model_validate(document, context=_READER)
+
+
 def test_every_stage_of_a_pinned_record_names_its_access_window() -> None:
     with pytest.raises(ValidationError, match="stages.plan: a stage of a pinned record names its access window"):
         CAR.model_validate(pinned(**{"stages.plan.access_window": None}), context=_READER)
@@ -297,3 +370,15 @@ def test_a_pinned_record_names_the_commit_it_is_about(commit: Any) -> None:
         document["subject"]["source"]["commit"] = commit
     with pytest.raises(ValidationError, match="names the commit it is about"):
         CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize("stage", ["plan", "pre_deploy"])
+def test_a_pinned_stage_gate_runs_in_the_pinned_gate_mode(stage: str) -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, f"stages.{stage}.enforcement", "advisory")
+    with pytest.raises(ValidationError, match="runs in the pinned policy's gate mode"):
+        CAR.model_validate(document, context=_READER)
+    set_path(document, "pins.policy.gate_mode", "advisory")
+    other = "pre_deploy" if stage == "plan" else "plan"
+    set_path(document, f"stages.{other}.enforcement", "advisory")
+    CAR.model_validate(document, context=_READER)

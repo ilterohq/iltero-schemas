@@ -308,5 +308,448 @@
       "/stages/plan/ci_identity/actor_id"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "change_of_two_units",
+    "vector": "local_run.json",
+    "set": {
+      "/change/units": [
+        {
+          "plan": {
+            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
+          },
+          "unit": "root"
+        },
+        {
+          "unit": "zz",
+          "plan": {
+            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
+          }
+        }
+      ]
+    },
+    "remove": [],
+    "message": "at most 1 item"
+  },
+  {
+    "name": "change_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/change/units/0/unit": "network"
+    },
+    "remove": [],
+    "message": "the change is the record's own unit with the plan the record names"
+  },
+  {
+    "name": "unit_not_declared_in_its_units_file",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "network",
+        "web"
+      ]
+    },
+    "remove": [],
+    "message": "the record's unit is one of the units its units file declares"
+  },
+  {
+    "name": "units_file_names_a_unit_twice",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "a units file names each unit once"
+  },
+  {
+    "name": "record_without_the_units_file_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/units_file"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "change_digest_of_another_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "not the digest of the change's units"
+  },
+  {
+    "name": "subject_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/subject/unit": "network"
+    },
+    "remove": [],
+    "message": "the record's subject is its own unit"
+  },
+  {
+    "name": "units_file_with_no_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": []
+    },
+    "remove": [],
+    "message": "at least 1"
+  },
+  {
+    "name": "units_file_over_64_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "u0",
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9",
+        "u10",
+        "u11",
+        "u12",
+        "u13",
+        "u14",
+        "u15",
+        "u16",
+        "u17",
+        "u18",
+        "u19",
+        "u20",
+        "u21",
+        "u22",
+        "u23",
+        "u24",
+        "u25",
+        "u26",
+        "u27",
+        "u28",
+        "u29",
+        "u30",
+        "u31",
+        "u32",
+        "u33",
+        "u34",
+        "u35",
+        "u36",
+        "u37",
+        "u38",
+        "u39",
+        "u40",
+        "u41",
+        "u42",
+        "u43",
+        "u44",
+        "u45",
+        "u46",
+        "u47",
+        "u48",
+        "u49",
+        "u50",
+        "u51",
+        "u52",
+        "u53",
+        "u54",
+        "u55",
+        "u56",
+        "u57",
+        "u58",
+        "u59",
+        "u60",
+        "u61",
+        "u62",
+        "u63"
+      ]
+    },
+    "remove": [],
+    "message": "at most 64"
+  },
+  {
+    "name": "units_file_path_leaves_the_project",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/path": "../units.json"
+    },
+    "remove": [],
+    "message": "must be a relative path inside the project"
+  },
+  {
+    "name": "units_file_unit_not_lowercase",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "Network",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "local_plan_with_a_placeholder_marked_complete",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "assurance_status"
+  },
+  {
+    "name": "governed_stage_that_read_a_placeholder",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "upstream inputs replaced with placeholders: 1"
+      },
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ],
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "plan: upstream inputs replaced with placeholders: 1"
+      }
+    },
+    "remove": [],
+    "message": "read no placeholder for an input"
+  },
+  {
+    "name": "substituted_input_of_an_unknown_kind",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "cached_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Input should be 'upstream_state'"
+  },
+  {
+    "name": "local_stage_names_facts_received",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/facts_received": {
+        "api_version": "iltero.io/assurance-facts/v1",
+        "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+        "stage": "pre_deploy",
+        "issued_at": "2026-09-22T13:05:00.000Z",
+        "scope": {
+          "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
+          "environment": "production",
+          "change_digest": null
+        },
+        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      }
+    },
+    "remove": [],
+    "message": "no facts received from the server"
+  },
+  {
+    "name": "stage_enforcement_outside_the_list",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/enforcement": "waived"
+    },
+    "remove": [],
+    "message": "Input should be 'enforcing' or 'advisory'"
+  },
+  {
+    "name": "stage_without_an_enforcement_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/enforcement"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "substituted_input_listed_twice",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a substituted input is listed once"
+  },
+  {
+    "name": "pre_deploy_event_with_facts_from_a_local_file",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": "local_file"
+    },
+    "remove": [],
+    "message": "read no facts from a local file"
+  },
+  {
+    "name": "pre_deploy_record_without_a_change_digest",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/change/digest": null,
+      "/stages/pre_deploy/facts_received/scope/change_digest": null
+    },
+    "remove": [],
+    "message": "names the change digest its approvals were issued for"
+  },
+  {
+    "name": "pre_deploy_event_without_a_facts_source",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": null
+    },
+    "remove": [],
+    "message": "facts_source is present exactly when the check ran at pre_deploy"
+  },
+  {
+    "name": "pre_deploy_stage_of_another_repository",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/ci_identity/repository_id": "7002"
+    },
+    "remove": [],
+    "message": "share one CI system, token issuer, source and commit"
+  },
+  {
+    "name": "pre_deploy_facts_for_another_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/scope/change_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "for no change, or for the change the record names"
+  },
+  {
+    "name": "pre_deploy_stage_without_facts_received",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received": null
+    },
+    "remove": [],
+    "message": "names facts received exactly when it is pre-deploy"
+  },
+  {
+    "name": "pre_deploy_stage_counting_another_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "counts the change the record names"
+  },
+  {
+    "name": "governed_stage_whose_gate_is_not_the_pinned_mode",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/enforcement": "advisory"
+    },
+    "remove": [],
+    "message": "runs in the pinned policy's gate mode"
+  },
+  {
+    "name": "pre_deploy_facts_for_another_run",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    },
+    "remove": [],
+    "message": "issued for the record's run"
+  },
+  {
+    "name": "pre_deploy_event_that_read_no_facts",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": "none"
+    },
+    "remove": [],
+    "message": "read the facts the server served"
+  },
+  {
+    "name": "pre_deploy_facts_of_another_kind",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/api_version": "iltero.io/assurance-facts/v2"
+    },
+    "remove": [],
+    "message": "Input should be 'iltero.io/assurance-facts/v1'"
+  },
+  {
+    "name": "placeholders_out_of_order",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.z",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "sorted by source"
+  },
+  {
+    "name": "pre_deploy_gate_not_the_pinned_mode",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/enforcement": "enforcing"
+    },
+    "remove": [],
+    "message": "runs in the pinned policy's gate mode"
   }
 ]

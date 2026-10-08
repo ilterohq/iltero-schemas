@@ -194,7 +194,6 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from (`server_bundle`, `local` or `custom_rego`), and its source digest. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `ci_context` | Whether the CI context file was checked: `integrity` (`verified`, `unverified` or `absent`) and `basis`. It is `verified` exactly when the basis is `context_key_mac`: the tool checked the file's HMAC-SHA256 with the context key Iltero Cloud issued for the run. A reader without that key cannot check it again. |
 | `facts_source` | For a `pre_deploy` check, where the Iltero Cloud facts came from: `server`, `local_file` or `none`. `null` at every other stage. |
 | `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 
@@ -246,13 +245,14 @@ with a regulatory framework.
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` when the record has `pins`, `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
-| `change` | object | Every unit of the change with its plan `digest`, sorted by unit, and the change `digest` once known. |
+| `change` | object | The record's own unit with its plan `digest` (a change covers one unit), and the change `digest` once the pre-deploy stage fixes it. |
+| `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the envelope of the facts it received from Iltero Cloud (`facts_received`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
-| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling. |
+| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a reason. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error) or `upstream_state_unavailable` (the stage read placeholders for an input). A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `not_in_scope` | list | Each lifecycle stage the record does not expect, with `basis` (`project_config` or `not_supported`). |
@@ -278,9 +278,11 @@ accepts only `self_attested`.
 
 Key rules:
 
-- Every path in the record is relative to the record's directory: plain names joined by `/`, at most 6 deep and 1024
-  characters, each name using only letters, digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two
-  `evidence_refs` entries share a `path` or a `ref_id`.
+- Every path in the record is relative to the record's directory, except `units_file.path` and
+  `not_in_scope[].declared_in.path`, which are relative to the project and hold no `.` or `..` part and no `:` (a
+  Windows drive or file stream). A path in the
+  record's directory is plain names joined by `/`, at most 6 deep and 1024 characters, each name using only letters,
+  digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two `evidence_refs` entries share a `path` or a `ref_id`.
 - The first expected stage is `plan`, and `post_deploy` is always expected. `runtime` is never a stage of a record.
   Every lifecycle stage is either expected or listed once in `not_in_scope`. Only `pre_deploy` can be left out by
   `project_config`, and it then names the declaring file in `declared_in`.
@@ -288,14 +290,50 @@ Key rules:
   (indeterminate), `1` (assertion failed) or `0` applies, and the stage takes the first in the order
   `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`. The record's verdict is the stage verdict that comes first in that order, and
   it names that stage.
+- The plan stage counts the plan's resources (`basis: plan_resource_enumeration`); a pre-deploy stage counts its one
+  change (`change_unit`), by the record's `change.digest` as its `source_digest`; a post-deploy stage counts its one
+  deployment (`deployment_unit`).
+- `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
+  Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
+  happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
+  `advisory`. In a record of a run Iltero Cloud opened, it is the pinned policy's `gate_mode`; otherwise it is the
+  tool's choice. It is the writer's claim; only the CI job's own result shows what the pipeline did.
+- A pre-deploy stage of a record of a run Iltero Cloud opened names `facts_received`: the facts document's
+  `api_version` (`iltero.io/assurance-facts/v1`), the `run_id` and `stage` it was issued for (the record's run,
+  `pre_deploy`), `issued_at`, `scope` (`stack_id` and `environment` of the pins, and `change_digest`, `null` when the
+  facts name no change, or the record's), and `digest`: `iltero_schemas.canonical.digest_of` of the whole facts
+  document as parsed from the response body, every member as received. A body that repeats a member name, or is not
+  I-JSON (RFC 7493), is refused before it is digested. Every pre-deploy check of such a record read those facts
+  (`facts_source: server`). The envelope holds none of the facts themselves, so it proves nothing about an approval;
+  it is the writer's copy, and only Iltero Cloud's own log of what it served confirms it. No other stage, and no
+  record of a run the tool opened, names one.
+- A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
+  `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, its configuration address (module
+  path and data source, with no instance key). A stage lists at most 256, sorted by `source` by Unicode code point; a
+  record lists at most 256 across its stages. Its verdict still follows its checks, and it is `incomplete` with reason
+  `upstream_state_unavailable`; an evaluator error's reason wins when there is one. A record of a run Iltero Cloud
+  opened lists none.
+- A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
+  the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
+  incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
+  `coverage.substituted_inputs`, not by the reason.
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record with `pins` agrees with them: its environment, the bundle every stage and check names, the pinned
-  assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. A record
-  without `pins` names no Iltero Cloud bundle, no facts from Iltero Cloud and no verified CI context.
+  assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. Each stage
+  names the CI job it ran in. The contract neither requires nor forbids two stages naming the same job: a pipeline may
+  run every stage in one job, or give stages jobs of their own. What a stage's job must satisfy is Iltero Cloud's
+  pipeline trust, checked for each stage on its own. A record without `pins` names no Iltero Cloud bundle and no facts
+  from Iltero Cloud.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`).
+  (`iltero_schemas.canonical.change_digest`). A record's change holds exactly one entry: its own unit with the plan it
+  names. A unit is planned, approved and applied on its own.
+- A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
+- Across records: the records of one run share `run_id.value`, and every one of them names the same `units_file`, or
+  every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.
+  The units file is the writer's copy: records cannot show a run with no record at all, or a units file the writer
+  left out or shortened. Only the file at the record's commit can, by its digest.
 - A stage names `access_window` exactly when it names `ci_identity`, from the same Iltero Cloud answer, and its
   `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
   them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may

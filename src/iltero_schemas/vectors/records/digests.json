@@ -1,4 +1,7 @@
 {
-  "governed_run.json": "sha256:1987a33cb7a4d801dc579c71cd58781417e03680b871112ebf0be84fda17f6d5",
-  "local_run.json": "sha256:465677610aa492b88bbced43fa414265b34cbee3488d99a56acfbadbe5fbc9b5"
+  "governed_run.json": "sha256:521bf8ea895a7c5909ef996cdbcfb72941ed63e60fc5d45ada5e599cd05b956a",
+  "governed_two_stage.json": "sha256:c2d943e80ede3ddceb625da132377ea02907c273a4d253d78fde6daa2a655062",
+  "local_run.json": "sha256:284a8c51849235ec2ee29eec0f7d84d17d41c347db9903dc75988fce8342cdf2",
+  "local_run_declared_units.json": "sha256:29b9418612de392bc6b3af2c198b5d5a1cd3694d85865c88fbb36949ffcf8406",
+  "local_run_on_placeholders.json": "sha256:1b2e8a57366bc84d9a02144542eccb9e14552a0b823fc2ecc144dbe9b4c19323"
 }

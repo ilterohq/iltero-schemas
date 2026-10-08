@@ -1092,6 +1092,8 @@
       "ci_identity": null,
       "access_window": null,
       "job_check": null,
+      "enforcement": "enforcing",
+      "facts_received": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {

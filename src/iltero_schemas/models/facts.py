@@ -1,4 +1,4 @@
-"""The unknown marker: what stands in the evaluation input where a fact could not be supplied.
+"""What a pre-deploy stage read of the facts only the server holds: the unknown marker, and the facts' envelope.
 
 Some checks need facts only the server holds: who approved the change,
 which exceptions are in force, earlier evaluations. Until the server can
@@ -7,6 +7,11 @@ rather than an empty list. The difference decides the verdict: an assertion
 that looks for an approval in an empty list fails, as if the change had been
 refused; the same assertion over a marker yields ``unknown`` with the
 marker's reason, which says what is true — the answer was not available.
+
+A stage that read facts from the server keeps the envelope of the document it
+received (``FactsReceived``): what it was issued for and when, and the digest
+of the document as received, so a record can be reconciled with what the
+server issued. It is the writer's copy of that envelope.
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from typing import Literal
 from pydantic import ConfigDict, Field
 
 from iltero_schemas.models.base import StrictModel
+from iltero_schemas.models.fields import Digest, EnvironmentKey, Identifier, Timestamp, Uuid
 
 # Why a part of the facts is missing; the evaluator's runtime copies it into the result.
 UnknownReason = Literal["server_facts_unavailable"]
@@ -31,3 +37,21 @@ class UnknownMarker(StrictModel):
 
     unknown: Literal[True] = Field(alias="__unknown")
     reason: UnknownReason
+
+
+class FactsScope(StrictModel):
+    """What the facts were issued for: the stack, the environment, and the unit's change once it is fixed."""
+
+    stack_id: Uuid
+    environment: EnvironmentKey
+    change_digest: Digest | None
+
+
+class FactsReceived(StrictModel):
+    """The envelope of the facts document a stage received: its kind, when it was issued, what for, and its digest."""
+
+    api_version: Identifier
+    issued_at: Timestamp
+    scope: FactsScope
+    # The digest of the document as received (``canonical.digest_of``).
+    digest: Digest

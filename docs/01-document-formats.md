@@ -249,7 +249,7 @@ with a regulatory framework.
 | `change` | object | The record's own unit with its plan `digest` (a change covers one unit), and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), whether its gate could block (`enforcement`: `enforcing`, or `advisory` when a failed or undecided check was waived), the envelope of the facts it received from Iltero Cloud (`facts_received`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -290,6 +290,15 @@ Key rules:
   (indeterminate), `1` (assertion failed) or `0` applies, and the stage takes the first in the order
   `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`. The record's verdict is the stage verdict that comes first in that order, and
   it names that stage.
+- The plan stage counts the plan's resources (`basis: plan_resource_enumeration`); a pre-deploy stage counts its one
+  change (`change_unit`), by the record's `change.digest` as its `source_digest`; a post-deploy stage counts its one
+  deployment (`deployment_unit`).
+- `enforcement` says whether the stage's gate could block. `advisory` records that a failed or undecided check was
+  waived rather than blocking; the verdict still names it.
+- A pre-deploy stage of a record of a run Iltero Cloud opened names `facts_received`: the facts document's
+  `api_version`, `issued_at`, `scope` (`stack_id` and `environment` of the pins, and `change_digest`, `null` or the
+  record's) and the `digest` of the document as received. It is the writer's copy of that envelope. No other stage,
+  and no record of a run the tool opened, names one.
 - A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input in
   `coverage.substituted_inputs` (`kind: upstream_state` and the input's `source`). Its verdict still follows its
   checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there

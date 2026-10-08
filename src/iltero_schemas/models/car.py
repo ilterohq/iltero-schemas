@@ -46,6 +46,7 @@ from iltero_schemas.models.ci_job import JobCheck
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
+from iltero_schemas.models.facts import FactsReceived
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
     ArtifactDigestBasis,
@@ -269,6 +270,10 @@ class StageRecord(StrictModel):
     # How the tool checked the job it ran in against the verified job; the tool's own claim. Null exactly
     # when ci_identity is.
     job_check: JobCheck | None
+    # Whether the tool's gate at this stage could block: a failed or undecided check waived as advisory says so.
+    enforcement: Literal["enforcing", "advisory"]
+    # The envelope of the facts the stage received from the server; null unless it is a pinned pre-deploy stage.
+    facts_received: FactsReceived | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
     events: Written

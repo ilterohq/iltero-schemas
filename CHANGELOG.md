@@ -84,6 +84,11 @@ keep, so any two tools agree on what a record means.
   `job_key()` names the run, attempt and job in one shape for every CI
   system.
 - The signed bundle's descriptor.
+- A pre-deploy stage counts its one change (`basis: change_unit`), by the
+  record's change digest. Every stage says whether its gate could block
+  (`enforcement`: `enforcing` or `advisory`), and a governed pre-deploy
+  stage keeps the envelope of the facts it received from Iltero Cloud
+  (`facts_received`: kind, issue time, scope and digest).
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`). Its
   verdict still follows its checks, and it is incomplete with reason

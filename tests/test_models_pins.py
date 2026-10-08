@@ -32,6 +32,20 @@ def _with_event(document: dict[str, Any], **provenance: Any) -> dict[str, Any]:
     return changed
 
 
+# The envelope of the facts a pinned pre-deploy stage received; its scope is filled from the record.
+FACTS_RECEIVED: dict[str, Any] = {
+    "api_version": "iltero.io/assurance-facts/v1",
+    "issued_at": "2026-09-22T13:05:00.000Z",
+    "digest": "sha256:" + "8" * 64,
+}
+
+
+FACTS_RECEIVED_IN_SCOPE: dict[str, Any] = {
+    **FACTS_RECEIVED,
+    "scope": {"stack_id": PINS["stack_id"], "environment": PINS["environment"], "change_digest": None},
+}
+
+
 def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, Any]:
     """``document`` with its last check moved to a pre-deploy stage that read facts from ``facts_source``."""
     changed = copy.deepcopy(document)
@@ -55,6 +69,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
     changed["complete"] = False
     units = changed["change"]["units"]
     changed["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    pre_deploy = changed["stages"]["pre_deploy"]
+    pre_deploy["coverage"]["subjects_in_scope"]["source_digest"] = changed["change"]["digest"]
+    if changed["pins"] is not None:
+        scope = {"stack_id": changed["pins"]["stack_id"], "environment": changed["pins"]["environment"]}
+        pre_deploy["facts_received"] = {
+            **FACTS_RECEIVED,
+            "scope": {**scope, "change_digest": changed["change"]["digest"]},
+        }
     return changed
 
 
@@ -65,12 +87,14 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         (record(**{"stages.plan.ci_identity": CI_IDENTITY}), "no CI job verified by the server"),
         (record(**{"stages.plan.access_window": ACCESS_WINDOW}), "no stage access window from the server"),
         (record(**{"stages.plan.job_check": "compared"}), "no check of a job the server verified"),
+        (record(**{"stages.plan.facts_received": FACTS_RECEIVED_IN_SCOPE}), "no facts received from the server"),
     ],
     ids=[
         "a check from a server bundle",
         "a CI job the server verified",
         "a stage access window from the server",
         "a check of a job the server verified",
+        "facts received from the server",
     ],
 )
 def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
@@ -93,6 +117,40 @@ def test_a_pinned_pre_deploy_check_reads_no_facts_from_a_local_file(facts_source
         with pytest.raises(ValidationError, match="read no facts from a local file"):
             CAR.model_validate(document, context=_READER)
     else:
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("dotted", "value", "message"),
+    [
+        ("stages.pre_deploy.facts_received", None, "names facts received exactly when it is pre-deploy"),
+        ("stages.pre_deploy.facts_received.scope.environment", "staging", "the stack and environment the run was"),
+        (
+            "stages.pre_deploy.facts_received.scope.change_digest",
+            "sha256:" + "e" * 64,
+            "for no change, or for the change",
+        ),
+    ],
+    ids=["no facts envelope", "another environment", "another change"],
+)
+def test_a_pinned_pre_deploy_stage_names_the_facts_it_received_for_its_run(
+    dotted: str, value: Any, message: str
+) -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, dotted, value)
+    with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_facts_received_before_the_change_is_fixed_name_no_change() -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, "stages.pre_deploy.facts_received.scope.change_digest", None)
+    CAR.model_validate(document, context=_READER)
+
+
+def test_only_the_pre_deploy_stage_names_facts_received() -> None:
+    document = pinned(**{"stages.plan.facts_received": FACTS_RECEIVED_IN_SCOPE})
+    with pytest.raises(ValidationError, match="names facts received exactly when it is pre-deploy"):
         CAR.model_validate(document, context=_READER)
 
 

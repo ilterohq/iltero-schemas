@@ -106,7 +106,7 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
                     )
                 }
             ),
-            "the pre_deploy stage counts its scope as its own",
+            "the pre_deploy stage counts its scope as change_unit",
         ),
         (_record(events=[*RECORD["events"][:-1], _moved_event(-1, "pre_deploy")]), "every event belongs to a stage"),
         (
@@ -298,6 +298,7 @@ def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
     with pytest.raises(ValidationError, match="names the change digest"):
         CAR.model_validate(with_stage, context=_READER)
     with_stage["change"]["digest"] = change_digest_value
+    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = change_digest_value
     CAR.model_validate(with_stage, context=_READER)
 
 
@@ -315,7 +316,8 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
 
 def test_an_offline_record_has_no_facts_from_the_server() -> None:
     units = RECORD["change"]["units"]
-    pre_deploy = _stage("pre_deploy")
+    digest = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    pre_deploy = _stage("pre_deploy", **{"coverage.subjects_in_scope.source_digest": digest})
     event = _moved_event(-1, "pre_deploy")
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     plan = copy.deepcopy(RECORD["stages"]["plan"])
@@ -325,7 +327,7 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
         expected_stages=["plan", "pre_deploy", "post_deploy"],
         complete=False,
         events=[*RECORD["events"][:-1], event],
-        **{"change.digest": change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})},
+        **{"change.digest": digest},
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"

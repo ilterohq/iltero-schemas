@@ -20,6 +20,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from iltero_schemas.models.assertion import Stage
+
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
     from iltero_schemas.models.run import RunPins
@@ -65,6 +67,8 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened names no stage access window from the server")
     if any(record.job_check is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no check of a job the server verified")
+    if any(record.facts_received is not None for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened names no facts received from the server")
 
 
 def _check_pinned(car: CAR, pins: RunPins) -> None:
@@ -80,6 +84,7 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
         raise ValueError("a pinned record's pre-deploy checks read no facts from a local file")
     if any(record.coverage.substituted_inputs for record in car.stages.values()):
         raise ValueError("a stage of a pinned record read no placeholder for an input")
+    _check_facts_received(car, pins)
     required = {(a.id, a.version, a.digest) for a in pins.required_assertions}
     if any((e.assertion.id, e.assertion.version, e.assertion.digest) not in required for e in car.events):
         raise ValueError("every check is of an assertion the run was pinned to")
@@ -115,3 +120,18 @@ def _check_ci_identities(car: CAR) -> None:
         raise ValueError("a pinned record names the commit it is about (subject.source.commit.sha)")
     if any(i.commit != sha for i in identities):
         raise ValueError("the verified CI jobs ran on the commit the record is about")
+
+
+def _check_facts_received(car: CAR, pins: RunPins) -> None:
+    """A pinned pre-deploy stage names the facts it received, issued for this stack, environment and change."""
+    for stage, record in car.stages.items():
+        received = record.facts_received
+        if (received is not None) != (stage is Stage.PRE_DEPLOY):
+            raise ValueError(f"stages.{stage.value}: a pinned stage names facts received exactly when it is pre-deploy")
+        if received is None:
+            continue
+        scope = received.scope
+        if (scope.stack_id, scope.environment) != (pins.stack_id, pins.environment):
+            raise ValueError("the facts received were issued for the stack and environment the run was pinned to")
+        if scope.change_digest not in (None, car.change.digest):
+            raise ValueError("the facts received were issued for no change, or for the change the record names")

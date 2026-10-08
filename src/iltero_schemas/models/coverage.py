@@ -62,16 +62,21 @@ class AssuranceStatus(StrictModel):
 
 class SubjectsInScope(StrictModel):
     value: Count
-    # How the subjects were counted: each resource the plan names, or the one deployment of the unit.
-    basis: Literal["plan_resource_enumeration", "deployment_unit"]
+    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
+    # one deployment of the unit (after it).
+    basis: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
     source_digest: Digest
     removed_by_plan: Count
     excluded: list[dict[str, Any]]
 
     @model_validator(mode="after")
     def _a_deployment_is_one(self) -> SubjectsInScope:
-        if self.basis == "deployment_unit" and (self.value, self.removed_by_plan, self.excluded) != (1, 0, []):
-            raise ValueError("a deployment's scope is the one deployment, with nothing removed or excluded")
+        if self.basis != "plan_resource_enumeration" and (self.value, self.removed_by_plan, self.excluded) != (
+            1,
+            0,
+            [],
+        ):
+            raise ValueError("a change's or a deployment's scope is that one subject, with nothing removed or excluded")
         return self
 
 

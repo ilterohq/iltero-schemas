@@ -200,7 +200,7 @@ def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
 )
 def test_a_deployment_scope_is_the_one_deployment(scope: dict[str, Any]) -> None:
     changes = {f"coverage.subjects_in_scope.{key}": value for key, value in scope.items()}
-    with pytest.raises(ValidationError, match="the one deployment"):
+    with pytest.raises(ValidationError, match="that one subject"):
         _outcome(DEPLOYED_STAGE, **changes)
 
 
@@ -240,3 +240,10 @@ def test_combining_names_the_stage_of_each_placeholder() -> None:
     )
     with pytest.raises(ValueError, match="substituted inputs do not name a stage"):
         combine([("plan", stage_outcome(named))])
+
+
+def test_a_change_scope_is_its_one_change() -> None:
+    with pytest.raises(ValidationError, match="that one subject"):
+        _outcome(
+            DEPLOYED_STAGE, **{"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
+        )

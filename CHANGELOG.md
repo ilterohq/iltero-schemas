@@ -41,11 +41,13 @@ keep, so any two tools agree on what a record means.
   Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
   including a record of a run Iltero Cloud opened with a plan and a
-  pre-deploy stage, a passing plan stage that read placeholders, an identity
-  document with no bindings, the identity documents that must be refused,
-  and changed ones that must still be accepted. The rules about bindings
-  have no vector, because a binding holds a cloud identifier this
-  repository does not publish.
+  including a record of a run Iltero Cloud opened with a plan and a
+  pre-deploy stage and the inputs its pre-deploy checks read, a passing
+  plan stage that read placeholders, an identity document with no
+  bindings, the identity documents that must be refused, and changed ones
+  that must still be accepted. The rules about bindings have no vector,
+  because a binding holds a cloud identifier this repository does not
+  publish.
 - A record of a run Iltero Cloud opened carries the run's pins, and agrees
   with them: its environment, where its expected checks came from, and the
   bundle every check was evaluated with. A record of a run the tool opened
@@ -94,8 +96,8 @@ keep, so any two tools agree on what a record means.
   facts it received (`facts_received`: kind, run, stage, issue time, scope
   and digest), and every pre-deploy check of such a record read them.
 - A stage that replaced an input it could not read, such as another unit's
-  state, with a placeholder lists it (`coverage.substituted_inputs`). Its
-  verdict still follows its checks, and it is incomplete with reason
+  state, with a placeholder lists it (`coverage.substituted_inputs`: at
+  most 256, by configuration address, sorted). Its verdict still follows its checks, and it is incomplete with reason
   `upstream_state_unavailable`, so a pass on placeholders reads as
   incomplete; an evaluator error's reason wins, in the stage and in the
   record. A record of a run Iltero Cloud opened has none.

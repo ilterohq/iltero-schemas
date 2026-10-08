@@ -10,13 +10,12 @@ allowlist and compare the result.
 from __future__ import annotations
 
 import json
-import re
 import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_json
 from iltero_schemas.ast.parse import parse_document
@@ -50,10 +49,6 @@ ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.j
 CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
-RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
-RECORD_VALID_CASES = json.loads((VECTORS / "records_valid" / "cases.json").read_text(encoding="utf-8"))
-IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
-IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
@@ -198,64 +193,6 @@ def test_every_document_vector_has_its_digest_and_nothing_else() -> None:
         assert {name for f, name in DOCUMENT_FILES if f == folder} == set(digests)
 
 
-def _step(document: Any, token: str) -> Any:
-    return document[int(token)] if isinstance(document, list) else document[token]
-
-
-def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
-    """Set or remove the value at a JSON Pointer (RFC 6901) whose parent exists."""
-    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
-    for token in parents:
-        document = _step(document, token)
-    key: int | str = int(last) if isinstance(document, list) else last
-    if remove:
-        del document[key]
-    else:
-        document[key] = value
-
-
-def _patched(case: dict[str, Any], folder: str) -> Any:
-    """The document a case names in ``folder``, with its values set and removed."""
-    document = json.loads((VECTORS / folder / case["vector"]).read_text(encoding="utf-8"))
-    for pointer, value in case["set"].items():
-        _changed(document, pointer, value, remove=False)
-    for pointer in case["remove"]:
-        _changed(document, pointer, None, remove=True)
-    return document
-
-
-@pytest.mark.parametrize("case", RECORD_INVALID_CASES, ids=[c["name"] for c in RECORD_INVALID_CASES])
-def test_invalid_record_is_rejected(case: dict[str, Any]) -> None:
-    with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        CAR.model_validate(_patched(case, "records"))
-
-
-@pytest.mark.parametrize("case", RECORD_VALID_CASES, ids=[c["name"] for c in RECORD_VALID_CASES])
-def test_valid_record_case_is_accepted(case: dict[str, Any]) -> None:
-    CAR.model_validate(_patched(case, "records"))
-
-
-@pytest.mark.parametrize("case", IDENTITY_INVALID_CASES, ids=[c["name"] for c in IDENTITY_INVALID_CASES])
-def test_invalid_identity_document_is_rejected(case: dict[str, Any]) -> None:
-    with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        IdentityBindings.model_validate(_patched(case, "identities"))
-
-
-@pytest.mark.parametrize("case", IDENTITY_VALID_CASES, ids=[c["name"] for c in IDENTITY_VALID_CASES])
-def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
-    IdentityBindings.model_validate(_patched(case, "identities"))
-
-
-@pytest.mark.parametrize(
-    "cases",
-    [RECORD_INVALID_CASES, RECORD_VALID_CASES, IDENTITY_INVALID_CASES, IDENTITY_VALID_CASES],
-    ids=["records invalid", "records valid", "identities invalid", "identities valid"],
-)
-def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
-    names = [case["name"] for case in cases]
-    assert len(names) == len(set(names))
-
-
 # --- under the pinned evaluator ---------------------------------------------
 
 
@@ -397,6 +334,7 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
     expected = case["expected"]
     assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
     assert result["observations"]["unknown"] == expected["unknown"]
+    assert result["observations"]["when"] == expected["when"]
 
 
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)

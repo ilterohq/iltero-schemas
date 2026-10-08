@@ -98,5 +98,13 @@
       "/stages/plan/enforcement": "advisory"
     },
     "remove": []
+  },
+  {
+    "name": "pre_deploy_facts_for_no_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/scope/change_digest": null
+    },
+    "remove": []
   }
 ]

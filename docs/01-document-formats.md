@@ -293,23 +293,26 @@ Key rules:
 - The plan stage counts the plan's resources (`basis: plan_resource_enumeration`); a pre-deploy stage counts its one
   change (`change_unit`), by the record's `change.digest` as its `source_digest`; a post-deploy stage counts its one
   deployment (`deployment_unit`).
-- `enforcement` is the mode the stage's gate ran in. Under `advisory`, a verdict with exit code `1` or `3` did not
-  stop the pipeline; every other non-zero code did. A waiver happened when a stage is `advisory` and its exit code is
-  `1` or `3`. Only the plan and pre-deploy stages can be `advisory`. In a record of a run Iltero Cloud opened, it is
-  the pinned policy's `gate_mode`; otherwise it is the tool's choice. It is the writer's claim; only the CI job's own
-  result shows what the pipeline did.
-- - A pre-deploy stage of a record of a run Iltero Cloud opened names `facts_received`: the facts document's
+- `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
+  Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
+  happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
+  `advisory`. In a record of a run Iltero Cloud opened, it is the pinned policy's `gate_mode`; otherwise it is the
+  tool's choice. It is the writer's claim; only the CI job's own result shows what the pipeline did.
+- A pre-deploy stage of a record of a run Iltero Cloud opened names `facts_received`: the facts document's
   `api_version` (`iltero.io/assurance-facts/v1`), the `run_id` and `stage` it was issued for (the record's run,
   `pre_deploy`), `issued_at`, `scope` (`stack_id` and `environment` of the pins, and `change_digest`, `null` when the
   facts name no change, or the record's), and `digest`: `iltero_schemas.canonical.digest_of` of the whole facts
-  document as parsed from the response body. Every pre-deploy check of such a record read those facts (`facts_source:
-  server`). The envelope holds none of the facts themselves, so it proves nothing about an approval; it is the
-  writer's copy, and only Iltero Cloud's own log of what it served confirms it. No other stage, and no record of a run
-  the tool opened, names one.
-- A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input in
-  `coverage.substituted_inputs` (`kind: upstream_state` and the input's `source`). Its verdict still follows its
-  checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
-  is one. A record of a run Iltero Cloud opened lists none.
+  document as parsed from the response body, every member as received. A body that repeats a member name, or is not
+  I-JSON (RFC 7493), is refused before it is digested. Every pre-deploy check of such a record read those facts
+  (`facts_source: server`). The envelope holds none of the facts themselves, so it proves nothing about an approval;
+  it is the writer's copy, and only Iltero Cloud's own log of what it served confirms it. No other stage, and no
+  record of a run the tool opened, names one.
+- A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
+  `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, its configuration address (module
+  path and data source, with no instance key). A stage lists at most 256, sorted by `source` by Unicode code point; a
+  record lists at most 256 across its stages. Its verdict still follows its checks, and it is `incomplete` with reason
+  `upstream_state_unavailable`; an evaluator error's reason wins when there is one. A record of a run Iltero Cloud
+  opened lists none.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
@@ -318,8 +321,9 @@ Key rules:
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record with `pins` agrees with them: its environment, the bundle every stage and check names, the pinned
-  assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. A record
-  without `pins` names no Iltero Cloud bundle and no facts from Iltero Cloud.
+  assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. Each stage
+  names the CI job it ran in; the contract does not compare the jobs of two stages. A record without `pins` names no
+  Iltero Cloud bundle and no facts from Iltero Cloud.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`). A record's change holds exactly one entry: its own unit with the plan it
   names. A unit is planned, approved and applied on its own.

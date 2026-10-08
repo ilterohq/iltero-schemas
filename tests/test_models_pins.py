@@ -145,9 +145,8 @@ def test_a_pinned_pre_deploy_check_reads_the_facts_the_server_served(facts_sourc
             "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
             "issued for the record's run",
         ),
-        ("stages.pre_deploy.enforcement", "advisory", "runs in the pinned policy's gate mode"),
     ],
-    ids=["no facts envelope", "another environment", "another change", "another run", "a gate the pins do not set"],
+    ids=["no facts envelope", "another environment", "another change", "another run"],
 )
 def test_a_pinned_pre_deploy_stage_names_the_facts_it_received_for_its_run(
     dotted: str, value: Any, message: str
@@ -371,3 +370,15 @@ def test_a_pinned_record_names_the_commit_it_is_about(commit: Any) -> None:
         document["subject"]["source"]["commit"] = commit
     with pytest.raises(ValidationError, match="names the commit it is about"):
         CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize("stage", ["plan", "pre_deploy"])
+def test_a_pinned_stage_gate_runs_in_the_pinned_gate_mode(stage: str) -> None:
+    document = _with_pre_deploy(pinned(), "server")
+    set_path(document, f"stages.{stage}.enforcement", "advisory")
+    with pytest.raises(ValidationError, match="runs in the pinned policy's gate mode"):
+        CAR.model_validate(document, context=_READER)
+    set_path(document, "pins.policy.gate_mode", "advisory")
+    other = "pre_deploy" if stage == "plan" else "plan"
+    set_path(document, f"stages.{other}.enforcement", "advisory")
+    CAR.model_validate(document, context=_READER)

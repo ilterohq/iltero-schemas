@@ -56,5 +56,5 @@ class FactsReceived(StrictModel):
     stage: Literal["pre_deploy"]
     issued_at: Timestamp
     scope: FactsScope
-    # ``canonical.digest_of`` of the whole facts document as parsed from the response body, with its own keys.
+    # ``canonical.digest_of`` of the whole facts document as parsed from the response body, every member as received.
     digest: Digest

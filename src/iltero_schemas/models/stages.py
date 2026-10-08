@@ -26,7 +26,6 @@ SCOPE_BASIS = {
     Stage.PLAN: "plan_resource_enumeration",
     Stage.PRE_DEPLOY: "change_unit",
     Stage.POST_DEPLOY: "deployment_unit",
-    Stage.POST_VERIFY: "deployment_unit",
 }
 # The stages whose gate may run in advisory mode: those before the deployment.
 ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)

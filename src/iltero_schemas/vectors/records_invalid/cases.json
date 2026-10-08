@@ -636,7 +636,8 @@
     "name": "pre_deploy_record_without_a_change_digest",
     "vector": "governed_two_stage.json",
     "set": {
-      "/change/digest": null
+      "/change/digest": null,
+      "/stages/pre_deploy/facts_received/scope/change_digest": null
     },
     "remove": [],
     "message": "names the change digest its approvals were issued for"
@@ -648,7 +649,7 @@
       "/events/7/provenance/facts_source": null
     },
     "remove": [],
-    "message": "facts_source"
+    "message": "facts_source is present exactly when the check ran at pre_deploy"
   },
   {
     "name": "pre_deploy_stage_of_another_repository",
@@ -741,5 +742,14 @@
     },
     "remove": [],
     "message": "sorted by source"
+  },
+  {
+    "name": "pre_deploy_gate_not_the_pinned_mode",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/enforcement": "enforcing"
+    },
+    "remove": [],
+    "message": "runs in the pinned policy's gate mode"
   }
 ]

@@ -106,7 +106,8 @@ class SubstitutedInput(StrictModel):
     """An input the stage could not read, which its tool replaced with a placeholder value.
 
     ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
-    ``source`` is the input's configuration address: its module path and the data source, with no instance key.
+    ``source`` is the input's configuration address: its module path and the data source, with no instance key. A
+    stage lists its entries sorted by ``source``, by Unicode code point.
     A stage's own entries name no stage; a record's combined coverage names each entry's stage. The list is the
     writer's claim: an empty one does not prove that no input was replaced.
     """
@@ -137,7 +138,7 @@ class Coverage(StrictModel):
         replaced = [(entry.kind, entry.source, entry.stage) for entry in self.substituted_inputs]
         if len(set(replaced)) != len(replaced):
             raise ValueError("a substituted input is listed once")
-        if not all(entry.stage is not None for entry in self.substituted_inputs):
+        if any(entry.stage is None for entry in self.substituted_inputs):
             sources = [entry.source for entry in self.substituted_inputs]
             if sources != sorted(sources):
                 raise ValueError("a stage's substituted inputs are sorted by source")

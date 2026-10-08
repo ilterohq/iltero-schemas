@@ -273,13 +273,6 @@ class Executor(StrictModel):
     run_id: Identifier | None
 
 
-class CiContext(StrictModel):
-    """Whether a CI context file was given to the tool. No contract defines a way to verify one, so it never is."""
-
-    integrity: Literal["unverified", "absent"]
-    basis: Literal["none"]
-
-
 # Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
@@ -303,7 +296,6 @@ class Provenance(StrictModel):
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    ci_context: CiContext
     # Present exactly for a pre_deploy check, the one stage that reads server facts.
     facts_source: FactsSource | None
     fs_hardening: Literal["posix", "windows_profile_acl", "none"]

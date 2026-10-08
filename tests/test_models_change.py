@@ -14,6 +14,17 @@ def test_a_units_file_keeps_its_deploy_order() -> None:
     assert UnitsFile.model_validate(FILE).units == ["network", "app"]
 
 
+@pytest.mark.parametrize("name", ["app", "_shared", "0net", "a" * 64, "eu_west-1"])
+def test_a_unit_name_is_lowercase_letters_digits_underscores_and_hyphens(name: str) -> None:
+    UnitsFile.model_validate({**FILE, "units": [name]})
+
+
+@pytest.mark.parametrize("name", ["App", "-app", "", "a" * 65, "app.prod", "app/prod"])
+def test_a_unit_name_outside_that_set_or_starting_with_a_hyphen_is_refused(name: str) -> None:
+    with pytest.raises(ValidationError, match="String should"):
+        UnitsFile.model_validate({**FILE, "units": [name]})
+
+
 @pytest.mark.parametrize(
     ("units", "message"),
     [([], "at least 1"), ([f"u{index}" for index in range(MAX_UNITS + 1)], f"at most {MAX_UNITS}")],

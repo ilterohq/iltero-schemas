@@ -101,10 +101,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": null,
         "compiled_digest": "sha256:d502f174ceaef9cafda8bc471554c0aa259660219f90645d909e242a4d741e6e",
         "compiler": {
@@ -201,10 +197,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": null,
         "compiled_digest": "sha256:f579c290581a7ccd7a9a399f2fdce6fa1f5a8753ef7d979bb12dd2e8e287a2f9",
         "compiler": {
@@ -340,10 +332,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": null,
         "compiled_digest": "sha256:dae954c4ac013bb9f4641a6a46ec20ce8e8a237bf4ed933f3bacb66b8dc45bd5",
         "compiler": {
@@ -440,10 +428,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": null,
         "compiled_digest": "sha256:22213d00978771245aa21969949f965e79f1bfa641ba9c434b1641ecbf4072b0",
         "compiler": {
@@ -544,10 +528,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": null,
         "compiled_digest": "sha256:51bdcc563374caeb53d22225d587b0db3efea6e01d4918969c90310854362dc2",
         "compiler": {
@@ -648,10 +628,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": "server",
         "compiled_digest": "sha256:ec20846d776d7f3e81101dfb92686741b9d561556498fd582c4abacec1e16d34",
         "compiler": {
@@ -761,10 +737,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": "server",
         "compiled_digest": "sha256:c62be579269bb6a16942557c5683fa5aabf26c535a47fbab77bf01ed027d771f",
         "compiler": {
@@ -878,10 +850,6 @@
           "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
         },
         "binding": null,
-        "ci_context": {
-          "basis": "none",
-          "integrity": "absent"
-        },
         "facts_source": "server",
         "compiled_digest": "sha256:361fa14203372a659f2f0d53b7e18cda2477025a349d2ea29bb03b40c89f0979",
         "compiler": {
@@ -1568,13 +1536,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:eec373ef25b1618cfacf4b6404e0121f44b332603585dcf24885beb8636a3de4",
+      "digest": "sha256:cccb3a61adddf75cef324de702b76a75f97c183466e9b664da5542556b919744",
       "media_type": "application/json",
       "path": "units/root/pre_deploy/events.json",
       "redaction_applied": null,
       "ref_id": "pre_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 6979,
+      "size_bytes": 6826,
       "source": null,
       "storage_uri": null
     }
@@ -2267,7 +2235,7 @@
       },
       "events": {
         "count": 3,
-        "digest": "sha256:eec373ef25b1618cfacf4b6404e0121f44b332603585dcf24885beb8636a3de4",
+        "digest": "sha256:cccb3a61adddf75cef324de702b76a75f97c183466e9b664da5542556b919744",
         "path": "units/root/pre_deploy/events.json"
       },
       "observed_at": "2026-09-22T13:06:02.114Z",

@@ -55,22 +55,21 @@ keep, so any two tools agree on what a record means.
   from one, and no facts from Iltero Cloud. A pinned record's checks are all
   of assertions from the Iltero Cloud bundle, and its pre-deploy checks read
   no facts from a local file. Every event names the record's own run and
-  unit. No CI context is ever verified. These rules check that a record is
-  consistent. They cannot prove that Iltero Cloud opened the run. A pinned
-  record names its commit, and each of its stages names the CI job that
-  Iltero Cloud said it verified. Its stages share the same CI system, the
-  same token issuer, the same repository and the same commit. GitHub Actions
-  identifies the repository by its id and its owner's id. Each such stage
-  also names its access window (`access_window`), the period its run token
-  is valid: Iltero Cloud's time in the answer that issued the token, and
-  when the token expires. These are the writer's copy of Iltero Cloud's
-  answer and say nothing about approval of the change. Each such stage also
-  says how the tool checked the job it ran in against the verified job
-  (`job_check`: `compared`, `not_given` or `not_named`), as the tool's own
-  claim. A stage of a run the tool opened names none of these. A stage's
-  assertion-set digest covers the pinned assertions of that stage only, so
-  it equals the pins' digest only when every pinned assertion belongs to
-  that one stage.
+  unit. These rules check that a record is consistent. They cannot prove
+  that Iltero Cloud opened the run. A pinned record names its commit, and
+  each of its stages names the CI job that Iltero Cloud said it verified.
+  Its stages share the same CI system, the same token issuer, the same
+  repository and the same commit. GitHub Actions identifies the repository
+  by its id and its owner's id. Each such stage also names its access window
+  (`access_window`), the period its run token is valid: Iltero Cloud's time
+  in the answer that issued the token, and when the token expires. These are
+  the writer's copy of Iltero Cloud's answer and say nothing about approval
+  of the change. Each such stage also says how the tool checked the job it
+  ran in against the verified job (`job_check`: `compared`, `not_given` or
+  `not_named`), as the tool's own claim. A stage of a run the tool opened
+  names none of these. A stage's assertion-set digest covers the pinned
+  assertions of that stage only, so it equals the pins' digest only when
+  every pinned assertion belongs to that one stage.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

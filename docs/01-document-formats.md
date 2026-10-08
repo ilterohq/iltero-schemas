@@ -194,7 +194,6 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from (`server_bundle`, `local` or `custom_rego`), and its source digest. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `ci_context` | Whether a CI context file was given to the tool: `integrity` (`unverified` or `absent`) and `basis` (`none`). No CI context is ever verified. |
 | `facts_source` | For a `pre_deploy` check, where the Iltero Cloud facts came from: `server`, `local_file` or `none`. `null` at every other stage. |
 | `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 
@@ -247,7 +246,7 @@ with a regulatory framework.
 | `governance` | object | `run_opened_by`: `server` when the record has `pins`, `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
 | `change` | object | The record's own unit with its plan `digest` (a change covers one unit), and the change `digest` once the pre-deploy stage fixes it. |
-| `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, each once). `null` for a project that declares none. |
+| `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
 | `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the envelope of the facts it received from Iltero Cloud (`facts_received`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
@@ -322,8 +321,10 @@ Key rules:
   context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record with `pins` agrees with them: its environment, the bundle every stage and check names, the pinned
   assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. Each stage
-  names the CI job it ran in; the contract does not compare the jobs of two stages. A record without `pins` names no
-  Iltero Cloud bundle and no facts from Iltero Cloud.
+  names the CI job it ran in. The contract neither requires nor forbids two stages naming the same job: a pipeline may
+  run every stage in one job, or give stages jobs of their own. What a stage's job must satisfy is Iltero Cloud's
+  pipeline trust, checked for each stage on its own. A record without `pins` names no Iltero Cloud bundle and no facts
+  from Iltero Cloud.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`). A record's change holds exactly one entry: its own unit with the plan it
   names. A unit is planned, approved and applied on its own.

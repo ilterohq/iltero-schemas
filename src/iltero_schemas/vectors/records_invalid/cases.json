@@ -620,5 +620,68 @@
     },
     "remove": [],
     "message": "a substituted input is listed once"
+  },
+  {
+    "name": "pre_deploy_event_with_facts_from_a_local_file",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": "local_file"
+    },
+    "remove": [],
+    "message": "read no facts from a local file"
+  },
+  {
+    "name": "pre_deploy_record_without_a_change_digest",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/change/digest": null
+    },
+    "remove": [],
+    "message": "names the change digest its approvals were issued for"
+  },
+  {
+    "name": "pre_deploy_event_without_a_facts_source",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/events/7/provenance/facts_source": null
+    },
+    "remove": [],
+    "message": "facts_source"
+  },
+  {
+    "name": "pre_deploy_stage_of_another_repository",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/ci_identity/repository_id": "7002"
+    },
+    "remove": [],
+    "message": "share one CI system, token issuer, source and commit"
+  },
+  {
+    "name": "pre_deploy_facts_for_another_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/scope/change_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "for no change, or for the change the record names"
+  },
+  {
+    "name": "pre_deploy_stage_without_facts_received",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received": null
+    },
+    "remove": [],
+    "message": "names facts received exactly when it is pre-deploy"
+  },
+  {
+    "name": "pre_deploy_stage_counting_another_change",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "counts the change the record names"
   }
 ]

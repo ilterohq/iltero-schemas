@@ -279,7 +279,8 @@ accepts only `self_attested`.
 Key rules:
 
 - Every path in the record is relative to the record's directory, except `units_file.path` and
-  `not_in_scope[].declared_in.path`, which are relative to the project and hold no `.` or `..` part. A path in the
+  `not_in_scope[].declared_in.path`, which are relative to the project and hold no `.` or `..` part and no `:` (a
+  Windows drive or file stream). A path in the
   record's directory is plain names joined by `/`, at most 6 deep and 1024 characters, each name using only letters,
   digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two `evidence_refs` entries share a `path` or a `ref_id`.
 - The first expected stage is `plan`, and `post_deploy` is always expected. `runtime` is never a stage of a record.

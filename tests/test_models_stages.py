@@ -254,6 +254,20 @@ def test_an_error_marks_a_stage_incomplete_and_a_clean_run_complete() -> None:
     assert stage_outcome(_coverage({"fail": 5})).assurance_status.value == "complete"
 
 
+@pytest.mark.parametrize("path", ["C:/outside/config.yml", "D:config.yml", "../config.yml"])
+def test_the_file_that_leaves_a_stage_out_is_inside_the_project(path: str) -> None:
+    config = {"path": path, "digest": "sha256:" + "d" * 64}
+    scoped = _record(
+        expected_stages=["plan", "post_deploy"],
+        not_in_scope=[
+            {"stage": "pre_deploy", "basis": "project_config", "declared_in": config},
+            {"stage": "post_verify", "basis": "not_supported", "declared_in": None},
+        ],
+    )
+    with pytest.raises(ValidationError, match="relative path inside the project"):
+        CAR.model_validate(scoped, context=_READER)
+
+
 def test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so() -> None:
     """A project that has no approval step says so in its configuration, and the record names that file."""
     config = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}

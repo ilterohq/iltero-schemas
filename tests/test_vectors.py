@@ -307,14 +307,7 @@ def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: di
         assert result["observations"]["predicates"] == expected["predicates"]
 
 
-@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
-def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
-    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
-    context["evaluation"]["assertion"]["id"] = case["assertion"]
-    assert case["facts"] in ("unknown_marker", "empty_list")
-    if case["facts"] == "empty_list":
-        for part in ("evaluations", "approvals", "exceptions"):
-            context[part] = []
+def _evaluate(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
     evaluated = _run(
         opa,
         "eval",
@@ -324,17 +317,48 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
         "--capabilities",
         str(capabilities),
         "--data",
-        str(COMPILER / f"{case['assertion']}.rego"),
+        str(module),
         "--stdin-input",
-        f"data.{package_of(case['assertion'])}.evaluate",
+        f"data.{package}.evaluate",
         stdin=json.dumps(context),
     )
     assert evaluated.returncode == 0, evaluated.stderr
-    result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+
+
+@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
+def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    assert case["facts"] in ("unknown_marker", "empty_list")
+    if case["facts"] == "empty_list":
+        for part in ("evaluations", "approvals", "exceptions"):
+            context[part] = []
+    result = _evaluate(
+        opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
+    )
     expected = case["expected"]
     assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
     assert result["observations"]["unknown"] == expected["unknown"]
     assert result["observations"]["when"] == expected["when"]
+
+
+def test_the_two_stage_records_pre_deploy_results_are_what_the_evaluator_returns_over_its_inputs(
+    opa: Path, capabilities: Path
+) -> None:
+    record = json.loads((VECTORS / "records" / "governed_two_stage.json").read_text(encoding="utf-8"))
+    checks = {e["provenance"]["input_digest"]: e for e in record["events"] if e["evaluation"]["stage"] == "pre_deploy"}
+    for path in sorted((VECTORS / "contexts").glob("governed_two_stage_*.json")):
+        context = json.loads(path.read_text(encoding="utf-8"))
+        event = checks[digest_of(context)]
+        assertion = event["assertion"]["id"]
+        result = _evaluate(opa, capabilities, COMPILER / f"{assertion}.rego", package_of(assertion), context)
+        recorded = event["evaluation"]
+        assert (result["status"], result["reason"], result["observations"]) == (
+            recorded["status"],
+            recorded["reason"],
+            recorded["observations"],
+        )
 
 
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)
@@ -408,25 +432,6 @@ spec:
 """
 
 
-def _evaluate_post_deploy(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
-    evaluated = _run(
-        opa,
-        "eval",
-        "--format",
-        "json",
-        "--strict-builtin-errors",
-        "--capabilities",
-        str(capabilities),
-        "--data",
-        str(module),
-        "--stdin-input",
-        f"data.{package}.evaluate",
-        stdin=json.dumps(context),
-    )
-    assert evaluated.returncode == 0, evaluated.stderr
-    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
-
-
 def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothing_to_one_that_does_not(
     opa: Path, capabilities: Path, tmp_path: Path
 ) -> None:
@@ -435,8 +440,8 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     module = compile(parse(_READS_THE_SUMMARY))
     path = tmp_path / "one_change.rego"
     path.write_bytes(module.source)
-    reads = _evaluate_post_deploy(opa, capabilities, path, module.package, context)
+    reads = _evaluate(opa, capabilities, path, module.package, context)
     assert reads["status"] == "unknown" and "apply_log_incomplete" in json.dumps(reads)
     binding = COMPILER / "ILT.DEPLOYMENT.PLAN_BINDING.rego"
-    ignores = _evaluate_post_deploy(opa, capabilities, binding, package_of("ILT.DEPLOYMENT.PLAN_BINDING"), context)
+    ignores = _evaluate(opa, capabilities, binding, package_of("ILT.DEPLOYMENT.PLAN_BINDING"), context)
     assert ignores["status"] == "pass"

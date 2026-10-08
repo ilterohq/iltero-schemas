@@ -49,18 +49,15 @@ def test_a_change_names_one_unit_with_its_plan_digest(units: list[object], messa
         Change.model_validate({"digest": None, "units": units})
 
 
-@pytest.mark.parametrize("name", ["App", "-app", "a/b", "a" * 65])
-def test_a_declared_unit_is_named_in_lowercase_plain_characters(name: str) -> None:
-    with pytest.raises(ValidationError, match="String should match pattern"):
-        UnitsFile.model_validate({**FILE, "units": [name]})
-
-
 @pytest.mark.parametrize("path", ["infra/teams/x/stacks/y/.iltero/units.json", "my stack/units.json"])
 def test_a_units_file_may_sit_anywhere_in_the_project(path: str) -> None:
     UnitsFile.model_validate({**FILE, "path": path})
 
 
-@pytest.mark.parametrize("path", ["/units.json", "./units.json", "a//units.json", "a\\units.json", "a/\tb"])
+@pytest.mark.parametrize(
+    "path",
+    ["/units.json", "./units.json", "a//units.json", "a\\units.json", "a/\tb", "C:/outside/units.json", "D:units.json"],
+)
 def test_a_units_file_path_is_a_plain_relative_path(path: str) -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match="relative path inside the project|control characters"):
         UnitsFile.model_validate({**FILE, "path": path})

@@ -105,11 +105,16 @@ def _member_path(value: str) -> str:
 
 
 def _project_path(value: str) -> str:
-    """A path inside the project's directory: relative, with no '.' or '..' component and no control character."""
+    """A path inside the project's directory: relative, with no '.' or '..' component and no control character.
+
+    A colon is refused too: on Windows it names a drive (``C:/x``, ``D:x``) or a stream of a file.
+    """
     plain_text(value)
     parts = value.split("/")
-    if value.startswith("/") or "\\" in value or any(part in ("", *_NOT_A_COMPONENT) for part in parts):
-        raise ValueError("must be a relative path inside the project, with no '..', '.', empty part or leading '/'")
+    if value.startswith("/") or "\\" in value or ":" in value or any(part in ("", *_NOT_A_COMPONENT) for part in parts):
+        raise ValueError(
+            "must be a relative path inside the project, with no '..', '.', empty part, ':' or leading '/'"
+        )
     return value
 
 

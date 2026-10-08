@@ -2,9 +2,3 @@
 # pattern: one per line, exactly as matched. Each is a documented test
 # constant, never a real value, and must occur in a tracked file under src/
 # or tests/.
-# The AWS account reserved for documentation, and the two placeholder
-# resources the identity-document conformance vector binds
-# (src/iltero_schemas/vectors/identities/identity_bindings.json).
-111122223333
-arn:aws:rds:eu-west-1:111122223333:db:payments
-arn:aws:s3:::logs-bucket

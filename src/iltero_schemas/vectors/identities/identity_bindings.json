@@ -29,65 +29,18 @@
       ]
     }
   ],
-  "bindings": [
-    {
-      "iac": {
-        "tool": "terraform",
-        "unit": "root",
-        "address": "aws_db_instance.payments"
-      },
-      "cloud": {
-        "provider": "aws",
-        "resource_type": "rds_instance",
-        "primary": {
-          "scheme": "aws_arn",
-          "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
-        }
-      },
-      "authority": "authoritative"
-    },
-    {
-      "iac": {
-        "tool": "terraform",
-        "unit": "root",
-        "address": "aws_s3_bucket.logs"
-      },
-      "cloud": {
-        "provider": "aws",
-        "resource_type": "s3_bucket",
-        "primary": {
-          "scheme": "aws_arn",
-          "value": "arn:aws:s3:::logs-bucket"
-        }
-      },
-      "authority": "authoritative"
-    }
-  ],
+  "bindings": [],
   "unresolved": [
+    {
+      "address": "aws_db_instance.payments",
+      "reason": "identifier_sensitive"
+    },
     {
       "address": "aws_lambda_function.worker",
       "reason": "no_resolver"
     }
   ],
-  "removed": [
-    {
-      "iac": {
-        "tool": "terraform",
-        "unit": "root",
-        "address": "aws_db_instance.payments"
-      },
-      "cloud": {
-        "provider": "aws",
-        "resource_type": "rds_instance",
-        "primary": {
-          "scheme": "aws_arn",
-          "value": "arn:aws:rds:eu-west-1:111122223333:db:payments"
-        }
-      },
-      "authority": "authoritative",
-      "fate": "deleted"
-    }
-  ],
+  "removed": [],
   "removed_unresolved": [
     {
       "address": "aws_kms_key.old",
@@ -95,6 +48,6 @@
       "fate": "forgotten"
     }
   ],
-  "deposed_objects": 1,
-  "deposed_destroyed": 0
+  "deposed_destroyed": 0,
+  "deposed_objects": 1
 }

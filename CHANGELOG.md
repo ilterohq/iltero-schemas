@@ -40,8 +40,10 @@ keep, so any two tools agree on what a record means.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
   Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
-  including a complete identity document, the identity documents that must
-  be refused, and changed ones that must still be accepted.
+  including an identity document with no bindings, the identity documents
+  that must be refused, and changed ones that must still be accepted. The
+  rules about bindings have no vector, because a binding holds a cloud
+  identifier this repository does not publish.
 - A record of a run Iltero Cloud opened carries the run's pins, and agrees
   with them: its environment, where its expected checks came from, and the
   bundle every check was evaluated with. A record of a run the tool opened

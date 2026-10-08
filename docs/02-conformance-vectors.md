@@ -16,7 +16,7 @@ consumer that fails one must fail its build.
 | `contexts/` | One complete assurance context per profile: `plan_resource.json`, `pre_deploy_change.json` and `post_deploy.json`. `digests.json` gives each one's `input_digest`. | Validation, and each document digest. |
 | `events/` | `plan_pass.json`, a complete assurance event, and `digests.json`. | Validation and the document digest. |
 | `reports/` | `verification_report.json`, a complete verification report, and `digests.json`. | Validation and the document digest. |
-| `identities/` | `identity_bindings.json`, a complete identity bindings document, and `digests.json`. One resource sits in both `bindings` and `removed` under the same cloud identity, as a resource destroyed and created again under one name in one apply does. | Validation and the document digest. |
+| `identities/` | `identity_bindings.json`, an identity bindings document with no bindings (only resources left unresolved), and `digests.json`. | Validation and the document digest. |
 | `identities_invalid/` | `cases.json`: identity documents that must be refused, in the same form as `records_invalid/`, each naming an `identities/` document. | The refusal. |
 | `identities_valid/` | `cases.json`: changed identity documents that must still be accepted, in the same form as `records_valid/`, such as a document read without an applied plan. | Acceptance. |
 | `records/` | Two complete CARs, with `digests.json`: `local_run.json`, of a run the tool opened on its own, and `governed_run.json`, of a run Iltero Cloud opened, with its pins and the CI job Iltero Cloud verified. Its plan stage owes every pinned assertion, so here the stage's assertion-set digest equals the pins'. | Validation and each document digest. |
@@ -24,6 +24,13 @@ consumer that fails one must fail its build.
 | `records_valid/` | `cases.json`: changed records that must still be accepted, in the same form without a message, such as a run whose environment is not production, a stage observed outside its token window, or a job the tool did not check against a token it fetched itself. | Acceptance. |
 | `evaluation/` | `cases.json`: an assertion, an input, and the expected `status`, `reason`, `unknown`, `when` and, for some cases, `predicates`. `facts_unknown.json`: the approval and exception assertions over `contexts/pre_deploy_change.json`, with the facts as unknown markers and as empty lists. | The OPA result for each case. |
 | `opa/` | `not_allowed.txt`: every built-in function of the pinned OPA release that the capabilities allowlist leaves out. | The allowlist of the pinned release. |
+
+The identity vectors hold no binding, because a binding names a real-format cloud identifier, which this repository
+does not publish. So these rules of an identity document have no vector: no two entries of `bindings`, or of
+`removed`, name the same cloud identity; a resource is bound or unresolved, never both; only a resource type verified
+for its provider's resolver is bound; every binding belongs to the unit and names the tool that wrote the state; an
+identifier names a resource of its stated type. A conformant consumer enforces them all; the validating model
+`iltero_schemas.models.identity.IdentityBindings` is the reference.
 
 Every document digest is the SHA-256 of the document's RFC 8785 canonical JSON, written `sha256:<hex>`. The
 `iltero_schemas.canonical` module computes it with `digest_of`, and the canonical bytes with `canonical_bytes`.

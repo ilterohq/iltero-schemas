@@ -116,9 +116,6 @@ generic_patterns=(
   '/Users/[^/[:space:]"'"'"']+'
   '/home/[^/[:space:]"'"'"']+'
   'C:\\Users\\[^\\[:space:]"'"'"']+'
-  '\b[0-9]{12}\b'
-  # A whole ARN, so that the allowlist can exempt one placeholder ARN and never every ARN.
-  'arn:aws[a-z-]*:[^[:space:]"'"'"'`]*'
   'AKIA[0-9A-Z]{16}'
   'ASIA[0-9A-Z]{16}'
   'gh[pousr]_[A-Za-z0-9]{20,}'
@@ -127,6 +124,11 @@ generic_patterns=(
   'eyJ[A-Za-z0-9_-]{10,}\.eyJ'
   'localhost:[0-9]{4,5}'
   '§'
+)
+# Cloud identifiers: an account id and an ARN. Never allowlisted, placeholder or not.
+cloud_id_patterns=(
+  '\b[0-9]{12}\b'
+  'arn:aws[a-z-]*:'
 )
 # The files that keep internal material out of the tree may name it.
 private_exempt='^(\.gitignore|\.markdownlint-cli2\.jsonc|pyproject\.toml)$'
@@ -143,9 +145,12 @@ check_content() {  # $1 = path, $2 = pattern, $3 = exempt-through-allowlist (yes
 }
 while IFS= read -r -d '' path; do
   [[ -f "$path" ]] || continue
-  [[ "$path" == scripts/check-public-surface.sh || "$path" == "$allowlist_file" ]] && continue
+  # The gate states its own patterns. The allowlist is checked like any file: its listed tokens are exempt, its
+  # comments are not.
+  [[ "$path" == scripts/check-public-surface.sh ]] && continue
   case "$path" in *.png|*.jpg|*.gif|*.ico|*.woff*) continue ;; esac
   for pattern in "${generic_patterns[@]}"; do check_content "$path" "$pattern" yes; done
+  for pattern in "${cloud_id_patterns[@]}"; do check_content "$path" "$pattern" no; done
   if ! [[ "$path" =~ $private_exempt ]]; then
     for pattern in "${private_patterns[@]+"${private_patterns[@]}"}"; do check_content "$path" "$pattern" no; done
   fi
@@ -176,7 +181,7 @@ fi
 if [[ -d tests/golden ]]; then
   framework_keys='"(framework[a-z_]*|control_id|controls)"[[:space:]]*:'
   while IFS= read -r -d '' path; do
-    if grep -qE -- "$framework_keys" "$path"; then fail "golden file carries a framework key: $path"; fi
+    if grep -aqE -- "$framework_keys" "$path"; then fail "golden file carries a framework key: $path"; fi
   done < <(git ls-files -z tests/golden)
 fi
 
@@ -190,7 +195,7 @@ while IFS= read -r -d '' path; do
     if [[ "$resolved" == ../* ]] || git check-ignore -q "$resolved"; then
       fail "$path links to an internal location: $target"
     fi
-  done < <(grep -oE '\]\([^)]+\)' "$path" | sed -E 's/^\]\(//; s/\)$//' || true)
+  done < <(grep -aoE '\]\([^)]+\)' "$path" | sed -E 's/^\]\(//; s/\)$//' || true)
 done < <(tracked)
 
 # 7. A built distribution must not carry anything the tree may not: a path

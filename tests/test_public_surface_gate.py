@@ -27,8 +27,9 @@ CLEAN = "src/iltero_schemas/__init__.py"
 # Assembled so that this file passes the gate it tests.
 USERS = "/Use" + "rs/"
 HOME = "/ho" + "me/"
-# An Amazon Resource Name (ARN) prefix, assembled for the same reason.
-ARN = "arn:" + "aws:"
+# A placeholder ARN and account id, assembled for the same reason.
+ACCOUNT = "1111" + "2222" + "3333"
+ARN = "arn:" + "aws:s3:::placeholder-bucket"
 # A private vocabulary for the throwaway repository only.
 PRIVATE = "# test\nsecret_garden\nProject Nightjar\n"
 
@@ -63,7 +64,7 @@ def _gate(repo: Path, dist: Path | None = None, **env: str) -> subprocess.Comple
     argv = ["bash", "scripts/check-public-surface.sh", *([str(dist)] if dist else [])]
     clean = {k: v for k, v in os.environ.items() if not k.startswith(("PUBLIC_SURFACE_", "GITHUB_"))}
     clean.setdefault("PUBLIC_SURFACE_PRIVATE_PATTERNS", PRIVATE)
-    return subprocess.run(argv, cwd=repo, capture_output=True, text=True, env={**clean, **env})
+    return subprocess.run(argv, cwd=repo, capture_output=True, text=True, errors="replace", env={**clean, **env})
 
 
 def _write(repo: Path, rel: str, content: str | bytes) -> None:
@@ -124,17 +125,39 @@ def test_an_allowlisted_token_is_exempt_and_only_that_token(repo: Path) -> None:
     assert result.returncode == 1 and f"{USERS}bob" in result.stderr and f"{USERS}alice" not in result.stderr
 
 
-def test_an_arn_is_refused_whole_and_an_allowlisted_arn_exempts_only_itself(repo: Path) -> None:
-    placeholder = f"{ARN}s3:::placeholder-bucket"
-    _write(repo, "tests/x.json", f'["{placeholder}", "{ARN}s3:::another-bucket"]\n')
+def test_a_file_grep_would_take_for_binary_is_still_read(repo: Path) -> None:
+    _write(repo, "tests/x.py", b"\x00" + f'\np = "{USERS}bob"\n'.encode())
     result = _gate(repo)
-    assert result.returncode == 1
-    assert f"{ARN}s3:::another-bucket" in result.stderr and f"{ARN}s3:::placeholder-bucket" in result.stderr
+    assert result.returncode == 1 and f"{USERS}bob" in result.stderr, result.stderr
+
+
+def test_a_pattern_matches_across_a_byte_that_is_not_utf_8(repo: Path) -> None:
+    _write(repo, "tests/x.py", b"# secret\xe9garden\n")
+    result = _gate(repo, PUBLIC_SURFACE_PRIVATE_PATTERNS="secret.garden")
+    assert result.returncode == 1 and "pattern secret.garden" in result.stderr, result.stderr
+
+
+def test_a_comment_in_the_allowlist_is_checked_like_any_text(repo: Path) -> None:
     with (repo / "scripts" / ALLOWLIST.name).open("a", encoding="utf-8") as handle:
-        handle.write(f"{placeholder}\n")
+        handle.write(f"# an example: {HOME}carol\n")
     result = _gate(repo)
-    assert result.returncode == 1
-    assert f"{ARN}s3:::another-bucket" in result.stderr and "placeholder-bucket" not in result.stderr
+    assert result.returncode == 1 and f"{HOME}carol" in result.stderr, result.stderr
+
+
+@pytest.mark.parametrize("token", [ARN, ACCOUNT, "arn:" + "aws:"], ids=["an ARN", "an account id", "the ARN prefix"])
+def test_a_cloud_identifier_is_refused_even_when_allowlisted(repo: Path, token: str) -> None:
+    _write(repo, "tests/x.py", f'x = "{token}"\n')
+    with (repo / "scripts" / ALLOWLIST.name).open("a", encoding="utf-8") as handle:
+        handle.write(f"{token}\n")
+    result = _gate(repo)
+    assert result.returncode == 1 and "forbidden content in tests/x.py" in result.stderr, result.stderr
+
+
+def test_a_link_in_a_file_grep_would_take_for_binary_is_still_checked(repo: Path) -> None:
+    (repo / ".gitignore").write_text("notes/\n", encoding="utf-8")
+    _write(repo, "docs/x.md", b"\x00\n[notes](../notes/a.md)\n")
+    result = _gate(repo)
+    assert result.returncode == 1 and "docs/x.md" in result.stderr, result.stderr
 
 
 def test_the_allowlist_cannot_carry_a_token_of_its_own(repo: Path) -> None:

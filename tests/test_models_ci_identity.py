@@ -34,6 +34,8 @@ def _with(**changes: Any) -> dict[str, Any]:
         {"runner_environment": None},
         {"job_workflow_ref": "acme/shared/.github/workflows/apply.yml@refs/tags/v3"},
         {"issuer": "https://ci.example.com/tenant/oidc"},
+        {"actor": "alice_acme"},
+        {"actor": "first.last"},
     ],
     ids=[
         "a tag",
@@ -46,6 +48,8 @@ def _with(**changes: Any) -> dict[str, Any]:
         "an unstated runner",
         "a shared workflow ran the job",
         "an issuer with a path",
+        "a managed account's login",
+        "a login with a dot",
     ],
 )
 def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(changes: dict[str, str]) -> None:
@@ -76,6 +80,11 @@ def test_a_verified_ci_job_is_accepted_in_every_shape_its_ci_system_gives(change
         ("repository_id", "0"),
         ("job_workflow_commit", "main"),
         ("ci_job_id", "0"),
+        ("actor", "-octocat"),
+        ("actor", "octocat[app]"),
+        ("actor", "o" * 101),
+        ("actor", "octocat[bot]x"),
+        ("actor", ""),
     ],
 )
 def test_a_value_outside_its_shape_is_refused(field: str, value: str) -> None:
@@ -104,6 +113,7 @@ def test_an_unknown_claim_is_refused() -> None:
         ("job_workflow_ref", f"acme/app/x.yml@refs/{JWT}"),
         ("ref", f"refs/{JWT}"),
         ("environment", f"prod {JWT}"),
+        ("actor", JWT),
     ],
 )
 def test_no_value_may_contain_a_json_web_token(field: str, value: str) -> None:

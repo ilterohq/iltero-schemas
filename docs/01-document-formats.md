@@ -363,6 +363,7 @@ claims of the job's identity token:
 | `job_workflow_commit` | commit | The commit of the workflow file that ran the job. |
 | `ref`, `commit` | string, commit | The Git reference and commit the job ran on. |
 | `event` | string | What started the CI run, such as `push`. |
+| `actor`, `actor_id` | string, string or null | The account that started the run (the token's `actor` and `actor_id` claims), by its login and its id (a decimal number). The id stays the same when the account is renamed, and a login may later name a different account, so accounts are compared by `actor_id`; `actor` is for display. `actor_id` is `null` only when the token does not carry it. |
 | `environment` | string or null | The deployment environment the job ran in. |
 | `ci_run_id`, `ci_run_attempt` | string | The CI run and its attempt, as decimal numbers. Every job of one run attempt shares both. |
 | `ci_job_id` | string or null | The job that asked for the identity token, as a decimal number (GitHub's `check_run_id` claim). `null` only when the token does not carry it: for example, a GitHub Enterprise Server that does not issue it. |
@@ -371,6 +372,13 @@ claims of the job's identity token:
 Key rules:
 
 - No value may contain a JSON Web Token.
+- `actor` is the account that started the run. It is not necessarily the commit's author or the change's approver. For a
+  scheduled run it is the account GitHub associates with the schedule, usually the one that last changed it. It may be
+  a bot account such as `dependabot[bot]`. It does not show that the approver and the author differ.
+- The account that asked for a re-run is not in the identity token, so on a re-run (`ci_run_attempt` above 1) `actor`
+  may name the account that started the first attempt, and the record does not name who asked for the re-run.
+- `actor` and `actor_id` identify a person when the account belongs to one. A record keeps them as long as it is
+  kept, and they cannot be removed without changing the record's digest.
 - The stages of one record share `provider`, `issuer`, `commit` and the source: for `github_actions`, `repository_id`
   and `repository_owner_id`. The commit is the record's `subject.source.commit.sha`.
 - The validating model of each variant offers `job_key()`, which names the job in one shape for every CI system

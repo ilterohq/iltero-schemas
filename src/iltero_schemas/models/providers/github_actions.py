@@ -1,10 +1,10 @@
 """The CI job identity of GitHub Actions, the first CI system the contract supports.
 
 GitHub Actions gives each job an identity token. Its claims name the
-repository, the workflows, the branch or tag, the commit, the event, the CI
-run and attempt, the job, and the runner. This module holds the shape of
-those claims as the server reports them. Another CI system adds its own
-module and changes none here.
+repository, the workflows, the branch or tag, the commit, the event, the
+account that started the run, the CI run and attempt, the job, and the
+runner. This module holds the shape of those claims as the server reports
+them. Another CI system adds its own module and changes none here.
 """
 
 from __future__ import annotations
@@ -35,6 +35,9 @@ REF_PATTERN = r"^refs/[A-Za-z0-9_./-]+$"
 EVENT_PATTERN = r"^[a-z][a-z_]{0,63}$"
 # A deployment environment's name as the CI system gives it; it may hold spaces.
 ENVIRONMENT_PATTERN = r"^[A-Za-z0-9_.-][A-Za-z0-9_. -]{0,254}$"
+# An account's login: letters, digits, hyphens, underscores and dots, as GitHub and GitHub Enterprise issue them,
+# with the "[bot]" suffix GitHub gives an app's account.
+ACTOR_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}(\[bot\])?$"
 # A positive number the CI system assigns, written as the CI system writes it: a decimal string.
 NUMBER_PATTERN = r"^[1-9][0-9]{0,19}$"
 CLAIM_MAX_LENGTH = 512
@@ -47,6 +50,7 @@ Ref = Annotated[str, Field(pattern=REF_PATTERN, max_length=CLAIM_MAX_LENGTH), No
 Event = Annotated[str, Field(pattern=EVENT_PATTERN)]
 DeploymentEnvironment = Annotated[str, Field(pattern=ENVIRONMENT_PATTERN), NoToken]
 Number = Annotated[str, Field(pattern=NUMBER_PATTERN)]
+Actor = Annotated[str, Field(pattern=ACTOR_PATTERN), NoToken]
 
 
 class GithubActionsIdentity(StrictModel):
@@ -68,6 +72,13 @@ class GithubActionsIdentity(StrictModel):
     ref: Ref
     commit: Commit
     event: Event
+    # The account that started the run (the token's actor claims), by its login and its id. The id stays the same
+    # when the account is renamed, and a login may later name another account, so accounts are compared by the id.
+    # It is not necessarily the commit's author or the change's approver, and it may be a bot. Who asked for a re-run
+    # is not in the token, so on a re-run it may name the account that started the first attempt.
+    actor: Actor
+    # Null only when the CI system's token does not carry it.
+    actor_id: Number | None
     # The deployment environment the job ran in; null when the job named none.
     environment: DeploymentEnvironment | None
     ci_run_id: Number

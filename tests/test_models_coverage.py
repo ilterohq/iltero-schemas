@@ -9,7 +9,16 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.coverage import VERDICT_PRECEDENCE, StageOutcome, Verdict, combine
+from iltero_schemas.models.coverage import (
+    INCOMPLETE_REASON,
+    SUBSTITUTED_REASON,
+    VERDICT_PRECEDENCE,
+    Coverage,
+    StageOutcome,
+    Verdict,
+    combine,
+    stage_outcome,
+)
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
@@ -198,3 +207,36 @@ def test_a_deployment_scope_is_the_one_deployment(scope: dict[str, Any]) -> None
 def test_the_status_counts_add_up_to_the_checks() -> None:
     with pytest.raises(ValidationError, match="add up to the number of checks"):
         _outcome(DEPLOYED_STAGE, **{"coverage.checks": 2})
+
+
+PLACEHOLDER = {"kind": "upstream_state", "source": "data.terraform_remote_state.network", "stage": None}
+
+
+def _substituted(**changes: Any) -> Coverage:
+    return Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [PLACEHOLDER], **changes})
+
+
+def test_a_stage_that_read_placeholders_is_incomplete_and_keeps_its_verdict() -> None:
+    outcome = stage_outcome(_substituted())
+    assert outcome.verdict == stage_outcome(PLAN.coverage).verdict
+    assert (outcome.assurance_status.value, outcome.assurance_status.reason) == ("incomplete", SUBSTITUTED_REASON)
+
+
+def test_an_evaluator_error_outranks_a_placeholder() -> None:
+    counts = {**PLAN_STAGE["coverage"]["status_counts"]}
+    moved = next(status for status, count in counts.items() if count)
+    counts[moved] -= 1
+    counts["error"] += 1
+    outcome = stage_outcome(_substituted(status_counts=counts))
+    assert outcome.assurance_status.reason == INCOMPLETE_REASON
+
+
+def test_combining_names_the_stage_of_each_placeholder() -> None:
+    stage = stage_outcome(_substituted())
+    combined = combine([("plan", stage)])
+    assert [entry.stage for entry in combined.coverage.substituted_inputs] == ["plan"]
+    named = Coverage.model_validate(
+        {**PLAN_STAGE["coverage"], "substituted_inputs": [{**PLACEHOLDER, "stage": "plan"}]}
+    )
+    with pytest.raises(ValueError, match="substituted inputs do not name a stage"):
+        combine([("plan", stage_outcome(named))])

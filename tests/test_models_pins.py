@@ -236,6 +236,13 @@ def test_a_job_check_says_not_named_exactly_when_the_verified_job_names_no_job(
             CAR.model_validate(document, context=_READER)
 
 
+def test_a_pinned_record_read_no_placeholder_for_an_input() -> None:
+    placeholder = [{"kind": "upstream_state", "source": "data.terraform_remote_state.network", "stage": None}]
+    document = pinned(**{"stages.plan.coverage.substituted_inputs": placeholder})
+    with pytest.raises(ValidationError, match="read no placeholder for an input"):
+        CAR.model_validate(document, context=_READER)
+
+
 def test_every_stage_of_a_pinned_record_names_its_access_window() -> None:
     with pytest.raises(ValidationError, match="stages.plan: a stage of a pinned record names its access window"):
         CAR.model_validate(pinned(**{"stages.plan.access_window": None}), context=_READER)

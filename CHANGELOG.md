@@ -84,6 +84,11 @@ keep, so any two tools agree on what a record means.
   `job_key()` names the run, attempt and job in one shape for every CI
   system.
 - The signed bundle's descriptor.
+- A stage that replaced an input it could not read, such as another unit's
+  state, with a placeholder lists it (`coverage.substituted_inputs`). Its
+  verdict still follows its checks, and it is incomplete with reason
+  `upstream_state_unavailable`. A record of a run Iltero Cloud opened has
+  none.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change, with vectors.
   A record's change covers its own unit only: that unit's plan, bound by

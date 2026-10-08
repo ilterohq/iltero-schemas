@@ -251,7 +251,7 @@ with a regulatory framework.
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
 | `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
-| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling. |
+| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
 | `assurance_status` | object | `complete` or `incomplete`, with a reason. |
 | `complete` | boolean | Whether every expected stage has reported. |
@@ -290,6 +290,10 @@ Key rules:
   (indeterminate), `1` (assertion failed) or `0` applies, and the stage takes the first in the order
   `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`. The record's verdict is the stage verdict that comes first in that order, and
   it names that stage.
+- A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input in
+  `coverage.substituted_inputs` (`kind: upstream_state` and the input's `source`). Its verdict still follows its
+  checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
+  is one. A record of a run Iltero Cloud opened lists none.
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.

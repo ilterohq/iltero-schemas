@@ -16,7 +16,7 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import Status
-from iltero_schemas.models.fields import Count, Digest, Identifier, plain_text
+from iltero_schemas.models.fields import Address, Count, Digest, Identifier, plain_text
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.
@@ -24,6 +24,8 @@ STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "no
 VERDICT_PRECEDENCE = (2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0)
 
 
+# More inputs than a configuration ever reads from other units, and bounded.
+MAX_SUBSTITUTED_INPUTS = 1000
 # Long enough for a stage name and a sentence about what stopped it.
 DETAIL_MAX_LENGTH = 1024
 # The word a verdict uses for each exit code it can carry; every other code is a failure.
@@ -94,6 +96,19 @@ class Truncated(StrictModel):
     reason: Identifier | None
 
 
+class SubstitutedInput(StrictModel):
+    """An input the stage could not read, which its tool replaced with a placeholder value.
+
+    ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
+    ``source`` names the input as the plan names it. A stage's own entries name no stage; a record's combined
+    coverage names each entry's stage.
+    """
+
+    kind: Literal["upstream_state"]
+    source: Address
+    stage: StageValue | None
+
+
 class Coverage(StrictModel):
     """The denominator every verdict is read against."""
 
@@ -107,6 +122,8 @@ class Coverage(StrictModel):
     gaps: list[dict[str, Any]]
     truncated: Truncated
     sampled: bool
+    # Inputs replaced with placeholders. A stage with any is incomplete; its verdict still follows its checks.
+    substituted_inputs: Annotated[list[SubstitutedInput], Field(max_length=MAX_SUBSTITUTED_INPUTS)]
 
     @model_validator(mode="after")
     def _counts_are_complete(self) -> Coverage:
@@ -127,6 +144,8 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
+# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's reason wins.
+SUBSTITUTED_REASON = "upstream_state_unavailable"
 
 
 def _stage_codes(coverage: Coverage) -> list[int]:
@@ -160,15 +179,15 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
-    status = (
-        AssuranceStatus(
-            value="incomplete",
-            reason=INCOMPLETE_REASON,
-            detail=f"{errors} of {coverage.checks} checks ended in an evaluator error",
-        )
-        if errors
-        else AssuranceStatus(value="complete", reason=None, detail=None)
-    )
+    substituted = len(coverage.substituted_inputs)
+    if errors:
+        detail = f"{errors} of {coverage.checks} checks ended in an evaluator error"
+        status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
+    elif substituted:
+        detail = f"{substituted} upstream inputs were placeholders"
+        status = AssuranceStatus(value="incomplete", reason=SUBSTITUTED_REASON, detail=detail)
+    else:
+        status = AssuranceStatus(value="complete", reason=None, detail=None)
     verdict = Verdict(
         value=VERDICT_WORDS.get(code, "fail"),
         exit_code=code,
@@ -189,6 +208,8 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     plan = coverages[0]
     if any("stage" in gap for c in coverages for gap in c.gaps):
         raise ValueError("a stage's gaps do not name a stage; combining names it")
+    if any(entry.stage is not None for c in coverages for entry in c.substituted_inputs):
+        raise ValueError("a stage's substituted inputs do not name a stage; combining names it")
     per_assertion: dict[str, int] = {}
     for coverage in coverages:
         if set(per_assertion) & set(coverage.subjects_per_assertion):
@@ -216,6 +237,11 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         gaps=[{**gap, "stage": name} for name, outcome in stages for gap in outcome.coverage.gaps],
         truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
         sampled=any(c.sampled for c in coverages),
+        substituted_inputs=[
+            SubstitutedInput.model_validate({**entry.model_dump(mode="json"), "stage": name})
+            for name, o in stages
+            for entry in o.coverage.substituted_inputs
+        ],
     )
 
 
@@ -234,8 +260,8 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
       counted by one stage only.
     - The assertion set is named by the digest over each stage's, in order, and
       is ``locally_derived`` when any stage's is.
-    - The gaps are kept, each naming its stage; the record is truncated or
-      sampled when any stage is.
+    - The gaps and the substituted inputs are kept, each naming its stage; the
+      record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,
       naming that stage; the record is incomplete when any stage is, with that
       stage's reason.

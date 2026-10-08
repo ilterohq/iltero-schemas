@@ -495,5 +495,74 @@
     },
     "remove": [],
     "message": "String should match pattern"
+  },
+  {
+    "name": "local_plan_with_a_placeholder_marked_complete",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "assurance_status"
+  },
+  {
+    "name": "governed_stage_that_read_a_placeholder",
+    "vector": "governed_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "1 upstream inputs were placeholders"
+      },
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ],
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "upstream_state_unavailable",
+        "detail": "plan: 1 upstream inputs were placeholders"
+      }
+    },
+    "remove": [],
+    "message": "read no placeholder for an input"
+  },
+  {
+    "name": "substituted_input_of_an_unknown_kind",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "cached_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Input should be 'upstream_state'"
   }
 ]

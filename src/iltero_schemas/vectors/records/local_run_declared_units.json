@@ -64,7 +64,8 @@
       "limit": null,
       "reason": null
     },
-    "sampled": false
+    "sampled": false,
+    "substituted_inputs": []
   },
   "events": [
     {
@@ -1588,7 +1589,8 @@
           "limit": null,
           "reason": null,
           "value": false
-        }
+        },
+        "substituted_inputs": []
       },
       "verdict": {
         "basis": "status_counts",

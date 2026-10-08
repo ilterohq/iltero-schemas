@@ -176,25 +176,11 @@ def test_facts_source_is_always_stated() -> None:
 
 
 @pytest.mark.parametrize(
-    ("integrity", "basis", "valid"),
-    [
-        ("verified", "context_key_mac", True),
-        ("unverified", "none", True),
-        ("absent", "none", True),
-        ("verified", "none", False),
-        ("unverified", "context_key_mac", False),
-        ("absent", "context_key_mac", False),
-    ],
+    "value", [{"integrity": "verified", "basis": "none"}, {"integrity": "absent", "basis": "hmac"}]
 )
-def test_a_ci_context_is_verified_exactly_when_checked_with_the_context_key(
-    integrity: str, basis: str, valid: bool
-) -> None:
-    document = {"integrity": integrity, "basis": basis}
-    if valid:
-        CiContext.model_validate(document)
-    else:
-        with pytest.raises(ValidationError, match="checked with the run's context key"):
-            CiContext.model_validate(document)
+def test_a_ci_context_is_never_verified(value: dict[str, str]) -> None:
+    with pytest.raises(ValidationError):
+        CiContext.model_validate(value)
 
 
 @pytest.mark.parametrize("provider", ["local", "ci", *CI_PROVIDERS])

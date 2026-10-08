@@ -3,8 +3,8 @@
 A run the server opened carries pins: what the server fixed when the run
 opened. A record of that run must agree with them. A record of a run the tool
 opened on its own has no pins. It must not claim anything only the server can
-give: a server bundle, facts from the server, a CI context verified with a
-run's context key, or a CI job the server verified.
+give: a server bundle, facts from the server, or a CI job the server
+verified.
 
 Each stage of a pinned record names the CI job the server verified for it, and
 its access window: when the server said it issued the stage's run token and
@@ -59,8 +59,6 @@ def _check_offline(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no checks from a server bundle")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from the server")
-    if any(p.ci_context.basis == "context_key_mac" for p in provenance):
-        raise ValueError("a record of a run the tool opened has no CI context verified with a run's context key")
     if any(record.ci_identity is not None for record in car.stages.values()):
         raise ValueError("a record of a run the tool opened names no CI job verified by the server")
     if any(record.access_window is not None for record in car.stages.values()):

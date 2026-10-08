@@ -194,7 +194,7 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from (`server_bundle`, `local` or `custom_rego`), and its source digest. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `ci_context` | Whether the CI context file was checked: `integrity` (`verified`, `unverified` or `absent`) and `basis`. It is `verified` exactly when the basis is `context_key_mac`: the tool checked the file's HMAC-SHA256 with the context key Iltero Cloud issued for the run. A reader without that key cannot check it again. |
+| `ci_context` | Whether a CI context file was given to the tool: `integrity` (`unverified` or `absent`) and `basis` (`none`). No CI context is ever verified. |
 | `facts_source` | For a `pre_deploy` check, where the Iltero Cloud facts came from: `server`, `local_file` or `none`. `null` at every other stage. |
 | `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 

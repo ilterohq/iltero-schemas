@@ -48,12 +48,9 @@ keep, so any two tools agree on what a record means.
   with them: its environment, where its expected checks came from, and the
   bundle every check was evaluated with. A record of a run the tool opened
   claims nothing only Iltero Cloud can give: no Iltero Cloud bundle or check
-  from one, no facts from Iltero Cloud, and no CI context verified with a run's
-  context key. A pinned
-  record's checks are all of assertions from the Iltero Cloud bundle, and its
+  from one, and no facts from Iltero Cloud. A pinned record's checks are all of assertions from the Iltero Cloud bundle, and its
   pre-deploy checks read no facts from a local file. Every event names the
-  record's own run and unit. A CI context counts as verified only when it was
-  checked with the run's context key. These rules check that a record is
+  record's own run and unit. No CI context is ever verified. These rules check that a record is
   consistent. They cannot prove that Iltero Cloud opened the run. A pinned record
   names its commit, and each of its stages names the CI job that Iltero Cloud
   said it verified. Its stages share the same CI system, the same token

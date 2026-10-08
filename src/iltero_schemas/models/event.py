@@ -274,19 +274,10 @@ class Executor(StrictModel):
 
 
 class CiContext(StrictModel):
-    """Whether the CI context file was checked, and how. Only a check with the run's context key verifies it.
+    """Whether a CI context file was given to the tool. No contract defines a way to verify one, so it never is."""
 
-    ``context_key_mac``: the tool checked the file's HMAC-SHA256 with the context key the server issued for the run.
-    """
-
-    integrity: Literal["verified", "unverified", "absent"]
-    basis: Literal["context_key_mac", "none"]
-
-    @model_validator(mode="after")
-    def _verified_only_with_the_context_key(self) -> CiContext:
-        if (self.integrity == "verified") != (self.basis == "context_key_mac"):
-            raise ValueError("a CI context is verified exactly when it was checked with the run's context key")
-        return self
+    integrity: Literal["unverified", "absent"]
+    basis: Literal["none"]
 
 
 # Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.

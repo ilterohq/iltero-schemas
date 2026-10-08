@@ -14,11 +14,18 @@
         "plan": {
           "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
         },
-        "unit": "root"
+        "unit": "app"
       }
     ]
   },
-  "units_file": null,
+  "units_file": {
+    "path": ".iltero/units.json",
+    "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+    "units": [
+      "network",
+      "app"
+    ]
+  },
   "complete": false,
   "coverage": {
     "subjects_in_scope": {
@@ -31,7 +38,7 @@
     "subjects_evaluated": 2,
     "assertions_expected": {
       "value": 5,
-      "basis": "server_pinned",
+      "basis": "locally_derived",
       "required_assertion_digest": "sha256:d737d547b09ab40280125f1c12e8bb90a7d9181bb8f3b69281bffd5db2554ae2"
     },
     "assertions_evaluated": 5,
@@ -90,11 +97,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "server_bundle",
+        "assertion_source": "local",
         "assertion_source_digest": "sha256:b1cbaf3d01c6824cb45ae69920dd688fd918d3d910ea2e9d4b03f0c933b0ff2a",
         "bundle": {
-          "kind": "server",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "binding": null,
         "ci_context": {
@@ -128,9 +135,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "type": "workload",
-          "provider": "github_actions",
-          "run_id": "9876543"
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
@@ -139,9 +146,9 @@
           "version": "1"
         },
         "run": {
-          "basis": "server_issued",
+          "basis": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-          "unit": "root"
+          "unit": "app"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000"
       },
@@ -152,7 +159,7 @@
           {
             "scheme": "terraform_address",
             "scope": {
-              "unit": "root"
+              "unit": "app"
             },
             "value": "aws_db_instance.payments"
           }
@@ -190,11 +197,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "server_bundle",
+        "assertion_source": "local",
         "assertion_source_digest": "sha256:37e929aba9537b805f8abf2ff813120f9d8a7a0e2ce7b80f31112966b2c8b765",
         "bundle": {
-          "kind": "server",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "binding": null,
         "ci_context": {
@@ -228,9 +235,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "type": "workload",
-          "provider": "github_actions",
-          "run_id": "9876543"
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
@@ -239,9 +246,9 @@
           "version": "1"
         },
         "run": {
-          "basis": "server_issued",
+          "basis": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-          "unit": "root"
+          "unit": "app"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000"
       },
@@ -252,7 +259,7 @@
           {
             "scheme": "terraform_address",
             "scope": {
-              "unit": "root"
+              "unit": "app"
             },
             "value": "aws_db_instance.payments"
           }
@@ -329,11 +336,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "server_bundle",
+        "assertion_source": "local",
         "assertion_source_digest": "sha256:9ef9de66f7199dbae4412cae33363ce86f4123e107c5088d978b1badb9718f83",
         "bundle": {
-          "kind": "server",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "binding": null,
         "ci_context": {
@@ -367,9 +374,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "type": "workload",
-          "provider": "github_actions",
-          "run_id": "9876543"
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
@@ -378,9 +385,9 @@
           "version": "1"
         },
         "run": {
-          "basis": "server_issued",
+          "basis": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-          "unit": "root"
+          "unit": "app"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000"
       },
@@ -391,7 +398,7 @@
           {
             "scheme": "terraform_address",
             "scope": {
-              "unit": "root"
+              "unit": "app"
             },
             "value": "aws_db_instance.payments"
           }
@@ -429,11 +436,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "server_bundle",
+        "assertion_source": "local",
         "assertion_source_digest": "sha256:c3bd61ded0c70ef783237263e6319e9f82a0b8c3b92a614768324350a7399140",
         "bundle": {
-          "kind": "server",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "binding": null,
         "ci_context": {
@@ -467,9 +474,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "type": "workload",
-          "provider": "github_actions",
-          "run_id": "9876543"
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
@@ -478,9 +485,9 @@
           "version": "1"
         },
         "run": {
-          "basis": "server_issued",
+          "basis": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-          "unit": "root"
+          "unit": "app"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000"
       },
@@ -491,7 +498,7 @@
           {
             "scheme": "terraform_address",
             "scope": {
-              "unit": "root"
+              "unit": "app"
             },
             "value": "aws_db_instance.payments"
           }
@@ -533,11 +540,11 @@
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
-        "assertion_source": "server_bundle",
+        "assertion_source": "local",
         "assertion_source_digest": "sha256:c8394d0e2bd76588568a0ef0c31b051a6502e31ec65c69d3b02a214a3043a8b2",
         "bundle": {
-          "kind": "server",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "binding": null,
         "ci_context": {
@@ -571,9 +578,9 @@
           "version": "1.20.2"
         },
         "executor": {
-          "type": "workload",
-          "provider": "github_actions",
-          "run_id": "9876543"
+          "provider": "local",
+          "run_id": null,
+          "type": "human"
         },
         "fs_hardening": "posix",
         "input_digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
@@ -582,9 +589,9 @@
           "version": "1"
         },
         "run": {
-          "basis": "server_issued",
+          "basis": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-          "unit": "root"
+          "unit": "app"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000"
       },
@@ -595,7 +602,7 @@
           {
             "scheme": "terraform_address",
             "scope": {
-              "unit": "root"
+              "unit": "app"
             },
             "value": "aws_s3_bucket.logs"
           }
@@ -614,7 +621,7 @@
       },
       "digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
       "media_type": "application/json",
-      "path": "units/root/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
+      "path": "units/app/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
       "redaction_applied": {
         "policy_id": "iltero.redaction",
         "version": "1"
@@ -637,7 +644,7 @@
       },
       "digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "path": "units/app/plan/contexts/sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
       "redaction_applied": null,
       "ref_id": "sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
       "retention_until": null,
@@ -654,7 +661,7 @@
       },
       "digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "path": "units/app/plan/contexts/sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
       "redaction_applied": null,
       "ref_id": "sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
       "retention_until": null,
@@ -671,7 +678,7 @@
       },
       "digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "path": "units/app/plan/contexts/sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
       "redaction_applied": null,
       "ref_id": "sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
       "retention_until": null,
@@ -688,7 +695,7 @@
       },
       "digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "path": "units/app/plan/contexts/sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
       "redaction_applied": null,
       "ref_id": "sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
       "retention_until": null,
@@ -705,7 +712,7 @@
       },
       "digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "path": "units/app/plan/contexts/sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
       "redaction_applied": null,
       "ref_id": "sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
       "retention_until": null,
@@ -722,7 +729,7 @@
       },
       "digest": "sha256:bd386d1957f8089b27935b689ce8cd2279dcbe81c78ead0e3de4debb1dae8043",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "retention_until": null,
@@ -739,7 +746,7 @@
       },
       "digest": "sha256:d502f174ceaef9cafda8bc471554c0aa259660219f90645d909e242a4d741e6e",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "retention_until": null,
@@ -756,7 +763,7 @@
       },
       "digest": "sha256:6db8e9e404d0c1fea1b801ec24058dd76cfb253f27f134c4b0a325fd109d4425",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "retention_until": null,
@@ -773,7 +780,7 @@
       },
       "digest": "sha256:efe585a2c81f6aca28995d55e60b538f2af5c088be7fc3bc985294901dcf641f",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "retention_until": null,
@@ -790,7 +797,7 @@
       },
       "digest": "sha256:f579c290581a7ccd7a9a399f2fdce6fa1f5a8753ef7d979bb12dd2e8e287a2f9",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "retention_until": null,
@@ -807,7 +814,7 @@
       },
       "digest": "sha256:db4e5b50a7b848f320cae8823cf8cab97b0c4228fba4588dc29bace826b04b75",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "retention_until": null,
@@ -824,7 +831,7 @@
       },
       "digest": "sha256:c529004d4ef9ffce9dc138a1322d4473465042968e2df82aad633fa6867d90c0",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "retention_until": null,
@@ -841,7 +848,7 @@
       },
       "digest": "sha256:dae954c4ac013bb9f4641a6a46ec20ce8e8a237bf4ed933f3bacb66b8dc45bd5",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "retention_until": null,
@@ -858,7 +865,7 @@
       },
       "digest": "sha256:1adcf62f2ee6c8aeaa8e32a321c4ced03a09731bc9f93e400d2109a64f136fb0",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "retention_until": null,
@@ -875,7 +882,7 @@
       },
       "digest": "sha256:f6ab964e6fcf678934b96e10468152c523c7e1e7567d79eee3b5745fd2a94d84",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "retention_until": null,
@@ -892,7 +899,7 @@
       },
       "digest": "sha256:22213d00978771245aa21969949f965e79f1bfa641ba9c434b1641ecbf4072b0",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "retention_until": null,
@@ -909,7 +916,7 @@
       },
       "digest": "sha256:0c53c3fe2249d24a6a0e97d333e98d92d34efdbce0f1f4da666b3ddfd0edc9c0",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
+      "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "retention_until": null,
@@ -926,7 +933,7 @@
       },
       "digest": "sha256:98e0b72be15f3c0eff88f3a65d3d2ab9f59e59cd93c6711d60ea5d90879eac3c",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "retention_until": null,
@@ -943,7 +950,7 @@
       },
       "digest": "sha256:51bdcc563374caeb53d22225d587b0db3efea6e01d4918969c90310854362dc2",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "retention_until": null,
@@ -960,7 +967,7 @@
       },
       "digest": "sha256:5a73fd342151249eb41f07239a9f4f137e8a0c5e83a40007fd28df40ae71af78",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "retention_until": null,
@@ -977,7 +984,7 @@
       },
       "digest": "sha256:c19b618bb26b5c173411715c569a9f73b13579c15c5454da00bbea6c1231404d",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/compiled.json",
+      "path": "units/app/plan/assertions/compiled.json",
       "redaction_applied": null,
       "ref_id": "compiled.json",
       "retention_until": null,
@@ -994,7 +1001,7 @@
       },
       "digest": "sha256:733815065e8aa8dcd060ee4bca020304dc4f467c2e0506b65b77df0df1c01a7c",
       "media_type": "application/json",
-      "path": "units/root/plan/events.json",
+      "path": "units/app/plan/events.json",
       "redaction_applied": null,
       "ref_id": "events.json",
       "retention_until": null,
@@ -1017,7 +1024,7 @@
   ],
   "expires_at": null,
   "governance": {
-    "run_opened_by": "server"
+    "run_opened_by": "local"
   },
   "deployment": null,
   "identity": null,
@@ -1044,57 +1051,16 @@
   "retention_basis": "no_server_scope",
   "retention_class": null,
   "run_id": {
-    "basis": "server_issued",
+    "basis": "locally_derived",
     "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
-  "pins": {
-    "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d",
-    "environment": "production",
-    "bundle": {
-      "revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
-      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
-    },
-    "required_assertions": [
-      {
-        "id": "ILT.AWS.RDS.BACKUP_RETENTION",
-        "version": "1.0.0",
-        "digest": "sha256:43d8092c3fee90fef01c29592c5ecb2c407178206ce8e55ed78f4c0772efc16a"
-      },
-      {
-        "id": "ILT.AWS.RDS.NOT_PUBLIC",
-        "version": "1.0.0",
-        "digest": "sha256:8dc1dea745ba37d09c053e45250612059aaa8e75dea04f6ddaf78af0bdaea12e"
-      },
-      {
-        "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
-        "version": "1.0.0",
-        "digest": "sha256:6774e5b2a20ef3e565a4cf5d831d081728c4e66c02b93e5d6b4cd2e942ef7a7f"
-      },
-      {
-        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
-        "version": "1.0.0",
-        "digest": "sha256:26d43666bac3337acdf33f1ae65381d6389b49f846f228f9be3c85792162060f"
-      },
-      {
-        "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
-        "version": "1.0.0",
-        "digest": "sha256:46a5e1a3b3aa27ec10deb893929915b6b6a75fd4505235f214b174bb14277600"
-      }
-    ],
-    "required_assertion_digest": "sha256:f67cc77e1744d16c7902461a4230c98d71e3fa5075275858df514587e1005ee3",
-    "policy": {
-      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "gate_mode": "enforcing",
-      "production": true
-    },
-    "min_cli_version": "0.2.0"
-  },
+  "pins": null,
   "stages": {
     "plan": {
       "assertions": {
         "count": 5,
         "digest": "sha256:c19b618bb26b5c173411715c569a9f73b13579c15c5454da00bbea6c1231404d",
-        "index": "units/root/plan/assertions/compiled.json"
+        "index": "units/app/plan/assertions/compiled.json"
       },
       "compiler": {
         "contract_digest": null,
@@ -1105,14 +1071,14 @@
       "events": {
         "count": 5,
         "digest": "sha256:733815065e8aa8dcd060ee4bca020304dc4f467c2e0506b65b77df0df1c01a7c",
-        "path": "units/root/plan/events.json"
+        "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "ran": {
         "bundle": {
           "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
-          "kind": "server"
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "kind": "local_bundle"
         },
         "detail": null,
         "evaluator": {
@@ -1122,32 +1088,9 @@
         },
         "reason": null
       },
-      "ci_identity": {
-        "provider": "github_actions",
-        "issuer": "https://token.actions.githubusercontent.com",
-        "subject": "repo:acme/app:environment:production",
-        "repository": "acme/app",
-        "repository_id": "7001",
-        "repository_owner_id": "4242",
-        "workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
-        "job_workflow_ref": "acme/app/.github/workflows/deploy.yml@refs/heads/main",
-        "job_workflow_commit": "c84e7a1000000000000000000000000000000000",
-        "ref": "refs/heads/main",
-        "commit": "c84e7a1000000000000000000000000000000000",
-        "event": "push",
-        "actor": "octocat",
-        "actor_id": "583231",
-        "environment": "production",
-        "ci_run_id": "9876543",
-        "ci_run_attempt": "1",
-        "ci_job_id": "51234567890",
-        "runner_environment": "github-hosted"
-      },
-      "access_window": {
-        "issued_at": "2026-09-22T12:59:58.000Z",
-        "expires_at": "2026-09-22T13:59:58.000Z"
-      },
-      "job_check": "compared",
+      "ci_identity": null,
+      "access_window": null,
+      "job_check": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {
@@ -1611,7 +1554,7 @@
       "coverage": {
         "assertions_evaluated": 5,
         "assertions_expected": {
-          "basis": "server_pinned",
+          "basis": "locally_derived",
           "required_assertion_digest": "sha256:f67cc77e1744d16c7902461a4230c98d71e3fa5075275858df514587e1005ee3",
           "value": 5
         },
@@ -1673,9 +1616,9 @@
       },
       "vcs": "git"
     },
-    "unit": "root"
+    "unit": "app"
   },
-  "unit": "root",
+  "unit": "app",
   "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
   "verdict": {
     "value": "fail",

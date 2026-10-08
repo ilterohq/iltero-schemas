@@ -33,24 +33,26 @@ instead of failing on a missing key.
 
 from __future__ import annotations
 
-import re
 from typing import Annotated, Any, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
 from iltero_schemas.models.access_window import StageAccessWindow
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
-from iltero_schemas.models.base import StageValue, StrictModel, sorted_unique
+from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.change import Change, UnitsFile, check_change
 from iltero_schemas.models.ci_identity import CiIdentity
 from iltero_schemas.models.ci_job import JobCheck
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
 from iltero_schemas.models.fields import (
+    MAX_PATH_LENGTH,
     ArtifactDigestBasis,
     Count,
     Digest,
     Identifier,
+    MemberPath,
     Timestamp,
     Uuid,
     check_artifact_digest,
@@ -68,32 +70,12 @@ API_VERSION = "iltero.io/car/v1"
 # can report an edited one as tampering rather than as a record it cannot read. A reader that sets it must call
 # ``derived_problems`` and act on what it returns before trusting the counts or the verdicts.
 DERIVED_CHECKED_BY_READER = "derived_checked_by_reader"
-# A component of a path inside a record: a file or directory name, bounded, with no separator in it.
-_COMPONENT = re.compile(r"[A-Za-z0-9._@-]{1,255}")
-# Deep enough for a run's own layout (``units/<unit>/<stage>/contexts/<file>``), shallow enough to state.
-MAX_PATH_COMPONENTS = 6
-MAX_PATH_LENGTH = 1024
-# Components that name a directory rather than a file, whatever the pattern allows.
-_NOT_A_COMPONENT = frozenset({".", ".."})
 # A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
 # More reports than a stage is ever given; one per tool is the rule the model enforces.
 MAX_SCANNER_REPORTS = 16
 MAX_EVIDENCE_REFS = 100_000
-
-
-def _member_path(value: str) -> str:
-    """A path a record may name: relative, inside the record's directory, and bounded."""
-    parts = value.split("/")
-    if len(parts) > MAX_PATH_COMPONENTS:
-        raise ValueError(f"must be at most {MAX_PATH_COMPONENTS} components deep")
-    if any(part in _NOT_A_COMPONENT or not _COMPONENT.fullmatch(part) for part in parts):
-        raise ValueError("must be a relative path of plain names, with no '..' and no leading '/'")
-    return value
-
-
-MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_member_path)]
 
 
 class RunId(StrictModel):
@@ -322,28 +304,6 @@ class PlanRecord(StrictModel):
         return self
 
 
-class UnitPlan(StrictModel):
-    digest: Digest
-
-
-class ChangeUnit(StrictModel):
-    unit: Identifier
-    plan: UnitPlan
-
-
-class Change(StrictModel):
-    """Every unit of the change with its plan; ``digest`` binds them together once it is known."""
-
-    digest: Digest | None
-    units: Annotated[list[ChangeUnit], Field(min_length=1)]
-
-    @model_validator(mode="after")
-    def _units_sorted_once(self) -> Change:
-        if not sorted_unique([unit.unit for unit in self.units]):
-            raise ValueError("change.units must be sorted by unit with no unit twice")
-        return self
-
-
 class Integrity(StrictModel):
     """How the record is bound together. Without a signature this is digest linkage and says so."""
 
@@ -411,6 +371,8 @@ class CAR(StrictModel):
     governance: Governance
     subject: Subject
     change: Change
+    # The project's units file; null for a project that declares none.
+    units_file: UnitsFile | None
     plan: PlanRecord
     stages: dict[StageValue, StageRecord]
     events: Annotated[list[AssuranceEvent], Field(max_length=MAX_EVENTS)]
@@ -455,9 +417,7 @@ class CAR(StrictModel):
         check_tool(self.plan.tool, self.deployment)
         if Stage.PRE_DEPLOY in self.stages and self.change.digest is None:
             raise ValueError("a record with a pre-deploy stage names the change digest its approvals were issued for")
-        own = [unit for unit in self.change.units if unit.unit == self.unit]
-        if not own or own[0].plan.digest != self.plan.digest:
-            raise ValueError("the change lists the record's own unit with the plan the record names")
+        check_change(self.unit, self.plan.digest, self.change, self.units_file)
         self._check_identity()
         check_pins(self)
         # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.

@@ -308,5 +308,69 @@
       "/stages/plan/ci_identity/actor_id"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "change_of_two_units",
+    "vector": "local_run.json",
+    "set": {
+      "/change/units": [
+        {
+          "plan": {
+            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
+          },
+          "unit": "root"
+        },
+        {
+          "unit": "zz",
+          "plan": {
+            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
+          }
+        }
+      ]
+    },
+    "remove": [],
+    "message": "at most 1 item"
+  },
+  {
+    "name": "change_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/change/units/0/unit": "network"
+    },
+    "remove": [],
+    "message": "the change is the record's own unit with the plan the record names"
+  },
+  {
+    "name": "unit_not_declared_in_its_units_file",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "network",
+        "web"
+      ]
+    },
+    "remove": [],
+    "message": "the record's unit is one of the units its units file declares"
+  },
+  {
+    "name": "units_file_names_a_unit_twice",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "a units file names each unit once"
+  },
+  {
+    "name": "record_without_the_units_file_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/units_file"
+    ],
+    "message": "Field required"
   }
 ]

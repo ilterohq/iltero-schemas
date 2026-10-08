@@ -246,7 +246,8 @@ with a regulatory framework.
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` when the record has `pins`, `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
-| `change` | object | Every unit of the change with its plan `digest`, sorted by unit, and the change `digest` once known. |
+| `change` | object | The record's own unit with its plan `digest` (a change covers one unit), and the change `digest` once the pre-deploy stage fixes it. |
+| `units_file` | object or null | The project's units file: its `path` in the project, its `digest`, and its `units` in deploy order (1 to 64 names, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
 | `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
@@ -295,7 +296,10 @@ Key rules:
   assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. A record
   without `pins` names no Iltero Cloud bundle, no facts from Iltero Cloud and no verified CI context.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`).
+  (`iltero_schemas.canonical.change_digest`). A record's change holds exactly one entry: its own unit with the plan it
+  names. A unit is planned, approved and applied on its own.
+- When `units_file` is set, the record's `unit` is one of its `units`, so a reader of the records alone can tell
+  whether every declared unit has one.
 - A stage names `access_window` exactly when it names `ci_identity`, from the same Iltero Cloud answer, and its
   `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
   them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may

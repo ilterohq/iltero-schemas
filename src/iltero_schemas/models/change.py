@@ -7,9 +7,11 @@ binds to that digest, so re-planning the unit after the approval
 invalidates it.
 
 A project may declare its units in a units file. A record names that file
-by its path in the project, its digest and its unit names in deploy order,
-so a reader of the records alone can tell whether every declared unit has
-one. The record's unit is one of them.
+as the writer read it: its path in the project, the digest of its bytes and
+its unit names in deploy order, and the record's unit is one of them. The
+record is not signed, so this is the writer's copy: a reader can tell
+whether the records of one run agree with each other and with it, and can
+check it against the file at the record's commit.
 """
 
 from __future__ import annotations
@@ -19,9 +21,9 @@ from typing import Annotated
 from pydantic import Field, model_validator
 
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Digest, Identifier, MemberPath
+from iltero_schemas.models.fields import Digest, Identifier, ProjectPath, UnitName
 
-# The most units a units file declares.
+# The most units a units file declares: a reader checks one record per declared unit, so the list is bounded.
 MAX_UNITS = 64
 
 
@@ -42,11 +44,12 @@ class Change(StrictModel):
 
 
 class UnitsFile(StrictModel):
-    """The project's units file: its path in the project, its digest, and its unit names in deploy order."""
+    """The project's units file as the writer read it: its path in the project, the SHA-256 digest of its bytes
+    (``canonical.digest``), and its unit names in deploy order."""
 
-    path: MemberPath
+    path: ProjectPath
     digest: Digest
-    units: Annotated[list[Identifier], Field(min_length=1, max_length=MAX_UNITS)]
+    units: Annotated[list[UnitName], Field(min_length=1, max_length=MAX_UNITS)]
 
     @model_validator(mode="after")
     def _each_unit_once(self) -> UnitsFile:

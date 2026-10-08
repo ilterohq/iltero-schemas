@@ -53,6 +53,7 @@ from iltero_schemas.models.fields import (
     Digest,
     Identifier,
     MemberPath,
+    ProjectPath,
     Timestamp,
     Uuid,
     check_artifact_digest,
@@ -327,7 +328,7 @@ ScopeBasis = Literal["project_config", "not_supported"]
 class DeclaredIn(StrictModel):
     """The project file that declared a stage out of scope, by its path in the project and its digest."""
 
-    path: MemberPath
+    path: ProjectPath
     digest: Digest
 
 
@@ -417,6 +418,8 @@ class CAR(StrictModel):
         check_tool(self.plan.tool, self.deployment)
         if Stage.PRE_DEPLOY in self.stages and self.change.digest is None:
             raise ValueError("a record with a pre-deploy stage names the change digest its approvals were issued for")
+        if self.subject.unit != self.unit:
+            raise ValueError("the record's subject is its own unit")
         check_change(self.unit, self.plan.digest, self.change, self.units_file)
         self._check_identity()
         check_pins(self)

@@ -372,5 +372,128 @@
       "/units_file"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "change_digest_of_another_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "not the digest of the change's units"
+  },
+  {
+    "name": "subject_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/subject/unit": "network"
+    },
+    "remove": [],
+    "message": "the record's subject is its own unit"
+  },
+  {
+    "name": "units_file_with_no_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": []
+    },
+    "remove": [],
+    "message": "at least 1"
+  },
+  {
+    "name": "units_file_over_64_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "u0",
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9",
+        "u10",
+        "u11",
+        "u12",
+        "u13",
+        "u14",
+        "u15",
+        "u16",
+        "u17",
+        "u18",
+        "u19",
+        "u20",
+        "u21",
+        "u22",
+        "u23",
+        "u24",
+        "u25",
+        "u26",
+        "u27",
+        "u28",
+        "u29",
+        "u30",
+        "u31",
+        "u32",
+        "u33",
+        "u34",
+        "u35",
+        "u36",
+        "u37",
+        "u38",
+        "u39",
+        "u40",
+        "u41",
+        "u42",
+        "u43",
+        "u44",
+        "u45",
+        "u46",
+        "u47",
+        "u48",
+        "u49",
+        "u50",
+        "u51",
+        "u52",
+        "u53",
+        "u54",
+        "u55",
+        "u56",
+        "u57",
+        "u58",
+        "u59",
+        "u60",
+        "u61",
+        "u62",
+        "u63"
+      ]
+    },
+    "remove": [],
+    "message": "at most 64"
+  },
+  {
+    "name": "units_file_path_leaves_the_project",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/path": "../units.json"
+    },
+    "remove": [],
+    "message": "must be a relative path inside the project"
+  },
+  {
+    "name": "units_file_unit_not_lowercase",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "Network",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "String should match pattern"
   }
 ]

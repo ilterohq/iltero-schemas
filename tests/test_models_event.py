@@ -176,11 +176,16 @@ def test_facts_source_is_always_stated() -> None:
 
 
 @pytest.mark.parametrize(
-    "value", [{"integrity": "verified", "basis": "none"}, {"integrity": "absent", "basis": "hmac"}]
+    ("value", "field"),
+    [
+        ({"integrity": "verified", "basis": "none"}, "integrity"),
+        ({"integrity": "unverified", "basis": "context_key_mac"}, "basis"),
+    ],
 )
-def test_a_ci_context_is_never_verified(value: dict[str, str]) -> None:
-    with pytest.raises(ValidationError):
+def test_a_ci_context_is_never_verified(value: dict[str, str], field: str) -> None:
+    with pytest.raises(ValidationError) as refused:
         CiContext.model_validate(value)
+    assert [error["loc"] for error in refused.value.errors()] == [(field,)]
 
 
 @pytest.mark.parametrize("provider", ["local", "ci", *CI_PROVIDERS])

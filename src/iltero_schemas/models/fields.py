@@ -85,7 +85,7 @@ def instant(timestamp: str) -> tuple[datetime, int]:
     return datetime.fromisoformat(f"{whole}Z"), int(fraction.ljust(9, "0"))
 
 
-# A component of a path a record names: a file or directory name, bounded, with no separator in it.
+# A component of a path inside a record's directory: a file or directory name, bounded, with no separator in it.
 _COMPONENT = re.compile(r"[A-Za-z0-9._@-]{1,255}")
 # Deep enough for a run's own layout (``units/<unit>/<stage>/contexts/<file>``), shallow enough to state.
 MAX_PATH_COMPONENTS = 6
@@ -95,12 +95,21 @@ _NOT_A_COMPONENT = frozenset({".", ".."})
 
 
 def _member_path(value: str) -> str:
-    """A path a record may name: relative, inside the record's or the project's directory, and bounded."""
+    """A path inside the record's directory: relative, of plain names, and bounded."""
     parts = value.split("/")
     if len(parts) > MAX_PATH_COMPONENTS:
         raise ValueError(f"must be at most {MAX_PATH_COMPONENTS} components deep")
     if any(part in _NOT_A_COMPONENT or not _COMPONENT.fullmatch(part) for part in parts):
         raise ValueError("must be a relative path of plain names, with no '..' and no leading '/'")
+    return value
+
+
+def _project_path(value: str) -> str:
+    """A path inside the project's directory: relative, with no '.' or '..' component and no control character."""
+    plain_text(value)
+    parts = value.split("/")
+    if value.startswith("/") or "\\" in value or any(part in ("", *_NOT_A_COMPONENT) for part in parts):
+        raise ValueError("must be a relative path inside the project, with no '..', '.', empty part or leading '/'")
     return value
 
 
@@ -114,3 +123,6 @@ Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 Version = Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
 EnvironmentKey = Annotated[str, Field(pattern=ENVIRONMENT_KEY_PATTERN)]
 MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_member_path)]
+ProjectPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_project_path)]
+# A unit's name as a units file declares it: lowercase letters, digits, "_" and "-", starting with a letter or digit.
+UnitName = Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9_-]{0,63}$")]

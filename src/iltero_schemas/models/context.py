@@ -181,7 +181,7 @@ class ResourceIndexEntry(StrictModel):
 
 
 class Change(StrictModel):
-    """The proposed change: the resources it touches, and its digest once every unit is known."""
+    """The proposed change: the resources it touches, and its digest once the unit's pre-deploy stage fixes it."""
 
     resources: list[ResourceIndexEntry]
     digest: Digest | None = None

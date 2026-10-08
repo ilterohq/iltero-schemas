@@ -88,8 +88,9 @@ keep, so any two tools agree on what a record means.
 - The digest of an assertion set and the digest of a change, with vectors.
   A record's change covers its own unit only: that unit's plan, bound by
   the change digest, which readers check. A record names its project's
-  units file (`units_file`: path, digest, units in deploy order), and its
-  unit is one of them.
+  units file as the writer read it (`units_file`: path, digest of its
+  bytes, units in deploy order), and its unit is one of them, so the
+  records of one run can be checked against it.
 - The unknown marker: where a fact only Iltero Cloud holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A

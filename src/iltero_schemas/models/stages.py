@@ -14,19 +14,28 @@ from collections import Counter
 from typing import TYPE_CHECKING
 
 from iltero_schemas.canonical import change_digest, digest_of
-from iltero_schemas.models.assertion import Stage
+from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import instant
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
 
-# How each stage counts the subjects in its scope. Only the plan stage enumerates the plan's resources.
-SCOPE_BASIS = {
-    Stage.PLAN: "plan_resource_enumeration",
-    Stage.PRE_DEPLOY: "change_unit",
-    Stage.POST_DEPLOY: "deployment_unit",
+# How a stage counts its subjects, by their kind: resources by enumerating the plan, a change or a deployment as
+# its one unit. Only the plan stage enumerates the plan's resources.
+SCOPE_BASIS: dict[TargetKind, str] = {
+    TargetKind.RESOURCE: "plan_resource_enumeration",
+    TargetKind.CHANGE: "change_unit",
+    TargetKind.DEPLOYMENT: "deployment_unit",
 }
+
+
+def subject_kind(stage: Stage) -> TargetKind | None:
+    """The one kind of subject a stage's assertions can target, or None when it can target several."""
+    kinds = {kind for _type, valid_stage, kind in VALID_COMBINATIONS if valid_stage is stage}
+    return next(iter(kinds)) if len(kinds) == 1 else None
+
+
 # The stages whose gate may run in advisory mode: those before the deployment.
 ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)
 _ORDER = list(Stage)
@@ -110,9 +119,11 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
-        basis = SCOPE_BASIS.get(stage)
+        kind = subject_kind(stage)
+        basis = None if kind is None else SCOPE_BASIS.get(kind)
         scope = record.coverage.subjects_in_scope.basis
-        if (basis is not None and scope != basis) or (stage is not Stage.PLAN and scope == SCOPE_BASIS[Stage.PLAN]):
+        enumerates = scope == SCOPE_BASIS[TargetKind.RESOURCE]
+        if (basis is not None and scope != basis) or (stage is not Stage.PLAN and enumerates):
             raise ValueError(f"the {stage.value} stage counts its scope as {basis or 'its own'}")
         if record.enforcement == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
@@ -155,8 +166,8 @@ def derived_problems(car: CAR) -> list[tuple[str, str]]:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
-    units = {unit.unit: unit.plan.digest for unit in car.change.units}
-    if car.change.digest is not None and car.change.digest != change_digest(units):
+    unit = car.change.unit
+    if car.change.digest is not None and car.change.digest != change_digest({unit.name: unit.plan.digest}):
         problems.append(("change.digest", "is not the digest of the change's units"))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)

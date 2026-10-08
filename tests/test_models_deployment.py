@@ -233,7 +233,7 @@ def test_a_replan_names_only_its_reason() -> None:
         AssuranceContext.model_validate(document)
 
 
-UNSETTLED = {"__unknown": True, "reason": "apply_log_incomplete"}
+UNSETTLED = {"__unknown": True, "reason": "deployment_log_incomplete"}
 
 
 def _changed(address: str, action: str, required: list[str], **fields: Any) -> dict[str, Any]:
@@ -376,7 +376,9 @@ def test_the_state_settles_a_deposed_object_as_gone_failed_or_never_started(outc
         ),
         (_deposed("applied", basis="log"), "the state settles what happened to a deposed object"),
         (
-            _deposed("applied", basis="unsettled", completed={"__unknown": True, "reason": "apply_log_incomplete"}),
+            _deposed(
+                "applied", basis="unsettled", completed={"__unknown": True, "reason": "deployment_log_incomplete"}
+            ),
             "unsettled",
         ),
         (_deposed("applied", key="BB9FD791"), "should match pattern"),
@@ -466,7 +468,7 @@ def test_terraforms_removed_count_may_or_may_not_include_a_deposed_delete(
 
 
 def test_a_deposed_object_still_held_after_the_log_lost_lines_may_stay_unsettled() -> None:
-    unknown = {**_deposed("errored"), "outcome": {"__unknown": True, "reason": "apply_log_incomplete"}}
+    unknown = {**_deposed("errored"), "outcome": {"__unknown": True, "reason": "deployment_log_incomplete"}}
     damaged = {**APPLY["source"], "damaged_lines": 1}
     lost = _apply(changes=[unknown], summary=None, source=damaged, basis="log_and_state_where_log_incomplete")
     assert isinstance(Apply.model_validate(lost).changes[0].outcome, Unsettled)

@@ -70,8 +70,8 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
         entry for entry in changed["not_in_scope"] if entry["stage"] not in changed["expected_stages"]
     ]
     changed["complete"] = False
-    units = changed["change"]["units"]
-    changed["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    unit = changed["change"]["unit"]
+    changed["change"]["digest"] = change_digest({unit["name"]: unit["plan"]["digest"]})
     pre_deploy = changed["stages"]["pre_deploy"]
     pre_deploy["coverage"]["subjects_in_scope"]["source_digest"] = changed["change"]["digest"]
     if changed["pins"] is not None:
@@ -107,7 +107,7 @@ def test_a_record_of_a_run_the_tool_opened_claims_nothing_only_the_server_gives(
         CAR.model_validate(document, context=_READER)
 
 
-@pytest.mark.parametrize("source", ["local", "custom_rego"])
+@pytest.mark.parametrize("source", ["local", "custom_rego", "contract_starter"])
 def test_every_check_in_a_pinned_record_is_of_an_assertion_from_the_server_bundle(source: str) -> None:
     with pytest.raises(ValidationError, match="of an assertion from the server's bundle"):
         CAR.model_validate(_with_event(pinned(), assertion_source=source), context=_READER)
@@ -133,7 +133,7 @@ def test_a_pinned_pre_deploy_check_reads_the_facts_the_server_served(facts_sourc
 @pytest.mark.parametrize(
     ("dotted", "value", "message"),
     [
-        ("stages.pre_deploy.facts_received", None, "names facts received exactly when it is pre-deploy"),
+        ("stages.pre_deploy.facts_received", None, "names facts received exactly when its checks read server facts"),
         ("stages.pre_deploy.facts_received.scope.environment", "staging", "the stack and environment the run was"),
         (
             "stages.pre_deploy.facts_received.scope.change_digest",
@@ -165,7 +165,7 @@ def test_facts_received_before_the_change_is_fixed_name_no_change() -> None:
 
 def test_only_the_pre_deploy_stage_names_facts_received() -> None:
     document = pinned(**{"stages.plan.facts_received": FACTS_RECEIVED_IN_SCOPE})
-    with pytest.raises(ValidationError, match="names facts received exactly when it is pre-deploy"):
+    with pytest.raises(ValidationError, match="names facts received exactly when its checks read server facts"):
         CAR.model_validate(document, context=_READER)
 
 

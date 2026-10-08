@@ -60,7 +60,8 @@ def test_every_listed_reason_is_accepted_for_its_status(status: str, reason: str
 @pytest.mark.parametrize(
     ("status", "reason", "message"),
     [
-        ("pass", "plan_superseded", "not a reason for status 'pass'"),
+        ("pass", "redacted", "not a reason for status 'pass'"),
+        ("fail", "redacted", "not a reason for status 'fail'"),
         ("unknown", "evaluator_crash", "not a reason for status 'unknown'"),
         ("error", "redacted", "not a reason for status 'error'"),
         ("unknown", None, "needs a status_reason"),
@@ -153,15 +154,16 @@ def test_an_editable_contract_install_may_have_no_digest() -> None:
     )
 
 
+@pytest.mark.parametrize("stage", ["pre_deploy", "runtime"])
 @pytest.mark.parametrize("source", ["server", "local_file", "none"])
-def test_a_pre_deploy_check_says_where_its_server_facts_came_from(source: str) -> None:
-    AssuranceEvent.model_validate(_event(**{"evaluation.stage": "pre_deploy", "provenance.facts_source": source}))
+def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(stage: str, source: str) -> None:
+    AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": source}))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
-        AssuranceEvent.model_validate(_event(**{"evaluation.stage": "pre_deploy", "provenance.facts_source": None}))
+        AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": None}))
 
 
-@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify", "runtime"])
-def test_only_a_pre_deploy_check_names_a_facts_source(stage: str) -> None:
+@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify"])
+def test_a_check_at_a_stage_that_reads_no_server_facts_names_no_facts_source(stage: str) -> None:
     AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage}))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
         AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": "server"}))
@@ -194,3 +196,8 @@ def test_an_executor_in_an_unnamed_ci_system_is_refused(provider: str) -> None:
 
 def test_the_status_order_ranks_every_status_once() -> None:
     assert sorted(STATUS_SEVERITY) == sorted(get_args(Status))
+
+
+@pytest.mark.parametrize("source", ["server_bundle", "local", "custom_rego", "contract_starter"])
+def test_a_check_names_where_its_assertion_came_from(source: str) -> None:
+    AssuranceEvent.model_validate(_event(**{"provenance.assertion_source": source}))

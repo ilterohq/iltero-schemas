@@ -20,6 +20,8 @@ from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKin
 ALWAYS = frozenset({"evaluation", "context", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
+# The parts only the server holds. A stage whose input may carry one reads server facts.
+SERVER_FACTS = frozenset({"evaluations", "approvals", "exceptions"})
 
 
 @dataclass(frozen=True)
@@ -40,9 +42,7 @@ class Profile:
 
 
 PLAN_RESOURCE = Profile("plan_resource", ALWAYS | _SOURCE | _CHANGE, frozenset())
-PRE_DEPLOY_CHANGE = Profile(
-    "pre_deploy_change", ALWAYS | _SOURCE | _CHANGE | {"evaluations", "approvals", "exceptions"}, frozenset()
-)
+PRE_DEPLOY_CHANGE = Profile("pre_deploy_change", ALWAYS | _SOURCE | _CHANGE | SERVER_FACTS, frozenset())
 POST_DEPLOY = Profile("post_deploy", ALWAYS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
 VERIFICATION = Profile("verification", ALWAYS | {"subject", "deployment"}, _SOURCE | {"verification", "assurance"})
 RUNTIME = Profile("runtime", ALWAYS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
@@ -60,6 +60,11 @@ PROFILES: dict[tuple[Stage, TargetKind], Profile] = {
     (stage, kind): (_BY_STAGE[stage].with_resource() if kind is TargetKind.RESOURCE else _BY_STAGE[stage])
     for _type, stage, kind in VALID_COMBINATIONS
 }
+
+
+def reads_server_facts(stage: Stage) -> bool:
+    """Whether an input at ``stage`` may carry facts only the server holds."""
+    return any(profile.roots & SERVER_FACTS for (at, _kind), profile in PROFILES.items() if at is stage)
 
 
 def profile_for(stage: Stage, target_kind: TargetKind) -> Profile:

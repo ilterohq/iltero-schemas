@@ -40,13 +40,17 @@ def test_a_units_file_path_stays_inside_the_project() -> None:
 
 
 @pytest.mark.parametrize(
-    ("units", "message"),
-    [([{"unit": "root", "plan": {}}], "digest"), ([], "at least 1")],
-    ids=["a unit with no plan digest", "no unit"],
+    ("change", "message"),
+    [
+        ({"digest": None, "unit": {"name": "root", "plan": {}}}, "digest"),
+        ({"digest": None}, "unit"),
+        ({"digest": None, "units": [{"name": "root", "plan": {"digest": "sha256:" + "4" * 64}}]}, "unit"),
+    ],
+    ids=["a unit with no plan digest", "no unit", "a list of units"],
 )
-def test_a_change_names_one_unit_with_its_plan_digest(units: list[object], message: str) -> None:
+def test_a_change_names_one_unit_with_its_plan_digest(change: dict[str, object], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
-        Change.model_validate({"digest": None, "units": units})
+        Change.model_validate(change)
 
 
 @pytest.mark.parametrize("path", ["infra/teams/x/stacks/y/.iltero/units.json", "my stack/units.json"])

@@ -8,8 +8,8 @@ verified.
 
 Each stage of a pinned record names the CI job the server verified for it, and
 its access window: when the server said it issued the stage's run token and
-when the token expires. Its pre-deploy stage keeps the envelope of the facts
-the server served, and every pre-deploy check read them. Its plan and
+when the token expires. Each stage that reads server facts keeps the envelope
+of the facts the server served, and every check of it read them. Its plan and
 pre-deploy gates run in the pinned gate mode. It also says how the tool
 checked the job it ran in against that verified job (``job_check``), which is
 the tool's own claim. The
@@ -23,8 +23,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.stages import ADVISORY_STAGES
+from iltero_schemas.profiles import reads_server_facts
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
@@ -85,7 +85,7 @@ def _check_pinned(car: CAR, pins: RunPins) -> None:
     if any(e.provenance.assertion_source != "server_bundle" for e in car.events):
         raise ValueError("every check in a pinned record is of an assertion from the server's bundle")
     if any(e.provenance.facts_source == "local_file" for e in car.events):
-        raise ValueError("a pinned record's pre-deploy checks read no facts from a local file")
+        raise ValueError("a pinned record's checks read no facts from a local file")
     for stage, record in car.stages.items():
         if record.coverage.substituted_inputs:
             raise ValueError(f"stages.{stage.value}: a stage of a pinned record read no placeholder for an input")
@@ -131,13 +131,18 @@ def _check_ci_identities(car: CAR) -> None:
 
 
 def _check_facts_received(car: CAR, pins: RunPins) -> None:
-    """A pinned pre-deploy stage names the facts it received, issued for this stack, environment and change."""
+    """A pinned stage that reads server facts names the facts it received, issued for this run, stage, stack,
+    environment and change."""
     for stage, record in car.stages.items():
         received = record.facts_received
-        if (received is not None) != (stage is Stage.PRE_DEPLOY):
-            raise ValueError(f"stages.{stage.value}: a pinned stage names facts received exactly when it is pre-deploy")
+        if (received is not None) != reads_server_facts(stage):
+            raise ValueError(
+                f"stages.{stage.value}: a pinned stage names facts received exactly when its checks read server facts"
+            )
         if received is None:
             continue
+        if received.stage != stage.value:
+            raise ValueError(f"stages.{stage.value}: the facts received were issued for the stage that names them")
         scope = received.scope
         if (scope.stack_id, scope.environment) != (pins.stack_id, pins.environment):
             raise ValueError("the facts received were issued for the stack and environment the run was pinned to")
@@ -145,6 +150,5 @@ def _check_facts_received(car: CAR, pins: RunPins) -> None:
             raise ValueError("the facts received were issued for no change, or for the change the record names")
         if received.run_id != car.run_id.value:
             raise ValueError("the facts received were issued for the record's run")
-        pre_deploy = [e for e in car.events if e.evaluation.stage is Stage.PRE_DEPLOY]
-        if any(e.provenance.facts_source == "none" for e in pre_deploy):
-            raise ValueError("every pre-deploy check of a pinned record read the facts the server served")
+        if any(e.provenance.facts_source == "none" for e in car.events if e.evaluation.stage is stage):
+            raise ValueError(f"stages.{stage.value}: every check of a pinned stage read the facts the server served")

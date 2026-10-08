@@ -306,8 +306,8 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
 
 
 def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
-    units = RECORD["change"]["units"]
-    change_digest_value = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    unit = RECORD["change"]["unit"]
+    change_digest_value = change_digest({unit["name"]: unit["plan"]["digest"]})
     with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
     with pytest.raises(ValidationError, match="names the change digest"):
         CAR.model_validate(with_stage, context=_READER)
@@ -329,8 +329,8 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
 
 
 def test_an_offline_record_has_no_facts_from_the_server() -> None:
-    units = RECORD["change"]["units"]
-    digest = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    unit = RECORD["change"]["unit"]
+    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
     pre_deploy = _stage("pre_deploy", **{"coverage.subjects_in_scope.source_digest": digest})
     event = _moved_event(-1, "pre_deploy")
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
@@ -350,9 +350,9 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
 
 
 def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
-    units = RECORD["change"]["units"]
+    unit = RECORD["change"]["unit"]
     with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    with_stage["change"]["digest"] = change_digest({unit["unit"]: unit["plan"]["digest"] for unit in units})
+    with_stage["change"]["digest"] = change_digest({unit["name"]: unit["plan"]["digest"]})
     with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
     with pytest.raises(ValidationError, match="counts the change the record names"):
         CAR.model_validate(with_stage, context=_READER)

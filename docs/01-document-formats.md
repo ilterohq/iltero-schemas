@@ -79,7 +79,7 @@ Key rules:
 - A path's first segment must be a part of the [assurance context](#assurancecontext) that the stage provides.
 - A comparison between values of different types is false, never an error. `null` is not accepted as an operand.
 - A check whose value is missing, hidden or not yet known is `unknown`, with a reason: `path_missing`, `redacted`,
-  `not_a_list`, or the reason the value's marker carries (`known_after_apply`, or `unspecified` when it carries
+  `not_a_list`, or the reason the value's marker carries (`known_after_deploy`, or `unspecified` when it carries
   none). `all`, `any`, `not` and `exists` follow three-valued logic. The assertion's result is `not_applicable`,
   `unknown`, `pass` or `fail`.
 - Limits: a document of at most 256 KiB, nested at most 32 levels; at most 128 checks, nested at most 8 levels, and
@@ -191,10 +191,10 @@ who produced it and to reproduce it.
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the limits applied (`environment`, including `capabilities_digest`). For a scanner (`checkov`, `trivy` or `prowler`): its reported `version`, a `digest` when known, and `basis: not_executed_by_cli`. |
 | `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`) and `digest`. Present exactly when the evaluator is `opa`. |
 | `binding` | The evaluator binding that let a scanner's result stand for the assertion. Present exactly when the evaluator is a scanner. |
-| `assertion_source`, `assertion_source_digest` | Where the assertion came from (`server_bundle`, `local` or `custom_rego`), and its source digest. |
+| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: the Iltero Cloud bundle. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `facts_source` | For a `pre_deploy` check, where the Iltero Cloud facts came from: `server`, `local_file` or `none`. `null` at every other stage. |
+| `facts_source` | For a check at a stage whose input may carry Iltero Cloud facts (approvals, exceptions, earlier evaluations: `pre_deploy` and `runtime`), where they came from: `server`, `local_file` or `none`. `null` at every other stage. |
 | `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 
 Key rules:
@@ -205,8 +205,8 @@ Key rules:
   | Status | Reasons |
   | --- | --- |
   | `pass` | none |
-  | `fail` | none, or `plan_superseded` (the applied plan is not the evaluated plan) |
-  | `unknown` | `known_after_apply`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `reference_time_untrusted`, `apply_log_incomplete` |
+  | `fail` | none: a failure's reason is the policy's `reason` |
+  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `reference_time_untrusted`, `deployment_log_incomplete` |
   | `not_applicable` | `when_guard_excluded`, `no_subject_in_scope` |
   | `not_evaluated` | `scanner_not_run`, `credential_denied`, `resource_type_unsupported`, `binding_unverified`, `timeout`, `subject_unresolved`, `evaluator_unavailable`, `identity_unverified`, `stage_not_run` |
   | `error` | `evaluator_crash`, `evaluator_timeout`, `evaluator_memory_cap`, `output_overflow`, `output_contract_violation`, `adapter_parse_failure`, `bundle_verification_failed`, `compile_failure` |
@@ -245,7 +245,7 @@ with a regulatory framework.
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` when the record has `pins`, `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
-| `change` | object | The record's own unit with its plan `digest` (a change covers one unit), and the change `digest` once the pre-deploy stage fixes it. |
+| `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
 | `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the envelope of the facts it received from Iltero Cloud (`facts_received`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
@@ -298,21 +298,21 @@ Key rules:
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
   `advisory`. In a record of a run Iltero Cloud opened, it is the pinned policy's `gate_mode`; otherwise it is the
   tool's choice. It is the writer's claim; only the CI job's own result shows what the pipeline did.
-- A pre-deploy stage of a record of a run Iltero Cloud opened names `facts_received`: the facts document's
-  `api_version` (`iltero.io/assurance-facts/v1`), the `run_id` and `stage` it was issued for (the record's run,
-  `pre_deploy`), `issued_at`, `scope` (`stack_id` and `environment` of the pins, and `change_digest`, `null` when the
-  facts name no change, or the record's), and `digest`: `iltero_schemas.canonical.digest_of` of the whole facts
-  document as parsed from the response body, every member as received. A body that repeats a member name, or is not
-  I-JSON (RFC 7493), is refused before it is digested. Every pre-deploy check of such a record read those facts
-  (`facts_source: server`). The envelope holds none of the facts themselves, so it proves nothing about an approval;
-  it is the writer's copy, and only Iltero Cloud's own log of what it served confirms it. No other stage, and no
-  record of a run the tool opened, names one.
+- In a record of a run Iltero Cloud opened, each stage whose checks read Iltero Cloud facts names `facts_received`:
+  the facts document's `api_version` (the kind the facts document named, such as `iltero.io/assurance-facts/v1`), the
+  `run_id` and `stage` it was issued for (the record's run, and the stage that names it), `issued_at`, `scope`
+  (`stack_id` and `environment` of the pins, and `change_digest`, `null` when the facts name no change, or the
+  record's), and `digest`: `iltero_schemas.canonical.digest_of` of the whole facts document as parsed from the
+  response body, every member as received. A body that repeats a member name, or is not I-JSON (RFC 7493), is refused
+  before it is digested. Every check of such a stage read those facts (`facts_source: server`). The envelope holds
+  none of the facts themselves, so it proves nothing about an approval; it is the writer's copy, and only Iltero
+  Cloud's own log of what it served confirms it. No other stage, and no record of a run the tool opened, names one.
 - A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
-  `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, its configuration address (module
-  path and data source, with no instance key). A stage lists at most 256, sorted by `source` by Unicode code point; a
-  record lists at most 256 across its stages. Its verdict still follows its checks, and it is `incomplete` with reason
-  `upstream_state_unavailable`; an evaluator error's reason wins when there is one. A record of a run Iltero Cloud
-  opened lists none.
+  `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
+  a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
+  by `source` by Unicode code point; a record lists at most 256 across its stages. Its verdict still follows its
+  checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
+  is one. A record of a run Iltero Cloud opened lists none.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
@@ -327,8 +327,8 @@ Key rules:
   pipeline trust, checked for each stage on its own. A record without `pins` names no Iltero Cloud bundle and no facts
   from Iltero Cloud.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`). A record's change holds exactly one entry: its own unit with the plan it
-  names. A unit is planned, approved and applied on its own.
+  (`iltero_schemas.canonical.change_digest`), over the change's one unit. A record's `change.unit` is its own unit with
+  the plan it names. A unit is planned, approved and applied on its own.
 - A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
 - Across records: the records of one run share `run_id.value`, and every one of them names the same `units_file`, or
   every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.

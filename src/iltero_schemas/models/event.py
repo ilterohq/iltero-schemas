@@ -24,29 +24,35 @@ from iltero_schemas.compiler.limits import (
     REASON_MAX_BYTES,
     nesting_depth,
 )
-from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
+from iltero_schemas.models.assertion import (
+    ID_MAX_LENGTH,
+    ID_PATTERN,
+    VERSION_MAX_LENGTH,
+    VERSION_PATTERN,
+)
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.ci_identity import CiProvider
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
 from iltero_schemas.models.scanners import ScannerTool
+from iltero_schemas.profiles import reads_server_facts
 
 Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
 # Why a status is what it is; the runner sets it, a policy never does.
 STATUS_REASONS: dict[str, frozenset[str]] = {
     "pass": frozenset(),
-    # The applied plan is not the evaluated one.
-    "fail": frozenset({"plan_superseded"}),
+    # A failure's reason is the policy's own ``reason``; the runner adds none.
+    "fail": frozenset(),
     "unknown": frozenset(
         {
-            "known_after_apply",
+            "known_after_deploy",
             "redacted",
             "path_missing",
             "not_a_list",
             "unspecified",
             "server_facts_unavailable",
             "reference_time_untrusted",
-            "apply_log_incomplete",
+            "deployment_log_incomplete",
         }
     ),
     "not_applicable": frozenset({"when_guard_excluded", "no_subject_in_scope"}),
@@ -273,7 +279,7 @@ class Executor(StrictModel):
     run_id: Identifier | None
 
 
-# Where the facts document a pre-deploy check read came from: the server, a file given to the tool, or none.
+# Where the facts document a check read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
 
@@ -291,12 +297,14 @@ class Provenance(StrictModel):
     bundle: Bundle | None
     # Present exactly when a scanner's result was read for this check (see ``ScannerEvaluator``).
     binding: BindingRef | None
-    assertion_source: Literal["server_bundle", "local", "custom_rego"]
+    # Where the assertion came from: the server's bundle, the project's own files (``local``, hand-written Rego as
+    # ``custom_rego``), or a starter assertion this package ships (``contract_starter``). The writer's claim.
+    assertion_source: Literal["server_bundle", "local", "custom_rego", "contract_starter"]
     assertion_source_digest: Digest
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    # Present exactly for a pre_deploy check, the one stage that reads server facts.
+    # Present exactly for a check at a stage whose input may carry server facts (``profiles.reads_server_facts``).
     facts_source: FactsSource | None
     fs_hardening: Literal["posix", "windows_profile_acl", "none"]
 
@@ -319,8 +327,8 @@ class AssuranceEvent(StrictModel):
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
-        if (self.provenance.facts_source is not None) != (self.evaluation.stage == Stage.PRE_DEPLOY):
-            raise ValueError("facts_source is present exactly when the check ran at pre_deploy")
+        if (self.provenance.facts_source is not None) != reads_server_facts(self.evaluation.stage):
+            raise ValueError("facts_source is present exactly when the check's stage reads server facts")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
                 f"a check with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"

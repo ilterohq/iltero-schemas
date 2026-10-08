@@ -78,7 +78,7 @@
     }
   },
   {
-    "name": "known_after_apply",
+    "name": "known_after_deploy",
     "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
@@ -96,7 +96,7 @@
         "after": {
           "storage_encrypted": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         }
@@ -104,10 +104,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "resource.after.storage_encrypted: known_after_apply",
+      "reason": "resource.after.storage_encrypted: known_after_deploy",
       "unknown": {
         "path": "resource.after.storage_encrypted",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": null,
       "predicates": [
@@ -818,7 +818,7 @@
         "after": {
           "storage_encrypted": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "publicly_accessible": false,
@@ -922,7 +922,7 @@
         "after": {
           "storage_encrypted": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "publicly_accessible": true,
@@ -959,7 +959,7 @@
           "publicly_accessible": false,
           "backup_retention_period": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "instance_class": "db.r6g.large"
@@ -968,10 +968,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "resource.after.backup_retention_period: known_after_apply",
+      "reason": "resource.after.backup_retention_period: known_after_deploy",
       "unknown": {
         "path": "resource.after.backup_retention_period",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": "true"
     }
@@ -1002,7 +1002,7 @@
           "publicly_accessible": false,
           "backup_retention_period": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "instance_class": "db.r6g.large"
@@ -1180,7 +1180,7 @@
         "after": {
           "a": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "b": true
@@ -1213,7 +1213,7 @@
           "a": false,
           "b": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         }
@@ -1221,10 +1221,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "resource.after.b: known_after_apply",
+      "reason": "resource.after.b: known_after_deploy",
       "unknown": {
         "path": "resource.after.b",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": null
     }
@@ -1340,7 +1340,7 @@
         "after": {
           "a": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         }
@@ -1348,10 +1348,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "resource.after.a: known_after_apply",
+      "reason": "resource.after.a: known_after_deploy",
       "unknown": {
         "path": "resource.after.a",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": null
     }
@@ -1374,7 +1374,7 @@
         "after": {
           "a": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           },
           "b": false
@@ -1407,7 +1407,7 @@
           "a": true,
           "b": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         }
@@ -1415,10 +1415,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "resource.after.b: known_after_apply",
+      "reason": "resource.after.b: known_after_deploy",
       "unknown": {
         "path": "resource.after.b",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": null
     }
@@ -2637,7 +2637,7 @@
                   {
                     "port": {
                       "__unknown": true,
-                      "reason": "known_after_apply",
+                      "reason": "known_after_deploy",
                       "present": true
                     }
                   }
@@ -2650,10 +2650,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "item.port: known_after_apply",
+      "reason": "item.port: known_after_deploy",
       "unknown": {
         "path": "item.port",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": null
     }
@@ -2811,7 +2811,7 @@
         "related": [
           {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         ]
@@ -2893,7 +2893,7 @@
         "environment": {
           "name": {
             "__unknown": true,
-            "reason": "known_after_apply",
+            "reason": "known_after_deploy",
             "present": true
           }
         }
@@ -2906,10 +2906,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.name: known_after_apply",
+      "reason": "context.environment.name: known_after_deploy",
       "unknown": {
         "path": "context.environment.name",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": "unknown"
     }
@@ -3163,7 +3163,7 @@
           {
             "type": {
               "__unknown": true,
-              "reason": "known_after_apply",
+              "reason": "known_after_deploy",
               "present": true
             }
           }
@@ -3173,10 +3173,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "item.type: known_after_apply",
+      "reason": "item.type: known_after_deploy",
       "unknown": {
         "path": "item.type",
-        "reason": "known_after_apply"
+        "reason": "known_after_deploy"
       },
       "when": "unknown"
     }

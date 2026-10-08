@@ -20,7 +20,7 @@ def test_a_marker_is_written_back_under_its_marker_name() -> None:
     "value",
     [
         [],
-        {"__unknown": True, "reason": "known_after_apply"},
+        {"__unknown": True, "reason": "known_after_deploy"},
         {"__unknown": False, "reason": "server_facts_unavailable"},
         {"unknown": True, "reason": "server_facts_unavailable"},
         {**MARKER, "present": True},

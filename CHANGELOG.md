@@ -37,19 +37,17 @@ keep, so any two tools agree on what a record means.
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
-  `iltero_schemas.models.providers.aws` and `CI_PROVIDER` in
-  `iltero_schemas.models.providers.github_actions`.
+  `iltero_schemas.models.providers.aws`, and the CI systems an executor may
+  name in `iltero_schemas.models.event.CI_SYSTEMS`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
   Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
-  including a record of a run Iltero Cloud opened with a plan and a
-  including a record of a run Iltero Cloud opened with a plan and a
-  pre-deploy stage and the inputs its pre-deploy checks read, a passing
-  plan stage that read placeholders, an identity document with no
-  bindings, the identity documents that must be refused, and changed ones
-  that must still be accepted. The rules about bindings have no vector,
-  because a binding holds a cloud identifier this repository does not
-  publish.
+  including records of runs the tool opened (one of a project that declares
+  its units, one whose plan stage read placeholders), a record of a run
+  Iltero Cloud opened, an identity document with no bindings, the identity
+  documents that must be refused, and changed ones that must still be
+  accepted. The rules about bindings have no vector, because a binding holds
+  a cloud identifier this repository does not publish.
 - A record says who opened its run (`run_id.basis` and
   `governance.run_opened_by`), the same way everywhere. A record of a run
   the tool opened claims nothing only Iltero Cloud can give: no Iltero Cloud

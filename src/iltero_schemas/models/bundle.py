@@ -13,7 +13,7 @@ signed under two keys has one revision and two digests. ``digest`` is over
 the decoded tarball bytes, never over their base64 text.
 
 A bundle may hold more assertions than one run owes: ``assertion_set_digest``
-names everything in the bundle, and a run's own pins name the subset it owes.
+names everything in the bundle.
 """
 
 from __future__ import annotations

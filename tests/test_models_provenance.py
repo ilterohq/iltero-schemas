@@ -8,8 +8,9 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
-from tests.records import record, set_path
+from tests.records import record, set_path, stage
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
 SERVER_BUNDLE = {"kind": "server", "digest": "sha256:" + "5" * 64}
@@ -85,4 +86,26 @@ def test_a_record_of_a_run_the_tool_opened_has_no_checks_from_a_server_bundle() 
 def test_a_record_of_a_run_the_tool_opened_counts_its_checks_as_locally_derived() -> None:
     document = record(**{"stages.plan.coverage.assertions_expected.basis": "server_pinned"})
     with pytest.raises(ValidationError, match="server_pinned exactly when"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> None:
+    document = record()
+    event = document["events"][-1]
+    event["evaluation"]["stage"] = "pre_deploy"
+    event["subject"]["kind"] = "change"
+    event["provenance"]["facts_source"] = "server"
+    moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
+    del document["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]
+    unit = document["change"]["unit"]
+    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
+    document["change"]["digest"] = digest
+    document["stages"]["pre_deploy"] = stage(
+        "pre_deploy",
+        **{"coverage.subjects_per_assertion": {moved: 1}, "coverage.subjects_in_scope.source_digest": digest},
+    )
+    document["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
+    document["not_in_scope"] = [entry for entry in document["not_in_scope"] if entry["stage"] == "post_verify"]
+    document["complete"] = False
+    with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)

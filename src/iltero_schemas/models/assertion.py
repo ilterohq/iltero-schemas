@@ -136,8 +136,9 @@ class Metadata(_Strict):
         return self
 
 
-# A provider's short name, as an assertion and an evaluation input name it (``aws``).
-ProviderName = Annotated[str, Field(pattern=NAME_PATTERN, max_length=PROVIDER_MAX_LENGTH)]
+# A provider's short name, as an assertion and an evaluation input name it (``aws``, ``google-beta``).
+PROVIDER_PATTERN = r"^[a-z][a-z0-9_-]*$"
+ProviderName = Annotated[str, Field(pattern=PROVIDER_PATTERN, max_length=PROVIDER_MAX_LENGTH)]
 
 
 class KindSelector(_Strict):

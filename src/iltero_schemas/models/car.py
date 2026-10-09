@@ -308,7 +308,7 @@ class Integrity(StrictModel):
     signature: None
 
 
-class Subject(StrictModel):
+class RecordSubject(StrictModel):
     """What the record is about: the change, in an environment, of one unit, from one commit."""
 
     kind: Literal["change"]
@@ -363,7 +363,7 @@ class CAR(StrictModel):
     compliance_determination: None
     issuer: Issuer
     governance: Governance
-    subject: Subject
+    subject: RecordSubject
     change: Change
     # The project's units file; null for a project that declares none.
     units_file: UnitsFile | None

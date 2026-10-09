@@ -8,8 +8,6 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [AssuranceContext](#assurancecontext)
 - [AssuranceEvent](#assuranceevent)
 - [Change Assurance Record (CAR)](#change-assurance-record-car)
-  - [Run pins](#run-pins)
-  - [CI identity](#ci-identity)
 - [VerificationReport](#verificationreport)
 - [IdentityBindings](#identitybindings)
 - [Attestation](#attestation)
@@ -128,7 +126,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | --- | --- | --- |
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
-| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether the pinned policy treats it as production, or the unknown marker when the run has no pins. |
+| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Cloud's policy treats it as production, or the unknown marker in a run Iltero Cloud did not open. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`) and `trust` (`attested`, `corroborated` or `asserted`). |
 | `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `action`, `module`), and the change `digest` once known. |
@@ -163,9 +161,9 @@ Key rules:
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
   value not yet known is `{"__unknown": true, "reason": ..., "present": true}`. A check that reaches either is
   `unknown`.
-- `context.environment.production` comes from the run's pins (`pins.policy.production`). A run Iltero Cloud did not
-  open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never `false`: a run without the
-  server never silently skips a production check.
+- `context.environment.production` comes from Iltero Cloud's policy for the run's environment. A run Iltero Cloud did
+  not open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never `false`: a run without
+  the server never silently skips a production check.
 - A fact Iltero Cloud could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
   never an empty list. A check that reads it is `unknown`, never `fail`.
 - The context holds no evaluator version, bundle digest or provenance.
@@ -241,17 +239,16 @@ with a regulatory framework.
 | `apiVersion` | string | `iltero.io/car/v1`. |
 | `uuid` | UUID | The record's id. |
 | `run_id` | object | The run's `value` (UUID) and `basis` (`server_issued` or `locally_derived`). |
-| `pins` | object or null | For a run Iltero Cloud opened, the [run pins](#run-pins). `null` for a run the tool opened on its own. |
 | `unit` | identifier | The unit the record covers. |
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `issuer` | object | `type: local` and `identity_verified: false`. |
-| `governance` | object | `run_opened_by`: `server` when the record has `pins`, `local` otherwise. |
+| `governance` | object | `run_opened_by`: `server` for a run Iltero Cloud issued (`run_id.basis: server_issued`), `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the CI job Iltero Cloud verified (`ci_identity`), the stage's access window, the period its run token is valid (`access_window`: `issued_at`, Iltero Cloud's time in the answer that issued the stage's run token, a short-lived credential for one stage, and `expires_at`, when that token expires; it is not a change or maintenance window, says nothing about approval of the change, and holds no credential), how the tool checked the job it ran in against that CI job (`job_check`), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the envelope of the facts it received from Iltero Cloud (`facts_received`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -301,23 +298,14 @@ Key rules:
 - `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
-  `advisory`. In a record of a run Iltero Cloud opened, it is the pinned policy's `gate_mode`; otherwise it is the
-  tool's choice. It is the writer's claim; only the CI job's own result shows what the pipeline did.
-- In a record of a run Iltero Cloud opened, each stage whose checks read Iltero Cloud facts names `facts_received`:
-  the facts document's `api_version` (the kind the facts document named, such as `iltero.io/assurance-facts/v1`), the
-  `run_id` and `stage` it was issued for (the record's run, and the stage that names it), `issued_at`, `scope`
-  (`stack_id` and `environment` of the pins, and `change_digest`, `null` when the facts name no change, or the
-  record's), and `digest`: `iltero_schemas.canonical.digest_of` of the whole facts document as parsed from the
-  response body, every member as received. A body that repeats a member name, or is not I-JSON (RFC 7493), is refused
-  before it is digested. Every check of such a stage read those facts (`facts_source: server`). The envelope holds
-  none of the facts themselves, so it proves nothing about an approval; it is the writer's copy, and only Iltero
-  Cloud's own log of what it served confirms it. No other stage, and no record of a run the tool opened, names one.
+  `advisory`. In a run Iltero Cloud opened, Iltero Cloud's policy sets it; otherwise it is the tool's choice. It is
+  the writer's claim; only the CI job's own result shows what the pipeline did.
 - A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
   `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
   a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
   by `source` by Unicode code point; a record lists at most 256 across its stages. Its verdict still follows its
   checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
-  is one. A record of a run Iltero Cloud opened lists none.
+  is one.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
@@ -325,12 +313,10 @@ Key rules:
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
-- A record with `pins` agrees with them: its environment, the bundle every stage and check names, the pinned
-  assertions, and a `ci_identity` on every stage from the same CI system, issuer, repository and commit. Each stage
-  names the CI job it ran in. The contract neither requires nor forbids two stages naming the same job: a pipeline may
-  run every stage in one job, or give stages jobs of their own. What a stage's job must satisfy is Iltero Cloud's
-  pipeline trust, checked for each stage on its own. A record without `pins` names no Iltero Cloud bundle and no facts
-  from Iltero Cloud.
+- A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Cloud bundle, no check from one,
+  and no facts from Iltero Cloud. A record of a run Iltero Cloud opened says so everywhere: `run_id.basis:
+  server_issued`, `governance.run_opened_by: server`, and every stage counts its checks as `server_pinned`. Either way
+  the record is the writer's own: only Iltero Cloud can confirm a run it opened, by its `run_id`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`), over the change's one unit. A record's `change.unit` is its own unit with
   the plan it names. A unit is planned, approved and applied on its own.
@@ -339,95 +325,14 @@ Key rules:
   every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.
   The units file is the writer's copy: records cannot show a run with no record at all, or a units file the writer
   left out or shortened. Only the file at the record's commit can, by its digest.
-- A stage names `access_window` exactly when it names `ci_identity`, from the same Iltero Cloud answer, and its
-  `expires_at` is after its `issued_at`. Both are the times Iltero Cloud gave in that answer, as the writer copied
-  them; only Iltero Cloud's own log confirms them. A stage's `observed_at` comes from the runner's clock, which may
-  differ, so it is not required to fall between them.
-- A stage names `job_check` exactly when it names `ci_identity`. It is the tool's own claim of how it checked the job
-  it ran in against the CI job Iltero Cloud verified: `compared` (Iltero Cloud named a job, the tool fetched the
-  identity token from the CI system itself, and that token names the same job; a tool that finds another job writes no
-  record), `not_given` (Iltero Cloud named a job, but the tool did not fetch the token itself because the job handed
-  it one, or could not read the job from the token it fetched) or `not_named` (Iltero Cloud's identity names no job).
-  In the last two, only the CI run and its attempt were compared. It is `not_named` exactly when the CI identity's job
-  is null. Iltero Cloud cannot confirm the field: no reader can tell `compared` from `not_given`; only `not_named` is
-  checked, against `ci_identity`. `compared` says where the token came from, not that two sources agree: Iltero Cloud
-  reads its job from that same token. Iltero Cloud's own record of the token is what ties it to a job.
 - A stage's `coverage.assertions_expected.required_assertion_digest` is the digest of the assertions it owed, whether
-  or not each was evaluated. For `basis: locally_derived`, as the project's files gave them. For
-  `basis: server_pinned`, the run's pinned assertions whose `spec.stage` is this stage: a part of the pins'
-  `required_assertions`, so it equals the pins' `required_assertion_digest` only when every pinned assertion belongs
-  to that one stage. The record's top-level digest, which combines the stages' digests, is not the pins' digest
-  either. A difference between these digests is not, by itself, a gap. The model does not recompute a stage's digest.
+  or not each was evaluated: as the project's files gave them (`basis: locally_derived`), or as Iltero Cloud set them
+  for the run (`basis: server_pinned`). The model does not recompute a stage's digest.
 - These rules establish consistency only. An unsigned record cannot prove that Iltero Cloud opened its run. Only
   Iltero Cloud can confirm a run, by its `run_id`.
 - `compiler.contract_digest` is the SHA-256 over the sorted `path,hash` lines of the wheel's `RECORD` entries for the
   package's own files. `iltero_schemas.distribution.installed_identity()` returns it for the installed package. An
   editable install has none.
-
-### Run pins
-
-A record of a run Iltero Cloud opened carries the run's pins (`pins`): what Iltero Cloud fixed when it opened the run.
-Model: `iltero_schemas.models.run.RunPins`.
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `stack_id`, `environment` | UUID, string | What the run is for. |
-| `bundle` | object | The signed assertion bundle, by `revision` (content digest) and `digest` (signed tarball). |
-| `required_assertions` | list | The assertions the run owes: 1 to 1024 entries of `id`, `version` and document `digest`, sorted by `id`, one version each. |
-| `required_assertion_digest` | digest | The digest of `required_assertions`. |
-| `policy` | object | The environment policy's `digest`, its `gate_mode` (`enforcing` or `advisory`) and `production`: `true` when Iltero Cloud classified the run's environment as production when it opened the run, `false` otherwise. |
-| `min_cli_version` | string | The oldest tool version that may evaluate the run, compared numerically part by part. |
-
-`required_assertion_digest` is the digest of the list of `[id, version, digest]` triples, sorted as text
-(`iltero_schemas.canonical.required_assertion_digest`).
-
-Iltero Cloud sets `production` from its own record of the environment; a client never sets it. A later change to the
-environment's classification does not change a run's pins. A record of a run the tool opened on its own has no pins,
-so it says nothing about production. The record is not signed, so its pins are the writer's copy of what Iltero Cloud
-fixed; only Iltero Cloud confirms them, by the run's `run_id`.
-
-### CI identity
-
-Each stage of a record of a run Iltero Cloud opened names the CI job Iltero Cloud verified for it (`ci_identity`), as
-Iltero Cloud reported it. The record is not signed, so this is the writer's copy of that report. Each CI system has one
-shape, chosen by `provider`. Model: `iltero_schemas.models.ci_identity.CiIdentity`.
-
-For `github_actions` (`iltero_schemas.models.providers.github_actions.GithubActionsIdentity`), the fields are the
-claims of the job's identity token:
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `provider` | string | `github_actions`. |
-| `issuer` | string | The token issuer, an `https` URL. |
-| `subject` | string | The CI system's own name for the job, such as `repo:acme/app:environment:production`. |
-| `repository` | string | `owner/name`. |
-| `repository_id`, `repository_owner_id` | string | The ids of the repository and its owner. They stay the same when either is renamed. |
-| `workflow_ref`, `job_workflow_ref` | string | The workflow the run started from, and the workflow file that ran the job, as `owner/name/path@ref`. |
-| `job_workflow_commit` | commit | The commit of the workflow file that ran the job. |
-| `ref`, `commit` | string, commit | The Git reference and commit the job ran on. |
-| `event` | string | What started the CI run, such as `push`. |
-| `actor`, `actor_id` | string, string or null | The account that started the run (the token's `actor` and `actor_id` claims), by its login and its id (a decimal number). The id stays the same when the account is renamed, and a login may later name a different account, so accounts are compared by `actor_id`; `actor` is for display. `actor_id` is `null` only when the token does not carry it. |
-| `environment` | string or null | The deployment environment the job ran in. |
-| `ci_run_id`, `ci_run_attempt` | string | The CI run and its attempt, as decimal numbers. Every job of one run attempt shares both. |
-| `ci_job_id` | string or null | The job that asked for the identity token, as a decimal number (GitHub's `check_run_id` claim). `null` only when the token does not carry it: for example, a GitHub Enterprise Server that does not issue it. |
-| `runner_environment` | string or null | `github-hosted` or `self-hosted`. |
-
-Key rules:
-
-- No value may contain a JSON Web Token.
-- `actor` is the account that started the run. It is not necessarily the commit's author or the change's approver. For a
-  scheduled run it is the account GitHub associates with the schedule, usually the one that last changed it. It may be
-  a bot account such as `dependabot[bot]`. It does not show that the approver and the author differ.
-- The account that asked for a re-run is not in the identity token, so on a re-run (`ci_run_attempt` above 1) `actor`
-  may name the account that started the first attempt, and the record does not name who asked for the re-run.
-- `actor` and `actor_id` identify a person when the account belongs to one. A record keeps them as long as it is
-  kept, and they cannot be removed without changing the record's digest.
-- The stages of one record share `provider`, `issuer`, `commit` and the source: for `github_actions`, `repository_id`
-  and `repository_owner_id`. The commit is the record's `subject.source.commit.sha`.
-- The validating model of each variant offers `job_key()`, which names the job in one shape for every CI system
-  (`iltero_schemas.models.ci_job.JobKey`): `provider`, `run_id`, `attempt` (an integer, from `ci_run_attempt`) and
-  `job_id` (or `None`). Keys compare only for equality, and a `job_id` of `None` names no job, so it never matches
-  one: compare `job_id` only when both sides name a job.
 
 ## VerificationReport
 
@@ -641,7 +546,7 @@ with the module in the tarball before it runs anything.
 Key rules:
 
 - The same content signed under two keys has one `revision` and two `digest` values.
-- `assertion_set_digest` names everything in the bundle. A run's pins name the subset the run owes.
+- `assertion_set_digest` names everything in the bundle.
 - The signing key must be in the trusted keys and must not be revoked.
 
 ## Trusted bundle keys

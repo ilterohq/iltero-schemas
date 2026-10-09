@@ -351,24 +351,6 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
     assert result["observations"]["when"] == expected["when"]
 
 
-def test_the_two_stage_records_pre_deploy_results_are_what_the_evaluator_returns_over_its_inputs(
-    opa: Path, capabilities: Path
-) -> None:
-    record = json.loads((VECTORS / "records" / "governed_two_stage.json").read_text(encoding="utf-8"))
-    checks = {e["provenance"]["input_digest"]: e for e in record["events"] if e["evaluation"]["stage"] == "pre_deploy"}
-    for path in sorted((VECTORS / "contexts").glob("governed_two_stage_*.json")):
-        context = json.loads(path.read_text(encoding="utf-8"))
-        event = checks[digest_of(context)]
-        assertion = event["assertion"]["id"]
-        result = _evaluate(opa, capabilities, COMPILER / f"{assertion}.rego", package_of(assertion), context)
-        recorded = event["evaluation"]
-        assert (result["status"], result["reason"], result["observations"]) == (
-            recorded["status"],
-            recorded["reason"],
-            recorded["observations"],
-        )
-
-
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)
 def test_the_scenario_assertions_pass_on_the_context_vector(opa: Path, capabilities: Path, assertion_id: str) -> None:
     context = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))

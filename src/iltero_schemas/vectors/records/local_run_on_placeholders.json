@@ -1035,7 +1035,6 @@
     "basis": "locally_derived",
     "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
-  "pins": null,
   "stages": {
     "plan": {
       "assertions": {
@@ -1069,11 +1068,7 @@
         },
         "reason": null
       },
-      "ci_identity": null,
-      "access_window": null,
-      "job_check": null,
       "enforcement": "enforcing",
-      "facts_received": null,
       "redaction_applied": {
         "allowed": [],
         "policy": {

@@ -1,6 +1,4 @@
 {
-  "governed_two_stage_production_approved.json": "sha256:d69a995cf2adc79034c3338e882e9bca8620ee2d7632205bd5f1135d40c5a0b4",
-  "governed_two_stage_sensitive_change_approved.json": "sha256:b7d2be88a814dd9db23e6e3024f8d6423af711b4041da47f36aa2a64f7018889",
   "plan_resource.json": "sha256:74fa25e47155685e429e2ab7d06f7383e391ab6dd90bb8e1aa00dcb798d8964e",
   "post_deploy.json": "sha256:fc81eba63b38e654520800a780e035ae8765416e0dd0e080be3d63ec864ba7a4",
   "pre_deploy_change.json": "sha256:8436193daa177d2cdd033f82a5570c652f987d06de3076607dbc589caeccdad0"

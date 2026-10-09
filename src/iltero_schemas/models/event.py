@@ -13,7 +13,7 @@ it and are refused if present.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, get_args
 
 from pydantic import AfterValidator, Field, model_validator
 
@@ -31,7 +31,6 @@ from iltero_schemas.models.assertion import (
     VERSION_PATTERN,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.ci_identity import CiProvider
 from iltero_schemas.models.context import Authority, Identity
 from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
 from iltero_schemas.models.scanners import ScannerTool
@@ -268,7 +267,10 @@ class Compiler(StrictModel):
 
 # Where an evaluation ran: on a person's machine (``local``), in a job of a CI system the tool could not
 # name (``ci``), or in a job of a named CI system.
-ExecutorProvider = Literal["local", "ci"] | CiProvider
+# The CI systems an executor may name; a new CI system adds its name here.
+CiSystem = Literal["github_actions"]
+CI_SYSTEMS: tuple[str, ...] = get_args(CiSystem)
+ExecutorProvider = Literal["local", "ci"] | CiSystem
 
 
 class Executor(StrictModel):

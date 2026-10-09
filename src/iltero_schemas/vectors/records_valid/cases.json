@@ -1,66 +1,5 @@
 [
   {
-    "name": "governed_environment_not_production",
-    "vector": "governed_run.json",
-    "set": {
-      "/pins/policy/production": false
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_stage_observed_outside_its_token_window",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/observed_at": "2026-09-22T12:59:00.000Z"
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_ci_token_without_a_job_id",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/ci_identity/ci_job_id": null,
-      "/stages/plan/job_check": "not_named"
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_token_valid_for_one_nanosecond",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/access_window": {
-        "issued_at": "2026-09-22T12:59:58.000000001Z",
-        "expires_at": "2026-09-22T12:59:58.000000002Z"
-      }
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_job_not_checked_against_a_fetched_token",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/job_check": "not_given"
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_run_started_by_a_bot_account",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/ci_identity/actor": "dependabot[bot]",
-      "/stages/plan/ci_identity/actor_id": "49699333"
-    },
-    "remove": []
-  },
-  {
-    "name": "governed_ci_token_without_an_actor_id",
-    "vector": "governed_run.json",
-    "set": {
-      "/stages/plan/ci_identity/actor_id": null
-    },
-    "remove": []
-  },
-  {
     "name": "local_plan_that_read_a_placeholder_for_upstream_state",
     "vector": "local_run.json",
     "set": {
@@ -100,10 +39,18 @@
     "remove": []
   },
   {
-    "name": "pre_deploy_facts_for_no_change",
-    "vector": "governed_two_stage.json",
+    "name": "record_of_a_run_the_server_opened",
+    "vector": "local_run.json",
     "set": {
-      "/stages/pre_deploy/facts_received/scope/change_digest": null
+      "/run_id/basis": "server_issued",
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/basis": "server_pinned",
+      "/events/0/provenance/run/basis": "server_issued",
+      "/events/1/provenance/run/basis": "server_issued",
+      "/events/2/provenance/run/basis": "server_issued",
+      "/events/3/provenance/run/basis": "server_issued",
+      "/events/4/provenance/run/basis": "server_issued",
+      "/coverage/assertions_expected/basis": "server_pinned"
     },
     "remove": []
   }

@@ -9,8 +9,8 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.ci_identity import CI_PROVIDERS
 from iltero_schemas.models.event import (
+    CI_SYSTEMS,
     NO_EVALUATOR_REASONS,
     POLICY_STATUSES,
     STATUS_REASONS,
@@ -183,7 +183,7 @@ def test_an_event_names_no_ci_context() -> None:
         AssuranceEvent.model_validate(document)
 
 
-@pytest.mark.parametrize("provider", ["local", "ci", *CI_PROVIDERS])
+@pytest.mark.parametrize("provider", ["local", "ci", *CI_SYSTEMS])
 def test_an_executor_ran_locally_or_in_a_ci_system(provider: str) -> None:
     AssuranceEvent.model_validate(_event(**{"provenance.executor.provider": provider}))
 

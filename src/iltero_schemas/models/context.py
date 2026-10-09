@@ -111,8 +111,8 @@ class Evaluation(StrictModel):
 class Environment(StrictModel):
     """The environment the change is for: its name, and whether the policy it runs under treats it as production.
 
-    ``production`` comes from the run's pins; a run with no pins cannot know it, so it holds the unknown marker
-    and a condition that reads it is ``unknown``, never false.
+    ``production`` comes from the server's policy for the environment; a run the server did not open cannot know
+    it, so it holds the unknown marker and a condition that reads it is ``unknown``, never false.
     """
 
     name: Identifier

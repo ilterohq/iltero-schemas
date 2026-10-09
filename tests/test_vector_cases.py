@@ -15,7 +15,6 @@ from pydantic import ValidationError
 
 from iltero_schemas.assertions import ASSERTIONS
 from iltero_schemas.bundle.build import member
-from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.identity import IdentityBindings
 from tests.conftest import VECTORS
@@ -82,22 +81,6 @@ def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
 def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     names = [case["name"] for case in cases]
     assert len(names) == len(set(names))
-
-
-def test_each_pre_deploy_check_of_the_two_stage_record_read_a_shipped_input_about_its_change() -> None:
-    record = json.loads((VECTORS / "records" / "governed_two_stage.json").read_text(encoding="utf-8"))
-    contexts = [
-        json.loads(path.read_text(encoding="utf-8"))
-        for path in sorted((VECTORS / "contexts").glob("governed_two_stage_*.json"))
-    ]
-    shipped = {digest_of(context): context for context in contexts}
-    checks = [event for event in record["events"] if event["evaluation"]["stage"] == "pre_deploy"]
-    assert len(shipped) == len(checks) == len(contexts)
-    for event in checks:
-        context = shipped[event["provenance"]["input_digest"]]
-        assert context["evaluation"]["assertion"]["id"] == event["assertion"]["id"]
-        assert context["change"]["digest"] == record["change"]["digest"]
-        assert context["plan"]["digest"] == record["plan"]["digest"]
 
 
 def test_every_check_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:

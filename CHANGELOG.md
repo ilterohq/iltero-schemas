@@ -37,41 +37,23 @@ keep, so any two tools agree on what a record means.
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
-  `iltero_schemas.models.providers.aws` and `CI_PROVIDER` in
-  `iltero_schemas.models.providers.github_actions`.
+  `iltero_schemas.models.providers.aws`, and the CI systems an executor may
+  name in `iltero_schemas.models.event.CI_SYSTEMS`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
   Terraform plan. Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
-  including a record of a run Iltero Cloud opened with a plan and a
-  including a record of a run Iltero Cloud opened with a plan and a
-  pre-deploy stage and the inputs its pre-deploy checks read, a passing
-  plan stage that read placeholders, an identity document with no
-  bindings, the identity documents that must be refused, and changed ones
-  that must still be accepted. The rules about bindings have no vector,
-  because a binding holds a cloud identifier this repository does not
-  publish.
-- A record of a run Iltero Cloud opened carries the run's pins, and agrees
-  with them: its environment, where its expected checks came from, and the
-  bundle every check was evaluated with. A record of a run the tool opened
-  claims nothing only Iltero Cloud can give: no Iltero Cloud bundle or check
-  from one, and no facts from Iltero Cloud. A pinned record's checks are all
-  of assertions from the Iltero Cloud bundle, and its pre-deploy checks read
-  no facts from a local file. Every event names the record's own run and
-  unit. These rules check that a record is consistent. They cannot prove
-  that Iltero Cloud opened the run. A pinned record names its commit, and
-  each of its stages names the CI job that Iltero Cloud said it verified.
-  Its stages share the same CI system, the same token issuer, the same
-  repository and the same commit. GitHub Actions identifies the repository
-  by its id and its owner's id. Each such stage also names its access window
-  (`access_window`), the period its run token is valid: Iltero Cloud's time
-  in the answer that issued the token, and when the token expires. These are
-  the writer's copy of Iltero Cloud's answer and say nothing about approval
-  of the change. Each such stage also says how the tool checked the job it
-  ran in against the verified job (`job_check`: `compared`, `not_given` or
-  `not_named`), as the tool's own claim. A stage of a run the tool opened
-  names none of these. A stage's assertion-set digest covers the pinned
-  assertions of that stage only, so it equals the pins' digest only when
-  every pinned assertion belongs to that one stage.
+  including records of runs the tool opened (one of a project that declares
+  its units, one whose plan stage read placeholders), a record of a run
+  Iltero Cloud opened, an identity document with no bindings, the identity
+  documents that must be refused, and changed ones that must still be
+  accepted. The rules about bindings have no vector, because a binding holds
+  a cloud identifier this repository does not publish.
+- A record says who opened its run (`run_id.basis` and
+  `governance.run_opened_by`), the same way everywhere. A record of a run
+  the tool opened claims nothing only Iltero Cloud can give: no Iltero Cloud
+  bundle or check from one, and no facts from Iltero Cloud. Every event
+  names the record's own run and unit. Every record is self-attested: only
+  Iltero Cloud can confirm a run it opened, by its `run_id`.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release
@@ -80,24 +62,12 @@ keep, so any two tools agree on what a record means.
   the trusted-key history, builds reproducibly from hash-pinned tools, attests
   the build, and publishes through PyPI Trusted Publishing after a
   maintainer's approval.
-- The fields of a run's pins (stack, environment, bundle, checks owed,
-  environment policy, whether Iltero Cloud classified the environment as
-  production, oldest tool version) and of a stage's CI identity
-  (`ci_identity`: CI system, repository, workflows, branch, commit, event,
-  the account that started the run, environment, run, job and runner). The
-  job (`ci_job_id`) is null when the CI system's token does not carry it.
-  `job_key()` names the run, attempt and job in one shape for every CI
-  system.
 - The signed bundle's descriptor.
 - A stage counts its subjects by their kind: resources by enumerating the
-  plan, a change or a deployment as its one unit (`basis: change_unit`,
-  by the record's change digest, or `deployment_unit`). Every stage records
-  the mode its gate ran in (`enforcement`: `enforcing` or `advisory`; the
-  pinned mode in a run Iltero Cloud opened, and always enforcing after the
-  deployment). In a run Iltero Cloud opened, each stage whose checks read
-  Iltero Cloud facts keeps the envelope of the facts it received
-  (`facts_received`: kind, run, stage, issue time, scope and digest), and
-  every check of that stage read them.
+  plan, a change or a deployment as its one unit (`basis: change_unit`, by
+  the record's change digest, or `deployment_unit`). Every stage records the
+  mode its gate ran in (`enforcement`: `enforcing` or `advisory`, always
+  enforcing after the deployment).
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`: at most
   256, by the tool's address of the input, sorted). Its verdict still
@@ -112,11 +82,11 @@ keep, so any two tools agree on what a record means.
   units file as the writer read it (`units_file`: path, digest of its
   bytes, units in deploy order), and its unit is one of them, so the
   records of one run can be checked against it.
-- The evaluation input's environment says whether the pinned policy treats
-  it as production (`context.environment.production`), and the starter
-  assertions guard on that, not on the environment's name. A run without
-  pins holds the unknown marker there, so a production check is `unknown`,
-  never skipped.
+- The evaluation input's environment says whether Iltero Cloud's policy
+  treats it as production (`context.environment.production`), and the
+  starter assertions guard on that, not on the environment's name. A run
+  Iltero Cloud did not open holds the unknown marker there, so a production
+  check is `unknown`, never skipped.
 - The unknown marker: where a fact only Iltero Cloud holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A

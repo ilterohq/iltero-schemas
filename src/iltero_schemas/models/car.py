@@ -37,16 +37,12 @@ from typing import Annotated, Any, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
-from iltero_schemas.models.access_window import StageAccessWindow
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.change import Change, UnitsFile, check_change
-from iltero_schemas.models.ci_identity import CiIdentity
-from iltero_schemas.models.ci_job import JobCheck
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
-from iltero_schemas.models.facts import FactsReceived
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
     ArtifactDigestBasis,
@@ -63,8 +59,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
-from iltero_schemas.models.pins import check_pins
-from iltero_schemas.models.run import RunPins
+from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.stages import check_structure, derived_problems
 
@@ -263,19 +258,9 @@ class StageRecord(StrictModel):
     observed_at: Timestamp
     reference_time: dict[str, Any]
     ran: Ran
-    # The CI job the server verified for this stage; null for a run the tool opened on its own.
-    ci_identity: CiIdentity | None
-    # The server's time in the answer that issued this stage's run token, and the token's expiry, from the same
-    # answer as ci_identity; null exactly when ci_identity is.
-    access_window: StageAccessWindow | None
-    # How the tool checked the job it ran in against the verified job; the tool's own claim. Null exactly
-    # when ci_identity is.
-    job_check: JobCheck | None
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
-    # The envelope of the facts the stage received from the server; null unless it is a pinned pre-deploy stage.
-    facts_received: FactsReceived | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
     events: Written
@@ -367,9 +352,6 @@ class CAR(StrictModel):
     api_version: Literal["iltero.io/car/v1"] = Field(alias="apiVersion")
     uuid: Uuid
     run_id: RunId
-    # What the server fixed when it opened the run — the bundle, the checks owed, the environment policy
-    # and whether a failed check stops the pipeline — present exactly for a run the server issued.
-    pins: RunPins | None
     unit: Identifier
     trust_level: TrustLevel
     # Always null: a record never determines compliance with a framework. A view of a framework is built
@@ -429,7 +411,7 @@ class CAR(StrictModel):
             raise ValueError("the record's subject is its own unit")
         check_change(self.unit, self.plan.digest, self.change, self.units_file)
         self._check_identity()
-        check_pins(self)
+        check_provenance(self)
         # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.
         if not (info.context or {}).get(DERIVED_CHECKED_BY_READER):
             for where, problem in derived_problems(self):

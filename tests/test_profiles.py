@@ -11,7 +11,7 @@ from iltero_schemas.profiles import ALWAYS, PROFILES, profile_for
 # The documented table: which parts each stage provides, beyond the three every stage has.
 DOCUMENTED = {
     Stage.PLAN: {"source", "change", "plan", "subject"},
-    Stage.PRE_DEPLOY: {"source", "change", "plan", "subject", "evaluations", "approvals", "exceptions"},
+    Stage.PRE_DEPLOY: {"source", "change", "plan", "subject", "evaluations", "approvals", "exceptions", "run"},
     Stage.POST_DEPLOY: {"source", "change", "plan", "subject", "deployment"},
     Stage.POST_VERIFY: {"source", "subject", "deployment", "verification", "assurance"},
     Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},

@@ -17,9 +17,10 @@ from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import instant
+from iltero_schemas.profiles import reads_server_facts
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR
+    from iltero_schemas.models.car import CAR, StageRecord
 
 # How a stage counts its subjects, by their kind: resources by enumerating the plan, a change or a deployment as
 # its one unit. Only the plan stage enumerates the plan's resources.
@@ -58,6 +59,18 @@ LIFECYCLE = (Stage.PLAN, Stage.PRE_DEPLOY, Stage.POST_DEPLOY, Stage.POST_VERIFY)
 
 def _assertions_of(car: CAR, stage: Stage) -> set[str]:
     return {f"{e.assertion.id}@{e.assertion.version}" for e in car.events if e.evaluation.stage is stage}
+
+
+def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
+    """A stage lists the approvals its checks read, once each, each of this record's change or run."""
+    approvals = record.approvals or []
+    if len({approval.id for approval in approvals}) != len(approvals):
+        raise ValueError(f"the {stage.value} stage lists each approval once")
+    for approval in approvals:
+        subject = approval.subject
+        own = subject.digest == car.change.digest if subject.kind == "change" else subject.id == car.run_id.value
+        if not own:
+            raise ValueError(f"the {stage.value} stage lists only approvals of this record's change or run")
 
 
 def _check_plan_first(car: CAR) -> None:
@@ -138,6 +151,9 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage counts its scope as {basis or 'its own'}")
         if record.enforcement == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
+        if (record.approvals is not None) != reads_server_facts(stage):
+            raise ValueError(f"the {stage.value} stage lists approvals exactly when it reads server facts")
+        _check_approvals(car, stage, record)
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
     digest = car.change.digest
     if pre_deploy is not None and digest is not None and pre_deploy.coverage.subjects_in_scope.source_digest != digest:

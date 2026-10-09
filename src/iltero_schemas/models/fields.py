@@ -14,7 +14,14 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field
 
-from iltero_schemas.models.assertion import CONTROL_CHARACTERS, VERSION_MAX_LENGTH, VERSION_PATTERN
+from iltero_schemas.models.assertion import (
+    CONTROL_CHARACTERS,
+    ID_MAX_LENGTH,
+    ID_PATTERN,
+    VERSION_MAX_LENGTH,
+    VERSION_PATTERN,
+)
+from iltero_schemas.models.base import StrictModel
 
 # Every digest: ``sha256:`` and 64 lowercase hex digits.
 DIGEST_PATTERN = r"^sha256:[0-9a-f]{64}$"
@@ -131,3 +138,24 @@ MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), Aft
 ProjectPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_project_path)]
 # A unit's name as a units file declares it: lowercase letters, digits, "_" and "-", starting with a letter or digit.
 UnitName = Annotated[str, Field(pattern=r"^[a-z0-9_][a-z0-9_-]{0,63}$")]
+
+
+class Identity(StrictModel):
+    """One external name of a subject: a scheme, its value, and the scope the value is unique in."""
+
+    scheme: Identifier
+    value: Address
+    scope: dict[Identifier, Identifier] | None = None
+
+
+# What a check found. The runner's reason for it is kept apart, per status (see ``models.event``).
+Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
+
+AssertionId = Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
+
+
+class AssertionRef(StrictModel):
+    """An assertion by its id and version: enough for a rule to name itself, never its digest."""
+
+    id: AssertionId
+    version: Version

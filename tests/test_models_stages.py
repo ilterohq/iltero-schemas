@@ -397,3 +397,61 @@ def test_a_stages_checks_are_about_one_kind_of_subject_it_can_target(
 ) -> None:
     with pytest.raises(ValueError, match=message):
         scope_basis(stage, kinds)
+
+
+def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[str, Any]:
+    return {
+        "id": approval_id,
+        "actor": {"provider": "iltero", "id": "reviewer_1"},
+        "roles": ["security"],
+        "status": "approved",
+        "subject": subject,
+        "method": "iltero_review",
+        "independence": "independent",
+        "policy_version": None,
+        "timestamp": "2026-09-22T13:05:30.000Z",
+    }
+
+
+def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
+    """The record with a pre-deploy stage whose checks read ``approvals``, its change digest fixed."""
+    unit = RECORD["change"]["unit"]
+    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
+    document = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    document["change"]["digest"] = digest
+    stage = document["stages"]["pre_deploy"]
+    stage["coverage"]["subjects_in_scope"]["source_digest"] = digest
+    stage["approvals"] = list(approvals)
+    return document
+
+
+def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
+    digest = change_digest({RECORD["change"]["unit"]["name"]: RECORD["change"]["unit"]["plan"]["digest"]})
+    of_change = _approval({"kind": "change", "digest": digest})
+    of_run = _approval({"kind": "run", "id": RECORD["run_id"]["value"]}, "apr_0002")
+    CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("approvals", "message"),
+    [
+        ([_approval({"kind": "change", "digest": "sha256:" + "e" * 64})], "only approvals of this record's change"),
+        ([_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})], "only approvals of this"),
+        ([_approval({"kind": "run", "id": RECORD["run_id"]["value"]})] * 2, "lists each approval once"),
+    ],
+    ids=["another change", "another run", "listed twice"],
+)
+def test_a_stage_lists_no_approval_of_another_change_or_run_and_each_once(
+    approvals: list[dict[str, Any]], message: str
+) -> None:
+    with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(_pre_deploy_reading(*approvals), context=_READER)
+
+
+def test_only_a_stage_whose_input_carries_approvals_lists_them() -> None:
+    with pytest.raises(ValidationError, match="the plan stage lists approvals exactly when"):
+        CAR.model_validate(_record(**{"stages.plan.approvals": []}), context=_READER)
+    document = _pre_deploy_reading()
+    document["stages"]["pre_deploy"]["approvals"] = None
+    with pytest.raises(ValidationError, match="the pre_deploy stage lists approvals exactly when"):
+        CAR.model_validate(document, context=_READER)

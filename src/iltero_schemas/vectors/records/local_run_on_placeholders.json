@@ -1585,7 +1585,8 @@
         "value": "incomplete",
         "reason": "upstream_state_unavailable",
         "detail": "upstream inputs replaced with placeholders: 1"
-      }
+      },
+      "approvals": null
     }
   },
   "subject": {

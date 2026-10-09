@@ -42,7 +42,8 @@ class Profile:
 
 
 PLAN_RESOURCE = Profile("plan_resource", ALWAYS | _SOURCE | _CHANGE, frozenset())
-PRE_DEPLOY_CHANGE = Profile("pre_deploy_change", ALWAYS | _SOURCE | _CHANGE | SERVER_FACTS, frozenset())
+# A pre-deploy input names the run it belongs to, which an approval of a run names.
+PRE_DEPLOY_CHANGE = Profile("pre_deploy_change", ALWAYS | _SOURCE | _CHANGE | SERVER_FACTS | {"run"}, frozenset())
 POST_DEPLOY = Profile("post_deploy", ALWAYS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
 VERIFICATION = Profile("verification", ALWAYS | {"subject", "deployment"}, _SOURCE | {"verification", "assurance"})
 RUNTIME = Profile("runtime", ALWAYS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})

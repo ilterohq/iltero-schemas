@@ -24,6 +24,7 @@ from iltero_schemas.compiler.limits import (
     REASON_MAX_BYTES,
     nesting_depth,
 )
+from iltero_schemas.models import fields
 from iltero_schemas.models.assertion import (
     ID_MAX_LENGTH,
     ID_PATTERN,
@@ -31,12 +32,11 @@ from iltero_schemas.models.assertion import (
     VERSION_PATTERN,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.context import Authority, Identity
-from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Timestamp, plain_text
+from iltero_schemas.models.context import Authority
+from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Identity, Status, Timestamp, plain_text
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.profiles import reads_server_facts
 
-Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
 # Why a status is what it is; the runner sets it, a policy never does.
 STATUS_REASONS: dict[str, frozenset[str]] = {
     "pass": frozenset(),
@@ -140,11 +140,9 @@ def _observations(value: dict[str, Any]) -> dict[str, Any]:
 Observations = Annotated[dict[str, Any], AfterValidator(_observations)]
 
 
-class AssertionRef(StrictModel):
+class AssertionRef(fields.AssertionRef):
     """The assertion, with the digest of its document as it was read."""
 
-    id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
-    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     digest: Digest
 
 

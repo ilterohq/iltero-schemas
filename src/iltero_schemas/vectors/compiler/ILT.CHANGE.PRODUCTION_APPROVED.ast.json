@@ -15,33 +15,81 @@
     }
   },
   "assert": {
-    "exists": {
-      "in": "approvals",
-      "where": {
-        "all": [
-          {
-            "predicate": {
-              "path": "item.status",
-              "op": "equal",
-              "literal": "approved"
-            }
-          },
-          {
-            "predicate": {
-              "path": "item.roles",
-              "op": "contains",
-              "literal": "security"
-            }
-          },
-          {
-            "predicate": {
-              "path": "item.subject.digest",
-              "op": "equal",
-              "ref": "change.digest"
-            }
+    "any": [
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "path": "item.status",
+                  "op": "equal",
+                  "literal": "approved"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.subject.kind",
+                  "op": "equal",
+                  "literal": "change"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.subject.digest",
+                  "op": "equal",
+                  "ref": "change.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.roles",
+                  "op": "contains",
+                  "literal": "security"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.independence",
+                  "op": "equal",
+                  "literal": "independent"
+                }
+              }
+            ]
           }
-        ]
+        }
+      },
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "path": "item.status",
+                  "op": "equal",
+                  "literal": "approved"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.subject.kind",
+                  "op": "equal",
+                  "literal": "run"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.subject.id",
+                  "op": "equal",
+                  "ref": "run.id"
+                }
+              }
+            ]
+          }
+        }
       }
-    }
+    ]
   }
 }

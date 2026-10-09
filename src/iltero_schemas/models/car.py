@@ -61,6 +61,7 @@ from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.scanners import ScannerTool
+from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import check_structure, derived_problems
 
 API_VERSION = "iltero.io/car/v1"
@@ -261,6 +262,9 @@ class StageRecord(StrictModel):
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
+    # The approvals the stage's checks read, whatever their source, each of this record's change or run; null at a
+    # stage whose input carries no approvals.
+    approvals: Approvals | None
     compiler: Compiler
     redaction_applied: dict[str, Any]
     events: Written

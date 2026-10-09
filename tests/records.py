@@ -6,7 +6,9 @@ import copy
 import json
 from typing import Any
 
+from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.coverage import Coverage, stage_outcome
+from iltero_schemas.profiles import reads_server_facts
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
@@ -33,6 +35,7 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     """The plan stage copied under another name, counting its one subject (its change or deployment) and no check."""
     copied = copy.deepcopy(RECORD["stages"]["plan"])
     copied["stage"] = name
+    copied["approvals"] = [] if reads_server_facts(Stage(name)) else None
     copied["events"] = {**copied["events"], "count": 0, "path": f"units/root/{name}/events.json"}
     coverage = copied["coverage"]
     basis = "change_unit" if name == "pre_deploy" else "deployment_unit"

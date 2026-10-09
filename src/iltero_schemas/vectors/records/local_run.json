@@ -1573,7 +1573,8 @@
         "value": "complete",
         "reason": null,
         "detail": null
-      }
+      },
+      "approvals": null
     }
   },
   "subject": {

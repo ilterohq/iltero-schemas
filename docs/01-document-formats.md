@@ -134,7 +134,8 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `subject` | object | The subject's `kind`, local `id`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `action`, `before`, `after`, `related` and more. |
 | `deployment` | object | What the apply did. |
-| `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds. |
+| `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds, as the items below (`iltero_schemas.models.server_facts`). |
+| `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `verification`, `assurance` | object | Facts after deployment. |
 
 Key rules:
@@ -146,7 +147,7 @@ Key rules:
   | Stage | Required | Optional |
   | --- | --- | --- |
   | `plan` | `source`, `change`, `plan`, `subject` | none |
-  | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions` | none |
+  | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions`, `run` | none |
   | `post_deploy` | `source`, `change`, `plan`, `subject`, `deployment` | none |
   | `post_verify` | `subject`, `deployment` | `source`, `verification`, `assurance` |
   | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
@@ -167,6 +168,24 @@ Key rules:
 - A fact Iltero Cloud could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
   never an empty list. A check that reads it is `unknown`, never `fail`.
 - The context holds no evaluator version, bundle digest or provenance.
+
+The facts only Iltero Cloud holds are normalised whatever produced them. Each item is Iltero Cloud's claim, as
+served.
+
+| Item | Fields |
+| --- | --- |
+| Approval | `id`, `actor` (`provider`, and `id`: the provider's stable account id, never a login, a name or an address), `roles`, `status` (`approved`), `subject`, `method` (`ci_deployment_review` or `iltero_review`), `independence` (`independent` when the approver neither started the run nor triggered the attempt; `self_permitted_by_policy` otherwise, with the permitting `policy_version`, `null` when independent), `timestamp`. An approval from a CI deployment review names no role, since none is verified. |
+| Exception | `id`, `status` (`approved`: only granted exceptions are served), `scope` (`assertion.id`, `environment`, and the `resources` it covers, by their identities), `valid_from`, `expires_at` (after `valid_from`), `approved_by`, `reason`. |
+| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `id`), `result.status`, `plan_digest`, `observed_at`. |
+
+- An approval's `subject` names what it approves: `{kind: change, digest}`, that plan and no other, or `{kind: run,
+  id}`, Iltero's run, never a CI run. An approval of a run approves the run, not a plan's content: a CI deployment
+  review approves the deploy job when it starts, whether or not that run has planned yet.
+- `ILT.CHANGE.PRODUCTION_APPROVED` and `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` pass on an approved, independent
+  approval of the change by its digest from the `security` role, or on an approval of the run whose `subject.id` is
+  the input's `run.id`. Each is its own `exists`, so the observations show which one held. An approval of the run may
+  be a self-approval the policy permitted; an approval of the change may not. For an approval of the run, both
+  assertions read the same CI environment approval: there is no separate security sign-off behind it.
 
 ## AssuranceEvent
 
@@ -248,7 +267,7 @@ with a regulatory framework.
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |

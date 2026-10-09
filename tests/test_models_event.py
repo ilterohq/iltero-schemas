@@ -16,8 +16,8 @@ from iltero_schemas.models.event import (
     STATUS_REASONS,
     STATUS_SEVERITY,
     AssuranceEvent,
-    Status,
 )
+from iltero_schemas.models.fields import Status
 from tests.conftest import VECTORS
 
 VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "plan_pass.json").read_text(encoding="utf-8"))

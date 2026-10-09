@@ -50,6 +50,7 @@ ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.j
 CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
+APPROVALS = json.loads((VECTORS / "evaluation" / "approvals.json").read_text(encoding="utf-8"))
 INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
@@ -349,6 +350,23 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
     assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
     assert result["observations"]["unknown"] == expected["unknown"]
     assert result["observations"]["when"] == expected["when"]
+
+
+@pytest.mark.parametrize("case", APPROVALS["cases"], ids=[c["name"] for c in APPROVALS["cases"]])
+def test_an_approval_counts_for_its_change_or_its_run(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / APPROVALS["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    context.update(case["set"])
+    AssuranceContext.model_validate(context)
+    result = _evaluate(
+        opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
+    )
+    expected = case["expected"]
+    assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
+    exists = [
+        p["status"] for p in result["observations"]["predicates"] if (p["clause"], p["op"]) == ("assert", "exists")
+    ]
+    assert exists == expected["branches"]
 
 
 @pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)

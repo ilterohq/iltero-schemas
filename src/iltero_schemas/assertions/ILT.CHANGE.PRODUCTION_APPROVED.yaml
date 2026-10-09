@@ -3,7 +3,7 @@ kind: TechnicalAssertion
 metadata:
   id: ILT.CHANGE.PRODUCTION_APPROVED
   version: "1.0.0"
-  title: Production change approved by a security reviewer
+  title: "Production change approved: its digest by a security reviewer, or its run"
 spec:
   stage: pre_deploy
   target:
@@ -12,14 +12,30 @@ spec:
     path: context.environment.production
     equal: true
   assert:
-    exists:
-      in: approvals
-      where:
-        all:
-          - path: item.status
-            equal: approved
-          - path: item.roles
-            contains: security
-          - path: item.subject.digest
-            equal:
-              path: change.digest
+    any:
+      - exists:
+          in: approvals
+          where:
+            all:
+              - path: item.status
+                equal: approved
+              - path: item.subject.kind
+                equal: change
+              - path: item.subject.digest
+                equal:
+                  path: change.digest
+              - path: item.roles
+                contains: security
+              - path: item.independence
+                equal: independent
+      - exists:
+          in: approvals
+          where:
+            all:
+              - path: item.status
+                equal: approved
+              - path: item.subject.kind
+                equal: run
+              - path: item.subject.id
+                equal:
+                  path: run.id

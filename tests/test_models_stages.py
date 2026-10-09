@@ -177,7 +177,7 @@ INCOMPLETE = {"value": "incomplete", "reason": "evaluator_error", "detail": "1 o
         (_record(**{"stages.plan.verdict": PASSED}), ["stages.plan.verdict"]),
         (_record(**{"stages.plan.assurance_status": INCOMPLETE}), ["stages.plan.assurance_status"]),
         ({**_record(), "coverage": {**RECORD["coverage"], "sampled": True}}, ["coverage"]),
-        ({**_record(), "verdict": {**RECORD["verdict"], "exit_code": 6}}, ["verdict"]),
+        ({**_record(), "verdict": {**RECORD["verdict"], "value": "fail", "exit_code": 1}}, ["verdict"]),
         ({**_record(), "assurance_status": INCOMPLETE}, ["assurance_status"]),
     ],
     ids=[

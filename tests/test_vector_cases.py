@@ -13,6 +13,8 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.assertions import ASSERTIONS
+from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.identity import IdentityBindings
@@ -96,3 +98,19 @@ def test_each_pre_deploy_check_of_the_two_stage_record_read_a_shipped_input_abou
         assert context["evaluation"]["assertion"]["id"] == event["assertion"]["id"]
         assert context["change"]["digest"] == record["change"]["digest"]
         assert context["plan"]["digest"] == record["plan"]["digest"]
+
+
+def test_every_check_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
+    shipped = {}
+    for path in ASSERTIONS.iterdir():
+        if path.name.endswith(".yaml"):
+            assertion = member(path.read_text(encoding="utf-8"))
+            shipped[assertion.id] = (assertion.version, assertion.digest, assertion.compiled_digest)
+    for path in sorted((VECTORS / "records").glob("*.json")):
+        if path.name == "digests.json":
+            continue
+        for event in json.loads(path.read_text(encoding="utf-8"))["events"]:
+            named = event["assertion"]
+            if named["id"] in shipped:
+                as_named = (named["version"], named["digest"], event["provenance"]["compiled_digest"])
+                assert as_named == shipped[named["id"]], (path.name, named["id"])

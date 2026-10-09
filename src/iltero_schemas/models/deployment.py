@@ -32,7 +32,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.markers import Unsettled
-from iltero_schemas.models.tools.terraform import TerraformApplyData
+from iltero_schemas.models.tools.variants import ApplyToolData
 
 # What the IaC tool runs on a resource. A replacement needs a create, and a delete unless it only forgets its old
 # object.
@@ -217,8 +217,8 @@ class Apply(StrictModel):
     changes: Annotated[list[AppliedChange], Field(max_length=MAX_RESOURCES)]
     # Null exactly when no operation ran.
     timing: ApplyTiming | None
-    # What only the tool that wrote the log says about the apply; a new tool makes this a union keyed by ``tool``.
-    tool_data: TerraformApplyData
+    # What only the tool that wrote the log says about the apply, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: ApplyToolData
 
     @model_validator(mode="after")
     def _one_story(self) -> Apply:

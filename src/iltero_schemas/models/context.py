@@ -52,7 +52,7 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
-from iltero_schemas.models.tools.terraform import TerraformRelatedData, TerraformResourceData
+from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
@@ -241,8 +241,8 @@ class RelatedResource(StrictModel):
     relation: Relation
     via: list[MaybeHidden]
     resource: dict[str, Any] | None
-    # What only the plan's tool says about the match; a new tool makes this a union keyed by ``tool``.
-    tool_data: TerraformRelatedData
+    # What only the plan's tool says about the match, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: RelatedToolData
 
 
 class PlanResource(StrictModel):
@@ -258,8 +258,8 @@ class PlanResource(StrictModel):
     before: Any
     after: Any
     related: list[RelatedResource]
-    # What only the tool that planned it says about the resource; a new tool makes this a union keyed by ``tool``.
-    tool_data: TerraformResourceData
+    # What only the tool that planned it says about the resource, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: ResourceToolData
 
     @model_validator(mode="after")
     def _kind_from_its_tools_table(self) -> PlanResource:

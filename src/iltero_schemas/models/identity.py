@@ -31,7 +31,7 @@ from iltero_schemas.models.deployment import Fate, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
-from iltero_schemas.models.tools.terraform import TerraformIdentityData
+from iltero_schemas.models.tools.variants import IdentityToolData
 
 API_VERSION = "iltero.io/identity-bindings/v1"
 # More cloud providers than one unit's configuration ever uses.
@@ -143,8 +143,8 @@ class IdentityRecord(StrictModel):
     # These two are null when no applied plan was read: what left the state was not checked.
     removed: Annotated[list[RemovedBinding], Field(max_length=MAX_RESOURCES)] | None
     removed_unresolved: Annotated[list[RemovedUnresolved], Field(max_length=MAX_RESOURCES)] | None
-    # What only the state's tool says; a new tool makes this a union keyed by ``tool``.
-    tool_data: TerraformIdentityData
+    # What only the state's tool says, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: IdentityToolData
 
     @model_validator(mode="after")
     def _each_half_holds_together(self) -> IdentityRecord:

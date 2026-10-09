@@ -16,7 +16,7 @@ from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind
 from iltero_schemas.models.iac import IacTool
 
 # Bumped when the JSON form below changes shape; part of every digest.
-AST_VERSION = 2
+AST_VERSION = 1
 
 Scalar: TypeAlias = str | int | float | bool
 

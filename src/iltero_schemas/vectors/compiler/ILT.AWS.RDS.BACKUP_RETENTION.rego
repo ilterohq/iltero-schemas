@@ -6,9 +6,9 @@ assertion_id := "ILT.AWS.RDS.BACKUP_RETENTION"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:f04b03acd008ce00e6599f0561190b71867260d32a10651247abbd961c7bafe7"
+assertion_source_digest := "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c"
 
 _has_when := false
 

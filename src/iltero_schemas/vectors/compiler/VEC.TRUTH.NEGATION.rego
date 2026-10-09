@@ -6,9 +6,9 @@ assertion_id := "VEC.TRUTH.NEGATION"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:1bc1a3c4cf1f85b91dd8409fb3747cb240b12923e0ca9228a08e8bf75442b5ea"
+assertion_source_digest := "sha256:c3c850591c1fa74c3ff04998814bdc06c2f8f19c57c1dee6d8809ce70c6b69a2"
 
 _has_when := false
 

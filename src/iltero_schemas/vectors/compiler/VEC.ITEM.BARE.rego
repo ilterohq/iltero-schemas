@@ -6,9 +6,9 @@ assertion_id := "VEC.ITEM.BARE"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:8f4f633e55b8dfe4b52c89a64ef1379568affa23e578d8e95374aefab70eaf25"
+assertion_source_digest := "sha256:09ea0175009bd39cc6bec6a7262310a08d38f364ead10dbb7fd4d807c663dbd5"
 
 _has_when := false
 

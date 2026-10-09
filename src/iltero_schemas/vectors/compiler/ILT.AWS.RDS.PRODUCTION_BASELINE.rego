@@ -6,9 +6,9 @@ assertion_id := "ILT.AWS.RDS.PRODUCTION_BASELINE"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:449f8b4952fee7ec896a98fd4969ad4521ff57becf5a02c5d395e949899a9038"
+assertion_source_digest := "sha256:dfe4975c1f62bf907c4b80db5eab135d9ba013f7ffe2245acf9b5135d63045f8"
 
 _has_when := true
 

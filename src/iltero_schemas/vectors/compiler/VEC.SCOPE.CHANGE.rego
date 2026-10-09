@@ -6,9 +6,9 @@ assertion_id := "VEC.SCOPE.CHANGE"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:9e85233861f972080e593f793610a00720c90632fd38bb6d01dc6306bdcd27b0"
+assertion_source_digest := "sha256:4b46a472853692038f7b67b7d867b2a640333e3381cda55b0cb8d8074c55db18"
 
 _has_when := true
 

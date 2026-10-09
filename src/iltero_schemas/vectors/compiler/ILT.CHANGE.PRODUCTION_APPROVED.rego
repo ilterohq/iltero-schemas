@@ -6,9 +6,9 @@ assertion_id := "ILT.CHANGE.PRODUCTION_APPROVED"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:8689f2dcbdf2629d5efd4262401eb9357d2dec701ad5b916c54e2f43b1b519ec"
+assertion_source_digest := "sha256:f3752fc1054bb6f39663c575a09355dd6376abc9340cdac56265fd8db946dfc7"
 
 _has_when := true
 

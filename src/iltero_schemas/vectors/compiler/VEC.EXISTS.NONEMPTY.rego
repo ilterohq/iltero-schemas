@@ -6,9 +6,9 @@ assertion_id := "VEC.EXISTS.NONEMPTY"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:496ab03e9fbc400a1501eb61c9b6cfce67c8c2386ad38ba9f00ff2f3dd992054"
+assertion_source_digest := "sha256:e833bca17fd5b4843f117a86ad5f5bd9e245868ed7f44612813f55b461bb78c6"
 
 _has_when := false
 

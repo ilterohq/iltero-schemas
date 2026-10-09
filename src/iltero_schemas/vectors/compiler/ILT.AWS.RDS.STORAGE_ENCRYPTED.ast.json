@@ -1,5 +1,5 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
   "version": "1.0.0",
   "type": "state",

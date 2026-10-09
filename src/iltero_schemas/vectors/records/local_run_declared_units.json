@@ -97,14 +97,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:f04b03acd008ce00e6599f0561190b71867260d32a10651247abbd961c7bafe7",
+        "assertion_source_digest": "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:67652b7c4a6de32213fc2ed7214f04fbf982485f7a6ef4acd6d66e3cef25e18d",
+        "compiled_digest": "sha256:deb0fffce4a6adf97d2a2c00cc546134a580a2474897afd1be57b939eba374d4",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -135,7 +135,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:d009f51549e302b75cd9d33d51714c6af1fe657aa7ea99f991da79af27ff56f8",
+        "input_digest": "sha256:e66fbaca211a535c3505206b8d288bfa1f63beef88e1a1156c4c954a88f650db",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -193,14 +193,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:ffa5d77b2187fe0abf1336a79a655c226ba8f23044bf0d667cfd6e5673685ad5",
+        "assertion_source_digest": "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:1ef78e6b504948a49869e48fdf5f6cfabe5169c4911ff449aa85f032c0c54211",
+        "compiled_digest": "sha256:98cc4d1045c9d44ae480ba91f86c00dcb8bfb56dfec256e833fe4e83362c9d1f",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -231,7 +231,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:5fe4f54bc580e70a183dc800d8efac984c70415ad4e05d49252f359ed3c9eca3",
+        "input_digest": "sha256:058cf2882c4dc37e67331dab01209f56dfea4260d67391cba54d04f7278b94f1",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -331,14 +331,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:449f8b4952fee7ec896a98fd4969ad4521ff57becf5a02c5d395e949899a9038",
+        "assertion_source_digest": "sha256:dfe4975c1f62bf907c4b80db5eab135d9ba013f7ffe2245acf9b5135d63045f8",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:f4628ed57cef7afd3da99738d7deb6eaa6c4a340c29ef8378ffe5bd8986ee85e",
+        "compiled_digest": "sha256:51b1c68cd38b89cf099236d5aaf308e94634f43595fd369f724e1f198c967ef8",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -369,7 +369,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:eb83948df4fb12a055c93b4860716a0312feb60b023354a10f3b0dd8a14c15f2",
+        "input_digest": "sha256:33c51ebef8b97fa8ae75979e4ec6963471b66703d1a3daa3a93374e6a5c7ce85",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -427,14 +427,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:910034b0b46dbef5d591d6c1e49668567ac93495a89e21aabadac331b451979a",
+        "assertion_source_digest": "sha256:5f5e1fa285c8854c11ca2cd2e814dae9313320ec3d3ea7252f43820370bb6d5d",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:5f2cd35336825b96e0e8b8e44e6eb11bb94145040394f04a54f092630658f5dd",
+        "compiled_digest": "sha256:b79a6bf5951e074571c06a10853ec445864c79886d65e15c0462a982b172a163",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -465,7 +465,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:78cef28cb9df41f66461ca3f65cfc27cdcc341e7d25feeefd9fc47fbaea1bbf4",
+        "input_digest": "sha256:f224950a747fb483748fe3b843727c98e5c17c72a3bee38ea8bc67fc9f53c8f0",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -527,14 +527,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:36a4781e59958281363018f46b5fdd41663a3e16b3759bd467d36714b6f1a7f6",
+        "assertion_source_digest": "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:3661529df2e8d38acf144f18495f06a673882865db06e0792cc129eaa54be81d",
+        "compiled_digest": "sha256:4d7df14bdf7b0eeab22860b2e4a8ff72a584406835712988e8af2e3d3df90a60",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -565,7 +565,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:2f1bb70290893eaaaec62ab0a7f60b6dfc9dc7a8bc418b1d84fa1e963ca47342",
+        "input_digest": "sha256:348b873afc15ecc543d11be959a683d02a273e07fd4840d72852e6dd7575a576",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -624,13 +624,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d009f51549e302b75cd9d33d51714c6af1fe657aa7ea99f991da79af27ff56f8",
+      "digest": "sha256:e66fbaca211a535c3505206b8d288bfa1f63beef88e1a1156c4c954a88f650db",
       "media_type": "application/json",
-      "path": "units/app/plan/contexts/sha256-d009f51549e302b75cd9d33d51714c6af1fe657aa7ea99f991da79af27ff56f8",
+      "path": "units/app/plan/contexts/sha256-e66fbaca211a535c3505206b8d288bfa1f63beef88e1a1156c4c954a88f650db",
       "redaction_applied": null,
-      "ref_id": "sha256-d009f51549e302b75cd9d33d51714c6af1fe657aa7ea99f991da79af27ff56f8",
+      "ref_id": "sha256-e66fbaca211a535c3505206b8d288bfa1f63beef88e1a1156c4c954a88f650db",
       "retention_until": null,
-      "size_bytes": 13117,
+      "size_bytes": 12877,
       "source": null,
       "storage_uri": null
     },
@@ -641,13 +641,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:5fe4f54bc580e70a183dc800d8efac984c70415ad4e05d49252f359ed3c9eca3",
+      "digest": "sha256:058cf2882c4dc37e67331dab01209f56dfea4260d67391cba54d04f7278b94f1",
       "media_type": "application/json",
-      "path": "units/app/plan/contexts/sha256-5fe4f54bc580e70a183dc800d8efac984c70415ad4e05d49252f359ed3c9eca3",
+      "path": "units/app/plan/contexts/sha256-058cf2882c4dc37e67331dab01209f56dfea4260d67391cba54d04f7278b94f1",
       "redaction_applied": null,
-      "ref_id": "sha256-5fe4f54bc580e70a183dc800d8efac984c70415ad4e05d49252f359ed3c9eca3",
+      "ref_id": "sha256-058cf2882c4dc37e67331dab01209f56dfea4260d67391cba54d04f7278b94f1",
       "retention_until": null,
-      "size_bytes": 13111,
+      "size_bytes": 12871,
       "source": null,
       "storage_uri": null
     },
@@ -658,13 +658,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:eb83948df4fb12a055c93b4860716a0312feb60b023354a10f3b0dd8a14c15f2",
+      "digest": "sha256:33c51ebef8b97fa8ae75979e4ec6963471b66703d1a3daa3a93374e6a5c7ce85",
       "media_type": "application/json",
-      "path": "units/app/plan/contexts/sha256-eb83948df4fb12a055c93b4860716a0312feb60b023354a10f3b0dd8a14c15f2",
+      "path": "units/app/plan/contexts/sha256-33c51ebef8b97fa8ae75979e4ec6963471b66703d1a3daa3a93374e6a5c7ce85",
       "redaction_applied": null,
-      "ref_id": "sha256-eb83948df4fb12a055c93b4860716a0312feb60b023354a10f3b0dd8a14c15f2",
+      "ref_id": "sha256-33c51ebef8b97fa8ae75979e4ec6963471b66703d1a3daa3a93374e6a5c7ce85",
       "retention_until": null,
-      "size_bytes": 13120,
+      "size_bytes": 12880,
       "source": null,
       "storage_uri": null
     },
@@ -675,13 +675,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:78cef28cb9df41f66461ca3f65cfc27cdcc341e7d25feeefd9fc47fbaea1bbf4",
+      "digest": "sha256:f224950a747fb483748fe3b843727c98e5c17c72a3bee38ea8bc67fc9f53c8f0",
       "media_type": "application/json",
-      "path": "units/app/plan/contexts/sha256-78cef28cb9df41f66461ca3f65cfc27cdcc341e7d25feeefd9fc47fbaea1bbf4",
+      "path": "units/app/plan/contexts/sha256-f224950a747fb483748fe3b843727c98e5c17c72a3bee38ea8bc67fc9f53c8f0",
       "redaction_applied": null,
-      "ref_id": "sha256-78cef28cb9df41f66461ca3f65cfc27cdcc341e7d25feeefd9fc47fbaea1bbf4",
+      "ref_id": "sha256-f224950a747fb483748fe3b843727c98e5c17c72a3bee38ea8bc67fc9f53c8f0",
       "retention_until": null,
-      "size_bytes": 13118,
+      "size_bytes": 12878,
       "source": null,
       "storage_uri": null
     },
@@ -692,13 +692,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:2f1bb70290893eaaaec62ab0a7f60b6dfc9dc7a8bc418b1d84fa1e963ca47342",
+      "digest": "sha256:348b873afc15ecc543d11be959a683d02a273e07fd4840d72852e6dd7575a576",
       "media_type": "application/json",
-      "path": "units/app/plan/contexts/sha256-2f1bb70290893eaaaec62ab0a7f60b6dfc9dc7a8bc418b1d84fa1e963ca47342",
+      "path": "units/app/plan/contexts/sha256-348b873afc15ecc543d11be959a683d02a273e07fd4840d72852e6dd7575a576",
       "redaction_applied": null,
-      "ref_id": "sha256-2f1bb70290893eaaaec62ab0a7f60b6dfc9dc7a8bc418b1d84fa1e963ca47342",
+      "ref_id": "sha256-348b873afc15ecc543d11be959a683d02a273e07fd4840d72852e6dd7575a576",
       "retention_until": null,
-      "size_bytes": 14954,
+      "size_bytes": 14714,
       "source": null,
       "storage_uri": null
     },
@@ -726,7 +726,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:67652b7c4a6de32213fc2ed7214f04fbf982485f7a6ef4acd6d66e3cef25e18d",
+      "digest": "sha256:deb0fffce4a6adf97d2a2c00cc546134a580a2474897afd1be57b939eba374d4",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "redaction_applied": null,
@@ -743,7 +743,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:0696f08d724648022ac22846af4f7ffbdb3af1ae191e4c6baece9fa65d2ccbfc",
+      "digest": "sha256:f5e53a43176b6891a24979a398e147a1f7affcd926c000439d03e50b5d79b3ff",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "redaction_applied": null,
@@ -777,7 +777,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:1ef78e6b504948a49869e48fdf5f6cfabe5169c4911ff449aa85f032c0c54211",
+      "digest": "sha256:98cc4d1045c9d44ae480ba91f86c00dcb8bfb56dfec256e833fe4e83362c9d1f",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "redaction_applied": null,
@@ -794,7 +794,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:6e8f2d77005bd89f3e315b093d93e9ce048cb7cd8cd182f782006576c470b192",
+      "digest": "sha256:52ebc015c2e2be560f7ab1574eef1341bd9b1156b07bdb9b24f9e4d6d524cec0",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "redaction_applied": null,
@@ -828,7 +828,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:f4628ed57cef7afd3da99738d7deb6eaa6c4a340c29ef8378ffe5bd8986ee85e",
+      "digest": "sha256:51b1c68cd38b89cf099236d5aaf308e94634f43595fd369f724e1f198c967ef8",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_applied": null,
@@ -845,7 +845,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:e4668b363ee4b6e55461bef566f990bc17aac2309acd038f53ad82bdb454dcb0",
+      "digest": "sha256:aaa05cb18c84a8d8ec6fc4627d9d225297329fcfdc5c765dc808553fc01c3340",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_applied": null,
@@ -879,7 +879,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:5f2cd35336825b96e0e8b8e44e6eb11bb94145040394f04a54f092630658f5dd",
+      "digest": "sha256:b79a6bf5951e074571c06a10853ec445864c79886d65e15c0462a982b172a163",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "redaction_applied": null,
@@ -896,7 +896,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:52c9c8e55818e750f6f1af3daacb544d30961948d4d6389efd077e1ad0902b2f",
+      "digest": "sha256:adf72eefe82cefff5b3f6370559aaed05136b9acabf4ffaf98962f98eb70813d",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "redaction_applied": null,
@@ -930,7 +930,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:3661529df2e8d38acf144f18495f06a673882865db06e0792cc129eaa54be81d",
+      "digest": "sha256:4d7df14bdf7b0eeab22860b2e4a8ff72a584406835712988e8af2e3d3df90a60",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "redaction_applied": null,
@@ -947,7 +947,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a307b9c83f43e7ed05927b21f73d733cad84db672cc39998160875c9818b84a8",
+      "digest": "sha256:005d830f80a329b5660e54f0d2dc9eb3b989b657270bc876311f60b3b0562f8d",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "redaction_applied": null,
@@ -964,7 +964,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:de37bf978fae523449e2deaf49212f0e2acb4b9c789cca1853b89acc7f4f2194",
+      "digest": "sha256:2f0fdb41f9c849d51a98afe1a77f1e09306f103d5068c808ad9be4bf54b96a6a",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/compiled.json",
       "redaction_applied": null,
@@ -981,7 +981,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:2ebd26ed441b6296161e9f2bb9a0d496d2e43c6b38e00698544f8a9612a090f7",
+      "digest": "sha256:f8f339fa1e33063ef72e7a858d99ee7462cfc3dfcda3ef3682bfd309c86e6169",
       "media_type": "application/json",
       "path": "units/app/plan/events.json",
       "redaction_applied": null,
@@ -1040,7 +1040,7 @@
     "plan": {
       "assertions": {
         "count": 5,
-        "digest": "sha256:de37bf978fae523449e2deaf49212f0e2acb4b9c789cca1853b89acc7f4f2194",
+        "digest": "sha256:2f0fdb41f9c849d51a98afe1a77f1e09306f103d5068c808ad9be4bf54b96a6a",
         "index": "units/app/plan/assertions/compiled.json"
       },
       "compiler": {
@@ -1051,7 +1051,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:2ebd26ed441b6296161e9f2bb9a0d496d2e43c6b38e00698544f8a9612a090f7",
+        "digest": "sha256:f8f339fa1e33063ef72e7a858d99ee7462cfc3dfcda3ef3682bfd309c86e6169",
         "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",

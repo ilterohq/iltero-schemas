@@ -1,5 +1,5 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.AWS.RDS.NOT_PUBLIC",
   "version": "1.0.0",
   "type": "state",

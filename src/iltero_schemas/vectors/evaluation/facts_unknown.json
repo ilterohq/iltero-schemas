@@ -3,31 +3,6 @@
   "context": "pre_deploy_change.json",
   "cases": [
     {
-      "name": "exception_valid_unknown_marker",
-      "assertion": "ILT.CHANGE.EXCEPTION_VALID",
-      "facts": "unknown_marker",
-      "expected": {
-        "status": "unknown",
-        "reason": "exceptions: server_facts_unavailable",
-        "unknown": {
-          "path": "exceptions",
-          "reason": "server_facts_unavailable"
-        },
-        "when": null
-      }
-    },
-    {
-      "name": "exception_valid_empty_list",
-      "assertion": "ILT.CHANGE.EXCEPTION_VALID",
-      "facts": "empty_list",
-      "expected": {
-        "status": "fail",
-        "reason": "assert: false; predicate 0 is false: exceptions exists",
-        "unknown": null,
-        "when": null
-      }
-    },
-    {
       "name": "production_approved_unknown_marker",
       "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
       "facts": "unknown_marker",

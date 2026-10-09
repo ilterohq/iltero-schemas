@@ -105,8 +105,8 @@ spec:
     provider: aws
     resource_types: [aws_db_instance]
   when:
-    path: context.environment.name
-    equal: production
+    path: context.environment.production
+    equal: true
   assert:
     all:
       - path: resource.after.storage_encrypted
@@ -128,7 +128,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | --- | --- | --- |
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
-| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. |
+| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether the pinned policy treats it as production, or the unknown marker when the run has no pins. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`) and `trust` (`attested`, `corroborated` or `asserted`). |
 | `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `action`, `module`), and the change `digest` once known. |
@@ -163,6 +163,9 @@ Key rules:
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
   value not yet known is `{"__unknown": true, "reason": ..., "present": true}`. A check that reaches either is
   `unknown`.
+- `context.environment.production` comes from the run's pins (`pins.policy.production`). A run Iltero Cloud did not
+  open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never `false`: a run without the
+  server never silently skips a production check.
 - A fact Iltero Cloud could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
   never an empty list. A check that reads it is `unknown`, never `fail`.
 - The context holds no evaluator version, bundle digest or provenance.

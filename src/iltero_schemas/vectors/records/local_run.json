@@ -30,7 +30,7 @@
     "assertions_expected": {
       "value": 5,
       "basis": "locally_derived",
-      "required_assertion_digest": "sha256:0668110f56182e6eb627a43e8f47e31086f0c6d93d4931d8db18449cdd3916a3"
+      "required_assertion_digest": "sha256:c33e6c11b0bac2f4382a7722ed704e39fea4df0cf6834f9c4af16b428a12c0e6"
     },
     "assertions_evaluated": 5,
     "subjects_per_assertion": {
@@ -42,8 +42,8 @@
     },
     "status_counts": {
       "pass": 2,
-      "fail": 3,
-      "unknown": 0,
+      "fail": 2,
+      "unknown": 1,
       "not_applicable": 0,
       "not_evaluated": 0,
       "error": 0
@@ -128,7 +128,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+        "input_digest": "sha256:dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -224,7 +224,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+        "input_digest": "sha256:8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -253,7 +253,7 @@
     },
     {
       "assertion": {
-        "digest": "sha256:a936735641c4a07faa869388b52d2778180179f18778e4b1775dfaf24f56905b",
+        "digest": "sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0",
         "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
         "version": "1.0.0"
       },
@@ -261,13 +261,13 @@
         "observations": {
           "predicates": [
             {
-              "actual": "production",
+              "actual": null,
               "clause": "when",
-              "expected": "production",
+              "expected": true,
               "index": 0,
               "op": "equal",
-              "path": "context.environment.name",
-              "status": "true"
+              "path": "context.environment.production",
+              "status": "unknown"
             },
             {
               "actual": true,
@@ -309,26 +309,29 @@
               "status": "false"
             }
           ],
-          "unknown": null,
-          "when": "true"
+          "unknown": {
+            "path": "context.environment.production",
+            "reason": "server_facts_unavailable"
+          },
+          "when": "unknown"
         },
-        "reason": "assert: false; predicate 3 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "reason": "context.environment.production: server_facts_unavailable",
         "stage": "plan",
-        "status": "fail",
+        "status": "unknown",
         "status_detail": null,
-        "status_reason": null
+        "status_reason": "server_facts_unavailable"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:74c30886999cc9b5f9e0ce3b67a7d88565f028443c85d761f86f5abe58f46ad8",
+        "assertion_source_digest": "sha256:e8e7c1cef138c0e8eaae07b7a3cdb364185dff67fdaa0a3057a65f0352198e71",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:36e4c72f5759a5633989f74a2cf63861d50307fe7ac2997c84c383ea5aadf69e",
+        "compiled_digest": "sha256:c0681ae2c6e18200d7e587ff541486f3b3281ad1cff8c179a41ae5c236822b9e",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -359,7 +362,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+        "input_digest": "sha256:56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -455,7 +458,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+        "input_digest": "sha256:759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -555,7 +558,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+        "input_digest": "sha256:567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -614,13 +617,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "digest": "sha256:dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "path": "units/root/plan/contexts/sha256-dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
       "redaction_applied": null,
-      "ref_id": "sha256-02d4baf27ffaff5eef9fabfdca3121ad7da6aa928a3977e438c5eb03c1106437",
+      "ref_id": "sha256-dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
       "retention_until": null,
-      "size_bytes": 11245,
+      "size_bytes": 11279,
       "source": null,
       "storage_uri": null
     },
@@ -631,13 +634,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "digest": "sha256:8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "path": "units/root/plan/contexts/sha256-8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
       "redaction_applied": null,
-      "ref_id": "sha256-d7bd7c0eb95c0726c40a70537e8ffae244f4a2813b65213ce62a9bb1225bed68",
+      "ref_id": "sha256-8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
       "retention_until": null,
-      "size_bytes": 11239,
+      "size_bytes": 11273,
       "source": null,
       "storage_uri": null
     },
@@ -648,13 +651,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "digest": "sha256:56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "path": "units/root/plan/contexts/sha256-56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
       "redaction_applied": null,
-      "ref_id": "sha256-0ebf5404aa133560ef4bc0529fb850a709017268cae80a8d6db1e31bf7dae86a",
+      "ref_id": "sha256-56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
       "retention_until": null,
-      "size_bytes": 11248,
+      "size_bytes": 11282,
       "source": null,
       "storage_uri": null
     },
@@ -665,13 +668,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "digest": "sha256:759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "path": "units/root/plan/contexts/sha256-759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
       "redaction_applied": null,
-      "ref_id": "sha256-235de3843fe91da7b7358b3bb8595606de5a90932cb00e5f370ebd2431b5b6d6",
+      "ref_id": "sha256-759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
       "retention_until": null,
-      "size_bytes": 11246,
+      "size_bytes": 11280,
       "source": null,
       "storage_uri": null
     },
@@ -682,13 +685,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "digest": "sha256:567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "path": "units/root/plan/contexts/sha256-567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
       "redaction_applied": null,
-      "ref_id": "sha256-ebb4f5709b38f060dc4b1b83c9df686a90977332696964f239771bc90919a626",
+      "ref_id": "sha256-567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
       "retention_until": null,
-      "size_bytes": 13080,
+      "size_bytes": 13114,
       "source": null,
       "storage_uri": null
     },
@@ -801,7 +804,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:77a263c637da37d7c4c0fe016a6000cc0bcc0009ce78aa986a4920b3ee5dda89",
+      "digest": "sha256:98426aac827cf1136f51c5859abf6e245efeb551e9cf44d1332ae8faf7f2d1c4",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "redaction_applied": null,
@@ -818,13 +821,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:36e4c72f5759a5633989f74a2cf63861d50307fe7ac2997c84c383ea5aadf69e",
+      "digest": "sha256:c0681ae2c6e18200d7e587ff541486f3b3281ad1cff8c179a41ae5c236822b9e",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11691,
+      "size_bytes": 11689,
       "source": null,
       "storage_uri": null
     },
@@ -835,13 +838,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:2deacf4d34f950ade0a7e61c32931ff4ec4185c961fea0d608719a4d7815872e",
+      "digest": "sha256:7ea7e6aa9ff39972eb4e09e3b70a00202cb330e9cab12814a466077918182a08",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 1145,
+      "size_bytes": 1143,
       "source": null,
       "storage_uri": null
     },
@@ -954,7 +957,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:6ba4c89e25fb04a0b917b1200925709f4ef2cdcb9e2e45802e4995335e588d3f",
+      "digest": "sha256:144b6d0322c378933925cd631e6dce0a0ff8a00e8bd37927d8a202e30c430994",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/compiled.json",
       "redaction_applied": null,
@@ -971,13 +974,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:cda88c8adb4dc6aed3688afac734069ed73dba7637cb082a2937f3f2c5cfec62",
+      "digest": "sha256:c41b8919f693418618df3222744284f3fe6cd94b97273d64103451fb79272dbc",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_applied": null,
       "ref_id": "events.json",
       "retention_until": null,
-      "size_bytes": 11172,
+      "size_bytes": 11225,
       "source": null,
       "storage_uri": null
     }
@@ -1031,7 +1034,7 @@
     "plan": {
       "assertions": {
         "count": 5,
-        "digest": "sha256:6ba4c89e25fb04a0b917b1200925709f4ef2cdcb9e2e45802e4995335e588d3f",
+        "digest": "sha256:144b6d0322c378933925cd631e6dce0a0ff8a00e8bd37927d8a202e30c430994",
         "index": "units/root/plan/assertions/compiled.json"
       },
       "compiler": {
@@ -1042,7 +1045,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:cda88c8adb4dc6aed3688afac734069ed73dba7637cb082a2937f3f2c5cfec62",
+        "digest": "sha256:c41b8919f693418618df3222744284f3fe6cd94b97273d64103451fb79272dbc",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1529,7 +1532,7 @@
         "assertions_evaluated": 5,
         "assertions_expected": {
           "basis": "locally_derived",
-          "required_assertion_digest": "sha256:eaaa176127186a9e465dd4fd7cf2f3d2dfaa901989109a85d91a4cf68d648f68",
+          "required_assertion_digest": "sha256:84fbbdbe140405968929b5328addfa496982328ca4750d38b9c63435ea646605",
           "value": 5
         },
         "checks": 5,
@@ -1537,11 +1540,11 @@
         "sampled": false,
         "status_counts": {
           "error": 0,
-          "fail": 3,
+          "fail": 2,
           "not_applicable": 0,
           "not_evaluated": 0,
           "pass": 2,
-          "unknown": 0
+          "unknown": 1
         },
         "subjects_evaluated": 2,
         "subjects_in_scope": {
@@ -1566,15 +1569,15 @@
         "substituted_inputs": []
       },
       "verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
         "basis": "status_counts",
-        "exit_code": 1,
-        "value": "fail",
         "stage": null
       },
       "assurance_status": {
-        "detail": null,
+        "value": "complete",
         "reason": null,
-        "value": "complete"
+        "detail": null
       }
     }
   },
@@ -1596,8 +1599,8 @@
   "unit": "root",
   "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
   "verdict": {
-    "value": "fail",
-    "exit_code": 1,
+    "value": "indeterminate",
+    "exit_code": 3,
     "basis": "stage_precedence",
     "stage": "plan"
   }

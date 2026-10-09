@@ -108,12 +108,23 @@ class Evaluation(StrictModel):
     assertion: AssertionRef
 
 
+class Environment(StrictModel):
+    """The environment the change is for: its name, and whether the policy it runs under treats it as production.
+
+    ``production`` comes from the run's pins; a run with no pins cannot know it, so it holds the unknown marker
+    and a condition that reads it is ``unknown``, never false.
+    """
+
+    name: Identifier
+    production: bool | UnknownMarker
+
+
 class Scope(StrictModel):
     """Organizational scope; each part is present only when known."""
 
     organization: Identified | None = None
     workspace: Identified | None = None
-    environment: Named | None = None
+    environment: Environment | None = None
 
 
 class Bracket(StrictModel):

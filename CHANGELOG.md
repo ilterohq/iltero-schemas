@@ -112,6 +112,11 @@ keep, so any two tools agree on what a record means.
   units file as the writer read it (`units_file`: path, digest of its
   bytes, units in deploy order), and its unit is one of them, so the
   records of one run can be checked against it.
+- The evaluation input's environment says whether the pinned policy treats
+  it as production (`context.environment.production`), and the starter
+  assertions guard on that, not on the environment's name. A run without
+  pins holds the unknown marker there, so a production check is `unknown`,
+  never skipped.
 - The unknown marker: where a fact only Iltero Cloud holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A

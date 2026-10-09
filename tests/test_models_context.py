@@ -184,3 +184,16 @@ def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
         AssuranceContext.model_validate({**PRE_DEPLOY, part: {**MARKER, "reason": "redacted"}})
     with pytest.raises(ValidationError):
         AssuranceContext.model_validate({**PRE_DEPLOY, part: {"__redacted": True}})
+
+
+@pytest.mark.parametrize("production", [True, False, {"__unknown": True, "reason": "server_facts_unavailable"}])
+def test_the_environment_says_whether_it_is_production_or_that_nobody_knows(production: object) -> None:
+    environment = {"name": "production", "production": production}
+    AssuranceContext.model_validate({**VECTOR, "context": {**VECTOR["context"], "environment": environment}})
+
+
+@pytest.mark.parametrize("production", [None, "yes"], ids=["null", "text"])
+def test_an_environment_without_a_production_answer_is_refused(production: object) -> None:
+    environment = {"name": "production", "production": production}
+    with pytest.raises(ValidationError, match="production"):
+        AssuranceContext.model_validate({**VECTOR, "context": {**VECTOR["context"], "environment": environment}})

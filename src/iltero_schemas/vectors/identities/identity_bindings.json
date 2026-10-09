@@ -48,6 +48,9 @@
       "fate": "forgotten"
     }
   ],
-  "deposed_destroyed": 0,
-  "deposed_objects": 1
+  "tool_data": {
+    "tool": "terraform",
+    "deposed_destroyed": 0,
+    "deposed_objects": 1
+  }
 }

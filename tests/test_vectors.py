@@ -433,7 +433,7 @@ spec:
   target:
     kind: deployment
   assert:
-    path: deployment.apply.summary.changed
+    path: deployment.apply.tool_data.summary.changed
     equal: 1
 """
 
@@ -442,7 +442,7 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     opa: Path, capabilities: Path, tmp_path: Path
 ) -> None:
     context = json.loads((VECTORS / "contexts" / "post_deploy.json").read_text(encoding="utf-8"))
-    context["deployment"]["apply"]["summary"] = {"__unknown": True, "reason": "deployment_log_incomplete"}
+    context["deployment"]["apply"]["tool_data"]["summary"] = {"__unknown": True, "reason": "deployment_log_incomplete"}
     module = compile(parse(_READS_THE_SUMMARY))
     path = tmp_path / "one_change.rego"
     path.write_bytes(module.source)

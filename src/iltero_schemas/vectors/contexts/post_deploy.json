@@ -98,10 +98,7 @@
       "source": {
         "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
         "tool": "terraform",
-        "tool_version": "1.14.0",
-        "noise_lines": 0,
-        "damaged_lines": 0,
-        "interrupted_operations": 0
+        "tool_version": "1.14.0"
       },
       "state": {
         "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
@@ -122,21 +119,29 @@
           "imported": false,
           "completed": [
             "update"
-          ],
-          "deposed": null
+          ]
         }
       ],
-      "summary": {
-        "added": 0,
-        "changed": 1,
-        "imported": 0,
-        "removed": 0
-      },
       "timing": {
         "started_at": "2026-09-16T18:38:00Z",
         "ended_at": "2026-09-16T18:39:30Z",
         "source": "apply_log",
         "trust": "asserted"
+      },
+      "tool_data": {
+        "tool": "terraform",
+        "summary": {
+          "added": 0,
+          "changed": 1,
+          "imported": 0,
+          "removed": 0
+        },
+        "log_lines": {
+          "noise": 0,
+          "damaged": 0,
+          "interrupted_operations": 0
+        },
+        "deposed": []
       }
     },
     "superseded_by": null

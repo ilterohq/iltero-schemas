@@ -63,6 +63,7 @@ from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import check_structure, derived_problems
+from iltero_schemas.models.tools.variants import check_identity_against_apply
 
 API_VERSION = "iltero.io/car/v1"
 # Validation context key: the reader recomputes the record's derived values itself (``derived_problems``), so it
@@ -445,6 +446,4 @@ class CAR(StrictModel):
         left = {change.address: change.fate for change in self.deployment.apply.changes if change.left_the_state}
         if self.identity.left_the_state() != left:
             raise ValueError("what the identities list as removed is exactly what left the state, and how")
-        destroyed = sum(change.destroyed_deposed for change in self.deployment.apply.changes)
-        if self.identity.deposed_destroyed != destroyed:
-            raise ValueError("the identities count exactly the deposed objects the apply destroyed")
+        check_identity_against_apply(self.identity.tool_data, self.deployment.apply.tool_data)

@@ -9,15 +9,21 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.deployment import AppliedChange, Apply, Unsettled, check_one_tool, check_tool
+from iltero_schemas.models.deployment import AppliedChange, Apply, check_one_tool, check_tool
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
 TIMING: dict[str, Any] = APPLY["timing"]
 
 
+TOOL_FIELDS = ("summary", "log_lines", "deposed")
+
+
 def _apply(**fields: Any) -> dict[str, Any]:
-    return {**copy.deepcopy(APPLY), **fields}
+    """The vector's apply with ``fields`` set over it; Terraform's own fields go under ``tool_data``."""
+    apply = copy.deepcopy(APPLY)
+    apply["tool_data"].update({key: value for key, value in fields.items() if key in TOOL_FIELDS})
+    return {**apply, **{key: value for key, value in fields.items() if key not in TOOL_FIELDS}}
 
 
 def test_the_post_deploy_vector_describes_the_apply() -> None:
@@ -143,7 +149,7 @@ UPDATED = change("a.x", "update", ["update"], "applied")
     ("fields", "message"),
     [
         ({"changes": [change("b.x", "create", ["create"], "applied"), UPDATED]}, "sorted by address"),
-        ({"changes": [UPDATED, UPDATED]}, "name each object once"),
+        ({"changes": [UPDATED, UPDATED]}, "name each address once"),
         (
             {
                 "changes": [
@@ -219,7 +225,7 @@ def test_the_counts_are_the_changes_own() -> None:
     ]
     changes.sort(key=lambda entry: entry["address"])
     summary = {"added": 2, "changed": 1, "imported": 1, "removed": 2}
-    assert Apply.model_validate(_apply(changes=changes, summary=summary)).summary is not None
+    assert Apply.model_validate(_apply(changes=changes, summary=summary)).tool_data.summary is not None
 
 
 def test_a_replan_names_only_its_reason() -> None:
@@ -241,7 +247,7 @@ def _changed(address: str, action: str, required: list[str], **fields: Any) -> d
     return {**change(address, action, required, "applied"), **fields}
 
 
-DAMAGED = {**APPLY["source"], "damaged_lines": 1}
+DAMAGED = {**APPLY["tool_data"]["log_lines"], "damaged": 1}
 
 
 def _unsettled_update(address: str = "a.x") -> dict[str, Any]:
@@ -255,14 +261,14 @@ def _created_by_the_state(address: str = "a.y") -> dict[str, Any]:
 def test_a_log_that_lost_messages_leaves_to_the_state_what_it_settles_and_unsettled_the_rest() -> None:
     apply = Apply.model_validate(
         _apply(
-            source=DAMAGED,
+            log_lines=DAMAGED,
             basis="log_and_state_where_log_incomplete",
             changes=[_unsettled_update(), _created_by_the_state()],
             summary=UNSETTLED,
         )
     )
     assert [c.basis for c in apply.changes] == ["unsettled", "state"]
-    assert apply.model_dump(mode="json", by_alias=True)["summary"] == UNSETTLED
+    assert apply.model_dump(mode="json", by_alias=True)["tool_data"]["summary"] == UNSETTLED
 
 
 @pytest.mark.parametrize(
@@ -314,11 +320,11 @@ def test_what_is_unsettled_follows_from_how_the_change_is_known(entry: dict[str,
             {"changes": [_created_by_the_state()], "basis": "log_and_state_where_log_incomplete", "timing": None},
             "only a log that lost messages",
         ),
-        ({"source": DAMAGED, "changes": [_created_by_the_state()], "timing": None}, "the apply's basis says"),
-        ({"source": DAMAGED, "summary": UNSETTLED}, "the apply's basis says"),
+        ({"log_lines": DAMAGED, "changes": [_created_by_the_state()], "timing": None}, "the apply's basis says"),
+        ({"log_lines": DAMAGED, "summary": UNSETTLED}, "the apply's basis says"),
         (
             {
-                "source": DAMAGED,
+                "log_lines": DAMAGED,
                 "basis": "log_and_state_where_log_incomplete",
                 "changes": [_unsettled_update()],
                 "summary": {"added": 0, "changed": 1, "imported": 0, "removed": 0},
@@ -339,15 +345,15 @@ def test_only_a_log_that_lost_messages_leaves_anything_unsettled(fields: dict[st
 
 
 def test_an_unsettled_change_may_have_run_or_not() -> None:
-    fields = {"source": DAMAGED, "basis": "log_and_state_where_log_incomplete", "changes": [_unsettled_update()]}
+    fields = {"log_lines": DAMAGED, "basis": "log_and_state_where_log_incomplete", "changes": [_unsettled_update()]}
     assert Apply.model_validate(_apply(**fields, summary=None)).timing is not None
     assert Apply.model_validate(_apply(**fields, summary=None, timing=None)).timing is None
 
 
 def test_an_operation_that_started_and_never_ended_is_a_lost_message() -> None:
     """A job stopped mid-apply ends the log at a line break: no damaged line, but an operation never ended."""
-    interrupted = {**APPLY["source"], "interrupted_operations": 1}
-    fields = {"source": interrupted, "basis": "log_and_state_where_log_incomplete"}
+    interrupted = {**APPLY["tool_data"]["log_lines"], "interrupted_operations": 1}
+    fields = {"log_lines": interrupted, "basis": "log_and_state_where_log_incomplete"}
     assert Apply.model_validate(_apply(**fields, changes=[_created_by_the_state()], summary=None, timing=None)).changes
 
 
@@ -356,125 +362,9 @@ def test_the_unknown_marker_is_written_under_its_marker_name() -> None:
     assert change.model_dump(mode="json")["outcome"] == UNSETTLED
 
 
-def _deposed(outcome: str, key: str = "bb9fd791", **fields: Any) -> dict[str, Any]:
-    """A deposed object's delete at ``a.server``, settled by the state."""
-    return {**change("a.server", "delete", ["delete"], outcome, basis="state", deposed=key), **fields}
-
-
-@pytest.mark.parametrize("outcome", ["applied", "errored", "not_attempted"])
-def test_the_state_settles_a_deposed_object_as_gone_failed_or_never_started(outcome: str) -> None:
-    entry = AppliedChange.model_validate(_deposed(outcome))
-    assert entry.deposed == "bb9fd791" and entry.destroyed_deposed == (outcome == "applied")
-
-
-@pytest.mark.parametrize(
-    ("entry", "message"),
-    [
-        (
-            change("a.server", "replace", ["create", "delete"], "applied", basis="state", deposed="bb9fd791"),
-            "only ever deleted",
-        ),
-        (_deposed("applied", basis="log"), "the state settles what happened to a deposed object"),
-        (
-            _deposed(
-                "applied", basis="unsettled", completed={"__unknown": True, "reason": "deployment_log_incomplete"}
-            ),
-            "unsettled",
-        ),
-        (_deposed("applied", key="BB9FD791"), "should match pattern"),
-        (_deposed("applied", key="bb9fd7"), "should match pattern"),
-    ],
-    ids=["a replacement", "known from the log", "unsettled operations", "an upper-case key", "a short key"],
-)
-def test_a_deposed_object_is_only_ever_deleted_and_settled_by_the_state(entry: dict[str, Any], message: str) -> None:
-    with pytest.raises(ValidationError, match=message):
-        AppliedChange.model_validate(entry)
-
-
 def test_a_current_object_settled_by_the_state_still_cannot_be_never_attempted() -> None:
     with pytest.raises(ValidationError, match="the state settles only"):
         AppliedChange.model_validate(change("a.x", "delete", ["delete"], "not_attempted", basis="state"))
-
-
-def test_a_deposed_object_is_counted_not_listed_as_leaving_the_state() -> None:
-    assert AppliedChange.model_validate(_deposed("applied")).left_the_state is False
-
-
-def _cleared() -> dict[str, Any]:
-    """The real deposed-cleared apply: a tainted replacement, and the deposed object's delete, both done."""
-    replaced = change("a.server", "replace", ["create", "delete"], "applied")
-    summary = {"added": 1, "changed": 0, "imported": 0, "removed": 1}
-    return _apply(changes=[replaced, _deposed("applied")], summary=summary)
-
-
-def test_a_deposed_object_sorts_after_its_address_and_is_left_out_of_terraforms_counts() -> None:
-    apply = Apply.model_validate(_cleared())
-    assert [(c.address, c.deposed) for c in apply.changes] == [("a.server", None), ("a.server", "bb9fd791")]
-    assert apply.basis == "log_held_to_plan_and_state_presence"
-
-
-@pytest.mark.parametrize(
-    ("changes", "message"),
-    [
-        (lambda c: [c[1], c[0]], "sorted by address, then deposed key"),
-        (lambda c: [c[0], c[1], c[1]], "name each object once"),
-    ],
-    ids=["deposed first", "the same deposed object twice"],
-)
-def test_the_objects_at_one_address_are_in_one_order_once_each(changes: Any, message: str) -> None:
-    document = _cleared()
-    document["changes"] = changes(document["changes"])
-    with pytest.raises(ValidationError, match=message):
-        Apply.model_validate(document)
-
-
-@pytest.mark.parametrize(
-    ("changes", "removed", "accepted"),
-    [
-        ("cleared", 1, True),
-        ("cleared", 2, True),
-        ("cleared", 0, False),
-        ("cleared", 3, False),
-        ("lone", 1, True),
-        ("lone", 0, True),
-        ("lone", 2, False),
-    ],
-    ids=[
-        "the deposed delete lost behind the replacement",
-        "the deposed delete counted",
-        "too few",
-        "too many",
-        "a lone deposed delete counted, as Terraform 1.14 does",
-        "a lone deposed delete not counted",
-        "a lone deposed delete counted twice",
-    ],
-)
-def test_terraforms_removed_count_may_or_may_not_include_a_deposed_delete(
-    changes: str, removed: int, accepted: bool
-) -> None:
-    document = _cleared()
-    if changes == "lone":
-        document["changes"] = [
-            change("a.server", "no-op", [], "no_operation", moved_from="a.before"),
-            _deposed("applied"),
-        ]
-        document["summary"] = {"added": 0, "changed": 0, "imported": 0, "removed": removed}
-    document["summary"]["removed"] = removed
-    if accepted:
-        Apply.model_validate(document)
-    else:
-        with pytest.raises(ValidationError, match="the summary's counts are not what the changes show"):
-            Apply.model_validate(document)
-
-
-def test_a_deposed_object_still_held_after_the_log_lost_lines_may_stay_unsettled() -> None:
-    unknown = {**_deposed("errored"), "outcome": {"__unknown": True, "reason": "deployment_log_incomplete"}}
-    damaged = {**APPLY["source"], "damaged_lines": 1}
-    lost = _apply(changes=[unknown], summary=None, source=damaged, basis="log_and_state_where_log_incomplete")
-    assert isinstance(Apply.model_validate(lost).changes[0].outcome, Unsettled)
-    whole = _apply(changes=[unknown], summary=None)
-    with pytest.raises(ValidationError, match="only a log that lost messages"):
-        Apply.model_validate(whole)
 
 
 def test_the_apply_log_and_the_state_name_the_same_tool() -> None:

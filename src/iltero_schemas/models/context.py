@@ -17,7 +17,7 @@ the current implementation. That address is the ``id`` on the subject, on the
 resource and on the plan's table of contents. The resources that refer to it
 (``resource.related``) are embedded as the plan adapter observed them,
 ``address`` included. ``provider`` is the short name an assertion targets
-(``aws``); the provider's full source address is ``provider_source``. A
+(``aws``); what only the tool says about a resource is under ``tool_data``. A
 value hidden by redaction is a marker (``__redacted``), and the fields where
 a hidden value may legitimately sit accept one. A fact the server could not
 supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
@@ -26,6 +26,7 @@ the list it would have filled.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated, Any, Literal
 
 from pydantic import ConfigDict, Field, model_validator
@@ -49,12 +50,12 @@ from iltero_schemas.models.fields import (
     check_artifact_digest,
 )
 from iltero_schemas.models.iac import IacTool
+from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
+from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
-# The marker's reason: a short token, as the evaluator's runtime accepts it.
-REASON_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
 ReferenceTimeSource = Literal["server", "timestamp_authority", "rekor", "runner_clock"]
 ReferenceTimeTrust = Literal["attested", "corroborated", "asserted"]
@@ -74,20 +75,6 @@ PARTS = (
     "verification",
     "assurance",
 )
-
-
-class RedactedMarker(StrictModel):
-    """What stands where a value was hidden: that one was there, why it was hidden, and its type."""
-
-    redacted: Literal[True] = Field(alias="__redacted")
-    reason: Annotated[str, Field(pattern=REASON_PATTERN)]
-    present: bool
-    type: Annotated[str, Field(pattern=REASON_PATTERN)]
-
-
-# A name that may have been hidden: a hidden name is still a fact about the resource.
-MaybeHidden = Identifier | RedactedMarker
-MaybeHiddenAddress = Address | RedactedMarker
 
 
 class Named(StrictModel):
@@ -203,7 +190,7 @@ class ResourceIndexEntry(StrictModel):
     module: Address | None
 
 
-def check_kinds(tool: IacTool, entries: list[ResourceIndexEntry]) -> None:
+def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResource]) -> None:
     """Raise ``ValueError`` unless every entry names the kind ``tool``'s table gives its type."""
     for entry in entries:
         named = None if entry.type is None else kind_of(tool, entry.provider, entry.type)
@@ -252,28 +239,32 @@ class RelatedResource(StrictModel):
     address: MaybeHiddenAddress
     type: MaybeHidden | None
     relation: Relation
-    match: Literal["instance", "every_instance"]
     via: list[MaybeHidden]
     resource: dict[str, Any] | None
+    # What only the plan's tool says about the match, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: RelatedToolData
 
 
 class PlanResource(StrictModel):
     """One managed resource as the plan describes it, values before and after, with the resources that refer to it."""
 
     id: Address
-    provider: Identifier | None
-    provider_source: Identifier | None
+    provider: ProviderName
     type: Identifier | None
+    kind: Identifier | UnknownKind | None
     name: MaybeHidden | None
     module: Address | None
     action: Action
-    action_reason: MaybeHidden | None
-    previous_address: MaybeHiddenAddress | None
-    importing: Any
-    replace_paths: Any
     before: Any
     after: Any
     related: list[RelatedResource]
+    # What only the tool that planned it says about the resource, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: ResourceToolData
+
+    @model_validator(mode="after")
+    def _kind_from_its_tools_table(self) -> PlanResource:
+        check_kinds(self.tool_data.tool, [self])
+        return self
 
 
 class AssuranceContext(StrictModel):

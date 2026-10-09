@@ -20,7 +20,7 @@ DOCUMENT: dict[str, Any] = {
         unresolved=[{"address": "aws_lambda_function.worker", "reason": "no_resolver"}],
         removed=[removed("aws_db_instance.payments")],
         removed_unresolved=[{"address": "aws_kms_key.old", "reason": "identifier_missing", "fate": "forgotten"}],
-        deposed_objects=1,
+        tool_data={"tool": "terraform", "deposed_destroyed": 0, "deposed_objects": 1},
     ),
 }
 
@@ -30,7 +30,7 @@ def test_a_document_of_bound_and_unresolved_resources_validates() -> None:
     addresses = [entry.iac.address for entry in bindings.bindings]
     assert addresses == ["aws_db_instance.payments", "aws_s3_bucket.logs"]
     assert bindings.unresolved[0].reason == "no_resolver"
-    assert bindings.sources.state.tool_version == "1.14.0" and bindings.deposed_objects == 1
+    assert bindings.sources.state.tool_version == "1.14.0" and bindings.tool_data.deposed_objects == 1
 
 
 def test_a_replacement_old_object_is_removed_while_its_new_one_is_bound() -> None:
@@ -66,13 +66,14 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
     document["sources"]["plan"] = None
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(document)
-    document.update(removed=None, removed_unresolved=None, deposed_destroyed=None)
+    document.update(removed=None, removed_unresolved=None)
+    document["tool_data"]["deposed_destroyed"] = None
     assert IdentityBindings.model_validate(document).removed is None
     document["removed"] = []
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(document)
     checked = copy.deepcopy(DOCUMENT)
-    checked["deposed_destroyed"] = None
+    checked["tool_data"]["deposed_destroyed"] = None
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(checked)
 
@@ -106,8 +107,8 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
             ),
             "never both",
         ),
-        (lambda d: d.update(deposed_objects=-1), "greater than or equal to 0"),
-        (lambda d: d.update(deposed_objects=100_001), "less than or equal to 100000"),
+        (lambda d: d["tool_data"].update(deposed_objects=-1), "greater than or equal to 0"),
+        (lambda d: d["tool_data"].update(deposed_objects=100_001), "less than or equal to 100000"),
         (lambda d: d["removed"][0].update(fate="vanished"), "Input should be"),
         (lambda d: d["removed"][0].pop("fate"), "Field required"),
         (lambda d: d["removed"][0]["iac"].update(unit="network"), "belongs to the unit"),

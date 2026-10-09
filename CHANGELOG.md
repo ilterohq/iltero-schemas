@@ -24,9 +24,7 @@ keep, so any two tools agree on what a record means.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
   v1): each stage's coverage and verdict, the rules that tie the stages
   together, what a deployment did, the resources' cloud identities, and which
-  stages are in scope. A deployment lists the delete of each deposed object
-  (an old copy a replacement set aside) as its own change, settled by the
-  state after the apply.
+  stages are in scope.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold. No two of its bindings, and no two of its
   removed entries, name the same cloud identity.
@@ -136,6 +134,20 @@ keep, so any two tools agree on what a record means.
 
 These changes break documents written before them.
 
+- A deployment's apply and the identity document are a neutral core plus
+  `tool_data`, keyed by `tool`, with that tool's checks in its own module.
+  For Terraform, the apply's `tool_data` holds the `summary` counts, the
+  `log_lines` it could not read, and the delete of each deposed object (an
+  old copy a replacement set aside) settled by the state; the identity
+  document's holds its deposed counts. The apply's `changes` name each
+  address's current object once.
+- A plan resource in the evaluation input is a neutral core (`id`,
+  `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
+  `related`), and what only its IaC tool says about it is under `tool_data`,
+  keyed by `tool`: Terraform's `provider_source`, `action_reason`,
+  `previous_address`, `importing`, `replace_paths`, and a related resource's
+  `match`. It names the kind its tool's table gives its type, like a change
+  entry, and `provider` is required and is the provider's short name.
 - An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
   could issue. A bucket name that looks like an IP address, holds two dots in a
   row or uses a reserved prefix or suffix is refused. So is an RDS identifier

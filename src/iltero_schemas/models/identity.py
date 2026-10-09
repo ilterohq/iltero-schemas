@@ -31,6 +31,7 @@ from iltero_schemas.models.deployment import Fate, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
+from iltero_schemas.models.tools.variants import IdentityToolData
 
 API_VERSION = "iltero.io/identity-bindings/v1"
 # More cloud providers than one unit's configuration ever uses.
@@ -130,10 +131,8 @@ class IdentityRecord(StrictModel):
     ``removed_unresolved``, by its identity before the apply, with its fate:
     ``deleted`` (destroyed in the cloud) or ``forgotten`` (still in the cloud,
     no longer managed). A replacement's old object appears there while its
-    new one is bound. A deposed object — an old copy a failed replacement
-    left — is a real resource no list names, so ``deposed_destroyed`` says how
-    many the apply destroyed, and ``deposed_objects`` how many the state still
-    holds.
+    new one is bound. What only the tool that wrote the state says is under
+    ``tool_data``, keyed by ``tool``.
     """
 
     sources: IdentitySources
@@ -141,18 +140,21 @@ class IdentityRecord(StrictModel):
     resolvers: Annotated[list[Resolver], Field(max_length=MAX_RESOLVERS)]
     bindings: Bindings
     unresolved: UnresolvedList
-    # These three are null when no applied plan was read: what left the state was not checked.
+    # These two are null when no applied plan was read: what left the state was not checked.
     removed: Annotated[list[RemovedBinding], Field(max_length=MAX_RESOURCES)] | None
     removed_unresolved: Annotated[list[RemovedUnresolved], Field(max_length=MAX_RESOURCES)] | None
-    # Old copies of resources the apply destroyed, as the state after it shows: real cloud resources no list names.
-    deposed_destroyed: Annotated[int, Field(ge=0, le=MAX_RESOURCES)] | None
-    deposed_objects: Annotated[int, Field(ge=0, le=MAX_RESOURCES)]
+    # What only the state's tool says, keyed by ``tool`` (``models.tools.variants``).
+    tool_data: IdentityToolData
 
     @model_validator(mode="after")
     def _each_half_holds_together(self) -> IdentityRecord:
         _one_list_each(self.bindings, self.unresolved)
         _one_entry_per_cloud_identity(self.bindings, "bindings")
-        checked = (self.removed is not None, self.removed_unresolved is not None, self.deposed_destroyed is not None)
+        checked = (
+            self.removed is not None,
+            self.removed_unresolved is not None,
+            self.tool_data.deposed_destroyed is not None,
+        )
         if set(checked) != {self.sources.plan is not None}:
             raise ValueError("what left the state is listed exactly when the applied plan was read, and null otherwise")
         _one_list_each(self.removed or [], self.removed_unresolved or [])

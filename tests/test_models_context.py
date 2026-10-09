@@ -117,11 +117,12 @@ def test_a_hidden_name_is_accepted_where_a_name_may_have_been_hidden() -> None:
             "address": marker,
             "type": marker,
             "relation": "configures",
-            "match": "instance",
             "via": [marker],
             "resource": None,
+            "tool_data": {"tool": "terraform", "match": "instance"},
         }
     ]
+    document["resource"]["tool_data"]["action_reason"] = marker
     AssuranceContext.model_validate(document)
     document["resource"]["id"] = marker
     with pytest.raises(ValidationError, match="resource.id"):
@@ -252,3 +253,49 @@ def test_a_resource_names_the_kind_its_tools_table_gives_its_type(entry: dict[st
 def test_a_resource_kind_is_the_tables_unknown_or_absent_for_a_provider_with_none(entry: dict[str, Any]) -> None:
     resources = [{"id": "r.x", "action": "update", "module": None, **entry}]
     AssuranceContext.model_validate({**VECTOR, "change": {**VECTOR["change"], "resources": resources}})
+
+
+@pytest.mark.parametrize(
+    "field", ["provider_source", "action_reason", "previous_address", "importing", "replace_paths"]
+)
+def test_what_only_the_tool_says_about_a_resource_is_under_tool_data(field: str) -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"][field] = None
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AssuranceContext.model_validate(document)
+
+
+def test_a_related_resource_says_how_it_matched_under_tool_data() -> None:
+    related: dict[str, Any] = {"address": "a.b", "type": "t", "relation": "configures", "via": [], "resource": None}
+    document = copy.deepcopy(VECTOR)
+    document["resource"]["related"] = [{**related, "match": "instance"}]
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AssuranceContext.model_validate(document)
+
+
+def test_a_plan_resource_names_the_kind_its_tools_table_gives_its_type() -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"]["kind"] = "kms_key"
+    with pytest.raises(ValidationError, match="other than the one the terraform table gives"):
+        AssuranceContext.model_validate(document)
+
+
+@pytest.mark.parametrize("provider", [None, "registry.terraform.io/hashicorp/aws"], ids=["none", "a source address"])
+def test_a_plan_resource_names_its_providers_short_name(provider: str | None) -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"]["provider"] = provider
+    with pytest.raises(ValidationError, match="resource.provider"):
+        AssuranceContext.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("provider", "type_", "kind"),
+    [("aws", "aws_new_thing", UNMAPPED), ("google", "google_kms_key", None)],
+    ids=["a type the table lacks", "a provider with no kinds"],
+)
+def test_a_plan_resource_kind_is_unknown_or_absent_where_the_table_gives_none(
+    provider: str, type_: str, kind: dict[str, Any] | None
+) -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"].update(provider=provider, type=type_, kind=kind)
+    AssuranceContext.model_validate(document)

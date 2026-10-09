@@ -30,7 +30,7 @@
     "assertions_expected": {
       "value": 5,
       "basis": "locally_derived",
-      "required_assertion_digest": "sha256:c33e6c11b0bac2f4382a7722ed704e39fea4df0cf6834f9c4af16b428a12c0e6"
+      "required_assertion_digest": "sha256:32bbee8cef0e70277bcede5178ba0e9652ccabdbcbbe3eac8c94f4b4fd5039e7"
     },
     "assertions_evaluated": 5,
     "subjects_per_assertion": {
@@ -67,7 +67,7 @@
   "events": [
     {
       "assertion": {
-        "digest": "sha256:d2bc8dcd5cb8db74b5071048ef203550345c03556da9b035691f9fc9d7d31089",
+        "digest": "sha256:86b4d7649143d9f0083b3f2cdd6ef5b87b0702a8a41c5c597e93a5b58db6fbe8",
         "id": "ILT.AWS.RDS.BACKUP_RETENTION",
         "version": "1.0.0"
       },
@@ -96,14 +96,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:2afa1bc34d71965ca9335aee75c6cd13990d2beb51f5f21c97001b490430d192",
+        "assertion_source_digest": "sha256:f04b03acd008ce00e6599f0561190b71867260d32a10651247abbd961c7bafe7",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:a82ab9a16015ccc0ce5550e635d4805089b885b3717b8ac3ded3022815c48f91",
+        "compiled_digest": "sha256:67652b7c4a6de32213fc2ed7214f04fbf982485f7a6ef4acd6d66e3cef25e18d",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -134,7 +134,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
+        "input_digest": "sha256:b8787ff1bbccd3e98f2a47107c8ae9a3d02df8afa135d88d90d380eff3745e26",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -163,7 +163,7 @@
     },
     {
       "assertion": {
-        "digest": "sha256:8567383b2eeacc1d715dc9ca0a7e04a54fd83b47afe29dfec35e0155142f793e",
+        "digest": "sha256:15cbf457bd1402ef6cd66a0cdeec692ba4181c368bdfcc978660e22b838e7949",
         "id": "ILT.AWS.RDS.NOT_PUBLIC",
         "version": "1.0.0"
       },
@@ -192,14 +192,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:bbb338b5a42669400eefe7a3e7c26767483df1da41983ba39833c2a1775842cf",
+        "assertion_source_digest": "sha256:ffa5d77b2187fe0abf1336a79a655c226ba8f23044bf0d667cfd6e5673685ad5",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:4f0344dff24e149c99f716fd9b2cbf7113dcd00de3ba419ff59d1e16a97466e2",
+        "compiled_digest": "sha256:1ef78e6b504948a49869e48fdf5f6cfabe5169c4911ff449aa85f032c0c54211",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -230,7 +230,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
+        "input_digest": "sha256:ed8ce451df6ebae9a68c5baeea410eb88eab695bd3dbc75d7b9b99e2aacbede0",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -259,7 +259,7 @@
     },
     {
       "assertion": {
-        "digest": "sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0",
+        "digest": "sha256:b7440a0df17bf805f073b4b5a1ef21a4fbb200036517a073953e46b8a8905d37",
         "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
         "version": "1.0.0"
       },
@@ -330,14 +330,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:e8e7c1cef138c0e8eaae07b7a3cdb364185dff67fdaa0a3057a65f0352198e71",
+        "assertion_source_digest": "sha256:449f8b4952fee7ec896a98fd4969ad4521ff57becf5a02c5d395e949899a9038",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:c0681ae2c6e18200d7e587ff541486f3b3281ad1cff8c179a41ae5c236822b9e",
+        "compiled_digest": "sha256:f4628ed57cef7afd3da99738d7deb6eaa6c4a340c29ef8378ffe5bd8986ee85e",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -368,7 +368,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
+        "input_digest": "sha256:9337658e34f782ef7c43e8543f390dac40cf9304f78eb5d65e381b3c5792c1ae",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -397,7 +397,7 @@
     },
     {
       "assertion": {
-        "digest": "sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67",
+        "digest": "sha256:e4baf86675a34dd8e473a10baedd19357b1613e0dad71ee5dbcf414298fab02c",
         "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
         "version": "1.0.0"
       },
@@ -426,14 +426,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:7d0e58fd64fad627fc20be7a6c45da5a483572aa79b977fd8b6cf86b2ad71d0a",
+        "assertion_source_digest": "sha256:910034b0b46dbef5d591d6c1e49668567ac93495a89e21aabadac331b451979a",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:439bfafcbf6eb8464fde368da526000035441f72536dfe3c404dbd3e7febacaa",
+        "compiled_digest": "sha256:5f2cd35336825b96e0e8b8e44e6eb11bb94145040394f04a54f092630658f5dd",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -464,7 +464,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
+        "input_digest": "sha256:0910f1994ab156b112789c7917c4095d51cf06d51c3450bb0d80583af359c531",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -493,7 +493,7 @@
     },
     {
       "assertion": {
-        "digest": "sha256:6ca3ba3aa21029fe477b32ec72a3b97ecca3f20727618cacbf7878d20c7138ad",
+        "digest": "sha256:b342625215b2fdc251980041a72895ddca12c9bca3737686bebd2cf402b4c90e",
         "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
         "version": "1.0.0"
       },
@@ -526,14 +526,14 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:8666b15260a2061eaa1c10d31cb1ccbc193004e7c89049c89d820d05595b8dae",
+        "assertion_source_digest": "sha256:36a4781e59958281363018f46b5fdd41663a3e16b3759bd467d36714b6f1a7f6",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:2eeb23656011e9ddcbcbb1c8ea0b16724e22b3187d7010ca5aa45b1bf3b3f463",
+        "compiled_digest": "sha256:3661529df2e8d38acf144f18495f06a673882865db06e0792cc129eaa54be81d",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -564,7 +564,7 @@
           "type": "human"
         },
         "fs_hardening": "posix",
-        "input_digest": "sha256:567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
+        "input_digest": "sha256:f4ae2effc4f7eaddde7a2e838bb4d55d3ed1e7de92f31f960f1d5d8912c6d6e8",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
           "version": "1"
@@ -623,13 +623,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
+      "digest": "sha256:b8787ff1bbccd3e98f2a47107c8ae9a3d02df8afa135d88d90d380eff3745e26",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
+      "path": "units/root/plan/contexts/sha256-b8787ff1bbccd3e98f2a47107c8ae9a3d02df8afa135d88d90d380eff3745e26",
       "redaction_applied": null,
-      "ref_id": "sha256-dcc58286d83e7f7d7f49505862526e36700f3f1208f3fddc55f3d13d6d7e5bc0",
+      "ref_id": "sha256-b8787ff1bbccd3e98f2a47107c8ae9a3d02df8afa135d88d90d380eff3745e26",
       "retention_until": null,
-      "size_bytes": 11279,
+      "size_bytes": 13118,
       "source": null,
       "storage_uri": null
     },
@@ -640,13 +640,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
+      "digest": "sha256:ed8ce451df6ebae9a68c5baeea410eb88eab695bd3dbc75d7b9b99e2aacbede0",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
+      "path": "units/root/plan/contexts/sha256-ed8ce451df6ebae9a68c5baeea410eb88eab695bd3dbc75d7b9b99e2aacbede0",
       "redaction_applied": null,
-      "ref_id": "sha256-8a78a62ebefd7f1705ba98068a9ffd40bb978f34a77166f223adc8ccd9e9827b",
+      "ref_id": "sha256-ed8ce451df6ebae9a68c5baeea410eb88eab695bd3dbc75d7b9b99e2aacbede0",
       "retention_until": null,
-      "size_bytes": 11273,
+      "size_bytes": 13112,
       "source": null,
       "storage_uri": null
     },
@@ -657,13 +657,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
+      "digest": "sha256:9337658e34f782ef7c43e8543f390dac40cf9304f78eb5d65e381b3c5792c1ae",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
+      "path": "units/root/plan/contexts/sha256-9337658e34f782ef7c43e8543f390dac40cf9304f78eb5d65e381b3c5792c1ae",
       "redaction_applied": null,
-      "ref_id": "sha256-56263383d417715cf9c7d5170a18a2e7959e2413c7f1a7207710f4385a461d39",
+      "ref_id": "sha256-9337658e34f782ef7c43e8543f390dac40cf9304f78eb5d65e381b3c5792c1ae",
       "retention_until": null,
-      "size_bytes": 11282,
+      "size_bytes": 13121,
       "source": null,
       "storage_uri": null
     },
@@ -674,13 +674,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
+      "digest": "sha256:0910f1994ab156b112789c7917c4095d51cf06d51c3450bb0d80583af359c531",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
+      "path": "units/root/plan/contexts/sha256-0910f1994ab156b112789c7917c4095d51cf06d51c3450bb0d80583af359c531",
       "redaction_applied": null,
-      "ref_id": "sha256-759e65bdfe13b25303427987cae86bbd199288ca9ee71dc06d944ee5e36c2880",
+      "ref_id": "sha256-0910f1994ab156b112789c7917c4095d51cf06d51c3450bb0d80583af359c531",
       "retention_until": null,
-      "size_bytes": 11280,
+      "size_bytes": 13119,
       "source": null,
       "storage_uri": null
     },
@@ -691,13 +691,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
+      "digest": "sha256:f4ae2effc4f7eaddde7a2e838bb4d55d3ed1e7de92f31f960f1d5d8912c6d6e8",
       "media_type": "application/json",
-      "path": "units/root/plan/contexts/sha256-567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
+      "path": "units/root/plan/contexts/sha256-f4ae2effc4f7eaddde7a2e838bb4d55d3ed1e7de92f31f960f1d5d8912c6d6e8",
       "redaction_applied": null,
-      "ref_id": "sha256-567d63aa1bfbf5bd51c8a71f876855bd3937fbe047c2c48a3aae19727a7e04a6",
+      "ref_id": "sha256-f4ae2effc4f7eaddde7a2e838bb4d55d3ed1e7de92f31f960f1d5d8912c6d6e8",
       "retention_until": null,
-      "size_bytes": 13114,
+      "size_bytes": 14955,
       "source": null,
       "storage_uri": null
     },
@@ -708,13 +708,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:bb6baffbf1afec0ee059861515dcaa128fb6040db36f7c5206a14bfe99791cca",
+      "digest": "sha256:f81cc14b7f4fe84c487d32a113ffb880882a894c1d31f3e11f3109cdd3b0341f",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 381,
+      "size_bytes": 408,
       "source": null,
       "storage_uri": null
     },
@@ -725,7 +725,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a82ab9a16015ccc0ce5550e635d4805089b885b3717b8ac3ded3022815c48f91",
+      "digest": "sha256:67652b7c4a6de32213fc2ed7214f04fbf982485f7a6ef4acd6d66e3cef25e18d",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "redaction_applied": null,
@@ -742,13 +742,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:e3cc4fbcf5e4b34a9f48c8c79b3183339f6e655157ecc11b1de12bbea1ce8ba5",
+      "digest": "sha256:0696f08d724648022ac22846af4f7ffbdb3af1ae191e4c6baece9fa65d2ccbfc",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 440,
+      "size_bytes": 501,
       "source": null,
       "storage_uri": null
     },
@@ -759,13 +759,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:fe37ce4b30c5df0bd74257705afb9dbfc7cef6cf01472525796c52f0c3dbf8a5",
+      "digest": "sha256:d37d321334f8dc9bca14bc89843b5da95b09494f4396b563e69a08714d0a5499",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 351,
+      "size_bytes": 378,
       "source": null,
       "storage_uri": null
     },
@@ -776,7 +776,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:4f0344dff24e149c99f716fd9b2cbf7113dcd00de3ba419ff59d1e16a97466e2",
+      "digest": "sha256:1ef78e6b504948a49869e48fdf5f6cfabe5169c4911ff449aa85f032c0c54211",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "redaction_applied": null,
@@ -793,13 +793,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a01f677aaf98146c632185e16ec34616e92c076a73802a2d69d4c69ed133b2b7",
+      "digest": "sha256:6e8f2d77005bd89f3e315b093d93e9ce048cb7cd8cd182f782006576c470b192",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 418,
+      "size_bytes": 479,
       "source": null,
       "storage_uri": null
     },
@@ -810,13 +810,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:98426aac827cf1136f51c5859abf6e245efeb551e9cf44d1332ae8faf7f2d1c4",
+      "digest": "sha256:7f1e58a6be7114b2a001344db81dc4d4b9f2c901002815cf0b6fd824c36a694b",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 733,
+      "size_bytes": 760,
       "source": null,
       "storage_uri": null
     },
@@ -827,7 +827,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c0681ae2c6e18200d7e587ff541486f3b3281ad1cff8c179a41ae5c236822b9e",
+      "digest": "sha256:f4628ed57cef7afd3da99738d7deb6eaa6c4a340c29ef8378ffe5bd8986ee85e",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_applied": null,
@@ -844,13 +844,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:7ea7e6aa9ff39972eb4e09e3b70a00202cb330e9cab12814a466077918182a08",
+      "digest": "sha256:e4668b363ee4b6e55461bef566f990bc17aac2309acd038f53ad82bdb454dcb0",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 1143,
+      "size_bytes": 1204,
       "source": null,
       "storage_uri": null
     },
@@ -861,13 +861,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:1e632546526c5105c96027596c702efe3906dd12275eaa8777ef2bb52137d0ed",
+      "digest": "sha256:af9fc0b080b3524ccf0ef814a414182e1272848187e39f7822348d744ccfec36",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 349,
+      "size_bytes": 376,
       "source": null,
       "storage_uri": null
     },
@@ -878,7 +878,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:439bfafcbf6eb8464fde368da526000035441f72536dfe3c404dbd3e7febacaa",
+      "digest": "sha256:5f2cd35336825b96e0e8b8e44e6eb11bb94145040394f04a54f092630658f5dd",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "redaction_applied": null,
@@ -895,13 +895,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:001f78b434694779e115b7c846fd54a62668d75529886e10793edd8c65ceebea",
+      "digest": "sha256:52c9c8e55818e750f6f1af3daacb544d30961948d4d6389efd077e1ad0902b2f",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 422,
+      "size_bytes": 483,
       "source": null,
       "storage_uri": null
     },
@@ -912,13 +912,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:9f74a41d0a71e47ec9e043895bf38081e487e7312ae54689dbc8911bce491ea4",
+      "digest": "sha256:cf6095544b343332ebc2ccbfe924ef0ab0de655080594311e5af6068113128cd",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 832,
+      "size_bytes": 859,
       "source": null,
       "storage_uri": null
     },
@@ -929,7 +929,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:2eeb23656011e9ddcbcbb1c8ea0b16724e22b3187d7010ca5aa45b1bf3b3f463",
+      "digest": "sha256:3661529df2e8d38acf144f18495f06a673882865db06e0792cc129eaa54be81d",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "redaction_applied": null,
@@ -946,13 +946,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a7b0f5cdeda424aed2d67076df5573d76b9a8426ca0d3643419f0725f260df79",
+      "digest": "sha256:a307b9c83f43e7ed05927b21f73d733cad84db672cc39998160875c9818b84a8",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "redaction_applied": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 1534,
+      "size_bytes": 1595,
       "source": null,
       "storage_uri": null
     },
@@ -963,7 +963,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:144b6d0322c378933925cd631e6dce0a0ff8a00e8bd37927d8a202e30c430994",
+      "digest": "sha256:de37bf978fae523449e2deaf49212f0e2acb4b9c789cca1853b89acc7f4f2194",
       "media_type": "application/json",
       "path": "units/root/plan/assertions/compiled.json",
       "redaction_applied": null,
@@ -980,7 +980,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:22e92bd57f3b6d1c030ce8db7ed507e23f50d5c2416691463d80026b0951995d",
+      "digest": "sha256:f8e2da8a5ed7212b2fdd60e5c05c8c3786dc064465c4534d16e8a069b787803e",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_applied": null,
@@ -1039,7 +1039,7 @@
     "plan": {
       "assertions": {
         "count": 5,
-        "digest": "sha256:144b6d0322c378933925cd631e6dce0a0ff8a00e8bd37927d8a202e30c430994",
+        "digest": "sha256:de37bf978fae523449e2deaf49212f0e2acb4b9c789cca1853b89acc7f4f2194",
         "index": "units/root/plan/assertions/compiled.json"
       },
       "compiler": {
@@ -1050,7 +1050,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:22e92bd57f3b6d1c030ce8db7ed507e23f50d5c2416691463d80026b0951995d",
+        "digest": "sha256:f8e2da8a5ed7212b2fdd60e5c05c8c3786dc064465c4534d16e8a069b787803e",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1533,7 +1533,7 @@
         "assertions_evaluated": 5,
         "assertions_expected": {
           "basis": "locally_derived",
-          "required_assertion_digest": "sha256:84fbbdbe140405968929b5328addfa496982328ca4750d38b9c63435ea646605",
+          "required_assertion_digest": "sha256:9ea4d4d08ad0ca79ad5573c777c1232d2e29e3b4abd638963b0754fd8641f85c",
           "value": 5
         },
         "checks": 5,

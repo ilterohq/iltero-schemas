@@ -5,7 +5,8 @@
   "type": "process",
   "stage": "pre_deploy",
   "target": {
-    "kind": "change"
+    "kind": "change",
+    "resources": []
   },
   "when": {
     "predicate": {

@@ -28,8 +28,10 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import Field, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
+from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
+from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.facts import UnknownMarker
@@ -176,14 +178,43 @@ class Subject(StrictModel):
     authority: Authority
 
 
+class UnknownKind(StrictModel):
+    """What stands where a tool's adapter could not name a resource's kind: a check that reads it is unknown."""
+
+    model_config = ConfigDict(serialize_by_alias=True)
+
+    unknown: Literal[True] = Field(alias="__unknown")
+    reason: Literal["kind_unmapped"]
+
+
 class ResourceIndexEntry(StrictModel):
-    """One line of the plan's table of contents: which resource, of which type, planned to do what."""
+    """One line of the plan's table of contents: which resource, of which type and kind, planned to do what.
+
+    ``provider`` is the provider's short name (``aws``). ``kind`` is the kind the plan's tool table gives the type
+    (``kinds.tables``); the unknown marker when the table has none; null exactly for a provider with no kinds.
+    """
 
     id: Address
-    provider: Identifier | None
+    provider: ProviderName
     type: Identifier | None
+    kind: Identifier | UnknownKind | None
+
     action: Action
     module: Address | None
+
+
+def check_kinds(tool: IacTool, entries: list[ResourceIndexEntry]) -> None:
+    """Raise ``ValueError`` unless every entry names the kind ``tool``'s table gives its type."""
+    for entry in entries:
+        named = None if entry.type is None else kind_of(tool, entry.provider, entry.type)
+        if entry.provider not in RESOURCE_KINDS:
+            valid = entry.kind is None
+        elif named is None:
+            valid = isinstance(entry.kind, UnknownKind)
+        else:
+            valid = entry.kind == named
+        if not valid:
+            raise ValueError(f"{entry.id} names a kind other than the one the {tool} table gives its type")
 
 
 class Change(StrictModel):
@@ -282,6 +313,7 @@ class AssuranceContext(StrictModel):
         if self.plan is not None and self.source is not None and self.plan.source_commit != self.source.commit.sha:
             raise ValueError("plan.source_commit must be the source commit")
         if self.plan is not None:
+            check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
             check_superseded(self.plan.digest, self.deployment)
             check_tool(self.plan.tool, self.deployment)
         return self

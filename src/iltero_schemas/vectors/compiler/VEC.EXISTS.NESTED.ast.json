@@ -6,10 +6,14 @@
   "stage": "plan",
   "target": {
     "kind": "resource",
-    "tool": "terraform",
-    "provider": "vec",
-    "resource_types": [
-      "thing"
+    "resources": [
+      {
+        "tool": "terraform",
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ]
+      }
     ]
   },
   "when": null,

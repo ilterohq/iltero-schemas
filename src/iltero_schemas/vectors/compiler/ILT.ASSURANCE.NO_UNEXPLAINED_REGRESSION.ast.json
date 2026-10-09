@@ -5,7 +5,8 @@
   "type": "process",
   "stage": "runtime",
   "target": {
-    "kind": "assurance"
+    "kind": "assurance",
+    "resources": []
   },
   "when": {
     "all": [

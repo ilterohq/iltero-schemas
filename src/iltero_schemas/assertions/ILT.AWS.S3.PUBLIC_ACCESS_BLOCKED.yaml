@@ -8,9 +8,10 @@ spec:
   stage: plan
   target:
     kind: resource
-    tool: terraform
-    provider: aws
-    resource_types: [aws_s3_bucket]
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_s3_bucket]
   assert:
     exists:
       in: resource.related

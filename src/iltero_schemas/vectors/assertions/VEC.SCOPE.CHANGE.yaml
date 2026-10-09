@@ -1,0 +1,21 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.SCOPE.CHANGE
+  version: "1.0.0"
+  title: A change target scoped by two selectors, with a when of its own
+spec:
+  stage: pre_deploy
+  target:
+    kind: change
+    resources:
+      - provider: aws
+        kinds: [kms_key]
+      - provider: aws
+        kinds: [iam_role]
+  when:
+    path: context.environment.production
+    equal: true
+  assert:
+    path: change.digest
+    equal: sha256:0000000000000000000000000000000000000000000000000000000000000000

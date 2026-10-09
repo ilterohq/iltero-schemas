@@ -37,140 +37,196 @@
         "id": "aws_db_instance.payments",
         "module": null,
         "provider": "aws",
-        "type": "aws_db_instance"
+        "type": "aws_db_instance",
+        "kind": "rds_instance"
       },
       {
         "action": "create",
         "id": "aws_iam_access_key.ci[\"audit\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_access_key"
+        "type": "aws_iam_access_key",
+        "kind": "iam_access_key"
       },
       {
         "action": "create",
         "id": "aws_iam_access_key.ci[\"deploy\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_access_key"
+        "type": "aws_iam_access_key",
+        "kind": "iam_access_key"
       },
       {
         "action": "create",
         "id": "aws_iam_user.ci[\"audit\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_user"
+        "type": "aws_iam_user",
+        "kind": "iam_user"
       },
       {
         "action": "create",
         "id": "aws_iam_user.ci[\"deploy\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_user"
+        "type": "aws_iam_user",
+        "kind": "iam_user"
       },
       {
         "action": "create",
         "id": "aws_instance.bastion",
         "module": null,
         "provider": "aws",
-        "type": "aws_instance"
+        "type": "aws_instance",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_kms_key.payments",
         "module": null,
         "provider": "aws",
-        "type": "aws_kms_key"
+        "type": "aws_kms_key",
+        "kind": "kms_key"
       },
       {
         "action": "create",
         "id": "aws_s3_bucket.logs",
         "module": null,
         "provider": "aws",
-        "type": "aws_s3_bucket"
+        "type": "aws_s3_bucket",
+        "kind": "s3_bucket"
       },
       {
         "action": "create",
         "id": "aws_s3_bucket_public_access_block.logs",
         "module": null,
         "provider": "aws",
-        "type": "aws_s3_bucket_public_access_block"
+        "type": "aws_s3_bucket_public_access_block",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_security_group.db",
         "module": null,
         "provider": "aws",
-        "type": "aws_security_group"
+        "type": "aws_security_group",
+        "kind": "security_group"
       },
       {
         "action": "create",
         "id": "aws_ssm_parameter.connection",
         "module": null,
         "provider": "aws",
-        "type": "aws_ssm_parameter"
+        "type": "aws_ssm_parameter",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_subnet.private[0]",
         "module": null,
         "provider": "aws",
-        "type": "aws_subnet"
+        "type": "aws_subnet",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_subnet.private[1]",
         "module": null,
         "provider": "aws",
-        "type": "aws_subnet"
+        "type": "aws_subnet",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_vpc.main",
         "module": null,
         "provider": "aws",
-        "type": "aws_vpc"
+        "type": "aws_vpc",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].aws_sns_topic.alerts",
         "module": "module.notify[\"primary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic"
+        "type": "aws_sns_topic",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].aws_sns_topic_policy.alerts",
         "module": "module.notify[\"primary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic_policy"
+        "type": "aws_sns_topic_policy",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].aws_sns_topic.alerts",
         "module": "module.notify[\"secondary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic"
+        "type": "aws_sns_topic",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].aws_sns_topic_policy.alerts",
         "module": "module.notify[\"secondary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic_policy"
+        "type": "aws_sns_topic_policy",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].module.dlq.aws_sqs_queue.this",
         "module": "module.notify[\"primary\"].module.dlq",
         "provider": "aws",
-        "type": "aws_sqs_queue"
+        "type": "aws_sqs_queue",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].module.dlq.aws_sqs_queue.this",
         "module": "module.notify[\"secondary\"].module.dlq",
         "provider": "aws",
-        "type": "aws_sqs_queue"
+        "type": "aws_sqs_queue",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       }
     ],
     "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
@@ -189,140 +245,196 @@
         "id": "aws_db_instance.payments",
         "module": null,
         "provider": "aws",
-        "type": "aws_db_instance"
+        "type": "aws_db_instance",
+        "kind": "rds_instance"
       },
       {
         "action": "create",
         "id": "aws_iam_access_key.ci[\"audit\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_access_key"
+        "type": "aws_iam_access_key",
+        "kind": "iam_access_key"
       },
       {
         "action": "create",
         "id": "aws_iam_access_key.ci[\"deploy\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_access_key"
+        "type": "aws_iam_access_key",
+        "kind": "iam_access_key"
       },
       {
         "action": "create",
         "id": "aws_iam_user.ci[\"audit\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_user"
+        "type": "aws_iam_user",
+        "kind": "iam_user"
       },
       {
         "action": "create",
         "id": "aws_iam_user.ci[\"deploy\"]",
         "module": null,
         "provider": "aws",
-        "type": "aws_iam_user"
+        "type": "aws_iam_user",
+        "kind": "iam_user"
       },
       {
         "action": "create",
         "id": "aws_instance.bastion",
         "module": null,
         "provider": "aws",
-        "type": "aws_instance"
+        "type": "aws_instance",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_kms_key.payments",
         "module": null,
         "provider": "aws",
-        "type": "aws_kms_key"
+        "type": "aws_kms_key",
+        "kind": "kms_key"
       },
       {
         "action": "create",
         "id": "aws_s3_bucket.logs",
         "module": null,
         "provider": "aws",
-        "type": "aws_s3_bucket"
+        "type": "aws_s3_bucket",
+        "kind": "s3_bucket"
       },
       {
         "action": "create",
         "id": "aws_s3_bucket_public_access_block.logs",
         "module": null,
         "provider": "aws",
-        "type": "aws_s3_bucket_public_access_block"
+        "type": "aws_s3_bucket_public_access_block",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_security_group.db",
         "module": null,
         "provider": "aws",
-        "type": "aws_security_group"
+        "type": "aws_security_group",
+        "kind": "security_group"
       },
       {
         "action": "create",
         "id": "aws_ssm_parameter.connection",
         "module": null,
         "provider": "aws",
-        "type": "aws_ssm_parameter"
+        "type": "aws_ssm_parameter",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_subnet.private[0]",
         "module": null,
         "provider": "aws",
-        "type": "aws_subnet"
+        "type": "aws_subnet",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_subnet.private[1]",
         "module": null,
         "provider": "aws",
-        "type": "aws_subnet"
+        "type": "aws_subnet",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "aws_vpc.main",
         "module": null,
         "provider": "aws",
-        "type": "aws_vpc"
+        "type": "aws_vpc",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].aws_sns_topic.alerts",
         "module": "module.notify[\"primary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic"
+        "type": "aws_sns_topic",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].aws_sns_topic_policy.alerts",
         "module": "module.notify[\"primary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic_policy"
+        "type": "aws_sns_topic_policy",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].aws_sns_topic.alerts",
         "module": "module.notify[\"secondary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic"
+        "type": "aws_sns_topic",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].aws_sns_topic_policy.alerts",
         "module": "module.notify[\"secondary\"]",
         "provider": "aws",
-        "type": "aws_sns_topic_policy"
+        "type": "aws_sns_topic_policy",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"primary\"].module.dlq.aws_sqs_queue.this",
         "module": "module.notify[\"primary\"].module.dlq",
         "provider": "aws",
-        "type": "aws_sqs_queue"
+        "type": "aws_sqs_queue",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       },
       {
         "action": "create",
         "id": "module.notify[\"secondary\"].module.dlq.aws_sqs_queue.this",
         "module": "module.notify[\"secondary\"].module.dlq",
         "provider": "aws",
-        "type": "aws_sqs_queue"
+        "type": "aws_sqs_queue",
+        "kind": {
+          "__unknown": true,
+          "reason": "kind_unmapped"
+        }
       }
     ],
     "source_commit": "c84e7a1000000000000000000000000000000000",

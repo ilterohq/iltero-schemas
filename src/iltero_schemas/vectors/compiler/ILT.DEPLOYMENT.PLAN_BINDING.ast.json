@@ -5,7 +5,8 @@
   "type": "process",
   "stage": "post_deploy",
   "target": {
-    "kind": "deployment"
+    "kind": "deployment",
+    "resources": []
   },
   "when": null,
   "assert": {

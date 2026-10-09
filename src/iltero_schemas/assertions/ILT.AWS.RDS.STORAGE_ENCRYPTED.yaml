@@ -8,9 +8,10 @@ spec:
   stage: plan
   target:
     kind: resource
-    tool: terraform
-    provider: aws
-    resource_types: [aws_db_instance]
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_db_instance]
   assert:
     path: resource.after.storage_encrypted
     equal: true

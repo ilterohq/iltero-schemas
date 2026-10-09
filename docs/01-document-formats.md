@@ -54,7 +54,7 @@ it is checked, and what kind of thing it is about. The compiler turns it into on
 | `metadata.version` | string | A semantic version `X.Y.Z`. Evidence cites the assertion's digest, not this version. |
 | `metadata.title` | string | One line, at most 200 characters. |
 | `spec.stage` | stage | When the assertion is checked. |
-| `spec.target` | object | What the assertion is about. `kind` is `resource`, `change`, `deployment` or `assurance`. A `resource` target also names the infrastructure-as-code (IaC) `tool` (`terraform`), the `provider` and 1 to 64 `resource_types`. |
+| `spec.target` | object | What the assertion is about. `kind` is `resource`, `change`, `deployment` or `assurance`. `resources` lists resource selectors: a `resource` target names exactly one; a `change` or `deployment` target may name up to 16, and is then in scope only when the change touches a resource one of them picks. |
 | `spec.type` | string | Optional. `state` for a `resource` target, `process` otherwise. When written, it must match the target. |
 | `spec.when` | object | Optional condition. When it is false, the result is `not_applicable`. |
 | `spec.assert` | object | The rule. |
@@ -70,6 +70,19 @@ Key rules:
   | `deployment` | `post_deploy`, `post_verify`, `runtime` |
   | `assurance` | `post_verify`, `runtime` |
 
+- A resource selector is one of:
+
+  | Selector | Where | Picks |
+  | --- | --- | --- |
+  | `{tool, provider, resource_types}` | A `resource` target: exactly one. | Resources of `provider` whose type, as the infrastructure-as-code (IaC) `tool` (`terraform`) spells it, is one of `resource_types` (1 to 64). A resource's values are that tool's own attributes. |
+  | `{provider, kinds}` | A `change` target, or a `deployment` target at `post_deploy`: up to 16. | Resources of `provider` whose kind is one of `kinds` (1 to 64), from the provider's list (`iltero_schemas.kinds.RESOURCE_KINDS`). |
+
+  A kind is a tool-independent name for what a resource is, such as `rds_instance`, so one selector holds for every
+  IaC tool. Each tool's table gives its resource types their kinds: `iltero_schemas/kinds/terraform.json`, read with
+  `iltero_schemas.kinds.kind_of`. The compiler writes a `change` or `deployment` target's scope check from its
+  selectors, ahead of `when`: some resource of the provider has one of the kinds. A resource whose type the table
+  lacks holds the unknown marker, so the check is `unknown`, not `false`. A target out of scope is
+  `not_applicable` with the reason `when: false`. A hand-written policy names no selectors.
 - A rule is built from checks. A check names a `path` and exactly one comparison: `equal`, `not_equal`,
   `greater_than`, `greater_than_or_equal`, `less_than`, `less_than_or_equal`, `in`, `not_in` or `contains`. The
   operand is a literal or `{path: ...}`. Checks combine with `all`, `any`, `not` and `exists` (`in` and an optional
@@ -99,9 +112,10 @@ spec:
   stage: plan
   target:
     kind: resource
-    tool: terraform
-    provider: aws
-    resource_types: [aws_db_instance]
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_db_instance]
   when:
     path: context.environment.production
     equal: true
@@ -129,7 +143,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Cloud's policy treats it as production, or the unknown marker in a run Iltero Cloud did not open. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`) and `trust` (`attested`, `corroborated` or `asserted`). |
 | `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
-| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `action`, `module`), and the change `digest` once known. |
+| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name (`aws`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
 | `subject` | object | The subject's `kind`, local `id`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `action`, `before`, `after`, `related` and more. |

@@ -6,7 +6,10 @@ from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.canonical import digest
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, RegoModule, compile, package_of
 
-RESOURCE = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}
+RESOURCE = {
+    "kind": "resource",
+    "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}],
+}
 
 
 def _source(assert_: Any, when: Any = None, assertion_id: str = "ACME.TEST.CASE") -> dict[str, Any]:
@@ -114,3 +117,17 @@ def test_exists_without_where_counts_elements() -> None:
 def test_non_ascii_literals_are_kept_as_utf8() -> None:
     module = _module({"path": "resource.x", "equal": "café"})
     assert 'literal("café")' in module.source.decode("utf-8")
+
+
+def _change_source(target: dict[str, Any]) -> dict[str, Any]:
+    source = _source({"path": "change.digest", "equal": "x"})
+    source["spec"].update(stage="pre_deploy", target=target)
+    return source
+
+
+def test_a_change_target_with_selectors_is_in_scope_only_when_the_change_touches_one() -> None:
+    target = {"kind": "change", "resources": [{"provider": "aws", "kinds": ["kms_key"]}]}
+    rules = _rules(compile(parse_document(_change_source(target))))
+    assert "_has_when := true\n" in rules
+    assert '"change.resources"' in rules and '"item.kind"' in rules and '"kms_key"' in rules
+    assert "_has_when := false\n" in _rules(compile(parse_document(_change_source({"kind": "change"}))))

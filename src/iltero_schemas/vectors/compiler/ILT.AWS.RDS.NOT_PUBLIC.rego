@@ -8,7 +8,7 @@ assertion_version := "1.0.0"
 
 ast_version := 2
 
-assertion_source_digest := "sha256:bbb338b5a42669400eefe7a3e7c26767483df1da41983ba39833c2a1775842cf"
+assertion_source_digest := "sha256:ffa5d77b2187fe0abf1336a79a655c226ba8f23044bf0d667cfd6e5673685ad5"
 
 _has_when := false
 

@@ -8,7 +8,7 @@ assertion_version := "1.0.0"
 
 ast_version := 2
 
-assertion_source_digest := "sha256:ba28919cce534bc4f19b5af7ca7304e52d93bcb9f23234f1242e81821f71b417"
+assertion_source_digest := "sha256:6bac0b9a3757f97514b72bf3f8bd8a10498b4120d7a0aad9359a7957076a2d24"
 
 _has_when := true
 
@@ -19,7 +19,10 @@ _check := any_of([
 	exists_of(lookup("approvals"), [where_3(e3) | some e3 in elements(lookup("approvals"))]),
 ])
 
-where_1(item) := predicate("in", lookup_item(item, "item.type"), literal(["aws_iam_policy", "aws_iam_role_policy", "aws_security_group", "aws_security_group_rule", "aws_kms_key"]))
+where_1(item) := all_of([
+	predicate("equal", lookup_item(item, "item.provider"), literal("aws")),
+	predicate("in", lookup_item(item, "item.kind"), literal(["iam_access_key", "iam_group_membership", "iam_group_policy", "iam_identity_provider", "iam_policy", "iam_policy_attachment", "iam_role", "iam_role_policy", "iam_user_policy", "kms_grant", "kms_key", "kms_key_policy", "network_acl", "network_acl_rule", "security_group", "security_group_rule"])),
+])
 
 where_2(item) := all_of([
 	predicate("equal", lookup_item(item, "item.status"), literal("approved")),

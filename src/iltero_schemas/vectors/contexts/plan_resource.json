@@ -63,7 +63,8 @@
         "provider": "aws",
         "type": "aws_db_instance",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "rds_instance"
       }
     ]
   },
@@ -84,7 +85,8 @@
         "provider": "aws",
         "type": "aws_db_instance",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "rds_instance"
       }
     ]
   },

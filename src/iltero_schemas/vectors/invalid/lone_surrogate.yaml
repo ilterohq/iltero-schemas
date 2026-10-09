@@ -6,7 +6,7 @@ metadata:
   title: An invalid document
 spec:
   stage: plan
-  target: {kind: resource, tool: terraform, provider: aws, resource_types: [aws_db_instance]}
+  target: {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [aws_db_instance]}]}
   assert:
     path: resource.after.name
     equal: "\ud800"

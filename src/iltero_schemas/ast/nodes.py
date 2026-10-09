@@ -96,11 +96,19 @@ Expr: TypeAlias = Predicate | All | AnyOf | Not | Exists
 
 
 @dataclass(frozen=True)
+class Selector:
+    """Resources one selector picks: a provider's neutral ``kinds``, or one ``tool``'s ``resource_types``."""
+
+    provider: str
+    kinds: tuple[str, ...]
+    tool: IacTool | None
+    resource_types: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class Target:
     kind: TargetKind
-    tool: IacTool | None
-    provider: str | None
-    resource_types: tuple[str, ...]
+    selectors: tuple[Selector, ...]
 
 
 @dataclass(frozen=True)
@@ -136,13 +144,18 @@ def _expr_json(expr: Expr) -> dict[str, Any]:
     }
 
 
+def _selector_json(selector: Selector) -> dict[str, Any]:
+    if selector.tool is None:
+        return {"provider": selector.provider, "kinds": list(selector.kinds)}
+    return {"tool": selector.tool, "provider": selector.provider, "resource_types": list(selector.resource_types)}
+
+
 def to_json(assertion: Assertion) -> dict[str, Any]:
     """The one JSON form of the AST; its canonical bytes are the assertion's source digest."""
-    target: dict[str, Any] = {"kind": assertion.target.kind.value}
-    if assertion.target.kind is TargetKind.RESOURCE:
-        target["tool"] = assertion.target.tool
-        target["provider"] = assertion.target.provider
-        target["resource_types"] = list(assertion.target.resource_types)
+    target: dict[str, Any] = {
+        "kind": assertion.target.kind.value,
+        "resources": [_selector_json(selector) for selector in assertion.target.selectors],
+    }
     return {
         "ast_version": AST_VERSION,
         "id": assertion.id,

@@ -21,6 +21,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
 from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
 
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
@@ -41,6 +42,9 @@ NAME_PATTERN = r"^[a-z][a-z0-9_]*$"
 PROVIDER_MAX_LENGTH = 32
 RESOURCE_TYPE_MAX_LENGTH = 128
 RESOURCE_TYPES_MAX = 64
+# The most kinds one selector names, and the longest kind.
+KINDS_MAX = 64
+KIND_MAX_LENGTH = 64
 # Characters no human-readable field or literal may contain: C0 and C1
 # controls, DEL, zero-width and bidirectional formatting characters.
 CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f-\x9f\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u2069\ufeff]")
@@ -132,23 +136,48 @@ class Metadata(_Strict):
         return self
 
 
-class ResourceTarget(_Strict):
-    """A state assertion's target: resources of the named types, from one provider, as one IaC tool names them.
+# A provider's short name, as an assertion and an evaluation input name it (``aws``).
+ProviderName = Annotated[str, Field(pattern=NAME_PATTERN, max_length=PROVIDER_MAX_LENGTH)]
 
-    Each IaC tool spells resource types its own way, so a type is checked
-    against the rule of the tool the target names.
+
+class KindSelector(_Strict):
+    """Resources of one provider, by the neutral kinds that provider's list names (``kinds.vocabulary``)."""
+
+    provider: ProviderName
+    kinds: Annotated[
+        list[Annotated[str, Field(pattern=NAME_PATTERN, max_length=KIND_MAX_LENGTH)]],
+        Field(min_length=1, max_length=KINDS_MAX),
+    ]
+
+    @model_validator(mode="after")
+    def _kinds(self) -> KindSelector:
+        known = RESOURCE_KINDS.get(self.provider)
+        if known is None:
+            raise ValueError(f"provider {self.provider!r} has no resource kinds a selector can name")
+        if not set(self.kinds) <= known:
+            raise ValueError(f"kinds must be {self.provider} resource kinds: {', '.join(sorted(known))}")
+        if len(set(self.kinds)) != len(self.kinds):
+            raise ValueError("kinds must not repeat a kind")
+        return self
+
+
+class ToolSelector(_Strict):
+    """Resources of the named types, from one provider, as one IaC tool names them.
+
+    The one place a target names a tool's own types: for a check that reads that
+    tool's attributes. Each tool spells types its own way, so a type is checked
+    against the rule of the tool named.
     """
 
-    kind: Literal["resource"]
     tool: IacTool
-    provider: Annotated[str, Field(pattern=NAME_PATTERN, max_length=PROVIDER_MAX_LENGTH)]
+    provider: ProviderName
     resource_types: Annotated[
         list[Annotated[str, Field(min_length=1, max_length=RESOURCE_TYPE_MAX_LENGTH)]],
         Field(min_length=1, max_length=RESOURCE_TYPES_MAX),
     ]
 
     @model_validator(mode="after")
-    def _types(self) -> ResourceTarget:
+    def _types(self) -> ToolSelector:
         rule = re.compile(RESOURCE_TYPE_PATTERNS[self.tool])
         if not all(rule.fullmatch(name) for name in self.resource_types):
             raise ValueError(f"resource_types must be {self.tool} resource types")
@@ -157,13 +186,48 @@ class ResourceTarget(_Strict):
         return self
 
 
+# The most selectors one target names.
+SELECTORS_MAX = 16
+
+
+class ResourceTarget(_Strict):
+    """A state assertion's target: the resources its one tool selector picks, whose values are that tool's own."""
+
+    kind: Literal["resource"]
+    resources: Annotated[list[ToolSelector], Field(min_length=1, max_length=1)]
+
+
 class ProcessTarget(_Strict):
-    """A process assertion's target: the change, the deployment or the assurance history."""
+    """A process assertion's target: the change, the deployment or the assurance history.
+
+    A change or deployment target may name ``resources``, by kinds so it holds for every tool: it is then in scope
+    only when the change touches a resource one of its selectors picks.
+    """
 
     kind: Literal["change", "deployment", "assurance"]
+    resources: Annotated[list[KindSelector], Field(min_length=1, max_length=SELECTORS_MAX)] | None = None
+
+    @model_validator(mode="after")
+    def _resources(self) -> ProcessTarget:
+        if self.resources is not None and self.kind == "assurance":
+            raise ValueError("an assurance target names no resources: it has no change to scope")
+        return self
 
 
 Target = Annotated[ResourceTarget | ProcessTarget, Field(discriminator="kind")]
+
+
+# The stages whose input has a change a target's selectors can scope.
+SCOPED_STAGES = frozenset({Stage.PRE_DEPLOY, Stage.POST_DEPLOY})
+
+
+def check_target(stage: Stage, target: ResourceTarget | ProcessTarget) -> None:
+    """Raise ``ValueError`` unless ``target`` is valid at ``stage`` and its selectors have a change to scope."""
+    kind = TargetKind(target.kind)
+    if (DERIVED_TYPE[kind], stage, kind) not in VALID_COMBINATIONS:
+        raise ValueError(f"stage {stage.value!r} is not valid for target kind {target.kind!r}")
+    if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
+        raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
 
 
 class Spec(_Strict):
@@ -186,8 +250,7 @@ class Spec(_Strict):
             raise ValueError(
                 f"type {self.type.value!r} does not match target kind {self.target.kind!r} ({derived.value})"
             )
-        if (derived, self.stage, TargetKind(self.target.kind)) not in VALID_COMBINATIONS:
-            raise ValueError(f"stage {self.stage.value!r} is not valid for target kind {self.target.kind!r}")
+        check_target(self.stage, self.target)
         return self
 
 

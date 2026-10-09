@@ -1,0 +1,38 @@
+{
+  "ast_version": 2,
+  "id": "VEC.SCOPE.CHANGE",
+  "version": "1.0.0",
+  "type": "process",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": [
+      {
+        "provider": "aws",
+        "kinds": [
+          "kms_key"
+        ]
+      },
+      {
+        "provider": "aws",
+        "kinds": [
+          "iam_role"
+        ]
+      }
+    ]
+  },
+  "when": {
+    "predicate": {
+      "path": "context.environment.production",
+      "op": "equal",
+      "literal": true
+    }
+  },
+  "assert": {
+    "predicate": {
+      "path": "change.digest",
+      "op": "equal",
+      "literal": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
+}

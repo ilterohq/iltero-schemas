@@ -290,9 +290,11 @@ Key rules:
   (indeterminate), `1` (assertion failed) or `0` applies, and the stage takes the first in the order
   `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`. The record's verdict is the stage verdict that comes first in that order, and
   it names that stage.
-- The plan stage counts the plan's resources (`basis: plan_resource_enumeration`); a pre-deploy stage counts its one
-  change (`change_unit`), by the record's `change.digest` as its `source_digest`; a post-deploy stage counts its one
-  deployment (`deployment_unit`).
+- A stage's checks are about one kind of subject, one its assertions can target, and the stage counts its subjects
+  by that kind (`iltero_schemas.models.stages.scope_basis`): the plan stage enumerates the plan's resources (`basis:
+  plan_resource_enumeration`); a change counts as its one unit (`change_unit`, with the record's `change.digest` as
+  its `source_digest`); a deployment counts as its one unit (`deployment_unit`). Only the plan stage enumerates the
+  plan's resources. A stage with no checks counts by the one kind its assertions can target.
 - `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be

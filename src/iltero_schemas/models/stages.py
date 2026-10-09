@@ -30,10 +30,22 @@ SCOPE_BASIS: dict[TargetKind, str] = {
 }
 
 
-def subject_kind(stage: Stage) -> TargetKind | None:
-    """The one kind of subject a stage's assertions can target, or None when it can target several."""
-    kinds = {kind for _type, valid_stage, kind in VALID_COMBINATIONS if valid_stage is stage}
-    return next(iter(kinds)) if len(kinds) == 1 else None
+def scope_basis(stage: Stage, kinds: set[TargetKind]) -> str | None:
+    """How a stage whose checks are about subjects of ``kinds`` counts them; None when no basis is fixed.
+
+    A stage's checks are about one kind of subject, one its assertions can target. A stage with no checks counts
+    by the one kind its assertions can target, if there is one. Only the plan stage enumerates the plan's
+    resources; a later stage's resources have no fixed basis yet.
+    """
+    valid = {kind for _type, valid_stage, kind in VALID_COMBINATIONS if valid_stage is stage}
+    if len(kinds) > 1:
+        raise ValueError(f"the {stage.value} stage's checks are about one kind of subject")
+    if not kinds <= valid:
+        raise ValueError(f"the {stage.value} stage's checks are about subjects its assertions can target")
+    kind = next(iter(kinds or valid)) if len(kinds or valid) == 1 else None
+    if kind is None or (kind is TargetKind.RESOURCE and stage is not Stage.PLAN):
+        return None
+    return SCOPE_BASIS[kind]
 
 
 # The stages whose gate may run in advisory mode: those before the deployment.
@@ -119,8 +131,7 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
-        kind = subject_kind(stage)
-        basis = None if kind is None else SCOPE_BASIS.get(kind)
+        basis = scope_basis(stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage})
         scope = record.coverage.subjects_in_scope.basis
         enumerates = scope == SCOPE_BASIS[TargetKind.RESOURCE]
         if (basis is not None and scope != basis) or (stage is not Stage.PLAN and enumerates):

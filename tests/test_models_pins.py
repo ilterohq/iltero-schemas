@@ -54,6 +54,7 @@ def _with_pre_deploy(document: dict[str, Any], facts_source: str) -> dict[str, A
     changed = copy.deepcopy(document)
     event = changed["events"][-1]
     event["evaluation"]["stage"] = "pre_deploy"
+    event["subject"]["kind"] = "change"
     event["provenance"]["facts_source"] = facts_source
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     del changed["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]

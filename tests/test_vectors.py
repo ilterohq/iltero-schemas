@@ -101,6 +101,12 @@ def test_change_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
     assert change_digest(case["units"]) == case["digest"]
 
 
+def test_the_reversed_starter_set_names_the_same_assertions_in_reverse() -> None:
+    cases = {case["name"]: case for case in ASSERTION_SET_CASES["cases"]}
+    assert cases["starter_set_reversed"]["assertions"] == cases["starter_set"]["assertions"][::-1]
+    assert cases["starter_set_reversed"]["digest"] == cases["starter_set"]["digest"]
+
+
 def test_the_starter_set_vector_holds_every_starter_assertion() -> None:
     starter = next(c for c in ASSERTION_SET_CASES["cases"] if c["name"] == "starter_set")
     assert sorted(tuple(triple) for triple in starter["assertions"]) == sorted(

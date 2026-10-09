@@ -319,7 +319,8 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
     document["identity"]["sources"]["plan"] = None
-    document["identity"].update(removed=None, removed_unresolved=None, deposed_destroyed=None)
+    document["identity"].update(removed=None, removed_unresolved=None)
+    document["identity"]["tool_data"]["deposed_destroyed"] = None
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
 
@@ -327,7 +328,7 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
 def _with_changes(*changes: dict[str, Any], **identity: Any) -> dict[str, Any]:
     document = _deployed()
     apply = document["deployment"]["apply"]
-    apply["changes"], apply["summary"] = list(changes), None
+    apply["changes"], apply["tool_data"]["summary"] = list(changes), None
     document["identity"].update(identity)
     return _combined(document)
 
@@ -429,9 +430,17 @@ def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:
 
 
 def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() -> None:
-    gone = change("aws_db_instance.db", "delete", ["delete"], "applied", basis="state", deposed="bb9fd791")
-    left = change("aws_db_instance.db", "delete", ["delete"], "errored", basis="state", deposed="cc0a1b2d")
-    assert CAR.model_validate(_with_changes(gone, left, deposed_destroyed=1)).identity is not None
-    for counted in (0, 2):
+    deposed = [
+        {"address": "aws_db_instance.db", "key": "bb9fd791", "outcome": "applied"},
+        {"address": "aws_db_instance.db", "key": "cc0a1b2d", "outcome": "errored"},
+    ]
+    for counted, valid in ((1, True), (0, False), (2, False)):
+        document = _deployed()
+        document["deployment"]["apply"]["tool_data"].update(summary=None, deposed=deposed)
+        document["identity"]["tool_data"]["deposed_destroyed"] = counted
+        document = _combined(document)
+        if valid:
+            assert CAR.model_validate(document).identity is not None
+            continue
         with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
-            CAR.model_validate(_with_changes(gone, left, deposed_destroyed=counted))
+            CAR.model_validate(document)

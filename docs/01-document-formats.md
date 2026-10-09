@@ -147,7 +147,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
 | `subject` | object | The subject's `kind`, local `id`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
-| `deployment` | object | What the apply did. |
+| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `verification`, `assurance` | object | Facts after deployment. |
@@ -247,7 +247,7 @@ Key rules:
   | --- | --- |
   | `pass` | none |
   | `fail` | none: a failure's reason is the policy's `reason` |
-  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `reference_time_untrusted`, `deployment_log_incomplete` |
+  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `reference_time_untrusted`, `deployment_log_incomplete`, `kind_unmapped` |
   | `not_applicable` | `when_guard_excluded`, `no_subject_in_scope` |
   | `not_evaluated` | `scanner_not_run`, `credential_denied`, `resource_type_unsupported`, `binding_unverified`, `timeout`, `subject_unresolved`, `evaluator_unavailable`, `identity_unverified`, `stage_not_run` |
   | `error` | `evaluator_crash`, `evaluator_timeout`, `evaluator_memory_cap`, `output_overflow`, `output_contract_violation`, `adapter_parse_failure`, `bundle_verification_failed`, `compile_failure` |
@@ -437,8 +437,7 @@ with a reason. A resolver is the part of a tool that reads identifiers for one c
 | `bindings` | list | Each managed resource in the state after the apply that was bound: `iac` (`tool`, `unit`, `address`), `cloud` (per provider) and `authority: authoritative`. |
 | `unresolved` | list | Each managed resource that was not bound: `address` and `reason`. |
 | `removed`, `removed_unresolved` | list or null | Each object that left the state during the apply, by its identity before the apply, with its `fate` (`deleted` or `forgotten`). |
-| `deposed_destroyed` | integer or null | How many deposed objects the apply destroyed. |
-| `deposed_objects` | integer | How many deposed objects the state still holds. |
+| `tool_data` | object | What only the state's IaC tool says, keyed by `tool`. For `terraform`: `deposed_destroyed` (integer or null), how many deposed objects the apply destroyed, and `deposed_objects`, how many the state still holds. |
 
 Key rules:
 
@@ -457,7 +456,8 @@ Key rules:
   `kms_key`) and the `primary` identifier (`scheme: aws_arn`, `value`). Each ARN must match its type's published
   naming rule, holds no wildcard and is at most 2048 characters. An S3 bucket name and an RDS instance identifier are
   lowercase, as AWS stores them.
-- `removed`, `removed_unresolved` and `deposed_destroyed` are `null` exactly when `sources.plan` is `null`.
+- `removed`, `removed_unresolved` and `tool_data.deposed_destroyed` are `null` exactly when `sources.plan` is
+  `null`.
 - The document carries identifiers only. The state file it was read from never leaves the machine that read it.
 
 ## Attestation

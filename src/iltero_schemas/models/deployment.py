@@ -7,15 +7,16 @@ times the IaC tool reported must agree with that list, so a document that
 tells two stories about one apply is refused.
 
 The apply log and the state each name the infrastructure-as-code (IaC) tool
-that wrote them, and both must name the same one. The current implementation
-reads Terraform's apply log and state.
+that wrote them, and both must name the same one. What only that tool says
+about the apply is under ``tool_data``, keyed by ``tool``, with the checks that
+hold it to the changes (``models.tools``).
 """
 
 from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import ConfigDict, Field, model_validator
+from pydantic import Field, model_validator
 
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.fields import (
@@ -23,7 +24,6 @@ from iltero_schemas.models.fields import (
     Action,
     Address,
     ArtifactDigestBasis,
-    Count,
     Digest,
     Identifier,
     Timestamp,
@@ -31,8 +31,11 @@ from iltero_schemas.models.fields import (
     instant,
 )
 from iltero_schemas.models.iac import IacTool
+from iltero_schemas.models.markers import Unsettled
+from iltero_schemas.models.tools.terraform import TerraformApplyData
 
-# What Terraform runs on a resource. A replacement needs a create, and a delete unless it only forgets its old object.
+# What the IaC tool runs on a resource. A replacement needs a create, and a delete unless it only forgets its old
+# object.
 Operation = Literal["create", "update", "delete"]
 # What happened to one change. ``no_operation``: it needed none, and the state after the apply shows it done.
 ChangeOutcome = Literal["applied", "errored", "not_attempted", "no_operation"]
@@ -47,9 +50,6 @@ ALLOWED_OPERATIONS: dict[str, tuple[tuple[str, ...], ...]] = {
 }
 # How an object that left the state left it: destroyed in the cloud, or still there but no longer managed.
 Fate = Literal["deleted", "forgotten"]
-# The key Terraform gives a deposed object: an old copy of a resource that a replacement set aside.
-DEPOSED_KEY_PATTERN = r"^[0-9a-f]{8}$"
-DeposedKey = Annotated[str, Field(pattern=DEPOSED_KEY_PATTERN)]
 
 
 class AppliedPlan(StrictModel):
@@ -66,33 +66,10 @@ class AppliedPlan(StrictModel):
         return self
 
 
-class ApplySummary(StrictModel):
-    """The counts the IaC tool reported when the apply ran to its end."""
-
-    added: Annotated[int, Field(ge=0)]
-    changed: Annotated[int, Field(ge=0)]
-    imported: Annotated[int, Field(ge=0)]
-    removed: Annotated[int, Field(ge=0)]
-
-
-class Unsettled(StrictModel):
-    """A fact the apply log lost that the state cannot give back either.
-
-    It is the evaluator's own unknown marker, so a check that reads it is
-    ``unknown``, never passed on a guess; a check that does not read it is
-    evaluated as usual. It is always written under its marker name.
-    """
-
-    model_config = ConfigDict(serialize_by_alias=True)
-
-    unknown: Literal[True] = Field(alias="__unknown")
-    reason: Literal["deployment_log_incomplete"]
-
-
 # How a change's outcome is known. ``log``: the log's word, held to the plan and to the state's presence.
 # ``state``: the state settled which operations completed. That happens when the log lost what happened to a
-# change (the outcome may then stay unsettled: a failure and an attempt never made look the same), and always for
-# a deposed object: its delete's start names the object, but its end does not. ``unsettled``: nothing settles it.
+# change (the outcome may then stay unsettled: a failure and an attempt never made look the same).
+# ``unsettled``: nothing settles it.
 ChangeBasis = Literal["log", "state", "unsettled"]
 # What the state can settle: whether an object was made or removed. An update leaves the object either way.
 STATE_SETTLES = frozenset({"create", "delete", "replace"})
@@ -112,11 +89,9 @@ class AppliedChange(StrictModel):
     moved_from: Address | None
     # Whether this change brought an existing cloud resource under the IaC tool's management.
     imported: bool
-    # The key of the deposed object this change deletes; null for a change to the resource's current object.
-    deposed: DeposedKey | None
 
     @model_validator(mode="after")
-    def _a_change_terraform_can_make(self) -> AppliedChange:
+    def _a_change_the_tool_can_make(self) -> AppliedChange:
         if tuple(self.required) not in ALLOWED_OPERATIONS[self.action]:
             raise ValueError(f"not the operations a {self.action} needs")
         self._check_basis()
@@ -127,24 +102,7 @@ class AppliedChange(StrictModel):
             raise ValueError("a rename moves an existing resource to another address")
         if self.imported and self.action not in ("no-op", "update"):
             raise ValueError("an import brings in a resource that is then kept or updated")
-        if self.deposed is not None:
-            self._check_deposed()
         return self
-
-    def _check_deposed(self) -> None:
-        """A deposed object is only ever deleted, and the state says whether it went.
-
-        Terraform's apply log names a deposed object's delete like any other
-        delete at that address, and does not say which delete finished. So the
-        state after the apply settles it: gone, still there after its delete
-        started, or still there because its delete never started. When the log
-        lost lines, a failed delete and one never started look the same, so the
-        outcome of an object the state still holds may stay unsettled.
-        """
-        if self.action != "delete":
-            raise ValueError("a deposed object is only ever deleted")
-        if self.basis != "state":
-            raise ValueError("the state settles what happened to a deposed object")
 
     def _check_basis(self) -> None:
         """What is unsettled follows from how the change is known; only an update's operations may stay unsettled.
@@ -160,9 +118,9 @@ class AppliedChange(StrictModel):
             raise ValueError("a change known from the log has a settled outcome")
         if unsettled_completed and (self.action != "update" or not isinstance(self.outcome, Unsettled)):
             raise ValueError("only an update's operations may stay unsettled, and then its outcome too")
-        # A deposed object's delete may never have started: the state still holds it, and the log names no start.
-        never_started = ("no_operation",) if self.deposed is not None else ("not_attempted", "no_operation")
-        if self.basis == "state" and (self.action not in STATE_SETTLES or self.outcome in never_started):
+        if self.basis == "state" and (
+            self.action not in STATE_SETTLES or self.outcome in ("not_attempted", "no_operation")
+        ):
             raise ValueError("the state settles only a create, delete or replace, as applied, errored or unknown")
 
     def _check_completed(self) -> None:
@@ -193,17 +151,11 @@ class AppliedChange(StrictModel):
         """
         if self.action == "forget":
             return self.outcome == "no_operation"
-        # A deposed object is counted, not listed: the address's current object is the one a list names.
-        if self.action not in ("delete", "replace") or self.deposed is not None:
+        if self.action not in ("delete", "replace"):
             return False
         if not isinstance(self.completed, list):
             raise ValueError("only an update's operations may be unsettled, and an update leaves nothing")
         return "delete" in self.completed or (self.required == ["create"] and self.completed == ["create"])
-
-    @property
-    def destroyed_deposed(self) -> bool:
-        """Whether this change destroyed a deposed object."""
-        return self.deposed is not None and self.outcome == "applied"
 
     @property
     def fate(self) -> Fate:
@@ -228,18 +180,11 @@ class ApplyTiming(StrictModel):
 
 
 class ApplySource(StrictModel):
-    """The apply log the changes were read from: the digest of its bytes, the tool that wrote it,
-    and the lines it could not read."""
+    """The apply log the changes were read from: the digest of its bytes, and the tool that wrote it."""
 
     digest: Digest
     tool: IacTool
     tool_version: Identifier
-    # Lines that are not JSON and carry no mark of the tool: output the pipeline mixed in. Nothing was lost.
-    noise_lines: Count
-    # Lines that are not JSON but carry the tool's mark: a message of the tool's own was lost or damaged.
-    damaged_lines: Count
-    # Operations the log shows starting and never ending: the log stopped, or their end was lost.
-    interrupted_operations: Count
 
 
 class StateSource(StrictModel):
@@ -270,67 +215,29 @@ class Apply(StrictModel):
     # where the log lost messages, the state's word where it settles a change (each change says which).
     basis: Literal["log_held_to_plan_and_state_presence", "log_and_state_where_log_incomplete"]
     changes: Annotated[list[AppliedChange], Field(max_length=MAX_RESOURCES)]
-    # Null when the tool stopped before reporting one: the apply did not run to its end. Unsettled when the
-    # log lost messages and has none: it may have been one of them.
-    summary: ApplySummary | Unsettled | None
     # Null exactly when no operation ran.
     timing: ApplyTiming | None
+    # What only the tool that wrote the log says about the apply; a new tool makes this a union keyed by ``tool``.
+    tool_data: TerraformApplyData
 
     @model_validator(mode="after")
     def _one_story(self) -> Apply:
         check_one_tool(self.source, self.state)
         changes = self.changes
-        # The current object sorts before the deposed objects at its address. An address holds no control
-        # character, so joining with NUL keeps the order of the addresses themselves.
-        if not sorted_unique([f"{change.address}\x00{change.deposed or ''}" for change in changes]):
-            raise ValueError("changes are sorted by address, then deposed key, and name each object once")
+        if not sorted_unique([change.address for change in changes]):
+            raise ValueError("changes are sorted by address and name each address once")
         renamed = [change.moved_from for change in changes if change.moved_from is not None]
         if len(set(renamed)) != len(renamed):
             raise ValueError("two changes cannot be renamed from one address")
-        self._check_damage()
-        ran = any(change.outcome in ("applied", "errored") for change in changes)
-        maybe = any(isinstance(change.outcome, Unsettled) for change in changes)
-        if (self.timing is None and ran) or (self.timing is not None and not ran and not maybe):
-            raise ValueError("the apply has a time exactly when an operation ran")
-        if isinstance(self.summary, ApplySummary):
-            self._check_summary(self.summary)
-        return self
-
-    def _check_damage(self) -> None:
-        """Only an apply log that lost messages leaves anything to the state, or unsettled, and says so.
-
-        A deposed object is always settled by the state, so that alone says nothing about the log. Its
-        outcome stays unsettled only when the log lost lines.
-        """
-        incomplete = isinstance(self.summary, Unsettled) or any(
-            c.basis != "log" and (c.deposed is None or isinstance(c.outcome, Unsettled)) for c in self.changes
-        )
-        lost = self.source.damaged_lines or self.source.interrupted_operations
-        if incomplete and not lost:
-            raise ValueError("only a log that lost messages leaves a change to the state or unsettled")
+        incomplete = self.tool_data.unsettled or any(change.basis != "log" for change in changes)
         if incomplete != (self.basis == "log_and_state_where_log_incomplete"):
             raise ValueError("the apply's basis says whether the state settled what the log lost")
-
-    def _check_summary(self, summary: ApplySummary) -> None:
-        """Terraform reports its counts only when the apply ran to its end, and they are the changes' own.
-
-        Terraform counts the operations it ran by address. So a deposed object's delete is counted when it
-        is the only one at its address, and may be lost behind another change there. Its count of removed
-        objects therefore lies between the current objects' deletes and those plus every deposed delete.
-        """
-        if any(not isinstance(c.outcome, str) or c.outcome in ("errored", "not_attempted") for c in self.changes):
-            raise ValueError("the tool reports its counts only when every change was made")
-        applied = [change for change in self.changes if change.outcome == "applied" and change.deposed is None]
-        expected = {
-            "added": sum("create" in change.required for change in applied),
-            "changed": sum("update" in change.required for change in applied),
-            "imported": sum(change.imported for change in self.changes),
-        }
-        removed = sum("delete" in change.required for change in applied)
-        deposed = sum(change.destroyed_deposed for change in self.changes)
-        reported = summary.model_dump()
-        if reported.pop("removed") not in range(removed, removed + deposed + 1) or reported != expected:
-            raise ValueError("the summary's counts are not what the changes show")
+        ran = self.tool_data.ran or any(change.outcome in ("applied", "errored") for change in changes)
+        maybe = self.tool_data.maybe_ran or any(isinstance(change.outcome, Unsettled) for change in changes)
+        if (self.timing is None and ran) or (self.timing is not None and not ran and not maybe):
+            raise ValueError("the apply has a time exactly when an operation ran")
+        self.tool_data.check(self)
+        return self
 
 
 class Superseded(StrictModel):

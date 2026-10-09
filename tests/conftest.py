@@ -98,8 +98,7 @@ def identity_record(**fields: Any) -> dict[str, Any]:
         "unresolved": [],
         "removed": [],
         "removed_unresolved": [],
-        "deposed_objects": 0,
-        "deposed_destroyed": 0,
+        "tool_data": {"tool": "terraform", "deposed_destroyed": 0, "deposed_objects": 0},
     }
     return {**record, **fields}
 
@@ -123,7 +122,6 @@ def change(address: str, action: str, required: list[str], outcome: str, **field
         "outcome": outcome,
         "moved_from": None,
         "imported": False,
-        "deposed": None,
         **fields,
     }
 

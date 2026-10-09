@@ -32,7 +32,7 @@ class UnitPlan(StrictModel):
 
 
 class ChangeUnit(StrictModel):
-    unit: Identifier
+    name: Identifier
     plan: UnitPlan
 
 
@@ -40,7 +40,7 @@ class Change(StrictModel):
     """The record's own unit with its plan; ``digest`` binds them once the pre-deploy stage fixes it."""
 
     digest: Digest | None
-    units: Annotated[list[ChangeUnit], Field(min_length=1, max_length=1)]
+    unit: ChangeUnit
 
 
 class UnitsFile(StrictModel):
@@ -60,8 +60,8 @@ class UnitsFile(StrictModel):
 
 def check_change(unit: str, plan_digest: str, change: Change, units_file: UnitsFile | None) -> None:
     """Raise ``ValueError`` unless the change is the record's own unit and plan, and the unit is declared."""
-    (own,) = change.units
-    if own.unit != unit or own.plan.digest != plan_digest:
+    own = change.unit
+    if own.name != unit or own.plan.digest != plan_digest:
         raise ValueError("the change is the record's own unit with the plan the record names")
     if units_file is not None and unit not in units_file.units:
         raise ValueError("the record's unit is one of the units its units file declares")

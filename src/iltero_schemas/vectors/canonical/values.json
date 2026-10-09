@@ -7,5 +7,5 @@
   "integers": {"max": 9007199254740991, "min": -9007199254740991, "one": 1},
   "strings": {"escapes": "tab\t newline\n quote\" backslash\\ control\u0001", "unicode": "café – 😀", "sorted_by_utf16": {"é": 1, "z": 2, "😀": 3, "A": 4}},
   "digest_string": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "sentinel_nodes": {"master_password": {"__redacted": true, "reason": "terraform_sensitive", "present": true, "type": "string"}, "kms_key_id": {"__unknown": true, "reason": "known_after_apply", "present": true}}
+  "sentinel_nodes": {"master_password": {"__redacted": true, "reason": "terraform_sensitive", "present": true, "type": "string"}, "kms_key_id": {"__unknown": true, "reason": "known_after_deploy", "present": true}}
 }

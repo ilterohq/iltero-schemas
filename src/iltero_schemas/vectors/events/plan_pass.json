@@ -2,7 +2,7 @@
   "assertion": {
     "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
     "version": "1.0.0",
-    "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    "digest": "sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67"
   },
   "subject": {
     "kind": "resource",
@@ -79,9 +79,9 @@
       "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
     },
     "binding": null,
-    "assertion_source": "local",
-    "assertion_source_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-    "compiled_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+    "assertion_source": "contract_starter",
+    "assertion_source_digest": "sha256:7d0e58fd64fad627fc20be7a6c45da5a483572aa79b977fd8b6cf86b2ad71d0a",
+    "compiled_digest": "sha256:439bfafcbf6eb8464fde368da526000035441f72536dfe3c404dbd3e7febacaa",
     "compiler": {
       "version": "1",
       "contract_version": "0.1.0",

@@ -75,7 +75,7 @@
     "name": "governed_check_not_from_the_server_bundle",
     "vector": "governed_run.json",
     "set": {
-      "/events/0/provenance/assertion_source": "local"
+      "/events/0/provenance/assertion_source": "contract_starter"
     },
     "remove": [],
     "message": "an assertion from the server's bundle"
@@ -310,32 +310,10 @@
     "message": "Field required"
   },
   {
-    "name": "change_of_two_units",
-    "vector": "local_run.json",
-    "set": {
-      "/change/units": [
-        {
-          "plan": {
-            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
-          },
-          "unit": "root"
-        },
-        {
-          "unit": "zz",
-          "plan": {
-            "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
-          }
-        }
-      ]
-    },
-    "remove": [],
-    "message": "at most 1 item"
-  },
-  {
     "name": "change_of_another_unit",
     "vector": "local_run.json",
     "set": {
-      "/change/units/0/unit": "network"
+      "/change/unit/name": "network"
     },
     "remove": [],
     "message": "the change is the record's own unit with the plan the record names"
@@ -649,7 +627,7 @@
       "/events/7/provenance/facts_source": null
     },
     "remove": [],
-    "message": "facts_source is present exactly when the check ran at pre_deploy"
+    "message": "facts_source is present exactly when the check's stage reads server facts"
   },
   {
     "name": "pre_deploy_stage_of_another_repository",
@@ -676,7 +654,7 @@
       "/stages/pre_deploy/facts_received": null
     },
     "remove": [],
-    "message": "names facts received exactly when it is pre-deploy"
+    "message": "names facts received exactly when its checks read server facts"
   },
   {
     "name": "pre_deploy_stage_counting_another_change",
@@ -715,15 +693,6 @@
     "message": "read the facts the server served"
   },
   {
-    "name": "pre_deploy_facts_of_another_kind",
-    "vector": "governed_two_stage.json",
-    "set": {
-      "/stages/pre_deploy/facts_received/api_version": "iltero.io/assurance-facts/v2"
-    },
-    "remove": [],
-    "message": "Input should be 'iltero.io/assurance-facts/v1'"
-  },
-  {
     "name": "placeholders_out_of_order",
     "vector": "local_run_on_placeholders.json",
     "set": {
@@ -751,5 +720,14 @@
     },
     "remove": [],
     "message": "runs in the pinned policy's gate mode"
+  },
+  {
+    "name": "facts_received_issued_for_another_stage",
+    "vector": "governed_two_stage.json",
+    "set": {
+      "/stages/pre_deploy/facts_received/stage": "plan"
+    },
+    "remove": [],
+    "message": "issued for the stage that names them"
   }
 ]

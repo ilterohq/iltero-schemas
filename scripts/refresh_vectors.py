@@ -13,10 +13,8 @@ under ``vectors/events``, every identity document under
 verification report under ``vectors/reports``, each validated against its
 model first.
 
-A changed runtime under an unchanged ``COMPILER_VERSION`` is refused: every
-recorded compiled digest would change while the version that explains it
-stays the same. Bump the version first, then rerun; review the diff of the
-vectors as carefully as the code.
+A changed runtime changes ``RUNTIME.digest``; review the diff of the vectors
+as carefully as the code.
 
 Usage: python scripts/refresh_vectors.py [--check]
 """
@@ -132,14 +130,6 @@ def document_vectors() -> dict[Path, bytes]:
     return expected
 
 
-def runtime_changed_without_a_bump(expected: dict[Path, bytes]) -> bool:
-    version = COMPILER_VECTORS / "COMPILER_VERSION"
-    runtime = COMPILER_VECTORS / "RUNTIME.digest"
-    if not version.exists() or not runtime.exists():
-        return False
-    return version.read_bytes() == expected[version] and runtime.read_bytes() != expected[runtime]
-
-
 def main(argv: list[str]) -> int:
     check = argv[1:] == ["--check"]
     if argv[1:] and not check:
@@ -148,9 +138,6 @@ def main(argv: list[str]) -> int:
     expected = {COMPILER_VECTORS / name: data for name, data in compiler_vectors().items()}
     expected.update({CANONICAL_VECTORS / name: data for name, data in canonical_vectors().items()})
     expected.update(document_vectors())
-    if runtime_changed_without_a_bump(expected):
-        print("runtime.rego changed but COMPILER_VERSION did not; bump it first", file=sys.stderr)
-        return 1
     stale = [path for path, data in expected.items() if not path.exists() or path.read_bytes() != data]
     if check:
         for path in stale:

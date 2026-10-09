@@ -1,4 +1,4 @@
-"""What a pre-deploy stage read of the facts only the server holds: the unknown marker, and the facts' envelope.
+"""What a stage read of the facts only the server holds: the unknown marker, and the facts' envelope.
 
 Some checks need facts only the server holds: who approved the change,
 which exceptions are in force, earlier evaluations. Until the server can
@@ -20,8 +20,8 @@ from typing import Literal
 
 from pydantic import ConfigDict, Field
 
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Digest, EnvironmentKey, Timestamp, Uuid
+from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.fields import Digest, EnvironmentKey, Identifier, Timestamp, Uuid
 
 # Why a part of the facts is missing; the evaluator's runtime copies it into the result.
 UnknownReason = Literal["server_facts_unavailable"]
@@ -51,9 +51,10 @@ class FactsReceived(StrictModel):
     """The envelope of the facts document a stage received: its kind, the run and stage it was issued for, when,
     what for, and its digest. It holds none of the facts themselves, so it proves nothing about an approval."""
 
-    api_version: Literal["iltero.io/assurance-facts/v1"]
+    # The facts document is the server's own message; the contract records only the kind it named.
+    api_version: Identifier
     run_id: Uuid
-    stage: Literal["pre_deploy"]
+    stage: StageValue
     issued_at: Timestamp
     scope: FactsScope
     # ``canonical.digest_of`` of the whole facts document as parsed from the response body, every member as received.

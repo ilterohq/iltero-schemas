@@ -9,14 +9,12 @@
   },
   "change": {
     "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
-    "units": [
-      {
-        "plan": {
-          "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
-        },
-        "unit": "root"
+    "unit": {
+      "name": "root",
+      "plan": {
+        "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761"
       }
-    ]
+    }
   },
   "units_file": null,
   "complete": false,

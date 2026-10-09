@@ -17,6 +17,8 @@ keep, so any two tools agree on what a record means.
   functions and its pinned release.
 - Ten starter assertions, and the built-in check that the plan applied is the
   plan that was checked.
+- A check of a starter assertion that a project added to its local run says
+  so (`assertion_source: contract_starter`).
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each stage.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
@@ -87,16 +89,19 @@ keep, so any two tools agree on what a record means.
   `job_key()` names the run, attempt and job in one shape for every CI
   system.
 - The signed bundle's descriptor.
-- A pre-deploy stage counts its one change (`basis: change_unit`), by the
-  record's change digest. Every stage records the mode its gate ran in
-  (`enforcement`: `enforcing` or `advisory`; the pinned mode in a run
-  Iltero Cloud opened, and always enforcing after the deployment). A
-  pre-deploy stage of a run Iltero Cloud opened keeps the envelope of the
-  facts it received (`facts_received`: kind, run, stage, issue time, scope
-  and digest), and every pre-deploy check of such a record read them.
+- A stage counts its subjects by their kind: resources by enumerating the
+  plan, a change or a deployment as its one unit (`basis: change_unit`,
+  by the record's change digest, or `deployment_unit`). Every stage records
+  the mode its gate ran in (`enforcement`: `enforcing` or `advisory`; the
+  pinned mode in a run Iltero Cloud opened, and always enforcing after the
+  deployment). In a run Iltero Cloud opened, each stage whose checks read
+  Iltero Cloud facts keeps the envelope of the facts it received
+  (`facts_received`: kind, run, stage, issue time, scope and digest), and
+  every check of that stage read them.
 - A stage that replaced an input it could not read, such as another unit's
-  state, with a placeholder lists it (`coverage.substituted_inputs`: at
-  most 256, by configuration address, sorted). Its verdict still follows its checks, and it is incomplete with reason
+  state, with a placeholder lists it (`coverage.substituted_inputs`: at most
+  256, by the tool's address of the input, sorted). Its verdict still
+  follows its checks, and it is incomplete with reason
   `upstream_state_unavailable`, so a pass on placeholders reads as
   incomplete; an evaluator error's reason wins, in the stage and in the
   record. A record of a run Iltero Cloud opened has none.
@@ -110,7 +115,8 @@ keep, so any two tools agree on what a record means.
 - The unknown marker: where a fact only Iltero Cloud holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A
-  pre-deploy event records where its facts came from (`facts_source`).
+  check at a stage that reads Iltero Cloud facts records where they came
+  from (`facts_source`).
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.

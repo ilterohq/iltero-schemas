@@ -106,8 +106,8 @@ class SubstitutedInput(StrictModel):
     """An input the stage could not read, which its tool replaced with a placeholder value.
 
     ``upstream_state``: the state of a unit this one reads from, such as a remote state another unit wrote.
-    ``source`` is the input's configuration address: its module path and the data source, with no instance key. A
-    stage lists its entries sorted by ``source``, by Unicode code point.
+    ``source`` is the tool's address of the input (for Terraform, the module path and the data source, with no
+    instance key). A stage lists its entries sorted by ``source``, by Unicode code point.
     A stage's own entries name no stage; a record's combined coverage names each entry's stage. The list is the
     writer's claim: an empty one does not prove that no input was replaced.
     """

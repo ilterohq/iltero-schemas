@@ -3,10 +3,9 @@
 A unit is planned, approved and applied on its own, so a record's change
 covers its own unit only, and its list holds that one entry. An approval
 binds to this digest, so re-planning the unit after the approval invalidates
-it. The list has the shape a record's ``change.units`` holds
-(``{"unit", "plan": {"digest"}}``), sorted by unit name in Unicode code-point
-order (not UTF-16 order), so a reader recomputes the digest from the record
-without reshaping anything.
+it. Each entry is ``{"unit": name, "plan": {"digest"}}``, built from a
+record's ``change.unit`` (its ``name`` and ``plan.digest``), and the list is
+sorted by unit name in Unicode code-point order (not UTF-16 order).
 """
 
 from __future__ import annotations

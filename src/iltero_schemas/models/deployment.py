@@ -86,7 +86,7 @@ class Unsettled(StrictModel):
     model_config = ConfigDict(serialize_by_alias=True)
 
     unknown: Literal[True] = Field(alias="__unknown")
-    reason: Literal["apply_log_incomplete"]
+    reason: Literal["deployment_log_incomplete"]
 
 
 # How a change's outcome is known. ``log``: the log's word, held to the plan and to the state's presence.

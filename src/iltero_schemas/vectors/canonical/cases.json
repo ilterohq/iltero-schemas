@@ -93,11 +93,11 @@
       },
       "kms_key_id": {
         "__unknown": true,
-        "reason": "known_after_apply",
+        "reason": "known_after_deploy",
         "present": true
       }
     },
-    "canonical": "{\"kms_key_id\":{\"__unknown\":true,\"present\":true,\"reason\":\"known_after_apply\"},\"master_password\":{\"__redacted\":true,\"present\":true,\"reason\":\"terraform_sensitive\",\"type\":\"string\"}}",
-    "digest": "sha256:09168f24eceb9c5785637418a869bb165386e96eff4d4637a5ce6c08b3eba6b9"
+    "canonical": "{\"kms_key_id\":{\"__unknown\":true,\"present\":true,\"reason\":\"known_after_deploy\"},\"master_password\":{\"__redacted\":true,\"present\":true,\"reason\":\"terraform_sensitive\",\"type\":\"string\"}}",
+    "digest": "sha256:eeacbcf2d87e314dbe31654ee2f3f62e83ffce78b0bd2c578e67e10adc12512a"
   }
 ]

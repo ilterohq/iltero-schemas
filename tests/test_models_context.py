@@ -245,8 +245,9 @@ def test_a_resource_names_the_kind_its_tools_table_gives_its_type(entry: dict[st
         {"provider": "aws", "type": "aws_kms_key", "kind": "kms_key"},
         {"provider": "aws", "type": "aws_new_thing", "kind": UNMAPPED},
         {"provider": "google", "type": "google_kms_key", "kind": None},
+        {"provider": "google-beta", "type": "google_kms_key", "kind": None},
     ],
-    ids=["the table's kind", "a type the table lacks", "a provider with no kinds"],
+    ids=["the table's kind", "a type the table lacks", "a provider with no kinds", "a provider named with a hyphen"],
 )
 def test_a_resource_kind_is_the_tables_unknown_or_absent_for_a_provider_with_none(entry: dict[str, Any]) -> None:
     resources = [{"id": "r.x", "action": "update", "module": None, **entry}]

@@ -239,3 +239,11 @@ def test_a_scoped_target_has_a_change_to_scope() -> None:
     target = {"kind": "deployment", "resources": [{"provider": "aws", "kinds": ["rds_instance"]}]}
     TechnicalAssertion.model_validate(_document(spec__stage="post_deploy", spec__target=target))
     assert _error_locations(_document(spec__stage="post_verify", spec__target=target)) == ["spec"]
+
+
+def test_a_provider_short_name_may_hold_a_hyphen() -> None:
+    selector = {"tool": "terraform", "provider": "google-beta", "resource_types": ["google_compute_instance"]}
+    TechnicalAssertion.model_validate(_document(spec__target={"kind": "resource", "resources": [selector]}))
+    for provider in ("-aws", "Aws", "hashicorp/aws"):
+        target = {"kind": "resource", "resources": [{**selector, "provider": provider}]}
+        assert _error_locations(_document(spec__target=target)) == ["spec.target.resource.resources.0.provider"]

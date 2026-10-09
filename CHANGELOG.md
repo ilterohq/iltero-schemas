@@ -136,6 +136,13 @@ keep, so any two tools agree on what a record means.
 
 These changes break documents written before them.
 
+- A plan resource in the evaluation input is a neutral core (`id`,
+  `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
+  `related`), and what only its IaC tool says about it is under `tool_data`,
+  keyed by `tool`: Terraform's `provider_source`, `action_reason`,
+  `previous_address`, `importing`, `replace_paths`, and a related resource's
+  `match`. It names the kind its tool's table gives its type, like a change
+  entry, and `provider` is required and is the provider's short name.
 - An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
   could issue. A bucket name that looks like an IP address, holds two dots in a
   row or uses a reserved prefix or suffix is refused. So is an RDS identifier

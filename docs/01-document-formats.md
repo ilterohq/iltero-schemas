@@ -146,7 +146,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
 | `subject` | object | The subject's `kind`, local `id`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
-| `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `action`, `before`, `after`, `related` and more. |
+| `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did. |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
@@ -167,7 +167,14 @@ Key rules:
   | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
 
 - A resource is named by its address in the IaC tool's configuration. `provider` is the short name an assertion
-  targets (`aws`), and `provider_source` is the provider's full source address.
+  targets (`aws`). `kind` follows the same rule as a change entry's. `name` is the resource's name within its
+  configuration, and `module` the address of the module that contains it, in the tool's own syntax, or `null` at the
+  root.
+- `tool_data` holds what only the IaC tool that planned the resource says about it, keyed by `tool`, which is the
+  plan's tool. For `terraform`: `provider_source` (the provider's full source address), `action_reason`,
+  `previous_address` (the address before a rename), `importing` and `replace_paths`, as the plan wrote them. Each
+  related resource's `tool_data` says how Terraform matched it: `match` is `instance` (this instance of a `count` or
+  `for_each`) or `every_instance`.
 - `plan.digest` is the digest of the plan as `terraform show -json` prints it, after the top-level keys `timestamp`,
   `terraform_version`, `format_version`, `prior_state`, `resource_drift` and `relevant_attributes` are removed.
   `digest_version` names that rule. `artifact_digest` is the digest of the saved plan file. It is present exactly

@@ -93,15 +93,11 @@
   "resource": {
     "id": "aws_db_instance.payments",
     "provider": "aws",
-    "provider_source": "registry.terraform.io/hashicorp/aws",
     "type": "aws_db_instance",
+    "kind": "rds_instance",
     "name": "payments",
     "module": null,
     "action": "update",
-    "action_reason": null,
-    "previous_address": null,
-    "importing": null,
-    "replace_paths": null,
     "before": {
       "identifier": "payments-prod",
       "storage_encrypted": true,
@@ -114,6 +110,14 @@
       "publicly_accessible": false,
       "backup_retention_period": 14
     },
-    "related": []
+    "related": [],
+    "tool_data": {
+      "tool": "terraform",
+      "provider_source": "registry.terraform.io/hashicorp/aws",
+      "action_reason": null,
+      "previous_address": null,
+      "importing": null,
+      "replace_paths": null
+    }
   }
 }

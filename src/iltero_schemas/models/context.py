@@ -98,7 +98,7 @@ class Identified(StrictModel):
     id: Identifier
 
 
-class Evaluation(StrictModel):
+class EvaluationRun(StrictModel):
     """This evaluation run: its id, stage, the runner's own clock, and the assertion."""
 
     id: Identifier
@@ -124,7 +124,7 @@ class Environment(StrictModel):
     production: bool | UnknownMarker
 
 
-class Scope(StrictModel):
+class OrganizationScope(StrictModel):
     """Organizational scope; each part is present only when known."""
 
     organization: Identified | None = None
@@ -217,7 +217,7 @@ def check_kinds(tool: IacTool, entries: list[ResourceIndexEntry]) -> None:
             raise ValueError(f"{entry.id} names a kind other than the one the {tool} table gives its type")
 
 
-class Change(StrictModel):
+class ProposedChange(StrictModel):
     """The proposed change: the resources it touches, and its digest once the unit's pre-deploy stage fixes it."""
 
     resources: list[ResourceIndexEntry]
@@ -280,11 +280,11 @@ class AssuranceContext(StrictModel):
     """The document; the parts present are exactly what the stage's profile provides for the subject's kind."""
 
     api_version: Literal["iltero.io/assurance-context/v1"] = Field(alias="apiVersion")
-    evaluation: Evaluation
-    context: Scope
+    evaluation: EvaluationRun
+    context: OrganizationScope
     reference_time: ReferenceTime
     source: Source | None = None
-    change: Change | None = None
+    change: ProposedChange | None = None
     plan: Plan | None = None
     subject: Subject | None = None
     resource: PlanResource | None = None

@@ -147,7 +147,7 @@ class AssertionRef(fields.AssertionKey):
     digest: Digest
 
 
-class Subject(StrictModel):
+class EventSubject(StrictModel):
     """What the verdict is about; ``id`` is absent only when the assertion had no subject in scope."""
 
     kind: TargetKindValue
@@ -198,7 +198,7 @@ class MemoryCap(StrictModel):
     kind: Identifier
 
 
-class Environment(StrictModel):
+class EvaluationLimits(StrictModel):
     """The limits an evaluation ran under, as applied, so the same limits can be applied again."""
 
     timeout_s: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_S)]
@@ -216,7 +216,7 @@ class OpaEvaluator(StrictModel):
     engine: Literal["opa"]
     version: Identifier
     digest: Digest
-    environment: Environment
+    environment: EvaluationLimits
 
 
 class ScannerEvaluator(StrictModel):
@@ -314,7 +314,7 @@ class AssuranceEvent(StrictModel):
     """One verdict as submitted."""
 
     assertion: AssertionRef
-    subject: Subject
+    subject: EventSubject
     evaluation: Evaluation
     provenance: Provenance
     observed_at: Timestamp

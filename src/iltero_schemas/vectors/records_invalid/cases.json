@@ -605,7 +605,7 @@
     "name": "pre_deploy_event_with_facts_from_a_local_file",
     "vector": "governed_two_stage.json",
     "set": {
-      "/events/7/provenance/facts_source": "local_file"
+      "/events/6/provenance/facts_source": "local_file"
     },
     "remove": [],
     "message": "read no facts from a local file"
@@ -624,7 +624,7 @@
     "name": "pre_deploy_event_without_a_facts_source",
     "vector": "governed_two_stage.json",
     "set": {
-      "/events/7/provenance/facts_source": null
+      "/events/6/provenance/facts_source": null
     },
     "remove": [],
     "message": "facts_source is present exactly when the check's stage reads server facts"
@@ -687,7 +687,7 @@
     "name": "pre_deploy_event_that_read_no_facts",
     "vector": "governed_two_stage.json",
     "set": {
-      "/events/7/provenance/facts_source": "none"
+      "/events/6/provenance/facts_source": "none"
     },
     "remove": [],
     "message": "read the facts the server served"

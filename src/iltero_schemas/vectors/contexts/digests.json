@@ -1,5 +1,4 @@
 {
-  "governed_two_stage_exception_valid.json": "sha256:9c79bf2a851b818a943c382400d68c1c5acec3341d7e556c87703ca53aaeda96",
   "governed_two_stage_production_approved.json": "sha256:37606bb2e726955caa9b9b6e4a5d44a963c6b41ce185abb5b43f736931df4e35",
   "governed_two_stage_sensitive_change_approved.json": "sha256:4410319b82a2eebaa78aba9bcc175aa297e7f1c37c2a21c3c9a49007c8dd5fec",
   "plan_resource.json": "sha256:262716cb5bdb3d2292a76e96f90e5d68b57ebc35d075ff56c5515bb809130f7f",

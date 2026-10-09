@@ -15,7 +15,7 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Ten starter assertions, and the built-in check that the plan applied is the
+- Nine starter assertions, and the built-in check that the plan applied is the
   plan that was checked.
 - A check of a starter assertion that a project added to its local run says
   so (`assertion_source: contract_starter`).

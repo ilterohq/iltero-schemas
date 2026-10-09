@@ -16,8 +16,7 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.event import Status
-from iltero_schemas.models.fields import Address, Count, Digest, Identifier, plain_text
+from iltero_schemas.models.fields import Address, Count, Digest, Identifier, Status, plain_text
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.

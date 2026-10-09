@@ -8,20 +8,31 @@ assertion_version := "1.0.0"
 
 ast_version := 2
 
-assertion_source_digest := "sha256:3492352146da3275afc06b084a05cd391c76c19503f2505aac086e68f86ecd58"
+assertion_source_digest := "sha256:ba28919cce534bc4f19b5af7ca7304e52d93bcb9f23234f1242e81821f71b417"
 
 _has_when := true
 
 _guard := exists_of(lookup("change.resources"), [where_1(e1) | some e1 in elements(lookup("change.resources"))])
 
-_check := exists_of(lookup("approvals"), [where_2(e2) | some e2 in elements(lookup("approvals"))])
+_check := any_of([
+	exists_of(lookup("approvals"), [where_2(e2) | some e2 in elements(lookup("approvals"))]),
+	exists_of(lookup("approvals"), [where_3(e3) | some e3 in elements(lookup("approvals"))]),
+])
 
 where_1(item) := predicate("in", lookup_item(item, "item.type"), literal(["aws_iam_policy", "aws_iam_role_policy", "aws_security_group", "aws_security_group_rule", "aws_kms_key"]))
 
 where_2(item) := all_of([
 	predicate("equal", lookup_item(item, "item.status"), literal("approved")),
-	predicate("contains", lookup_item(item, "item.roles"), literal("security")),
+	predicate("equal", lookup_item(item, "item.subject.kind"), literal("change")),
 	predicate("equal", lookup_item(item, "item.subject.digest"), lookup("change.digest")),
+	predicate("contains", lookup_item(item, "item.roles"), literal("security")),
+	predicate("equal", lookup_item(item, "item.independence"), literal("independent")),
+])
+
+where_3(item) := all_of([
+	predicate("equal", lookup_item(item, "item.status"), literal("approved")),
+	predicate("equal", lookup_item(item, "item.subject.kind"), literal("run")),
+	predicate("equal", lookup_item(item, "item.subject.id"), lookup("run.id")),
 ])
 
 # Runtime shared by every compiled assertion. It is copied verbatim into each

@@ -1,0 +1,336 @@
+{
+  "description": "Each case evaluates one assertion over contexts/pre_deploy_approvals.json with the parts in set replaced. branches lists the status of each exists of the assertion's assert, in order: an independent approval of the change by its digest from the security role, and an approval of the run by Iltero's run id.",
+  "context": "pre_deploy_approvals.json",
+  "cases": [
+    {
+      "name": "production_run_approved",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "branches": [
+          "false",
+          "true"
+        ]
+      }
+    },
+    {
+      "name": "production_run_approved_by_a_self_approval_the_policy_permits",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+            },
+            "method": "ci_deployment_review",
+            "independence": "self_permitted_by_policy",
+            "policy_version": "3",
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "branches": [
+          "false",
+          "true"
+        ]
+      }
+    },
+    {
+      "name": "production_change_approved_by_its_digest",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0002",
+            "actor": {
+              "provider": "iltero",
+              "id": "reviewer_1"
+            },
+            "roles": [
+              "security"
+            ],
+            "status": "approved",
+            "subject": {
+              "kind": "change",
+              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+            },
+            "method": "iltero_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "branches": [
+          "true",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_without_an_approval",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": []
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_approval_of_another_run",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_approval_of_another_change",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0002",
+            "actor": {
+              "provider": "iltero",
+              "id": "reviewer_1"
+            },
+            "roles": [
+              "security"
+            ],
+            "status": "approved",
+            "subject": {
+              "kind": "change",
+              "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+            },
+            "method": "iltero_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_change_self_approved",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0002",
+            "actor": {
+              "provider": "iltero",
+              "id": "reviewer_1"
+            },
+            "roles": [
+              "security"
+            ],
+            "status": "approved",
+            "subject": {
+              "kind": "change",
+              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+            },
+            "method": "iltero_review",
+            "independence": "self_permitted_by_policy",
+            "policy_version": "3",
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_change_approved_without_the_security_role",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0002",
+            "actor": {
+              "provider": "iltero",
+              "id": "reviewer_1"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "change",
+              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+            },
+            "method": "iltero_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    },
+    {
+      "name": "production_approvals_unavailable",
+      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "set": {
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "unknown",
+        "reason": "approvals: server_facts_unavailable",
+        "branches": [
+          "unknown",
+          "unknown"
+        ]
+      }
+    },
+    {
+      "name": "sensitive_change_run_approved",
+      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "set": {
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-22T13:05:30.000Z"
+          }
+        ]
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "branches": [
+          "false",
+          "true"
+        ]
+      }
+    },
+    {
+      "name": "no_sensitive_resource_changed",
+      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "set": {
+        "approvals": [],
+        "change": {
+          "resources": [
+            {
+              "action": "create",
+              "id": "aws_db_instance.payments",
+              "module": null,
+              "provider": "aws",
+              "type": "aws_db_instance"
+            }
+          ],
+          "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+        }
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "branches": [
+          "false",
+          "false"
+        ]
+      }
+    }
+  ]
+}

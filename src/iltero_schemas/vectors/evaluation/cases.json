@@ -3011,13 +3011,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "security"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:aaaa"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },
@@ -3047,13 +3058,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "security"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:bbbb"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },
@@ -3083,13 +3105,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "platform"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:aaaa"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },
@@ -3150,13 +3183,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "security"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:aaaa"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },
@@ -3291,13 +3335,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "security"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:aaaa"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },
@@ -3334,6 +3389,19 @@
           "op": "exists",
           "path": "approvals",
           "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 0,
+          "op": "exists",
+          "path": "approvals",
+          "status": "false"
         }
       ]
     }
@@ -3817,13 +3885,24 @@
       },
       "approvals": [
         {
-          "status": "approved",
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
           "roles": [
             "security"
           ],
+          "status": "approved",
           "subject": {
+            "kind": "change",
             "digest": "sha256:aaaa"
-          }
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T09:00:00.000Z",
+          "released": null
         }
       ]
     },

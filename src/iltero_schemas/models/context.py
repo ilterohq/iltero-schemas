@@ -30,7 +30,6 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.facts import UnknownMarker
@@ -38,13 +37,17 @@ from iltero_schemas.models.fields import (
     Action,
     Address,
     ArtifactDigestBasis,
+    AssertionRef,
     Commit,
     Digest,
     Identifier,
+    Identity,
     Timestamp,
+    Uuid,
     check_artifact_digest,
 )
 from iltero_schemas.models.iac import IacTool
+from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
@@ -64,6 +67,7 @@ PARTS = (
     "evaluations",
     "approvals",
     "exceptions",
+    "run",
     "deployment",
     "verification",
     "assurance",
@@ -92,13 +96,6 @@ class Identified(StrictModel):
     id: Identifier
 
 
-class AssertionRef(StrictModel):
-    """The assertion this input is evaluated by: enough for a rule to name itself, never its digest."""
-
-    id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
-    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-
-
 class Evaluation(StrictModel):
     """This evaluation run: its id, stage, the runner's own clock, and the assertion."""
 
@@ -106,6 +103,12 @@ class Evaluation(StrictModel):
     stage: StageValue
     timestamp: Timestamp
     assertion: AssertionRef
+
+
+class RunRef(StrictModel):
+    """The run an input belongs to, by Iltero's run id."""
+
+    id: Uuid
 
 
 class Environment(StrictModel):
@@ -161,14 +164,6 @@ class Source(StrictModel):
     repository: Named | None = None
     ref: GitRef | None = None
     pull_request: Identified | None = None
-
-
-class Identity(StrictModel):
-    """One external name of the subject: a scheme, its value, and the scope the value is unique in."""
-
-    scheme: Identifier
-    value: Address
-    scope: dict[Identifier, Identifier] | None = None
 
 
 class Subject(StrictModel):
@@ -263,10 +258,12 @@ class AssuranceContext(StrictModel):
     subject: Subject | None = None
     resource: PlanResource | None = None
     deployment: Deployment | None = None
-    # Parts whose shape lands with the stage that fills them; a marker when the server could not supply them.
-    evaluations: list[Any] | UnknownMarker | None = None
-    approvals: list[Any] | UnknownMarker | None = None
-    exceptions: list[Any] | UnknownMarker | None = None
+    # Facts only the server holds (``models.server_facts``); a marker when it could not supply them.
+    evaluations: Evaluations | UnknownMarker | None = None
+    approvals: Approvals | UnknownMarker | None = None
+    exceptions: Exceptions | UnknownMarker | None = None
+    # Iltero's run this input belongs to, which an approval of a run names.
+    run: RunRef | None = None
     verification: dict[str, Any] | None = None
     assurance: dict[str, Any] | None = None
 

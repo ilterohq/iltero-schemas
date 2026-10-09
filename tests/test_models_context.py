@@ -197,3 +197,12 @@ def test_an_environment_without_a_production_answer_is_refused(production: objec
     environment = {"name": "production", "production": production}
     with pytest.raises(ValidationError, match="production"):
         AssuranceContext.model_validate({**VECTOR, "context": {**VECTOR["context"], "environment": environment}})
+
+
+def test_only_a_pre_deploy_input_names_the_run_it_belongs_to() -> None:
+    assert PRE_DEPLOY["run"]["id"]
+    without = {key: value for key, value in PRE_DEPLOY.items() if key != "run"}
+    with pytest.raises(ValidationError, match="pre_deploy_change: missing run"):
+        AssuranceContext.model_validate(without)
+    with pytest.raises(ValidationError, match="plan_resource: not part of this profile: run"):
+        AssuranceContext.model_validate({**VECTOR, "run": PRE_DEPLOY["run"]})

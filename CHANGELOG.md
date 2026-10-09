@@ -87,6 +87,14 @@ keep, so any two tools agree on what a record means.
   starter assertions guard on that, not on the environment's name. A run
   Iltero Cloud did not open holds the unknown marker there, so a production
   check is `unknown`, never skipped.
+- The facts only Iltero Cloud holds, as items an assertion reads: approvals,
+  exceptions and earlier evaluations. An approval names the change it
+  approves by its digest, or the run by Iltero's run id, and says how it was
+  obtained and whether it was a self-approval the policy permitted. The
+  pre-deploy input names its run (`run.id`), and the approval assertions
+  accept either kind, each in its own branch. A stage whose input carries
+  approvals lists the ones its checks read, whatever their source, each
+  once and of the record's own change or run.
 - The unknown marker: where a fact only Iltero Cloud holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A

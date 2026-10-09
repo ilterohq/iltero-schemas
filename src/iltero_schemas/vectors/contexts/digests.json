@@ -1,5 +1,6 @@
 {
   "plan_resource.json": "sha256:74fa25e47155685e429e2ab7d06f7383e391ab6dd90bb8e1aa00dcb798d8964e",
   "post_deploy.json": "sha256:fc81eba63b38e654520800a780e035ae8765416e0dd0e080be3d63ec864ba7a4",
-  "pre_deploy_change.json": "sha256:8436193daa177d2cdd033f82a5570c652f987d06de3076607dbc589caeccdad0"
+  "pre_deploy_approvals.json": "sha256:4c7a7fc8a6ec6421b761f903c09f0d0784f14e7fbafcf0f68d43e9536e8a7ddf",
+  "pre_deploy_change.json": "sha256:729675758540bba3923d7d626180e429151a1f417e3024d44c79e70aaa7d8cc8"
 }

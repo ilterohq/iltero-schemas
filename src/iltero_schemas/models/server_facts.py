@@ -27,7 +27,7 @@ from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.fields import (
     Address,
     AssertionId,
-    AssertionRef,
+    AssertionKey,
     Digest,
     Identifier,
     Identity,
@@ -146,7 +146,7 @@ class EarlierEvaluation(StrictModel):
     """The result of one check of an earlier stage, as the server recorded it."""
 
     id: Identifier
-    assertion: AssertionRef
+    assertion: AssertionKey
     stage: StageValue
     subject: EvaluatedSubject
     result: Result

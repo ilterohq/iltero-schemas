@@ -154,7 +154,7 @@ Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "
 AssertionId = Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
 
 
-class AssertionRef(StrictModel):
+class AssertionKey(StrictModel):
     """An assertion by its id and version: enough for a rule to name itself, never its digest."""
 
     id: AssertionId

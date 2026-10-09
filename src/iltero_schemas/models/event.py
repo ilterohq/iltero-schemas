@@ -141,7 +141,7 @@ def _observations(value: dict[str, Any]) -> dict[str, Any]:
 Observations = Annotated[dict[str, Any], AfterValidator(_observations)]
 
 
-class AssertionRef(fields.AssertionRef):
+class AssertionRef(fields.AssertionKey):
     """The assertion, with the digest of its document as it was read."""
 
     digest: Digest

@@ -39,7 +39,7 @@ from iltero_schemas.models.fields import (
     Action,
     Address,
     ArtifactDigestBasis,
-    AssertionRef,
+    AssertionKey,
     Commit,
     Digest,
     Identifier,
@@ -104,7 +104,7 @@ class Evaluation(StrictModel):
     id: Identifier
     stage: StageValue
     timestamp: Timestamp
-    assertion: AssertionRef
+    assertion: AssertionKey
 
 
 class RunRef(StrictModel):

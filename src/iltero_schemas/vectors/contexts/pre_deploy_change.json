@@ -17,7 +17,8 @@
       "id": "production"
     },
     "environment": {
-      "name": "production"
+      "name": "production",
+      "production": true
     }
   },
   "reference_time": {

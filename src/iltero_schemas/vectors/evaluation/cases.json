@@ -9,7 +9,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -27,12 +28,12 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
-          "expected": true,
-          "clause": "assert",
-          "index": 0,
           "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
           "status": "true"
         }
       ]
@@ -48,7 +49,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -66,12 +68,12 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
-          "expected": true,
-          "clause": "assert",
-          "index": 0,
           "actual": false,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
           "status": "false"
         }
       ]
@@ -87,7 +89,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -112,12 +115,12 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
-          "expected": true,
-          "clause": "assert",
-          "index": 0,
           "actual": null,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
           "status": "unknown"
         }
       ]
@@ -133,7 +136,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -169,7 +173,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -200,7 +205,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -233,7 +239,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -266,7 +273,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -300,7 +308,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -334,7 +343,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -370,7 +380,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -398,7 +409,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -430,7 +442,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -448,12 +461,12 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
-          "expected": true,
-          "clause": "assert",
-          "index": 0,
           "actual": null,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
           "status": "false"
         }
       ]
@@ -465,7 +478,8 @@
     "input": {
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -564,7 +578,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -584,14 +599,14 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
-          "expected": true,
-          "clause": "assert",
-          "index": 0,
           "actual": {
             "type": "object"
           },
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
           "status": "false"
         }
       ]
@@ -607,7 +622,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -635,7 +651,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -663,7 +680,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -691,7 +709,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -719,7 +738,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -747,7 +767,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -778,7 +799,8 @@
       },
       "context": {
         "environment": {
-          "name": "staging"
+          "name": "staging",
+          "production": false
         }
       },
       "resource": {
@@ -809,7 +831,8 @@
       },
       "context": {
         "environment": {
-          "name": "staging"
+          "name": "staging",
+          "production": false
         }
       },
       "resource": {
@@ -849,6 +872,12 @@
             "reason": "terraform_sensitive",
             "present": true,
             "type": "string"
+          },
+          "production": {
+            "__redacted": true,
+            "reason": "terraform_sensitive",
+            "present": true,
+            "type": "boolean"
           }
         }
       },
@@ -865,9 +894,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.name: redacted",
+      "reason": "context.environment.production: redacted",
       "unknown": {
-        "path": "context.environment.name",
+        "path": "context.environment.production",
         "reason": "redacted"
       },
       "when": "unknown"
@@ -895,9 +924,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.name: path_missing",
+      "reason": "context.environment.production: path_missing",
       "unknown": {
-        "path": "context.environment.name",
+        "path": "context.environment.production",
         "reason": "path_missing"
       },
       "when": "unknown"
@@ -913,7 +942,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -948,7 +978,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -986,7 +1017,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1029,7 +1061,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1060,7 +1093,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1091,7 +1125,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1112,52 +1147,52 @@
       "when": "true",
       "predicates": [
         {
-          "path": "context.environment.name",
-          "op": "equal",
-          "expected": "production",
-          "actual": "production",
-          "status": "true",
+          "actual": true,
           "clause": "when",
-          "index": 0
-        },
-        {
-          "path": "resource.after.storage_encrypted",
-          "op": "equal",
           "expected": true,
-          "actual": false,
-          "status": "false",
-          "clause": "assert",
-          "index": 1
-        },
-        {
-          "path": "resource.after.publicly_accessible",
+          "index": 0,
           "op": "equal",
-          "expected": false,
+          "path": "context.environment.production",
+          "status": "true"
+        },
+        {
           "actual": false,
-          "status": "true",
           "clause": "assert",
-          "index": 2
+          "expected": true,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted",
+          "status": "false"
         },
         {
-          "path": "resource.after.backup_retention_period",
-          "op": "greater_than_or_equal",
-          "expected": 7,
+          "actual": false,
+          "clause": "assert",
+          "expected": false,
+          "index": 2,
+          "op": "equal",
+          "path": "resource.after.publicly_accessible",
+          "status": "true"
+        },
+        {
           "actual": 14,
-          "status": "true",
           "clause": "assert",
-          "index": 3
+          "expected": 7,
+          "index": 3,
+          "op": "greater_than_or_equal",
+          "path": "resource.after.backup_retention_period",
+          "status": "true"
         },
         {
-          "path": "resource.after.instance_class",
-          "op": "not_in",
+          "actual": "db.r6g.large",
+          "clause": "assert",
           "expected": [
             "db.t3.micro",
             "db.t3.small"
           ],
-          "actual": "db.r6g.large",
-          "status": "true",
-          "clause": "assert",
-          "index": 4
+          "index": 4,
+          "op": "not_in",
+          "path": "resource.after.instance_class",
+          "status": "true"
         }
       ]
     }
@@ -1172,7 +1207,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1204,7 +1240,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1239,7 +1276,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1267,7 +1305,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1284,13 +1323,13 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.a",
-          "op": "equal",
-          "expected": true,
           "actual": true,
-          "status": "true",
           "clause": "assert",
-          "index": 0
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.a",
+          "status": "true"
         }
       ]
     }
@@ -1305,7 +1344,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1332,7 +1372,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1366,7 +1407,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1398,7 +1440,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1433,7 +1476,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1466,7 +1510,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1497,7 +1542,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1530,7 +1576,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1553,61 +1600,61 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.n",
-          "op": "greater_than",
+          "actual": 2,
+          "clause": "assert",
           "expected": 1,
-          "actual": 2,
-          "status": "true",
-          "clause": "assert",
-          "index": 0
-        },
-        {
-          "path": "resource.after.n",
-          "op": "greater_than_or_equal",
-          "expected": 2,
-          "actual": 2,
-          "status": "true",
-          "clause": "assert",
-          "index": 1
-        },
-        {
-          "path": "resource.after.n",
-          "op": "less_than",
-          "expected": 3,
-          "actual": 2,
-          "status": "true",
-          "clause": "assert",
-          "index": 2
-        },
-        {
-          "path": "resource.after.n",
-          "op": "less_than_or_equal",
-          "expected": 2,
-          "actual": 2,
-          "status": "true",
-          "clause": "assert",
-          "index": 3
-        },
-        {
-          "path": "resource.after.t",
+          "index": 0,
           "op": "greater_than",
-          "expected": "2026-01-01T00:00:00.000Z",
-          "actual": "2026-09-22T00:00:00.000Z",
-          "status": "true",
-          "clause": "assert",
-          "index": 4
+          "path": "resource.after.n",
+          "status": "true"
         },
         {
-          "path": "resource.after.t",
+          "actual": 2,
+          "clause": "assert",
+          "expected": 2,
+          "index": 1,
+          "op": "greater_than_or_equal",
+          "path": "resource.after.n",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": 3,
+          "index": 2,
           "op": "less_than",
+          "path": "resource.after.n",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": 2,
+          "index": 3,
+          "op": "less_than_or_equal",
+          "path": "resource.after.n",
+          "status": "true"
+        },
+        {
+          "actual": "2026-09-22T00:00:00.000Z",
+          "clause": "assert",
+          "expected": "2026-01-01T00:00:00.000Z",
+          "index": 4,
+          "op": "greater_than",
+          "path": "resource.after.t",
+          "status": "true"
+        },
+        {
+          "actual": "2026-09-22T00:00:00.000Z",
+          "clause": "assert",
           "expected": {
             "ref": "reference_time.value"
           },
+          "index": 5,
+          "op": "less_than",
+          "path": "resource.after.t",
           "resolved": "2026-09-21T00:00:00.000Z",
-          "actual": "2026-09-22T00:00:00.000Z",
-          "status": "false",
-          "clause": "assert",
-          "index": 5
+          "status": "false"
         }
       ]
     }
@@ -1622,7 +1669,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1655,7 +1703,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1688,7 +1737,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1715,65 +1765,65 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "a",
             "b",
             "c"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 0
+          "index": 0,
+          "op": "in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "x",
             "y"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 1
+          "index": 1,
+          "op": "not_in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.tags",
-          "op": "contains",
-          "expected": "owner",
           "actual": [
             "owner",
             "team"
           ],
-          "status": "true",
           "clause": "assert",
-          "index": 2
+          "expected": "owner",
+          "index": 2,
+          "op": "contains",
+          "path": "resource.after.tags",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_equal",
-          "expected": "z",
           "actual": "a",
-          "status": "true",
           "clause": "assert",
-          "index": 3
+          "expected": "z",
+          "index": 3,
+          "op": "not_equal",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": {
             "ref": "plan.allowed_kinds"
           },
+          "index": 4,
+          "op": "in",
+          "path": "resource.after.kind",
           "resolved": [
             "a",
             "b"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 4
+          "status": "true"
         }
       ]
     }
@@ -1788,7 +1838,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1821,7 +1872,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1857,7 +1909,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1894,7 +1947,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1929,7 +1983,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1964,7 +2019,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -1993,64 +2049,64 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "a",
             "b",
             "c"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 0
+          "index": 0,
+          "op": "in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "x",
             "y"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 1
+          "index": 1,
+          "op": "not_in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.tags",
-          "op": "contains",
-          "expected": "owner",
           "actual": {
-            "type": "array",
-            "count": 5
+            "count": 5,
+            "type": "array"
           },
-          "status": "true",
           "clause": "assert",
-          "index": 2
+          "expected": "owner",
+          "index": 2,
+          "op": "contains",
+          "path": "resource.after.tags",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_equal",
-          "expected": "z",
           "actual": "a",
-          "status": "true",
           "clause": "assert",
-          "index": 3
+          "expected": "z",
+          "index": 3,
+          "op": "not_equal",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": {
             "ref": "plan.allowed_kinds"
           },
+          "index": 4,
+          "op": "in",
+          "path": "resource.after.kind",
           "resolved": [
             "a"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 4
+          "status": "true"
         }
       ]
     }
@@ -2065,7 +2121,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2093,64 +2150,64 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "a",
             "b",
             "c"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 0
+          "index": 0,
+          "op": "in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_in",
+          "actual": "a",
+          "clause": "assert",
           "expected": [
             "x",
             "y"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 1
+          "index": 1,
+          "op": "not_in",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.tags",
-          "op": "contains",
-          "expected": "owner",
           "actual": {
-            "type": "array",
-            "count": 2
+            "count": 2,
+            "type": "array"
           },
-          "status": "true",
           "clause": "assert",
-          "index": 2
+          "expected": "owner",
+          "index": 2,
+          "op": "contains",
+          "path": "resource.after.tags",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "not_equal",
-          "expected": "z",
           "actual": "a",
-          "status": "true",
           "clause": "assert",
-          "index": 3
+          "expected": "z",
+          "index": 3,
+          "op": "not_equal",
+          "path": "resource.after.kind",
+          "status": "true"
         },
         {
-          "path": "resource.after.kind",
-          "op": "in",
+          "actual": "a",
+          "clause": "assert",
           "expected": {
             "ref": "plan.allowed_kinds"
           },
+          "index": 4,
+          "op": "in",
+          "path": "resource.after.kind",
           "resolved": [
             "a"
           ],
-          "actual": "a",
-          "status": "true",
-          "clause": "assert",
-          "index": 4
+          "status": "true"
         }
       ]
     }
@@ -2165,7 +2222,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2198,17 +2256,17 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.related",
-          "op": "exists",
-          "expected": null,
           "actual": {
-            "type": "array",
-            "count": 2
+            "count": 2,
+            "type": "array"
           },
-          "status": "true",
-          "matched": 1,
           "clause": "assert",
-          "index": 0
+          "expected": null,
+          "index": 0,
+          "matched": 1,
+          "op": "exists",
+          "path": "resource.related",
+          "status": "true"
         }
       ]
     }
@@ -2223,7 +2281,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2254,7 +2313,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2280,7 +2340,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2298,14 +2359,14 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.related",
-          "op": "exists",
-          "expected": null,
           "actual": null,
-          "status": "unknown",
-          "matched": null,
           "clause": "assert",
-          "index": 0
+          "expected": null,
+          "index": 0,
+          "matched": null,
+          "op": "exists",
+          "path": "resource.related",
+          "status": "unknown"
         }
       ]
     }
@@ -2320,7 +2381,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2349,7 +2411,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2383,7 +2446,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2422,7 +2486,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2470,7 +2535,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2505,7 +2571,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2541,7 +2608,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2583,7 +2651,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2622,7 +2691,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2668,7 +2738,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2706,7 +2777,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2736,7 +2808,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2765,7 +2838,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2802,7 +2876,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2834,7 +2909,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2865,7 +2941,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -2895,7 +2972,8 @@
             "__unknown": true,
             "reason": "known_after_deploy",
             "present": true
-          }
+          },
+          "production": false
         }
       },
       "resource": {
@@ -2924,7 +3002,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -2959,7 +3038,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -2994,7 +3074,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3029,7 +3110,8 @@
       },
       "context": {
         "environment": {
-          "name": "staging"
+          "name": "staging",
+          "production": false
         }
       },
       "change": {
@@ -3054,7 +3136,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3094,7 +3177,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3124,7 +3208,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3154,7 +3239,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3191,7 +3277,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "change": {
@@ -3224,29 +3311,29 @@
       "when": "unknown",
       "predicates": [
         {
-          "path": "change.resources",
-          "op": "exists",
-          "expected": null,
           "actual": {
             "type": "object"
           },
-          "status": "unknown",
-          "matched": null,
           "clause": "when",
-          "index": 0
+          "expected": null,
+          "index": 0,
+          "matched": null,
+          "op": "exists",
+          "path": "change.resources",
+          "status": "unknown"
         },
         {
-          "path": "approvals",
-          "op": "exists",
-          "expected": null,
           "actual": {
-            "type": "array",
-            "count": 1
+            "count": 1,
+            "type": "array"
           },
-          "status": "true",
-          "matched": 1,
           "clause": "assert",
-          "index": 1
+          "expected": null,
+          "index": 1,
+          "matched": 1,
+          "op": "exists",
+          "path": "approvals",
+          "status": "true"
         }
       ]
     }
@@ -3261,7 +3348,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "plan": {
@@ -3292,7 +3380,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "plan": {
@@ -3313,28 +3402,28 @@
       "when": null,
       "predicates": [
         {
-          "path": "deployment.plan.digest",
-          "op": "equal",
+          "actual": "sha256:a",
+          "clause": "assert",
           "expected": {
             "ref": "plan.digest"
           },
+          "index": 0,
+          "op": "equal",
+          "path": "deployment.plan.digest",
           "resolved": "sha256:a",
-          "actual": "sha256:a",
-          "status": "true",
-          "clause": "assert",
-          "index": 0
+          "status": "true"
         },
         {
-          "path": "deployment.plan.artifact_digest",
-          "op": "equal",
+          "actual": "sha256:c",
+          "clause": "assert",
           "expected": {
             "ref": "plan.artifact_digest"
           },
+          "index": 1,
+          "op": "equal",
+          "path": "deployment.plan.artifact_digest",
           "resolved": "sha256:b",
-          "actual": "sha256:c",
-          "status": "false",
-          "clause": "assert",
-          "index": 1
+          "status": "false"
         }
       ]
     }
@@ -3349,7 +3438,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "plan": {
@@ -3380,7 +3470,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "assurance": {
@@ -3413,7 +3504,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "assurance": {
@@ -3450,7 +3542,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "assurance": {
@@ -3487,7 +3580,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "assurance": {
@@ -3524,7 +3618,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "assurance": {
@@ -3557,7 +3652,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -3577,49 +3673,49 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.kind",
-          "op": "in",
-          "expected": {
-            "type": "array",
-            "count": 6
-          },
           "actual": "a",
-          "status": "true",
           "clause": "assert",
-          "index": 0
-        },
-        {
-          "path": "resource.after.text",
-          "op": "equal",
           "expected": {
-            "type": "string",
-            "length": 130
+            "count": 6,
+            "type": "array"
           },
+          "index": 0,
+          "op": "in",
+          "path": "resource.after.kind",
+          "status": "true"
+        },
+        {
           "actual": {
-            "type": "string",
-            "length": 130
+            "length": 130,
+            "type": "string"
           },
-          "status": "false",
           "clause": "assert",
-          "index": 1
-        },
-        {
-          "path": "resource.after.ratio",
-          "op": "greater_than",
-          "expected": 0.5,
-          "actual": 0.75,
-          "status": "true",
-          "clause": "assert",
-          "index": 2
-        },
-        {
-          "path": "resource.after.bare",
+          "expected": {
+            "length": 130,
+            "type": "string"
+          },
+          "index": 1,
           "op": "equal",
-          "expected": true,
-          "actual": true,
-          "status": "true",
+          "path": "resource.after.text",
+          "status": "false"
+        },
+        {
+          "actual": 0.75,
           "clause": "assert",
-          "index": 3
+          "expected": 0.5,
+          "index": 2,
+          "op": "greater_than",
+          "path": "resource.after.ratio",
+          "status": "true"
+        },
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 3,
+          "op": "equal",
+          "path": "resource.after.bare",
+          "status": "true"
         }
       ]
     }
@@ -3634,7 +3730,8 @@
       },
       "context": {
         "environment": {
-          "name": "production"
+          "name": "production",
+          "production": true
         }
       },
       "resource": {
@@ -3658,44 +3755,124 @@
       "when": null,
       "predicates": [
         {
-          "path": "resource.after.s128",
-          "op": "equal",
-          "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "actual": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "status": "true",
           "clause": "assert",
-          "index": 0
-        },
-        {
-          "path": "resource.after.s129",
+          "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "index": 0,
           "op": "equal",
-          "expected": {
-            "type": "string",
-            "length": 129
-          },
-          "actual": {
-            "type": "string",
-            "length": 129
-          },
-          "status": "true",
-          "clause": "assert",
-          "index": 1
+          "path": "resource.after.s128",
+          "status": "true"
         },
         {
-          "path": "resource.after.l4",
-          "op": "contains",
-          "expected": 4,
+          "actual": {
+            "length": 129,
+            "type": "string"
+          },
+          "clause": "assert",
+          "expected": {
+            "length": 129,
+            "type": "string"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.s129",
+          "status": "true"
+        },
+        {
           "actual": [
             1,
             2,
             3,
             4
           ],
-          "status": "true",
           "clause": "assert",
-          "index": 2
+          "expected": 4,
+          "index": 2,
+          "op": "contains",
+          "path": "resource.after.l4",
+          "status": "true"
         }
       ]
+    }
+  },
+  {
+    "name": "production_approved_without_a_production_flag",
+    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "change_001"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        }
+      },
+      "change": {
+        "digest": "sha256:aaaa"
+      },
+      "approvals": [
+        {
+          "status": "approved",
+          "roles": [
+            "security"
+          ],
+          "subject": {
+            "digest": "sha256:aaaa"
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.production: server_facts_unavailable",
+      "unknown": {
+        "path": "context.environment.production",
+        "reason": "server_facts_unavailable"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "production_baseline_without_a_production_flag",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "id": "aws_db_instance.payments"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        }
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {
+          "storage_encrypted": true,
+          "publicly_accessible": false,
+          "backup_retention_period": 14,
+          "instance_class": "db.r6g.large"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.production: server_facts_unavailable",
+      "unknown": {
+        "path": "context.environment.production",
+        "reason": "server_facts_unavailable"
+      },
+      "when": "unknown"
     }
   }
 ]

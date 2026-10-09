@@ -9,9 +9,9 @@
   },
   "when": {
     "predicate": {
-      "path": "context.environment.name",
+      "path": "context.environment.production",
       "op": "equal",
-      "literal": "production"
+      "literal": true
     }
   },
   "assert": {

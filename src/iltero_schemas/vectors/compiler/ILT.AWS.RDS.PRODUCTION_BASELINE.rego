@@ -8,11 +8,11 @@ assertion_version := "1.0.0"
 
 ast_version := 2
 
-assertion_source_digest := "sha256:74c30886999cc9b5f9e0ce3b67a7d88565f028443c85d761f86f5abe58f46ad8"
+assertion_source_digest := "sha256:e8e7c1cef138c0e8eaae07b7a3cdb364185dff67fdaa0a3057a65f0352198e71"
 
 _has_when := true
 
-_guard := predicate("equal", lookup("context.environment.name"), literal("production"))
+_guard := predicate("equal", lookup("context.environment.production"), literal(true))
 
 _check := all_of([
 	predicate("equal", lookup("resource.after.storage_encrypted"), literal(true)),

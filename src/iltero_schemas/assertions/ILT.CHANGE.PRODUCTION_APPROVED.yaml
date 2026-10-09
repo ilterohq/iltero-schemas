@@ -9,8 +9,8 @@ spec:
   target:
     kind: change
   when:
-    path: context.environment.name
-    equal: production
+    path: context.environment.production
+    equal: true
   assert:
     exists:
       in: approvals

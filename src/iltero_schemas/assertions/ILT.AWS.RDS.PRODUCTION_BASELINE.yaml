@@ -12,8 +12,8 @@ spec:
     provider: aws
     resource_types: [aws_db_instance]
   when:
-    path: context.environment.name
-    equal: production
+    path: context.environment.production
+    equal: true
   assert:
     all:
       - path: resource.after.storage_encrypted

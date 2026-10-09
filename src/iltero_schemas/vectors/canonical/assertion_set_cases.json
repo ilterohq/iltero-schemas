@@ -12,27 +12,27 @@
         [
           "ILT.AWS.RDS.BACKUP_RETENTION",
           "1.0.0",
-          "sha256:d2bc8dcd5cb8db74b5071048ef203550345c03556da9b035691f9fc9d7d31089"
+          "sha256:86b4d7649143d9f0083b3f2cdd6ef5b87b0702a8a41c5c597e93a5b58db6fbe8"
         ],
         [
           "ILT.AWS.RDS.NOT_PUBLIC",
           "1.0.0",
-          "sha256:8567383b2eeacc1d715dc9ca0a7e04a54fd83b47afe29dfec35e0155142f793e"
+          "sha256:15cbf457bd1402ef6cd66a0cdeec692ba4181c368bdfcc978660e22b838e7949"
         ],
         [
           "ILT.AWS.RDS.PRODUCTION_BASELINE",
           "1.0.0",
-          "sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0"
+          "sha256:b7440a0df17bf805f073b4b5a1ef21a4fbb200036517a073953e46b8a8905d37"
         ],
         [
           "ILT.AWS.RDS.STORAGE_ENCRYPTED",
           "1.0.0",
-          "sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67"
+          "sha256:e4baf86675a34dd8e473a10baedd19357b1613e0dad71ee5dbcf414298fab02c"
         ],
         [
           "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
           "1.0.0",
-          "sha256:6ca3ba3aa21029fe477b32ec72a3b97ecca3f20727618cacbf7878d20c7138ad"
+          "sha256:b342625215b2fdc251980041a72895ddca12c9bca3737686bebd2cf402b4c90e"
         ],
         [
           "ILT.CHANGE.PRODUCTION_APPROVED",
@@ -42,7 +42,7 @@
         [
           "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
           "1.0.0",
-          "sha256:ce7df8e4eed7e2c102b2e8f0607b4fc43559f0c5f480de37d683b8c6c21e227c"
+          "sha256:baa05631a7166412ee6069368d477e2528c84fbc4e2bd9ac8d03f469eb54a526"
         ],
         [
           "ILT.DEPLOYMENT.PLAN_BINDING",
@@ -50,8 +50,8 @@
           "sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb"
         ]
       ],
-      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:d2bc8dcd5cb8db74b5071048ef203550345c03556da9b035691f9fc9d7d31089\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:8567383b2eeacc1d715dc9ca0a7e04a54fd83b47afe29dfec35e0155142f793e\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:6ca3ba3aa21029fe477b32ec72a3b97ecca3f20727618cacbf7878d20c7138ad\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:4ed626069dc3fa9f14dcfc89d876acf2c86c429b03fee98a411cc612dbedca99\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:ce7df8e4eed7e2c102b2e8f0607b4fc43559f0c5f480de37d683b8c6c21e227c\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb\"]]",
-      "digest": "sha256:f1562879cb2c771b216c7ad496c012c882fd948a25c21af2dd915ef4de90edc2"
+      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:86b4d7649143d9f0083b3f2cdd6ef5b87b0702a8a41c5c597e93a5b58db6fbe8\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:15cbf457bd1402ef6cd66a0cdeec692ba4181c368bdfcc978660e22b838e7949\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:b7440a0df17bf805f073b4b5a1ef21a4fbb200036517a073953e46b8a8905d37\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:e4baf86675a34dd8e473a10baedd19357b1613e0dad71ee5dbcf414298fab02c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:b342625215b2fdc251980041a72895ddca12c9bca3737686bebd2cf402b4c90e\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:4ed626069dc3fa9f14dcfc89d876acf2c86c429b03fee98a411cc612dbedca99\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:baa05631a7166412ee6069368d477e2528c84fbc4e2bd9ac8d03f469eb54a526\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb\"]]",
+      "digest": "sha256:6ef374a0d5938f9de3025f170d555f65b773f93ca59c39cd8b52a681b426136b"
     },
     {
       "name": "starter_set_reversed",
@@ -65,7 +65,7 @@
         [
           "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
           "1.0.0",
-          "sha256:ce7df8e4eed7e2c102b2e8f0607b4fc43559f0c5f480de37d683b8c6c21e227c"
+          "sha256:baa05631a7166412ee6069368d477e2528c84fbc4e2bd9ac8d03f469eb54a526"
         ],
         [
           "ILT.CHANGE.PRODUCTION_APPROVED",
@@ -75,27 +75,27 @@
         [
           "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
           "1.0.0",
-          "sha256:6ca3ba3aa21029fe477b32ec72a3b97ecca3f20727618cacbf7878d20c7138ad"
+          "sha256:b342625215b2fdc251980041a72895ddca12c9bca3737686bebd2cf402b4c90e"
         ],
         [
           "ILT.AWS.RDS.STORAGE_ENCRYPTED",
           "1.0.0",
-          "sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67"
+          "sha256:e4baf86675a34dd8e473a10baedd19357b1613e0dad71ee5dbcf414298fab02c"
         ],
         [
           "ILT.AWS.RDS.PRODUCTION_BASELINE",
           "1.0.0",
-          "sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0"
+          "sha256:b7440a0df17bf805f073b4b5a1ef21a4fbb200036517a073953e46b8a8905d37"
         ],
         [
           "ILT.AWS.RDS.NOT_PUBLIC",
           "1.0.0",
-          "sha256:8567383b2eeacc1d715dc9ca0a7e04a54fd83b47afe29dfec35e0155142f793e"
+          "sha256:15cbf457bd1402ef6cd66a0cdeec692ba4181c368bdfcc978660e22b838e7949"
         ],
         [
           "ILT.AWS.RDS.BACKUP_RETENTION",
           "1.0.0",
-          "sha256:d2bc8dcd5cb8db74b5071048ef203550345c03556da9b035691f9fc9d7d31089"
+          "sha256:86b4d7649143d9f0083b3f2cdd6ef5b87b0702a8a41c5c597e93a5b58db6fbe8"
         ],
         [
           "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
@@ -103,8 +103,8 @@
           "sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc"
         ]
       ],
-      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:d2bc8dcd5cb8db74b5071048ef203550345c03556da9b035691f9fc9d7d31089\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:8567383b2eeacc1d715dc9ca0a7e04a54fd83b47afe29dfec35e0155142f793e\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:de0c4e41949d3ec67eeca554f4a6fcfdbc0e9ad9cc161395631c598792fb77a0\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:6ca3ba3aa21029fe477b32ec72a3b97ecca3f20727618cacbf7878d20c7138ad\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:4ed626069dc3fa9f14dcfc89d876acf2c86c429b03fee98a411cc612dbedca99\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:ce7df8e4eed7e2c102b2e8f0607b4fc43559f0c5f480de37d683b8c6c21e227c\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb\"]]",
-      "digest": "sha256:f1562879cb2c771b216c7ad496c012c882fd948a25c21af2dd915ef4de90edc2"
+      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:25a92a2df015b80e92baadcb61704210dd2b256aac0f5c0536e90452a37d25cc\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:86b4d7649143d9f0083b3f2cdd6ef5b87b0702a8a41c5c597e93a5b58db6fbe8\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:15cbf457bd1402ef6cd66a0cdeec692ba4181c368bdfcc978660e22b838e7949\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:b7440a0df17bf805f073b4b5a1ef21a4fbb200036517a073953e46b8a8905d37\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:e4baf86675a34dd8e473a10baedd19357b1613e0dad71ee5dbcf414298fab02c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:b342625215b2fdc251980041a72895ddca12c9bca3737686bebd2cf402b4c90e\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:4ed626069dc3fa9f14dcfc89d876acf2c86c429b03fee98a411cc612dbedca99\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:baa05631a7166412ee6069368d477e2528c84fbc4e2bd9ac8d03f469eb54a526\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:b28dd53316fa79501e08241420ac8cdd8f469bca1e3b5b229adb38cc9cf290bb\"]]",
+      "digest": "sha256:6ef374a0d5938f9de3025f170d555f65b773f93ca59c39cd8b52a681b426136b"
     },
     {
       "name": "one_assertion",

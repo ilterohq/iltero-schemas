@@ -6,9 +6,9 @@ assertion_id := "VEC.EXISTS.NESTED"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:4e77b9b0cba3882c50368f9dea13de8d6c02c2a44066e864bee655c523381f6d"
+assertion_source_digest := "sha256:28146349fb0088681d8ea7d73cd6d5f081e6840e44bac0807fa71860a2d478ce"
 
 _has_when := false
 

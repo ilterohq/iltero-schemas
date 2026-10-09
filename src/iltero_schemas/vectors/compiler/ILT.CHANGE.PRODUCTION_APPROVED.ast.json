@@ -1,11 +1,12 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.CHANGE.PRODUCTION_APPROVED",
   "version": "1.0.0",
   "type": "process",
   "stage": "pre_deploy",
   "target": {
-    "kind": "change"
+    "kind": "change",
+    "resources": []
   },
   "when": {
     "predicate": {

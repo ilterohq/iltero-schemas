@@ -206,3 +206,48 @@ def test_only_a_pre_deploy_input_names_the_run_it_belongs_to() -> None:
         AssuranceContext.model_validate(without)
     with pytest.raises(ValidationError, match="plan_resource: not part of this profile: run"):
         AssuranceContext.model_validate({**VECTOR, "run": PRE_DEPLOY["run"]})
+
+
+UNMAPPED = {"__unknown": True, "reason": "kind_unmapped"}
+
+
+@pytest.mark.parametrize(
+    ("entry", "message"),
+    [
+        ({"provider": "aws", "type": "aws_kms_key", "kind": None}, "other than the one the terraform table gives"),
+        (
+            {"provider": "aws", "type": "aws_kms_key", "kind": "iam_role"},
+            "other than the one the terraform table gives",
+        ),
+        ({"provider": "aws", "type": "aws_kms_key", "kind": UNMAPPED}, "other than the one the terraform table gives"),
+        ({"provider": "aws", "type": "aws_new_thing", "kind": "kms_key"}, "other than the one the terraform table"),
+        ({"provider": "google", "type": "google_kms_key", "kind": "kms_key"}, "other than the one the terraform table"),
+        ({"provider": "hashicorp/aws", "type": "aws_kms_key", "kind": "kms_key"}, "String should match pattern"),
+    ],
+    ids=[
+        "no kind for a type the table holds",
+        "another kind than the table's",
+        "the marker for a type the table holds",
+        "a kind for a type the table lacks",
+        "a kind for a provider with no kinds",
+        "a long provider",
+    ],
+)
+def test_a_resource_names_the_kind_its_tools_table_gives_its_type(entry: dict[str, Any], message: str) -> None:
+    resources = [{"id": "r.x", "action": "update", "module": None, **entry}]
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate({**VECTOR, "change": {**VECTOR["change"], "resources": resources}})
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"provider": "aws", "type": "aws_kms_key", "kind": "kms_key"},
+        {"provider": "aws", "type": "aws_new_thing", "kind": UNMAPPED},
+        {"provider": "google", "type": "google_kms_key", "kind": None},
+    ],
+    ids=["the table's kind", "a type the table lacks", "a provider with no kinds"],
+)
+def test_a_resource_kind_is_the_tables_unknown_or_absent_for_a_provider_with_none(entry: dict[str, Any]) -> None:
+    resources = [{"id": "r.x", "action": "update", "module": None, **entry}]
+    AssuranceContext.model_validate({**VECTOR, "change": {**VECTOR["change"], "resources": resources}})

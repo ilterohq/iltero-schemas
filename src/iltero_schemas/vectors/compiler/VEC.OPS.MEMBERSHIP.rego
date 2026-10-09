@@ -6,9 +6,9 @@ assertion_id := "VEC.OPS.MEMBERSHIP"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:ec1450c473b494eaf64e7ca09c34730d0c1ce0da98b54f69e977e07f49fab3dd"
+assertion_source_digest := "sha256:c111382483c1ecc96c127804e355458160b0fb663d8a9178c895390779410bfc"
 
 _has_when := false
 

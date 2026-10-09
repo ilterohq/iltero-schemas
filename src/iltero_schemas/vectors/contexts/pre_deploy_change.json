@@ -46,14 +46,16 @@
         "provider": "aws",
         "type": "aws_db_instance",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "rds_instance"
       },
       {
         "id": "aws_iam_policy.deployer",
         "provider": "aws",
         "type": "aws_iam_policy",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "iam_policy"
       }
     ],
     "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
@@ -75,14 +77,16 @@
         "provider": "aws",
         "type": "aws_db_instance",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "rds_instance"
       },
       {
         "id": "aws_iam_policy.deployer",
         "provider": "aws",
         "type": "aws_iam_policy",
         "action": "update",
-        "module": null
+        "module": null,
+        "kind": "iam_policy"
       }
     ]
   },

@@ -1,30 +1,36 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
   "version": "1.0.0",
   "type": "process",
   "stage": "pre_deploy",
   "target": {
-    "kind": "change"
-  },
-  "when": {
-    "exists": {
-      "in": "change.resources",
-      "where": {
-        "predicate": {
-          "path": "item.type",
-          "op": "in",
-          "literal": [
-            "aws_iam_policy",
-            "aws_iam_role_policy",
-            "aws_security_group",
-            "aws_security_group_rule",
-            "aws_kms_key"
-          ]
-        }
+    "kind": "change",
+    "resources": [
+      {
+        "provider": "aws",
+        "kinds": [
+          "iam_access_key",
+          "iam_group_membership",
+          "iam_group_policy",
+          "iam_identity_provider",
+          "iam_policy",
+          "iam_policy_attachment",
+          "iam_role",
+          "iam_role_policy",
+          "iam_user_policy",
+          "kms_grant",
+          "kms_key",
+          "kms_key_policy",
+          "network_acl",
+          "network_acl_rule",
+          "security_group",
+          "security_group_rule"
+        ]
       }
-    }
+    ]
   },
+  "when": null,
   "assert": {
     "any": [
       {

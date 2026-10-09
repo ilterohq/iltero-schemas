@@ -32,11 +32,18 @@ from iltero_schemas.ast.nodes import (
     Path,
     Predicate,
     Scalar,
+    Selector,
     Target,
 )
 from iltero_schemas.ast.roots import ITEM_ROOT, allowed_roots
 from iltero_schemas.canonical import INT_MAX, INT_MIN
-from iltero_schemas.models.assertion import CONTROL_CHARACTERS, ResourceTarget, TargetKind, TechnicalAssertion
+from iltero_schemas.models.assertion import (
+    CONTROL_CHARACTERS,
+    KindSelector,
+    TargetKind,
+    TechnicalAssertion,
+    ToolSelector,
+)
 
 # Bounds on one assertion's check, so evaluation cost stays proportional to
 # what an author can read.
@@ -244,16 +251,17 @@ def _model_issues(document: dict[str, Any], error: ValidationError) -> list[Issu
     return issues
 
 
+def _selector(selector: KindSelector | ToolSelector) -> Selector:
+    if isinstance(selector, KindSelector):
+        return Selector(provider=selector.provider, kinds=tuple(sorted(selector.kinds)), tool=None, resource_types=())
+    return Selector(
+        provider=selector.provider, kinds=(), tool=selector.tool, resource_types=tuple(sorted(selector.resource_types))
+    )
+
+
 def _target(model: TechnicalAssertion) -> Target:
     target = model.spec.target
-    if isinstance(target, ResourceTarget):
-        return Target(
-            kind=TargetKind.RESOURCE,
-            tool=target.tool,
-            provider=target.provider,
-            resource_types=tuple(sorted(target.resource_types)),
-        )
-    return Target(kind=TargetKind(target.kind), tool=None, provider=None, resource_types=())
+    return Target(kind=TargetKind(target.kind), selectors=tuple(_selector(s) for s in target.resources or ()))
 
 
 def parse_document(document: dict[str, Any]) -> Assertion:

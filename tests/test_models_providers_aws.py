@@ -7,6 +7,7 @@ from typing import get_args
 
 import pytest
 
+from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
 from iltero_schemas.models.identity import CloudSide, Resolver
 from iltero_schemas.models.providers.aws import (
     ARN_SHAPES,
@@ -142,3 +143,7 @@ def test_the_identity_document_writes_the_arn_scheme_as_named() -> None:
 def test_every_cloud_provider_has_a_cloud_side_and_a_resolver() -> None:
     """A cloud is added as both variants at once, so the two types always accept the same providers."""
     assert variant_providers(CloudSide) == variant_providers(Resolver) == {"aws"}
+
+
+def test_every_aws_resource_an_identity_names_is_a_kind_a_selector_can_name() -> None:
+    assert set(get_args(AwsResourceType)) <= RESOURCE_KINDS["aws"]

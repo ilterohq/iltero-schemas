@@ -6,9 +6,9 @@ assertion_id := "VEC.LITERALS.EDGE"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:9da22f0d53b4c36d8112f465a950bf51a8828c38c1818438532cdfa9a4d33b83"
+assertion_source_digest := "sha256:2db5a081f74cf0b159f3a642e1c0ce680a11f0d1a459c6a891f4d130c0c172ac"
 
 _has_when := false
 

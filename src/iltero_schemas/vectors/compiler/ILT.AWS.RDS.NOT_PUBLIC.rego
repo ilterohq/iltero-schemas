@@ -6,9 +6,9 @@ assertion_id := "ILT.AWS.RDS.NOT_PUBLIC"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:bbb338b5a42669400eefe7a3e7c26767483df1da41983ba39833c2a1775842cf"
+assertion_source_digest := "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc"
 
 _has_when := false
 

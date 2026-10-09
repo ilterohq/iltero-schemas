@@ -1,15 +1,19 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "VEC.EXISTS.NESTED",
   "version": "1.0.0",
   "type": "state",
   "stage": "plan",
   "target": {
     "kind": "resource",
-    "tool": "terraform",
-    "provider": "vec",
-    "resource_types": [
-      "thing"
+    "resources": [
+      {
+        "tool": "terraform",
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ]
+      }
     ]
   },
   "when": null,

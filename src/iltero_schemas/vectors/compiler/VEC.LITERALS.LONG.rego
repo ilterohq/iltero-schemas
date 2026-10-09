@@ -6,9 +6,9 @@ assertion_id := "VEC.LITERALS.LONG"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:84e31c787837397a4956804ce408eee834d8184ebf6a3cf3572bcdaa02a080bf"
+assertion_source_digest := "sha256:1083c6dbca7ab06e7965152d77956ce812647afda783100fe69208d762654926"
 
 _has_when := false
 

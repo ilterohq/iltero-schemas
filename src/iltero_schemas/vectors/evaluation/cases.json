@@ -3177,7 +3177,9 @@
         "digest": "sha256:aaaa",
         "resources": [
           {
-            "type": "aws_iam_policy"
+            "type": "aws_iam_policy",
+            "provider": "aws",
+            "kind": "iam_policy"
           }
         ]
       },
@@ -3229,7 +3231,9 @@
         "digest": "sha256:aaaa",
         "resources": [
           {
-            "type": "aws_kms_key"
+            "type": "aws_kms_key",
+            "provider": "aws",
+            "kind": "kms_key"
           }
         ]
       },
@@ -3260,7 +3264,9 @@
         "digest": "sha256:aaaa",
         "resources": [
           {
-            "type": "aws_s3_bucket"
+            "type": "aws_s3_bucket",
+            "provider": "aws",
+            "kind": "s3_bucket"
           }
         ]
       },
@@ -3274,7 +3280,7 @@
     }
   },
   {
-    "name": "sensitive_guard_unknown_element",
+    "name": "sensitive_guard_unmapped_kind",
     "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
@@ -3295,6 +3301,11 @@
               "__unknown": true,
               "reason": "known_after_deploy",
               "present": true
+            },
+            "provider": "aws",
+            "kind": {
+              "__unknown": true,
+              "reason": "kind_unmapped"
             }
           }
         ]
@@ -3303,10 +3314,10 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "item.type: known_after_deploy",
+      "reason": "item.kind: kind_unmapped",
       "unknown": {
-        "path": "item.type",
-        "reason": "known_after_deploy"
+        "path": "item.kind",
+        "reason": "kind_unmapped"
       },
       "when": "unknown"
     }
@@ -3952,6 +3963,268 @@
         "reason": "server_facts_unavailable"
       },
       "when": "unknown"
+    }
+  },
+  {
+    "name": "scope_first_selector_picks",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_kms_key",
+            "kind": "kms_key",
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "scope_second_selector_picks",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_iam_role",
+            "kind": "iam_role",
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "scope_no_selector_picks",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_s3_bucket",
+            "kind": "s3_bucket",
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "scope_unmapped_kind_of_the_provider",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_new_thing",
+            "kind": {
+              "__unknown": true,
+              "reason": "kind_unmapped"
+            },
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.kind: kind_unmapped",
+      "unknown": {
+        "path": "item.kind",
+        "reason": "kind_unmapped"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "scope_unmapped_kind_beside_a_pick",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_new_thing",
+            "kind": {
+              "__unknown": true,
+              "reason": "kind_unmapped"
+            },
+            "action": "update",
+            "module": null
+          },
+          {
+            "id": "r1",
+            "provider": "aws",
+            "type": "aws_kms_key",
+            "kind": "kms_key",
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": "true"
+    }
+  },
+  {
+    "name": "scope_resource_of_another_provider",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "google",
+            "type": "google_kms_crypto_key",
+            "kind": null,
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
+    }
+  },
+  {
+    "name": "scope_in_but_when_false",
+    "assertion": "VEC.SCOPE.CHANGE",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "id": "root"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": false
+        }
+      },
+      "change": {
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "resources": [
+          {
+            "id": "r0",
+            "provider": "aws",
+            "type": "aws_kms_key",
+            "kind": "kms_key",
+            "action": "update",
+            "module": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false"
     }
   }
 ]

@@ -87,6 +87,18 @@ keep, so any two tools agree on what a record means.
   starter assertions guard on that, not on the environment's name. A run
   Iltero Cloud did not open holds the unknown marker there, so a production
   check is `unknown`, never skipped.
+- Resource selectors on an assertion's target. A resource target names one
+  IaC tool's types (`{tool, provider, resource_types}`), whose values are
+  that tool's own attributes. A change or deployment target may name a
+  provider's tool-independent kinds (`{provider, kinds}`), and the compiler
+  writes its scope check from them. Each tool's table gives its types their
+  kinds (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3
+  and RDS types). Each resource in the evaluation input names its provider's
+  short name and the kind the table gives its type, or the unknown marker
+  when the table lacks it, so an unnamed type makes the check unknown rather
+  than out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
+  and network kinds instead of Terraform types, roles, policy attachments,
+  key policies and grants included.
 - The facts only Iltero Cloud holds, as items an assertion reads: approvals,
   exceptions and earlier evaluations. An approval names the change it
   approves by its digest, or the run by Iltero's run id, and says how it was

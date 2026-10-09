@@ -250,9 +250,7 @@ def test_an_id_that_prefixes_another_still_bundles(opa: Path, capabilities: Path
                 "stage": "plan",
                 "target": {
                     "kind": "resource",
-                    "tool": "terraform",
-                    "provider": "aws",
-                    "resource_types": ["aws_db_instance"],
+                    "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}],
                 },
                 "assert": {"path": "resource.after.x", "equal": 1},
             },

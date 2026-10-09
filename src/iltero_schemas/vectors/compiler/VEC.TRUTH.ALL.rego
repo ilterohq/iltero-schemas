@@ -6,9 +6,9 @@ assertion_id := "VEC.TRUTH.ALL"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:e84b4fc87b7570101650778fac1066b18d98aa0a8d0d58dfaecd9c0e7d6f2d23"
+assertion_source_digest := "sha256:177b4ebfb4647452bf96aeaff38ac615b3c422d775a4ed1370f0657f16ef211b"
 
 _has_when := false
 

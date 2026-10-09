@@ -6,9 +6,9 @@ assertion_id := "ILT.DEPLOYMENT.PLAN_BINDING"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:9e6317720035e6f811c3320fdff2c5804ae542ebcf5fdfa97b6f5c8a562ccda0"
+assertion_source_digest := "sha256:73336378a8e5bca5e8dad92337440e49ac02a040f7c9083a953a347bd0aa643b"
 
 _has_when := false
 

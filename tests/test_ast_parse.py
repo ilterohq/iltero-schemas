@@ -34,7 +34,10 @@ from iltero_schemas.ast.parse import (
 from iltero_schemas.canonical import INT_MAX
 from iltero_schemas.models.assertion import Stage, TargetKind
 
-RESOURCE = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}
+RESOURCE = {
+    "kind": "resource",
+    "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}],
+}
 
 
 def _document(
@@ -82,15 +85,13 @@ def test_combinators_and_exists_without_where() -> None:
 
 
 def test_type_is_derived_and_resource_types_are_sorted() -> None:
-    target = {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["b", "a"]}
+    target = {"kind": "resource", "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["b", "a"]}]}
     ast = parse_document(_document({"path": "resource.x", "equal": 1}, target=target))
     assert ast.type.value == "state"
-    assert ast.target.resource_types == ("a", "b")
+    assert ast.target.selectors[0].resource_types == ("a", "b")
     assert to_json(ast)["target"] == {
         "kind": "resource",
-        "tool": "terraform",
-        "provider": "aws",
-        "resource_types": ["a", "b"],
+        "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["a", "b"]}],
     }
 
 
@@ -98,8 +99,8 @@ def test_process_target_has_no_provider_in_the_ast() -> None:
     ast = parse_document(
         _document({"path": "change.digest", "equal": "x"}, stage="pre_deploy", target={"kind": "change"})
     )
-    assert ast.target.provider is None
-    assert to_json(ast)["target"] == {"kind": "change"}
+    assert ast.target.selectors == ()
+    assert to_json(ast)["target"] == {"kind": "change", "resources": []}
 
 
 def test_ast_json_carries_its_version_and_no_title() -> None:
@@ -286,10 +287,20 @@ def test_parse_reads_yaml_text_and_reports_document_errors() -> None:
     ast = parse(
         "apiVersion: iltero.io/v1\nkind: TechnicalAssertion\n"
         "metadata: {id: A.B, version: '1.0.0', title: t}\n"
-        "spec:\n  stage: plan\n  target: {kind: resource, tool: terraform, provider: aws, resource_types: [x]}\n"
+        "spec:\n  stage: plan\n"
+        "  target: {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [x]}]}\n"
         "  assert: {path: resource.x, equal: 1}\n"
     )
     assert ast.id == "A.B"
     with pytest.raises(AssertionSyntaxError) as raised:
         parse("- not a mapping")
     assert raised.value.issues[0].path == "document"
+
+
+def test_selectors_are_sorted_into_the_ast() -> None:
+    target = {"kind": "change", "resources": [{"provider": "aws", "kinds": ["kms_key", "iam_policy"]}]}
+    ast = parse_document(_document({"path": "change.digest", "equal": "x"}, stage="pre_deploy", target=target))
+    assert to_json(ast)["target"] == {
+        "kind": "change",
+        "resources": [{"provider": "aws", "kinds": ["iam_policy", "kms_key"]}],
+    }

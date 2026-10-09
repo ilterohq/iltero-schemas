@@ -6,9 +6,9 @@ assertion_id := "VEC.GUARD.UNKNOWN"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:274f1f6827cf1a650943c183cdc4bf854ad6a2643ae5d3c7bcb34e18656f3307"
+assertion_source_digest := "sha256:dae814d8991d802e411c22ed7bad900ebb43bccf9be94cc2f322dfcfba1cefc2"
 
 _has_when := true
 

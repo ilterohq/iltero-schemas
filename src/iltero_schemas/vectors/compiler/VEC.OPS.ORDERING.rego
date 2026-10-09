@@ -6,9 +6,9 @@ assertion_id := "VEC.OPS.ORDERING"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:885b8180d2f966003c47e43ec579e63217677836905c08387fde55c6717be4ef"
+assertion_source_digest := "sha256:bf2654c015007b3a9c45190a57a76657d1411fcf4be25833195ceed9050c186f"
 
 _has_when := false
 

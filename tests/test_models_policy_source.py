@@ -28,7 +28,10 @@ RESOURCE: dict[str, Any] = {
     "title": "A bucket's name carries the team that owns it",
     "assertion": {"id": "ACME.AWS.BUCKET_NAMING", "version": "1.0.0"},
     "stage": "plan",
-    "target": {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["aws_s3_bucket"]},
+    "target": {
+        "kind": "resource",
+        "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_s3_bucket"]}],
+    },
     "file": "naming.rego",
 }
 
@@ -70,7 +73,10 @@ def test_a_policy_carries_what_an_assertion_carries_except_the_logic() -> None:
         (
             {
                 "stage": "pre_deploy",
-                "target": {"kind": "resource", "tool": "terraform", "provider": "aws", "resource_types": ["a"]},
+                "target": {
+                    "kind": "resource",
+                    "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["a"]}],
+                },
             },
             "not valid for target kind",
         ),
@@ -121,3 +127,9 @@ def test_two_policies_may_not_be_written_in_one_file() -> None:
 def test_a_manifest_outside_the_shape_is_refused(changes: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         PolicySourceManifest.model_validate({**_manifest(), **changes})
+
+
+def test_a_hand_written_policy_names_no_resources() -> None:
+    scoped = {**CHANGE, "target": {"kind": "change", "resources": [{"provider": "aws", "kinds": ["kms_key"]}]}}
+    with pytest.raises(ValidationError, match="names no resources: no compiler writes its scope check"):
+        PolicySourceManifest.model_validate(_manifest(scoped))

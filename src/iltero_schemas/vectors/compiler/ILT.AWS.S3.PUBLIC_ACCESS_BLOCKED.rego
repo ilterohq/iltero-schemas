@@ -6,9 +6,9 @@ assertion_id := "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED"
 
 assertion_version := "1.0.0"
 
-ast_version := 2
+ast_version := 1
 
-assertion_source_digest := "sha256:8666b15260a2061eaa1c10d31cb1ccbc193004e7c89049c89d820d05595b8dae"
+assertion_source_digest := "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064"
 
 _has_when := false
 

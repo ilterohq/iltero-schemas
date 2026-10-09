@@ -1,11 +1,12 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
   "version": "1.0.0",
   "type": "process",
   "stage": "runtime",
   "target": {
-    "kind": "assurance"
+    "kind": "assurance",
+    "resources": []
   },
   "when": {
     "all": [

@@ -1,15 +1,19 @@
 {
-  "ast_version": 2,
+  "ast_version": 1,
   "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
   "version": "1.0.0",
   "type": "state",
   "stage": "plan",
   "target": {
     "kind": "resource",
-    "tool": "terraform",
-    "provider": "aws",
-    "resource_types": [
-      "aws_s3_bucket"
+    "resources": [
+      {
+        "tool": "terraform",
+        "provider": "aws",
+        "resource_types": [
+          "aws_s3_bucket"
+        ]
+      }
     ]
   },
   "when": null,

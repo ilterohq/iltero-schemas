@@ -25,15 +25,14 @@ from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.models.assertion import (
     CONTROL_CHARACTERS,
-    DERIVED_TYPE,
     ID_MAX_LENGTH,
     ID_PATTERN,
     TITLE_MAX_LENGTH,
-    VALID_COMBINATIONS,
     VERSION_MAX_LENGTH,
     VERSION_PATTERN,
+    ProcessTarget,
     Target,
-    TargetKind,
+    check_target,
 )
 from iltero_schemas.models.base import StageValue, StrictModel
 
@@ -79,9 +78,9 @@ class PolicyEntry(StrictModel):
 
     @model_validator(mode="after")
     def _the_combination_is_one_that_exists(self) -> PolicyEntry:
-        kind = TargetKind(self.target.kind)
-        if (DERIVED_TYPE[kind], self.stage, kind) not in VALID_COMBINATIONS:
-            raise ValueError(f"stage {self.stage.value!r} is not valid for target kind {self.target.kind!r}")
+        check_target(self.stage, self.target)
+        if isinstance(self.target, ProcessTarget) and self.target.resources is not None:
+            raise ValueError("a hand-written policy names no resources: no compiler writes its scope check")
         return self
 
 

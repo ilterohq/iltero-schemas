@@ -317,7 +317,8 @@
               "id": "aws_db_instance.payments",
               "module": null,
               "provider": "aws",
-              "type": "aws_db_instance"
+              "type": "aws_db_instance",
+              "kind": "rds_instance"
             }
           ],
           "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"

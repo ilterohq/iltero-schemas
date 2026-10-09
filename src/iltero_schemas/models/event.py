@@ -52,6 +52,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "server_facts_unavailable",
             "reference_time_untrusted",
             "deployment_log_incomplete",
+            "kind_unmapped",
         }
     ),
     "not_applicable": frozenset({"when_guard_excluded", "no_subject_in_scope"}),

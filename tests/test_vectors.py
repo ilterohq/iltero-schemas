@@ -192,6 +192,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "opa",
         "records_invalid",
         "records_valid",
+        "subjects",
     }
     assert folders == known | set(DOCUMENT_MODELS)
 
@@ -388,7 +389,7 @@ def test_the_scenario_assertions_pass_on_the_context_vector(opa: Path, capabilit
     assert evaluated.returncode == 0, evaluated.stderr
     result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
     assert result["status"] == "pass"
-    assert result["subject"] == {"kind": "resource", "id": "aws_db_instance.payments"}
+    assert result["subject"] == {"kind": "resource", "key": context["subject"]["key"]}
 
 
 @pytest.mark.parametrize(
@@ -418,7 +419,7 @@ def test_plan_binding_decides_on_the_post_deploy_vector(
     assert evaluated.returncode == 0, evaluated.stderr
     result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
     assert result["status"] == status
-    assert result["subject"] == {"kind": "deployment", "id": "root"}
+    assert result["subject"] == {"kind": "deployment", "key": context["subject"]["key"]}
 
 
 _READS_THE_SUMMARY = """\

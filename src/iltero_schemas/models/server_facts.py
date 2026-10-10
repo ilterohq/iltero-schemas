@@ -25,7 +25,6 @@ from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.fields import (
-    Address,
     AssertionId,
     AssertionKey,
     Digest,
@@ -130,10 +129,10 @@ class ExceptionGrant(StrictModel):
 
 
 class EvaluatedSubject(StrictModel):
-    """What an earlier check was about: its kind and local id."""
+    """What an earlier check was about: its kind and its key (``models.subjects``)."""
 
     kind: TargetKindValue
-    id: Address
+    key: Digest
 
 
 class Result(StrictModel):

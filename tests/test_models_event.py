@@ -1,4 +1,4 @@
-"""The event contract: reasons closed per status, a subject id exactly when there was one, a digest per verdict."""
+"""The event contract: reasons closed per status, an identity exactly when there was a subject, a digest per verdict."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from iltero_schemas.models.event import (
     AssuranceEvent,
 )
 from iltero_schemas.models.fields import Status
-from tests.conftest import VECTORS
+from tests.conftest import ARNS, VECTORS
 
 VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "plan_pass.json").read_text(encoding="utf-8"))
 
@@ -36,7 +36,8 @@ def _event(**changes: Any) -> dict[str, Any]:
 
 def test_the_vector_validates() -> None:
     event = AssuranceEvent.model_validate(VECTOR)
-    assert event.evaluation.status == "pass" and event.subject.id == "aws_db_instance.payments"
+    assert event.evaluation.status == "pass" and event.subject.key is not None
+    assert event.subject.identities[0].value == "aws_db_instance.payments"
 
 
 def test_policy_statuses_are_the_four_the_output_contract_allows() -> None:
@@ -51,7 +52,7 @@ def test_policy_statuses_are_the_four_the_output_contract_allows() -> None:
 def test_every_listed_reason_is_accepted_for_its_status(status: str, reason: str) -> None:
     changes: dict[str, Any] = {"evaluation.status": status, "evaluation.status_reason": reason}
     if reason == "no_subject_in_scope":
-        changes.update({"subject.id": None, "subject.identities": [], "provenance.input_digest": None})
+        changes.update({"subject.key": None, "subject.identities": [], "provenance.input_digest": None})
     if reason in NO_EVALUATOR_REASONS:
         changes.update({"provenance.evaluator": None, "provenance.bundle": None})
     AssuranceEvent.model_validate(_event(**changes))
@@ -74,13 +75,35 @@ def test_a_reason_outside_its_status_is_refused(status: str, reason: str | None,
         AssuranceEvent.model_validate(_event(**{"evaluation.status": status, "evaluation.status_reason": reason}))
 
 
-def test_a_subject_id_is_absent_exactly_when_no_subject_was_in_scope() -> None:
-    with pytest.raises(ValidationError, match="absent exactly when"):
-        AssuranceEvent.model_validate(_event(**{"subject.id": None}))
-    with pytest.raises(ValidationError, match="absent exactly when"):
+def test_a_subject_has_no_key_and_no_identity_exactly_when_no_subject_was_in_scope() -> None:
+    without: list[dict[str, Any]] = [{"subject.identities": []}, {"subject.key": None}]
+    for changes in without:
+        with pytest.raises(ValidationError, match="no key and no identity exactly when"):
+            AssuranceEvent.model_validate(_event(**changes))
+    with pytest.raises(ValidationError, match="no key and no identity exactly when"):
         AssuranceEvent.model_validate(
             _event(**{"evaluation.status": "not_applicable", "evaluation.status_reason": "no_subject_in_scope"})
         )
+
+
+@pytest.mark.parametrize(
+    ("kind", "identity"),
+    [
+        ("resource", {"scheme": "iltero_unit", "value": "root"}),
+        ("change", {"scheme": "terraform_address", "value": "aws_db_instance.payments", "scope": {"unit": "root"}}),
+    ],
+    ids=["a resource named by a unit", "a change named by an address"],
+)
+def test_an_event_subject_is_named_by_its_local_identity(kind: str, identity: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match="exactly one identity in"):
+        AssuranceEvent.model_validate(_event(**{"subject.kind": kind, "subject.identities": [identity]}))
+
+
+def test_an_event_subjects_key_is_the_digest_of_its_identity_in_the_events_unit() -> None:
+    with pytest.raises(ValidationError, match="the digest of its kind and its local identity"):
+        AssuranceEvent.model_validate(_event(**{"subject.key": "sha256:" + "0" * 64}))
+    with pytest.raises(ValidationError, match="its own unit"):
+        AssuranceEvent.model_validate(_event(**{"provenance.run.unit": "network"}))
 
 
 def test_a_policy_verdict_names_its_input() -> None:
@@ -105,7 +128,7 @@ def test_only_a_check_no_evaluator_ran_may_omit_the_evaluator() -> None:
         status = "not_applicable" if reason == "no_subject_in_scope" else "not_evaluated"
         changes: dict[str, Any] = {**absent, "evaluation.status": status, "evaluation.status_reason": reason}
         if reason == "no_subject_in_scope":
-            changes.update({"subject.id": None, "subject.identities": [], "provenance.input_digest": None})
+            changes.update({"subject.key": None, "subject.identities": [], "provenance.input_digest": None})
         AssuranceEvent.model_validate(_event(**changes))
     with pytest.raises(ValidationError, match="names the evaluator that ran it"):
         AssuranceEvent.model_validate(_event(**absent))
@@ -201,3 +224,9 @@ def test_the_status_order_ranks_every_status_once() -> None:
 @pytest.mark.parametrize("source", ["server_bundle", "local", "custom_rego", "contract_starter"])
 def test_a_check_names_where_its_assertion_came_from(source: str) -> None:
     AssuranceEvent.model_validate(_event(**{"provenance.assertion_source": source}))
+
+
+def test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment() -> None:
+    identity = {"scheme": "aws_arn", "value": ARNS["rds_instance"]}
+    with pytest.raises(ValidationError, match="read after deployment"):
+        AssuranceEvent.model_validate(_event(**{"subject.identities": [identity]}))

@@ -13,8 +13,9 @@ exactly.
 
 Two conventions hold throughout. A resource is named by its address in the
 configuration of the infrastructure-as-code (IaC) tool, which is Terraform in
-the current implementation. That address is the ``id`` on the subject, on the
-resource and on the plan's table of contents. The resources that refer to it
+the current implementation. That address is the subject's local identity
+(``models.subjects``) and the ``id`` on the resource and on the plan's table of
+contents. The resources that refer to it
 (``resource.related``) are embedded as the plan adapter observed them,
 ``address`` included. ``provider`` is the short name an assertion targets
 (``aws``); what only the tool says about a resource is under ``tool_data``. A
@@ -49,9 +50,10 @@ from iltero_schemas.models.fields import (
     Uuid,
     check_artifact_digest,
 )
-from iltero_schemas.models.iac import IacTool
+from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
+from iltero_schemas.models.subjects import check_subject, local_identity
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData
 from iltero_schemas.profiles import ALWAYS, profile_for
 
@@ -156,10 +158,11 @@ class Source(StrictModel):
 
 
 class Subject(StrictModel):
-    """What the evaluation is about, named by its local id and every identity known for it."""
+    """What the evaluation is about: its key, and every identity known for it."""
 
     kind: TargetKindValue
-    id: Address
+    # The digest of its kind and its local identity (``models.subjects``).
+    key: Digest
     identities: Annotated[list[Identity], Field(min_length=1)]
     # ``authoritative`` once a verified resolver bound a cloud identity; ``unresolved`` until then.
     authority: Authority
@@ -303,6 +306,11 @@ class AssuranceContext(StrictModel):
             raise ValueError(f"{profile.name}: not part of this profile: {', '.join(extra)}")
         if self.plan is not None and self.source is not None and self.plan.source_commit != self.source.commit.sha:
             raise ValueError("plan.source_commit must be the source commit")
+        check_subject(self.subject.kind, self.subject.key, self.subject.identities, self.evaluation.stage, None)
+        if self.subject.kind == "resource" and self.resource is not None:
+            address = local_identity(self.subject.kind, self.subject.identities)
+            if (address.scheme, address.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
+                raise ValueError("a resource subject is named by the address of the resource the input carries")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
             check_superseded(self.plan.digest, self.deployment)

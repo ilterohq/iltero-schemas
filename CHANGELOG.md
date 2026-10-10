@@ -134,6 +134,15 @@ keep, so any two tools agree on what a record means.
 
 These changes break documents written before them.
 
+- A subject is keyed, in the evaluation input, in events and in an earlier
+  evaluation, by `key`: the digest of its kind and its one local identity,
+  computed by `models.subjects.subject_key` and checked in every document,
+  with a conformance vector. The local identity is a managed resource's
+  address scoped by its unit, the cloud identity of a resource only the
+  cloud knows (after deployment), or the unit of a change, a deployment or
+  an assurance check. `key` replaces `id`, which was the resource's address.
+  No stack or other Iltero Cloud scope is part of it. An event's subject has
+  no key and no identity exactly when no subject was in scope.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's checks in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the

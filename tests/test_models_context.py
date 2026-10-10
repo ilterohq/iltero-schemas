@@ -10,6 +10,8 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext
+from iltero_schemas.models.fields import Identity
+from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import PROFILES
 from tests.conftest import POST_DEPLOY, VECTORS
 
@@ -26,7 +28,8 @@ def _without(*names: str) -> dict[str, Any]:
 def test_the_vector_validates_and_names_exactly_the_profile_parts() -> None:
     context = AssuranceContext.model_validate(VECTOR)
     assert context.subject is not None and context.resource is not None
-    assert context.subject.id == context.resource.id == "aws_db_instance.payments"
+    assert context.subject.key.startswith("sha256:")
+    assert context.subject.identities[0].value == context.resource.id == "aws_db_instance.payments"
     assert set(VECTOR) - {"apiVersion", "evaluation", "context", "reference_time"} == {
         "source",
         "change",
@@ -78,9 +81,10 @@ def test_an_unknown_key_anywhere_is_refused() -> None:
         (("source", "commit", "sha"), "c84e7a1", "String should match pattern"),
         (("evaluation", "timestamp"), "2026-09-16 18:05:00", "String should match pattern"),
         (("subject", "identities"), [], "at least 1 item"),
-        (("subject", "id"), "a\x00b", "control characters"),
-        (("subject", "id"), "a\u202eb", "control characters"),
-        (("subject", "id"), "x" * 2049, "at most 2048"),
+        (("subject", "identities", 0, "value"), "a\x00b", "control characters"),
+        (("subject", "identities", 0, "value"), "a\u202eb", "control characters"),
+        (("subject", "identities", 0, "value"), "x" * 2049, "at most 2048"),
+        (("subject", "key"), "aws_db_instance.payments", "String should match pattern"),
         (("resource", "action"), "read", "Input should be"),
         (("reference_time", "source"), "wall_clock", "Input should be"),
         (("evaluation", "timestamp"), "2026-13-45T25:61:61Z", "real date and time"),
@@ -132,8 +136,9 @@ def test_a_hidden_name_is_accepted_where_a_name_may_have_been_hidden() -> None:
 def test_a_long_terraform_address_is_accepted_where_an_id_would_not_be() -> None:
     document = copy.deepcopy(VECTOR)
     address = "module." + ("x" * 300) + '["k"].aws_db_instance.payments'
-    document["subject"]["id"] = address
     document["subject"]["identities"][0]["value"] = address
+    identities = [Identity.model_validate(document["subject"]["identities"][0])]
+    document["subject"]["key"] = subject_key("resource", identities)
     document["resource"]["id"] = address
     AssuranceContext.model_validate(document)
     document["context"]["environment"]["name"] = "x" * 257

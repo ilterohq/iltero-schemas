@@ -346,8 +346,8 @@ observations := {
 	"unknown": _unknown,
 }
 
-# The subject is echoed as identity only, bounded like every observed value.
-_subject := {"kind": _summary(object.get(subject, "kind", null)), "id": _summary(object.get(subject, "id", null))} if {
+# The subject is echoed as its kind and key only, bounded like every observed value.
+_subject := {"kind": _summary(object.get(subject, "kind", null)), "key": _summary(object.get(subject, "key", null))} if {
 	is_object(input)
 	subject := input.subject
 	is_object(subject)

@@ -12,7 +12,9 @@ from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import LIFECYCLE, derived_problems, scope_basis
+from iltero_schemas.models.subjects import subject_key
 from tests.records import RECORD
 from tests.records import set_path as _set
 from tests.records import stage as _stage
@@ -55,7 +57,11 @@ def _moved_event(index: int, stage: str) -> dict[str, Any]:
     event["evaluation"]["stage"] = stage
     event["provenance"]["facts_source"] = "none" if stage == "pre_deploy" else None
     if stage == "pre_deploy":
-        event["subject"]["kind"] = "change"
+        event["subject"].update(
+            kind="change",
+            key=subject_key("change", [Identity(scheme="iltero_unit", value="root")]),
+            identities=[{"scheme": "iltero_unit", "value": "root"}],
+        )
     return event
 
 
@@ -327,6 +333,11 @@ def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
 def test_every_event_names_the_records_run(field: str, value: str) -> None:
     document = _record()
     _set(document, f"events.0.provenance.run.{field}", value)
+    if field == "unit":
+        # The event moves to the other unit whole, so only the record can tell it is not its own.
+        subject = document["events"][0]["subject"]
+        subject["identities"][0]["scope"] = {"unit": value}
+        subject["key"] = subject_key(subject["kind"], [Identity.model_validate(subject["identities"][0])])
     with pytest.raises(ValidationError, match="every event names the record's run"):
         CAR.model_validate(document, context=_READER)
 

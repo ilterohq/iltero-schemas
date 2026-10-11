@@ -29,7 +29,7 @@ from pydantic import BaseModel
 
 from iltero_schemas.ast import parse, source_digest, to_json
 from iltero_schemas.canonical import (
-    PLAN_DIGEST_VERSION,
+    PLAN_DIGEST_VERSIONS,
     canonical_assertion_set_bytes,
     canonical_bytes,
     canonical_change_bytes,
@@ -92,13 +92,15 @@ def canonical_vectors() -> dict[str, bytes]:
         {
             "name": name,
             "description": entry["description"],
+            "tool": entry["tool"],
+            "version": PLAN_DIGEST_VERSIONS[entry["tool"]],
             "plan": entry["plan"],
-            "canonical": canonical_plan_bytes(entry["plan"]).decode("utf-8"),
-            "digest": plan_digest(entry["plan"]),
+            "canonical": canonical_plan_bytes(entry["tool"], entry["plan"]).decode("utf-8"),
+            "digest": plan_digest(entry["tool"], entry["plan"]),
         }
         for name, entry in plans.items()
     ]
-    document = {"version": PLAN_DIGEST_VERSION, "cases": plan_cases}
+    document = {"cases": plan_cases}
     sets = json.loads((CANONICAL_VECTORS / "assertion_set_cases.json").read_text(encoding="utf-8"))
     for case in sets["cases"]:
         encoded = canonical_assertion_set_bytes(tuple(triple) for triple in case["assertions"])

@@ -191,9 +191,10 @@ Key rules:
   `previous_address` (the address before a rename), `importing` and `replace_paths`, as the plan wrote them. Each
   related resource's `tool_data` says how Terraform matched it: `match` is `instance` (this instance of a `count` or
   `for_each`) or `every_instance`.
-- `plan.digest` is the digest of the plan as `terraform show -json` prints it, after the top-level keys `timestamp`,
-  `terraform_version`, `format_version`, `prior_state`, `resource_drift` and `relevant_attributes` are removed.
-  `digest_version` names that rule. `artifact_digest` is the digest of the saved plan file. It is present exactly
+- `plan.digest` is the digest of the plan by the rule of the plan's `tool`, and `digest_version` names the version of
+  that rule. For `terraform` (version `1`): the plan as `terraform show -json` prints it, after the top-level keys
+  `timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift` and `relevant_attributes` are
+  removed. `artifact_digest` is the digest of the saved plan file. It is present exactly
   when `artifact_digest_basis` is `plan_binary`, and `null` when it is `not_provided`.
 - `plan.source_commit` equals `source.commit.sha`.
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
@@ -252,7 +253,6 @@ who produced it and to reproduce it.
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
 | `facts_source` | For a check at a stage whose input may carry Iltero Cloud facts (approvals, exceptions, earlier evaluations: `pre_deploy` and `runtime`), where they came from: `server`, `local_file` or `none`. `null` at every other stage. |
-| `fs_hardening` | How the writer protected its files: `posix`, `windows_profile_acl` or `none`. |
 
 Key rules:
 
@@ -531,7 +531,7 @@ Each entry:
 | `tool` | string | `checkov`, `trivy` or `prowler`. |
 | `tool_version_constraint` | string | A PEP 440 version specifier, such as `>=3,<4`. |
 | `check_id` | string | The scanner's own check id, such as `CKV_AWS_16`. |
-| `framework` | string or null | What the scanner must have been reading, in its own words, such as `terraform_plan`. Null for a scanner that reads one kind of input. |
+| `input_kind` | string or null | What the scanner must have been reading, in its own words, such as `terraform_plan`. Null for a scanner that reads one kind of input. |
 | `assertion` | object | The `id` and `version` of the assertion the check establishes. |
 | `stage` | stage | The stage the credit applies to. |
 | `status_map` | object | 1 to 32 of the scanner's status words, each mapped to `pass` or `fail`. |

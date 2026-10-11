@@ -217,7 +217,6 @@ class EvaluationLimits(StrictModel):
     contexts_per_process: Annotated[int, Field(ge=1)]
     capabilities_digest: Digest
     platform: Identifier
-    python_platform: Identifier
 
 
 class OpaEvaluator(StrictModel):
@@ -317,7 +316,6 @@ class Provenance(StrictModel):
     executor: Executor
     # Present exactly for a check at a stage whose input may carry server facts (``profiles.reads_server_facts``).
     facts_source: FactsSource | None
-    fs_hardening: Literal["posix", "windows_profile_acl", "none"]
 
 
 class AssuranceEvent(StrictModel):

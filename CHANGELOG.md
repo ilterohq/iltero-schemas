@@ -38,7 +38,8 @@ keep, so any two tools agree on what a record means.
   `iltero_schemas.models.providers.aws`, and the CI systems an executor may
   name in `iltero_schemas.models.event.CI_SYSTEMS`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
-  Terraform plan. Two timestamps compare to the nanosecond.
+  plan by its IaC tool's rule (`plan_digest(tool, plan)`, with
+  `PLAN_DIGEST_VERSIONS` naming each rule's version). Two timestamps compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
@@ -187,9 +188,13 @@ These changes break documents written before them.
   program change.
 - An event's executor provider is `local`, `ci` or a CI system's name, such
   as `github_actions`. A resource's identity scheme is `terraform_address`.
+- An evaluator binding names what the scanner read as `input_kind` (was
+  `framework`).
 
 ### Removed
 
+- An event's `fs_hardening` and its evaluation limits' `python_platform`:
+  the limits' `platform` already names the system the evaluation ran on.
 - The messages a pipeline exchanges with Iltero Cloud during a run: opening
   a run, a stage's token, closing a run, uploads and their answers, the facts
   document, the artifact store, and their vectors. The record vectors are in

@@ -31,7 +31,7 @@ ENTRY: dict[str, Any] = {
     "tool": "checkov",
     "tool_version_constraint": ">=3,<4",
     "check_id": "CKV_AWS_16",
-    "framework": "terraform_plan",
+    "input_kind": "terraform_plan",
     "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
     "stage": "plan",
     "status_map": {"PASSED": "pass", "FAILED": "fail"},
@@ -59,7 +59,7 @@ def test_the_starter_set_loads() -> None:
 
 def test_an_entry_says_what_the_tool_must_have_been_reading() -> None:
     """A configuration scan and a plan scan answer different questions about one resource."""
-    assert {entry.framework for entry in starter_set().bindings} == {"terraform_plan"}
+    assert {entry.input_kind for entry in starter_set().bindings} == {"terraform_plan"}
 
 
 def test_every_starter_entry_cites_an_assertion_this_package_ships() -> None:
@@ -170,8 +170,8 @@ def test_a_tool_version_is_read_against_the_constraint(constraint: str, version:
         ({"status_map": {"BAD STATUS": "pass"}}, "String should match"),
         ({"id": "not.an.id"}, "String should match"),
         ({"version": "1.0"}, "String should match"),
-        ({"framework": None}, None),
-        ({"framework": "not a framework"}, "String should match"),
+        ({"input_kind": None}, None),
+        ({"input_kind": "not an input kind"}, "String should match"),
         ({"severity": "high"}, "Extra inputs are not permitted"),
     ],
 )

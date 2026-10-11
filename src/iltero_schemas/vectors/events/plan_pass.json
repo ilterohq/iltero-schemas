@@ -69,8 +69,7 @@
         "output_bytes_per_answer": 1054720,
         "contexts_per_process": 64,
         "capabilities_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
-        "platform": "linux-x86_64",
-        "python_platform": "linux"
+        "platform": "linux-x86_64"
       }
     },
     "bundle": {
@@ -92,8 +91,7 @@
       "provider": "local",
       "run_id": null
     },
-    "facts_source": null,
-    "fs_hardening": "posix"
+    "facts_source": null
   },
   "observed_at": "2026-09-16T18:05:00.000Z"
 }

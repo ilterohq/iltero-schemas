@@ -21,7 +21,7 @@ from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_js
 from iltero_schemas.ast.parse import parse_document
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import (
-    PLAN_DIGEST_VERSION,
+    PLAN_DIGEST_VERSIONS,
     canonical_assertion_set_bytes,
     canonical_bytes,
     canonical_change_bytes,
@@ -85,8 +85,8 @@ def test_canonical_vector_is_reproduced(case: dict[str, Any]) -> None:
 
 @pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
 def test_plan_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
-    assert canonical_plan_bytes(case["plan"]).decode("utf-8") == case["canonical"]
-    assert plan_digest(case["plan"]) == case["digest"]
+    assert canonical_plan_bytes(case["tool"], case["plan"]).decode("utf-8") == case["canonical"]
+    assert plan_digest(case["tool"], case["plan"]) == case["digest"]
 
 
 @pytest.mark.parametrize("case", ASSERTION_SET_CASES["cases"], ids=[c["name"] for c in ASSERTION_SET_CASES["cases"]])
@@ -121,8 +121,8 @@ def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
     assert context["change"]["digest"] == change_digest({"root": context["plan"]["digest"]})
 
 
-def test_plan_digest_vectors_record_the_current_version() -> None:
-    assert PLAN_DIGEST_DOCUMENT["version"] == PLAN_DIGEST_VERSION
+def test_plan_digest_vectors_record_the_current_version_of_their_tool() -> None:
+    assert all(case["version"] == PLAN_DIGEST_VERSIONS[case["tool"]] for case in PLAN_DIGEST_DOCUMENT["cases"])
 
 
 def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:

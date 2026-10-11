@@ -124,7 +124,7 @@ class EvaluatorBinding(StrictModel):
     # reads the configuration, where a value may still be a variable, while
     # ``terraform_plan`` reads the values the plan settled on. A result from
     # anything else is not credited. ``null`` for a tool with one thing to read.
-    framework: Annotated[str, Field(pattern=CHECK_ID_PATTERN, max_length=CHECK_ID_MAX_LENGTH)] | None
+    input_kind: Annotated[str, Field(pattern=CHECK_ID_PATTERN, max_length=CHECK_ID_MAX_LENGTH)] | None
     assertion: AssertionCite
     stage: StageValue
     # The tool's vocabulary translated into the contract's: a word the tool

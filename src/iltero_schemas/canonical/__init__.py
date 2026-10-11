@@ -1,5 +1,5 @@
-"""Canonical bytes and digests (``encoding``), the Terraform plan digest (``plan``), the digests of an assertion set
-(``assertion_set``) and of a change (``change``), and timestamps (``time``)."""
+"""Canonical bytes and digests (``encoding``), the plan digest of each IaC tool (``plan``), the digests of an
+assertion set (``assertion_set``) and of a change (``change``), and timestamps (``time``)."""
 
 from iltero_schemas.canonical.assertion_set import canonical_assertion_set_bytes, required_assertion_digest
 from iltero_schemas.canonical.change import canonical_change_bytes, change_digest
@@ -15,7 +15,7 @@ from iltero_schemas.canonical.encoding import (
 )
 from iltero_schemas.canonical.plan import (
     EXCLUDED_TOP_LEVEL_KEYS,
-    PLAN_DIGEST_VERSION,
+    PLAN_DIGEST_VERSIONS,
     canonical_plan_bytes,
     plan_digest,
 )
@@ -25,7 +25,7 @@ __all__ = [
     "CANONICALIZATION",
     "DIGEST_PREFIX",
     "EXCLUDED_TOP_LEVEL_KEYS",
-    "PLAN_DIGEST_VERSION",
+    "PLAN_DIGEST_VERSIONS",
     "INT_MAX",
     "INT_MIN",
     "CanonicalizationError",

@@ -9,7 +9,7 @@ consumer that fails one must fail its build.
 
 | Folder | Contents | What a consumer reproduces |
 | --- | --- | --- |
-| `canonical/` | `values.json` and `cases.json`: sample values with their canonical bytes and digests. `plan_values.json` and `plan_digest_cases.json`: sample plans with their canonical bytes and plan digests. `assertion_set_cases.json` and `change_digest_cases.json`: inputs to the assertion-set digest and the change digest, with the canonical bytes and digest of each. | The canonical bytes and every digest. |
+| `canonical/` | `values.json` and `cases.json`: sample values with their canonical bytes and digests. `plan_values.json` and `plan_digest_cases.json`: sample plans, each with its IaC tool, the version of that tool's rule, its canonical bytes and its plan digest. `assertion_set_cases.json` and `change_digest_cases.json`: inputs to the assertion-set digest and the change digest, with the canonical bytes and digest of each. | The canonical bytes and every digest. |
 | `assertions/` | Assertions written to exercise the language: truth tables, every comparison, nesting and edge-case literals. | Parsing each one. |
 | `compiler/` | For every shipped assertion and every vector assertion: the abstract syntax tree (`.ast.json`), its source digest (`.digest`), the compiled Rego program (`.rego`) and the program's digest (`.rego.digest`). Also `COMPILER_VERSION` and `RUNTIME.digest`, the digest of the shared runtime every program embeds. | The AST, the source digest, the compiled bytes and the program digest. |
 | `invalid/` | Assertions that must be refused. `expected.json` names, for each, the key and message of the first problem. | The refusal, at the same key. |

@@ -5,7 +5,9 @@ import pytest
 from iltero_schemas.canonical import (
     CANONICALIZATION,
     DIGEST_PREFIX,
+    EXCLUDED_TOP_LEVEL_KEYS,
     INT_MAX,
+    PLAN_DIGEST_VERSIONS,
     CanonicalizationError,
     canonical_bytes,
     canonical_plan_bytes,
@@ -13,6 +15,7 @@ from iltero_schemas.canonical import (
     digest_of,
     plan_digest,
 )
+from iltero_schemas.models.iac import IAC_TOOLS
 
 
 def test_canonical_bytes_sort_keys_and_keep_array_order() -> None:
@@ -46,6 +49,10 @@ def test_canonicalization_name_is_recorded_as_rfc8785() -> None:
 
 def test_plan_digest_drops_rendering_metadata_at_the_top_level_only() -> None:
     plan = {"timestamp": "2026-01-01T00:00:00Z", "terraform_version": "1.14.0", "resource_changes": [{"timestamp": 1}]}
-    assert canonical_plan_bytes(plan) == b'{"resource_changes":[{"timestamp":1}]}'
-    assert plan_digest(plan) == digest(b'{"resource_changes":[{"timestamp":1}]}')
-    assert plan_digest({}) == digest(b"{}")
+    assert canonical_plan_bytes("terraform", plan) == b'{"resource_changes":[{"timestamp":1}]}'
+    assert plan_digest("terraform", plan) == digest(b'{"resource_changes":[{"timestamp":1}]}')
+    assert plan_digest("terraform", {}) == digest(b"{}")
+
+
+def test_every_iac_tool_has_a_plan_digest_rule() -> None:
+    assert set(PLAN_DIGEST_VERSIONS) == set(EXCLUDED_TOP_LEVEL_KEYS) == set(IAC_TOOLS)

@@ -37,6 +37,7 @@ from typing import Annotated, Any, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.change import Change, UnitsFile, check_change
@@ -197,7 +198,7 @@ class ScannerReport(StrictModel):
     # What the tool was reading, in its own words. A tool that reads a configuration
     # and one that reads a plan answer different questions about the same resource,
     # so a reader must be able to tell which produced a credited verdict.
-    frameworks: list[Identifier]
+    input_kinds: list[Identifier]
     # The digest of the report as the stage kept it, which is the ``input_digest`` of any verdict it stands behind.
     report_digest: Digest
     observations: MemberPath
@@ -299,6 +300,11 @@ class PlanRecord(StrictModel):
     @model_validator(mode="after")
     def _artifact_digest_has_its_basis(self) -> PlanRecord:
         check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+        return self
+
+    @model_validator(mode="after")
+    def _digest_version_is_the_tools(self) -> PlanRecord:
+        check_plan_digest_version(self.tool, self.digest_version)
         return self
 
 

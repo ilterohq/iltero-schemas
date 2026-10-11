@@ -387,3 +387,10 @@ def test_a_deployment_is_of_the_tool_that_wrote_the_plan() -> None:
 def test_a_deployment_read_from_a_log_names_the_log_as_the_source_of_its_times() -> None:
     with pytest.raises(ValidationError, match="Input should be 'apply_log'"):
         Apply.model_validate(_apply(timing={**TIMING, "source": "terraform_log"}))
+
+
+def test_an_applied_plan_digest_version_other_than_its_tools_is_refused() -> None:
+    document = copy.deepcopy(POST_DEPLOY)
+    document["deployment"]["plan"]["digest_version"] = "2"
+    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
+        AssuranceContext.model_validate(document)

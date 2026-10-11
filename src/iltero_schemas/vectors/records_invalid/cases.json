@@ -303,5 +303,23 @@
     },
     "remove": [],
     "message": "sorted by source"
+  },
+  {
+    "name": "record_plan_digest_version_not_the_tools",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/digest_version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
+  },
+  {
+    "name": "event_plan_digest_version_not_the_tools",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/plan_digest/version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
   }
 ]

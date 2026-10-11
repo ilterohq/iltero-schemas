@@ -14,9 +14,10 @@ from iltero_schemas.canonical.encoding import (
     digest_of,
 )
 from iltero_schemas.canonical.plan import (
-    EXCLUDED_TOP_LEVEL_KEYS,
     PLAN_DIGEST_VERSIONS,
+    PLAN_EXCLUDED_TOP_LEVEL_KEYS,
     canonical_plan_bytes,
+    check_plan_digest_version,
     plan_digest,
 )
 from iltero_schemas.canonical.time import now_rfc3339_ms, rfc3339_ms
@@ -24,16 +25,17 @@ from iltero_schemas.canonical.time import now_rfc3339_ms, rfc3339_ms
 __all__ = [
     "CANONICALIZATION",
     "DIGEST_PREFIX",
-    "EXCLUDED_TOP_LEVEL_KEYS",
-    "PLAN_DIGEST_VERSIONS",
     "INT_MAX",
     "INT_MIN",
+    "PLAN_DIGEST_VERSIONS",
+    "PLAN_EXCLUDED_TOP_LEVEL_KEYS",
     "CanonicalizationError",
     "canonical_assertion_set_bytes",
     "canonical_bytes",
     "canonical_change_bytes",
     "canonical_plan_bytes",
     "change_digest",
+    "check_plan_digest_version",
     "digest",
     "digest_of",
     "now_rfc3339_ms",

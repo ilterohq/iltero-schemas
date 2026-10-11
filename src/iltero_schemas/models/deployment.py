@@ -18,6 +18,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.fields import (
     MAX_RESOURCES,
@@ -257,6 +258,12 @@ class Deployment(StrictModel):
     plan: AppliedPlan
     apply: Apply
     superseded_by: Superseded | None
+
+    @model_validator(mode="after")
+    def _plan_digest_version_is_the_tools(self) -> Deployment:
+        # The applied plan may be a re-plan, so it is held to its own tool's rule, not to the evaluated plan.
+        check_plan_digest_version(self.apply.source.tool, self.plan.digest_version)
+        return self
 
 
 def check_superseded(evaluated: str, deployment: Deployment | None) -> None:

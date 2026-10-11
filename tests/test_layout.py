@@ -22,3 +22,10 @@ def test_init_files_carry_no_logic(path: Path) -> None:
         if isinstance(node, ast.Assign) and [t.id for t in node.targets if isinstance(t, ast.Name)] == ["__all__"]:
             continue
         pytest.fail(f"{path.relative_to(PACKAGE)}:{node.lineno}: only imports and __all__ belong in __init__.py")
+
+
+def test_the_iac_tool_list_imports_nothing_from_the_package() -> None:
+    # ``canonical`` reads the tool list and ``models`` reads ``canonical``, so the list must stand alone.
+    module = ast.parse((PACKAGE / "models" / "iac.py").read_text(encoding="utf-8"))
+    imported = [node.module for node in ast.walk(module) if isinstance(node, ast.ImportFrom) and node.module]
+    assert not [name for name in imported if name.startswith("iltero_schemas")]

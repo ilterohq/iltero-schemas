@@ -5,12 +5,13 @@ import pytest
 from iltero_schemas.canonical import (
     CANONICALIZATION,
     DIGEST_PREFIX,
-    EXCLUDED_TOP_LEVEL_KEYS,
     INT_MAX,
     PLAN_DIGEST_VERSIONS,
+    PLAN_EXCLUDED_TOP_LEVEL_KEYS,
     CanonicalizationError,
     canonical_bytes,
     canonical_plan_bytes,
+    check_plan_digest_version,
     digest,
     digest_of,
     plan_digest,
@@ -55,4 +56,15 @@ def test_plan_digest_drops_rendering_metadata_at_the_top_level_only() -> None:
 
 
 def test_every_iac_tool_has_a_plan_digest_rule() -> None:
-    assert set(PLAN_DIGEST_VERSIONS) == set(EXCLUDED_TOP_LEVEL_KEYS) == set(IAC_TOOLS)
+    assert set(PLAN_DIGEST_VERSIONS) == set(PLAN_EXCLUDED_TOP_LEVEL_KEYS) == set(IAC_TOOLS)
+
+
+def test_a_tool_with_no_plan_digest_rule_is_refused() -> None:
+    with pytest.raises(ValueError, match="no plan digest rule for 'pulumi'"):
+        plan_digest("pulumi", {})  # type: ignore[arg-type]
+
+
+def test_a_digest_version_other_than_the_tools_is_refused() -> None:
+    check_plan_digest_version("terraform", "1")
+    with pytest.raises(ValueError, match="is not the version of the terraform plan digest rule"):
+        check_plan_digest_version("terraform", "2")

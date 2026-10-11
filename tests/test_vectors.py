@@ -121,8 +121,9 @@ def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
     assert context["change"]["digest"] == change_digest({"root": context["plan"]["digest"]})
 
 
-def test_plan_digest_vectors_record_the_current_version_of_their_tool() -> None:
-    assert all(case["version"] == PLAN_DIGEST_VERSIONS[case["tool"]] for case in PLAN_DIGEST_DOCUMENT["cases"])
+@pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
+def test_plan_digest_vectors_record_the_current_version_of_their_tool(case: dict[str, Any]) -> None:
+    assert case["version"] == PLAN_DIGEST_VERSIONS[case["tool"]]
 
 
 def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:

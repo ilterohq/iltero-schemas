@@ -32,6 +32,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import ConfigDict, Field, model_validator
 
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
@@ -233,6 +234,11 @@ class Plan(StrictModel):
     @model_validator(mode="after")
     def _artifact_digest_has_its_basis(self) -> Plan:
         check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+        return self
+
+    @model_validator(mode="after")
+    def _digest_version_is_the_tools(self) -> Plan:
+        check_plan_digest_version(self.tool, self.digest_version)
         return self
 
 

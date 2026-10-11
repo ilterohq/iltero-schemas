@@ -18,6 +18,7 @@ from typing import Annotated, Any, Literal, get_args
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.canonical.encoding import CanonicalizationError, canonical_bytes
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.compiler.limits import (
     OBSERVATIONS_MAX_BYTES,
     OBSERVATIONS_MAX_DEPTH,
@@ -42,6 +43,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     plain_text,
 )
+from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.subjects import check_subject
 from iltero_schemas.profiles import reads_server_facts
@@ -196,8 +198,16 @@ class Run(StrictModel):
 
 
 class PlanDigest(StrictModel):
+    """The digest of the plan a check is about, and the IaC tool and version of the rule that computed it."""
+
     value: Digest
     version: Identifier
+    tool: IacTool
+
+    @model_validator(mode="after")
+    def _version_is_the_tools(self) -> PlanDigest:
+        check_plan_digest_version(self.tool, self.version)
+        return self
 
 
 class MemoryCap(StrictModel):

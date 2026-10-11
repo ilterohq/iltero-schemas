@@ -129,7 +129,8 @@
         "input_digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-          "version": "1"
+          "version": "1",
+          "tool": "terraform"
         },
         "run": {
           "basis": "locally_derived",
@@ -223,7 +224,8 @@
         "input_digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-          "version": "1"
+          "version": "1",
+          "tool": "terraform"
         },
         "run": {
           "basis": "locally_derived",
@@ -359,7 +361,8 @@
         "input_digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-          "version": "1"
+          "version": "1",
+          "tool": "terraform"
         },
         "run": {
           "basis": "locally_derived",
@@ -453,7 +456,8 @@
         "input_digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-          "version": "1"
+          "version": "1",
+          "tool": "terraform"
         },
         "run": {
           "basis": "locally_derived",
@@ -551,7 +555,8 @@
         "input_digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
         "plan_digest": {
           "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-          "version": "1"
+          "version": "1",
+          "tool": "terraform"
         },
         "run": {
           "basis": "locally_derived",

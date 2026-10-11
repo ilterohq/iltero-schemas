@@ -157,7 +157,7 @@ SCANNERS: dict[str, Any] = {
         {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "frameworks": ["terraform_plan"],
+            "input_kinds": ["terraform_plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,
             "checks_read": 73,

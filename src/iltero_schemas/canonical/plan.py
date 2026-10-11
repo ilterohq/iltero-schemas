@@ -1,10 +1,10 @@
-"""The digest of a plan: the same bytes wherever it is computed, by a rule each IaC tool has.
+"""A plan's digest, by a rule for each IaC tool: the same value wherever it is computed.
 
-Each tool's rule removes what describes the rendering of a plan rather than
-what the plan will change, canonicalizes the rest and digests it. A
-document that holds a plan digest also names the tool, which chooses the
-rule; ``digest_version`` names the rule's version. A new tool adds its
-entry to each table below.
+Each rule drops what describes how the plan was rendered rather than what
+it will change, canonicalizes the rest and digests it. A document that
+holds a plan digest names the plan's tool, which picks the rule, and the
+rule's version (``digest_version``, from ``PLAN_DIGEST_VERSIONS``). A new
+tool adds its entry to each table below.
 
 Terraform: ``terraform show -json`` renders a saved plan. A few top-level
 keys describe the rendering or the walk that produced it — when it was
@@ -31,7 +31,7 @@ from iltero_schemas.models.iac import IacTool
 # The version of each tool's rule; it moves when the bytes the rule produces change.
 PLAN_DIGEST_VERSIONS: Mapping[IacTool, str] = MappingProxyType({"terraform": "1"})
 # Removed at the top level only; a same-named key deeper in the plan is content.
-EXCLUDED_TOP_LEVEL_KEYS: Mapping[IacTool, frozenset[str]] = MappingProxyType(
+PLAN_EXCLUDED_TOP_LEVEL_KEYS: Mapping[IacTool, frozenset[str]] = MappingProxyType(
     {
         "terraform": frozenset(
             {"timestamp", "terraform_version", "format_version", "prior_state", "resource_drift", "relevant_attributes"}
@@ -40,9 +40,17 @@ EXCLUDED_TOP_LEVEL_KEYS: Mapping[IacTool, frozenset[str]] = MappingProxyType(
 )
 
 
+def check_plan_digest_version(tool: IacTool, version: str) -> None:
+    """Raise ``ValueError`` unless ``version`` is the version of ``tool``'s rule."""
+    if version != PLAN_DIGEST_VERSIONS.get(tool):
+        raise ValueError(f"digest_version {version!r} is not the version of the {tool} plan digest rule")
+
+
 def canonical_plan_bytes(tool: IacTool, plan: dict[str, Any]) -> bytes:
-    """``tool``'s plan without its rendering metadata, as RFC 8785 bytes."""
-    excluded = EXCLUDED_TOP_LEVEL_KEYS[tool]
+    """``tool``'s plan without its rendering metadata, as RFC 8785 bytes; ``ValueError`` for a tool with no rule."""
+    excluded = PLAN_EXCLUDED_TOP_LEVEL_KEYS.get(tool)
+    if excluded is None:
+        raise ValueError(f"no plan digest rule for {tool!r}")
     return canonical_bytes({key: value for key, value in plan.items() if key not in excluded})
 
 

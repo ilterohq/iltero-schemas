@@ -120,8 +120,9 @@ def _check_deployment(car: CAR) -> None:
 
 def _check_plan_of_events(car: CAR) -> None:
     """Every event names the plan the record evaluated, whichever stage it came from."""
-    evaluated = (car.plan.digest, car.plan.digest_version)
-    if any((e.provenance.plan_digest.value, e.provenance.plan_digest.version) != evaluated for e in car.events):
+    evaluated = (car.plan.digest, car.plan.digest_version, car.plan.tool)
+    named = (e.provenance.plan_digest for e in car.events)
+    if any((plan.value, plan.version, plan.tool) != evaluated for plan in named):
         raise ValueError("every event names the plan the record evaluated")
 
 

@@ -53,7 +53,7 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
-from iltero_schemas.models.subjects import check_subject, local_identity
+from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData
 from iltero_schemas.profiles import ALWAYS, profile_for
 
@@ -307,9 +307,9 @@ class AssuranceContext(StrictModel):
         if self.plan is not None and self.source is not None and self.plan.source_commit != self.source.commit.sha:
             raise ValueError("plan.source_commit must be the source commit")
         check_subject(self.subject.kind, self.subject.key, self.subject.identities, self.evaluation.stage, None)
-        if self.subject.kind == "resource" and self.resource is not None:
-            address = local_identity(self.subject.kind, self.subject.identities)
-            if (address.scheme, address.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
+        local = local_identity(self.subject.kind, self.subject.identities)
+        if self.resource is not None and local.scheme in ADDRESS_IDENTITY_SCHEMES:
+            if (local.scheme, local.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))

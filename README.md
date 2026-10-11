@@ -1,6 +1,6 @@
 # iltero-schemas
 
-`iltero-schemas` is the shared contract between the Iltero CLI, Iltero Cloud and third parties. Any program that
+`iltero-schemas` is the shared contract between the Iltero CLI, Iltero Platform and third parties. Any program that
 writes or checks an Iltero record uses it to agree on what the record means.
 
 The package contains:

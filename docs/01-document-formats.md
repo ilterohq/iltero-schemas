@@ -140,7 +140,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | --- | --- | --- |
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
-| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Cloud's policy treats it as production, or the unknown marker in a run Iltero Cloud did not open. |
+| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Platform's policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`) and `trust` (`attested`, `corroborated` or `asserted`). |
 | `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
@@ -148,7 +148,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
-| `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds, as the items below (`iltero_schemas.models.server_facts`). |
+| `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `verification`, `assurance` | object | Facts after deployment. |
 
@@ -180,8 +180,8 @@ Key rules:
   The key names an address in a unit, not a cloud resource: a resource replaced in the cloud keeps its key, and a
   resource moved to another address gets a new one. Only an identity document ties a key to a cloud resource over
   time. A key is unique within one project's records. Neither a stack nor any other
-  Iltero Cloud scope is part of it, so a project keeps every key when it connects to Iltero Cloud. A cloud identity
-  bound later is added beside the local identity, never in its place. A resource subject's address is the `id` of
+  Iltero Platform scope is part of it, so a project keeps every key when it connects to Iltero Platform. A cloud
+  identity bound later is added beside the local identity, never in its place. A resource subject's address is the `id` of
   the `resource` the input carries, and an event's local identity is of the event's `provenance.run.unit`.
 - A resource's `provider` is the short name an assertion targets (`aws`). `kind` follows the same rule as a change
   entry's. `name` is the resource's name within its configuration, and `module` the address of the module that
@@ -200,14 +200,14 @@ Key rules:
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
   value not yet known is `{"__unknown": true, "reason": ..., "present": true}`. A check that reaches either is
   `unknown`.
-- `context.environment.production` comes from Iltero Cloud's policy for the run's environment. A run Iltero Cloud did
-  not open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never `false`: a run without
+- `context.environment.production` comes from Iltero Platform's policy for the run's environment. A run Iltero
+  Platform did not open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never `false`: a run without
   the server never silently skips a production check.
-- A fact Iltero Cloud could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
+- A fact Iltero Platform could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
   never an empty list. A check that reads it is `unknown`, never `fail`.
 - The context holds no evaluator version, bundle digest or provenance.
 
-The facts only Iltero Cloud holds are normalised whatever produced them. Each item is Iltero Cloud's claim, as
+The facts only Iltero Platform holds are normalised whatever produced them. Each item is Iltero Platform's claim, as
 served.
 
 | Item | Fields |
@@ -249,10 +249,10 @@ who produced it and to reproduce it.
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the limits applied (`environment`, including `capabilities_digest`). For a scanner (`checkov`, `trivy` or `prowler`): its reported `version`, a `digest` when known, and `basis: not_executed_by_cli`. |
 | `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`) and `digest`. Present exactly when the evaluator is `opa`. |
 | `binding` | The evaluator binding that let a scanner's result stand for the assertion. Present exactly when the evaluator is a scanner. |
-| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: the Iltero Cloud bundle. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
+| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: the Iltero Platform bundle. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and `run_id`. |
-| `facts_source` | For a check at a stage whose input may carry Iltero Cloud facts (approvals, exceptions, earlier evaluations: `pre_deploy` and `runtime`), where they came from: `server`, `local_file` or `none`. `null` at every other stage. |
+| `facts_source` | For a check at a stage whose input may carry Iltero Platform facts (approvals, exceptions, earlier evaluations: `pre_deploy` and `runtime`), where they came from: `server`, `local_file` or `none`. `null` at every other stage. |
 
 Key rules:
 
@@ -299,7 +299,7 @@ with a regulatory framework.
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `issuer` | object | `type: local` and `identity_verified: false`. |
-| `governance` | object | `run_opened_by`: `server` for a run Iltero Cloud issued (`run_id.basis: server_issued`), `local` otherwise. |
+| `governance` | object | `run_opened_by`: `server` for a run Iltero Platform issued (`run_id.basis: server_issued`), `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
@@ -325,7 +325,7 @@ Trust levels, from weakest to strongest:
 | --- | --- |
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer authenticated the repository, the CI system and the identities named in the record. |
-| `governed` | Iltero Cloud enforced a declared assurance profile and verified the evidence chain. |
+| `governed` | Iltero Platform enforced a declared assurance profile and verified the evidence chain. |
 | `assessor_reviewed` | A named external assessor reviewed the record. |
 | `authority_accepted` | A named authority accepted the record for a stated purpose. |
 
@@ -354,8 +354,8 @@ Key rules:
 - `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
-  `advisory`. In a run Iltero Cloud opened, Iltero Cloud's policy sets it; otherwise it is the tool's choice. It is
-  the writer's claim; only the CI job's own result shows what the pipeline did.
+  `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise it is the tool's choice.
+  It is the writer's claim; only the CI job's own result shows what the pipeline did.
 - A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
   `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
   a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
@@ -369,10 +369,10 @@ Key rules:
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
-- A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Cloud bundle, no check from one,
-  and no facts from Iltero Cloud. A record of a run Iltero Cloud opened says so everywhere: `run_id.basis:
+- A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
+  one, and no facts from Iltero Platform. A record of a run Iltero Platform opened says so everywhere: `run_id.basis:
   server_issued`, `governance.run_opened_by: server`, and every stage counts its checks as `server_pinned`. Either way
-  the record is the writer's own: only Iltero Cloud can confirm a run it opened, by its `run_id`.
+  the record is the writer's own: only Iltero Platform can confirm a run it opened, by its `run_id`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`), over the change's one unit. A record's `change.unit` is its own unit with
   the plan it names. A unit is planned, approved and applied on its own.
@@ -382,10 +382,10 @@ Key rules:
   The units file is the writer's copy: records cannot show a run with no record at all, or a units file the writer
   left out or shortened. Only the file at the record's commit can, by its digest.
 - A stage's `coverage.assertions_expected.required_assertion_digest` is the digest of the assertions it owed, whether
-  or not each was evaluated: as the project's files gave them (`basis: locally_derived`), or as Iltero Cloud set them
+  or not each was evaluated: as the project's files gave them (`basis: locally_derived`), or as Iltero Platform set them
   for the run (`basis: server_pinned`). The model does not recompute a stage's digest.
-- These rules establish consistency only. An unsigned record cannot prove that Iltero Cloud opened its run. Only
-  Iltero Cloud can confirm a run, by its `run_id`.
+- These rules establish consistency only. An unsigned record cannot prove that Iltero Platform opened its run. Only
+  Iltero Platform can confirm a run, by its `run_id`.
 - `compiler.contract_digest` is the SHA-256 over the sorted `path,hash` lines of the wheel's `RECORD` entries for the
   package's own files. `iltero_schemas.distribution.installed_identity()` returns it for the installed package. An
   editable install has none.
@@ -579,7 +579,7 @@ Key rules:
 
 ## BundleDescriptor
 
-A bundle descriptor is how Iltero Cloud serves a signed assertion bundle. It carries the signed Open Policy Agent
+A bundle descriptor is how Iltero Platform serves a signed assertion bundle. It carries the signed Open Policy Agent
 (OPA) bundle tarball and each assertion's source, so a tool can recompile every assertion and compare the result
 with the module in the tarball before it runs anything.
 

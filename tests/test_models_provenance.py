@@ -10,6 +10,8 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
+from iltero_schemas.models.fields import Identity
+from iltero_schemas.models.subjects import subject_key
 from tests.records import record, set_path, stage
 
 _READER = {DERIVED_CHECKED_BY_READER: True}
@@ -93,7 +95,11 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     document = record()
     event = document["events"][-1]
     event["evaluation"]["stage"] = "pre_deploy"
-    event["subject"]["kind"] = "change"
+    event["subject"].update(
+        kind="change",
+        key=subject_key("change", [Identity(scheme="iltero_unit", value="root")]),
+        identities=[{"scheme": "iltero_unit", "value": "root"}],
+    )
     event["provenance"]["facts_source"] = "server"
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     del document["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]

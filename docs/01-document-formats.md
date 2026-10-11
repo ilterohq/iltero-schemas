@@ -145,7 +145,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
-| `subject` | object | The subject's `kind`, local `id`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
+| `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Cloud holds, as the items below (`iltero_schemas.models.server_facts`). |
@@ -166,10 +166,26 @@ Key rules:
   | `post_verify` | `subject`, `deployment` | `source`, `verification`, `assurance` |
   | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
 
-- A resource is named by its address in the IaC tool's configuration. `provider` is the short name an assertion
-  targets (`aws`). `kind` follows the same rule as a change entry's. `name` is the resource's name within its
-  configuration, and `module` the address of the module that contains it, in the tool's own syntax, or `null` at the
-  root.
+- A subject's `key` is `sha256:` and the hex SHA-256 of the canonical bytes of `{"kind": <kind>, "identity": {"scheme":
+  ..., "value": ..., "scope": ...}}`, the local identity with all three fields, `scope` as `null` when it has none,
+  computed by `iltero_schemas.models.subjects.subject_key`. Every document is checked against it. The
+  local identity is exactly one of the subject's identities:
+
+  | Subject | Local identity |
+  | --- | --- |
+  | A resource an IaC tool manages | Its address (`scheme: terraform_address`), with `scope` exactly `{"unit": <its unit>}`. |
+  | A resource no IaC tool manages, read at `post_verify` or `runtime` | Its cloud identity (`scheme: aws_arn`). |
+  | A change, a deployment or an assurance check | Its unit (`scheme: iltero_unit`), with no `scope`. |
+
+  The key names an address in a unit, not a cloud resource: a resource replaced in the cloud keeps its key, and a
+  resource moved to another address gets a new one. Only an identity document ties a key to a cloud resource over
+  time. A key is unique within one project's records. Neither a stack nor any other
+  Iltero Cloud scope is part of it, so a project keeps every key when it connects to Iltero Cloud. A cloud identity
+  bound later is added beside the local identity, never in its place. A resource subject's address is the `id` of
+  the `resource` the input carries, and an event's local identity is of the event's `provenance.run.unit`.
+- A resource's `provider` is the short name an assertion targets (`aws`). `kind` follows the same rule as a change
+  entry's. `name` is the resource's name within its configuration, and `module` the address of the module that
+  contains it, in the tool's own syntax, or `null` at the root.
 - `tool_data` holds what only the IaC tool that planned the resource says about it, keyed by `tool`, which is the
   plan's tool. For `terraform`: `provider_source` (the provider's full source address), `action_reason`,
   `previous_address` (the address before a rename), `importing` and `replace_paths`, as the plan wrote them. Each
@@ -197,7 +213,7 @@ served.
 | --- | --- |
 | Approval | `id`, `actor` (`provider`, and `id`: the provider's stable account id, never a login, a name or an address), `roles`, `status` (`approved`), `subject`, `method` (`ci_deployment_review` or `iltero_review`), `independence` (`independent` when the approver neither started the run nor triggered the attempt; `self_permitted_by_policy` otherwise, with the permitting `policy_version`, `null` when independent), `timestamp`. An approval from a CI deployment review names no role, since none is verified. |
 | Exception | `id`, `status` (`approved`: only granted exceptions are served), `scope` (`assertion.id`, `environment`, and the `resources` it covers, by their identities), `valid_from`, `expires_at` (after `valid_from`), `approved_by`, `reason`. |
-| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `id`), `result.status`, `plan_digest`, `observed_at`. |
+| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result.status`, `plan_digest`, `observed_at`. |
 
 - An approval's `subject` names what it approves: `{kind: change, digest}`, that plan and no other, or `{kind: run,
   id}`, Iltero's run, never a CI run. An approval of a run approves the run, not a plan's content: a CI deployment
@@ -219,7 +235,7 @@ who produced it and to reproduce it.
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `assertion` | object | The assertion's `id`, `version` and the `digest` of its document as it was read. |
-| `subject` | object | The subject's `kind`, local `id`, `identities` and `authority`. `id` is `null` only when no subject was in scope. |
+| `subject` | object | The subject's `kind`, `key`, `identities` and `authority`, in the same shape as on the evaluation input. `key` is `null`, and `identities` empty, exactly when no subject was in scope. |
 | `evaluation` | object | The `stage`, the `status`, the runner's `status_reason` and `status_detail`, and the policy's own `reason` and `observations`. |
 | `provenance` | object | Where the verdict came from (see below). |
 | `observed_at` | timestamp | The run's timestamp. Every event of one run carries the same value. |
@@ -254,8 +270,8 @@ Key rules:
 
 - A policy can return `pass`, `fail`, `unknown` or `not_applicable`. Only the runner sets `not_evaluated` and
   `error`.
-- A policy verdict names its `input_digest`. When no subject was in scope, the event has no subject `id` and no
-  `input_digest`.
+- A policy verdict names its `input_digest`. When no subject was in scope, the event's subject has no `key` and no
+  `identities`, and the event has no `input_digest`.
 - `evaluator` is `null` only for `evaluator_unavailable` and `no_subject_in_scope`.
 - From worst to best, statuses rank `not_evaluated`, `error`, `unknown`, `fail`, `not_applicable`, `pass`
   (`iltero_schemas.models.event.STATUS_SEVERITY`).

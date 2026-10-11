@@ -66,7 +66,7 @@ def test_the_largest_assertion_answers_within_the_limits(opa: Path, tmp_path: Pa
     module = compile(assertion)
     (tmp_path / "m.rego").write_bytes(module.source)
     (tmp_path / "caps.json").write_bytes(CAPABILITIES)
-    subject = {"kind": "resource", "id": "x" * SUBJECT_FIELD_MAX_CHARS}
+    subject = {"kind": "resource", "key": "x" * SUBJECT_FIELD_MAX_CHARS}
     context = {"subject": subject, "resource": _nested(SHORT_LIST)}
     evaluated = subprocess.run(
         [

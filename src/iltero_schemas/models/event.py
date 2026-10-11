@@ -33,8 +33,17 @@ from iltero_schemas.models.assertion import (
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.context import Authority
-from iltero_schemas.models.fields import Address, Commit, Digest, Identifier, Identity, Status, Timestamp, plain_text
+from iltero_schemas.models.fields import (
+    Commit,
+    Digest,
+    Identifier,
+    Identity,
+    Status,
+    Timestamp,
+    plain_text,
+)
 from iltero_schemas.models.scanners import ScannerTool
+from iltero_schemas.models.subjects import check_subject
 from iltero_schemas.profiles import reads_server_facts
 
 # Why a status is what it is; the runner sets it, a policy never does.
@@ -148,10 +157,11 @@ class AssertionRef(fields.AssertionKey):
 
 
 class EventSubject(StrictModel):
-    """What the verdict is about; ``id`` is absent only when the assertion had no subject in scope."""
+    """What the verdict is about; no key and no identity only when the assertion had no subject in scope."""
 
     kind: TargetKindValue
-    id: Address | None
+    # The digest of its kind and its local identity (``models.subjects``).
+    key: Digest | None
     identities: list[Identity]
     authority: Authority
 
@@ -322,8 +332,12 @@ class AssuranceEvent(StrictModel):
     @model_validator(mode="after")
     def _consistent(self) -> AssuranceEvent:
         no_subject = self.evaluation.status_reason == "no_subject_in_scope"
-        if (self.subject.id is None) != no_subject:
-            raise ValueError("a subject id is absent exactly when no subject was in scope")
+        subject = self.subject
+        if (subject.key is None) != no_subject or (not subject.identities) != no_subject:
+            raise ValueError("a subject has no key and no identity exactly when no subject was in scope")
+        if subject.key is not None:
+            stage, unit = self.evaluation.stage.value, self.provenance.run.unit
+            check_subject(subject.kind, subject.key, subject.identities, stage, unit)
         if no_subject and self.provenance.input_digest is not None:
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:

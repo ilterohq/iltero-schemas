@@ -443,14 +443,11 @@
   },
   "subject": {
     "kind": "change",
-    "id": "root",
+    "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
     "identities": [
       {
         "scheme": "iltero_unit",
-        "value": "root",
-        "scope": {
-          "stack_id": "5d2c8a10-3f4b-4e6a-8c7d-9b0e1f2a3c4d"
-        }
+        "value": "root"
       }
     ],
     "authority": "unresolved"

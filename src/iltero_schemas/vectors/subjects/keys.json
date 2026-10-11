@@ -1,0 +1,68 @@
+[
+  {
+    "name": "a resource an IaC tool manages",
+    "kind": "resource",
+    "identities": [
+      {
+        "scheme": "terraform_address",
+        "value": "aws_db_instance.payments",
+        "scope": {
+          "unit": "root"
+        }
+      }
+    ],
+    "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193"
+  },
+  {
+    "name": "a resource in a module, with a non-ASCII key",
+    "kind": "resource",
+    "identities": [
+      {
+        "scheme": "terraform_address",
+        "value": "module.app[\"café\"].aws_s3_bucket.logs",
+        "scope": {
+          "unit": "root"
+        }
+      }
+    ],
+    "key": "sha256:4ef253749c815ad6075bbb9d480eb2a02c0240b512dd3bc48293db05122e19e0"
+  },
+  {
+    "name": "the same address in another unit",
+    "kind": "resource",
+    "identities": [
+      {
+        "scheme": "terraform_address",
+        "value": "aws_db_instance.payments",
+        "scope": {
+          "unit": "network"
+        }
+      }
+    ],
+    "key": "sha256:0e726ee90921b649c6bfc00ae71b4a4c3760e30be4dc57c2780d09cf535b885c"
+  },
+  {
+    "name": "a change",
+    "kind": "change",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "root",
+        "scope": null
+      }
+    ],
+    "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5"
+  },
+  {
+    "name": "the same unit's deployment",
+    "kind": "deployment",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "root",
+        "scope": null
+      }
+    ],
+    "key": "sha256:715b868fc180dcacd304ac378f1e1f69749ba9bff3f7be63f7d4ca98ff293ce9"
+  }
+]

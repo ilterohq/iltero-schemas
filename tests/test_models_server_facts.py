@@ -87,18 +87,25 @@ def test_an_exception_waives_one_assertion_for_the_resources_it_names_between_tw
         ExceptionGrant.model_validate({**EXCEPTION, "scope": {**EXCEPTION["scope"], "resources": []}})
 
 
+EARLIER = {
+    "id": "aevt_0001",
+    "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
+    "stage": "plan",
+    "subject": {"kind": "resource", "key": "sha256:" + "5" * 64},
+    "result": {"status": "pass"},
+    "plan_digest": "sha256:" + "8" * 64,
+    "observed_at": "2026-09-22T13:00:13.568Z",
+}
+
+
 def test_an_earlier_evaluation_names_its_assertion_stage_subject_and_result() -> None:
-    EarlierEvaluation.model_validate(
-        {
-            "id": "aevt_0001",
-            "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
-            "stage": "plan",
-            "subject": {"kind": "resource", "id": "aws_db_instance.payments"},
-            "result": {"status": "pass"},
-            "plan_digest": "sha256:" + "8" * 64,
-            "observed_at": "2026-09-22T13:00:13.568Z",
-        }
-    )
+    EarlierEvaluation.model_validate(EARLIER)
+
+
+def test_an_earlier_evaluation_names_its_subject_by_its_key() -> None:
+    for subject in ({"kind": "resource", "key": "aws_db_instance.payments"}, {"kind": "resource", "id": "x"}):
+        with pytest.raises(ValidationError):
+            EarlierEvaluation.model_validate({**EARLIER, "subject": subject})
 
 
 def test_only_a_granted_exception_is_served() -> None:

@@ -6,7 +6,7 @@
   },
   "subject": {
     "kind": "resource",
-    "id": "aws_db_instance.payments",
+    "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
     "identities": [
       {
         "scheme": "terraform_address",
@@ -26,8 +26,7 @@
     "reason": "assert: true",
     "observations": {
       "subject": {
-        "kind": "resource",
-        "id": "aws_db_instance.payments"
+        "kind": "resource"
       },
       "when": null,
       "unknown": null,

@@ -28,6 +28,20 @@
     "key": "sha256:4ef253749c815ad6075bbb9d480eb2a02c0240b512dd3bc48293db05122e19e0"
   },
   {
+    "name": "the same address with its non-ASCII key decomposed (NFD): text is never normalized",
+    "kind": "resource",
+    "identities": [
+      {
+        "scheme": "terraform_address",
+        "value": "module.app[\"café\"].aws_s3_bucket.logs",
+        "scope": {
+          "unit": "root"
+        }
+      }
+    ],
+    "key": "sha256:f1fb4a1f503f5940a9ff8f54046a4534f2f92210d57b677d9d1a37b0d5776753"
+  },
+  {
     "name": "the same address in another unit",
     "kind": "resource",
     "identities": [
@@ -40,6 +54,25 @@
       }
     ],
     "key": "sha256:0e726ee90921b649c6bfc00ae71b4a4c3760e30be4dc57c2780d09cf535b885c"
+  },
+  {
+    "name": "a resource only the cloud knows, by its cloud identity; the value is value_parts joined by ':'",
+    "kind": "resource",
+    "identities": [
+      {
+        "scheme": "aws_arn",
+        "value_parts": [
+          "arn",
+          "aws",
+          "s3",
+          "",
+          "",
+          "logs-bucket"
+        ],
+        "scope": null
+      }
+    ],
+    "key": "sha256:2e7a21de9bd16b23822650bab276e38de94c1b7b3e154667b17ca1d21cd03cf6"
   },
   {
     "name": "a change",

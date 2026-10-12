@@ -13,6 +13,10 @@ one. Only an identity document ties a key to a cloud resource over time. A
 stack, a workspace or an organization is never an input, so a project keeps
 every key when it connects to the server. A cloud identity bound later is
 added beside the local identity, never in its place.
+
+The key is over the identity's text exactly as its writer gave it: no
+Unicode normalization. An IaC tool tells two spellings of one character
+apart (composed and decomposed), so they are two addresses with two keys.
 """
 
 from __future__ import annotations

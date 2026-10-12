@@ -46,8 +46,12 @@ RESOURCE_TYPES_MAX = 64
 KINDS_MAX = 64
 KIND_MAX_LENGTH = 64
 # Characters no human-readable field or literal may contain: C0 and C1
-# controls, DEL, zero-width and bidirectional formatting characters.
-CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f-\x9f\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u2069\ufeff]")
+# controls, DEL, zero-width and bidirectional formatting characters, and the
+# characters that show as nothing (soft hyphen, grapheme joiner, Hangul fillers).
+CONTROL_CHARACTERS = re.compile(
+    r"[\x00-\x1f\x7f-\x9f\xad\u034f\u061c\u115f\u1160\u180e\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u2069"
+    r"\u3164\ufeff\uffa0]"
+)
 
 
 class Stage(StrEnum):

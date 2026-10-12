@@ -23,8 +23,10 @@ Every model applies the same rules:
 - A key the model does not define is refused.
 - No value is converted. The string `"true"` is not a boolean, and `"7"` is not a number.
 - A text field the model types (a name, an identifier, an address, a title) never contains a control character,
-  a zero-width character or a bidirectional formatting character. Fields that carry data as another tool wrote it,
-  such as a resource's planned values in an AssuranceContext, accept any JSON value.
+  a zero-width character, a bidirectional formatting character or another character that shows as nothing: a soft
+  hyphen, the combining grapheme joiner, the Arabic letter mark, the Mongolian vowel separator or a Hangul filler.
+  Fields that carry data as another tool wrote it, such as a resource's planned values in an AssuranceContext,
+  accept any JSON value.
 - A list of names that the model keeps sorted is sorted by Unicode code point, with no name twice.
 
 The tables below use these value types:
@@ -168,7 +170,9 @@ Key rules:
 
 - A subject's `key` is `sha256:` and the hex SHA-256 of the canonical bytes of `{"kind": <kind>, "identity": {"scheme":
   ..., "value": ..., "scope": ...}}`, the local identity with all three fields, `scope` as `null` when it has none,
-  computed by `iltero_schemas.models.subjects.subject_key`. Every document is checked against it. The
+  computed by `iltero_schemas.models.subjects.subject_key`. Every document is checked against it. The key is over
+  the identity's text exactly as written, with no Unicode normalization, so a composed and a decomposed spelling of
+  one character (`é` as U+00E9, or `e` and U+0301) give two keys. The
   local identity is exactly one of the subject's identities:
 
   | Subject | Local identity |

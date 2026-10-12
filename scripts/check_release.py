@@ -15,8 +15,9 @@ For a release tag:
 With ``--keys BASE``, a change is checked before it merges. The working tree's
 keys must keep the history of the newest release, and a key change must raise
 the major or minor version over it, as the release will require. The version in
-``pyproject.toml`` may never be lower than on ``BASE``. If the change edits
-anything under ``trust/``, the version must be higher than on ``BASE``.
+``pyproject.toml`` may never be lower than on ``BASE``. Once a release exists,
+a change that edits anything under ``trust/`` must also make the version higher
+than on ``BASE``; before the first release no version moves.
 
 Usage: python scripts/check_release.py TAG MAIN_REF
        python scripts/check_release.py --keys BASE

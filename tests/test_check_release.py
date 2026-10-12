@@ -320,12 +320,14 @@ def test_before_the_first_release_a_key_change_needs_no_new_version(repo: Repo) 
 
 def test_a_key_change_with_a_higher_version_passes(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.2.0", _key(**RETIRED))
     assert RELEASE.version_bump_problems(repo.path, "main") == []
 
 
 def test_a_change_that_leaves_the_keys_alone_needs_no_new_version(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.1.0", _key())
     assert RELEASE.version_bump_problems(repo.path, "main") == []
 
@@ -372,6 +374,7 @@ def test_adding_the_key_file_counts_as_a_key_change(repo: Repo) -> None:
 
 def test_a_key_change_already_on_the_base_is_not_counted(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.2.0", _key())
     repo.git("checkout", "-q", "main")
     repo.commit("0.2.0", _key(**RETIRED))

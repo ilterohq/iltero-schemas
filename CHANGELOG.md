@@ -41,8 +41,10 @@ keep, so any two tools agree on what a record means.
   by its IaC tool's rule (`plan_digest(tool, plan)`); `PLAN_DIGEST_VERSIONS`
   gives each rule's version. A plan, or a deployment's applied plan, whose
   `digest_version` is not its tool's rule version is refused
-  (`check_plan_digest_version`), and a tool with no rule has no plan
-  digest. Two timestamps compare to the nanosecond.
+  (`check_plan_digest_version`), and so is an identity document whose
+  applied plan's is not the rule version of the tool that wrote the state,
+  with a vector. A tool with no rule has no plan digest. Two timestamps
+  compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
@@ -152,15 +154,19 @@ These changes break documents written before them.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
   `log_lines` it could not read, and the delete of each deposed object (an
   old copy a replacement set aside) settled by the state; the identity
-  document's holds its deposed counts. The apply's `changes` name each
-  address's current object once.
+  document's holds its deposed counts. The apply's `tool_data` must be the
+  variant of its log's tool, and the identity document's that of its state's
+  tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
+  each address's current object once.
 - A plan resource in the evaluation input is a neutral core (`id`,
   `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
   `related`), and what only its IaC tool says about it is under `tool_data`,
   keyed by `tool`: Terraform's `provider_source`, `action_reason`,
   `previous_address`, `importing`, `replace_paths`, and a related resource's
-  `match`. It names the kind its tool's table gives its type, like a change
-  entry, and `provider` is required and is the provider's short name.
+  `match`. Its `tool_data`, and each related resource's, must be the
+  variant of the plan's tool. It names the kind its tool's table gives its
+  type, like a change entry, and `provider` is required and is the
+  provider's short name.
 - An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
   could issue. A bucket name that looks like an IP address, holds two dots in a
   row or uses a reserved prefix or suffix is refused. So is an RDS identifier

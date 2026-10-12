@@ -147,7 +147,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
 | `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
-| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
+| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `verification`, `assurance` | object | Facts after deployment. |
@@ -186,11 +186,11 @@ Key rules:
 - A resource's `provider` is the short name an assertion targets (`aws`). `kind` follows the same rule as a change
   entry's. `name` is the resource's name within its configuration, and `module` the address of the module that
   contains it, in the tool's own syntax, or `null` at the root.
-- `tool_data` holds what only the IaC tool that planned the resource says about it, keyed by `tool`, which is the
-  plan's tool. For `terraform`: `provider_source` (the provider's full source address), `action_reason`,
-  `previous_address` (the address before a rename), `importing` and `replace_paths`, as the plan wrote them. Each
-  related resource's `tool_data` says how Terraform matched it: `match` is `instance` (this instance of a `count` or
-  `for_each`) or `every_instance`.
+- `tool_data` holds what only the IaC tool that planned the resource says about it, keyed by `tool`, which must be
+  the plan's `tool`, as must each related resource's; any other is refused. For `terraform`: `provider_source` (the
+  provider's full source address), `action_reason`, `previous_address` (the address before a rename), `importing` and
+  `replace_paths`, as the plan wrote them. Each related resource's `tool_data` says how Terraform matched it: `match`
+  is `instance` (this instance of a `count` or `for_each`) or `every_instance`.
 - `plan.digest` is the plan's digest by the rule for the plan's `tool` (`iltero_schemas.canonical.plan_digest`), and
   `digest_version` is that rule's version (`PLAN_DIGEST_VERSIONS`). A context with any other `digest_version` is
   refused, and `plan_digest` raises `ValueError` for a tool with no rule. `deployment.plan.digest_version` is held to
@@ -459,7 +459,7 @@ with a reason. A resolver is the part of a tool that reads identifiers for one c
 | `bindings` | list | Each managed resource in the state after the apply that was bound: `iac` (`tool`, `unit`, `address`), `cloud` (per provider) and `authority: authoritative`. |
 | `unresolved` | list | Each managed resource that was not bound: `address` and `reason`. |
 | `removed`, `removed_unresolved` | list or null | Each object that left the state during the apply, by its identity before the apply, with its `fate` (`deleted` or `forgotten`). |
-| `tool_data` | object | What only the state's IaC tool says, keyed by `tool`. For `terraform`: `deposed_destroyed` (integer or null), how many deposed objects the apply destroyed, and `deposed_objects`, how many the state still holds. |
+| `tool_data` | object | What only the state's IaC tool says, keyed by `tool`, which must be `sources.state.tool`. For `terraform`: `deposed_destroyed` (integer or null), how many deposed objects the apply destroyed, and `deposed_objects`, how many the state still holds. |
 
 Key rules:
 
@@ -480,6 +480,8 @@ Key rules:
   lowercase, as AWS stores them.
 - `removed`, `removed_unresolved` and `tool_data.deposed_destroyed` are `null` exactly when `sources.plan` is
   `null`.
+- `sources.plan.digest_version` is the version of the plan digest rule for `sources.state.tool`, since the tool that
+  wrote the state wrote the applied plan. Any other version is refused.
 - The document carries identifiers only. The state file it was read from never leaves the machine that read it.
 
 ## Attestation

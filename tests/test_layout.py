@@ -27,5 +27,8 @@ def test_init_files_carry_no_logic(path: Path) -> None:
 def test_the_iac_tool_list_imports_nothing_from_the_package() -> None:
     # ``canonical`` reads the tool list and ``models`` reads ``canonical``, so the list must stand alone.
     module = ast.parse((PACKAGE / "models" / "iac.py").read_text(encoding="utf-8"))
-    imported = [node.module for node in ast.walk(module) if isinstance(node, ast.ImportFrom) and node.module]
+    imported = [
+        *(node.module for node in ast.walk(module) if isinstance(node, ast.ImportFrom) and node.module),
+        *(alias.name for node in ast.walk(module) if isinstance(node, ast.Import) for alias in node.names),
+    ]
     assert not [name for name in imported if name.startswith("iltero_schemas")]

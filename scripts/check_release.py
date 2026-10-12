@@ -15,8 +15,9 @@ For a release tag:
 With ``--keys BASE``, a change is checked before it merges. The working tree's
 keys must keep the history of the newest release, and a key change must raise
 the major or minor version over it, as the release will require. The version in
-``pyproject.toml`` may never be lower than on ``BASE``. If the change edits
-anything under ``trust/``, the version must be higher than on ``BASE``.
+``pyproject.toml`` may never be lower than on ``BASE``. Once a release exists,
+a change that edits anything under ``trust/`` must also make the version higher
+than on ``BASE``; before the first release no version moves.
 
 Usage: python scripts/check_release.py TAG MAIN_REF
        python scripts/check_release.py --keys BASE
@@ -173,8 +174,9 @@ def _dotted(version: tuple[int, int, int]) -> str:
 def version_bump_problems(repo: Path, base: str) -> list[str]:
     """Whether the working tree's version is right for a change to ``base``.
 
-    It may never be lower than ``base``'s. It must be higher when the change
-    edits anything under ``trust/``. The trust folder is compared with the commit
+    It may never be lower than ``base``'s. Once a release exists, it must be
+    higher when the change edits anything under ``trust/``; before the first
+    release no version moves, and no published version trusted any key. The trust folder is compared with the commit
     where the change left ``base``, so a key change already on ``base`` is not
     counted. In CI this commit is ``base`` itself; the difference matters only
     when the check runs locally on a branch.
@@ -186,6 +188,8 @@ def version_bump_problems(repo: Path, base: str) -> list[str]:
     after = _declared_version((repo / "pyproject.toml").read_bytes(), "the working tree")
     if after < before:
         return [f"the version {_dotted(after)} is lower than {_dotted(before)}, the version at {base}"]
+    if newest_release(repo, before=None, on=base) is None:
+        return []
     diff = _git(repo, "diff", "--quiet", merge_base.stdout.decode("utf-8").strip(), "--", TRUST_DIR)
     if diff.returncode not in (0, 1):
         raise ReleaseError(f"cannot compare {TRUST_DIR} with {base}")

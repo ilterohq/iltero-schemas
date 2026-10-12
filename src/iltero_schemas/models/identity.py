@@ -26,12 +26,13 @@ from typing import Annotated, Literal, TypeAlias
 
 from pydantic import Field, model_validator
 
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.deployment import Fate, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
-from iltero_schemas.models.tools.variants import IdentityToolData
+from iltero_schemas.models.tools.variants import IdentityToolData, check_tool_data
 
 API_VERSION = "iltero.io/identity-bindings/v1"
 # More cloud providers than one unit's configuration ever uses.
@@ -148,6 +149,10 @@ class IdentityRecord(StrictModel):
 
     @model_validator(mode="after")
     def _each_half_holds_together(self) -> IdentityRecord:
+        check_tool_data(self.sources.state.tool, [self.tool_data], "tool_data")
+        if self.sources.plan is not None:
+            # The applied plan was written by the tool that wrote the state, so its digest follows that tool's rule.
+            check_plan_digest_version(self.sources.state.tool, self.sources.plan.digest_version)
         _one_list_each(self.bindings, self.unresolved)
         _one_entry_per_cloud_identity(self.bindings, "bindings")
         checked = (

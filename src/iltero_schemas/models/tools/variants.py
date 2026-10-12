@@ -10,6 +10,10 @@ changes.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Protocol
+
+from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.tools.terraform import (
     TerraformApplyData,
     TerraformIdentityData,
@@ -26,6 +30,19 @@ RelatedToolData = TerraformRelatedData
 ApplyToolData = TerraformApplyData
 # What only the tool that wrote the state says in an identity document.
 IdentityToolData = TerraformIdentityData
+
+
+class ToolKeyed(Protocol):
+    """A tool-keyed part: it names the tool whose variant it is."""
+
+    @property
+    def tool(self) -> str: ...
+
+
+def check_tool_data(tool: IacTool, parts: Iterable[ToolKeyed], where: str) -> None:
+    """Raise ``ValueError`` unless every part is the variant of ``tool``, the tool its enclosing document names."""
+    if any(part.tool != tool for part in parts):
+        raise ValueError(f"{where} is keyed by the tool {tool}")
 
 
 def check_identity_against_apply(identity: IdentityToolData, apply: ApplyToolData) -> None:

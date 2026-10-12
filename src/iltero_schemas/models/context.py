@@ -55,7 +55,7 @@ from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity
-from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData
+from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.profiles import ALWAYS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
@@ -273,6 +273,7 @@ class PlanResource(StrictModel):
     @model_validator(mode="after")
     def _kind_from_its_tools_table(self) -> PlanResource:
         check_kinds(self.tool_data.tool, [self])
+        check_tool_data(self.tool_data.tool, [related.tool_data for related in self.related], "related.tool_data")
         return self
 
 
@@ -319,6 +320,8 @@ class AssuranceContext(StrictModel):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
+            if self.resource is not None:
+                check_tool_data(self.plan.tool, [self.resource.tool_data], "resource.tool_data")
             check_superseded(self.plan.digest, self.deployment)
             check_tool(self.plan.tool, self.deployment)
         return self

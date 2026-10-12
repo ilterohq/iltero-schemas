@@ -147,9 +147,13 @@ These changes break documents written before them.
   address scoped by its unit, the cloud identity of a resource only the
   cloud knows (after deployment), or the unit of a change, a deployment or
   an assurance check. The key is over the identity's text as written, with
-  no Unicode normalization. `key` replaces `id`, which was the resource's address.
-  No stack or other Iltero Platform scope is part of it. An event's subject has
-  no key and no identity exactly when no subject was in scope.
+  no Unicode normalization. `key` replaces `id`, which was the resource's
+  address. No stack or other Iltero Platform scope is part of it. An event's
+  subject has no key and no identity exactly when no subject was in scope.
+- A typed text field (a name, an identifier, an address, a title) and an
+  assertion's literal also refuse the characters that show as nothing: a
+  soft hyphen, the combining grapheme joiner, the Arabic letter mark, the
+  Mongolian vowel separator and the Hangul fillers.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's checks in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the

@@ -23,8 +23,10 @@ Every model applies the same rules:
 - A key the model does not define is refused.
 - No value is converted. The string `"true"` is not a boolean, and `"7"` is not a number.
 - A text field the model types (a name, an identifier, an address, a title) never contains a control character,
-  a zero-width character or a bidirectional formatting character. Fields that carry data as another tool wrote it,
-  such as a resource's planned values in an AssuranceContext, accept any JSON value.
+  a zero-width character, a bidirectional formatting character or another character that shows as nothing: a soft
+  hyphen, the combining grapheme joiner, the Arabic letter mark, the Mongolian vowel separator or a Hangul filler.
+  Fields that carry data as another tool wrote it, such as a resource's planned values in an AssuranceContext,
+  accept any JSON value.
 - A list of names that the model keeps sorted is sorted by Unicode code point, with no name twice.
 
 The tables below use these value types:

@@ -44,8 +44,10 @@ def test_a_bound_cloud_identity_never_changes_the_key() -> None:
 
 def _vector_identity(identity: dict[str, Any]) -> Identity:
     # A cloud identity is written as parts, so no tracked line holds one.
-    value = ":".join(identity["value_parts"]) if "value_parts" in identity else identity["value"]
-    return Identity(scheme=identity["scheme"], value=value, scope=identity["scope"])
+    data = dict(identity)
+    if "value_parts" in data:
+        data["value"] = ":".join(data.pop("value_parts"))
+    return Identity.model_validate(data)
 
 
 def test_the_key_vectors_are_reproduced() -> None:

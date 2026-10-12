@@ -104,5 +104,14 @@
     },
     "remove": [],
     "message": "bindings and unresolved are sorted by address and name each resource once"
+  },
+  {
+    "name": "applied_plan_digest_version_not_the_tools",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/plan/digest_version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
   }
 ]

@@ -1,10 +1,12 @@
 {
   "empty_object": {
     "description": "An empty plan is digested as an empty object.",
+    "tool": "terraform",
     "plan": {}
   },
   "only_excluded_keys": {
     "description": "A plan that holds only the keys the digest ignores is digested as an empty object.",
+    "tool": "terraform",
     "plan": {
       "timestamp": "2026-06-25T00:00:00Z",
       "terraform_version": "1.5.7",
@@ -29,6 +31,7 @@
   },
   "excluded_keys_stripped_around_content": {
     "description": "The keys the digest ignores are dropped; resource_changes is kept with its order.",
+    "tool": "terraform",
     "plan": {
       "format_version": "1.2",
       "terraform_version": "1.5.7",
@@ -65,6 +68,7 @@
   },
   "numbers_bool_null": {
     "description": "Whole-number floats are written as integers (1.0 becomes 1), -0.0 becomes 0; true, false and null are kept.",
+    "tool": "terraform",
     "plan": {
       "resource_changes": [
         {
@@ -83,6 +87,7 @@
   },
   "nested_key_sorting": {
     "description": "Object keys are sorted at every level; the order of arrays is kept.",
+    "tool": "terraform",
     "plan": {
       "planned_values": {
         "root_module": {
@@ -103,6 +108,7 @@
   },
   "non_ascii_values": {
     "description": "Characters outside ASCII are written as themselves, not escaped.",
+    "tool": "terraform",
     "plan": {
       "resource_changes": [
         {
@@ -116,6 +122,7 @@
   },
   "non_ascii_keys": {
     "description": "Object keys outside ASCII are sorted by code point.",
+    "tool": "terraform",
     "plan": {
       "resource_changes": [],
       "é": 1,
@@ -124,6 +131,7 @@
   },
   "array_order_significant": {
     "description": "The order of resource_changes is kept exactly as Terraform wrote it; it is meaningful.",
+    "tool": "terraform",
     "plan": {
       "resource_changes": [
         {

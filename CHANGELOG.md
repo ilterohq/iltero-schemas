@@ -37,21 +37,27 @@ keep, so any two tools agree on what a record means.
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
   `iltero_schemas.models.providers.aws`, and the CI systems an executor may
   name in `iltero_schemas.models.event.CI_SYSTEMS`.
-- Canonical JSON (RFC 8785) and `sha256` digests, including the digest of a
-  Terraform plan. Two timestamps compare to the nanosecond.
+- Canonical JSON (RFC 8785) and `sha256` digests, including a plan's digest
+  by its IaC tool's rule (`plan_digest(tool, plan)`); `PLAN_DIGEST_VERSIONS`
+  gives each rule's version. A plan, or a deployment's applied plan, whose
+  `digest_version` is not its tool's rule version is refused
+  (`check_plan_digest_version`), and so is an identity document whose
+  applied plan's is not the rule version of the tool that wrote the state,
+  with a vector. A tool with no rule has no plan digest. Two timestamps
+  compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
-  Iltero Cloud opened, an identity document with no bindings, the identity
+  Iltero Platform opened, an identity document with no bindings, the identity
   documents that must be refused, and changed ones that must still be
   accepted. The rules about bindings have no vector, because a binding holds
   a cloud identifier this repository does not publish.
 - A record says who opened its run (`run_id.basis` and
   `governance.run_opened_by`), the same way everywhere. A record of a run
-  the tool opened claims nothing only Iltero Cloud can give: no Iltero Cloud
-  bundle or check from one, and no facts from Iltero Cloud. Every event
-  names the record's own run and unit. Every record is self-attested: only
-  Iltero Cloud can confirm a run it opened, by its `run_id`.
+  the tool opened claims nothing only Iltero Platform can give: no Iltero
+  Platform bundle or check from one, and no facts from Iltero Platform. Every
+  event names the record's own run and unit. Every record is self-attested:
+  only Iltero Platform can confirm a run it opened, by its `run_id`.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release
@@ -72,7 +78,7 @@ keep, so any two tools agree on what a record means.
   follows its checks, and it is incomplete with reason
   `upstream_state_unavailable`, so a pass on placeholders reads as
   incomplete; an evaluator error's reason wins, in the stage and in the
-  record. A record of a run Iltero Cloud opened has none.
+  record. A record of a run Iltero Platform opened has none.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change, with vectors.
   A record's change covers its own unit only: that unit's plan, bound by
@@ -80,10 +86,10 @@ keep, so any two tools agree on what a record means.
   units file as the writer read it (`units_file`: path, digest of its
   bytes, units in deploy order), and its unit is one of them, so the
   records of one run can be checked against it.
-- The evaluation input's environment says whether Iltero Cloud's policy
+- The evaluation input's environment says whether Iltero Platform's policy
   treats it as production (`context.environment.production`), and the
   starter assertions guard on that, not on the environment's name. A run
-  Iltero Cloud did not open holds the unknown marker there, so a production
+  Iltero Platform did not open holds the unknown marker there, so a production
   check is `unknown`, never skipped.
 - Resource selectors on an assertion's target. A resource target names one
   IaC tool's types (`{tool, provider, resource_types}`), whose values are
@@ -97,7 +103,7 @@ keep, so any two tools agree on what a record means.
   than out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
   and network kinds instead of Terraform types, roles, policy attachments,
   key policies and grants included.
-- The facts only Iltero Cloud holds, as items an assertion reads: approvals,
+- The facts only Iltero Platform holds, as items an assertion reads: approvals,
   exceptions and earlier evaluations. An approval names the change it
   approves by its digest, or the run by Iltero's run id, and says how it was
   obtained and whether it was a self-approval the policy permitted. The
@@ -105,10 +111,10 @@ keep, so any two tools agree on what a record means.
   accept either kind, each in its own branch. A stage whose input carries
   approvals lists the ones its checks read, whatever their source, each
   once and of the record's own change or run.
-- The unknown marker: where a fact only Iltero Cloud holds (approvals,
+- The unknown marker: where a fact only Iltero Platform holds (approvals,
   exceptions, evaluations) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. A
-  check at a stage that reads Iltero Cloud facts records where they came
+  check at a stage that reads Iltero Platform facts records where they came
   from (`facts_source`).
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
@@ -141,22 +147,26 @@ These changes break documents written before them.
   address scoped by its unit, the cloud identity of a resource only the
   cloud knows (after deployment), or the unit of a change, a deployment or
   an assurance check. `key` replaces `id`, which was the resource's address.
-  No stack or other Iltero Cloud scope is part of it. An event's subject has
+  No stack or other Iltero Platform scope is part of it. An event's subject has
   no key and no identity exactly when no subject was in scope.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's checks in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
   `log_lines` it could not read, and the delete of each deposed object (an
   old copy a replacement set aside) settled by the state; the identity
-  document's holds its deposed counts. The apply's `changes` name each
-  address's current object once.
+  document's holds its deposed counts. The apply's `tool_data` must be the
+  variant of its log's tool, and the identity document's that of its state's
+  tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
+  each address's current object once.
 - A plan resource in the evaluation input is a neutral core (`id`,
   `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
   `related`), and what only its IaC tool says about it is under `tool_data`,
   keyed by `tool`: Terraform's `provider_source`, `action_reason`,
   `previous_address`, `importing`, `replace_paths`, and a related resource's
-  `match`. It names the kind its tool's table gives its type, like a change
-  entry, and `provider` is required and is the provider's short name.
+  `match`. Its `tool_data`, and each related resource's, must be the
+  variant of the plan's tool. It names the kind its tool's table gives its
+  type, like a change entry, and `provider` is required and is the
+  provider's short name.
 - An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
   could issue. A bucket name that looks like an IP address, holds two dots in a
   row or uses a reserved prefix or suffix is refused. So is an RDS identifier
@@ -187,10 +197,18 @@ These changes break documents written before them.
   program change.
 - An event's executor provider is `local`, `ci` or a CI system's name, such
   as `github_actions`. A resource's identity scheme is `terraform_address`.
+- An evaluator binding's `framework` is now `input_kind`: what the scanner
+  must have been reading. A record's scanner report lists `input_kinds`, in
+  place of `frameworks`.
+- An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
+  `version`, `tool`), and a record holds every event's to its own plan.
 
 ### Removed
 
-- The messages a pipeline exchanges with Iltero Cloud during a run: opening
+- An event's `fs_hardening`.
+- The evaluation limits' `python_platform`: `platform` names the system the
+  evaluation ran on.
+- The messages a pipeline exchanges with Iltero Platform during a run: opening
   a run, a stage's token, closing a run, uploads and their answers, the facts
   document, the artifact store, and their vectors. The record vectors are in
   `vectors/records/`.

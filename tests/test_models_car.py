@@ -157,7 +157,7 @@ SCANNERS: dict[str, Any] = {
         {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "frameworks": ["terraform_plan"],
+            "input_kinds": ["terraform_plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,
             "checks_read": 73,
@@ -315,8 +315,9 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
     document["identity"]["sources"]["plan"]["digest"] = "sha256:" + "c" * 64
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
+    # Another version is refused before the two plans are compared: no rule but the tool's has a digest.
     document["identity"]["sources"]["plan"] = {"digest": document["plan"]["digest"], "digest_version": "2"}
-    with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
+    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
         CAR.model_validate(document)
     document["identity"]["sources"]["plan"] = None
     document["identity"].update(removed=None, removed_unresolved=None)

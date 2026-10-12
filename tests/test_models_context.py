@@ -177,6 +177,13 @@ def test_an_artifact_digest_is_present_exactly_when_a_binary_was_given(part: str
         AssuranceContext.model_validate(document)
 
 
+def test_a_plan_digest_version_other_than_its_tools_is_refused() -> None:
+    document = copy.deepcopy(POST_DEPLOY)
+    document["plan"]["digest_version"] = "2"
+    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
+        AssuranceContext.model_validate(document)
+
+
 PRE_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
 MARKER = {"__unknown": True, "reason": "server_facts_unavailable"}
 

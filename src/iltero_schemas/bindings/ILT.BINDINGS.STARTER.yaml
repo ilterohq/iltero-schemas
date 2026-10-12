@@ -17,7 +17,7 @@ bindings:
     check_id: CKV_AWS_16
     # The configuration scan would decide `storage_encrypted = var.encrypt` on the
     # variable; only the plan scan decides the value the plan settled on.
-    framework: terraform_plan
+    input_kind: terraform_plan
     assertion:
       id: ILT.AWS.RDS.STORAGE_ENCRYPTED
       version: "1.0.0"
@@ -30,7 +30,7 @@ bindings:
     tool: checkov
     tool_version_constraint: ">=3,<4"
     check_id: CKV_AWS_17
-    framework: terraform_plan
+    input_kind: terraform_plan
     assertion:
       id: ILT.AWS.RDS.NOT_PUBLIC
       version: "1.0.0"

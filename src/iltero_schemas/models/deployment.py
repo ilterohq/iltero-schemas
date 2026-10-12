@@ -18,6 +18,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
+from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.fields import (
     MAX_RESOURCES,
@@ -32,7 +33,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.markers import Unsettled
-from iltero_schemas.models.tools.variants import ApplyToolData
+from iltero_schemas.models.tools.variants import ApplyToolData, check_tool_data
 
 # What the IaC tool runs on a resource. A replacement needs a create, and a delete unless it only forgets its old
 # object.
@@ -223,6 +224,7 @@ class Apply(StrictModel):
     @model_validator(mode="after")
     def _one_story(self) -> Apply:
         check_one_tool(self.source, self.state)
+        check_tool_data(self.source.tool, [self.tool_data], "apply.tool_data")
         changes = self.changes
         if not sorted_unique([change.address for change in changes]):
             raise ValueError("changes are sorted by address and name each address once")
@@ -257,6 +259,12 @@ class Deployment(StrictModel):
     plan: AppliedPlan
     apply: Apply
     superseded_by: Superseded | None
+
+    @model_validator(mode="after")
+    def _plan_digest_version_is_the_tools(self) -> Deployment:
+        # The applied plan may be a re-plan, so it is held to its own tool's rule, not to the evaluated plan.
+        check_plan_digest_version(self.apply.source.tool, self.plan.digest_version)
+        return self
 
 
 def check_superseded(evaluated: str, deployment: Deployment | None) -> None:

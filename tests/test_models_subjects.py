@@ -42,11 +42,23 @@ def test_a_bound_cloud_identity_never_changes_the_key() -> None:
     assert subject_key("change", [UNIT]) != subject_key("deployment", [UNIT])
 
 
+def _vector_identity(identity: dict[str, Any]) -> Identity:
+    # A cloud identity is written as parts, so no tracked line holds one.
+    value = ":".join(identity["value_parts"]) if "value_parts" in identity else identity["value"]
+    return Identity(scheme=identity["scheme"], value=value, scope=identity["scope"])
+
+
 def test_the_key_vectors_are_reproduced() -> None:
     cases = json.loads((VECTORS / "subjects" / "keys.json").read_text(encoding="utf-8"))
     for case in cases:
-        identities = [Identity.model_validate(identity) for identity in case["identities"]]
+        identities = [_vector_identity(identity) for identity in case["identities"]]
         assert subject_key(case["kind"], identities) == case["key"], case["name"]
+
+
+def test_a_key_is_over_the_text_as_written_never_normalized() -> None:
+    composed = ADDRESS.model_copy(update={"value": 'module.app["caf\u00e9"].aws_s3_bucket.logs'})
+    decomposed = ADDRESS.model_copy(update={"value": 'module.app["cafe\u0301"].aws_s3_bucket.logs'})
+    assert subject_key("resource", [composed]) != subject_key("resource", [decomposed])
 
 
 @pytest.mark.parametrize(

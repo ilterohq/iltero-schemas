@@ -146,7 +146,8 @@ These changes break documents written before them.
   with a conformance vector. The local identity is a managed resource's
   address scoped by its unit, the cloud identity of a resource only the
   cloud knows (after deployment), or the unit of a change, a deployment or
-  an assurance check. `key` replaces `id`, which was the resource's address.
+  an assurance check. The key is over the identity's text as written, with
+  no Unicode normalization. `key` replaces `id`, which was the resource's address.
   No stack or other Iltero Platform scope is part of it. An event's subject has
   no key and no identity exactly when no subject was in scope.
 - A deployment's apply and the identity document are a neutral core plus

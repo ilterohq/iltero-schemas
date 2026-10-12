@@ -168,7 +168,9 @@ Key rules:
 
 - A subject's `key` is `sha256:` and the hex SHA-256 of the canonical bytes of `{"kind": <kind>, "identity": {"scheme":
   ..., "value": ..., "scope": ...}}`, the local identity with all three fields, `scope` as `null` when it has none,
-  computed by `iltero_schemas.models.subjects.subject_key`. Every document is checked against it. The
+  computed by `iltero_schemas.models.subjects.subject_key`. Every document is checked against it. The key is over
+  the identity's text exactly as written, with no Unicode normalization, so a composed and a decomposed spelling of
+  one character (`é` as U+00E9, or `e` and U+0301) give two keys. The
   local identity is exactly one of the subject's identities:
 
   | Subject | Local identity |

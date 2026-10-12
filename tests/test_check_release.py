@@ -305,10 +305,17 @@ def _change(repo: Repo, version: str, *keys: dict[str, Any]) -> None:
 
 def test_a_key_change_without_a_higher_version_is_refused(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.1.0", _key(**RETIRED))
     assert RELEASE.version_bump_problems(repo.path, "main") == [
         "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
     ]
+
+
+def test_before_the_first_release_a_key_change_needs_no_new_version(repo: Repo) -> None:
+    repo.commit("0.1.0", _key())
+    _change(repo, "0.1.0", _key(**RETIRED))
+    assert RELEASE.version_bump_problems(repo.path, "main") == []
 
 
 def test_a_key_change_with_a_higher_version_passes(repo: Repo) -> None:
@@ -333,6 +340,7 @@ def test_a_change_may_never_lower_the_version(repo: Repo) -> None:
 
 def test_an_uncommitted_key_change_counts(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     (repo.path / RELEASE.TRUST_FILE).write_bytes(_file(_key(**RETIRED)))
     assert RELEASE.version_bump_problems(repo.path, "main") == [
         "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
@@ -341,6 +349,7 @@ def test_an_uncommitted_key_change_counts(repo: Repo) -> None:
 
 def test_any_change_in_the_trust_folder_counts_as_a_key_change(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     repo.git("checkout", "-q", "-b", "change")
     (repo.path / RELEASE.TRUST_DIR / "other-keys.json").write_text("{}", encoding="utf-8")
     repo.git("add", "-A")
@@ -354,6 +363,7 @@ def test_adding_the_key_file_counts_as_a_key_change(repo: Repo) -> None:
     (repo.path / "pyproject.toml").write_text('[project]\nversion = "0.1.0"\n', encoding="utf-8")
     repo.git("add", "-A")
     repo.git("commit", "-q", "-m", "no keys yet")
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.1.0", _key())
     assert RELEASE.version_bump_problems(repo.path, "main") == [
         "the trusted keys changed, so the version must be higher than 0.1.0, the version at main"
@@ -371,6 +381,7 @@ def test_a_key_change_already_on_the_base_is_not_counted(repo: Repo) -> None:
 
 def test_the_version_must_beat_the_base_not_where_the_change_began(repo: Repo) -> None:
     repo.commit("0.1.0", _key())
+    repo.git("tag", "v0.1.0")
     _change(repo, "0.2.0", _key(**RETIRED))
     repo.git("checkout", "-q", "main")
     repo.commit("0.2.0", _key())

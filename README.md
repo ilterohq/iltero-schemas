@@ -9,8 +9,8 @@ The package contains:
   assurance event and the Change Assurance Record (CAR).
 - **Canonical digests.** RFC 8785 canonical JSON and SHA-256 digests, so the same document gives the same bytes and
   the same digest on every machine.
-- **The assertion compiler.** It turns an assertion, a compliance rule written in YAML, into a policy program for
-  Open Policy Agent (OPA). The same assertion always compiles to the same bytes.
+- **The assertion compiler.** It turns an assertion, a rule about infrastructure written in YAML, into a policy
+  program for Open Policy Agent (OPA). The same assertion always compiles to the same bytes.
 - **The OPA pin.** The one OPA release every Iltero component runs, with the SHA-256 digest of its binary for each
   supported platform, and the allowlist of OPA functions a program may call.
 - **Conformance vectors.** Known inputs with their exact expected outputs.

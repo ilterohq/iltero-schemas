@@ -100,16 +100,9 @@ class Governance(StrictModel):
 # How far a record's facts were established, from the weakest level to the strongest.
 # self_attested: written by the tool alone. source_authenticated: the issuing service authenticated the
 # repository, CI and identity sources. governed: the issuing service enforced a declared assurance
-# profile and verified the evidence chain. assessor_reviewed: a named external assessor reviewed it.
-# authority_accepted: a named authority accepted it for a stated purpose. Every level above self_attested
-# needs a signature, which this version of the record cannot carry.
-TrustLevel = Literal[
-    "self_attested",
-    "source_authenticated",
-    "governed",
-    "assessor_reviewed",
-    "authority_accepted",
-]
+# profile and verified the evidence chain. Every level above self_attested needs a signature, which this
+# version of the record cannot carry.
+TrustLevel = Literal["self_attested", "source_authenticated", "governed"]
 # The only level a record without a signature may claim.
 UNSIGNED_TRUST_LEVEL: Final[TrustLevel] = "self_attested"
 

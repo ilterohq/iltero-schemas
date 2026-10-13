@@ -10,7 +10,6 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [Change Assurance Record (CAR)](#change-assurance-record-car)
 - [VerificationReport](#verificationreport)
 - [IdentityBindings](#identitybindings)
-- [Attestation](#attestation)
 - [EvaluatorBindingSet](#evaluatorbindingset)
 - [PolicySourceManifest](#policysourcemanifest)
 - [BundleDescriptor](#bundledescriptor)
@@ -42,8 +41,8 @@ The tables below use these value types:
 
 ## TechnicalAssertion
 
-A technical assertion is a compliance rule written in YAML. It states what must be true, at which stage of a change
-it is checked, and what kind of thing it is about. The compiler turns it into one OPA program.
+A technical assertion is a rule about infrastructure, written in YAML. It states what must be true, at which stage of
+a change it is checked, and what kind of thing it is about. The compiler turns it into one OPA program.
 
 - **apiVersion:** `iltero.io/v1`, with `kind: TechnicalAssertion`
 - **Model:** `iltero_schemas.models.assertion.TechnicalAssertion`. `iltero_schemas.ast.parse` reads the YAML text,
@@ -334,8 +333,6 @@ Trust levels, from weakest to strongest:
 | `self_attested` | The tool that wrote the record is its only source. |
 | `source_authenticated` | A service other than the writer authenticated the repository, the CI system and the identities named in the record. |
 | `governed` | Iltero Platform enforced a declared assurance profile and verified the evidence chain. |
-| `assessor_reviewed` | A named external assessor reviewed the record. |
-| `authority_accepted` | A named authority accepted the record for a stated purpose. |
 
 Every level above `self_attested` requires a signature. This version of the record carries none, so the model
 accepts only `self_attested`.
@@ -487,38 +484,6 @@ Key rules:
 - `sources.plan.digest_version` is the version of the plan digest rule for `sources.state.tool`, since the tool that
   wrote the state wrote the applied plan. Any other version is refused.
 - The document carries identifiers only. The state file it was read from never leaves the machine that read it.
-
-## Attestation
-
-An attestation is a person's written claim about a fact no technical assertion can establish, such as a policy
-existing or a review taking place. It is evidence a person reads, never a verdict: no assertion status is derived
-from it.
-
-- **apiVersion:** `iltero.io/v1`, with `kind: Attestation`
-- **Model:** `iltero_schemas.models.attestation.Attestation`
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `apiVersion`, `kind` | string | `iltero.io/v1` and `Attestation`. |
-| `uuid` | UUID | The claim's id. |
-| `statement` | string | The claim, verbatim, at most 4096 characters. |
-| `scope` | object | The `system_id`, the `environment`, and the `assertion_id` it stands in for or the `control_ref` it addresses. |
-| `attester` | object | `identity`, `idp`, `auth_method`, `role`, `role_source_ref`, and `identity_source` (`asserted` or `ci_oidc`). |
-| `assessment_method` | string | `EXAMINE` or `INTERVIEW`. |
-| `supporting_evidence` | list | Up to 256 files, each by `ref_id` and `digest`. |
-| `attested_at` | object | When the claim was made: `value`, `source` (`server`, `timestamp_authority` or `runner_clock`) and `trust`. |
-| `valid_until` | timestamp | When the claim stops counting. Required. |
-| `next_review_at` | timestamp or null | When the claim is due for review. |
-| `supersedes` | UUID or null | The claim this one replaces. |
-| `signature` | null | Always `null` in this version. |
-| `written_by` | string or null | The version of the tool that wrote it. |
-
-Key rules:
-
-- `valid_until` is later than `attested_at.value`, and `next_review_at` is no later than `valid_until`.
-- `scope` names an `assertion_id`, a `control_ref`, or both.
-- `identity_source: asserted` means the tool recorded a name it was given and verified nothing.
-- A record lists an attestation in `evidence_refs` with `media_type: application/vnd.iltero.attestation+json`.
 
 ## EvaluatorBindingSet
 

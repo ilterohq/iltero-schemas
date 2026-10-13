@@ -217,3 +217,5 @@ These changes break documents written before them.
   a run, a stage's token, closing a run, uploads and their answers, the facts
   document, the artifact store, and their vectors. The record vectors are in
   `vectors/records/`.
+- The `Attestation` document and its media type, and the `assessor_reviewed`
+  and `authority_accepted` trust levels. A record states machine facts only.

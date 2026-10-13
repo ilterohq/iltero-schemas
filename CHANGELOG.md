@@ -28,7 +28,7 @@ keep, so any two tools agree on what a record means.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold. No two of its bindings, and no two of its
   removed entries, name the same cloud identity.
-- Attestations, hand-written policy sources and scanner binding sets. Binding
+- Hand-written policy sources and scanner binding sets. Binding
   sets, events and records name a scanner from one list.
 - A record's scanner report now refuses any scanner other than `checkov`,
   `trivy` and `prowler`.
@@ -182,7 +182,7 @@ These changes break documents written before them.
   regulatory framework. In plain words, a record says what was checked and
   how. On its own, it does not show that anything is certified or complies
   with a regulation or standard.
-- A record's `trust_level` replaces `assurance_level`. It lists five levels,
+- A record's `trust_level` replaces `assurance_level`. It lists three levels,
   and a record may claim only `self_attested`, since it carries no signature.
 - A record has a new `compliance_determination` field, which is always `null`.
 - A record's issuer is always `local`, and its identity is never verified,

@@ -4,6 +4,7 @@ metadata:
   id: ILT.AWS.RDS.STORAGE_ENCRYPTED
   version: "1.0.0"
   title: RDS storage encryption enabled
+  remediation: Set storage_encrypted to true.
 spec:
   stage: plan
   target:

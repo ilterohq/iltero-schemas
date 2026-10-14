@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from iltero_schemas.assertions import ASSERTIONS, PLAN_BINDING, PLAN_BINDING_ID
 from iltero_schemas.ast import parse
-from iltero_schemas.models.assertion import Stage, TargetKind
+from iltero_schemas.ast.document import load_document
+from iltero_schemas.models.assertion import Stage, TargetKind, TechnicalAssertion
 
 
 def test_the_shipped_binding_check_is_a_post_deploy_assertion_about_the_deployment() -> None:
@@ -17,3 +18,10 @@ def test_every_shipped_assertion_parses_and_the_binding_check_is_one_of_them() -
     files = [entry for entry in ASSERTIONS.iterdir() if entry.name.endswith(".yaml")]
     ids = {parse(entry.read_text(encoding="utf-8")).id for entry in files}
     assert PLAN_BINDING_ID in ids and len(ids) == len(files)
+
+
+def test_every_shipped_assertion_suggests_an_action() -> None:
+    for entry in ASSERTIONS.iterdir():
+        if entry.name.endswith(".yaml"):
+            model = TechnicalAssertion.model_validate(load_document(entry.read_text(encoding="utf-8")))
+            assert model.metadata.remediation, entry.name

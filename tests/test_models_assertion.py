@@ -5,8 +5,10 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.models.assertion import (
     DERIVED_TYPE,
+    REMEDIATION_MAX_LENGTH,
     VALID_COMBINATIONS,
     AssertionType,
     Stage,
@@ -135,6 +137,30 @@ def test_version_is_a_semantic_version_core(version: str) -> None:
 @pytest.mark.parametrize("title", ["", "   ", "line\nbreak", "x" * 201])
 def test_title_is_a_bounded_single_line(title: str) -> None:
     assert _error_locations(_document(metadata__title=title))[0].startswith("metadata")
+
+
+def test_remediation_is_optional() -> None:
+    assert TechnicalAssertion.model_validate(_document()).metadata.remediation is None
+    remediation = "Set storage_encrypted to true."
+    document = _document(metadata__remediation=remediation)
+    assert TechnicalAssertion.model_validate(document).metadata.remediation == remediation
+
+
+@pytest.mark.parametrize(
+    "remediation", ["", "   ", "line\nbreak", "zero\u200bwidth", "x" * (REMEDIATION_MAX_LENGTH + 1)]
+)
+def test_remediation_is_a_bounded_single_line(remediation: str) -> None:
+    assert _error_locations(_document(metadata__remediation=remediation))[0].startswith("metadata")
+
+
+def test_remediation_is_left_out_rather_than_null() -> None:
+    assert _error_locations(_document(metadata__remediation=None)) == ["metadata"]
+
+
+def test_remediation_is_not_part_of_the_ast() -> None:
+    plain = parse_document(_document())
+    with_remediation = parse_document(_document(metadata__remediation="Set storage_encrypted to true."))
+    assert source_digest(plain) == source_digest(with_remediation)
 
 
 def test_resource_target_needs_provider_and_unique_types() -> None:

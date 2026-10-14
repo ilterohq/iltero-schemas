@@ -4,6 +4,7 @@ metadata:
   id: ILT.AWS.RDS.PRODUCTION_BASELINE
   version: "1.0.0"
   title: Production RDS instances are encrypted, private, backed up and not on a burstable class
+  remediation: Set storage_encrypted to true, publicly_accessible to false and backup_retention_period to 7 or more, and use an instance class other than db.t3.micro or db.t3.small.
 spec:
   stage: plan
   target:

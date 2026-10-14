@@ -4,6 +4,7 @@ metadata:
   id: ILT.AWS.RDS.BACKUP_RETENTION
   version: "1.0.0"
   title: RDS backups retained for at least seven days
+  remediation: Set backup_retention_period to 7 or more.
 spec:
   stage: plan
   target:

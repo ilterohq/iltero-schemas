@@ -4,6 +4,7 @@ metadata:
   id: ILT.DEPLOYMENT.PLAN_BINDING
   version: "1.0.0"
   title: The applied plan is the evaluated plan
+  remediation: Apply the plan that was evaluated, or evaluate the plan you apply.
 spec:
   stage: post_deploy
   target:

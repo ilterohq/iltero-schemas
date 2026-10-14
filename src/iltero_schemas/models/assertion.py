@@ -38,6 +38,8 @@ _WINDOWS_DEVICE_NAMES = frozenset(
 VERSION_PATTERN = r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
 VERSION_MAX_LENGTH = 32
 TITLE_MAX_LENGTH = 200
+# The longest suggested action: one instruction sentence, a little longer than a title.
+REMEDIATION_MAX_LENGTH = 300
 NAME_PATTERN = r"^[a-z][a-z0-9_]*$"
 PROVIDER_MAX_LENGTH = 32
 RESOURCE_TYPE_MAX_LENGTH = 128
@@ -126,17 +128,25 @@ def _title(value: str) -> str:
 
 
 class Metadata(_Strict):
-    """Identity of the assertion as an author names it."""
+    """The assertion's identity, and the text a person reads about it."""
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     title: Annotated[str, Field(max_length=TITLE_MAX_LENGTH)]
+    # What a person does to make a failing subject meet the assertion. Shown to people only: the compiler
+    # ignores it, so it is in neither the AST nor the source digest.
+    remediation: Annotated[str, Field(max_length=REMEDIATION_MAX_LENGTH)] | None = None
 
     @model_validator(mode="after")
     def _check(self) -> Metadata:
         if self.id.split(".")[0] in _WINDOWS_DEVICE_NAMES:
             raise ValueError(f"id must not start with {self.id.split('.')[0]!r}, a name Windows reserves for a device")
         _title(self.title)
+        if self.remediation is not None:
+            _title(self.remediation)
+        elif "remediation" in self.model_fields_set:
+            # The assertion's digest is taken over the document as written: one meaning, one digest.
+            raise ValueError("remediation is left out, never null")
         return self
 
 

@@ -4,6 +4,7 @@ metadata:
   id: ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION
   version: "1.0.0"
   title: An assurance regression corresponds to a recorded deployment or an approved exception
+  remediation: Record the deployment made since the last passing result, or get an exception approved.
 spec:
   stage: runtime
   target:

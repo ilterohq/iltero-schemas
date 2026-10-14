@@ -4,6 +4,7 @@ metadata:
   id: ILT.AWS.RDS.NOT_PUBLIC
   version: "1.0.0"
   title: RDS instance not publicly accessible
+  remediation: Set publicly_accessible to false.
 spec:
   stage: plan
   target:

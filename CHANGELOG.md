@@ -17,6 +17,10 @@ keep, so any two tools agree on what a record means.
   functions and its pinned release.
 - Nine starter assertions, and the built-in check that the plan applied is the
   plan that was checked.
+- An optional `metadata.remediation` on a `TechnicalAssertion`: one line, at
+  most 300 characters, saying what a person does to make a failing subject
+  meet the assertion. The compiler ignores it. The assertion's digest covers
+  it; the source digest does not. Each starter assertion has one.
 - A check of a starter assertion that a project added to its local run says
   so (`assertion_source: contract_starter`).
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for

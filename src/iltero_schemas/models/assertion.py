@@ -134,7 +134,7 @@ class Metadata(_Strict):
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     title: Annotated[str, Field(max_length=TITLE_MAX_LENGTH)]
     # What a person does to make a failing subject meet the assertion. Shown to people only: the compiler
-    # ignores it, so it is in neither the AST nor its digest.
+    # ignores it, so it is in neither the AST nor the source digest.
     remediation: Annotated[str, Field(max_length=REMEDIATION_MAX_LENGTH)] | None = None
 
     @model_validator(mode="after")
@@ -144,6 +144,9 @@ class Metadata(_Strict):
         _title(self.title)
         if self.remediation is not None:
             _title(self.remediation)
+        elif "remediation" in self.model_fields_set:
+            # The assertion's digest is taken over the document as written: one meaning, one digest.
+            raise ValueError("remediation is left out, never null")
         return self
 
 

@@ -30,7 +30,7 @@
     "assertions_expected": {
       "value": 5,
       "basis": "locally_derived",
-      "required_assertion_digest": "sha256:32bbee8cef0e70277bcede5178ba0e9652ccabdbcbbe3eac8c94f4b4fd5039e7"
+      "required_assertion_digest": "sha256:bb10fda8166fd6722f0595e599a7f0be8af78545a806cd2aa93c15e4aed7afa9"
     },
     "assertions_evaluated": 5,
     "subjects_per_assertion": {
@@ -1528,7 +1528,7 @@
         "assertions_evaluated": 5,
         "assertions_expected": {
           "basis": "locally_derived",
-          "required_assertion_digest": "sha256:9ea4d4d08ad0ca79ad5573c777c1232d2e29e3b4abd638963b0754fd8641f85c",
+          "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
           "value": 5
         },
         "checks": 5,

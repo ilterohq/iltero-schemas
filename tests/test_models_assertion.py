@@ -153,6 +153,10 @@ def test_remediation_is_a_bounded_single_line(remediation: str) -> None:
     assert _error_locations(_document(metadata__remediation=remediation))[0].startswith("metadata")
 
 
+def test_remediation_is_left_out_rather_than_null() -> None:
+    assert _error_locations(_document(metadata__remediation=None)) == ["metadata"]
+
+
 def test_remediation_is_not_part_of_the_ast() -> None:
     plain = parse_document(_document())
     with_remediation = parse_document(_document(metadata__remediation="Set storage_encrypted to true."))

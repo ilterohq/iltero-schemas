@@ -54,7 +54,7 @@ a change it is checked, and what kind of thing it is about. The compiler turns i
 | `metadata.id` | string | Upper-case segments joined by dots, at least two, at most 128 characters. `ILT.` is reserved for assertions Iltero maintains. The first segment must not be a Windows device name (`CON`, `PRN`, `AUX`, `NUL`, `COM1`–`COM9`, `LPT1`–`LPT9`). |
 | `metadata.version` | string | A semantic version `X.Y.Z`. Evidence cites the assertion's digest, not this version. |
 | `metadata.title` | string | One line, at most 200 characters. |
-| `metadata.remediation` | string | Optional. What a person does to make a failing subject meet the assertion. One line, at most 300 characters. |
+| `metadata.remediation` | string | Optional; when absent, the key is left out, never `null`. What a person does to make a failing subject meet the assertion. One line, at most 300 characters. |
 | `spec.stage` | stage | When the assertion is checked. |
 | `spec.target` | object | What the assertion is about. `kind` is `resource`, `change`, `deployment` or `assurance`. `resources` lists resource selectors: a `resource` target names exactly one; a `change` or `deployment` target may name up to 16, and is then in scope only when the change touches a resource one of them picks. |
 | `spec.type` | string | Optional. `state` for a `resource` target, `process` otherwise. When written, it must match the target. |

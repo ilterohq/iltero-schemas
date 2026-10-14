@@ -6,6 +6,7 @@ refused case names the message the refusal carries.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from typing import Any
@@ -15,6 +16,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.assertions import ASSERTIONS
 from iltero_schemas.bundle.build import member
+from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.identity import IdentityBindings
 from tests.conftest import VECTORS
@@ -97,3 +99,18 @@ def test_every_check_in_a_record_vector_names_the_shipped_assertion_as_it_is() -
             if named["id"] in shipped:
                 as_named = (named["version"], named["digest"], event["provenance"]["compiled_digest"])
                 assert as_named == shipped[named["id"]], (path.name, named["id"])
+
+
+def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_events_owed() -> None:
+    shipped = {p.name.removesuffix(".yaml"): p.read_bytes() for p in ASSERTIONS.iterdir() if p.name.endswith(".yaml")}
+    for path in sorted((VECTORS / "records").glob("local_run*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        for ref in record["evidence_refs"]:
+            assertion_id, _, name = ref["ref_id"].partition("@")
+            if name.endswith(".yaml") and assertion_id in shipped:
+                body = shipped[assertion_id]
+                assert (ref["digest"], ref["size_bytes"]) == (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
+        (stage,) = record["stages"].values()
+        owed = {(e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"]) for e in record["events"]}
+        expected = stage["coverage"]["assertions_expected"]["required_assertion_digest"]
+        assert expected == required_assertion_digest(owed), path.name

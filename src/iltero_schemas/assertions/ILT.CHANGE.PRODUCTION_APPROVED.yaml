@@ -4,6 +4,7 @@ metadata:
   id: ILT.CHANGE.PRODUCTION_APPROVED
   version: "1.0.0"
   title: "Production change approved: its digest by a security reviewer, or its run"
+  remediation: Have an independent security reviewer approve the change's digest, or get the run approved.
 spec:
   stage: pre_deploy
   target:

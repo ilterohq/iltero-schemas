@@ -4,6 +4,7 @@ metadata:
   id: ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED
   version: "1.0.0"
   title: S3 bucket blocks all public access
+  remediation: Add an aws_s3_bucket_public_access_block for the bucket that sets all four settings to true.
 spec:
   stage: plan
   target:

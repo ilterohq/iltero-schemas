@@ -319,3 +319,49 @@ def test_a_plan_resource_kind_is_unknown_or_absent_where_the_table_gives_none(
     document = copy.deepcopy(VECTOR)
     document["resource"].update(provider=provider, type=type_, kind=kind)
     AssuranceContext.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("time", "message"),
+    [
+        ({"trust": "attested"}, "only ever asserted"),
+        ({"source": "timestamp_authority", "trust": "attested"}, "exactly when a timestamp authority"),
+        (
+            {
+                "bracket": {
+                    "not_before": "2026-09-16T18:04:00Z",
+                    "not_after": "2026-09-16T18:06:00Z",
+                    "nonce_digest": "sha256:" + "a" * 64,
+                }
+            },
+            "exactly when a timestamp authority",
+        ),
+    ],
+    ids=["clock-attested", "authority-no-bracket", "clock-bracket"],
+)
+def test_a_reference_time_claims_no_more_than_its_source(time: dict[str, Any], message: str) -> None:
+    document = {**VECTOR, "reference_time": {**VECTOR["reference_time"], **time}}
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate(document)
+
+
+def test_a_timestamp_authority_time_carries_its_bracket() -> None:
+    bracket = {
+        "not_before": "2026-09-16T18:04:00Z",
+        "not_after": "2026-09-16T18:06:00Z",
+        "nonce_digest": "sha256:" + "a" * 64,
+    }
+    time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
+    AssuranceContext.model_validate({**VECTOR, "reference_time": time})
+
+
+@pytest.mark.parametrize(
+    ("not_before", "not_after"),
+    [("2026-09-16T18:06:00Z", "2026-09-16T18:04:00Z"), ("2026-09-16T18:05:30Z", "2026-09-16T18:06:00Z")],
+    ids=["reversed", "time-before-bracket"],
+)
+def test_a_timestamp_authority_time_lies_inside_its_bracket(not_before: str, not_after: str) -> None:
+    bracket = {"not_before": not_before, "not_after": not_after, "nonce_digest": "sha256:" + "a" * 64}
+    time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
+    with pytest.raises(ValidationError, match="inside its bracket"):
+        AssuranceContext.model_validate({**VECTOR, "reference_time": time})

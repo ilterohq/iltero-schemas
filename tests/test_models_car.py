@@ -264,6 +264,7 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     stage = copy.deepcopy(plan_stage)
     stage["stage"] = "post_deploy"
     stage["observed_at"] = "2026-09-22T14:02:00Z"
+    stage["reference_time"] = {**plan_stage["reference_time"], "value": stage["observed_at"]}
     stage["events"] = {**plan_stage["events"], "count": 0, "path": "units/root/post_deploy/events.json"}
     stage["coverage"] = {
         **plan_stage["coverage"],
@@ -501,3 +502,36 @@ def test_raw_text_is_bounded_in_utf8_bytes() -> None:
     assert accepted.stages[Stage.PLAN].redaction_applied.unknown == [at_limit]
     with pytest.raises(ValidationError, match=f"at most {RAW_TEXT_MAX_BYTES} bytes"):
         CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit + "\u00e9"]}))
+
+
+@pytest.mark.parametrize(
+    ("time", "message"),
+    [
+        ({"trust": "attested"}, "only ever asserted"),
+        ({"value": "2026-09-22T13:00:14Z"}, "uses the time it observed"),
+        ({"source": "server", "trust": "attested"}, "no time from the server"),
+        (
+            {
+                "bracket": {
+                    "not_before": "2026-09-22T13:00:00Z",
+                    "not_after": "2026-09-22T13:01:00Z",
+                    "nonce_digest": "sha256:" + "a" * 64,
+                }
+            },
+            "exactly when a timestamp authority",
+        ),
+        ({"source": "timestamp_authority", "trust": "attested"}, "exactly when a timestamp authority"),
+    ],
+    ids=["clock-attested", "clock-not-observed", "local-server-time", "clock-bracket", "authority-no-bracket"],
+)
+def test_a_stage_reference_time_claims_no_more_than_its_source(time: dict[str, Any], message: str) -> None:
+    reference_time = {**RECORD["stages"]["plan"]["reference_time"], **time}
+    with pytest.raises(ValidationError, match=message):
+        CAR.model_validate(_record(**{"stages.plan.reference_time": reference_time}))
+
+
+def test_a_clock_time_written_another_way_is_the_same_instant() -> None:
+    observed = RECORD["stages"]["plan"]["observed_at"]
+    written = observed.replace("Z", "000Z") if "." in observed else observed.replace("Z", ".000Z")
+    reference_time = {**RECORD["stages"]["plan"]["reference_time"], "value": written}
+    CAR.model_validate(_record(**{"stages.plan.reference_time": reference_time}))

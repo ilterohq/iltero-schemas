@@ -57,6 +57,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
+    instant,
     plain_text,
 )
 from iltero_schemas.models.iac import IacTool
@@ -271,6 +272,14 @@ class StageRecord(StrictModel):
     coverage: Coverage
     verdict: Verdict
     assurance_status: AssuranceStatus
+
+    @model_validator(mode="after")
+    def _clock_time_is_when_it_was_observed(self) -> StageRecord:
+        if self.reference_time.source == "runner_clock" and instant(self.reference_time.value) != instant(
+            self.observed_at
+        ):
+            raise ValueError("a stage that reads its runner's clock uses the time it observed")
+        return self
 
     @property
     def outcome(self) -> StageOutcome:

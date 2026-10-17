@@ -272,6 +272,12 @@ class StageRecord(StrictModel):
     verdict: Verdict
     assurance_status: AssuranceStatus
 
+    @model_validator(mode="after")
+    def _clock_time_is_when_it_was_observed(self) -> StageRecord:
+        if self.reference_time.source == "runner_clock" and self.reference_time.value != self.observed_at:
+            raise ValueError("a stage that reads its runner's clock uses the time it observed")
+        return self
+
     @property
     def outcome(self) -> StageOutcome:
         return StageOutcome(coverage=self.coverage, verdict=self.verdict, assurance_status=self.assurance_status)

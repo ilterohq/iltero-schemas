@@ -321,5 +321,24 @@
     },
     "remove": [],
     "message": "is not the version of the terraform plan digest rule"
+  },
+  {
+    "name": "record_of_a_local_run_with_attested_clock_time",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/trust": "attested"
+    },
+    "remove": [],
+    "message": "a runner's clock is only ever asserted"
+  },
+  {
+    "name": "record_of_a_local_run_with_server_time",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/source": "server",
+      "/stages/plan/reference_time/trust": "attested"
+    },
+    "remove": [],
+    "message": "no time from the server"
   }
 ]

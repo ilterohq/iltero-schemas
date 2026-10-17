@@ -131,12 +131,24 @@ class Bracket(StrictModel):
 
 
 class ReferenceTime(StrictModel):
-    """The time every expiry or ordering comparison uses, and how far it can be trusted."""
+    """The time every expiry or ordering comparison uses, and how far it can be trusted.
+
+    A runner's own clock is only ever asserted. A timestamp authority's time comes with the bracket its two tokens
+    set, and no other source has one.
+    """
 
     value: Timestamp
     source: ReferenceTimeSource
     trust: ReferenceTimeTrust
     bracket: Bracket | None = None
+
+    @model_validator(mode="after")
+    def _trust_follows_source(self) -> ReferenceTime:
+        if self.source == "runner_clock" and self.trust != "asserted":
+            raise ValueError("a runner's clock is only ever asserted")
+        if (self.bracket is not None) != (self.source == "timestamp_authority"):
+            raise ValueError("a reference time has a bracket exactly when a timestamp authority gave it")
+        return self
 
 
 class CommitRef(StrictModel):

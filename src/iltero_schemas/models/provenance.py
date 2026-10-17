@@ -37,3 +37,5 @@ def check_provenance(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no checks from a server bundle")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from the server")
+    if any(record.reference_time.source == "server" for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened has no time from the server")

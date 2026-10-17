@@ -145,7 +145,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
 | `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
-| `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`), `trust` (`attested`, `corroborated` or `asserted`), and `bracket`, which may be left out or `null`: the two timestamps the evaluation sits between (`not_before`, `not_after`) and a `nonce_digest`. |
+| `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`), `trust` (`attested`, `corroborated` or `asserted`; always `asserted` for `runner_clock`), and `bracket`: the two timestamps the evaluation sits between (`not_before`, `not_after`) and a `nonce_digest`, present exactly when `source` is `timestamp_authority`, otherwise left out or `null`. |
 | `source` | object | The code the change comes from: `vcs` (`git`) and the `commit` (`sha`); and, each left out or `null` when unknown, the `repository` (`name`), the `ref` (`type`: `branch` or `tag`, and `name`) and the `pull_request` (`id`). |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
@@ -314,7 +314,7 @@ with a regulatory framework.
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape of an [AssuranceContext](#assurancecontext)'s, and `redaction_applied` is its redaction report (see below). |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape and rules of an [AssuranceContext](#assurancecontext)'s; read from the runner's clock (`source: runner_clock`), its `value` is the same instant as the stage's `observed_at`. Its `redaction_applied` is its redaction report (see below). |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -417,9 +417,10 @@ Key rules:
   the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
-  one, and no facts from Iltero Platform. A record of a run Iltero Platform opened says so everywhere: `run_id.basis:
-  server_issued`, `governance.run_opened_by: server`, and every stage counts its checks as `server_pinned`. Either way
-  the record is the writer's own: only Iltero Platform can confirm a run it opened, by its `run_id`.
+  one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a run
+  Iltero Platform opened says so everywhere: `run_id.basis: server_issued`, `governance.run_opened_by: server`, and
+  every stage counts its checks as `server_pinned`. Either way the record is the writer's own: only Iltero Platform
+  can confirm a run it opened, by its `run_id`.
 - `plan.digest_version` is the version of the plan digest rule for `plan.tool`; any other version is refused. Every
   event's `provenance.plan_digest` names the record's plan: the same `value`, `version` and `tool`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name

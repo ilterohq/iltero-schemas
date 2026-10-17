@@ -3,9 +3,9 @@
 A run is opened by the server (``run_id.basis: server_issued``) or by the tool
 on its own (``locally_derived``); ``governance.run_opened_by`` says the same,
 and a stage counts its checks as ``server_pinned`` exactly for a run the
-server opened. A record of a run the tool opened names no server bundle and
-no facts from the server. Every record stays self-attested: these labels are
-the writer's claims, and only the server can confirm a run it opened.
+server opened. A record of a run the tool opened names no server bundle, and
+no facts and no time from the server. Every record stays self-attested: these
+labels are the writer's claims, and only the server can confirm a run it opened.
 """
 
 from __future__ import annotations
@@ -37,3 +37,5 @@ def check_provenance(car: CAR) -> None:
         raise ValueError("a record of a run the tool opened has no checks from a server bundle")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from the server")
+    if any(record.reference_time.source == "server" for record in car.stages.values()):
+        raise ValueError("a record of a run the tool opened has no time from the server")

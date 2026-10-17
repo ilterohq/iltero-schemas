@@ -25,6 +25,12 @@ keep, so any two tools agree on what a record means.
   so (`assertion_source: contract_starter`).
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each stage.
+- A reference time claims no more than its source: a runner's clock is
+  always `asserted`, and a `bracket` is present exactly when a timestamp
+  authority gave the time, with the time inside it. A stage's reference time
+  read from its runner's clock is the same instant the stage observed
+  (`observed_at`).
+  Invalid-record vectors cover them.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
   v1): each stage's coverage and verdict, the rules that tie the stages
   together, what a deployment did, the resources' cloud identities, and which
@@ -59,9 +65,10 @@ keep, so any two tools agree on what a record means.
 - A record says who opened its run (`run_id.basis` and
   `governance.run_opened_by`), the same way everywhere. A record of a run
   the tool opened claims nothing only Iltero Platform can give: no Iltero
-  Platform bundle or check from one, and no facts from Iltero Platform. Every
-  event names the record's own run and unit. Every record is self-attested:
-  only Iltero Platform can confirm a run it opened, by its `run_id`.
+  Platform bundle or check from one, no facts from Iltero Platform, and no
+  stage reference time from it. Every event names the record's own run and
+  unit. Every record is self-attested: only Iltero Platform can confirm a run
+  it opened, by its `run_id`.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

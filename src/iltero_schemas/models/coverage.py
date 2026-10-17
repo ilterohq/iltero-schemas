@@ -9,7 +9,7 @@ stage found can never be cured by another stage's checks.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from pydantic import AfterValidator, Field, model_validator
 
@@ -17,7 +17,17 @@ from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import STATUS_REASONS
-from iltero_schemas.models.fields import MAX_RESOURCES, Address, Count, Digest, Identifier, Status, plain_text
+from iltero_schemas.models.fields import (
+    MAX_RESOURCES,
+    Address,
+    Count,
+    Digest,
+    Identifier,
+    RawText,
+    RunStage,
+    Status,
+    plain_text,
+)
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.
@@ -71,13 +81,14 @@ class Excluded(StrictModel):
 
     position: Count
     # The resource's address as the plan wrote it, null when it was hidden. An address that cannot be named is
-    # kept as written, whatever its length or characters, so it is plain text with no limit.
-    id: str | None
+    # kept as written, whatever its characters.
+    id: RawText | None
     reason: ExclusionReason
 
 
 class _Gap(StrictModel):
-    # Null or left out in a stage's own coverage; the record's combined coverage names the stage each gap came from.
+    # Null or left out in a stage's own coverage, since a stage's writer does not name itself; the record's combined
+    # coverage names the stage each gap came from.
     stage: StageValue | None = None
 
 
@@ -119,6 +130,8 @@ class CountGap(_Gap):
 
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
 Gap = PlanFlagGap | PositionGap | CountGap
+# The most gaps a coverage lists: one per resource a plan holds, and each flag or count kind once per stage.
+MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
 
 
 class SubjectsInScope(StrictModel):
@@ -185,7 +198,7 @@ class Coverage(StrictModel):
     subjects_per_assertion: dict[str, Count]
     status_counts: dict[Status, Count]
     checks: Count
-    gaps: list[Gap]
+    gaps: Annotated[list[Gap], Field(max_length=MAX_GAPS)]
     truncated: Truncated
     sampled: bool
     # Inputs replaced with placeholders. A stage with any is incomplete; its verdict still follows its checks.
@@ -309,7 +322,9 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         subjects_per_assertion=per_assertion,
         status_counts={status: sum(c.status_counts[status] for c in coverages) for status in STATUSES},
         checks=sum(c.checks for c in coverages),
-        gaps=[gap.model_copy(update={"stage": name}) for name, outcome in stages for gap in outcome.coverage.gaps],
+        gaps=[
+            gap.model_copy(update={"stage": Stage(name)}) for name, outcome in stages for gap in outcome.coverage.gaps
+        ],
         truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
         sampled=any(c.sampled for c in coverages),
         substituted_inputs=[

@@ -12,7 +12,8 @@ from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
-from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, MemberPath
+from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_LENGTH, MemberPath
+from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
 from tests.records import record as _record
@@ -472,7 +473,23 @@ def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None
     document = _record(
         **{
             "stages.plan.redaction_applied.unknown": [odd],
-            "stages.plan.redaction_applied.allowed": [{"path": odd, "reason": "Public by design: see ADR"}],
+            "stages.plan.redaction_applied.allowed": [{"path": odd, "reason": "Public by design"}],
         }
     )
     assert CAR.model_validate(document).stages[Stage.PLAN].redaction_applied.unknown == [odd]
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        ("stages.plan.redaction_applied.unknown", ["x" * (RAW_TEXT_MAX_LENGTH + 1)]),
+        ("stages.plan.redaction_applied.unknown", [""]),
+        ("stages.plan.redaction_applied.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
+        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": "line\nbreak"}]),
+        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": ""}]),
+    ],
+    ids=["path-too-long", "path-empty", "too-many-paths", "reason-control", "reason-empty"],
+)
+def test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text(path: str, value: Any) -> None:
+    with pytest.raises(ValidationError):
+        CAR.model_validate(_record(**{path: value}))

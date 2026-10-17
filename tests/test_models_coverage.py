@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.models.coverage import (
     INCOMPLETE_REASON,
+    MAX_GAPS,
     MAX_SUBSTITUTED_INPUTS,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
@@ -21,6 +22,7 @@ from iltero_schemas.models.coverage import (
     combine,
     stage_outcome,
 )
+from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_LENGTH
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
@@ -330,3 +332,24 @@ def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_rea
         Coverage.model_validate(
             {**PLAN_STAGE["coverage"], "subjects_in_scope": {**scope, "excluded": [{**hidden, "reason": "skipped"}]}}
         )
+
+
+def test_a_coverage_lists_at_most_max_gaps() -> None:
+    gaps = [{"kind": "identity_hidden", "position": n} for n in range(MAX_GAPS + 1)]
+    with pytest.raises(ValidationError, match="at most"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps})
+
+
+@pytest.mark.parametrize(
+    "excluded",
+    [
+        [{"position": n, "id": None, "reason": "deposed"} for n in range(MAX_RESOURCES + 1)],
+        [{"position": 0, "id": "a" * (RAW_TEXT_MAX_LENGTH + 1), "reason": "identity_unnameable"}],
+        [{"position": 0, "id": "", "reason": "identity_unnameable"}],
+    ],
+    ids=["too-many", "id-too-long", "id-empty"],
+)
+def test_the_excluded_resources_are_bounded(excluded: list[dict[str, Any]]) -> None:
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
+    with pytest.raises(ValidationError):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})

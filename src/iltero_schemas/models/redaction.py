@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import AfterValidator, Field
 
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Address, Digest, Identifier
+from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier, RawText, plain_text
 
 # The marker's reason: a short token, as the evaluator's runtime accepts it.
 REASON_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
@@ -28,8 +28,10 @@ class RedactedMarker(StrictModel):
     type: Annotated[str, Field(pattern=REASON_PATTERN)]
 
 
-# The most paths one redaction report lists in each of its lists: every attribute of the most resources a plan holds.
-MAX_REPORTED_PATHS = 1_000_000
+# The most paths one redaction report lists in each of its lists: ten for each of the most resources a plan holds.
+MAX_REPORTED_PATHS = 10 * MAX_RESOURCES
+# The longest reason a project's configuration gives for allowing a path through.
+ALLOWED_REASON_MAX_LENGTH = 1024
 
 
 class RedactionPolicyRef(StrictModel):
@@ -47,8 +49,8 @@ class RedactedInput(StrictModel):
     digest: Digest
 
 
-# A path in the redacted tree. Map keys are part of a path, so it is plain text with no length limit.
-TreePath = str
+# A path in the redacted tree. Map keys are part of a path, so it is kept as written.
+TreePath = RawText
 
 
 class HiddenPath(StrictModel):
@@ -62,7 +64,7 @@ class AllowedPath(StrictModel):
     """One path the project allowed through, with the reason its configuration gives in its own words."""
 
     path: TreePath
-    reason: str
+    reason: Annotated[str, Field(min_length=1, max_length=ALLOWED_REASON_MAX_LENGTH), AfterValidator(plain_text)]
 
 
 class RedactionReport(StrictModel):

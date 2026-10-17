@@ -70,7 +70,8 @@ keep, so any two tools agree on what a record means.
   the trusted-key history, builds reproducibly from hash-pinned tools, attests
   the build, and publishes through PyPI Trusted Publishing after a
   maintainer's approval.
-- The signed bundle's descriptor.
+- The signed bundle's descriptor, at most 64 MiB of canonical JSON
+  (`MAX_DESCRIPTOR_BYTES`).
 - A stage counts its subjects by their kind: resources by enumerating the
   plan, a change or a deployment as its one unit (`basis: change_unit`, by
   the record's change digest, or `deployment_unit`). Every stage records the
@@ -144,6 +145,16 @@ keep, so any two tools agree on what a record means.
 
 These changes break documents written before them.
 
+- Parts of a record that accepted any content now have a fixed shape. A
+  stage's `reference_time` and the record's `subject.source` are those of
+  the evaluation input. A stage's `redaction_applied` is a redaction report:
+  the policy that ran, what was redacted, and the paths hidden (each with a
+  reason token), left unknown, or allowed (each with the project's reason).
+  An excluded resource (`subjects_in_scope.excluded`) names its position in
+  the plan, its address as written or `null`, and one of four reasons. A
+  coverage gap is one of three shapes, chosen by its `kind`: a plan flag, a
+  resource's position, or a count of at least 1 (`COUNT_GAP_KINDS`); the
+  record's combined coverage names each gap's stage.
 - A subject is keyed, in the evaluation input, in events and in an earlier
   evaluation, by `key`: the digest of its kind and its one local identity,
   computed by `models.subjects.subject_key` and checked in every document,

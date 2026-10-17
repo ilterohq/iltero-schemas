@@ -37,7 +37,8 @@ API_VERSION = "iltero.io/assertion-bundle/v1"
 MAX_BUNDLE_ASSERTIONS = 1024
 # Every module repeats the shared runtime, which compresses well: 1024 modules fit with room to spare.
 MAX_TARBALL_BYTES = 16 * 1024 * 1024
-# The largest descriptor, as canonical JSON, a tool must accept: the size a tool caps a served answer at.
+# The largest descriptor, as canonical JSON, a tool must accept: the size a tool caps a served answer at. The check
+# runs on the parsed model, so a tool also caps the raw bytes it reads before it parses them.
 MAX_DESCRIPTOR_BYTES = 64 * 1024 * 1024
 # The longest base64 text of a tarball of MAX_TARBALL_BYTES.
 _MAX_TARBALL_TEXT = 4 * -(-MAX_TARBALL_BYTES // 3)
@@ -90,6 +91,12 @@ class BundleDescriptor(StrictModel):
 
     @model_validator(mode="after")
     def _digests_match_what_they_name(self) -> BundleDescriptor:
+        # Canonical JSON is never shorter than its strings: refuse an oversized descriptor before any other work.
+        written = sum(len(a.source.encode("utf-8")) for a in self.assertions) + len(self.tarball)
+        if written > MAX_DESCRIPTOR_BYTES or len(canonical_bytes(self.model_dump(mode="json", by_alias=True))) > (
+            MAX_DESCRIPTOR_BYTES
+        ):
+            raise ValueError(f"a descriptor is at most {MAX_DESCRIPTOR_BYTES} bytes of canonical JSON")
         ids = [a.id for a in self.assertions]
         if ids != sorted(set(ids)):
             raise ValueError("assertions must be sorted by id with no id twice")
@@ -99,6 +106,4 @@ class BundleDescriptor(StrictModel):
         tarball = base64.b64decode(self.tarball, validate=True)
         if self.digest != DIGEST_PREFIX + hashlib.sha256(tarball).hexdigest():
             raise ValueError("digest must be the digest of the tarball's bytes")
-        if len(canonical_bytes(self.model_dump(mode="json", by_alias=True))) > MAX_DESCRIPTOR_BYTES:
-            raise ValueError(f"a descriptor is at most {MAX_DESCRIPTOR_BYTES} bytes of canonical JSON")
         return self

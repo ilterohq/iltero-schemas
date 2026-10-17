@@ -145,8 +145,8 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
 | `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
-| `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`) and `trust` (`attested`, `corroborated` or `asserted`). |
-| `source` | object | The git `commit`, and the `repository`, `ref` and `pull_request` when known. |
+| `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`), `trust` (`attested`, `corroborated` or `asserted`), and `bracket`, which may be left out or `null`: the two timestamps the evaluation sits between (`not_before`, `not_after`) and a `nonce_digest`. |
+| `source` | object | The code the change comes from: `vcs` (`git`) and the `commit` (`sha`); and, each left out or `null` when unknown, the `repository` (`name`), the `ref` (`type`: `branch` or `tag`, and `name`) and the `pull_request` (`id`). |
 | `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
 | `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
@@ -310,11 +310,11 @@ with a regulatory framework.
 | `compliance_determination` | null | Always `null`. |
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` for a run Iltero Platform issued (`run_id.basis: server_issued`), `local` otherwise. |
-| `subject` | object | `kind: change`, the `environment`, the `unit` and the `source` commit. |
+| `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. |
+| `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape of an [AssuranceContext](#assurancecontext)'s, and `redaction_applied` is its redaction report (see below). |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
@@ -340,6 +340,44 @@ Trust levels, from weakest to strongest:
 Every level above `self_attested` requires a signature. This version of the record carries none, so the model
 accepts only `self_attested`.
 
+A stage's redaction report (`redaction_applied`) says what the stage's redaction hid, left unknown or allowed, by
+path. It holds no value.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `policy` | object | The redaction policy that ran: `id`, `version` (identifiers) and `digest`. |
+| `subject` | object | What was redacted: `kind` (`observation`, `facts` or `deployment`) and the `digest` of the redacted tree. |
+| `redacted` | list | Each path the policy hid: `path`, and `reason`, a token of a lowercase letter followed by up to 63 lowercase letters, digits or `_`. |
+| `unknown` | list | The paths left unknown. |
+| `allowed` | list | Each path the project allowed through: `path`, and `reason`, the project configuration's own words: one line of plain text, at most 1024 characters. |
+
+A path is a path in the redacted tree. Map keys are part of it, so it is kept as written: any characters, at most
+64 KiB of UTF-8 (`iltero_schemas.models.fields.RAW_TEXT_MAX_BYTES`). A reader escapes it to show it, control,
+bidirectional and invisible characters included. Each list holds at most 1,000,000 entries.
+
+A stage's `coverage.subjects_in_scope.excluded` lists the plan resources left out of the subjects in scope, at most
+100,000:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `position` | integer | The resource's position in the plan, from 0. |
+| `id` | string or null | The resource's address as the plan wrote it, kept as written whatever its characters, at most 64 KiB of UTF-8. `null` when it was hidden. |
+| `reason` | string | `not_managed` (not managed by the configuration), `deposed` (an old copy a replacement set aside), `identity_hidden` or `identity_unnameable` (an identity hidden, or one that cannot be named). |
+
+A stage's `coverage.gaps` lists what is missing from what the stage evaluated. Each gap has one of three shapes,
+chosen by its `kind`:
+
+| `kind` | Other field | Meaning |
+| --- | --- | --- |
+| `plan_incomplete`, `plan_not_applyable` | `value`: `false` or `null` | The plan says it is incomplete or cannot be applied; `value` is the plan's flag as stated. |
+| `identity_hidden`, `identity_unnameable` | `position`: integer from 0 | A plan resource whose identity was hidden or cannot be named, by its position in the plan. |
+| `deferred_changes`, `related_copies_omitted`, `unresolved_references`, `credited_by_binding`, or a `not_evaluated` or `error` [status reason](#assuranceevent) | `count`: integer from 1 | How many of one thing are missing: what the plan left out, checks a scanner's result stands behind rather than an evaluation the run ran, or checks not evaluated or ended in error for that reason. |
+
+A gap in a stage's own `coverage` names no `stage`: the field is left out or `null`. The record's combined `coverage`
+names the stage each gap came from. The kinds a count gap may name are
+`iltero_schemas.models.coverage.COUNT_GAP_KINDS`. A coverage lists at most
+`iltero_schemas.models.coverage.MAX_GAPS` gaps.
+
 Key rules:
 
 - Every path in the record is relative to the record's directory, except `units_file.path` and
@@ -358,7 +396,8 @@ Key rules:
   by that kind (`iltero_schemas.models.stages.scope_basis`): the plan stage enumerates the plan's resources (`basis:
   plan_resource_enumeration`); a change counts as its one unit (`change_unit`, with the record's `change.digest` as
   its `source_digest`); a deployment counts as its one unit (`deployment_unit`). Only the plan stage enumerates the
-  plan's resources. A stage with no checks counts by the one kind its assertions can target.
+  plan's resources. A stage with no checks counts by the one kind its assertions can target. A stage that counts a
+  change or a deployment has exactly one subject in scope, none removed by the plan and none excluded.
 - `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
@@ -584,6 +623,8 @@ Key rules:
 - The same content signed under two keys has one `revision` and two `digest` values.
 - `assertion_set_digest` names everything in the bundle.
 - The signing key must be in the trusted keys and must not be revoked.
+- A descriptor is at most 64 MiB as canonical JSON (`iltero_schemas.models.bundle.MAX_DESCRIPTOR_BYTES`); a larger
+  one is refused. The check runs on the parsed descriptor, so a tool also caps the bytes it reads before parsing.
 
 ## Trusted bundle keys
 

@@ -12,7 +12,8 @@ from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
-from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, MemberPath
+from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
+from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
 from tests.records import record as _record
@@ -447,3 +448,56 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
             continue
         with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
             CAR.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        ("stages.plan.reference_time", {"value": "2026-09-22T13:00:13.568Z", "trust": "attested"}),
+        ("stages.plan.reference_time.anything", [1, 2]),
+        ("stages.plan.redaction_applied", {}),
+        ("stages.plan.redaction_applied.subject.kind", "artifact"),
+        ("stages.plan.redaction_applied.redacted", [{"path": "resources[0].after.password", "reason": "Not A Token"}]),
+        ("subject.source", {"x": 1}),
+        ("subject.source.vcs", "svn"),
+    ],
+    ids=["time-no-source", "time-extra", "redaction-empty", "redaction-kind", "redaction-reason", "source", "vcs"],
+)
+def test_the_reference_time_redaction_report_and_source_have_their_shape(path: str, value: Any) -> None:
+    with pytest.raises(ValidationError):
+        CAR.model_validate(_record(**{path: value}))
+
+
+def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None:
+    odd = 'resources[0].after.tags["a key\nwith a line"]' + "x" * 3000
+    document = _record(
+        **{
+            "stages.plan.redaction_applied.unknown": [odd],
+            "stages.plan.redaction_applied.allowed": [{"path": odd, "reason": "Public by design"}],
+        }
+    )
+    assert CAR.model_validate(document).stages[Stage.PLAN].redaction_applied.unknown == [odd]
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        ("stages.plan.redaction_applied.unknown", ["x" * (RAW_TEXT_MAX_BYTES + 1)]),
+        ("stages.plan.redaction_applied.unknown", [""]),
+        ("stages.plan.redaction_applied.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
+        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": "line\nbreak"}]),
+        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": ""}]),
+    ],
+    ids=["path-too-long", "path-empty", "too-many-paths", "reason-control", "reason-empty"],
+)
+def test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text(path: str, value: Any) -> None:
+    with pytest.raises(ValidationError):
+        CAR.model_validate(_record(**{path: value}))
+
+
+def test_raw_text_is_bounded_in_utf8_bytes() -> None:
+    at_limit = "\u00e9" * (RAW_TEXT_MAX_BYTES // 2)
+    accepted = CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit]}))
+    assert accepted.stages[Stage.PLAN].redaction_applied.unknown == [at_limit]
+    with pytest.raises(ValidationError, match=f"at most {RAW_TEXT_MAX_BYTES} bytes"):
+        CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit + "\u00e9"]}))

@@ -13,6 +13,8 @@ from pydantic import ValidationError
 
 from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES
 from iltero_schemas.canonical import required_assertion_digest
+from iltero_schemas.canonical.encoding import canonical_bytes
+from iltero_schemas.models import bundle as bundle_model
 from iltero_schemas.models.bundle import API_VERSION, MAX_TARBALL_BYTES, BundleDescriptor
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
@@ -133,3 +135,10 @@ def test_the_tarball_is_bounded() -> None:
 def test_only_es256_signatures_are_described() -> None:
     with pytest.raises(ValidationError):
         BundleDescriptor.model_validate({**DESCRIPTOR, "algorithm": "RS256"})
+
+
+def test_a_descriptor_larger_than_a_tool_accepts_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    size = len(canonical_bytes(BundleDescriptor.model_validate(DESCRIPTOR).model_dump(mode="json", by_alias=True)))
+    monkeypatch.setattr(bundle_model, "MAX_DESCRIPTOR_BYTES", size - 1)
+    with pytest.raises(ValidationError, match="canonical JSON"):
+        BundleDescriptor.model_validate(DESCRIPTOR)

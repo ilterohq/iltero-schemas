@@ -125,11 +125,19 @@ def _project_path(value: str) -> str:
     return value
 
 
-# The longest raw text a record keeps as it was written.
-RAW_TEXT_MAX_LENGTH = 64 * 1024
+# The longest raw text a record keeps as it was written, in UTF-8 bytes.
+RAW_TEXT_MAX_BYTES = 64 * 1024
+
+
+def _raw_text_bytes(value: str) -> str:
+    if len(value.encode("utf-8")) > RAW_TEXT_MAX_BYTES:
+        raise ValueError(f"must be at most {RAW_TEXT_MAX_BYTES} bytes")
+    return value
+
+
 # Text a record keeps exactly as its source wrote it, such as a plan address or a map key: any character, bounded.
 # It may hold control, bidirectional or invisible characters, so a reader escapes it, all of those included, to show it.
-RawText = Annotated[str, Field(min_length=1, max_length=RAW_TEXT_MAX_LENGTH)]
+RawText = Annotated[str, Field(min_length=1, max_length=RAW_TEXT_MAX_BYTES), AfterValidator(_raw_text_bytes)]
 # Any name or id a record carries: bounded, never a control character.
 Identifier = Annotated[str, Field(min_length=1, max_length=IDENTIFIER_MAX_LENGTH), AfterValidator(plain_text)]
 Address = Annotated[str, Field(min_length=1, max_length=ADDRESS_MAX_LENGTH), AfterValidator(plain_text)]

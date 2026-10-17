@@ -351,9 +351,9 @@ path. It holds no value.
 | `unknown` | list | The paths left unknown. |
 | `allowed` | list | Each path the project allowed through: `path`, and `reason`, the project configuration's own words: one line of plain text, at most 1024 characters. |
 
-A path is a path in the redacted tree. Map keys are part of it, so it is kept as written: any characters, at most 64 KiB
-(`iltero_schemas.models.fields.RAW_TEXT_MAX_LENGTH`). A reader escapes it to show it, control, bidirectional and
-invisible characters included. Each list holds at most 1,000,000 entries.
+A path is a path in the redacted tree. Map keys are part of it, so it is kept as written: any characters, at most
+64 KiB of UTF-8 (`iltero_schemas.models.fields.RAW_TEXT_MAX_BYTES`). A reader escapes it to show it, control,
+bidirectional and invisible characters included. Each list holds at most 1,000,000 entries.
 
 A stage's `coverage.subjects_in_scope.excluded` lists the plan resources left out of the subjects in scope, at most
 100,000:
@@ -361,7 +361,7 @@ A stage's `coverage.subjects_in_scope.excluded` lists the plan resources left ou
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `position` | integer | The resource's position in the plan, from 0. |
-| `id` | string or null | The resource's address as the plan wrote it, kept as written whatever its characters, at most 64 KiB. `null` when it was hidden. |
+| `id` | string or null | The resource's address as the plan wrote it, kept as written whatever its characters, at most 64 KiB of UTF-8. `null` when it was hidden. |
 | `reason` | string | `not_managed` (not managed by the configuration), `deposed` (an old copy a replacement set aside), `identity_hidden` or `identity_unnameable` (an identity hidden, or one that cannot be named). |
 
 A stage's `coverage.gaps` lists what is missing from what the stage evaluated. Each gap has one of three shapes,

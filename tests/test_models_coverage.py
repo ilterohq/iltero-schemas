@@ -22,7 +22,7 @@ from iltero_schemas.models.coverage import (
     combine,
     stage_outcome,
 )
-from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_LENGTH
+from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_BYTES
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
@@ -344,7 +344,7 @@ def test_a_coverage_lists_at_most_max_gaps() -> None:
     "excluded",
     [
         [{"position": n, "id": None, "reason": "deposed"} for n in range(MAX_RESOURCES + 1)],
-        [{"position": 0, "id": "a" * (RAW_TEXT_MAX_LENGTH + 1), "reason": "identity_unnameable"}],
+        [{"position": 0, "id": "a" * (RAW_TEXT_MAX_BYTES + 1), "reason": "identity_unnameable"}],
         [{"position": 0, "id": "", "reason": "identity_unnameable"}],
     ],
     ids=["too-many", "id-too-long", "id-empty"],

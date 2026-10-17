@@ -12,7 +12,7 @@ from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
-from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_LENGTH, MemberPath
+from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
@@ -482,7 +482,7 @@ def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None
 @pytest.mark.parametrize(
     ("path", "value"),
     [
-        ("stages.plan.redaction_applied.unknown", ["x" * (RAW_TEXT_MAX_LENGTH + 1)]),
+        ("stages.plan.redaction_applied.unknown", ["x" * (RAW_TEXT_MAX_BYTES + 1)]),
         ("stages.plan.redaction_applied.unknown", [""]),
         ("stages.plan.redaction_applied.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
         ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": "line\nbreak"}]),
@@ -493,3 +493,11 @@ def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None
 def test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text(path: str, value: Any) -> None:
     with pytest.raises(ValidationError):
         CAR.model_validate(_record(**{path: value}))
+
+
+def test_raw_text_is_bounded_in_utf8_bytes() -> None:
+    at_limit = "\u00e9" * (RAW_TEXT_MAX_BYTES // 2)
+    accepted = CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit]}))
+    assert accepted.stages[Stage.PLAN].redaction_applied.unknown == [at_limit]
+    with pytest.raises(ValidationError, match=f"at most {RAW_TEXT_MAX_BYTES} bytes"):
+        CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit + "\u00e9"]}))

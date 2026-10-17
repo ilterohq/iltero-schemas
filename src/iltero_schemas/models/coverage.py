@@ -9,14 +9,15 @@ stage found can never be cured by another stage's checks.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.fields import Address, Count, Digest, Identifier, Status, plain_text
+from iltero_schemas.models.event import STATUS_REASONS
+from iltero_schemas.models.fields import MAX_RESOURCES, Address, Count, Digest, Identifier, Status, plain_text
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.
@@ -60,6 +61,66 @@ class AssuranceStatus(StrictModel):
     detail: Annotated[str, Field(max_length=DETAIL_MAX_LENGTH), AfterValidator(plain_text)] | None
 
 
+# Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
+# an identity that was hidden or cannot be named.
+ExclusionReason = Literal["not_managed", "deposed", "identity_hidden", "identity_unnameable"]
+
+
+class Excluded(StrictModel):
+    """A plan resource left out of the subjects in scope, by its position in the plan."""
+
+    position: Count
+    # The resource's address as the plan wrote it, null when it was hidden. An address that cannot be named is
+    # kept as written, whatever its length or characters, so it is plain text with no limit.
+    id: str | None
+    reason: ExclusionReason
+
+
+class _Gap(StrictModel):
+    # Null or left out in a stage's own coverage; the record's combined coverage names the stage each gap came from.
+    stage: StageValue | None = None
+
+
+class PlanFlagGap(_Gap):
+    """The plan says it is incomplete or cannot be applied; ``value`` is the flag as the plan states it."""
+
+    kind: Literal["plan_incomplete", "plan_not_applyable"]
+    value: Literal[False] | None
+
+
+class PositionGap(_Gap):
+    """A plan resource whose identity was hidden or cannot be named, by its position in the plan."""
+
+    kind: Literal["identity_hidden", "identity_unnameable"]
+    position: Count
+
+
+# What a count gap may name: what the plan left out, why checks were not evaluated or ended in error, and checks a
+# scanner's result stands behind rather than an evaluation this run ran.
+COUNT_GAP_KINDS: frozenset[str] = (
+    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", "credited_by_binding"})
+    | STATUS_REASONS["not_evaluated"]
+    | STATUS_REASONS["error"]
+)
+
+
+def _count_gap_kind(value: str) -> str:
+    if value not in COUNT_GAP_KINDS:
+        raise ValueError(f"{value!r} is not a gap a count can describe")
+    return value
+
+
+class CountGap(_Gap):
+    """How many of one thing are missing from what the stage evaluated."""
+
+    kind: Annotated[str, AfterValidator(_count_gap_kind)]
+    count: Annotated[int, Field(ge=1)]
+
+
+# One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
+Gap = PlanFlagGap | PositionGap | CountGap
+
+
 class SubjectsInScope(StrictModel):
     value: Count
     # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
@@ -67,7 +128,7 @@ class SubjectsInScope(StrictModel):
     basis: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
     source_digest: Digest
     removed_by_plan: Count
-    excluded: list[dict[str, Any]]
+    excluded: Annotated[list[Excluded], Field(max_length=MAX_RESOURCES)]
 
     @model_validator(mode="after")
     def _one_subject(self) -> SubjectsInScope:
@@ -124,7 +185,7 @@ class Coverage(StrictModel):
     subjects_per_assertion: dict[str, Count]
     status_counts: dict[Status, Count]
     checks: Count
-    gaps: list[dict[str, Any]]
+    gaps: list[Gap]
     truncated: Truncated
     sampled: bool
     # Inputs replaced with placeholders. A stage with any is incomplete; its verdict still follows its checks.
@@ -218,7 +279,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
             "a record's resources in scope are its plan stage's: one stage counts them, and it comes first"
         )
     plan = coverages[0]
-    if any("stage" in gap for c in coverages for gap in c.gaps):
+    if any(gap.stage is not None for c in coverages for gap in c.gaps):
         raise ValueError("a stage's gaps do not name a stage; combining names it")
     if any(entry.stage is not None for c in coverages for entry in c.substituted_inputs):
         raise ValueError("a stage's substituted inputs do not name a stage; combining names it")
@@ -248,7 +309,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         subjects_per_assertion=per_assertion,
         status_counts={status: sum(c.status_counts[status] for c in coverages) for status in STATUSES},
         checks=sum(c.checks for c in coverages),
-        gaps=[{**gap, "stage": name} for name, outcome in stages for gap in outcome.coverage.gaps],
+        gaps=[gap.model_copy(update={"stage": name}) for name, outcome in stages for gap in outcome.coverage.gaps],
         truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
         sampled=any(c.sampled for c in coverages),
         substituted_inputs=[

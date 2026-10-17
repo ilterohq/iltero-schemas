@@ -447,3 +447,32 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
             continue
         with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
             CAR.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        ("stages.plan.reference_time", {"value": "2026-09-22T13:00:13.568Z", "trust": "attested"}),
+        ("stages.plan.reference_time.anything", [1, 2]),
+        ("stages.plan.redaction_applied", {}),
+        ("stages.plan.redaction_applied.subject.kind", "artifact"),
+        ("stages.plan.redaction_applied.redacted", [{"path": "resources[0].after.password", "reason": "Not A Token"}]),
+        ("subject.source", {"x": 1}),
+        ("subject.source.vcs", "svn"),
+    ],
+    ids=["time-no-source", "time-extra", "redaction-empty", "redaction-kind", "redaction-reason", "source", "vcs"],
+)
+def test_the_reference_time_redaction_report_and_source_have_their_shape(path: str, value: Any) -> None:
+    with pytest.raises(ValidationError):
+        CAR.model_validate(_record(**{path: value}))
+
+
+def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None:
+    odd = 'resources[0].after.tags["a key\nwith a line"]' + "x" * 3000
+    document = _record(
+        **{
+            "stages.plan.redaction_applied.unknown": [odd],
+            "stages.plan.redaction_applied.allowed": [{"path": odd, "reason": "Public by design: see ADR"}],
+        }
+    )
+    assert CAR.model_validate(document).stages[Stage.PLAN].redaction_applied.unknown == [odd]

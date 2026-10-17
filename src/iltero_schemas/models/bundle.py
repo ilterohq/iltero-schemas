@@ -27,7 +27,7 @@ from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
-from iltero_schemas.canonical.encoding import DIGEST_PREFIX
+from iltero_schemas.canonical.encoding import DIGEST_PREFIX, canonical_bytes
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.event import AssertionRef
 from iltero_schemas.models.fields import Digest, Identifier, Version
@@ -37,6 +37,8 @@ API_VERSION = "iltero.io/assertion-bundle/v1"
 MAX_BUNDLE_ASSERTIONS = 1024
 # Every module repeats the shared runtime, which compresses well: 1024 modules fit with room to spare.
 MAX_TARBALL_BYTES = 16 * 1024 * 1024
+# The largest descriptor, as canonical JSON, a tool must accept: the size a tool caps a served answer at.
+MAX_DESCRIPTOR_BYTES = 64 * 1024 * 1024
 # The longest base64 text of a tarball of MAX_TARBALL_BYTES.
 _MAX_TARBALL_TEXT = 4 * -(-MAX_TARBALL_BYTES // 3)
 
@@ -97,4 +99,6 @@ class BundleDescriptor(StrictModel):
         tarball = base64.b64decode(self.tarball, validate=True)
         if self.digest != DIGEST_PREFIX + hashlib.sha256(tarball).hexdigest():
             raise ValueError("digest must be the digest of the tarball's bytes")
+        if len(canonical_bytes(self.model_dump(mode="json", by_alias=True))) > MAX_DESCRIPTOR_BYTES:
+            raise ValueError(f"a descriptor is at most {MAX_DESCRIPTOR_BYTES} bytes of canonical JSON")
         return self

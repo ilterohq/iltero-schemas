@@ -14,6 +14,7 @@ from iltero_schemas.models.coverage import (
     MAX_SUBSTITUTED_INPUTS,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
+    CountGap,
     Coverage,
     StageOutcome,
     Verdict,
@@ -52,7 +53,7 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
         "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.PLAN_BINDING@1.0.0": 1},
         "coverage.status_counts": dict.fromkeys(PLAN.coverage.status_counts, 0) | {"pass": 1},
         "coverage.checks": 1,
-        "coverage.gaps": [{"kind": "late"}],
+        "coverage.gaps": [{"kind": "timeout", "count": 1}],
         "verdict": {"value": "pass", "exit_code": 0, "basis": "status_counts", "stage": None},
         "assurance_status": {"value": "complete", "reason": None, "detail": None},
     },
@@ -80,7 +81,7 @@ def test_two_stages_add_up_and_keep_the_plans_resources_in_scope() -> None:
     assert coverage.subjects_in_scope == PLAN.coverage.subjects_in_scope
     assert coverage.subjects_evaluated == PLAN.coverage.subjects_evaluated
     assert "ILT.DEPLOYMENT.PLAN_BINDING@1.0.0" in coverage.subjects_per_assertion
-    assert {"stage": "post_deploy", "kind": "late"} in coverage.gaps
+    assert CountGap.model_validate({"kind": "timeout", "count": 1, "stage": "post_deploy"}) in coverage.gaps
 
 
 def test_the_assertion_set_of_several_stages_is_named_by_each_stages_own() -> None:
@@ -174,7 +175,7 @@ def test_a_record_counts_the_resources_of_its_one_plan_stage_first(stages: list[
 
 
 def test_a_stage_gap_that_names_a_stage_is_refused() -> None:
-    named = _outcome(DEPLOYED_STAGE, **{"coverage.gaps": [{"kind": "late", "stage": "plan"}]})
+    named = _outcome(DEPLOYED_STAGE, **{"coverage.gaps": [{"kind": "timeout", "count": 1, "stage": "plan"}]})
     with pytest.raises(ValueError, match="a stage's gaps do not name a stage"):
         combine([("plan", PLAN), ("post_deploy", named)])
 
@@ -196,7 +197,7 @@ def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
 
 @pytest.mark.parametrize(
     "scope",
-    [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"address": "a.x"}]}],
+    [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"position": 0, "id": "a.x", "reason": "not_managed"}]}],
     ids=["two deployments", "a removal", "an exclusion"],
 )
 def test_a_deployment_scope_is_its_one_deployment(scope: dict[str, Any]) -> None:
@@ -286,3 +287,46 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
     later = {**PLACEHOLDER, "source": "data.terraform_remote_state.z"}
     with pytest.raises(ValidationError, match="sorted by source"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [later, PLACEHOLDER]})
+
+
+@pytest.mark.parametrize(
+    "gap",
+    [
+        {"kind": "plan_incomplete", "value": False},
+        {"kind": "plan_not_applyable", "value": None},
+        {"kind": "identity_hidden", "position": 3},
+        {"kind": "deferred_changes", "count": 2},
+        {"kind": "evaluator_timeout", "count": 1},
+        {"kind": "credited_by_binding", "count": 4},
+    ],
+)
+def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
+    Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]})
+
+
+@pytest.mark.parametrize(
+    "gap",
+    [
+        {"kind": "late"},
+        {"kind": "plan_incomplete", "value": True},
+        {"kind": "deferred_changes", "count": 0},
+        {"kind": "identity_hidden", "count": 1},
+        {"kind": "pass", "count": 1},
+        {"kind": "timeout", "count": 1, "detail": "x"},
+    ],
+    ids=["unknown-kind", "plan-complete", "zero-count", "wrong-shape", "status", "extra"],
+)
+def test_a_gap_outside_its_shapes_is_refused(gap: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]})
+
+
+def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_reason() -> None:
+    unnameable = {"position": 0, "id": "aws_s3_bucket.x\n" + "y" * 3000, "reason": "identity_unnameable"}
+    hidden = {"position": 1, "id": None, "reason": "identity_hidden"}
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": [unnameable, hidden]}
+    Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+    with pytest.raises(ValidationError):
+        Coverage.model_validate(
+            {**PLAN_STAGE["coverage"], "subjects_in_scope": {**scope, "excluded": [{**hidden, "reason": "skipped"}]}}
+        )

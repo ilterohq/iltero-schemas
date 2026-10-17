@@ -33,7 +33,7 @@ instead of failing on a missing key.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Final, Literal
+from typing import Annotated, Final, Literal
 
 from pydantic import AfterValidator, Field, ValidationInfo, model_validator
 
@@ -41,6 +41,7 @@ from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.change import Change, UnitsFile, check_change
+from iltero_schemas.models.context import ReferenceTime, Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
@@ -61,6 +62,7 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.provenance import check_provenance
+from iltero_schemas.models.redaction import RedactionReport
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import check_structure, derived_problems
@@ -252,7 +254,7 @@ class StageRecord(StrictModel):
 
     stage: StageValue
     observed_at: Timestamp
-    reference_time: dict[str, Any]
+    reference_time: ReferenceTime
     ran: Ran
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
@@ -261,7 +263,7 @@ class StageRecord(StrictModel):
     # stage whose input carries no approvals.
     approvals: Approvals | None
     compiler: Compiler
-    redaction_applied: dict[str, Any]
+    redaction_applied: RedactionReport
     events: Written
     assertions: Compiled
     # Null for a stage that was given no scanner report.
@@ -314,7 +316,7 @@ class RecordSubject(StrictModel):
     kind: Literal["change"]
     environment: Identifier | None
     unit: Identifier
-    source: dict[str, Any]
+    source: Source
 
 
 # Why a stage of the lifecycle is not in a record's scope.

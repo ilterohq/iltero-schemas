@@ -362,5 +362,23 @@
     },
     "remove": [],
     "message": "exactly when a timestamp authority"
+  },
+  {
+    "name": "record_with_a_reversed_bracket",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time": {
+        "value": "2026-09-22T13:00:13.568Z",
+        "source": "timestamp_authority",
+        "trust": "attested",
+        "bracket": {
+          "not_before": "2026-09-22T13:01:00Z",
+          "not_after": "2026-09-22T13:00:00Z",
+          "nonce_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    "remove": [],
+    "message": "inside its bracket"
   }
 ]

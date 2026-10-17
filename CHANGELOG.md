@@ -27,8 +27,9 @@ keep, so any two tools agree on what a record means.
   each stage.
 - A reference time claims no more than its source: a runner's clock is
   always `asserted`, and a `bracket` is present exactly when a timestamp
-  authority gave the time. A stage's reference time read from its runner's
-  clock is the same instant the stage observed (`observed_at`).
+  authority gave the time, with the time inside it. A stage's reference time
+  read from its runner's clock is the same instant the stage observed
+  (`observed_at`).
   Invalid-record vectors cover them.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
   v1): each stage's coverage and verdict, the rules that tie the stages

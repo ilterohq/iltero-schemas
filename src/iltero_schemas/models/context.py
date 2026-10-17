@@ -50,6 +50,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
+    instant,
 )
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
@@ -134,7 +135,7 @@ class ReferenceTime(StrictModel):
     """The time every expiry or ordering comparison uses, and how far it can be trusted.
 
     A runner's own clock is only ever asserted. A timestamp authority's time comes with the bracket its two tokens
-    set, and no other source has one.
+    set, and lies inside it; no other source has one.
     """
 
     value: Timestamp
@@ -148,6 +149,10 @@ class ReferenceTime(StrictModel):
             raise ValueError("a runner's clock is only ever asserted")
         if (self.bracket is not None) != (self.source == "timestamp_authority"):
             raise ValueError("a reference time has a bracket exactly when a timestamp authority gave it")
+        if self.bracket is not None and not (
+            instant(self.bracket.not_before) <= instant(self.value) <= instant(self.bracket.not_after)
+        ):
+            raise ValueError("a reference time lies inside its bracket, which runs forward")
         return self
 
 

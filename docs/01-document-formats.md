@@ -208,10 +208,12 @@ Key rules:
   top-level keys `timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift` and
   `relevant_attributes` (`PLAN_EXCLUDED_TOP_LEVEL_KEYS`).
   `artifact_digest` is the digest of the saved plan file. It is present exactly when `artifact_digest_basis` is
-  `plan_binary`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest` with
-  `deployment.plan.digest`, and `plan.artifact_digest` with `deployment.plan.artifact_digest`. When both artifact
-  digests are `null`, neither side was given the saved plan file: the assertion passes and the binding rests on
-  `plan.digest`. When only one is `null`, it fails.
+  `plan_binary`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest`,
+  `plan.artifact_digest` and `plan.artifact_digest_basis` with the same fields of `deployment.plan`. When neither
+  side was given the saved plan file, both artifact digests are `null` and both bases `not_provided`: the assertion
+  passes, and the event's observations show `not_provided`. Such a pass shows that the applied plan's digest equals
+  the evaluated plan's, not that the applied plan file is the evaluated one byte for byte. When only one side has
+  the saved plan file, it fails.
 - `plan.source_commit` equals `source.commit.sha`.
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
   value not yet known is `{"__unknown": true, "reason": ..., "present": true}`. A check that reaches either is

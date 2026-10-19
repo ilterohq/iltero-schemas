@@ -3464,12 +3464,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": "sha256:b"
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:b"
+          "artifact_digest": "sha256:b",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -3496,12 +3498,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": "sha256:b"
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:c"
+          "artifact_digest": "sha256:c",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -3534,6 +3538,18 @@
           "path": "deployment.plan.artifact_digest",
           "resolved": "sha256:b",
           "status": "false"
+        },
+        {
+          "actual": "plan_binary",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.artifact_digest_basis"
+          },
+          "index": 2,
+          "op": "equal",
+          "path": "deployment.plan.artifact_digest_basis",
+          "resolved": "plan_binary",
+          "status": "true"
         }
       ]
     }
@@ -3554,12 +3570,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": null
+        "artifact_digest": null,
+        "artifact_digest_basis": "not_provided"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:b"
+          "artifact_digest": "sha256:b",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -4274,12 +4292,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": null
+        "artifact_digest": null,
+        "artifact_digest_basis": "not_provided"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": null
+          "artifact_digest": null,
+          "artifact_digest_basis": "not_provided"
         }
       }
     },
@@ -4306,12 +4326,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": "sha256:b"
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": null
+          "artifact_digest": null,
+          "artifact_digest_basis": "not_provided"
         }
       }
     },

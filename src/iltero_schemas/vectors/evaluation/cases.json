@@ -4291,7 +4291,7 @@
     }
   },
   {
-    "name": "plan_binding_deployment_artifact_unavailable",
+    "name": "plan_binding_applied_without_the_saved_plan",
     "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
     "input": {
       "subject": {

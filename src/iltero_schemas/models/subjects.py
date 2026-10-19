@@ -63,6 +63,15 @@ def subject_key(kind: str, identities: Sequence[Identity]) -> str:
     )
 
 
+def unit_of(identity: Identity) -> str:
+    """The unit a local identity belongs to; ``ValueError`` for one only the cloud knows."""
+    if identity.scheme == SCHEME_UNIT:
+        return identity.value
+    if identity.scheme in ADDRESS_IDENTITY_SCHEMES and identity.scope is not None and "unit" in identity.scope:
+        return identity.scope["unit"]
+    raise ValueError(f"a {identity.scheme} identity names no unit")
+
+
 def check_subject(kind: str, key: str, identities: Sequence[Identity], stage: str, unit: str | None) -> None:
     """Raise ``ValueError`` unless ``key`` is the subject's own and its local identity is well formed.
 

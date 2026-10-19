@@ -9,7 +9,8 @@ refused; the same assertion over a marker yields ``unknown`` with the
 marker's reason, which says what is true — the answer was not available.
 
 A fact the IaC tool did not report, such as whether an older tool's plan is
-complete, holds the marker too: a null there would read as a known value.
+complete, holds a marker of its own (``NotReported``): a null there would read
+as a known value.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from pydantic import ConfigDict, Field
 from iltero_schemas.models.base import StrictModel
 
 # Why a fact is missing; the evaluator's runtime copies it into the result.
-UnknownReason = Literal["server_facts_unavailable", "not_reported_by_tool"]
+UnknownReason = Literal["server_facts_unavailable"]
 
 
 class UnknownMarker(StrictModel):
@@ -34,3 +35,12 @@ class UnknownMarker(StrictModel):
 
     unknown: Literal[True] = Field(alias="__unknown")
     reason: UnknownReason
+
+
+class NotReported(StrictModel):
+    """What stands where the IaC tool did not report a fact: the evaluator reads it as ``unknown``, with this reason."""
+
+    model_config = ConfigDict(serialize_by_alias=True)
+
+    unknown: Literal[True] = Field(alias="__unknown")
+    reason: Literal["not_reported_by_tool"]

@@ -22,7 +22,11 @@ contents. The resources that refer to it
 value hidden by redaction is a marker (``__redacted``), and the fields where
 a hidden value may legitimately sit accept one. A fact the server could not
 supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
-the list it would have filled.
+the list it would have filled, and a fact the IaC tool did not report is one
+with its own reason. Null means a fact has no value, never that it is unknown:
+the evaluator reads a null as a known value. The one exception is a related
+resource's ``resource``, null when its values were not carried; a check that
+reads through it is ``unknown``.
 """
 
 from __future__ import annotations
@@ -38,7 +42,7 @@ from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.facts import UnknownMarker
+from iltero_schemas.models.facts import NotReported, UnknownMarker
 from iltero_schemas.models.fields import (
     Action,
     Address,
@@ -56,7 +60,7 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
-from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity
+from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.profiles import ALWAYS, profile_for
 
@@ -243,16 +247,16 @@ class Plan(StrictModel):
     # The IaC tool that wrote the plan, and the version of its plan format and of the tool itself.
     tool: IacTool
     format_version: Identifier
-    # The marker, reason ``not_reported_by_tool``, when the plan does not say.
-    tool_version: Identifier | UnknownMarker
+    # The marker when the plan does not say.
+    tool_version: Identifier | NotReported
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_basis: ArtifactDigestBasis
     source_commit: Commit
-    # The marker, reason ``not_reported_by_tool``, when the tool's plan format has no such flag.
-    complete: bool | UnknownMarker
-    applyable: bool | UnknownMarker
+    # The marker when the tool's plan format has no such flag.
+    complete: bool | NotReported
+    applyable: bool | NotReported
     resources: list[ResourceIndexEntry]
 
     @model_validator(mode="after")
@@ -267,7 +271,7 @@ class Plan(StrictModel):
 
 
 class RelatedResource(StrictModel):
-    """Another resource that refers to this one, with its values as planned — or without them when left out."""
+    """Another resource that refers to this one, with its values as planned, or null when they were not carried."""
 
     address: MaybeHiddenAddress
     type: MaybeHidden
@@ -343,8 +347,7 @@ class AssuranceContext(StrictModel):
             if (local.scheme, local.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
         if self.plan is not None and self.change is not None:
-            unit = local.scope["unit"] if local.scope is not None else local.value
-            if self.change.digest != change_digest({unit: self.plan.digest}):
+            if self.change.digest != change_digest({unit_of(local): self.plan.digest}):
                 raise ValueError("change.digest is the digest of its unit's plan")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))

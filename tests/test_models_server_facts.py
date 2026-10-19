@@ -102,6 +102,19 @@ def test_an_earlier_evaluation_names_its_assertion_stage_subject_and_result() ->
     EarlierEvaluation.model_validate(EARLIER)
 
 
+@pytest.mark.parametrize(
+    ("stage", "plan_digest"),
+    [("plan", None), ("post_deploy", None), ("runtime", "sha256:" + "8" * 64)],
+    ids=["a plan check without its plan", "a post-deploy check without its plan", "a runtime check with a plan"],
+)
+def test_an_earlier_evaluation_names_its_plans_digest_exactly_when_its_stage_reads_a_plan(
+    stage: str, plan_digest: str | None
+) -> None:
+    EarlierEvaluation.model_validate({**EARLIER, "stage": "runtime", "plan_digest": None})
+    with pytest.raises(ValidationError, match="exactly when its stage reads a plan"):
+        EarlierEvaluation.model_validate({**EARLIER, "stage": stage, "plan_digest": plan_digest})
+
+
 def test_an_earlier_evaluation_names_its_subject_by_its_key() -> None:
     for subject in ({"kind": "resource", "key": "aws_db_instance.payments"}, {"kind": "resource", "id": "x"}):
         with pytest.raises(ValidationError):

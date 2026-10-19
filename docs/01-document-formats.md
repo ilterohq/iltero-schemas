@@ -92,9 +92,9 @@ Key rules:
 - A path's first segment must be a part of the [assurance context](#assurancecontext) that the stage provides.
 - A comparison between values of different types is false, never an error. `null` is not accepted as an operand.
 - A check whose value is missing, hidden or not yet known is `unknown`, with a reason: `path_missing`, `redacted`,
-  `not_a_list`, or the reason the value's marker carries (`known_after_deploy`, or `unspecified` when it carries
-  none). `all`, `any`, `not` and `exists` follow three-valued logic. The assertion's result is `not_applicable`,
-  `unknown`, `pass` or `fail`.
+  `not_a_list`, or the reason the value's marker carries (such as `known_after_deploy` or `not_reported_by_tool`, or
+  `unspecified` when it carries none). `all`, `any`, `not` and `exists` follow three-valued logic. The assertion's
+  result is `not_applicable`, `unknown`, `pass` or `fail`.
 - Limits: a document of at most 256 KiB, nested at most 32 levels; at most 128 checks, nested at most 8 levels, and
   64 in one `all` or `any`; a path of at most 16 segments of 64 characters; at most 256 values in an `in` list; text
   values of at most 1024 characters; integers within ±(2^53 − 1). YAML anchors, aliases, tags, merge keys and
@@ -144,11 +144,11 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | --- | --- | --- |
 | `apiVersion` | string | `iltero.io/assurance-context/v1`. |
 | `evaluation` | object | This evaluation: its `id`, `stage`, the runner's `timestamp`, and the `assertion` (`id`, `version`). |
-| `context` | object | The `organization`, `workspace` and `environment`, each present only when known. The `environment` has its `name` and `production`: whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
+| `context` | object | The `organization`, `workspace` and `environment`, each `null` when the run has none. The `environment` has its `name` and `production`: whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`), `trust` (`attested`, `corroborated` or `asserted`; always `asserted` for `runner_clock`), and `bracket`: the two timestamps the evaluation sits between (`not_before`, `not_after`) and a `nonce_digest`, present exactly when `source` is `timestamp_authority`, otherwise left out or `null`. `not_before` ≤ `value` ≤ `not_after`. |
-| `source` | object | The code the change comes from: `vcs` (`git`) and the `commit` (`sha`); and, each left out or `null` when unknown, the `repository` (`name`), the `ref` (`type`: `branch` or `tag`, and `name`) and the `pull_request` (`id`). |
-| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest` once known. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
-| `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, and the same table of contents for every resource the plan covers. |
+| `source` | object | The code the change comes from: `vcs` (`git`) and the `commit` (`sha`); the `repository` (`name`), `null` for a checkout with no remote; the `ref` (`type`: `branch` or `tag`, and `name`), `null` for a detached head; and the `pull_request` (`id`), `null` for a run outside a pull request. A run on a developer's machine is never a pull request. |
+| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`, where the unit is the subject's unit. A context with any other `digest` is refused. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
+| `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, whether the plan is `complete` and `applyable`, and the same table of contents for every resource the plan covers. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `authority` (`authoritative` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, the `basis` (how far the outcomes were checked), each change of the applied plan once (`changes`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read, and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. |
@@ -189,6 +189,9 @@ Key rules:
   it, so a project keeps every key when it connects to Iltero Platform. A cloud identity bound later is added beside
   the local identity, never in its place. A resource subject's address is the `id` of the `resource` the input
   carries, and an event's local identity is of the event's `provenance.run.unit`.
+- A resource's `type`, in `change.resources`, `plan.resources` and `resource`, is never `null`, nor is
+  `resource.name`, `resource.tool_data.provider_source` or a related resource's `type`. A hidden value is the
+  redaction marker.
 - A resource's `provider` is the short name an assertion targets (`aws`). `kind` follows the same rule as a change
   entry's. `name` is the resource's name within its configuration, and `module` the address of the module that
   contains it, in the tool's own syntax, or `null` at the root.
@@ -205,11 +208,20 @@ Key rules:
   top-level keys `timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift` and
   `relevant_attributes` (`PLAN_EXCLUDED_TOP_LEVEL_KEYS`).
   `artifact_digest` is the digest of the saved plan file. It is present exactly when `artifact_digest_basis` is
-  `plan_binary`, and `null` when it is `not_provided`.
+  `plan_binary`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest` with
+  `deployment.plan.digest`, and `plan.artifact_digest` with `deployment.plan.artifact_digest`. When both artifact
+  digests are `null`, neither side was given the saved plan file: the assertion passes and the binding rests on
+  `plan.digest`. When only one is `null`, it fails.
 - `plan.source_commit` equals `source.commit.sha`.
 - A value hidden by redaction is a marker, `{"__redacted": true, "reason": ..., "present": true, "type": ...}`. A
   value not yet known is `{"__unknown": true, "reason": ..., "present": true}`. A check that reaches either is
   `unknown`.
+- `null` means a fact has no value, never that it is unknown. The evaluator reads a `null` at the end of a path as a
+  known value: `equal: true` on it is `false`, never `unknown`, so `not` over that check is `true`. A path through a
+  `null` part, or a key left out, is `unknown` with `path_missing`; `exists` over a `null` collection is `unknown`
+  with `not_a_list`. A fact that is not known is the unknown marker, and a check that reads it is `unknown` with the
+  marker's reason. The one `null` that stands for values not carried is a related resource's `resource`: a check
+  that reads through it is `unknown`.
 - `context.environment.production` comes from Iltero Platform's environment policy for the run's environment. A run
   Iltero Platform did not open cannot know it, so it is the unknown marker, and a guard on it is `unknown`, never
   `false`: such a run never silently skips a production check.
@@ -224,7 +236,7 @@ served.
 | --- | --- |
 | Approval | `id`, `actor` (`provider`, and `id`: the provider's stable account id, never a login, a name or an address), `roles`, `status` (`approved`), `subject`, `method` (`ci_deployment_review` or `iltero_review`), `independence` (`independent` when the approver neither started the run nor triggered the attempt; `self_permitted_by_policy` otherwise, with the permitting `policy_version`, `null` when independent), `timestamp`. An approval from a CI deployment review names no role, since none is verified. |
 | Exception | `id`, `status` (`approved`: only granted exceptions are served), `scope` (`assertion.id`, `environment`, and the `resources` it covers, by their identities), `valid_from`, `expires_at` (after `valid_from`), `approved_by`, `reason`. |
-| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result.status`, `plan_digest`, `observed_at`. |
+| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result.status`, `plan_digest` (`null` exactly for a check at a stage that reads no plan, such as `runtime`), `observed_at`. |
 
 - An approval's `subject` names what it approves: `{kind: change, digest}`, that plan and no other, or `{kind: run,
   id}`, Iltero's run, never a CI run. An approval of a run approves the run, not a plan's content: a CI deployment
@@ -273,7 +285,7 @@ Key rules:
   | --- | --- |
   | `pass` | none |
   | `fail` | none: a failure's reason is the policy's `reason` |
-  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `reference_time_untrusted`, `deployment_log_incomplete`, `kind_unmapped` |
+  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `not_reported_by_tool`, `reference_time_untrusted`, `deployment_log_incomplete`, `kind_unmapped` |
   | `not_applicable` | `when_guard_excluded`, `no_subject_in_scope` |
   | `not_evaluated` | `scanner_not_run`, `credential_denied`, `resource_type_unsupported`, `binding_unverified`, `timeout`, `subject_unresolved`, `evaluator_unavailable`, `identity_unverified`, `stage_not_run` |
   | `error` | `evaluator_crash`, `evaluator_timeout`, `evaluator_memory_cap`, `output_overflow`, `output_contract_violation`, `adapter_parse_failure`, `bundle_verification_failed`, `compile_failure` |

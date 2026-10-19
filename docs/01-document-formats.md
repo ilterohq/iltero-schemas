@@ -27,6 +27,9 @@ Every model applies the same rules:
   Fields that carry data as another tool wrote it, such as a resource's planned values in an AssuranceContext,
   accept any JSON value.
 - A list of names that the model keeps sorted is sorted by Unicode code point, with no name twice.
+- A tool that writes a JSON document writes every optional field, as `null` when it has no value: the form the
+  model's `model_dump(mode="json", by_alias=True)` gives. One set of facts then has one document digest. A reader
+  also accepts the field left out. A TechnicalAssertion is written by a person, in YAML, and keeps its own rules.
 
 The tables below use these value types:
 
@@ -158,8 +161,9 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 
 Key rules:
 
-- The parts present are exactly those the stage's profile provides. A missing required part or an extra part is
-  refused, and the error names it. `evaluation`, `context` and `reference_time` are always required. A resource
+- The parts present are exactly those the stage's profile provides. A part outside the profile is written as `null`
+  and reads as absent, as does one left out. A missing required part or an extra part is refused, and the error
+  names it. `evaluation`, `context` and `reference_time` are always required. A resource
   target also requires `resource`.
 
   | Stage | Required | Optional |

@@ -35,6 +35,8 @@ identifier names a resource of its stated type. A conformant consumer enforces t
 
 Every document digest is the SHA-256 of the document's RFC 8785 canonical JSON, written `sha256:<hex>`. The
 `iltero_schemas.canonical` module computes it with `digest_of`, and the canonical bytes with `canonical_bytes`.
+Each document vector is written as its validating model dumps it: every optional field present, `null` when it has
+no value. A consumer whose writer produces that form reproduces the vector's bytes and digest.
 
 ## The pinned OPA release
 

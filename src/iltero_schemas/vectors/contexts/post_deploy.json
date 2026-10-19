@@ -24,7 +24,8 @@
   "reference_time": {
     "value": "2026-09-16T18:40:00Z",
     "source": "runner_clock",
-    "trust": "asserted"
+    "trust": "asserted",
+    "bracket": null
   },
   "source": {
     "vcs": "git",
@@ -83,7 +84,8 @@
     "identities": [
       {
         "scheme": "iltero_unit",
-        "value": "root"
+        "value": "root",
+        "scope": null
       }
     ],
     "authority": "unresolved"
@@ -146,5 +148,12 @@
       }
     },
     "superseded_by": null
-  }
+  },
+  "resource": null,
+  "evaluations": null,
+  "approvals": null,
+  "exceptions": null,
+  "run": null,
+  "verification": null,
+  "assurance": null
 }

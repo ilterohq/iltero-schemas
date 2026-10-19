@@ -25,6 +25,10 @@ keep, so any two tools agree on what a record means.
   so (`assertion_source: contract_starter`).
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each stage.
+- A JSON document a tool writes has one form, so one set of facts has one
+  digest: every optional field is written, as `null` when it has no value,
+  as its model dumps it. A context part outside its stage's profile is `null`. A field
+  left out still reads. Every document vector is in this form.
 - A reference time claims no more than its source: a runner's clock is
   always `asserted`, and a `bracket` is present exactly when a timestamp
   authority gave the time, with the time inside it. A stage's reference time

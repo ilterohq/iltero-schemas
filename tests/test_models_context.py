@@ -33,7 +33,8 @@ def test_the_vector_validates_and_names_exactly_the_profile_parts() -> None:
     assert context.subject is not None and context.resource is not None
     assert context.subject.key.startswith("sha256:")
     assert context.subject.identities[0].value == context.resource.id == "aws_db_instance.payments"
-    assert set(VECTOR) - {"apiVersion", "evaluation", "context", "reference_time"} == {
+    named = {name for name, part in VECTOR.items() if part is not None}
+    assert named - {"apiVersion", "evaluation", "context", "reference_time"} == {
         "source",
         "change",
         "plan",

@@ -1,4 +1,4 @@
-"""The unknown marker: what stands where a fact only the server holds could not be supplied.
+"""The unknown marker: what stands where a fact could not be supplied.
 
 Some checks need facts only the server holds: who approved the change,
 which exceptions are in force, earlier evaluations. Until the server can
@@ -7,6 +7,9 @@ rather than an empty list. The difference decides the verdict: an assertion
 that looks for an approval in an empty list fails, as if the change had been
 refused; the same assertion over a marker yields ``unknown`` with the
 marker's reason, which says what is true — the answer was not available.
+
+A fact the IaC tool did not report, such as whether an older tool's plan is
+complete, holds the marker too: a null there would read as a known value.
 """
 
 from __future__ import annotations
@@ -17,8 +20,8 @@ from pydantic import ConfigDict, Field
 
 from iltero_schemas.models.base import StrictModel
 
-# Why a part of the facts is missing; the evaluator's runtime copies it into the result.
-UnknownReason = Literal["server_facts_unavailable"]
+# Why a fact is missing; the evaluator's runtime copies it into the result.
+UnknownReason = Literal["server_facts_unavailable", "not_reported_by_tool"]
 
 
 class UnknownMarker(StrictModel):

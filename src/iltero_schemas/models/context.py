@@ -32,6 +32,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import ConfigDict, Field, model_validator
 
+from iltero_schemas.canonical.change import change_digest
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
@@ -116,7 +117,7 @@ class Environment(StrictModel):
 
 
 class OrganizationScope(StrictModel):
-    """Organizational scope; each part is present only when known."""
+    """Organizational scope; a part is null when the run has none, such as a run not opened under a workspace."""
 
     organization: Identified | None = None
     workspace: Identified | None = None
@@ -166,7 +167,11 @@ class GitRef(StrictModel):
 
 
 class Source(StrictModel):
-    """The code the change comes from; the commit is always known, the rest when the runner is told."""
+    """The code the change comes from.
+
+    The commit is always known. ``repository`` is null for a checkout with no remote, ``ref`` for a detached head,
+    and ``pull_request`` for a run outside a pull request; a run on a developer's machine is never one.
+    """
 
     vcs: Literal["git"]
     commit: CommitRef
@@ -204,7 +209,7 @@ class ResourceIndexEntry(StrictModel):
 
     id: Address
     provider: ProviderName
-    type: Identifier | None
+    type: Identifier
     kind: Identifier | UnknownKind | None
 
     action: Action
@@ -214,7 +219,7 @@ class ResourceIndexEntry(StrictModel):
 def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResource]) -> None:
     """Raise ``ValueError`` unless every entry names the kind ``tool``'s table gives its type."""
     for entry in entries:
-        named = None if entry.type is None else kind_of(tool, entry.provider, entry.type)
+        named = kind_of(tool, entry.provider, entry.type)
         if entry.provider not in RESOURCE_KINDS:
             valid = entry.kind is None
         elif named is None:
@@ -226,10 +231,10 @@ def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResour
 
 
 class ProposedChange(StrictModel):
-    """The proposed change: the resources it touches, and its digest once the unit's pre-deploy stage fixes it."""
+    """The proposed change: the resources it touches, and its digest, ``canonical.change_digest`` of its unit's plan."""
 
     resources: list[ResourceIndexEntry]
-    digest: Digest | None = None
+    digest: Digest
 
 
 class Plan(StrictModel):
@@ -238,14 +243,16 @@ class Plan(StrictModel):
     # The IaC tool that wrote the plan, and the version of its plan format and of the tool itself.
     tool: IacTool
     format_version: Identifier
-    tool_version: Identifier | None
+    # The marker, reason ``not_reported_by_tool``, when the plan does not say.
+    tool_version: Identifier | UnknownMarker
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_basis: ArtifactDigestBasis
     source_commit: Commit
-    complete: bool | None
-    applyable: bool | None
+    # The marker, reason ``not_reported_by_tool``, when the tool's plan format has no such flag.
+    complete: bool | UnknownMarker
+    applyable: bool | UnknownMarker
     resources: list[ResourceIndexEntry]
 
     @model_validator(mode="after")
@@ -263,7 +270,7 @@ class RelatedResource(StrictModel):
     """Another resource that refers to this one, with its values as planned — or without them when left out."""
 
     address: MaybeHiddenAddress
-    type: MaybeHidden | None
+    type: MaybeHidden
     relation: Relation
     via: list[MaybeHidden]
     resource: dict[str, Any] | None
@@ -276,9 +283,9 @@ class PlanResource(StrictModel):
 
     id: Address
     provider: ProviderName
-    type: Identifier | None
+    type: Identifier
     kind: Identifier | UnknownKind | None
-    name: MaybeHidden | None
+    name: MaybeHidden
     module: Address | None
     action: Action
     before: Any
@@ -335,6 +342,10 @@ class AssuranceContext(StrictModel):
         if self.resource is not None and local.scheme in ADDRESS_IDENTITY_SCHEMES:
             if (local.scheme, local.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
+        if self.plan is not None and self.change is not None:
+            unit = local.scope["unit"] if local.scope is not None else local.value
+            if self.change.digest != change_digest({unit: self.plan.digest}):
+                raise ValueError("change.digest is the digest of its unit's plan")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
             if self.resource is not None:

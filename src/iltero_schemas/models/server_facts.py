@@ -149,6 +149,7 @@ class EarlierEvaluation(StrictModel):
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
+    # Null for a check that read no plan, such as a runtime check.
     plan_digest: Digest | None
     observed_at: Timestamp
 

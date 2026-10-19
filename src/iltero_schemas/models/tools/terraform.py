@@ -31,7 +31,7 @@ class TerraformResourceData(StrictModel):
 
     tool: Literal["terraform"]
     # The provider's full source address, such as ``registry.terraform.io/hashicorp/aws``.
-    provider_source: Identifier | None
+    provider_source: Identifier
     # Why Terraform chose the action, such as ``replace_because_tainted``.
     action_reason: MaybeHidden | None
     # The address the resource had before a ``moved`` block renamed it.

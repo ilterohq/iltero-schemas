@@ -365,3 +365,56 @@ def test_a_timestamp_authority_time_lies_inside_its_bracket(not_before: str, not
     time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
     with pytest.raises(ValidationError, match="inside its bracket"):
         AssuranceContext.model_validate({**VECTOR, "reference_time": time})
+
+
+def _set(document: dict[str, Any], path: tuple[str | int, ...], value: Any) -> dict[str, Any]:
+    node: Any = document
+    for key in path[:-1]:
+        node = node[key]
+    node[path[-1]] = value
+    return document
+
+
+RELATED: dict[str, Any] = {
+    "address": "aws_db_parameter_group.payments",
+    "type": "aws_db_parameter_group",
+    "relation": "configures",
+    "via": [],
+    "resource": None,
+    "tool_data": {"tool": "terraform", "match": "instance"},
+}
+
+
+def test_the_change_digest_is_the_digest_of_its_units_plan() -> None:
+    with pytest.raises(ValidationError, match="change.digest is the digest of its unit's plan"):
+        AssuranceContext.model_validate(_set(copy.deepcopy(VECTOR), ("change", "digest"), "sha256:" + "a" * 64))
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        ("change", "digest"),
+        ("change", "resources", 0, "type"),
+        ("resource", "type"),
+        ("resource", "name"),
+        ("resource", "tool_data", "provider_source"),
+        ("resource", "related", 0, "type"),
+    ],
+    ids=lambda path: ".".join(map(str, path)),
+)
+def test_a_fact_the_stage_always_knows_is_never_null(path: tuple[str | int, ...]) -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"]["related"] = [copy.deepcopy(RELATED)]
+    AssuranceContext.model_validate(document)
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate(_set(document, path, None))
+
+
+NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
+
+
+@pytest.mark.parametrize("flag", ["complete", "applyable", "tool_version"])
+def test_a_plan_fact_the_tool_did_not_report_is_the_unknown_marker_never_null(flag: str) -> None:
+    AssuranceContext.model_validate(_set(copy.deepcopy(VECTOR), ("plan", flag), NOT_REPORTED))
+    with pytest.raises(ValidationError, match=f"plan.{flag}"):
+        AssuranceContext.model_validate(_set(copy.deepcopy(VECTOR), ("plan", flag), None))

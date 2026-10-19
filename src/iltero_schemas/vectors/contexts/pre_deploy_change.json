@@ -24,7 +24,8 @@
   "reference_time": {
     "value": "2026-09-16T18:30:00Z",
     "source": "server",
-    "trust": "attested"
+    "trust": "attested",
+    "bracket": null
   },
   "source": {
     "vcs": "git",
@@ -37,7 +38,8 @@
     "ref": {
       "type": "branch",
       "name": "main"
-    }
+    },
+    "pull_request": null
   },
   "change": {
     "resources": [
@@ -96,7 +98,8 @@
     "identities": [
       {
         "scheme": "iltero_unit",
-        "value": "root"
+        "value": "root",
+        "scope": null
       }
     ],
     "authority": "unresolved"
@@ -115,5 +118,9 @@
   },
   "run": {
     "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
-  }
+  },
+  "resource": null,
+  "deployment": null,
+  "verification": null,
+  "assurance": null
 }

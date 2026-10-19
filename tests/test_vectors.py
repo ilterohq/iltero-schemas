@@ -180,6 +180,14 @@ def test_document_vector_validates_and_its_digest_is_reproduced(folder: str, nam
     assert digest_of(document) == digests[name]
 
 
+@pytest.mark.parametrize(("folder", "name"), DOCUMENT_FILES, ids=str)
+def test_document_vector_is_written_as_its_model_dumps_it(folder: str, name: str) -> None:
+    # One form per document: every optional field written, null when it has no value.
+    document = json.loads((VECTORS / folder / name).read_text(encoding="utf-8"))
+    dumped = DOCUMENT_MODELS[folder].model_validate(document).model_dump(mode="json", by_alias=True)
+    assert canonical_bytes(document) == canonical_bytes(dumped)
+
+
 def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in VECTORS.iterdir() if path.is_dir() and path.name != "__pycache__"}
     known = {

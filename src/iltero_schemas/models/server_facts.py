@@ -23,6 +23,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
+from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.fields import (
     AssertionId,
@@ -36,6 +37,7 @@ from iltero_schemas.models.fields import (
     instant,
     plain_text,
 )
+from iltero_schemas.profiles import reads_plan
 
 # The most items of each kind one facts document carries: more than one stage needs.
 MAX_FACT_ITEMS = 256
@@ -149,8 +151,15 @@ class EarlierEvaluation(StrictModel):
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
+    # The digest of the plan the check read; null exactly for a stage that reads none, such as runtime.
     plan_digest: Digest | None
     observed_at: Timestamp
+
+    @model_validator(mode="after")
+    def _plan_digest_where_a_plan_was_read(self) -> EarlierEvaluation:
+        if (self.plan_digest is None) == reads_plan(Stage(self.stage)):
+            raise ValueError("an earlier evaluation names its plan's digest exactly when its stage reads a plan")
+        return self
 
 
 Approvals = Annotated[list[Approval], Field(max_length=MAX_FACT_ITEMS)]

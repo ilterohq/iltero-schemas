@@ -3464,12 +3464,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": "sha256:b"
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:b"
+          "artifact_digest": "sha256:b",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -3496,12 +3498,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": "sha256:b"
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:c"
+          "artifact_digest": "sha256:c",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -3534,6 +3538,18 @@
           "path": "deployment.plan.artifact_digest",
           "resolved": "sha256:b",
           "status": "false"
+        },
+        {
+          "actual": "plan_binary",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.artifact_digest_basis"
+          },
+          "index": 2,
+          "op": "equal",
+          "path": "deployment.plan.artifact_digest_basis",
+          "resolved": "plan_binary",
+          "status": "true"
         }
       ]
     }
@@ -3554,12 +3570,14 @@
       },
       "plan": {
         "digest": "sha256:a",
-        "artifact_digest": null
+        "artifact_digest": null,
+        "artifact_digest_basis": "not_provided"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
-          "artifact_digest": "sha256:b"
+          "artifact_digest": "sha256:b",
+          "artifact_digest_basis": "plan_binary"
         }
       }
     },
@@ -4256,6 +4274,229 @@
       "reason": "when: false",
       "unknown": null,
       "when": "false"
+    }
+  },
+  {
+    "name": "plan_binding_neither_artifact_provided",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": null,
+        "artifact_digest_basis": "not_provided"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": null,
+          "artifact_digest_basis": "not_provided"
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "plan_binding_applied_without_the_saved_plan",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b",
+        "artifact_digest_basis": "plan_binary"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": null,
+          "artifact_digest_basis": "not_provided"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "negation_of_a_null_leaf_is_true",
+    "assertion": "VEC.TRUTH.NEGATION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": null
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "negation_of_an_unreported_fact_is_unknown",
+    "assertion": "VEC.TRUTH.NEGATION",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": {
+            "__unknown": true,
+            "reason": "not_reported_by_tool"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.a: not_reported_by_tool",
+      "unknown": {
+        "path": "resource.after.a",
+        "reason": "not_reported_by_tool"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "guard_through_a_null_part_is_path_missing",
+    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": null
+      },
+      "resource": {
+        "id": "aws_db_instance.payments",
+        "type": "aws_db_instance",
+        "after": {}
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "context.environment.production: path_missing",
+      "unknown": {
+        "path": "context.environment.production",
+        "reason": "path_missing"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "related_copy_left_out_is_path_missing",
+    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "aws_s3_bucket",
+        "after": {},
+        "related": [
+          {
+            "relation": "configures",
+            "type": "aws_s3_bucket_public_access_block",
+            "resource": null
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.resource.after.block_public_acls: path_missing",
+      "unknown": {
+        "path": "item.resource.after.block_public_acls",
+        "reason": "path_missing"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "exists_over_a_null_collection_is_not_a_list",
+    "assertion": "VEC.EXISTS.NONEMPTY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "context": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {},
+        "related": null
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.related: not_a_list",
+      "unknown": {
+        "path": "resource.related",
+        "reason": "not_a_list"
+      },
+      "when": null
     }
   }
 ]

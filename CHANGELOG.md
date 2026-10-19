@@ -31,6 +31,17 @@ keep, so any two tools agree on what a record means.
   read from its runner's clock is the same instant the stage observed
   (`observed_at`).
   Invalid-record vectors cover them.
+- In an `AssuranceContext`, `null` means a fact has no value, never that it is
+  unknown. A plan's `complete`, `applyable` and `tool_version` hold the unknown
+  marker with the new reason `not_reported_by_tool` when the tool's plan does
+  not say. `change.digest` is required and is the change digest of its unit's
+  plan. A resource's `type` and `name`, its provider source and a related
+  resource's `type` are never `null`. An earlier evaluation names its plan's
+  digest exactly when its stage reads a plan.
+- `ILT.DEPLOYMENT.PLAN_BINDING` also compares the two artifact digest bases,
+  so its observations show when neither side had the saved plan file. It
+  passes then, and fails when only one side has it. Evaluation vectors cover
+  both, and how a `null` value evaluates.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
   v1): each stage's coverage and verdict, the rules that tie the stages
   together, what a deployment did, the resources' cloud identities, and which

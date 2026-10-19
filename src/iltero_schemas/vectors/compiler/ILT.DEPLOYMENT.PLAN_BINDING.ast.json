@@ -24,6 +24,13 @@
           "op": "equal",
           "ref": "plan.artifact_digest"
         }
+      },
+      {
+        "predicate": {
+          "path": "deployment.plan.artifact_digest_basis",
+          "op": "equal",
+          "ref": "plan.artifact_digest_basis"
+        }
       }
     ]
   }

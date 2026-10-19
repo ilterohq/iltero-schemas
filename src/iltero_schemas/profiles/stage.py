@@ -68,6 +68,11 @@ def reads_server_facts(stage: Stage) -> bool:
     return any(profile.roots & SERVER_FACTS for (at, _kind), profile in PROFILES.items() if at is stage)
 
 
+def reads_plan(stage: Stage) -> bool:
+    """Whether an input at ``stage`` carries the plan."""
+    return any("plan" in profile.roots for (at, _kind), profile in PROFILES.items() if at is stage)
+
+
 def profile_for(stage: Stage, target_kind: TargetKind) -> Profile:
     """The profile of an assertion at ``stage`` about ``target_kind``; an invalid combination has none."""
     try:

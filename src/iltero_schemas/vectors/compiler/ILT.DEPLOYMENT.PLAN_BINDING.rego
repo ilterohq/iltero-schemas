@@ -8,7 +8,7 @@ assertion_version := "1.0.0"
 
 ast_version := 1
 
-assertion_source_digest := "sha256:73336378a8e5bca5e8dad92337440e49ac02a040f7c9083a953a347bd0aa643b"
+assertion_source_digest := "sha256:7a8c474d2940d48995f0664090de0ea746cffceab90e046c0ec28b1d38856db6"
 
 _has_when := false
 
@@ -17,6 +17,7 @@ _guard := _true
 _check := all_of([
 	predicate("equal", lookup("deployment.plan.digest"), lookup("plan.digest")),
 	predicate("equal", lookup("deployment.plan.artifact_digest"), lookup("plan.artifact_digest")),
+	predicate("equal", lookup("deployment.plan.artifact_digest_basis"), lookup("plan.artifact_digest_basis")),
 ])
 
 # Runtime shared by every compiled assertion. It is copied verbatim into each

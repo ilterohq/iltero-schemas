@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import copy
 import json
-from typing import Any
+import re
+from typing import Any, get_args
 
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext
+from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, UnknownKind
+from iltero_schemas.models.event import STATUS_REASONS
+from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import PROFILES
@@ -365,3 +368,78 @@ def test_a_timestamp_authority_time_lies_inside_its_bracket(not_before: str, not
     time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
     with pytest.raises(ValidationError, match="inside its bracket"):
         AssuranceContext.model_validate({**VECTOR, "reference_time": time})
+
+
+def _set(document: dict[str, Any], path: tuple[str | int, ...], value: Any) -> dict[str, Any]:
+    node: Any = document
+    for key in path[:-1]:
+        node = node[key]
+    node[path[-1]] = value
+    return document
+
+
+RELATED: dict[str, Any] = {
+    "address": "aws_db_parameter_group.payments",
+    "type": "aws_db_parameter_group",
+    "relation": "configures",
+    "via": [],
+    "resource": None,
+    "tool_data": {"tool": "terraform", "match": "instance"},
+}
+
+
+@pytest.mark.parametrize("name", ["plan_resource.json", "pre_deploy_change.json"], ids=["resource", "change"])
+def test_the_change_digest_is_the_digest_of_its_units_plan(name: str) -> None:
+    document = json.loads((VECTORS / "contexts" / name).read_text(encoding="utf-8"))
+    with pytest.raises(ValidationError, match="change.digest is the digest of its unit's plan"):
+        AssuranceContext.model_validate(_set(document, ("change", "digest"), "sha256:" + "a" * 64))
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        ("change", "digest"),
+        ("change", "resources", 0, "type"),
+        ("resource", "type"),
+        ("resource", "name"),
+        ("resource", "tool_data", "provider_source"),
+        ("resource", "related", 0, "type"),
+    ],
+    ids=lambda path: ".".join(map(str, path)),
+)
+def test_a_fact_the_stage_always_knows_is_never_null(path: tuple[str | int, ...]) -> None:
+    document = copy.deepcopy(VECTOR)
+    document["resource"]["related"] = [copy.deepcopy(RELATED)]
+    AssuranceContext.model_validate(document)
+    with pytest.raises(ValidationError, match=re.escape(".".join(map(str, path)))):
+        AssuranceContext.model_validate(_set(document, path, None))
+
+
+NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
+
+
+@pytest.mark.parametrize("flag", ["complete", "applyable", "tool_version"])
+def test_a_plan_fact_the_tool_did_not_report_is_the_unknown_marker_never_null(flag: str) -> None:
+    AssuranceContext.model_validate(_set(copy.deepcopy(VECTOR), ("plan", flag), NOT_REPORTED))
+    with pytest.raises(ValidationError, match=f"plan.{flag}"):
+        AssuranceContext.model_validate(_set(copy.deepcopy(VECTOR), ("plan", flag), None))
+
+
+@pytest.mark.parametrize(
+    ("path", "reason"),
+    [
+        (("plan", "complete"), "server_facts_unavailable"),
+        (("approvals",), "not_reported_by_tool"),
+        (("context", "environment", "production"), "not_reported_by_tool"),
+    ],
+    ids=["a plan flag", "a server fact", "production"],
+)
+def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tuple[str, ...], reason: str) -> None:
+    document = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+    with pytest.raises(ValidationError, match=re.escape(".".join(path))):
+        AssuranceContext.model_validate(_set(document, path, {"__unknown": True, "reason": reason}))
+
+
+def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
+    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, UnknownKind)}
+    assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]

@@ -50,6 +50,13 @@ keep, so any two tools agree on what a record means.
   v1): each stage's coverage and verdict, the rules that tie the stages
   together, what a deployment did, the resources' cloud identities, and which
   stages are in scope.
+- A record's plan `complete`, `applyable` and `tool_version`, and a
+  plan-flag gap's `value`, hold the `not_reported_by_tool` marker when the
+  tool's plan does not say; `null` is refused. A record's `change.digest` is
+  required. The plan stage lists one plan-flag gap for each plan flag that is
+  not `true`, with the plan's value, in kind order; a plan-flag gap in any
+  other stage is refused.
+  Record vectors cover each rule.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold. No two of its bindings, and no two of its
   removed entries, name the same cloud identity.

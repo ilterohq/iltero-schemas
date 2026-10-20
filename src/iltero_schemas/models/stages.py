@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
-from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.coverage import PlanFlagGap, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import instant
 from iltero_schemas.profiles import reads_server_facts
 
@@ -145,6 +145,8 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
+        if stage is not Stage.PLAN and any(isinstance(gap, PlanFlagGap) for gap in record.coverage.gaps):
+            raise ValueError(f"the {stage.value} stage lists a plan-flag gap, which only the plan stage lists")
         basis = scope_basis(stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage})
         scope = record.coverage.subjects_in_scope.basis
         enumerates = scope == SCOPE_BASIS[TargetKind.RESOURCE]
@@ -156,8 +158,7 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage lists approvals exactly when it reads server facts")
         _check_approvals(car, stage, record)
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
-    digest = car.change.digest
-    if pre_deploy is not None and digest is not None and pre_deploy.coverage.subjects_in_scope.source_digest != digest:
+    if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != car.change.digest:
         raise ValueError("the pre-deploy stage counts the change the record names, by its digest")
     stages_of_events = [event.evaluation.stage for event in car.events]
     if not set(stages_of_events) <= set(car.stages):
@@ -172,6 +173,23 @@ def check_structure(car: CAR) -> None:
         seen |= assertions
         if not set(record.coverage.subjects_per_assertion) <= assertions:
             raise ValueError(f"the {stage.value} stage counts subjects only for assertions it has events for")
+
+
+def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
+    """The plan stage lists one plan-flag gap for each plan flag that is not true, with the plan's value, in kind
+    order."""
+    plan = car.plan
+    # In kind order.
+    owed = [
+        (kind, value)
+        for kind, value in (("plan_incomplete", plan.complete), ("plan_not_applyable", plan.applyable))
+        if value is not True
+    ]
+    gaps = car.stages[Stage.PLAN].coverage.gaps
+    if [(gap.kind, gap.value) for gap in gaps if isinstance(gap, PlanFlagGap)] != owed:
+        where, what = "stages.plan.coverage.gaps", "does not match plan.complete and plan.applyable"
+        return [(where, f"{what}: one gap, in kind order, for each that is not true, with its value")]
+    return []
 
 
 def derived_problems(car: CAR) -> list[tuple[str, str]]:
@@ -195,8 +213,9 @@ def derived_problems(car: CAR) -> list[tuple[str, str]]:
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
     unit = car.change.unit
-    if car.change.digest is not None and car.change.digest != change_digest({unit.name: unit.plan.digest}):
+    if car.change.digest != change_digest({unit.name: unit.plan.digest}):
         problems.append(("change.digest", "is not the digest of the change's units"))
+    problems.extend(_plan_flag_problems(car))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)
     for key in ("coverage", "verdict", "assurance_status"):

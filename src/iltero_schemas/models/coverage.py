@@ -17,6 +17,7 @@ from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import STATUS_REASONS
+from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     MAX_RESOURCES,
     Address,
@@ -93,10 +94,10 @@ class _Gap(StrictModel):
 
 
 class PlanFlagGap(_Gap):
-    """The plan says it is incomplete or cannot be applied; ``value`` is the flag as the plan states it."""
+    """A plan flag that is not true; ``value`` is the plan's flag: false, or the not-reported marker."""
 
     kind: Literal["plan_incomplete", "plan_not_applyable"]
-    value: Literal[False] | None
+    value: Literal[False] | NotReported
 
 
 class PositionGap(_Gap):

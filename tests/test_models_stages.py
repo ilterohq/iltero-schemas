@@ -8,7 +8,6 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
@@ -39,7 +38,7 @@ def _with_top_level(document: dict[str, Any]) -> dict[str, Any]:
 def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) -> dict[str, Any]:
     """The run's record with ``changes``; a change of expected stages leaves the rest of the lifecycle out of scope."""
     document = copy.deepcopy(RECORD)
-    document["stages"].update(stages or {})
+    document["stages"].update(copy.deepcopy(stages or {}))
     for dotted, value in changes.items():
         _set(document, dotted, value)
     if "expected_stages" in changes and "not_in_scope" not in changes:
@@ -207,6 +206,75 @@ def test_a_record_as_written_has_nothing_to_recompute() -> None:
     assert derived_problems(CAR.model_validate(RECORD)) == []
 
 
+NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
+
+
+def _plan_flags(
+    flags: dict[str, Any], gaps: list[dict[str, Any]], stages: dict[str, dict[str, Any]] | None = None, **changes: Any
+) -> CAR:
+    """The record with the plan's ``flags`` and the plan stage's ``gaps``, read without its derived checks."""
+    plan = {f"plan.{flag}": value for flag, value in flags.items()}
+    document = _record(stages, **plan, **changes, **{"stages.plan.coverage.gaps": gaps})
+    return CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("flags", "gaps"),
+    [
+        ({"complete": False}, [{"kind": "plan_incomplete", "value": False}]),
+        (
+            {"complete": NOT_REPORTED, "applyable": False},
+            [{"kind": "plan_incomplete", "value": NOT_REPORTED}, {"kind": "plan_not_applyable", "value": False}],
+        ),
+        ({"tool_version": NOT_REPORTED}, []),
+    ],
+    ids=["incomplete", "not reported and not applyable", "tool version not reported"],
+)
+def test_the_plan_stage_lists_a_gap_for_each_plan_flag_that_is_not_true(
+    flags: dict[str, Any], gaps: list[dict[str, Any]]
+) -> None:
+    assert derived_problems(_plan_flags(flags, gaps)) == []
+
+
+@pytest.mark.parametrize(
+    ("flags", "gaps"),
+    [
+        ({"complete": False}, []),
+        ({}, [{"kind": "plan_incomplete", "value": False}]),
+        ({"applyable": NOT_REPORTED}, [{"kind": "plan_not_applyable", "value": False}]),
+        ({"complete": False}, [{"kind": "plan_incomplete", "value": False}] * 2),
+        (
+            {"complete": False, "applyable": False},
+            [{"kind": "plan_not_applyable", "value": False}, {"kind": "plan_incomplete", "value": False}],
+        ),
+    ],
+    ids=["a flag without its gap", "a gap for a true flag", "a gap of another value", "a gap twice", "out of order"],
+)
+def test_plan_flag_gaps_that_do_not_match_the_plan_flags_are_a_problem(
+    flags: dict[str, Any], gaps: list[dict[str, Any]]
+) -> None:
+    car = _plan_flags(flags, gaps)
+    assert derived_problems(car) == [
+        (
+            "stages.plan.coverage.gaps",
+            "does not match plan.complete and plan.applyable: one gap, in kind order, for each that is not true, "
+            "with its value",
+        )
+    ]
+    with pytest.raises(ValidationError, match="does not match plan.complete and plan.applyable"):
+        CAR.model_validate(car.model_dump(mode="json", by_alias=True))
+
+
+def test_only_the_plan_stage_lists_a_plan_flag_gap() -> None:
+    gap = [{"kind": "plan_incomplete", "value": False}]
+    later = {"pre_deploy": _stage("pre_deploy", **{"coverage.gaps": gap})}
+    expected = ["plan", "pre_deploy", "post_deploy"]
+    changes = {"plan.complete": False, "stages.plan.coverage.gaps": gap}
+    document = _record(later, expected_stages=expected, complete=False, **changes)
+    with pytest.raises(ValidationError, match="the pre_deploy stage lists a plan-flag gap"):
+        CAR.model_validate(document, context=_READER)
+
+
 def _coverage(
     counts: dict[str, int], *, expected: int = 5, evaluated: int = 5, subjects: int = 2, truncated: bool = False
 ) -> Coverage:
@@ -314,17 +382,6 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
         CAR.model_validate(_record(expected_stages=["plan"]), context=_READER)
 
 
-def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
-    unit = RECORD["change"]["unit"]
-    change_digest_value = change_digest({unit["name"]: unit["plan"]["digest"]})
-    with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    with pytest.raises(ValidationError, match="names the change digest"):
-        CAR.model_validate(with_stage, context=_READER)
-    with_stage["change"]["digest"] = change_digest_value
-    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = change_digest_value
-    CAR.model_validate(with_stage, context=_READER)
-
-
 @pytest.mark.parametrize(
     ("field", "value"),
     [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("basis", "server_issued"), ("unit", "network")],
@@ -343,9 +400,7 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
 
 
 def test_an_offline_record_has_no_facts_from_the_server() -> None:
-    unit = RECORD["change"]["unit"]
-    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
-    pre_deploy = _stage("pre_deploy", **{"coverage.subjects_in_scope.source_digest": digest})
+    pre_deploy = _stage("pre_deploy")
     event = _moved_event(-1, "pre_deploy")
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     plan = copy.deepcopy(RECORD["stages"]["plan"])
@@ -355,7 +410,6 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
         expected_stages=["plan", "pre_deploy", "post_deploy"],
         complete=False,
         events=[*RECORD["events"][:-1], event],
-        **{"change.digest": digest},
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"
@@ -364,9 +418,8 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
 
 
 def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
-    unit = RECORD["change"]["unit"]
     with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    with_stage["change"]["digest"] = change_digest({unit["name"]: unit["plan"]["digest"]})
+    CAR.model_validate(with_stage, context=_READER)
     with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
     with pytest.raises(ValidationError, match="counts the change the record names"):
         CAR.model_validate(with_stage, context=_READER)
@@ -425,20 +478,14 @@ def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[st
 
 
 def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
-    """The record with a pre-deploy stage whose checks read ``approvals``, its change digest fixed."""
-    unit = RECORD["change"]["unit"]
-    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
+    """The record with a pre-deploy stage whose checks read ``approvals``."""
     document = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    document["change"]["digest"] = digest
-    stage = document["stages"]["pre_deploy"]
-    stage["coverage"]["subjects_in_scope"]["source_digest"] = digest
-    stage["approvals"] = list(approvals)
+    document["stages"]["pre_deploy"]["approvals"] = list(approvals)
     return document
 
 
 def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
-    digest = change_digest({RECORD["change"]["unit"]["name"]: RECORD["change"]["unit"]["plan"]["digest"]})
-    of_change = _approval({"kind": "change", "digest": digest})
+    of_change = _approval({"kind": "change", "digest": RECORD["change"]["digest"]})
     of_run = _approval({"kind": "run", "id": RECORD["run_id"]["value"]}, "apr_0002")
     CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
 

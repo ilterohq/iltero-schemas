@@ -8,7 +8,6 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.subjects import subject_key
@@ -103,13 +102,7 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     event["provenance"]["facts_source"] = "server"
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     del document["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]
-    unit = document["change"]["unit"]
-    digest = change_digest({unit["name"]: unit["plan"]["digest"]})
-    document["change"]["digest"] = digest
-    document["stages"]["pre_deploy"] = stage(
-        "pre_deploy",
-        **{"coverage.subjects_per_assertion": {moved: 1}, "coverage.subjects_in_scope.source_digest": digest},
-    )
+    document["stages"]["pre_deploy"] = stage("pre_deploy", **{"coverage.subjects_per_assertion": {moved: 1}})
     document["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
     document["not_in_scope"] = [entry for entry in document["not_in_scope"] if entry["stage"] == "post_verify"]
     document["complete"] = False

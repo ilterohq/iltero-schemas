@@ -40,6 +40,8 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     coverage = copied["coverage"]
     basis = "change_unit" if name == "pre_deploy" else "deployment_unit"
     coverage["subjects_in_scope"].update(value=1, basis=basis, removed_by_plan=0, excluded=[])
+    if name == "pre_deploy":
+        coverage["subjects_in_scope"]["source_digest"] = RECORD["change"]["digest"]
     coverage.update(subjects_per_assertion={}, checks=0, status_counts=dict.fromkeys(coverage["status_counts"], 0))
     for dotted, value in changes.items():
         set_path(copied, dotted, value)

@@ -1,10 +1,9 @@
 """The change a record is about, and the units its project declares.
 
 A unit is planned, approved and applied on its own, so a record's change
-covers its own unit only: that unit's plan, bound by the change digest once
-the pre-deploy stage fixes it (``canonical.change_digest``). An approval
-binds to that digest, so re-planning the unit after the approval
-invalidates it.
+covers its own unit only: that unit's plan, bound by the change digest
+(``canonical.change_digest``). An approval binds to that digest, so
+re-planning the unit after the approval invalidates it.
 
 A project may declare its units in a units file. A record names that file
 as the writer read it: its path in the project, the digest of its bytes and
@@ -37,9 +36,9 @@ class ChangeUnit(StrictModel):
 
 
 class Change(StrictModel):
-    """The record's own unit with its plan; ``digest`` binds them once the pre-deploy stage fixes it."""
+    """The record's own unit with its plan; ``digest`` binds them."""
 
-    digest: Digest | None
+    digest: Digest
     unit: ChangeUnit
 
 

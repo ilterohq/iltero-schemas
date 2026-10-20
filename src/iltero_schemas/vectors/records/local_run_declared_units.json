@@ -8,7 +8,7 @@
     "detail": null
   },
   "change": {
-    "digest": null,
+    "digest": "sha256:d37b6cf94ac903d0f685601db89c2215425d40468b41714d9526643806913442",
     "unit": {
       "name": "app",
       "plan": {

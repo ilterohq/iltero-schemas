@@ -53,6 +53,11 @@ def test_a_change_names_one_unit_with_its_plan_digest(change: dict[str, object],
         Change.model_validate(change)
 
 
+def test_a_change_always_names_its_digest() -> None:
+    with pytest.raises(ValidationError, match="digest"):
+        Change.model_validate({"digest": None, "unit": {"name": "root", "plan": {"digest": "sha256:" + "4" * 64}}})
+
+
 @pytest.mark.parametrize("path", ["infra/teams/x/stacks/y/.iltero/units.json", "my stack/units.json"])
 def test_a_units_file_may_sit_anywhere_in_the_project(path: str) -> None:
     UnitsFile.model_validate({**FILE, "path": path})

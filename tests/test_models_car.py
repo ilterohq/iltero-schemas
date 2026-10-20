@@ -10,7 +10,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, StageRecord
+from iltero_schemas.models.car import CAR, PlanRecord, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
@@ -417,12 +417,20 @@ def test_every_event_names_the_plan_the_record_evaluated() -> None:
         CAR.model_validate(document)
 
 
-OWN_PLAN = RECORD["plan"]["digest"]
+@pytest.mark.parametrize(
+    ("flag", "message"),
+    [("complete", "valid boolean"), ("applyable", "valid boolean"), ("tool_version", "valid string")],
+)
+def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        PlanRecord.model_validate({**RECORD["plan"], flag: None})
+    PlanRecord.model_validate({**RECORD["plan"], flag: {"__unknown": True, "reason": "not_reported_by_tool"}})
+
+
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
 def test_a_change_digest_is_the_digest_of_its_unit() -> None:
-    CAR.model_validate(_record(**{"change.digest": change_digest({"root": OWN_PLAN})}))
     with pytest.raises(ValidationError, match="not the digest of the change's units"):
         CAR.model_validate(_record(**{"change.digest": change_digest({"root": OTHER_PLAN})}))
 

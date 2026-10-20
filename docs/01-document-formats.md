@@ -329,9 +329,9 @@ with a regulatory framework.
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` for a run Iltero Platform issued (`run_id.basis: server_issued`), `local` otherwise. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
-| `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest` once the pre-deploy stage fixes it. |
+| `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
-| `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`. |
+| `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_basis`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `stages` | object | One entry per stage that reported, keyed by stage: what ran it and under which limits, the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its checks read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted, the files written, scanner reports, and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape and rules of an [AssuranceContext](#assurancecontext)'s; read from the runner's clock (`source: runner_clock`), its `value` is the same instant as the stage's `observed_at`. Its `redaction_applied` is its redaction report (see below). |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
@@ -387,7 +387,7 @@ chosen by its `kind`:
 
 | `kind` | Other field | Meaning |
 | --- | --- | --- |
-| `plan_incomplete`, `plan_not_applyable` | `value`: `false` or `null` | The plan says it is incomplete or cannot be applied; `value` is the plan's flag as stated. |
+| `plan_incomplete`, `plan_not_applyable` | `value`: `false` or the `not_reported_by_tool` marker | The plan says it is incomplete or cannot be applied, or does not say; `value` is the plan's `complete` or `applyable` flag. |
 | `identity_hidden`, `identity_unnameable` | `position`: integer from 0 | A plan resource whose identity was hidden or cannot be named, by its position in the plan. |
 | `deferred_changes`, `related_copies_omitted`, `unresolved_references`, `credited_by_binding`, or a `not_evaluated` or `error` [status reason](#assuranceevent) | `count`: integer from 1 | How many of one thing are missing: what the plan left out, checks a scanner's result stands behind rather than an evaluation the run ran, or checks not evaluated or ended in error for that reason. |
 
@@ -431,8 +431,11 @@ Key rules:
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
   `coverage.substituted_inputs`, not by the reason.
-- The model recomputes every derived value: status counts from events, each stage's verdict, the change digest and
-  the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
+- The plan stage lists one plan-flag gap for each plan flag that is not `true`: `plan_incomplete` for `complete`,
+  `plan_not_applyable` for `applyable`, each with the plan's flag as its `value`. No other stage lists a plan-flag
+  gap.
+- The model recomputes every derived value: status counts from events, each stage's verdict, the change digest, the
+  plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
   context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
   one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a run

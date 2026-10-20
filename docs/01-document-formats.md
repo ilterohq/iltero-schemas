@@ -387,7 +387,7 @@ chosen by its `kind`:
 
 | `kind` | Other field | Meaning |
 | --- | --- | --- |
-| `plan_incomplete`, `plan_not_applyable` | `value`: `false` or the `not_reported_by_tool` marker | The plan says it is incomplete or cannot be applied, or does not say; `value` is the plan's `complete` or `applyable` flag. |
+| `plan_incomplete`, `plan_not_applyable` | `value`: `false` or the `not_reported_by_tool` marker | A plan flag that is not `true`. The kind names the flag (`plan_incomplete` for `complete`, `plan_not_applyable` for `applyable`) and `value` carries what the plan said: `false` means the plan said so, the marker means it did not say. |
 | `identity_hidden`, `identity_unnameable` | `position`: integer from 0 | A plan resource whose identity was hidden or cannot be named, by its position in the plan. |
 | `deferred_changes`, `related_copies_omitted`, `unresolved_references`, `credited_by_binding`, or a `not_evaluated` or `error` [status reason](#assuranceevent) | `count`: integer from 1 | How many of one thing are missing: what the plan left out, checks a scanner's result stands behind rather than an evaluation the run ran, or checks not evaluated or ended in error for that reason. |
 
@@ -431,12 +431,11 @@ Key rules:
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
   `coverage.substituted_inputs`, not by the reason.
-- The plan stage lists one plan-flag gap for each plan flag that is not `true`: `plan_incomplete` for `complete`,
-  `plan_not_applyable` for `applyable`, each with the plan's flag as its `value`. No other stage lists a plan-flag
-  gap.
+- The plan stage lists one plan-flag gap for each plan flag that is not `true`, with the plan's flag as its `value`,
+  in kind order: `plan_incomplete` before `plan_not_applyable`. A plan-flag gap in any other stage is refused.
 - The model recomputes every derived value: status counts from events, each stage's verdict, the change digest, the
-  plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets `DERIVED_CHECKED_BY_READER` in the validation
-  context and calls `iltero_schemas.models.stages.derived_problems`.
+  plan stage's plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets
+  `DERIVED_CHECKED_BY_READER` in the validation context and calls `iltero_schemas.models.stages.derived_problems`.
 - A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
   one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a run
   Iltero Platform opened says so everywhere: `run_id.basis: server_issued`, `governance.run_opened_by: server`, and

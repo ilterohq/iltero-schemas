@@ -45,6 +45,7 @@ from iltero_schemas.models.context import ReferenceTime, Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Compiler
+from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
     ArtifactDigestBasis,
@@ -297,9 +298,10 @@ class PlanRecord(StrictModel):
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool
     format_version: Identifier
-    tool_version: Identifier | None
-    complete: bool | None
-    applyable: bool | None
+    # What the tool's plan says; the not-reported marker stands where it does not say.
+    tool_version: Identifier | NotReported
+    complete: bool | NotReported
+    applyable: bool | NotReported
 
     @model_validator(mode="after")
     def _artifact_digest_has_its_basis(self) -> PlanRecord:
@@ -420,8 +422,6 @@ class CAR(StrictModel):
             raise ValueError(f"a record without a signature is {UNSIGNED_TRUST_LEVEL}")
         check_superseded(self.plan.digest, self.deployment)
         check_tool(self.plan.tool, self.deployment)
-        if Stage.PRE_DEPLOY in self.stages and self.change.digest is None:
-            raise ValueError("a record with a pre-deploy stage names the change digest its approvals were issued for")
         if self.subject.unit != self.unit:
             raise ValueError("the record's subject is its own unit")
         check_change(self.unit, self.plan.digest, self.change, self.units_file)

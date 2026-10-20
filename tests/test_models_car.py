@@ -10,7 +10,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, StageRecord
+from iltero_schemas.models.car import CAR, PlanRecord, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
@@ -415,6 +415,13 @@ def test_every_event_names_the_plan_the_record_evaluated() -> None:
     document["events"][0]["provenance"]["plan_digest"]["value"] = "sha256:" + "a" * 64
     with pytest.raises(ValidationError, match="every event names the plan the record evaluated"):
         CAR.model_validate(document)
+
+
+@pytest.mark.parametrize("flag", ["complete", "applyable", "tool_version"])
+def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str) -> None:
+    with pytest.raises(ValidationError, match="NotReported"):
+        PlanRecord.model_validate({**RECORD["plan"], flag: None})
+    PlanRecord.model_validate({**RECORD["plan"], flag: {"__unknown": True, "reason": "not_reported_by_tool"}})
 
 
 OWN_PLAN = RECORD["plan"]["digest"]

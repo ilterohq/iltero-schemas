@@ -295,7 +295,7 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
     "gap",
     [
         {"kind": "plan_incomplete", "value": False},
-        {"kind": "plan_not_applyable", "value": None},
+        {"kind": "plan_not_applyable", "value": {"__unknown": True, "reason": "not_reported_by_tool"}},
         {"kind": "identity_hidden", "position": 3},
         {"kind": "deferred_changes", "count": 2},
         {"kind": "evaluator_timeout", "count": 1},
@@ -311,12 +311,13 @@ def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
     [
         {"kind": "late"},
         {"kind": "plan_incomplete", "value": True},
+        {"kind": "plan_incomplete", "value": None},
         {"kind": "deferred_changes", "count": 0},
         {"kind": "identity_hidden", "count": 1},
         {"kind": "pass", "count": 1},
         {"kind": "timeout", "count": 1, "detail": "x"},
     ],
-    ids=["unknown-kind", "plan-complete", "zero-count", "wrong-shape", "status", "extra"],
+    ids=["unknown-kind", "plan-complete", "plan-null", "zero-count", "wrong-shape", "status", "extra"],
 )
 def test_a_gap_outside_its_shapes_is_refused(gap: dict[str, Any]) -> None:
     with pytest.raises(ValidationError):

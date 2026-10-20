@@ -207,6 +207,65 @@ def test_a_record_as_written_has_nothing_to_recompute() -> None:
     assert derived_problems(CAR.model_validate(RECORD)) == []
 
 
+NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
+
+
+def _plan_flags(
+    flags: dict[str, Any], gaps: list[dict[str, Any]], stages: dict[str, dict[str, Any]] | None = None, **changes: Any
+) -> CAR:
+    """The record with the plan's ``flags`` and the plan stage's ``gaps``, read without its derived checks."""
+    plan = {f"plan.{flag}": value for flag, value in flags.items()}
+    document = _record(stages, **plan, **changes, **{"stages.plan.coverage.gaps": gaps})
+    return CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("flags", "gaps"),
+    [
+        ({"complete": False}, [{"kind": "plan_incomplete", "value": False}]),
+        (
+            {"complete": NOT_REPORTED, "applyable": False},
+            [{"kind": "plan_not_applyable", "value": False}, {"kind": "plan_incomplete", "value": NOT_REPORTED}],
+        ),
+        ({"tool_version": NOT_REPORTED}, []),
+    ],
+    ids=["incomplete", "not reported and not applyable", "tool version not reported"],
+)
+def test_the_plan_stage_lists_a_gap_for_each_plan_flag_that_is_not_true(
+    flags: dict[str, Any], gaps: list[dict[str, Any]]
+) -> None:
+    assert derived_problems(_plan_flags(flags, gaps)) == []
+
+
+@pytest.mark.parametrize(
+    ("flags", "gaps"),
+    [
+        ({"complete": False}, []),
+        ({}, [{"kind": "plan_incomplete", "value": False}]),
+        ({"applyable": NOT_REPORTED}, [{"kind": "plan_not_applyable", "value": False}]),
+        ({"complete": False}, [{"kind": "plan_incomplete", "value": False}] * 2),
+    ],
+    ids=["a flag without its gap", "a gap for a true flag", "a gap of another value", "a gap twice"],
+)
+def test_plan_flag_gaps_that_do_not_match_the_plan_flags_are_a_problem(
+    flags: dict[str, Any], gaps: list[dict[str, Any]]
+) -> None:
+    car = _plan_flags(flags, gaps)
+    assert derived_problems(car) == [
+        ("stages.plan.coverage.gaps", "does not list one gap per plan flag that is not true")
+    ]
+    with pytest.raises(ValidationError, match="one gap per plan flag"):
+        CAR.model_validate(car.model_dump(mode="json", by_alias=True))
+
+
+def test_only_the_plan_stage_lists_a_plan_flag_gap() -> None:
+    gap = [{"kind": "plan_incomplete", "value": False}]
+    later = {"pre_deploy": _stage("pre_deploy", **{"coverage.gaps": gap})}
+    expected = ["plan", "pre_deploy", "post_deploy"]
+    car = _plan_flags({"complete": False}, gap, later, expected_stages=expected, complete=False)
+    assert [where for where, _ in derived_problems(car)] == ["stages.pre_deploy.coverage.gaps"]
+
+
 def _coverage(
     counts: dict[str, int], *, expected: int = 5, evaluated: int = 5, subjects: int = 2, truncated: bool = False
 ) -> Coverage:
@@ -314,17 +373,6 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
         CAR.model_validate(_record(expected_stages=["plan"]), context=_READER)
 
 
-def test_a_pre_deploy_stage_needs_the_change_digest() -> None:
-    unit = RECORD["change"]["unit"]
-    change_digest_value = change_digest({unit["name"]: unit["plan"]["digest"]})
-    with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    with pytest.raises(ValidationError, match="names the change digest"):
-        CAR.model_validate(with_stage, context=_READER)
-    with_stage["change"]["digest"] = change_digest_value
-    with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = change_digest_value
-    CAR.model_validate(with_stage, context=_READER)
-
-
 @pytest.mark.parametrize(
     ("field", "value"),
     [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("basis", "server_issued"), ("unit", "network")],
@@ -364,9 +412,8 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
 
 
 def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
-    unit = RECORD["change"]["unit"]
     with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    with_stage["change"]["digest"] = change_digest({unit["name"]: unit["plan"]["digest"]})
+    CAR.model_validate(with_stage, context=_READER)
     with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
     with pytest.raises(ValidationError, match="counts the change the record names"):
         CAR.model_validate(with_stage, context=_READER)

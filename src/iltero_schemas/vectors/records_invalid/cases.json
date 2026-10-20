@@ -380,5 +380,112 @@
     },
     "remove": [],
     "message": "inside its bracket"
+  },
+  {
+    "name": "plan_flag_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": null
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "plan_tool_version_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/tool_version": null
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "plan_flag_gap_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": null,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": null,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "change_without_a_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": null
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "plan_incomplete_without_its_gap",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not list one gap per plan flag that is not true"
+  },
+  {
+    "name": "plan_flag_gap_for_a_complete_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not list one gap per plan flag that is not true"
+  },
+  {
+    "name": "plan_flag_gap_of_another_value",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/applyable": {
+        "__unknown": true,
+        "reason": "not_reported_by_tool"
+      },
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_not_applyable",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_not_applyable",
+          "value": false,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not list one gap per plan flag that is not true"
   }
 ]

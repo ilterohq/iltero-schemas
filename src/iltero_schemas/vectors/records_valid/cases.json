@@ -53,5 +53,60 @@
       "/coverage/assertions_expected/basis": "server_pinned"
     },
     "remove": []
+  },
+  {
+    "name": "plan_whose_tool_did_not_report_its_flags",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/tool_version": {
+        "__unknown": true,
+        "reason": "not_reported_by_tool"
+      },
+      "/plan/complete": {
+        "__unknown": true,
+        "reason": "not_reported_by_tool"
+      },
+      "/plan/applyable": {
+        "__unknown": true,
+        "reason": "not_reported_by_tool"
+      },
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": {
+            "__unknown": true,
+            "reason": "not_reported_by_tool"
+          },
+          "stage": null
+        },
+        {
+          "kind": "plan_not_applyable",
+          "value": {
+            "__unknown": true,
+            "reason": "not_reported_by_tool"
+          },
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": {
+            "__unknown": true,
+            "reason": "not_reported_by_tool"
+          },
+          "stage": "plan"
+        },
+        {
+          "kind": "plan_not_applyable",
+          "value": {
+            "__unknown": true,
+            "reason": "not_reported_by_tool"
+          },
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": []
   }
 ]

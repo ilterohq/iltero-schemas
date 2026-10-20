@@ -145,6 +145,8 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
+        if stage is not Stage.PLAN and any(isinstance(gap, PlanFlagGap) for gap in record.coverage.gaps):
+            raise ValueError(f"the {stage.value} stage lists a plan-flag gap, which only the plan stage lists")
         basis = scope_basis(stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage})
         scope = record.coverage.subjects_in_scope.basis
         enumerates = scope == SCOPE_BASIS[TargetKind.RESOURCE]
@@ -174,24 +176,20 @@ def check_structure(car: CAR) -> None:
 
 
 def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
-    """The plan stage lists one plan-flag gap for each plan flag that is not true, with the plan's value; no other
-    stage lists one."""
-    problems: list[tuple[str, str]] = []
+    """The plan stage lists one plan-flag gap for each plan flag that is not true, with the plan's value, in kind
+    order."""
     plan = car.plan
+    # In kind order.
     owed = [
         (kind, value)
         for kind, value in (("plan_incomplete", plan.complete), ("plan_not_applyable", plan.applyable))
         if value is not True
     ]
-    for stage, record in car.stages.items():
-        listed = sorted(
-            ((g.kind, g.value) for g in record.coverage.gaps if isinstance(g, PlanFlagGap)), key=lambda gap: gap[0]
-        )
-        if stage is Stage.PLAN and listed != owed:
-            problems.append(("stages.plan.coverage.gaps", "does not list one gap per plan flag that is not true"))
-        if stage is not Stage.PLAN and listed:
-            problems.append((f"stages.{stage.value}.coverage.gaps", "lists a plan-flag gap, which only the plan lists"))
-    return problems
+    gaps = car.stages[Stage.PLAN].coverage.gaps
+    if [(gap.kind, gap.value) for gap in gaps if isinstance(gap, PlanFlagGap)] != owed:
+        where, what = "stages.plan.coverage.gaps", "does not match plan.complete and plan.applyable"
+        return [(where, f"{what}: one gap, in kind order, for each that is not true, with its value")]
+    return []
 
 
 def derived_problems(car: CAR) -> list[tuple[str, str]]:

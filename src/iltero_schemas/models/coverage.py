@@ -94,8 +94,7 @@ class _Gap(StrictModel):
 
 
 class PlanFlagGap(_Gap):
-    """The plan says it is incomplete or cannot be applied, or does not say; ``value`` is the plan's flag: false, or
-    the not-reported marker."""
+    """A plan flag that is not true; ``value`` is the plan's flag: false, or the not-reported marker."""
 
     kind: Literal["plan_incomplete", "plan_not_applyable"]
     value: Literal[False] | NotReported

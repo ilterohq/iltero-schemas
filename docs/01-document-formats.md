@@ -336,7 +336,7 @@ with a regulatory framework.
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `not_in_scope` | list | Each lifecycle stage the record does not expect, with `basis` (`project_config` or `not_supported`). |
@@ -450,7 +450,9 @@ Key rules:
   event's `provenance.plan_digest` names the record's plan: the same `value`, `version` and `tool`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
   (`iltero_schemas.canonical.change_digest`), over the change's one unit. Approvals bind to it, so a record whose
-  `change.digest` is any other value is refused, whatever the validation context. A record's `change.unit` is its own
+  `change.digest` is any other value is refused, whatever the validation context. It is checked before the stages that
+  compare their approvals and scope with it, so a forged one is refused as `change.digest is not the digest of the
+  change's units`. A record's `change.unit` is its own
   unit with the plan it names. A unit is planned, approved and applied on its own.
 - A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
 - Across records: the records of one run share `run_id.value`, and every one of them names the same `units_file`, or

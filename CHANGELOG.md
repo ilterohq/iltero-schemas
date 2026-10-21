@@ -62,9 +62,11 @@ keep, so any two tools agree on what a record means.
   `plan_not_complete`. Its verdict still follows its checks. An evaluator
   error's reason wins over it, and it wins over
   `upstream_state_unavailable`. A plan that cannot be applied leaves the
-  status as it is. Record vectors cover it.
+  status as it is. The status's `reason` is the leading cause; every cause
+  stays in the coverage. Record vectors cover it and pin the order.
 - A record's `change.digest` must be the change digest of its unit's plan
-  for every reader, including one that sets `DERIVED_CHECKED_BY_READER`.
+  for every reader, including one that sets `DERIVED_CHECKED_BY_READER`,
+  and it is checked before the stages, so a forged one is refused as such.
   Only the value `True` for that key hands the derived checks to the reader.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold. No two of its bindings, and no two of its

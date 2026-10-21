@@ -301,6 +301,19 @@ def test_an_evaluator_error_in_a_later_stage_names_the_records_reason() -> None:
     assert (status.reason, status.detail) == (INCOMPLETE_REASON, "post_deploy: x")
 
 
+def test_the_plans_reason_leads_a_later_stages_placeholders_and_yields_to_its_error() -> None:
+    gaps = [{"kind": "plan_incomplete", "value": False}]
+    plan = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps}))
+    placeholders = _outcome(
+        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": SUBSTITUTED_REASON, "detail": "x"}
+    )
+    errored = _outcome(
+        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": INCOMPLETE_REASON, "detail": "x"}
+    )
+    assert combine([("plan", plan), ("post_deploy", placeholders)]).assurance_status.reason == PLAN_REASON
+    assert combine([("plan", plan), ("post_deploy", errored)]).assurance_status.reason == INCOMPLETE_REASON
+
+
 def test_a_change_scope_is_its_one_change() -> None:
     changes = {"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
     with pytest.raises(ValidationError, match="that one subject"):

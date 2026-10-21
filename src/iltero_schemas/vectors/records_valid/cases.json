@@ -118,5 +118,620 @@
       }
     },
     "remove": []
+  },
+  {
+    "name": "plan_incomplete_on_placeholders_names_the_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/assurance_status/value": "incomplete",
+      "/assurance_status/reason": "plan_not_complete",
+      "/assurance_status/detail": "plan: the plan says it is incomplete",
+      "/coverage/gaps": [
+        {
+          "stage": "plan",
+          "kind": "plan_incomplete",
+          "value": false
+        }
+      ],
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ],
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/stages/plan/assurance_status/value": "incomplete",
+      "/stages/plan/assurance_status/reason": "plan_not_complete",
+      "/stages/plan/assurance_status/detail": "the plan says it is incomplete"
+    },
+    "remove": []
+  },
+  {
+    "name": "evaluator_error_on_an_incomplete_plan_names_the_error",
+    "vector": "local_run.json",
+    "set": {
+      "/assurance_status/value": "incomplete",
+      "/assurance_status/reason": "required_policy_evaluation_failed",
+      "/assurance_status/detail": "plan: 1 of 5 checks ended in an evaluator error",
+      "/coverage/status_counts/pass": 1,
+      "/coverage/status_counts/error": 1,
+      "/coverage/gaps": [
+        {
+          "stage": "plan",
+          "kind": "plan_incomplete",
+          "value": false
+        }
+      ],
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ],
+      "/events": [
+        {
+          "assertion": {
+            "digest": "sha256:6fc1aa36d1cf8e748d86ab67740d20f63e7694aad71168b1592934a4defd5e24",
+            "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+            "version": "1.0.0"
+          },
+          "evaluation": {
+            "observations": {
+              "predicates": [
+                {
+                  "actual": 3,
+                  "clause": "assert",
+                  "expected": 7,
+                  "index": 0,
+                  "op": "greater_than_or_equal",
+                  "path": "resource.after.backup_retention_period",
+                  "status": "false"
+                }
+              ],
+              "unknown": null,
+              "when": null
+            },
+            "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+            "stage": "plan",
+            "status": "fail",
+            "status_detail": null,
+            "status_reason": null
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "provenance": {
+            "assertion_source": "contract_starter",
+            "assertion_source_digest": "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c",
+            "bundle": {
+              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle"
+            },
+            "binding": null,
+            "facts_source": null,
+            "compiled_digest": "sha256:52067f64dc64e1ef5a83364cf683836b587dfbee78716d46d8a6961b65f9d0d5",
+            "compiler": {
+              "contract_digest": null,
+              "contract_version": "0.1.0",
+              "install": "editable",
+              "version": "1.0.0"
+            },
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "environment": {
+                "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+                "contexts_per_process": 64,
+                "memory_cap": {
+                  "bytes": 536870912,
+                  "enforced": false,
+                  "kind": "none"
+                },
+                "output_bytes_per_answer": 1054720,
+                "platform": "linux-x86_64",
+                "timeout_s": 60
+              },
+              "version": "1.20.2"
+            },
+            "executor": {
+              "provider": "local",
+              "run_id": null,
+              "type": "human"
+            },
+            "input_digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
+            "plan_digest": {
+              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "version": "1",
+              "tool": "terraform"
+            },
+            "run": {
+              "basis": "locally_derived",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+              "unit": "root"
+            },
+            "source_commit": "c84e7a1000000000000000000000000000000000"
+          },
+          "subject": {
+            "kind": "resource",
+            "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
+            "identities": [
+              {
+                "scheme": "terraform_address",
+                "scope": {
+                  "unit": "root"
+                },
+                "value": "aws_db_instance.payments"
+              }
+            ],
+            "authority": "unresolved"
+          }
+        },
+        {
+          "assertion": {
+            "digest": "sha256:fcac909238e5bfe590c2313c66139f53487de2ab711e95b0e56d6ad2c7981e95",
+            "id": "ILT.AWS.RDS.NOT_PUBLIC",
+            "version": "1.0.0"
+          },
+          "evaluation": {
+            "observations": {
+              "predicates": [
+                {
+                  "actual": false,
+                  "clause": "assert",
+                  "expected": false,
+                  "index": 0,
+                  "op": "equal",
+                  "path": "resource.after.publicly_accessible",
+                  "status": "true"
+                }
+              ],
+              "unknown": null,
+              "when": null
+            },
+            "reason": "assert: true",
+            "stage": "plan",
+            "status": "error",
+            "status_detail": null,
+            "status_reason": "evaluator_timeout"
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "provenance": {
+            "assertion_source": "contract_starter",
+            "assertion_source_digest": "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc",
+            "bundle": {
+              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle"
+            },
+            "binding": null,
+            "facts_source": null,
+            "compiled_digest": "sha256:639e804b50b2e0cd170e4feeaefa5093ac406cb0780c89bf5adc0a657a0a1786",
+            "compiler": {
+              "contract_digest": null,
+              "contract_version": "0.1.0",
+              "install": "editable",
+              "version": "1.0.0"
+            },
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "environment": {
+                "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+                "contexts_per_process": 64,
+                "memory_cap": {
+                  "bytes": 536870912,
+                  "enforced": false,
+                  "kind": "none"
+                },
+                "output_bytes_per_answer": 1054720,
+                "platform": "linux-x86_64",
+                "timeout_s": 60
+              },
+              "version": "1.20.2"
+            },
+            "executor": {
+              "provider": "local",
+              "run_id": null,
+              "type": "human"
+            },
+            "input_digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
+            "plan_digest": {
+              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "version": "1",
+              "tool": "terraform"
+            },
+            "run": {
+              "basis": "locally_derived",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+              "unit": "root"
+            },
+            "source_commit": "c84e7a1000000000000000000000000000000000"
+          },
+          "subject": {
+            "kind": "resource",
+            "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
+            "identities": [
+              {
+                "scheme": "terraform_address",
+                "scope": {
+                  "unit": "root"
+                },
+                "value": "aws_db_instance.payments"
+              }
+            ],
+            "authority": "unresolved"
+          }
+        },
+        {
+          "assertion": {
+            "digest": "sha256:82f921a67fc70581a2e62d37195a46ab2e074b01d0f491bba97ecfea4f363748",
+            "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+            "version": "1.0.0"
+          },
+          "evaluation": {
+            "observations": {
+              "predicates": [
+                {
+                  "actual": null,
+                  "clause": "when",
+                  "expected": true,
+                  "index": 0,
+                  "op": "equal",
+                  "path": "context.environment.production",
+                  "status": "unknown"
+                },
+                {
+                  "actual": true,
+                  "clause": "assert",
+                  "expected": true,
+                  "index": 1,
+                  "op": "equal",
+                  "path": "resource.after.storage_encrypted",
+                  "status": "true"
+                },
+                {
+                  "actual": false,
+                  "clause": "assert",
+                  "expected": false,
+                  "index": 2,
+                  "op": "equal",
+                  "path": "resource.after.publicly_accessible",
+                  "status": "true"
+                },
+                {
+                  "actual": 3,
+                  "clause": "assert",
+                  "expected": 7,
+                  "index": 3,
+                  "op": "greater_than_or_equal",
+                  "path": "resource.after.backup_retention_period",
+                  "status": "false"
+                },
+                {
+                  "actual": "db.t3.micro",
+                  "clause": "assert",
+                  "expected": [
+                    "db.t3.micro",
+                    "db.t3.small"
+                  ],
+                  "index": 4,
+                  "op": "not_in",
+                  "path": "resource.after.instance_class",
+                  "status": "false"
+                }
+              ],
+              "unknown": {
+                "path": "context.environment.production",
+                "reason": "server_facts_unavailable"
+              },
+              "when": "unknown"
+            },
+            "reason": "context.environment.production: server_facts_unavailable",
+            "stage": "plan",
+            "status": "unknown",
+            "status_detail": null,
+            "status_reason": "server_facts_unavailable"
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "provenance": {
+            "assertion_source": "contract_starter",
+            "assertion_source_digest": "sha256:dfe4975c1f62bf907c4b80db5eab135d9ba013f7ffe2245acf9b5135d63045f8",
+            "bundle": {
+              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle"
+            },
+            "binding": null,
+            "facts_source": null,
+            "compiled_digest": "sha256:8bb264fafd13ce35460bd60a5e2cfd8100168c111d1eae6de6fc5cddab545706",
+            "compiler": {
+              "contract_digest": null,
+              "contract_version": "0.1.0",
+              "install": "editable",
+              "version": "1.0.0"
+            },
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "environment": {
+                "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+                "contexts_per_process": 64,
+                "memory_cap": {
+                  "bytes": 536870912,
+                  "enforced": false,
+                  "kind": "none"
+                },
+                "output_bytes_per_answer": 1054720,
+                "platform": "linux-x86_64",
+                "timeout_s": 60
+              },
+              "version": "1.20.2"
+            },
+            "executor": {
+              "provider": "local",
+              "run_id": null,
+              "type": "human"
+            },
+            "input_digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
+            "plan_digest": {
+              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "version": "1",
+              "tool": "terraform"
+            },
+            "run": {
+              "basis": "locally_derived",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+              "unit": "root"
+            },
+            "source_commit": "c84e7a1000000000000000000000000000000000"
+          },
+          "subject": {
+            "kind": "resource",
+            "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
+            "identities": [
+              {
+                "scheme": "terraform_address",
+                "scope": {
+                  "unit": "root"
+                },
+                "value": "aws_db_instance.payments"
+              }
+            ],
+            "authority": "unresolved"
+          }
+        },
+        {
+          "assertion": {
+            "digest": "sha256:aa53deb187e7bac4440e74c2308c69115addf907a3537cab32b1a1af6f64aa55",
+            "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+            "version": "1.0.0"
+          },
+          "evaluation": {
+            "observations": {
+              "predicates": [
+                {
+                  "actual": true,
+                  "clause": "assert",
+                  "expected": true,
+                  "index": 0,
+                  "op": "equal",
+                  "path": "resource.after.storage_encrypted",
+                  "status": "true"
+                }
+              ],
+              "unknown": null,
+              "when": null
+            },
+            "reason": "assert: true",
+            "stage": "plan",
+            "status": "pass",
+            "status_detail": null,
+            "status_reason": null
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "provenance": {
+            "assertion_source": "contract_starter",
+            "assertion_source_digest": "sha256:5f5e1fa285c8854c11ca2cd2e814dae9313320ec3d3ea7252f43820370bb6d5d",
+            "bundle": {
+              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle"
+            },
+            "binding": null,
+            "facts_source": null,
+            "compiled_digest": "sha256:9bd973aac0945f05b13c2e67b15e779427e796c626300bdb9a332b7cde81b6d8",
+            "compiler": {
+              "contract_digest": null,
+              "contract_version": "0.1.0",
+              "install": "editable",
+              "version": "1.0.0"
+            },
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "environment": {
+                "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+                "contexts_per_process": 64,
+                "memory_cap": {
+                  "bytes": 536870912,
+                  "enforced": false,
+                  "kind": "none"
+                },
+                "output_bytes_per_answer": 1054720,
+                "platform": "linux-x86_64",
+                "timeout_s": 60
+              },
+              "version": "1.20.2"
+            },
+            "executor": {
+              "provider": "local",
+              "run_id": null,
+              "type": "human"
+            },
+            "input_digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
+            "plan_digest": {
+              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "version": "1",
+              "tool": "terraform"
+            },
+            "run": {
+              "basis": "locally_derived",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+              "unit": "root"
+            },
+            "source_commit": "c84e7a1000000000000000000000000000000000"
+          },
+          "subject": {
+            "kind": "resource",
+            "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
+            "identities": [
+              {
+                "scheme": "terraform_address",
+                "scope": {
+                  "unit": "root"
+                },
+                "value": "aws_db_instance.payments"
+              }
+            ],
+            "authority": "unresolved"
+          }
+        },
+        {
+          "assertion": {
+            "digest": "sha256:3b6a980e5c35fcc71264245fb50af07f015f0a333611f3cd8d16a514bed44e36",
+            "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+            "version": "1.0.0"
+          },
+          "evaluation": {
+            "observations": {
+              "predicates": [
+                {
+                  "actual": {
+                    "count": 3,
+                    "type": "array"
+                  },
+                  "clause": "assert",
+                  "expected": null,
+                  "index": 0,
+                  "matched": 0,
+                  "op": "exists",
+                  "path": "resource.related",
+                  "status": "false"
+                }
+              ],
+              "unknown": null,
+              "when": null
+            },
+            "reason": "assert: false; predicate 0 is false: resource.related exists",
+            "stage": "plan",
+            "status": "fail",
+            "status_detail": null,
+            "status_reason": null
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "provenance": {
+            "assertion_source": "contract_starter",
+            "assertion_source_digest": "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064",
+            "bundle": {
+              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle"
+            },
+            "binding": null,
+            "facts_source": null,
+            "compiled_digest": "sha256:415f3b704fbfc6f9e98cc654437c2fb67acad5ddb6533f0c51402db0e67fa40c",
+            "compiler": {
+              "contract_digest": null,
+              "contract_version": "0.1.0",
+              "install": "editable",
+              "version": "1.0.0"
+            },
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "environment": {
+                "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+                "contexts_per_process": 64,
+                "memory_cap": {
+                  "bytes": 536870912,
+                  "enforced": false,
+                  "kind": "none"
+                },
+                "output_bytes_per_answer": 1054720,
+                "platform": "linux-x86_64",
+                "timeout_s": 60
+              },
+              "version": "1.20.2"
+            },
+            "executor": {
+              "provider": "local",
+              "run_id": null,
+              "type": "human"
+            },
+            "input_digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
+            "plan_digest": {
+              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "version": "1",
+              "tool": "terraform"
+            },
+            "run": {
+              "basis": "locally_derived",
+              "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+              "unit": "root"
+            },
+            "source_commit": "c84e7a1000000000000000000000000000000000"
+          },
+          "subject": {
+            "kind": "resource",
+            "key": "sha256:15e2b99b7bed7f56ca8cac008e9a365e61fa04beb3f98e501b2bcd046e63a826",
+            "identities": [
+              {
+                "scheme": "terraform_address",
+                "scope": {
+                  "unit": "root"
+                },
+                "value": "aws_s3_bucket.logs"
+              }
+            ],
+            "authority": "unresolved"
+          }
+        }
+      ],
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/stages/plan/coverage/status_counts/error": 1,
+      "/stages/plan/coverage/status_counts/pass": 1,
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/stages/plan/verdict/value": "fail",
+      "/stages/plan/verdict/exit_code": 4,
+      "/stages/plan/assurance_status/value": "incomplete",
+      "/stages/plan/assurance_status/reason": "required_policy_evaluation_failed",
+      "/stages/plan/assurance_status/detail": "1 of 5 checks ended in an evaluator error",
+      "/verdict/value": "fail",
+      "/verdict/exit_code": 4
+    },
+    "remove": []
   }
 ]

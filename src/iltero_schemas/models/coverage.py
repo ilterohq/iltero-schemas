@@ -67,6 +67,9 @@ class Verdict(StrictModel):
 
 
 class AssuranceStatus(StrictModel):
+    """Whether the evidence behind the verdict is whole. ``reason`` is the leading cause, by a fixed precedence; every
+    cause stays listed in the coverage: its gaps, its substituted inputs and its error count."""
+
     value: Literal["complete", "incomplete"]
     reason: Identifier | None
     detail: Annotated[str, Field(max_length=DETAIL_MAX_LENGTH), AfterValidator(plain_text)] | None

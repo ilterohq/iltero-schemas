@@ -457,7 +457,17 @@
           "value": false,
           "stage": "plan"
         }
-      ]
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "the plan says it is incomplete"
+      },
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "plan: the plan says it is incomplete"
+      }
     },
     "remove": [],
     "message": "stages.plan.coverage.gaps does not match plan.complete and plan.applyable"
@@ -1658,5 +1668,28 @@
     },
     "remove": [],
     "message": "the pre_deploy stage lists a plan-flag gap, which only the plan stage lists"
+  },
+  {
+    "name": "incomplete_plan_reported_as_complete",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "stages.plan.assurance_status is not the status the stage's counts give"
   }
 ]

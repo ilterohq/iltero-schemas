@@ -71,9 +71,10 @@ from iltero_schemas.models.stages import check_structure, derived_problems
 from iltero_schemas.models.tools.variants import check_identity_against_apply
 
 API_VERSION = "iltero.io/car/v1"
-# Validation context key: the reader recomputes the record's derived values itself (``derived_problems``), so it
-# can report an edited one as tampering rather than as a record it cannot read. A reader that sets it must call
-# ``derived_problems`` and act on what it returns before trusting the counts or the verdicts.
+# Validation context key, set to True (any other value is ignored): the reader recomputes the record's derived values
+# itself (``derived_problems``), so it can report an edited one as tampering rather than as a record it cannot read.
+# A reader that sets it must call ``derived_problems`` and act on what it returns before trusting the counts or the
+# verdicts.
 DERIVED_CHECKED_BY_READER = "derived_checked_by_reader"
 # A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
@@ -428,7 +429,7 @@ class CAR(StrictModel):
         self._check_identity()
         check_provenance(self)
         # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.
-        if not (info.context or {}).get(DERIVED_CHECKED_BY_READER):
+        if (info.context or {}).get(DERIVED_CHECKED_BY_READER) is not True:
             for where, problem in derived_problems(self):
                 raise ValueError(f"{where} {problem}")
         return self

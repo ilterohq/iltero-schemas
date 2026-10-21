@@ -105,7 +105,17 @@
           },
           "stage": "plan"
         }
-      ]
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "the plan does not say it is complete"
+      },
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "plan: the plan does not say it is complete"
+      }
     },
     "remove": []
   }

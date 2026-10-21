@@ -10,7 +10,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, PlanRecord, StageRecord
+from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, PlanRecord, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
@@ -430,9 +430,20 @@ def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str,
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
-def test_a_change_digest_is_the_digest_of_its_unit() -> None:
+def test_a_change_digest_is_the_digest_of_its_unit_for_every_reader() -> None:
+    document = _record(**{"change.digest": change_digest({"root": OTHER_PLAN})})
     with pytest.raises(ValidationError, match="not the digest of the change's units"):
-        CAR.model_validate(_record(**{"change.digest": change_digest({"root": OTHER_PLAN})}))
+        CAR.model_validate(document)
+    with pytest.raises(ValidationError, match="not the digest of the change's units"):
+        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+
+
+@pytest.mark.parametrize("value", [1, "true", "no", [True]])
+def test_only_true_hands_the_derived_checks_to_the_reader(value: object) -> None:
+    document = _record(**{"stages.plan.verdict.value": "pass", "stages.plan.verdict.exit_code": 0})
+    CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+    with pytest.raises(ValidationError, match="is not the verdict the stage's counts give"):
+        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: value})
 
 
 def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:

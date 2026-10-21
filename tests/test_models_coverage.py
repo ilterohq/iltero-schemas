@@ -13,6 +13,7 @@ from iltero_schemas.models.coverage import (
     INCOMPLETE_REASON,
     MAX_GAPS,
     MAX_SUBSTITUTED_INPUTS,
+    PLAN_REASON,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
     CountGap,
@@ -233,6 +234,39 @@ def test_an_evaluator_error_outranks_a_placeholder() -> None:
     counts["error"] += 1
     outcome = stage_outcome(_substituted(status_counts=counts))
     assert outcome.assurance_status.reason == INCOMPLETE_REASON
+
+
+NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
+
+
+@pytest.mark.parametrize(
+    ("value", "detail"),
+    [(False, "the plan says it is incomplete"), (NOT_REPORTED, "the plan does not say it is complete")],
+    ids=["false", "not reported"],
+)
+def test_a_plan_that_does_not_say_it_is_complete_makes_its_stage_incomplete_and_keeps_its_verdict(
+    value: Any, detail: str
+) -> None:
+    gap = {"kind": "plan_incomplete", "value": value}
+    outcome = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]}))
+    assert outcome.verdict == PLAN.verdict
+    assert outcome.assurance_status.model_dump() == {"value": "incomplete", "reason": PLAN_REASON, "detail": detail}
+
+
+def test_a_plan_that_cannot_be_applied_leaves_its_stage_complete() -> None:
+    gap = {"kind": "plan_not_applyable", "value": False}
+    outcome = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]}))
+    assert outcome.assurance_status.value == "complete"
+
+
+def test_an_evaluator_error_outranks_the_plan_and_the_plan_outranks_a_placeholder() -> None:
+    gaps = [{"kind": "plan_incomplete", "value": False}]
+    assert stage_outcome(_substituted(gaps=gaps)).assurance_status.reason == PLAN_REASON
+    counts = {**PLAN_STAGE["coverage"]["status_counts"]}
+    moved = next(status for status, count in counts.items() if count)
+    counts[moved] -= 1
+    counts["error"] += 1
+    assert stage_outcome(_substituted(gaps=gaps, status_counts=counts)).assurance_status.reason == INCOMPLETE_REASON
 
 
 def test_combining_names_the_stage_of_each_placeholder() -> None:

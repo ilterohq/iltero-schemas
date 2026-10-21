@@ -19,6 +19,7 @@ from typing import Annotated
 
 from pydantic import Field, model_validator
 
+from iltero_schemas.canonical.change import change_digest
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.fields import Digest, Identifier, ProjectPath, UnitName
 
@@ -58,9 +59,13 @@ class UnitsFile(StrictModel):
 
 
 def check_change(unit: str, plan_digest: str, change: Change, units_file: UnitsFile | None) -> None:
-    """Raise ``ValueError`` unless the change is the record's own unit and plan, and the unit is declared."""
+    """Raise ``ValueError`` unless the change is the record's own unit and plan, bound by its digest, and the unit is
+    declared."""
     own = change.unit
     if own.name != unit or own.plan.digest != plan_digest:
         raise ValueError("the change is the record's own unit with the plan the record names")
+    # Approvals bind to the change digest, so every reader checks it, not only one that recomputes derived values.
+    if change.digest != change_digest({own.name: own.plan.digest}):
+        raise ValueError("change.digest is not the digest of the change's units")
     if units_file is not None and unit not in units_file.units:
         raise ValueError("the record's unit is one of the units its units file declares")

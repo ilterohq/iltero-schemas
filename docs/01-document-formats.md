@@ -336,7 +336,7 @@ with a regulatory framework.
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, checks, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `basis` and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error) or `upstream_state_unavailable` (the stage read placeholders for an input). A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (a check ended in an evaluator error), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `not_in_scope` | list | Each lifecycle stage the record does not expect, with `basis` (`project_config` or `not_supported`). |
@@ -425,17 +425,22 @@ Key rules:
   `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
   a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
   by `source` by Unicode code point; a record lists at most 256 across its stages. Its verdict still follows its
-  checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's reason wins when there
-  is one.
+  checks, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's or the plan's reason
+  wins when there is one.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
   `coverage.substituted_inputs`, not by the reason.
 - The plan stage lists one plan-flag gap for each plan flag that is not `true`, with the plan's flag as its `value`,
   in kind order: `plan_incomplete` before `plan_not_applyable`. A plan-flag gap in any other stage is refused.
-- The model recomputes every derived value: status counts from events, each stage's verdict, the change digest, the
-  plan stage's plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets
-  `DERIVED_CHECKED_BY_READER` in the validation context and calls `iltero_schemas.models.stages.derived_problems`.
+- A plan stage with a `plan_incomplete` gap is `incomplete` with reason `plan_not_complete`, and its verdict still
+  follows its checks. The `detail` is `the plan says it is incomplete` (`value: false`) or `the plan does not say it is
+  complete` (the marker). An evaluator error's reason wins over it; it wins over `upstream_state_unavailable`. A
+  `plan_not_applyable` gap leaves the status as it is: Terraform marks a plan that changes nothing as not applyable.
+- The model recomputes every derived value: status counts from events, each stage's verdict and status, the plan
+  stage's plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets
+  `DERIVED_CHECKED_BY_READER` to `True` in the validation context (any other value is ignored) and calls
+  `iltero_schemas.models.stages.derived_problems`.
 - A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
   one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a run
   Iltero Platform opened says so everywhere: `run_id.basis: server_issued`, `governance.run_opened_by: server`, and
@@ -444,8 +449,9 @@ Key rules:
 - `plan.digest_version` is the version of the plan digest rule for `plan.tool`; any other version is refused. Every
   event's `provenance.plan_digest` names the record's plan: the same `value`, `version` and `tool`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`), over the change's one unit. A record's `change.unit` is its own unit with
-  the plan it names. A unit is planned, approved and applied on its own.
+  (`iltero_schemas.canonical.change_digest`), over the change's one unit. Approvals bind to it, so a record whose
+  `change.digest` is any other value is refused, whatever the validation context. A record's `change.unit` is its own
+  unit with the plan it names. A unit is planned, approved and applied on its own.
 - A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
 - Across records: the records of one run share `run_id.value`, and every one of them names the same `units_file`, or
   every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.

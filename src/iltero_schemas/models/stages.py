@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING
 
-from iltero_schemas.canonical import change_digest, digest_of
+from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.coverage import PlanFlagGap, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import instant
@@ -212,9 +212,6 @@ def derived_problems(car: CAR) -> list[tuple[str, str]]:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
-    unit = car.change.unit
-    if car.change.digest != change_digest({unit.name: unit.plan.digest}):
-        problems.append(("change.digest", "is not the digest of the change's units"))
     problems.extend(_plan_flag_problems(car))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)

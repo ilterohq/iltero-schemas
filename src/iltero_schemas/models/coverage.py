@@ -67,6 +67,9 @@ class Verdict(StrictModel):
 
 
 class AssuranceStatus(StrictModel):
+    """Whether the evidence behind the verdict is whole. ``reason`` is the leading cause, by a fixed precedence; every
+    cause stays listed in the coverage: its gaps, its substituted inputs and its error count."""
+
     value: Literal["complete", "incomplete"]
     reason: Identifier | None
     detail: Annotated[str, Field(max_length=DETAIL_MAX_LENGTH), AfterValidator(plain_text)] | None
@@ -231,7 +234,9 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
-# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's reason wins.
+# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's reason wins.
+PLAN_REASON = "plan_not_complete"
+# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's or the plan's reason wins.
 SUBSTITUTED_REASON = "upstream_state_unavailable"
 
 
@@ -262,14 +267,20 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
 
     A gap in what was attempted outranks an evaluator error, which outranks an
     undecided check, which outranks a failed one. Errors also mark the stage
-    incomplete: the record survives, the gate still fails.
+    incomplete: the record survives, the gate still fails. So do a plan that
+    does not say it is complete and inputs replaced with placeholders; neither
+    changes the verdict.
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
+    plan = next((gap for gap in coverage.gaps if isinstance(gap, PlanFlagGap) and gap.kind == "plan_incomplete"), None)
     substituted = len(coverage.substituted_inputs)
     if errors:
         detail = f"{errors} of {coverage.checks} checks ended in an evaluator error"
         status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
+    elif plan is not None:
+        detail = "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
+        status = AssuranceStatus(value="incomplete", reason=PLAN_REASON, detail=detail)
     elif substituted:
         detail = f"upstream inputs replaced with placeholders: {substituted}"
         status = AssuranceStatus(value="incomplete", reason=SUBSTITUTED_REASON, detail=detail)

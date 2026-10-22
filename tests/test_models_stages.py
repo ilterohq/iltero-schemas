@@ -212,9 +212,13 @@ NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
 def _plan_flags(
     flags: dict[str, Any], gaps: list[dict[str, Any]], stages: dict[str, dict[str, Any]] | None = None, **changes: Any
 ) -> CAR:
-    """The record with the plan's ``flags`` and the plan stage's ``gaps``, read without its derived checks."""
+    """The record with the plan's ``flags`` and the plan stage's ``gaps``, its status as they give it, read without
+    its derived checks."""
     plan = {f"plan.{flag}": value for flag, value in flags.items()}
-    document = _record(stages, **plan, **changes, **{"stages.plan.coverage.gaps": gaps})
+    coverage = Coverage.model_validate({**RECORD["stages"]["plan"]["coverage"], "gaps": gaps})
+    status = stage_outcome(coverage).assurance_status.model_dump(mode="json")
+    stage = {"stages.plan.coverage.gaps": gaps, "stages.plan.assurance_status": status}
+    document = _record(stages, **plan, **changes, **stage)
     return CAR.model_validate(document, context=_READER)
 
 

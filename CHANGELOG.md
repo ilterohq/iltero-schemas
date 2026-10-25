@@ -64,10 +64,13 @@ keep, so any two tools agree on what a record means.
   `upstream_state_unavailable`. A plan that cannot be applied leaves the
   status as it is. The status's `reason` is the leading cause; every cause
   stays in the coverage. Record vectors cover it and pin the order.
-- A record's `change.digest` must be the change digest of its unit's plan
-  for every reader, including one that sets `DERIVED_CHECKED_BY_READER`,
-  and it is checked before the stages, so a forged one is refused as such.
-  Only the value `True` for that key hands the derived checks to the reader.
+- The integrity checks: a record's values that a reader can recompute,
+  including its `change.digest`, the pre-deploy stage's source digest and
+  each approval of a change, must be what they recompute to. Change digest
+  problems come first, so a forged digest is refused as such. A reader that
+  sets `SKIP_INTEGRITY_CHECKS` to `True` (any other value is ignored) reads
+  the record and gets every problem from `integrity_problems`, to report as
+  tampering. Record vectors (`records_tampered/`) cover it.
 - The identity document (`IdentityBindings` v1), and the shape of each AWS
   resource name (ARN) it may hold. No two of its bindings, and no two of its
   removed entries, name the same cloud identity.

@@ -437,10 +437,14 @@ Key rules:
   follows its checks. The `detail` is `the plan says it is incomplete` (`value: false`) or `the plan does not say it is
   complete` (the marker). An evaluator error's reason wins over it; it wins over `upstream_state_unavailable`. A
   `plan_not_applyable` gap leaves the status as it is: Terraform marks a plan that changes nothing as not applyable.
-- The model recomputes every derived value: status counts from events, each stage's verdict and status, the plan
-  stage's plan-flag gaps and the combined top level. A reader that reports a mismatch itself sets
-  `DERIVED_CHECKED_BY_READER` to `True` in the validation context (any other value is ignored) and calls
-  `iltero_schemas.models.stages.derived_problems`.
+- The model runs the integrity checks: it recomputes every value a reader can recompute and refuses a record whose
+  value differs. They cover the change digest and the digests bound to it (the pre-deploy stage's
+  `coverage.subjects_in_scope.source_digest` and each approval of a change), status counts from events, each stage's
+  verdict and status, the plan stage's plan-flag gaps and the combined top level. The change digest problems come
+  first, so a forged `change.digest` is refused as `change.digest is not the digest of the change's units`. A reader
+  that reports tampering itself sets `SKIP_INTEGRITY_CHECKS` (`iltero_schemas.models.car`) to `True` in the validation
+  context (any other value is ignored), then calls `iltero_schemas.models.stages.integrity_problems`, which returns
+  every problem as a `(where, what)` pair. An approval of another run is refused whatever the context.
 - A record of a run the tool opened (`run_id.basis: locally_derived`) names no Iltero Platform bundle, no check from
   one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a run
   Iltero Platform opened says so everywhere: `run_id.basis: server_issued`, `governance.run_opened_by: server`, and
@@ -449,11 +453,8 @@ Key rules:
 - `plan.digest_version` is the version of the plan digest rule for `plan.tool`; any other version is refused. Every
   event's `provenance.plan_digest` names the record's plan: the same `value`, `version` and `tool`.
 - The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`), over the change's one unit. Approvals bind to it, so a record whose
-  `change.digest` is any other value is refused, whatever the validation context. It is checked before the stages that
-  compare their approvals and scope with it, so a forged one is refused as `change.digest is not the digest of the
-  change's units`. A record's `change.unit` is its own
-  unit with the plan it names. A unit is planned, approved and applied on its own.
+  (`iltero_schemas.canonical.change_digest`), over the change's one unit. Approvals bind to it. A record's
+  `change.unit` is its own unit with the plan it names. A unit is planned, approved and applied on its own.
 - A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
 - Across records: the records of one run share `run_id.value`, and every one of them names the same `units_file`, or
   every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.

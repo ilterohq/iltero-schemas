@@ -10,10 +10,11 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, PlanRecord, StageRecord
+from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, PlanRecord, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
+from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
 from tests.records import record as _record
@@ -430,20 +431,20 @@ def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str,
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
-def test_a_change_digest_is_the_digest_of_its_unit_for_every_reader() -> None:
+def test_a_change_digest_is_the_digest_of_its_unit() -> None:
     document = _record(**{"change.digest": change_digest({"root": OTHER_PLAN})})
-    with pytest.raises(ValidationError, match="not the digest of the change's units"):
+    with pytest.raises(ValidationError, match="change.digest is not the digest of the change's units"):
         CAR.model_validate(document)
-    with pytest.raises(ValidationError, match="not the digest of the change's units"):
-        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+    car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+    assert integrity_problems(car) == [("change.digest", "is not the digest of the change's units")]
 
 
 @pytest.mark.parametrize("value", [1, "true", "no", [True]])
-def test_only_true_hands_the_derived_checks_to_the_reader(value: object) -> None:
+def test_only_true_skips_the_integrity_checks(value: object) -> None:
     document = _record(**{"stages.plan.verdict.value": "pass", "stages.plan.verdict.exit_code": 0})
-    CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+    CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
     with pytest.raises(ValidationError, match="is not the verdict the stage's counts give"):
-        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: value})
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: value})
 
 
 def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:

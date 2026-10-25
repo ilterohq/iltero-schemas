@@ -200,6 +200,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "invalid",
         "opa",
         "records_invalid",
+        "records_tampered",
         "records_valid",
         "subjects",
     }

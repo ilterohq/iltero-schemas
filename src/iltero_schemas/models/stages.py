@@ -2,10 +2,12 @@
 
 Two kinds of rule live here. The structure — which stages a record has, in
 which order, and which events belong to which — must hold for a record to be
-read at all. The values a reader can recompute — each stage's counts from its
-events, its verdict from its counts, and the record's top level from its
-stages — are listed as problems, so that a verifier can report an edited
-value as tampering rather than as a record it cannot read.
+read at all. The integrity checks compare each value a reader can recompute
+with what it recomputes to: the change digest and every digest bound to it,
+each stage's counts from its events, its verdict from its counts, and the
+record's top level from its stages. They are listed as problems, so that a
+verifier can report an edited value as tampering rather than as a record it
+cannot read.
 """
 
 from __future__ import annotations
@@ -13,7 +15,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING
 
-from iltero_schemas.canonical import digest_of
+from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.coverage import PlanFlagGap, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import instant
@@ -62,15 +64,15 @@ def _assertions_of(car: CAR, stage: Stage) -> set[str]:
 
 
 def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
-    """A stage lists the approvals its checks read, once each, each of this record's change or run."""
+    """A stage lists the approvals its checks read, once each, each of a change or of this record's run.
+
+    Which change is an integrity check (``change_digest_problems``).
+    """
     approvals = record.approvals or []
     if len({approval.id for approval in approvals}) != len(approvals):
         raise ValueError(f"the {stage.value} stage lists each approval once")
-    for approval in approvals:
-        subject = approval.subject
-        own = subject.digest == car.change.digest if subject.kind == "change" else subject.id == car.run_id.value
-        if not own:
-            raise ValueError(f"the {stage.value} stage lists only approvals of this record's change or run")
+    if any(a.subject.kind == "run" and a.subject.id != car.run_id.value for a in approvals):
+        raise ValueError(f"the {stage.value} stage lists only approvals of a change or of this record's run")
 
 
 def _check_plan_first(car: CAR) -> None:
@@ -157,9 +159,6 @@ def check_structure(car: CAR) -> None:
         if (record.approvals is not None) != reads_server_facts(stage):
             raise ValueError(f"the {stage.value} stage lists approvals exactly when it reads server facts")
         _check_approvals(car, stage, record)
-    pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
-    if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != car.change.digest:
-        raise ValueError("the pre-deploy stage counts the change the record names, by its digest")
     stages_of_events = [event.evaluation.stage for event in car.events]
     if not set(stages_of_events) <= set(car.stages):
         raise ValueError("every event belongs to a stage the record has")
@@ -192,12 +191,28 @@ def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
     return []
 
 
-def derived_problems(car: CAR) -> list[tuple[str, str]]:
+def change_digest_problems(car: CAR) -> list[tuple[str, str]]:
+    """The change digest is the digest of the change's units, and every stage that binds to the change names it."""
+    problems: list[tuple[str, str]] = []
+    unit = car.change.unit
+    if car.change.digest != change_digest({unit.name: unit.plan.digest}):
+        problems.append(("change.digest", "is not the digest of the change's units"))
+    pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
+    if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != car.change.digest:
+        problems.append(("stages.pre_deploy.coverage.subjects_in_scope.source_digest", "is not change.digest"))
+    for stage, record in car.stages.items():
+        approvals = record.approvals or []
+        if any(a.subject.kind == "change" and a.subject.digest != car.change.digest for a in approvals):
+            problems.append((f"stages.{stage.value}.approvals", "lists an approval of another change"))
+    return problems
+
+
+def integrity_problems(car: CAR) -> list[tuple[str, str]]:
     """Every value a reader can recompute that is not what it recomputes to, as (where, what) pairs.
 
     Call only on a record whose structure holds (``check_structure``).
     """
-    problems: list[tuple[str, str]] = []
+    problems = change_digest_problems(car)
     for stage, record in car.stages.items():
         where = f"stages.{stage.value}"
         coverage = record.coverage

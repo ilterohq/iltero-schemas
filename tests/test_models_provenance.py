@@ -8,12 +8,12 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER
+from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.subjects import subject_key
 from tests.records import record, set_path, stage
 
-_READER = {DERIVED_CHECKED_BY_READER: True}
+_READER = {SKIP_INTEGRITY_CHECKS: True}
 SERVER_BUNDLE = {"kind": "server", "digest": "sha256:" + "5" * 64}
 
 

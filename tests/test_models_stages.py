@@ -9,16 +9,16 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.assertion import Stage, TargetKind
-from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, OutOfScope
+from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.stages import LIFECYCLE, derived_problems, scope_basis
+from iltero_schemas.models.stages import LIFECYCLE, integrity_problems, scope_basis
 from iltero_schemas.models.subjects import subject_key
 from tests.records import RECORD
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
-_READER = {DERIVED_CHECKED_BY_READER: True}
+_READER = {SKIP_INTEGRITY_CHECKS: True}
 CONFIG = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
 
 
@@ -199,11 +199,11 @@ def test_an_edited_value_a_reader_can_recompute_is_listed(document: dict[str, An
     with pytest.raises(ValidationError, match=problems[0].replace(".", r"\.")):
         CAR.model_validate(document)
     car = CAR.model_validate(document, context=_READER)
-    assert [where for where, _ in derived_problems(car)] == problems
+    assert [where for where, _ in integrity_problems(car)] == problems
 
 
 def test_a_record_as_written_has_nothing_to_recompute() -> None:
-    assert derived_problems(CAR.model_validate(RECORD)) == []
+    assert integrity_problems(CAR.model_validate(RECORD)) == []
 
 
 NOT_REPORTED = {"__unknown": True, "reason": "not_reported_by_tool"}
@@ -237,7 +237,7 @@ def _plan_flags(
 def test_the_plan_stage_lists_a_gap_for_each_plan_flag_that_is_not_true(
     flags: dict[str, Any], gaps: list[dict[str, Any]]
 ) -> None:
-    assert derived_problems(_plan_flags(flags, gaps)) == []
+    assert integrity_problems(_plan_flags(flags, gaps)) == []
 
 
 @pytest.mark.parametrize(
@@ -258,7 +258,7 @@ def test_plan_flag_gaps_that_do_not_match_the_plan_flags_are_a_problem(
     flags: dict[str, Any], gaps: list[dict[str, Any]]
 ) -> None:
     car = _plan_flags(flags, gaps)
-    assert derived_problems(car) == [
+    assert integrity_problems(car) == [
         (
             "stages.plan.coverage.gaps",
             "does not match plan.complete and plan.applyable: one gap, in kind order, for each that is not true, "
@@ -423,10 +423,12 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
 
 def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
     with_stage = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
-    CAR.model_validate(with_stage, context=_READER)
+    CAR.model_validate(with_stage)
     with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
-    with pytest.raises(ValidationError, match="counts the change the record names"):
-        CAR.model_validate(with_stage, context=_READER)
+    with pytest.raises(ValidationError, match="source_digest is not change.digest"):
+        CAR.model_validate(with_stage)
+    where = "stages.pre_deploy.coverage.subjects_in_scope.source_digest"
+    assert integrity_problems(CAR.model_validate(with_stage, context=_READER)) == [(where, "is not change.digest")]
 
 
 def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
@@ -497,17 +499,37 @@ def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> N
 @pytest.mark.parametrize(
     ("approvals", "message"),
     [
-        ([_approval({"kind": "change", "digest": "sha256:" + "e" * 64})], "only approvals of this record's change"),
-        ([_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})], "only approvals of this"),
+        (
+            [_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})],
+            "only approvals of a change or of",
+        ),
         ([_approval({"kind": "run", "id": RECORD["run_id"]["value"]})] * 2, "lists each approval once"),
     ],
-    ids=["another change", "another run", "listed twice"],
+    ids=["another run", "listed twice"],
 )
-def test_a_stage_lists_no_approval_of_another_change_or_run_and_each_once(
-    approvals: list[dict[str, Any]], message: str
-) -> None:
+def test_a_stage_lists_no_approval_of_another_run_and_each_once(approvals: list[dict[str, Any]], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_pre_deploy_reading(*approvals), context=_READER)
+
+
+def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
+    document = _pre_deploy_reading(_approval({"kind": "change", "digest": "sha256:" + "e" * 64}))
+    with pytest.raises(ValidationError, match="stages.pre_deploy.approvals lists an approval of another change"):
+        CAR.model_validate(document)
+    car = CAR.model_validate(document, context=_READER)
+    assert integrity_problems(car) == [("stages.pre_deploy.approvals", "lists an approval of another change")]
+
+
+def test_a_forged_change_digest_is_reported_with_every_digest_bound_to_the_change() -> None:
+    document = _pre_deploy_reading(_approval({"kind": "change", "digest": RECORD["change"]["digest"]}))
+    document["change"]["digest"] = "sha256:" + "e" * 64
+    with pytest.raises(ValidationError, match="change.digest is not the digest of the change's units"):
+        CAR.model_validate(document)
+    assert [where for where, _ in integrity_problems(CAR.model_validate(document, context=_READER))] == [
+        "change.digest",
+        "stages.pre_deploy.coverage.subjects_in_scope.source_digest",
+        "stages.pre_deploy.approvals",
+    ]
 
 
 def test_only_a_stage_whose_input_carries_approvals_lists_them() -> None:

@@ -67,15 +67,15 @@ from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.redaction import RedactionReport
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
-from iltero_schemas.models.stages import check_structure, derived_problems
+from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
 from iltero_schemas.models.tools.variants import check_identity_against_apply
 
 API_VERSION = "iltero.io/car/v1"
-# Validation context key, set to True (any other value is ignored): the reader recomputes the record's derived values
-# itself (``derived_problems``), so it can report an edited one as tampering rather than as a record it cannot read.
-# A reader that sets it must call ``derived_problems`` and act on what it returns before trusting the counts or the
-# verdicts. The change digest is not among them: approvals bind to it, so it is checked for every reader.
-DERIVED_CHECKED_BY_READER = "derived_checked_by_reader"
+# Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
+# each value a reader can recompute (the change digest and the digests bound to it, the counts, the verdicts) with what
+# it recomputes to, so the reader can report an edited value as tampering rather than as a record it cannot read. A
+# reader that sets it must call ``integrity_problems`` and act on what it returns before trusting the record.
+SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 # A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
@@ -414,8 +414,11 @@ class CAR(StrictModel):
         ref_ids = [ref.ref_id for ref in self.evidence_refs]
         if len(set(ref_ids)) != len(ref_ids):
             raise ValueError("no two entries of the evidence register share a name")
-        # The stages compare their approvals and scope with the change digest, so it is checked first.
+        checks_integrity = (info.context or {}).get(SKIP_INTEGRITY_CHECKS) is not True
         check_change(self.unit, self.plan.digest, self.change, self.units_file)
+        # Approvals bind to the change digest, so its problems come before any structure built on it.
+        if checks_integrity:
+            _raise_first(change_digest_problems(self))
         check_structure(self)
         if self.complete != (set(self.stages) == {Stage(stage) for stage in self.expected_stages}):
             raise ValueError("a record is complete exactly when every expected stage has reported")
@@ -429,10 +432,8 @@ class CAR(StrictModel):
             raise ValueError("the record's subject is its own unit")
         self._check_identity()
         check_provenance(self)
-        # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.
-        if (info.context or {}).get(DERIVED_CHECKED_BY_READER) is not True:
-            for where, problem in derived_problems(self):
-                raise ValueError(f"{where} {problem}")
+        if checks_integrity:
+            _raise_first(integrity_problems(self))
         return self
 
     def combined(self) -> StageOutcome:
@@ -459,3 +460,8 @@ class CAR(StrictModel):
         if self.identity.left_the_state() != left:
             raise ValueError("what the identities list as removed is exactly what left the state, and how")
         check_identity_against_apply(self.identity.tool_data, self.deployment.apply.tool_data)
+
+
+def _raise_first(problems: list[tuple[str, str]]) -> None:
+    for where, problem in problems:
+        raise ValueError(f"{where} {problem}")

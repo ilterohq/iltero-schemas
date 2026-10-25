@@ -73,8 +73,10 @@ from iltero_schemas.models.tools.variants import check_identity_against_apply
 API_VERSION = "iltero.io/car/v1"
 # Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
 # each value a reader can recompute (the change digest and the digests bound to it, the counts, the verdicts) with what
-# it recomputes to, so the reader can report an edited value as tampering rather than as a record it cannot read. A
-# reader that sets it must call ``integrity_problems`` and act on what it returns before trusting the record.
+# it recomputes to, so the reader can report an edited value as tampering rather than as a record it cannot read. With
+# it set, the model no longer checks that the change digest is the change's, or that an approval is of this change. A
+# reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to trust the
+# record while it returns any problem.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 # A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
@@ -416,7 +418,7 @@ class CAR(StrictModel):
             raise ValueError("no two entries of the evidence register share a name")
         checks_integrity = (info.context or {}).get(SKIP_INTEGRITY_CHECKS) is not True
         check_change(self.unit, self.plan.digest, self.change, self.units_file)
-        # Approvals bind to the change digest, so its problems come before any structure built on it.
+        # Approvals bind to the change digest, so a reader that checks integrity is refused on it first.
         if checks_integrity:
             _raise_first(change_digest_problems(self))
         check_structure(self)
@@ -463,5 +465,5 @@ class CAR(StrictModel):
 
 
 def _raise_first(problems: list[tuple[str, str]]) -> None:
-    for where, problem in problems:
-        raise ValueError(f"{where} {problem}")
+    if problems:
+        raise ValueError(" ".join(problems[0]))

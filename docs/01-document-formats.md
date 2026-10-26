@@ -334,7 +334,7 @@ with a regulatory framework.
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_source`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran its evaluations (`execution`: the evaluator and bundle, or the `reason` nothing ran), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its evaluations read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted (`redaction`), the files written, what it read from scanner reports (`scanners`), and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape and rules of an [AssuranceContext](#assurancecontext)'s; read from the runner's clock (`source: runner_clock`), its `value` is the same instant as the stage's `observed_at`. Its `redaction` is its redaction report (see below). |
+| `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `computed_from` (`status_counts` for a stage, `stage_precedence` for the record) and the deciding `stage`. |
@@ -359,6 +359,61 @@ Trust levels, from weakest to strongest:
 
 Every level above `self_attested` requires a signature. This version of the record carries none, so the model
 accepts only `self_attested`.
+
+Each `stages` entry says what one stage did:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `stage` | stage | The stage, the same as the entry's key. |
+| `observed_at` | timestamp | When the stage observed the change. |
+| `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
+| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `digest`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
+| `enforcement` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
+| `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (`pre_deploy`), `null` at every other. |
+| `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
+| `redaction` | object | The stage's redaction report (see below). |
+| `events` | object | The file of the stage's events: its `path`, `digest` and `count`, which equals the stage's `coverage.evaluations`. |
+| `assertions` | object | The index of the assertions the stage compiled: its path (`index`), `digest` and `count`. |
+| `scanners` | object or null | What the stage read from the scanner reports it was given (see below). `null` for a stage given no scanner report. |
+| `coverage`, `verdict`, `assurance_status` | object | The stage's own, in the shape of the record's. |
+
+A stage's `scanners` says what it read from scanner reports and how much of it became a verdict:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `binding_set` | object | The one [evaluator binding set](#evaluatorbindingset) in force (see below). |
+| `reports` | list | Each scanner report the stage was given, at most 16, one per scanner (see below). |
+| `results_accepted` | integer | Results a binding accepted for an assertion, from 0. |
+| `results_binding_unverified` | integer | Results whose binding could not be verified, from 0. |
+| `results_without_binding` | integer | Results read for no assertion, because no binding allowed it or it had nothing to answer, from 0. It is the sum of the reports' own `results_without_binding`. |
+
+`results_accepted`, `results_binding_unverified` and `results_without_binding` add up to the sum of the reports'
+`results_read`: every result a scanner reported is counted once.
+
+`binding_set` names the binding set by:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `id` | string | The binding set's `metadata.id`: upper-case segments joined by dots, at least two, at most 128 characters. |
+| `version` | string | The binding set's `metadata.version`: a semantic version `X.Y.Z`. |
+| `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The tool sets it, never the binding set. |
+| `file_name` | string or null | The name of the file the set was read from, one line of at most 1024 characters. Present exactly when `origin` is `file`. |
+| `digest` | digest | The digest of the binding set as it was read. An event's `binding.digest` resolves to an entry of it. |
+| `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
+| `binding_count` | integer | How many bindings the set holds, from 0. |
+
+Each `reports` entry:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `tool` | string | `checkov`, `trivy` or `prowler`. |
+| `tool_version` | identifier | The version the scanner reported. |
+| `input_kinds` | list | What the scanner was reading, in its own words, such as `terraform_plan` (identifiers). |
+| `report_digest` | digest | The digest of the report as the stage kept it: the `input_digest` of every verdict it stands behind. |
+| `observations` | string | Where the stage kept what it read from the report, in the record's directory. |
+| `results_read` | integer | Results the stage read from the report, from 0. |
+| `results_without_binding` | integer | Results read for no assertion, from 0. |
+| `parsing_errors` | integer | Parsing errors the stage met reading the report, from 0. |
 
 A stage's redaction report (`redaction`) says what the stage's redaction hid, left unknown or allowed, by
 path. It holds no value.

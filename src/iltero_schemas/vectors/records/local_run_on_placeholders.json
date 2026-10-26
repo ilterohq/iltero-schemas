@@ -599,6 +599,7 @@
       "media_type": "application/json",
       "path": "units/root/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
       "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -621,7 +622,11 @@
       "digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
       "media_type": "application/json",
       "path": "units/root/plan/contexts/sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-      "redaction_policy": null,
+      "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
       "ref_id": "sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
       "retention_until": null,
       "size_bytes": 12981,
@@ -638,7 +643,11 @@
       "digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
       "media_type": "application/json",
       "path": "units/root/plan/contexts/sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-      "redaction_policy": null,
+      "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
       "ref_id": "sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
       "retention_until": null,
       "size_bytes": 12975,
@@ -655,7 +664,11 @@
       "digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
       "media_type": "application/json",
       "path": "units/root/plan/contexts/sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-      "redaction_policy": null,
+      "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
       "ref_id": "sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
       "retention_until": null,
       "size_bytes": 12984,
@@ -672,7 +685,11 @@
       "digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
       "media_type": "application/json",
       "path": "units/root/plan/contexts/sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-      "redaction_policy": null,
+      "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
       "ref_id": "sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
       "retention_until": null,
       "size_bytes": 12982,
@@ -689,7 +706,11 @@
       "digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
       "media_type": "application/json",
       "path": "units/root/plan/contexts/sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-      "redaction_policy": null,
+      "redaction_policy": {
+        "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
       "ref_id": "sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
       "retention_until": null,
       "size_bytes": 14920,

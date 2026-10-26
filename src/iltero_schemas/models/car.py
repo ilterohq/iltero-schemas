@@ -64,7 +64,7 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.provenance import check_provenance
-from iltero_schemas.models.redaction import RedactionReport
+from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
@@ -119,11 +119,6 @@ class Collector(StrictModel):
     version: Identifier
 
 
-class RedactionPolicyUsed(StrictModel):
-    id: Identifier
-    version: Identifier
-
-
 class EvidenceRef(StrictModel):
     """One file the record cites, named by its digest and by where it sits inside the record's directory."""
 
@@ -138,7 +133,8 @@ class EvidenceRef(StrictModel):
     collector: Collector
     source: dict[Identifier, Identifier] | None
     canonicalization: Identifier | None
-    redaction_policy: RedactionPolicyUsed | None
+    # The redaction policy that redacted the file's content; null for a file no redaction touched.
+    redaction_policy: RedactionPolicyRef | None
 
 
 class EventsFile(StrictModel):

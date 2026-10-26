@@ -135,6 +135,14 @@ def _check_run_of_events(car: CAR) -> None:
         raise ValueError("every event names the record's run, how that run was opened, and the record's unit")
 
 
+def _check_one_redaction_policy(car: CAR) -> None:
+    """A record redacts under one policy: every stage's report and every redacted file name the same one."""
+    named = [record.redaction.policy for record in car.stages.values()]
+    named += [ref.redaction_policy for ref in car.evidence_refs if ref.redaction_policy is not None]
+    if any(policy != named[0] for policy in named):
+        raise ValueError("every stage and every redacted evidence file name the same redaction policy")
+
+
 def check_structure(car: CAR) -> None:
     """Raise ``ValueError`` unless the stages hold together, whatever values they carry."""
     _check_plan_first(car)
@@ -142,6 +150,7 @@ def check_structure(car: CAR) -> None:
     _check_deployment(car)
     _check_plan_of_events(car)
     _check_run_of_events(car)
+    _check_one_redaction_policy(car)
     for stage, record in car.stages.items():
         if stage not in car.expected_stages:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")

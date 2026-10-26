@@ -2244,5 +2244,23 @@
     },
     "remove": [],
     "message": "change.digest is not the digest of the change's units"
+  },
+  {
+    "name": "evidence_file_redacted_under_another_policy",
+    "vector": "local_run.json",
+    "set": {
+      "/evidence_refs/0/redaction_policy/digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "remove": [],
+    "message": "every stage and every redacted evidence file name the same redaction policy"
+  },
+  {
+    "name": "evidence_file_policy_without_its_digest",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/evidence_refs/0/redaction_policy/digest"
+    ],
+    "message": "evidence_refs.0.redaction_policy.digest\n  Field required"
   }
 ]

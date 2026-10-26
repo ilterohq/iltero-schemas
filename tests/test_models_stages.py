@@ -544,3 +544,32 @@ def test_only_a_stage_whose_input_carries_approvals_lists_them() -> None:
     document["stages"]["pre_deploy"]["approvals"] = None
     with pytest.raises(ValidationError, match="the pre_deploy stage lists approvals exactly when"):
         CAR.model_validate(document, context=_READER)
+
+
+ONE_POLICY = "every stage and every redacted evidence file name the same redaction policy"
+OTHER_POLICY_DIGEST = "sha256:" + "f" * 64
+
+
+def test_a_record_redacts_under_one_policy_in_every_stage() -> None:
+    document = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    CAR.model_validate(document)
+    document["stages"]["pre_deploy"]["redaction"]["policy"]["digest"] = OTHER_POLICY_DIGEST
+    with pytest.raises(ValidationError, match=ONE_POLICY):
+        CAR.model_validate(document)
+    with pytest.raises(ValidationError, match=ONE_POLICY):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_redacted_evidence_file_names_the_records_policy() -> None:
+    document = _record()
+    redacted = next(ref for ref in document["evidence_refs"] if ref["redaction_policy"] is not None)
+    redacted["redaction_policy"]["digest"] = OTHER_POLICY_DIGEST
+    with pytest.raises(ValidationError, match=ONE_POLICY):
+        CAR.model_validate(document)
+
+
+def test_a_file_no_redaction_touched_names_no_policy() -> None:
+    document = _record()
+    for ref in document["evidence_refs"]:
+        ref["redaction_policy"] = None
+    CAR.model_validate(document)

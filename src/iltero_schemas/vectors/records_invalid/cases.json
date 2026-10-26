@@ -2262,5 +2262,14 @@
       "/evidence_refs/0/redaction_policy/digest"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "saved_plan_without_its_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
   }
 ]

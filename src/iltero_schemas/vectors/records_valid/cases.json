@@ -733,5 +733,14 @@
       "/verdict/exit_code": 4
     },
     "remove": []
+  },
+  {
+    "name": "local_plan_read_from_a_saved_plan_file",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": []
   }
 ]

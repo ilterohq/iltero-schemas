@@ -426,8 +426,8 @@ Key rules:
   record's directory is plain names joined by `/`, at most 6 deep and 1024 characters, each name using only letters,
   digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two `evidence_refs` entries share a `path` or a `ref_id`.
 - A record redacts under one policy: every stage's `redaction.policy` and every `evidence_refs[].redaction_policy`
-  that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. Before the first
-  release a policy keeps its version, so the digest tells two policies apart.
+  that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. The digest tells
+  apart two policies that share an `id` and `version`.
 - The first expected stage is `plan`, and `post_deploy` is always expected. `runtime` is never a stage of a record.
   Every lifecycle stage is either expected or listed once in `out_of_scope`. Only `pre_deploy` can be left out by
   `project_config`, and it then names the declaring file in `declared_in`.

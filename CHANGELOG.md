@@ -271,7 +271,7 @@ These changes break documents written before them.
 - An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
   `version`, `tool`), and a record holds every event's to its own plan.
 
-- Fields, values and names say what they hold:
+- Renamed:
   - Evaluation input: `context` is `organization_scope`; a reference time's
     `bracket` is `time_window`; a subject's `authority: authoritative` is
     `resolution: resolved`; `artifact_digest_basis` is

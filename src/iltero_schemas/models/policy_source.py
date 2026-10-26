@@ -80,7 +80,7 @@ class PolicyEntry(StrictModel):
     def _the_combination_is_one_that_exists(self) -> PolicyEntry:
         check_target(self.stage, self.target)
         if isinstance(self.target, ProcessTarget) and self.target.resources is not None:
-            raise ValueError("a hand-written policy names no resources: no compiler writes its scope condition")
+            raise ValueError("a hand-written policy names no resources: no compiler writes its scope guard")
         return self
 
 

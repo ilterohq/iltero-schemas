@@ -11,39 +11,39 @@
   "properties": {
     "integrity": {
       "state": "client_asserted",
-      "basis": "file_digests"
+      "reason": "file_digests"
     },
     "source_identity": {
       "state": "not_performed",
-      "basis": "run_opened_locally"
+      "reason": "run_opened_locally"
     },
     "approval_identity": {
       "state": "not_assessed",
-      "basis": "pre_deploy_not_in_scope"
+      "reason": "pre_deploy_not_in_scope"
     },
     "bundle_provenance": {
       "state": "not_performed",
-      "basis": "local_assertions"
+      "reason": "local_assertions"
     },
     "stage_completeness": {
       "state": "failed",
-      "basis": "stages_pending"
+      "reason": "stages_pending"
     },
     "plan_apply_match": {
       "state": "not_performed",
-      "basis": "no_post_deploy_stage"
+      "reason": "no_post_deploy_stage"
     },
     "runtime_verification": {
       "state": "not_performed",
-      "basis": "no_post_verify_stage"
+      "reason": "no_post_verify_stage"
     },
     "deployment_coverage": {
       "state": "not_assessed",
-      "basis": null
+      "reason": null
     },
     "exceptions": {
       "state": "not_assessed",
-      "basis": "pre_deploy_not_in_scope"
+      "reason": "pre_deploy_not_in_scope"
     }
   }
 }

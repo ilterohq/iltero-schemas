@@ -122,7 +122,7 @@ class _Emitter:
 
 
 def _guarded(scope: Expr | None, when: Expr | None) -> Expr | None:
-    """The guard a module checks: the target's scope check, then the author's ``when``, whichever are present."""
+    """A module's guard: the target's scope guard, then the author's ``when``, whichever are present."""
     if scope is None or when is None:
         return scope or when
     return All((scope, when))

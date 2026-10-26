@@ -179,9 +179,9 @@ def test_a_replan_is_a_plan_other_than_the_evaluated_one() -> None:
 @pytest.mark.parametrize(
     ("digest", "basis"),
     [(None, "saved_plan"), ("sha256:" + "d" * 64, "not_provided")],
-    ids=["binary without digest", "digest without binary"],
+    ids=["saved plan without digest", "digest without saved plan"],
 )
-def test_an_artifact_digest_is_present_exactly_when_a_binary_was_given(part: str, digest: Any, basis: str) -> None:
+def test_an_artifact_digest_is_present_exactly_when_a_saved_plan_was_given(part: str, digest: Any, basis: str) -> None:
     document = copy.deepcopy(POST_DEPLOY)
     target = document["plan"] if part == "plan" else document["deployment"]["plan"]
     target.update(artifact_digest=digest, artifact_digest_source=basis)

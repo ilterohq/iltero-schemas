@@ -53,7 +53,7 @@ class RedactedInput(StrictModel):
 TreePath = RawText
 
 
-class HiddenPath(StrictModel):
+class RedactedPath(StrictModel):
     """One path the policy hid, and the reason, as a token."""
 
     path: TreePath
@@ -72,11 +72,11 @@ class RedactionReport(StrictModel):
 
     policy: RedactionPolicyRef
     subject: RedactedInput
-    redacted: Annotated[list[HiddenPath], Field(max_length=MAX_REPORTED_PATHS)]
+    redacted: Annotated[list[RedactedPath], Field(max_length=MAX_REPORTED_PATHS)]
     unknown: Annotated[list[TreePath], Field(max_length=MAX_REPORTED_PATHS)]
     allowed: Annotated[list[AllowedPath], Field(max_length=MAX_REPORTED_PATHS)]
 
 
 # A name that may have been hidden: a hidden name is still a fact about the resource.
-MaybeHidden = Identifier | RedactedMarker
-MaybeHiddenAddress = Address | RedactedMarker
+MaybeRedacted = Identifier | RedactedMarker
+MaybeRedactedAddress = Address | RedactedMarker

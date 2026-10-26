@@ -12,12 +12,12 @@ from __future__ import annotations
 
 from typing import Any
 
-# Strings longer than this, and lists longer than SHORT_LIST_MAX, are recorded
+# Strings longer than this, and lists longer than LITERAL_LIST_MAX_ITEMS, are recorded
 # by shape (`{"type": "string", "length": n}`); mirrors `_short` in runtime.rego.
-SHORT_STRING_MAX_CHARS = 128
-SHORT_LIST_MAX = 4
+LITERAL_STRING_MAX_CHARS = 128
+LITERAL_LIST_MAX_ITEMS = 4
 # `subject` is echoed as {kind, key}, each bounded like any recorded value.
-SUBJECT_FIELD_MAX_CHARS = SHORT_STRING_MAX_CHARS
+SUBJECT_FIELD_MAX_CHARS = LITERAL_STRING_MAX_CHARS
 # reason: "<path>: <marker reason>" at most 16 names of 64 chars plus a
 # 64-char token, or a fixed sentence naming one predicate; 2 KiB is ample.
 REASON_MAX_BYTES = 2 * 1024

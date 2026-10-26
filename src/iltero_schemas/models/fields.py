@@ -83,7 +83,7 @@ def _timestamp(value: str) -> str:
     return value
 
 
-def instant(timestamp: str) -> tuple[datetime, int]:
+def parse_timestamp(timestamp: str) -> tuple[datetime, int]:
     """A ``Timestamp`` as a value that orders to the nanosecond: its whole seconds, then its fraction in nanoseconds.
 
     ``datetime`` keeps only microseconds, and a ``Timestamp`` may carry nine fractional digits.

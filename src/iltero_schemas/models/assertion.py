@@ -82,7 +82,7 @@ class AssertionType(StrEnum):
     PROCESS = "process"
 
 
-DERIVED_TYPE: dict[TargetKind, AssertionType] = {
+ASSERTION_TYPE_FOR_TARGET: dict[TargetKind, AssertionType] = {
     TargetKind.RESOURCE: AssertionType.STATE,
     TargetKind.CHANGE: AssertionType.PROCESS,
     TargetKind.DEPLOYMENT: AssertionType.PROCESS,
@@ -239,7 +239,7 @@ SCOPED_STAGES = frozenset({Stage.PRE_DEPLOY, Stage.POST_DEPLOY})
 def check_target(stage: Stage, target: ResourceTarget | ProcessTarget) -> None:
     """Raise ``ValueError`` unless ``target`` is valid at ``stage`` and its selectors have a change to scope."""
     kind = TargetKind(target.kind)
-    if (DERIVED_TYPE[kind], stage, kind) not in VALID_COMBINATIONS:
+    if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in VALID_COMBINATIONS:
         raise ValueError(f"stage {stage.value!r} is not valid for target kind {target.kind!r}")
     if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
         raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
@@ -256,7 +256,7 @@ class Spec(_Strict):
 
     @property
     def derived_type(self) -> AssertionType:
-        return DERIVED_TYPE[TargetKind(self.target.kind)]
+        return ASSERTION_TYPE_FOR_TARGET[TargetKind(self.target.kind)]
 
     @model_validator(mode="after")
     def _combination(self) -> Spec:

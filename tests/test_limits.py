@@ -11,11 +11,11 @@ from iltero_schemas.ast import parse_document
 from iltero_schemas.ast.parse import MAX_ARGS, MAX_NODES, MAX_PATH_SEGMENTS, MAX_SEGMENT_LENGTH
 from iltero_schemas.canonical import canonical_bytes
 from iltero_schemas.compiler import (
+    LITERAL_LIST_MAX_ITEMS,
+    LITERAL_STRING_MAX_CHARS,
     OBSERVATIONS_MAX_BYTES,
     OBSERVATIONS_MAX_DEPTH,
     REASON_MAX_BYTES,
-    SHORT_LIST_MAX,
-    SHORT_STRING_MAX_CHARS,
     SUBJECT_FIELD_MAX_CHARS,
     compile,
     nesting_depth,
@@ -24,8 +24,8 @@ from iltero_schemas.opa import CAPABILITIES
 
 SEGMENT = "s" * MAX_SEGMENT_LENGTH
 LONG_PATH = "resource." + ".".join([SEGMENT] * (MAX_PATH_SEGMENTS - 1))
-SHORT_STRING = "v" * SHORT_STRING_MAX_CHARS
-SHORT_LIST = [SHORT_STRING] * SHORT_LIST_MAX
+SHORT_STRING = "v" * LITERAL_STRING_MAX_CHARS
+SHORT_LIST = [SHORT_STRING] * LITERAL_LIST_MAX_ITEMS
 
 
 # One `all` over two `any` groups, filled to exactly MAX_NODES expressions.

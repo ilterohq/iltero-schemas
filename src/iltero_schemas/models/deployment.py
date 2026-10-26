@@ -29,10 +29,10 @@ from iltero_schemas.models.fields import (
     Identifier,
     Timestamp,
     check_artifact_digest,
-    instant,
+    parse_timestamp,
 )
 from iltero_schemas.models.iac import IacTool
-from iltero_schemas.models.markers import Unsettled
+from iltero_schemas.models.markers import ApplyLogIncomplete
 from iltero_schemas.models.tools.variants import ApplyToolData, check_tool_data
 
 # What the IaC tool runs on a resource. A replacement needs a create, and a delete unless it only forgets its old
@@ -84,8 +84,8 @@ class AppliedChange(StrictModel):
     required: list[Operation]
     basis: ChangeBasis
     # The operations completed: all of ``required`` when applied, part of it when errored.
-    completed: list[Operation] | Unsettled
-    outcome: ChangeOutcome | Unsettled
+    completed: list[Operation] | ApplyLogIncomplete
+    outcome: ChangeOutcome | ApplyLogIncomplete
     # The address the resource had before a rename in this change.
     moved_from: Address | None
     # Whether this change brought an existing cloud resource under the IaC tool's management.
@@ -112,12 +112,12 @@ class AppliedChange(StrictModel):
         the state is never guessed. The state settles only what makes or
         removes an object, and only as done, failed or unknown.
         """
-        unsettled_completed = isinstance(self.completed, Unsettled)
+        unsettled_completed = isinstance(self.completed, ApplyLogIncomplete)
         if unsettled_completed != (self.basis == "unsettled"):
             raise ValueError("a change's completed operations are unsettled exactly when its basis is unsettled")
-        if self.basis == "log" and isinstance(self.outcome, Unsettled):
+        if self.basis == "log" and isinstance(self.outcome, ApplyLogIncomplete):
             raise ValueError("a change known from the log has a settled outcome")
-        if unsettled_completed and (self.action != "update" or not isinstance(self.outcome, Unsettled)):
+        if unsettled_completed and (self.action != "update" or not isinstance(self.outcome, ApplyLogIncomplete)):
             raise ValueError("only an update's operations may stay unsettled, and then its outcome too")
         if self.basis == "state" and (
             self.action not in STATE_SETTLES or self.outcome in ("not_attempted", "no_operation")
@@ -175,7 +175,7 @@ class ApplyTiming(StrictModel):
 
     @model_validator(mode="after")
     def _in_order(self) -> ApplyTiming:
-        if instant(self.ended_at) < instant(self.started_at):
+        if parse_timestamp(self.ended_at) < parse_timestamp(self.started_at):
             raise ValueError("the apply ended before it started")
         return self
 
@@ -235,7 +235,7 @@ class Apply(StrictModel):
         if incomplete != (self.basis == "log_and_state_where_log_incomplete"):
             raise ValueError("the apply's basis says whether the state settled what the log lost")
         ran = self.tool_data.ran or any(change.outcome in ("applied", "errored") for change in changes)
-        maybe = self.tool_data.maybe_ran or any(isinstance(change.outcome, Unsettled) for change in changes)
+        maybe = self.tool_data.maybe_ran or any(isinstance(change.outcome, ApplyLogIncomplete) for change in changes)
         if (self.timing is None and ran) or (self.timing is not None and not ran and not maybe):
             raise ValueError("the apply has a time exactly when an operation ran")
         self.tool_data.check(self)

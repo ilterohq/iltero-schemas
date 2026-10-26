@@ -54,7 +54,7 @@ MAX_STATUS_MAP = 32
 # it was — unanswered — rather than being read as "does not apply here". That
 # matters most where the skip was written by the party being audited: a comment
 # in their own source must not close a gap in their own record.
-CreditedStatus = Literal["pass", "fail"]
+AcceptedStatus = Literal["pass", "fail"]
 
 
 def _specifier(value: str) -> str:
@@ -130,7 +130,7 @@ class EvaluatorBinding(StrictModel):
     # The tool's vocabulary translated into the contract's: a word the tool
     # may print and is not listed here leaves the observation uncredited.
     status_map: Annotated[
-        dict[Annotated[str, Field(pattern=TOOL_STATUS_PATTERN, max_length=TOOL_STATUS_MAX_LENGTH)], CreditedStatus],
+        dict[Annotated[str, Field(pattern=TOOL_STATUS_PATTERN, max_length=TOOL_STATUS_MAX_LENGTH)], AcceptedStatus],
         Field(min_length=1, max_length=MAX_STATUS_MAP),
     ]
 

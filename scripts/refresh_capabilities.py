@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from iltero_schemas.opa import PIN, platform_key
+from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent
 CAPABILITIES = ROOT / "src" / "iltero_schemas" / "opa" / "capabilities.json"
@@ -34,10 +34,10 @@ FEATURES = ["rego_v1", "keywords_in_refs"]
 
 
 def report_of(opa: Path) -> dict[str, Any]:
-    expected = PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
+    expected = OPA_RELEASE_PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
     actual = hashlib.sha256(opa.read_bytes()).hexdigest()
     if actual != expected:
-        raise SystemExit(f"{opa} is not the pinned OPA {PIN.version} (sha256 {actual})")
+        raise SystemExit(f"{opa} is not the pinned OPA {OPA_RELEASE_PIN.version} (sha256 {actual})")
     run = subprocess.run(
         [str(opa), "capabilities", "--current"], capture_output=True, text=True, timeout=60, check=False
     )

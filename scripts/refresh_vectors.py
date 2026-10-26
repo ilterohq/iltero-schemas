@@ -38,7 +38,7 @@ from iltero_schemas.canonical import (
     digest_of,
     plan_digest,
 )
-from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
@@ -67,7 +67,7 @@ def _dump(document: object) -> bytes:
 def compiler_vectors() -> dict[str, bytes]:
     files: dict[str, bytes] = {
         "COMPILER_VERSION": f"{COMPILER_VERSION}\n".encode(),
-        "RUNTIME.digest": f"{digest(RUNTIME.encode('utf-8'))}\n".encode(),
+        "RUNTIME.digest": f"{digest(RUNTIME_REGO.encode('utf-8'))}\n".encode(),
     }
     for directory in ASSERTION_DIRS:
         for path in sorted(directory.glob("*.yaml")):

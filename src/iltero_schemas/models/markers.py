@@ -9,7 +9,7 @@ from pydantic import ConfigDict, Field
 from iltero_schemas.models.base import StrictModel
 
 
-class Unsettled(StrictModel):
+class ApplyLogIncomplete(StrictModel):
     """A fact the apply log lost that the state cannot give back either.
 
     It is the evaluator's own unknown marker, so a check that reads it is

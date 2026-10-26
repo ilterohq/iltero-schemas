@@ -42,7 +42,7 @@ from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.facts import NotReported, UnknownMarker
+from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     Action,
     Address,
@@ -55,14 +55,14 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
-    instant,
+    parse_timestamp,
 )
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
-from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
+from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
-from iltero_schemas.profiles import ALWAYS, profile_for
+from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
@@ -117,7 +117,7 @@ class Environment(StrictModel):
     """
 
     name: Identifier
-    production: bool | UnknownMarker
+    production: bool | ServerFactsUnavailable
 
 
 class OrganizationScope(StrictModel):
@@ -128,7 +128,7 @@ class OrganizationScope(StrictModel):
     environment: Environment | None = None
 
 
-class Bracket(StrictModel):
+class TimeWindow(StrictModel):
     """The two timestamp-authority tokens an evaluation sits between."""
 
     not_before: Timestamp
@@ -146,7 +146,7 @@ class ReferenceTime(StrictModel):
     value: Timestamp
     source: ReferenceTimeSource
     trust: ReferenceTimeTrust
-    bracket: Bracket | None = None
+    bracket: TimeWindow | None = None
 
     @model_validator(mode="after")
     def _trust_follows_source(self) -> ReferenceTime:
@@ -155,7 +155,9 @@ class ReferenceTime(StrictModel):
         if (self.bracket is not None) != (self.source == "timestamp_authority"):
             raise ValueError("a reference time has a bracket exactly when a timestamp authority gave it")
         if self.bracket is not None and not (
-            instant(self.bracket.not_before) <= instant(self.value) <= instant(self.bracket.not_after)
+            parse_timestamp(self.bracket.not_before)
+            <= parse_timestamp(self.value)
+            <= parse_timestamp(self.bracket.not_after)
         ):
             raise ValueError("a reference time lies inside its bracket, which runs forward")
         return self
@@ -195,7 +197,7 @@ class Subject(StrictModel):
     authority: Authority
 
 
-class UnknownKind(StrictModel):
+class KindNotMapped(StrictModel):
     """What stands where a tool's adapter could not name a resource's kind: a check that reads it is unknown."""
 
     model_config = ConfigDict(serialize_by_alias=True)
@@ -214,7 +216,7 @@ class ResourceIndexEntry(StrictModel):
     id: Address
     provider: ProviderName
     type: Identifier
-    kind: Identifier | UnknownKind | None
+    kind: Identifier | KindNotMapped | None
 
     action: Action
     module: Address | None
@@ -227,7 +229,7 @@ def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResour
         if entry.provider not in RESOURCE_KINDS:
             valid = entry.kind is None
         elif named is None:
-            valid = isinstance(entry.kind, UnknownKind)
+            valid = isinstance(entry.kind, KindNotMapped)
         else:
             valid = entry.kind == named
         if not valid:
@@ -273,10 +275,10 @@ class Plan(StrictModel):
 class RelatedResource(StrictModel):
     """Another resource that refers to this one, with its values as planned, or null when they were not carried."""
 
-    address: MaybeHiddenAddress
-    type: MaybeHidden
+    address: MaybeRedactedAddress
+    type: MaybeRedacted
     relation: Relation
-    via: list[MaybeHidden]
+    via: list[MaybeRedacted]
     resource: dict[str, Any] | None
     # What only the plan's tool says about the match, keyed by ``tool`` (``models.tools.variants``).
     tool_data: RelatedToolData
@@ -288,8 +290,8 @@ class PlanResource(StrictModel):
     id: Address
     provider: ProviderName
     type: Identifier
-    kind: Identifier | UnknownKind | None
-    name: MaybeHidden
+    kind: Identifier | KindNotMapped | None
+    name: MaybeRedacted
     module: Address | None
     action: Action
     before: Any
@@ -319,9 +321,9 @@ class AssuranceContext(StrictModel):
     resource: PlanResource | None = None
     deployment: Deployment | None = None
     # Facts only the server holds (``models.server_facts``); a marker when it could not supply them.
-    evaluations: Evaluations | UnknownMarker | None = None
-    approvals: Approvals | UnknownMarker | None = None
-    exceptions: Exceptions | UnknownMarker | None = None
+    evaluations: Evaluations | ServerFactsUnavailable | None = None
+    approvals: Approvals | ServerFactsUnavailable | None = None
+    exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     verification: dict[str, Any] | None = None
@@ -332,7 +334,7 @@ class AssuranceContext(StrictModel):
         if self.subject is None:
             raise ValueError("subject is required")
         profile = profile_for(self.evaluation.stage, self.subject.kind)
-        present = {name for name in PARTS if getattr(self, name) is not None} | ALWAYS
+        present = {name for name in PARTS if getattr(self, name) is not None} | ALWAYS_REQUIRED_PARTS
         missing = sorted(profile.required - present)
         extra = sorted(present - profile.roots)
         if missing:

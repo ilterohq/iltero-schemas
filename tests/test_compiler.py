@@ -4,7 +4,7 @@ from typing import Any
 
 from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.canonical import digest
-from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, RegoModule, compile, package_of
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, RegoModule, compile, package_of
 
 RESOURCE = {
     "kind": "resource",
@@ -50,7 +50,7 @@ def test_module_is_self_describing_and_carries_the_runtime_verbatim() -> None:
     assert 'assertion_version := "2.1.0"\n' in rules
     assert "ast_version := 1\n" in rules
     assert f'assertion_source_digest := "{source_digest(parse_document(document))}"\n' in rules
-    assert module.source.decode("utf-8").endswith(RUNTIME)
+    assert module.source.decode("utf-8").endswith(RUNTIME_REGO)
     assert module.digest == digest(module.source)
 
 

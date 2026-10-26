@@ -25,7 +25,7 @@ from iltero_schemas.models.base import StrictModel
 UnknownReason = Literal["server_facts_unavailable"]
 
 
-class UnknownMarker(StrictModel):
+class ServerFactsUnavailable(StrictModel):
     """What stands where a fact could not be supplied: the evaluator reads it as ``unknown``, with this reason.
 
     It is always written under its marker name, ``__unknown``, which is the name the evaluator looks for.

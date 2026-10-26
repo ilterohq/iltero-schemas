@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.coverage import PlanFlagGap, StageOutcome, combine_in_order, stage_outcome
-from iltero_schemas.models.fields import instant
+from iltero_schemas.models.fields import parse_timestamp
 from iltero_schemas.profiles import reads_server_facts
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 # How a stage counts its subjects, by their kind: resources by enumerating the plan, a change or a deployment as
 # its one unit. Only the plan stage enumerates the plan's resources.
-SCOPE_BASIS: dict[TargetKind, str] = {
+SCOPE_COUNTED_FROM: dict[TargetKind, str] = {
     TargetKind.RESOURCE: "plan_resource_enumeration",
     TargetKind.CHANGE: "change_unit",
     TargetKind.DEPLOYMENT: "deployment_unit",
@@ -48,7 +48,7 @@ def scope_basis(stage: Stage, kinds: set[TargetKind]) -> str | None:
     kind = next(iter(kinds or valid)) if len(kinds or valid) == 1 else None
     if kind is None or (kind is TargetKind.RESOURCE and stage is not Stage.PLAN):
         return None
-    return SCOPE_BASIS[kind]
+    return SCOPE_COUNTED_FROM[kind]
 
 
 # The stages whose gate may run in advisory mode: those before the deployment.
@@ -90,7 +90,7 @@ def _check_plan_first(car: CAR) -> None:
     if plan_stage.coverage.subjects_in_scope.source_digest != car.plan.context_digest:
         raise ValueError("the plan stage counts the resources of the plan the record names")
     timing = car.deployment.apply.timing if car.deployment is not None else None
-    if timing is not None and instant(plan_stage.observed_at) > instant(timing.started_at):
+    if timing is not None and parse_timestamp(plan_stage.observed_at) > parse_timestamp(timing.started_at):
         raise ValueError("the plan stage was observed no later than the apply started, by the clocks that wrote them")
 
 
@@ -151,7 +151,7 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage lists a plan-flag gap, which only the plan stage lists")
         basis = scope_basis(stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage})
         scope = record.coverage.subjects_in_scope.basis
-        enumerates = scope == SCOPE_BASIS[TargetKind.RESOURCE]
+        enumerates = scope == SCOPE_COUNTED_FROM[TargetKind.RESOURCE]
         if (basis is not None and scope != basis) or (stage is not Stage.PLAN and enumerates):
             raise ValueError(f"the {stage.value} stage counts its scope as {basis or 'its own'}")
         if record.enforcement == "advisory" and stage not in ADVISORY_STAGES:

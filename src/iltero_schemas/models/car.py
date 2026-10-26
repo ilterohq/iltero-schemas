@@ -58,7 +58,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
-    instant,
+    parse_timestamp,
     plain_text,
 )
 from iltero_schemas.models.iac import IacTool
@@ -141,7 +141,7 @@ class EvidenceRef(StrictModel):
     redaction_applied: RedactionApplied | None
 
 
-class Written(StrictModel):
+class EventsFile(StrictModel):
     """A file a stage wrote, as the stage record names it."""
 
     path: MemberPath
@@ -149,7 +149,7 @@ class Written(StrictModel):
     count: Count
 
 
-class Compiled(StrictModel):
+class AssertionIndex(StrictModel):
     """Where the assertions a stage compiled are indexed, so a reader finds them without walking the directory."""
 
     index: MemberPath
@@ -157,7 +157,7 @@ class Compiled(StrictModel):
     count: Count
 
 
-class RanEvaluator(StrictModel):
+class ExecutionEvaluator(StrictModel):
     """The program that ran a stage's checks; the limits it ran each one under are on the events."""
 
     engine: Literal["opa"]
@@ -165,7 +165,7 @@ class RanEvaluator(StrictModel):
     digest: Digest
 
 
-class RanBundle(StrictModel):
+class ExecutionBundle(StrictModel):
     """The set of programs a stage loaded, and the allowlist they were built under."""
 
     kind: Literal["server", "local_bundle"]
@@ -173,16 +173,16 @@ class RanBundle(StrictModel):
     capabilities_digest: Digest
 
 
-class Ran(StrictModel):
+class Execution(StrictModel):
     """What ran a stage's checks, or why nothing did."""
 
-    evaluator: RanEvaluator | None
-    bundle: RanBundle | None
+    evaluator: ExecutionEvaluator | None
+    bundle: ExecutionBundle | None
     reason: Identifier | None
     detail: str | None
 
     @model_validator(mode="after")
-    def _absent_together(self) -> Ran:
+    def _absent_together(self) -> Execution:
         if (self.evaluator is None) != (self.bundle is None):
             raise ValueError("the evaluator and the bundle are absent together")
         if (self.evaluator is None) != (self.reason is not None):
@@ -208,7 +208,7 @@ class ScannerReport(StrictModel):
     parsing_errors: Count
 
 
-class BindingCatalogue(StrictModel):
+class BindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
     ``origin`` is set by the tool, never by the catalogue: a file cannot claim
@@ -227,7 +227,7 @@ class BindingCatalogue(StrictModel):
     entries: Count
 
     @model_validator(mode="after")
-    def _a_file_is_named(self) -> BindingCatalogue:
+    def _a_file_is_named(self) -> BindingSetUsed:
         if (self.file_name is None) != (self.origin == "shipped"):
             raise ValueError("a catalogue read from a file names it, and the shipped set names none")
         return self
@@ -236,7 +236,7 @@ class BindingCatalogue(StrictModel):
 class Scanners(StrictModel):
     """What a stage read from the scanner reports it was given, and how much of it became a verdict."""
 
-    catalogue: BindingCatalogue
+    catalogue: BindingSetUsed
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
     credited: Count
     binding_unverified: Count
@@ -260,7 +260,7 @@ class StageRecord(StrictModel):
     stage: StageValue
     observed_at: Timestamp
     reference_time: ReferenceTime
-    ran: Ran
+    ran: Execution
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
@@ -269,8 +269,8 @@ class StageRecord(StrictModel):
     approvals: Approvals | None
     compiler: Compiler
     redaction_applied: RedactionReport
-    events: Written
-    assertions: Compiled
+    events: EventsFile
+    assertions: AssertionIndex
     # Null for a stage that was given no scanner report.
     scanners: Scanners | None
     coverage: Coverage
@@ -279,9 +279,9 @@ class StageRecord(StrictModel):
 
     @model_validator(mode="after")
     def _clock_time_is_when_it_was_observed(self) -> StageRecord:
-        if self.reference_time.source == "runner_clock" and instant(self.reference_time.value) != instant(
-            self.observed_at
-        ):
+        if self.reference_time.source == "runner_clock" and parse_timestamp(
+            self.reference_time.value
+        ) != parse_timestamp(self.observed_at):
             raise ValueError("a stage that reads its runner's clock uses the time it observed")
         return self
 

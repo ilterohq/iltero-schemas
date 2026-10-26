@@ -32,7 +32,7 @@ from iltero_schemas.canonical import (
     plan_digest,
     required_assertion_digest,
 )
-from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_of
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, package_of
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
@@ -128,7 +128,7 @@ def test_plan_digest_vectors_record_the_current_version_of_their_tool(case: dict
 
 def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:
     assert (COMPILER / "COMPILER_VERSION").read_text(encoding="utf-8") == f"{COMPILER_VERSION}\n"
-    assert (COMPILER / "RUNTIME.digest").read_text(encoding="utf-8") == f"{digest(RUNTIME.encode('utf-8'))}\n"
+    assert (COMPILER / "RUNTIME.digest").read_text(encoding="utf-8") == f"{digest(RUNTIME_REGO.encode('utf-8'))}\n"
 
 
 def test_the_vectors_ship_inside_the_package() -> None:

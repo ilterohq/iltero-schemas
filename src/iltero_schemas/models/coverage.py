@@ -103,7 +103,7 @@ class PlanFlagGap(_Gap):
     value: Literal[False] | NotReported
 
 
-class PositionGap(_Gap):
+class PlanIndexGap(_Gap):
     """A plan resource whose identity was hidden or cannot be named, by its position in the plan."""
 
     kind: Literal["identity_hidden", "identity_unnameable"]
@@ -133,7 +133,7 @@ class CountGap(_Gap):
 
 
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PositionGap | CountGap
+Gap = PlanFlagGap | PlanIndexGap | CountGap
 # The most gaps a coverage lists: one per resource a plan holds, and each flag or count kind once per stage.
 MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
 

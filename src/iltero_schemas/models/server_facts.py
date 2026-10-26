@@ -34,7 +34,7 @@ from iltero_schemas.models.fields import (
     Status,
     Timestamp,
     Uuid,
-    instant,
+    parse_timestamp,
     plain_text,
 )
 from iltero_schemas.profiles import reads_plan
@@ -125,7 +125,7 @@ class ExceptionGrant(StrictModel):
 
     @model_validator(mode="after")
     def _ends_after_it_starts(self) -> ExceptionGrant:
-        if instant(self.expires_at) <= instant(self.valid_from):
+        if parse_timestamp(self.expires_at) <= parse_timestamp(self.valid_from):
             raise ValueError("an exception expires after it starts")
         return self
 

@@ -211,7 +211,7 @@ class PlanDigest(StrictModel):
         return self
 
 
-class MemoryCap(StrictModel):
+class MemoryLimit(StrictModel):
     """The memory cap as applied: not every platform can enforce one, and the record says which."""
 
     bytes: Annotated[int, Field(ge=0)] | None
@@ -223,7 +223,7 @@ class EvaluationLimits(StrictModel):
     """The limits an evaluation ran under, as applied, so the same limits can be applied again."""
 
     timeout_s: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_S)]
-    memory_cap: MemoryCap
+    memory_cap: MemoryLimit
     output_bytes_per_answer: Annotated[int, Field(ge=0)]
     contexts_per_process: Annotated[int, Field(ge=1)]
     capabilities_digest: Digest

@@ -18,7 +18,7 @@ from typing import Any, get_args
 
 import pytest
 
-from iltero_schemas.opa import PIN, platform_key
+from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
@@ -75,10 +75,10 @@ def opa() -> Path:
         if os.environ.get("ILTERO_OPA_REQUIRED") == "1":
             pytest.fail("ILTERO_OPA_REQUIRED=1 but no pinned opa is available: set ILTERO_OPA_PATH")
         pytest.skip("pinned opa not available: set ILTERO_OPA_PATH")
-    expected = PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
+    expected = OPA_RELEASE_PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
     actual = hashlib.sha256(binary.read_bytes()).hexdigest()
     if actual != expected:
-        pytest.fail(f"{binary} is not the pinned opa release {PIN.version} (sha256 {actual})")
+        pytest.fail(f"{binary} is not the pinned opa release {OPA_RELEASE_PIN.version} (sha256 {actual})")
     return binary
 
 

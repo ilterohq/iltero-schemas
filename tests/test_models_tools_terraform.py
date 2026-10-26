@@ -13,7 +13,7 @@ from iltero_schemas.models.tools.terraform import DeposedDelete
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
-UNSETTLED = {"__unknown": True, "reason": "deployment_log_incomplete"}
+LOG_INCOMPLETE = {"__unknown": True, "reason": "deployment_log_incomplete"}
 
 
 def _deposed(outcome: Any, key: str = "bb9fd791", address: str = "a.server") -> dict[str, Any]:
@@ -49,7 +49,7 @@ def test_a_deposed_key_is_terraforms(key: str) -> None:
 def test_a_deposed_object_is_left_out_of_the_changes_and_counted_by_the_summary() -> None:
     apply = Apply.model_validate(_cleared())
     assert [c.address for c in apply.changes] == ["a.server"] and apply.tool_data.destroyed == 1
-    assert apply.basis == "log_held_to_plan_and_state_presence"
+    assert apply.outcomes_from == "apply_log"
 
 
 @pytest.mark.parametrize(
@@ -110,23 +110,23 @@ def test_a_deposed_delete_that_ran_gives_the_apply_a_time() -> None:
         Apply.model_validate({**document, "timing": None})
 
 
-def test_an_unsettled_deposed_object_needs_a_log_that_lost_messages() -> None:
-    document = _cleared(_deposed(UNSETTLED), summary=None)
+def test_a_deposed_object_of_unknown_outcome_needs_a_log_that_lost_messages() -> None:
+    document = _cleared(_deposed(LOG_INCOMPLETE), summary=None)
     document["changes"] = []
-    with pytest.raises(ValidationError, match="the apply's basis says"):
+    with pytest.raises(ValidationError, match="outcomes_from says"):
         Apply.model_validate(document)
-    document["basis"] = "log_and_state_where_log_incomplete"
+    document["outcomes_from"] = "apply_log_and_state"
     with pytest.raises(ValidationError, match="only a log that lost messages"):
         Apply.model_validate(document)
-    document["tool_data"]["log_lines"]["damaged"] = 1
+    document["tool_data"]["log_lines"]["damaged_messages"] = 1
     assert Apply.model_validate(document).tool_data.maybe_ran
 
 
-@pytest.mark.parametrize("outcome", ["errored", UNSETTLED], ids=["errored", "unsettled"])
+@pytest.mark.parametrize("outcome", ["errored", LOG_INCOMPLETE], ids=["errored", "unknown"])
 def test_terraforms_counts_wait_for_every_deposed_delete(outcome: Any) -> None:
     document = _cleared(_deposed(outcome))
-    document["tool_data"]["log_lines"]["damaged"] = 1
-    document["basis"] = "log_and_state_where_log_incomplete" if outcome == UNSETTLED else document["basis"]
+    document["tool_data"]["log_lines"]["damaged_messages"] = 1
+    document["outcomes_from"] = "apply_log_and_state" if outcome == LOG_INCOMPLETE else document["outcomes_from"]
     with pytest.raises(ValidationError, match="reports its counts only when every change was made"):
         Apply.model_validate(document)
 

@@ -1,9 +1,9 @@
-"""The redaction marker: what stands in an evaluation input where a value was hidden.
+"""The redaction marker: what stands in an evaluation input where a value was redacted.
 
 A runner may hide a value it must not pass on, such as a secret in a planned
 attribute. It writes a marker in its place that says a value was there, why
-it was hidden and its type, so a check can still tell a hidden value from a
-missing one. The fields where a hidden value may legitimately sit accept one.
+it was hidden and its type, so a check can still tell a redacted value from a
+missing one. The fields where a redacted value may legitimately sit accept one.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ REASON_PATTERN = r"^[a-z][a-z0-9_]{0,63}$"
 
 
 class RedactedMarker(StrictModel):
-    """What stands where a value was hidden: that one was there, why it was hidden, and its type."""
+    """What stands where a value was redacted: that one was there, why it was redacted, and its type."""
 
     redacted: Literal[True] = Field(alias="__redacted")
     reason: Annotated[str, Field(pattern=REASON_PATTERN)]
@@ -71,12 +71,12 @@ class RedactionReport(StrictModel):
     """What a stage's redaction hid, left unknown or allowed, by path and reason. No value ever appears here."""
 
     policy: RedactionPolicyRef
-    subject: RedactedInput
+    input: RedactedInput
     redacted: Annotated[list[RedactedPath], Field(max_length=MAX_REPORTED_PATHS)]
     unknown: Annotated[list[TreePath], Field(max_length=MAX_REPORTED_PATHS)]
     allowed: Annotated[list[AllowedPath], Field(max_length=MAX_REPORTED_PATHS)]
 
 
-# A name that may have been hidden: a hidden name is still a fact about the resource.
+# A name that may have been redacted: a redacted name is still a fact about the resource.
 MaybeRedacted = Identifier | RedactedMarker
 MaybeRedactedAddress = Address | RedactedMarker

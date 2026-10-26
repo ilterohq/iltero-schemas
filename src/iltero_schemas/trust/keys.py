@@ -50,7 +50,7 @@ KeyStatus = Literal["active", "retired", "revoked"]
 _STATUSES = frozenset({"active", "retired", "revoked"})
 _FIELDS = frozenset(
     {
-        "keyid",
+        "key_id",
         "algorithm",
         "public_key",
         "spki_sha256",
@@ -79,7 +79,7 @@ class TrustFileError(ValueError):
 class BundleKey:
     """One public key, its status, and when that status began."""
 
-    keyid: str
+    key_id: str
     algorithm: Literal["ES256"]
     # The key in SubjectPublicKeyInfo DER form, as Open Policy Agent (OPA) and most libraries read it.
     public_key_der: bytes
@@ -159,18 +159,18 @@ def _status_dates(key: BundleKey, where: str) -> None:
 def _key(entry: Any, where: str, *, dev: bool) -> BundleKey:
     if not isinstance(entry, dict) or set(entry) != _FIELDS:
         raise TrustFileError(f"{where}: must have exactly the fields {', '.join(sorted(_FIELDS))}")
-    keyid = entry["keyid"]
-    if not isinstance(keyid, str) or not _KEY_ID.fullmatch(keyid):
-        raise TrustFileError(f"{where}.keyid: must be lower-case letters, digits, '.', '_' or '-', at most 128")
-    if keyid.startswith(DEV_KEY_PREFIX) != dev:
+    key_id = entry["key_id"]
+    if not isinstance(key_id, str) or not _KEY_ID.fullmatch(key_id):
+        raise TrustFileError(f"{where}.key_id: must be lower-case letters, digits, '.', '_' or '-', at most 128")
+    if key_id.startswith(DEV_KEY_PREFIX) != dev:
         rule = "only a development key" if dev else f"a development key ({DEV_KEY_PREFIX}…) is not trusted here"
-        raise TrustFileError(f"{where}.keyid: {rule}")
+        raise TrustFileError(f"{where}.key_id: {rule}")
     if entry["algorithm"] != "ES256":
         raise TrustFileError(f"{where}.algorithm: must be ES256")
     if not isinstance(entry["status"], str) or entry["status"] not in _STATUSES:
         raise TrustFileError(f"{where}.status: must be one of {', '.join(sorted(_STATUSES))}")
     key = BundleKey(
-        keyid=keyid,
+        key_id=key_id,
         algorithm="ES256",
         public_key_der=_public_key(entry, where),
         spki_sha256=entry["spki_sha256"],
@@ -202,12 +202,12 @@ def parse_bundle_keys(raw: bytes, *, dev: bool) -> Mapping[str, BundleKey]:
     if not isinstance(document["keys"], list):
         raise TrustFileError("keys: must be a list")
     keys = [_key(entry, f"keys[{index}]", dev=dev) for index, entry in enumerate(document["keys"])]
-    ids = [key.keyid for key in keys]
+    ids = [key.key_id for key in keys]
     if any(earlier >= later for earlier, later in zip(ids, ids[1:], strict=False)):
         raise TrustFileError("keys: must be in key-id order, with no key id twice")
     if len({key.spki_sha256 for key in keys}) != len(keys):
         raise TrustFileError("keys: no public key may appear under two key ids")
-    return MappingProxyType({key.keyid: key for key in keys})
+    return MappingProxyType({key.key_id: key for key in keys})
 
 
 _TRUST_FILE: bytes = resources.files("iltero_schemas.trust").joinpath("bundle-keys.json").read_bytes()

@@ -62,9 +62,9 @@ class TerraformLogLines(StrictModel):
     """The lines of Terraform's apply log that could not be read as one of its messages."""
 
     # Lines that are not JSON and carry no mark of Terraform: output the pipeline mixed in. Nothing was lost.
-    noise: Count
+    other_output_lines: Count
     # Lines that are not JSON but carry Terraform's mark: a message of its own was lost or damaged.
-    damaged: Count
+    damaged_messages: Count
     # Operations the log shows starting and never ending: the log stopped, or their end was lost.
     interrupted_operations: Count
 
@@ -78,7 +78,7 @@ class DeposedDelete(StrictModel):
     (``errored``), or still there because its delete never started
     (``not_attempted``). When the log lost lines, a failed delete and one never
     started look the same, so the outcome of an object the state still holds may
-    stay unsettled.
+    stay unknown.
     """
 
     address: Address
@@ -111,11 +111,11 @@ class TerraformApplyData(StrictModel):
 
     @property
     def maybe_ran(self) -> bool:
-        """Whether a deposed object's delete may have run: its outcome is unsettled."""
+        """Whether a deposed object's delete may have run: its outcome is unknown."""
         return any(isinstance(entry.outcome, ApplyLogIncomplete) for entry in self.deposed)
 
     @property
-    def unsettled(self) -> bool:
+    def outcome_unknown(self) -> bool:
         """Whether the log lost a fact only Terraform reports: the summary, or a deposed object's outcome."""
         return isinstance(self.summary, ApplyLogIncomplete) or self.maybe_ran
 
@@ -128,10 +128,10 @@ class TerraformApplyData(StrictModel):
         """Raise ``ValueError`` unless what Terraform says agrees with the apply's changes."""
         if len(apply.changes) + len(self.deposed) > MAX_RESOURCES:
             raise ValueError(f"an apply holds at most {MAX_RESOURCES} changes and deposed objects together")
-        if apply.basis == "log_and_state_where_log_incomplete" and not (
-            self.log_lines.damaged or self.log_lines.interrupted_operations
+        if apply.outcomes_from == "apply_log_and_state" and not (
+            self.log_lines.damaged_messages or self.log_lines.interrupted_operations
         ):
-            raise ValueError("only a log that lost messages leaves a change to the state or unsettled")
+            raise ValueError("only a log that lost messages leaves a change to the state or unknown")
         if isinstance(self.summary, TerraformApplySummary):
             self._check_summary(apply, self.summary)
 
@@ -162,12 +162,12 @@ class TerraformIdentityData(StrictModel):
 
     tool: Literal["terraform"]
     # How many deposed objects the apply destroyed; null when no applied plan was read.
-    deposed_destroyed: Annotated[int, Field(ge=0, le=MAX_RESOURCES)] | None
+    deposed_deleted: Annotated[int, Field(ge=0, le=MAX_RESOURCES)] | None
     # How many deposed objects the state still holds.
-    deposed_objects: Annotated[int, Field(ge=0, le=MAX_RESOURCES)]
+    deposed_remaining: Annotated[int, Field(ge=0, le=MAX_RESOURCES)]
 
 
 def check_deposed(identity: TerraformIdentityData, apply: TerraformApplyData) -> None:
     """Raise ``ValueError`` unless the identities count exactly the deposed objects the apply destroyed."""
-    if identity.deposed_destroyed != apply.destroyed:
+    if identity.deposed_deleted != apply.destroyed:
         raise ValueError("the identities count exactly the deposed objects the apply destroyed")

@@ -14,7 +14,7 @@ spec:
       - provider: aws
         kinds: [iam_role]
   when:
-    path: context.environment.production
+    path: organization_scope.environment.production
     equal: true
   assert:
     path: change.digest

@@ -17,7 +17,7 @@ from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKin
 
 # Present at every stage: what is being evaluated, for which organization,
 # workspace and environment, and the trusted time.
-ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "context", "reference_time"})
+ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "organization_scope", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
 # The parts only the server holds. A stage whose input may carry one reads server facts.

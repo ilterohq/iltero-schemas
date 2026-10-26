@@ -1,9 +1,9 @@
-"""The record and identity cases are refused, accepted or reported as tampered, and the two-stage record's checks name
-their inputs.
+"""The record and identity cases are refused, accepted or read with their integrity problems, and the two-stage
+record's evaluations name their inputs.
 
 Each case names a document vector and changes it by JSON Pointer (RFC 6901); a
-refused case names the message the refusal carries, and a tampered case the
-problems the integrity checks report.
+refused case names the message the refusal carries, and a case that fails its
+integrity checks names the problems they report.
 """
 
 from __future__ import annotations
@@ -26,7 +26,9 @@ from tests.conftest import VECTORS
 
 RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
 RECORD_VALID_CASES = json.loads((VECTORS / "records_valid" / "cases.json").read_text(encoding="utf-8"))
-RECORD_TAMPERED_CASES = json.loads((VECTORS / "records_tampered" / "cases.json").read_text(encoding="utf-8"))
+RECORD_INTEGRITY_FAILED_CASES = json.loads(
+    (VECTORS / "records_integrity_failed" / "cases.json").read_text(encoding="utf-8")
+)
 IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 
@@ -68,8 +70,8 @@ def test_valid_record_case_is_accepted(case: dict[str, Any]) -> None:
     CAR.model_validate(_patched(case, "records"))
 
 
-@pytest.mark.parametrize("case", RECORD_TAMPERED_CASES, ids=[c["name"] for c in RECORD_TAMPERED_CASES])
-def test_tampered_record_is_read_and_its_problems_reported(case: dict[str, Any]) -> None:
+@pytest.mark.parametrize("case", RECORD_INTEGRITY_FAILED_CASES, ids=[c["name"] for c in RECORD_INTEGRITY_FAILED_CASES])
+def test_a_record_that_fails_its_integrity_checks_is_read_and_its_problems_reported(case: dict[str, Any]) -> None:
     with pytest.raises(ValidationError, match=re.escape(" ".join(case["problems"][0]))):
         CAR.model_validate(_patched(case, "records"))
     car = CAR.model_validate(_patched(case, "records"), context={SKIP_INTEGRITY_CHECKS: True})
@@ -89,8 +91,14 @@ def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
 
 @pytest.mark.parametrize(
     "cases",
-    [RECORD_INVALID_CASES, RECORD_VALID_CASES, RECORD_TAMPERED_CASES, IDENTITY_INVALID_CASES, IDENTITY_VALID_CASES],
-    ids=["records invalid", "records valid", "records tampered", "identities invalid", "identities valid"],
+    [
+        RECORD_INVALID_CASES,
+        RECORD_VALID_CASES,
+        RECORD_INTEGRITY_FAILED_CASES,
+        IDENTITY_INVALID_CASES,
+        IDENTITY_VALID_CASES,
+    ],
+    ids=["records invalid", "records valid", "records integrity failed", "identities invalid", "identities valid"],
 )
 def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     names = [case["name"] for case in cases]

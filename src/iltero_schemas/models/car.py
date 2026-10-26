@@ -73,12 +73,12 @@ from iltero_schemas.models.tools.variants import check_identity_against_apply
 API_VERSION = "iltero.io/car/v1"
 # Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
 # each value a reader can recompute (the change digest and the digests bound to it, the counts, the verdicts) with what
-# it recomputes to, so the reader can report an edited value as tampering rather than as a record it cannot read. With
-# it set, the model no longer checks that the change digest is the change's, or that an approval is of this change. A
-# reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to trust the
-# record while it returns any problem.
+# it recomputes to, so the reader can report an edited value as an integrity failure rather than as a record it cannot
+# read. With it set, the model no longer checks that the change digest is the change's, or that an approval is of this
+# change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
+# trust the record while it returns any problem.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
-# A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
+# A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
 # More reports than a stage is ever given; one per tool is the rule the model enforces.
@@ -86,9 +86,9 @@ MAX_SCANNER_REPORTS = 16
 MAX_EVIDENCE_REFS = 100_000
 
 
-class RunId(StrictModel):
-    value: Uuid
-    basis: Literal["server_issued", "locally_derived"]
+class RecordRun(StrictModel):
+    id: Uuid
+    origin: Literal["server_issued", "locally_derived"]
 
 
 class Issuer(StrictModel):
@@ -119,8 +119,8 @@ class Collector(StrictModel):
     version: Identifier
 
 
-class RedactionApplied(StrictModel):
-    policy_id: Identifier
+class RedactionPolicyUsed(StrictModel):
+    id: Identifier
     version: Identifier
 
 
@@ -138,7 +138,7 @@ class EvidenceRef(StrictModel):
     collector: Collector
     source: dict[Identifier, Identifier] | None
     canonicalization: Identifier | None
-    redaction_applied: RedactionApplied | None
+    redaction_policy: RedactionPolicyUsed | None
 
 
 class EventsFile(StrictModel):
@@ -158,7 +158,7 @@ class AssertionIndex(StrictModel):
 
 
 class ExecutionEvaluator(StrictModel):
-    """The program that ran a stage's checks; the limits it ran each one under are on the events."""
+    """The program that ran a stage's evaluations; the limits it ran each one under are on the events."""
 
     engine: Literal["opa"]
     version: Identifier
@@ -174,7 +174,7 @@ class ExecutionBundle(StrictModel):
 
 
 class Execution(StrictModel):
-    """What ran a stage's checks, or why nothing did."""
+    """What ran a stage's evaluations, or why nothing did."""
 
     evaluator: ExecutionEvaluator | None
     bundle: ExecutionBundle | None
@@ -197,22 +197,22 @@ class ScannerReport(StrictModel):
     tool_version: Identifier
     # What the tool was reading, in its own words. A tool that reads a configuration
     # and one that reads a plan answer different questions about the same resource,
-    # so a reader must be able to tell which produced a credited verdict.
+    # so a reader must be able to tell which produced a accepted verdict.
     input_kinds: list[Identifier]
     # The digest of the report as the stage kept it, which is the ``input_digest`` of any verdict it stands behind.
     report_digest: Digest
     observations: MemberPath
-    checks_read: Count
+    results_read: Count
     # Results the stage read for no check at all: no entry allowed it, or it had nothing to answer.
-    unbound_checks: Count
+    results_without_binding: Count
     parsing_errors: Count
 
 
 class BindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
-    ``origin`` is set by the tool, never by the catalogue: a file cannot claim
-    to be the set the contract package ships. ``digest`` is over the catalogue
+    ``origin`` is set by the tool, never by the binding set: a file cannot claim
+    to be the set the contract package ships. ``digest`` is over the binding set
     as it was read, and the stage retains it, so an event's ``binding.digest``
     resolves to an entry a reader can see.
     """
@@ -223,32 +223,32 @@ class BindingSetUsed(StrictModel):
     # The name of the file it was read from; absent for the shipped set.
     file_name: Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(plain_text)] | None
     digest: Digest
-    retained: MemberPath
-    entries: Count
+    copy_path: MemberPath
+    binding_count: Count
 
     @model_validator(mode="after")
     def _a_file_is_named(self) -> BindingSetUsed:
         if (self.file_name is None) != (self.origin == "shipped"):
-            raise ValueError("a catalogue read from a file names it, and the shipped set names none")
+            raise ValueError("a binding set read from a file names it, and the shipped set names none")
         return self
 
 
 class Scanners(StrictModel):
     """What a stage read from the scanner reports it was given, and how much of it became a verdict."""
 
-    catalogue: BindingSetUsed
+    binding_set: BindingSetUsed
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
-    credited: Count
-    binding_unverified: Count
-    unbound_checks: Count
+    results_accepted: Count
+    results_binding_unverified: Count
+    results_without_binding: Count
 
     @model_validator(mode="after")
     def _counts_add_up(self) -> Scanners:
-        if self.unbound_checks != sum(report.unbound_checks for report in self.reports):
+        if self.results_without_binding != sum(report.results_without_binding for report in self.reports):
             raise ValueError("the unbound count is the sum of the reports' own")
-        read = sum(report.checks_read for report in self.reports)
-        if self.credited + self.binding_unverified + self.unbound_checks != read:
-            raise ValueError("every result a tool reported is credited, unverified or unbound")
+        read = sum(report.results_read for report in self.reports)
+        if self.results_accepted + self.results_binding_unverified + self.results_without_binding != read:
+            raise ValueError("every result a tool reported is accepted, unverified or unbound")
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
         return self
@@ -260,7 +260,7 @@ class StageRecord(StrictModel):
     stage: StageValue
     observed_at: Timestamp
     reference_time: ReferenceTime
-    ran: Execution
+    execution: Execution
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
@@ -268,7 +268,7 @@ class StageRecord(StrictModel):
     # stage whose input carries no approvals.
     approvals: Approvals | None
     compiler: Compiler
-    redaction_applied: RedactionReport
+    redaction: RedactionReport
     events: EventsFile
     assertions: AssertionIndex
     # Null for a stage that was given no scanner report.
@@ -296,7 +296,7 @@ class PlanRecord(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_basis: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestBasis
     context_digest: Digest
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool
@@ -307,8 +307,8 @@ class PlanRecord(StrictModel):
     applyable: bool | NotReported
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_basis(self) -> PlanRecord:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+    def _artifact_digest_has_its_source(self) -> PlanRecord:
+        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
         return self
 
     @model_validator(mode="after")
@@ -318,9 +318,9 @@ class PlanRecord(StrictModel):
 
 
 class Integrity(StrictModel):
-    """How the record is bound together. Without a signature this is digest linkage and says so."""
+    """How the record is bound together: without a signature, by its files' digests only, and it says so."""
 
-    scheme: Literal["digest_linkage"]
+    scheme: Literal["file_digests"]
     signature: None
 
 
@@ -334,7 +334,7 @@ class RecordSubject(StrictModel):
 
 
 # Why a stage of the lifecycle is not in a record's scope.
-ScopeBasis = Literal["project_config", "not_supported"]
+OutOfScopeReason = Literal["project_config", "not_supported"]
 
 
 class DeclaredIn(StrictModel):
@@ -354,14 +354,14 @@ class OutOfScope(StrictModel):
     """
 
     stage: StageValue
-    basis: ScopeBasis
+    reason: OutOfScopeReason
     declared_in: DeclaredIn | None
 
     @model_validator(mode="after")
     def _declared(self) -> OutOfScope:
-        if (self.basis == "project_config") != (self.declared_in is not None):
+        if (self.reason == "project_config") != (self.declared_in is not None):
             raise ValueError("a stage the project left out names the file that says so, and only such a stage")
-        if self.basis == "project_config" and self.stage is not Stage.PRE_DEPLOY:
+        if self.reason == "project_config" and self.stage is not Stage.PRE_DEPLOY:
             raise ValueError("a project can leave out only the pre-deploy approval gate")
         return self
 
@@ -371,7 +371,7 @@ class CAR(StrictModel):
 
     api_version: Literal["iltero.io/car/v1"] = Field(alias="apiVersion")
     uuid: Uuid
-    run_id: RunId
+    run: RecordRun
     unit: Identifier
     trust_level: TrustLevel
     # Always null: a record never determines compliance with a framework. A view of a framework is built
@@ -393,7 +393,7 @@ class CAR(StrictModel):
     expected_stages: list[StageValue]
     # Every stage of the lifecycle the record does not expect, each with why. Expected and not in
     # scope together name every stage of the lifecycle once.
-    not_in_scope: list[OutOfScope]
+    out_of_scope: list[OutOfScope]
     # Null until the post-deploy stage has reported.
     deployment: Deployment | None
     # Null until the post-deploy stage has read the unit's state.
@@ -402,7 +402,7 @@ class CAR(StrictModel):
     integrity: Integrity
     expires_at: None
     retention_class: None
-    retention_basis: Literal["no_server_scope"]
+    retention_reason: Literal["no_server_scope"]
 
     @property
     def outcome(self) -> StageOutcome:
@@ -458,7 +458,7 @@ class CAR(StrictModel):
             raise ValueError("the identities are read from the applied plan the deployment names")
         if self.identity.sources.state != self.deployment.apply.state:
             raise ValueError("the identities are read from the state the deployment was held to")
-        left = {change.address: change.fate for change in self.deployment.apply.changes if change.left_the_state}
+        left = {change.address: change.removal for change in self.deployment.apply.changes if change.left_the_state}
         if self.identity.left_the_state() != left:
             raise ValueError("what the identities list as removed is exactly what left the state, and how")
         check_identity_against_apply(self.identity.tool_data, self.deployment.apply.tool_data)

@@ -13,7 +13,7 @@ spec:
         provider: vec
         resource_types: [thing]
   when:
-    path: context.environment.name
+    path: organization_scope.environment.name
     equal: production
   assert:
     path: resource.after.a

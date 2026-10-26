@@ -9,7 +9,7 @@
       "version": "1.0.0"
     }
   },
-  "context": {
+  "organization_scope": {
     "environment": {
       "name": "production",
       "production": true
@@ -21,7 +21,7 @@
     "source": "runner_clock",
     "trust": "asserted",
     "value": "2026-09-22T13:06:02.114Z",
-    "bracket": null
+    "time_window": null
   },
   "source": {
     "commit": {
@@ -239,7 +239,7 @@
   "plan": {
     "applyable": true,
     "artifact_digest": null,
-    "artifact_digest_basis": "not_provided",
+    "artifact_digest_source": "not_provided",
     "complete": true,
     "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
     "digest_version": "1",
@@ -456,7 +456,7 @@
         "scope": null
       }
     ],
-    "authority": "unresolved"
+    "resolution": "unresolved"
   },
   "evaluations": {
     "__unknown": true,

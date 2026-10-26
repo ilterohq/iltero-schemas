@@ -11,7 +11,7 @@
   "properties": {
     "integrity": {
       "state": "client_asserted",
-      "basis": "digest_linkage"
+      "basis": "file_digests"
     },
     "source_identity": {
       "state": "not_performed",

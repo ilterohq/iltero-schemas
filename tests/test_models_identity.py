@@ -19,8 +19,8 @@ DOCUMENT: dict[str, Any] = {
         bindings=[binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")],
         unresolved=[{"address": "aws_lambda_function.worker", "reason": "no_resolver"}],
         removed=[removed("aws_db_instance.payments")],
-        removed_unresolved=[{"address": "aws_kms_key.old", "reason": "identifier_missing", "fate": "forgotten"}],
-        tool_data={"tool": "terraform", "deposed_destroyed": 0, "deposed_objects": 1},
+        removed_unresolved=[{"address": "aws_kms_key.old", "reason": "identifier_missing", "removal": "forgotten"}],
+        tool_data={"tool": "terraform", "deposed_deleted": 0, "deposed_remaining": 1},
     ),
 }
 
@@ -30,7 +30,7 @@ def test_a_document_of_bound_and_unresolved_resources_validates() -> None:
     addresses = [entry.iac.address for entry in bindings.bindings]
     assert addresses == ["aws_db_instance.payments", "aws_s3_bucket.logs"]
     assert bindings.unresolved[0].reason == "no_resolver"
-    assert bindings.sources.state.tool_version == "1.14.0" and bindings.tool_data.deposed_objects == 1
+    assert bindings.sources.state.tool_version == "1.14.0" and bindings.tool_data.deposed_remaining == 1
 
 
 def test_a_replacement_old_object_is_removed_while_its_new_one_is_bound() -> None:
@@ -55,7 +55,7 @@ def test_two_entries_of_one_list_never_name_one_cloud_identity(half: str) -> Non
 def test_two_resources_of_one_type_with_their_own_identities_are_both_bound() -> None:
     document = copy.deepcopy(DOCUMENT)
     other = binding("aws_db_instance.reports")
-    other["cloud"]["primary"]["value"] = other["cloud"]["primary"]["value"].replace("db:payments", "db:reports")
+    other["cloud"]["identifier"]["value"] = other["cloud"]["identifier"]["value"].replace("db:payments", "db:reports")
     document["bindings"].insert(1, other)
     assert len(IdentityBindings.model_validate(document).bindings) == 3
 
@@ -67,13 +67,13 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(document)
     document.update(removed=None, removed_unresolved=None)
-    document["tool_data"]["deposed_destroyed"] = None
+    document["tool_data"]["deposed_deleted"] = None
     assert IdentityBindings.model_validate(document).removed is None
     document["removed"] = []
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(document)
     checked = copy.deepcopy(DOCUMENT)
-    checked["tool_data"]["deposed_destroyed"] = None
+    checked["tool_data"]["deposed_deleted"] = None
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
         IdentityBindings.model_validate(checked)
 
@@ -87,15 +87,27 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d["unresolved"].append({"address": "aws_s3_bucket.logs", "reason": "no_resolver"}), "never both"),
         (lambda d: d["bindings"][0]["iac"].update(unit="network"), "belongs to the unit"),
         (lambda d: d["bindings"][0]["cloud"].update(resource_type="kms_key"), "not the ARN of a kms_key"),
-        (lambda d: d["bindings"][0]["cloud"]["primary"].update(value="x" * 2049), "at most 2048"),
-        (lambda d: d["bindings"][0].update(authority="heuristic"), "Input should be 'authoritative'"),
+        (lambda d: d["bindings"][0]["cloud"]["identifier"].update(value="x" * 2049), "at most 2048"),
+        (lambda d: d["bindings"][0].update(resolution="heuristic"), "Input should be 'resolved'"),
         (lambda d: d["resolvers"][0].update(version="latest build"), "String should match pattern"),
         (lambda d: d["generator"].update(name="terraform"), "Input should be 'iltero'"),
         (lambda d: d.pop("generator"), "Field required"),
-        (lambda d: d["resolvers"][0].update(verified=["s3_bucket"]), "only a resource type verified for its provider"),
-        (lambda d: d["resolvers"][0].update(verified=[]), "only a resource type verified for its provider"),
-        (lambda d: d["resolvers"][0].update(verified=["s3_bucket", "rds_instance"]), "sorted and named once"),
-        (lambda d: d["resolvers"][0].update(verified=["rds_instance", "rds_instance"]), "sorted and named once"),
+        (
+            lambda d: d["resolvers"][0].update(verified_resource_types=["s3_bucket"]),
+            "only a resource type verified for its provider",
+        ),
+        (
+            lambda d: d["resolvers"][0].update(verified_resource_types=[]),
+            "only a resource type verified for its provider",
+        ),
+        (
+            lambda d: d["resolvers"][0].update(verified_resource_types=["s3_bucket", "rds_instance"]),
+            "sorted and named once",
+        ),
+        (
+            lambda d: d["resolvers"][0].update(verified_resource_types=["rds_instance", "rds_instance"]),
+            "sorted and named once",
+        ),
         (lambda d: d["bindings"][0].update(resolver={"provider": "aws", "version": "1.0.0"}), "Extra inputs"),
         (lambda d: d["unresolved"][0].update(reason="guessed"), "Input should be"),
         (lambda d: d["bindings"][0].update(state={"password": "x"}), "Extra inputs are not permitted"),
@@ -103,14 +115,14 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d["removed"].append(removed("aws_db_instance.payments")), "name each resource once"),
         (
             lambda d: d["removed_unresolved"].insert(
-                0, {"address": "aws_db_instance.payments", "reason": "no_resolver", "fate": "deleted"}
+                0, {"address": "aws_db_instance.payments", "reason": "no_resolver", "removal": "deleted"}
             ),
             "never both",
         ),
-        (lambda d: d["tool_data"].update(deposed_objects=-1), "greater than or equal to 0"),
-        (lambda d: d["tool_data"].update(deposed_objects=100_001), "less than or equal to 100000"),
-        (lambda d: d["removed"][0].update(fate="vanished"), "Input should be"),
-        (lambda d: d["removed"][0].pop("fate"), "Field required"),
+        (lambda d: d["tool_data"].update(deposed_remaining=-1), "greater than or equal to 0"),
+        (lambda d: d["tool_data"].update(deposed_remaining=100_001), "less than or equal to 100000"),
+        (lambda d: d["removed"][0].update(removal="vanished"), "Input should be"),
+        (lambda d: d["removed"][0].pop("removal"), "Field required"),
         (lambda d: d["removed"][0]["iac"].update(unit="network"), "belongs to the unit"),
         (lambda d: d["sources"]["state"].update(digest="sha256:abc"), "String should match pattern"),
         (lambda d: d.update(resolvers=[]), "only a resource type verified for its provider"),
@@ -143,8 +155,8 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         "removed and unresolved",
         "negative deposed count",
         "too many deposed",
-        "unknown fate",
-        "no fate",
+        "unknown removal",
+        "no removal",
         "removed from another unit",
         "state digest",
         "no resolver for a bound provider",

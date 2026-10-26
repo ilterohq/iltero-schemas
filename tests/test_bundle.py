@@ -55,7 +55,7 @@ def _keys(status: str = "active") -> Mapping[str, BundleKey]:
         "revoked": {"revoked_at": "2026-10-01T00:00:00Z", "revocation_reason": "compromised"},
     }[status]
     entry = {
-        "keyid": KEY_ID,
+        "key_id": KEY_ID,
         "algorithm": "ES256",
         "public_key": base64.b64encode(der).decode("ascii"),
         "spki_sha256": "sha256:" + hashlib.sha256(der).hexdigest(),
@@ -193,7 +193,7 @@ def test_the_descriptor_carries_the_sources_and_the_digests() -> None:
 @pytest.mark.parametrize("status", ["active", "retired"])
 def test_a_genuine_bundle_passes_under_a_key_that_may_verify(status: str) -> None:
     checked = check_descriptor(DESCRIPTOR, _keys(status))
-    assert checked.key.keyid == KEY_ID
+    assert checked.key.key_id == KEY_ID
     assert dict(checked.files) == _signed_files()
 
 

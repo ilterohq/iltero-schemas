@@ -12,7 +12,7 @@ from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.stages import LIFECYCLE, integrity_problems, scope_basis
+from iltero_schemas.models.stages import LIFECYCLE, integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
 from tests.records import RECORD
 from tests.records import set_path as _set
@@ -41,10 +41,10 @@ def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) 
     document["stages"].update(copy.deepcopy(stages or {}))
     for dotted, value in changes.items():
         _set(document, dotted, value)
-    if "expected_stages" in changes and "not_in_scope" not in changes:
+    if "expected_stages" in changes and "out_of_scope" not in changes:
         expected = set(changes["expected_stages"])
-        document["not_in_scope"] = [
-            {"stage": stage.value, "basis": "not_supported", "declared_in": None}
+        document["out_of_scope"] = [
+            {"stage": stage.value, "reason": "not_supported", "declared_in": None}
             for stage in LIFECYCLE
             if stage.value not in expected
         ]
@@ -77,19 +77,19 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
         (_record(expected_stages=["post_deploy"]), "starts at its plan stage"),
         (_record(expected_stages=["plan", "runtime"]), "runtime observations belong to no deployment"),
         (
-            _record(not_in_scope=[{"stage": "post_verify", "basis": "not_supported", "declared_in": None}] * 2),
+            _record(out_of_scope=[{"stage": "post_verify", "reason": "not_supported", "declared_in": None}] * 2),
             "a stage is named not in scope once",
         ),
         (
             _record(
-                not_in_scope=[
-                    {"stage": "post_verify", "basis": "not_supported", "declared_in": None},
-                    {"stage": "post_deploy", "basis": "not_supported", "declared_in": None},
+                out_of_scope=[
+                    {"stage": "post_verify", "reason": "not_supported", "declared_in": None},
+                    {"stage": "post_deploy", "reason": "not_supported", "declared_in": None},
                 ]
             ),
             "a stage is expected or not in scope, never both",
         ),
-        (_record(not_in_scope=[]), "accounts for every stage of the lifecycle"),
+        (_record(out_of_scope=[]), "accounts for every stage of the lifecycle"),
         (
             _record(POST_VERIFY, expected_stages=["plan", "post_deploy", "post_verify"]),
             "verifies a deployment only after its post-deploy stage",
@@ -110,7 +110,7 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
             _record(
                 {
                     "pre_deploy": _stage(
-                        "pre_deploy", **{"coverage.subjects_in_scope.basis": "plan_resource_enumeration"}
+                        "pre_deploy", **{"coverage.subjects_in_scope.counted_from": "plan_resource_enumeration"}
                     )
                 }
             ),
@@ -166,11 +166,11 @@ def test_a_record_whose_stages_do_not_hold_together_is_refused(document: dict[st
 
 def _flipped_event() -> dict[str, Any]:
     event: dict[str, Any] = copy.deepcopy(RECORD["events"][1])
-    event["evaluation"].update(status="fail", reason="assert: false")
+    event["evaluation"].update(status="fail", policy_reason="assert: false")
     return event
 
 
-PASSED = {"value": "pass", "exit_code": 0, "basis": "status_counts", "stage": None}
+PASSED = {"value": "pass", "exit_code": 0, "computed_from": "status_counts", "stage": None}
 INCOMPLETE = {"value": "incomplete", "reason": "evaluator_error", "detail": "1 of 5"}
 
 
@@ -284,7 +284,7 @@ def _coverage(
 ) -> Coverage:
     document = copy.deepcopy(RECORD["stages"]["plan"]["coverage"])
     full = dict.fromkeys(document["status_counts"], 0) | counts
-    document.update(status_counts=full, checks=sum(full.values()), assertions_evaluated=evaluated)
+    document.update(status_counts=full, evaluations=sum(full.values()), assertions_evaluated=evaluated)
     document["assertions_expected"]["value"] = expected
     document["subjects_evaluated"] = subjects
     document["truncated"] = {"value": truncated, "limit": 1 if truncated else None, "reason": None}
@@ -322,7 +322,12 @@ def _coverage(
 )
 def test_a_stage_verdict_is_the_code_its_counts_give(coverage: Coverage, code: int, value: str) -> None:
     verdict = stage_outcome(coverage).verdict
-    assert (verdict.value, verdict.exit_code, verdict.basis, verdict.stage) == (value, code, "status_counts", None)
+    assert (verdict.value, verdict.exit_code, verdict.computed_from, verdict.stage) == (
+        value,
+        code,
+        "status_counts",
+        None,
+    )
 
 
 def test_an_error_marks_a_stage_incomplete_and_a_clean_run_complete() -> None:
@@ -330,7 +335,7 @@ def test_an_error_marks_a_stage_incomplete_and_a_clean_run_complete() -> None:
     assert (status.value, status.reason, status.detail) == (
         "incomplete",
         "required_policy_evaluation_failed",
-        "2 of 5 checks ended in an evaluator error",
+        "2 of 5 evaluations ended in an evaluator error",
     )
     assert stage_outcome(_coverage({"fail": 5})).assurance_status.value == "complete"
 
@@ -340,9 +345,9 @@ def test_the_file_that_leaves_a_stage_out_is_inside_the_project(path: str) -> No
     config = {"path": path, "digest": "sha256:" + "d" * 64}
     scoped = _record(
         expected_stages=["plan", "post_deploy"],
-        not_in_scope=[
-            {"stage": "pre_deploy", "basis": "project_config", "declared_in": config},
-            {"stage": "post_verify", "basis": "not_supported", "declared_in": None},
+        out_of_scope=[
+            {"stage": "pre_deploy", "reason": "project_config", "declared_in": config},
+            {"stage": "post_verify", "reason": "not_supported", "declared_in": None},
         ],
     )
     with pytest.raises(ValidationError, match="relative path inside the project"):
@@ -354,13 +359,13 @@ def test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so(
     config = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
     scoped = _record(
         expected_stages=["plan", "post_deploy"],
-        not_in_scope=[
-            {"stage": "pre_deploy", "basis": "project_config", "declared_in": config},
-            {"stage": "post_verify", "basis": "not_supported", "declared_in": None},
+        out_of_scope=[
+            {"stage": "pre_deploy", "reason": "project_config", "declared_in": config},
+            {"stage": "post_verify", "reason": "not_supported", "declared_in": None},
         ],
     )
     car = CAR.model_validate(scoped, context=_READER)
-    (left_out, _) = car.not_in_scope
+    (left_out, _) = car.out_of_scope
     assert left_out.declared_in is not None and left_out.declared_in.path == ".iltero/config.yml"
 
 
@@ -368,11 +373,11 @@ def test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so(
     ("entry", "message"),
     [
         (
-            {"stage": "post_deploy", "basis": "project_config", "declared_in": CONFIG},
+            {"stage": "post_deploy", "reason": "project_config", "declared_in": CONFIG},
             "only the pre-deploy approval gate",
         ),
-        ({"stage": "pre_deploy", "basis": "project_config", "declared_in": None}, "names the file that says so"),
-        ({"stage": "pre_deploy", "basis": "not_supported", "declared_in": CONFIG}, "names the file that says so"),
+        ({"stage": "pre_deploy", "reason": "project_config", "declared_in": None}, "names the file that says so"),
+        ({"stage": "pre_deploy", "reason": "not_supported", "declared_in": CONFIG}, "names the file that says so"),
     ],
     ids=["a project leaving out post-deploy", "a project choice naming no file", "a file named for no choice"],
 )
@@ -388,7 +393,7 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("basis", "server_issued"), ("unit", "network")],
+    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("origin", "server_issued"), ("unit", "network")],
     ids=["another run", "another way of opening it", "another unit"],
 )
 def test_every_event_names_the_records_run(field: str, value: str) -> None:
@@ -452,7 +457,7 @@ def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
 def test_a_stage_counts_by_the_kind_of_subject_its_checks_are_about(
     stage: Stage, kinds: set[TargetKind], basis: str | None
 ) -> None:
-    assert scope_basis(stage, kinds) == basis
+    assert scope_counted_from(stage, kinds) == basis
 
 
 @pytest.mark.parametrize(
@@ -466,7 +471,7 @@ def test_a_stages_checks_are_about_one_kind_of_subject_it_can_target(
     stage: Stage, kinds: set[TargetKind], message: str
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        scope_basis(stage, kinds)
+        scope_counted_from(stage, kinds)
 
 
 def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[str, Any]:
@@ -492,7 +497,7 @@ def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
 
 def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
     of_change = _approval({"kind": "change", "digest": RECORD["change"]["digest"]})
-    of_run = _approval({"kind": "run", "id": RECORD["run_id"]["value"]}, "apr_0002")
+    of_run = _approval({"kind": "run", "id": RECORD["run"]["id"]}, "apr_0002")
     CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
 
 
@@ -503,7 +508,7 @@ def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> N
             [_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})],
             "only approvals of a change or of",
         ),
-        ([_approval({"kind": "run", "id": RECORD["run_id"]["value"]})] * 2, "lists each approval once"),
+        ([_approval({"kind": "run", "id": RECORD["run"]["id"]})] * 2, "lists each approval once"),
     ],
     ids=["another run", "listed twice"],
 )

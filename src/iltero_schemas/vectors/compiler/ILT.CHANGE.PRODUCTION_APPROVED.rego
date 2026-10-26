@@ -8,11 +8,11 @@ assertion_version := "1.0.0"
 
 ast_version := 1
 
-assertion_source_digest := "sha256:f3752fc1054bb6f39663c575a09355dd6376abc9340cdac56265fd8db946dfc7"
+assertion_source_digest := "sha256:ad110bec34e3d903405fe88ee94f6df78014b32dad7738ac83b6826c5eaa0d41"
 
 _has_when := true
 
-_guard := predicate("equal", lookup("context.environment.production"), literal(true))
+_guard := predicate("equal", lookup("organization_scope.environment.production"), literal(true))
 
 _check := any_of([
 	exists_of(lookup("approvals"), [where_1(e1) | some e1 in elements(lookup("approvals"))]),

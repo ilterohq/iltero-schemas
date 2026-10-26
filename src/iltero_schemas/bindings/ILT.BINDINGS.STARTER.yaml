@@ -14,7 +14,7 @@ bindings:
     # Checkov 3 writes the result shape this binding reads: a version, and
     # each check with the resource address it was decided about.
     tool_version_constraint: ">=3,<4"
-    check_id: CKV_AWS_16
+    rule_id: CKV_AWS_16
     # The configuration scan would decide `storage_encrypted = var.encrypt` on the
     # variable; only the plan scan decides the value the plan settled on.
     input_kind: terraform_plan
@@ -29,7 +29,7 @@ bindings:
     version: "1.0.0"
     tool: checkov
     tool_version_constraint: ">=3,<4"
-    check_id: CKV_AWS_17
+    rule_id: CKV_AWS_17
     input_kind: terraform_plan
     assertion:
       id: ILT.AWS.RDS.NOT_PUBLIC

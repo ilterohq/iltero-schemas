@@ -20,7 +20,7 @@
     {
       "provider": "aws",
       "version": "1.0.0",
-      "verified": [
+      "verified_resource_types": [
         "iam_role",
         "kms_key",
         "rds_instance",
@@ -45,12 +45,12 @@
     {
       "address": "aws_kms_key.old",
       "reason": "identifier_missing",
-      "fate": "forgotten"
+      "removal": "forgotten"
     }
   ],
   "tool_data": {
     "tool": "terraform",
-    "deposed_destroyed": 0,
-    "deposed_objects": 1
+    "deposed_deleted": 0,
+    "deposed_remaining": 1
   }
 }

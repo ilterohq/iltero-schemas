@@ -1,4 +1,4 @@
-"""``EvaluatorBindingSet``: the rules that keep a credited verdict unambiguous."""
+"""``EvaluatorBindingSet``: the rules that keep a accepted verdict unambiguous."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ ENTRY: dict[str, Any] = {
     "version": "1.0.0",
     "tool": "checkov",
     "tool_version_constraint": ">=3,<4",
-    "check_id": "CKV_AWS_16",
+    "rule_id": "CKV_AWS_16",
     "input_kind": "terraform_plan",
     "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
     "stage": "plan",
@@ -54,7 +54,7 @@ def _other(**changes: Any) -> dict[str, Any]:
 def test_the_starter_set_loads() -> None:
     shipped = starter_set()
     assert shipped.metadata.id == "ILT.BINDINGS.STARTER"
-    assert [entry.check_id for entry in shipped.bindings] == ["CKV_AWS_16", "CKV_AWS_17"]
+    assert [entry.rule_id for entry in shipped.bindings] == ["CKV_AWS_16", "CKV_AWS_17"]
 
 
 def test_an_entry_says_what_the_tool_must_have_been_reading() -> None:
@@ -72,11 +72,11 @@ def test_every_starter_entry_cites_an_assertion_this_package_ships() -> None:
         assert parsed.stage is entry.stage
 
 
-def test_only_a_decision_may_be_credited() -> None:
-    """A skipped or unsettled check is not a decision, and an event could not carry it anyway.
+def test_only_a_decision_may_be_accepted() -> None:
+    """A skipped or undecided result is not a decision, and an event could not carry it anyway.
 
     ``not_applicable`` and ``unknown`` need a ``status_reason`` the runner sets
-    from what it observed; a scanner's result gives none, so crediting one
+    from what it observed; a scanner's result gives none, so accepting one
     could only produce an event the contract refuses.
     """
     accepted = set()
@@ -90,17 +90,17 @@ def test_only_a_decision_may_be_credited() -> None:
     assert accepted < POLICY_STATUSES
 
 
-def test_every_status_the_starter_set_credits_makes_a_valid_event() -> None:
+def test_every_status_the_starter_set_accepts_makes_a_valid_event() -> None:
     """The end-to-end guarantee: nothing an entry may say can produce an event the contract refuses."""
-    credited = {value for entry in starter_set().bindings for value in entry.status_map.values()}
-    assert credited == {"pass", "fail"}
-    for status in sorted(credited):
+    accepted = {value for entry in starter_set().bindings for value in entry.status_map.values()}
+    assert accepted == {"pass", "fail"}
+    for status in sorted(accepted):
         evaluation = {
             "stage": "plan",
             "status": status,
             "status_reason": None,
             "status_detail": None,
-            "reason": None,
+            "policy_reason": None,
             "observations": None,
         }
         Evaluation.model_validate(evaluation)
@@ -115,24 +115,24 @@ def test_an_entry_digest_changes_with_the_entry() -> None:
 
 def test_two_entries_may_not_share_an_id() -> None:
     with pytest.raises(ValidationError, match="two entries share the id"):
-        EvaluatorBindingSet.model_validate(_set(ENTRY, {**ENTRY, "check_id": "CKV_AWS_17"}))
+        EvaluatorBindingSet.model_validate(_set(ENTRY, {**ENTRY, "rule_id": "CKV_AWS_17"}))
 
 
-def test_one_tool_may_bind_a_check_once_per_stage() -> None:
+def test_one_tool_may_bind_a_rule_once_per_stage() -> None:
     other = _other(assertion={"id": "ILT.AWS.RDS.NOT_PUBLIC", "version": "1.0.0"})
-    with pytest.raises(ValidationError, match="bind the same check"):
+    with pytest.raises(ValidationError, match="bind the same rule"):
         EvaluatorBindingSet.model_validate(_set(ENTRY, other))
 
 
 def test_one_tool_may_establish_an_assertion_with_one_check_per_stage() -> None:
-    other = _other(check_id="CKV_AWS_999")
+    other = _other(rule_id="CKV_AWS_999")
     with pytest.raises(ValidationError, match="establish the same assertion"):
         EvaluatorBindingSet.model_validate(_set(ENTRY, other))
 
 
 def test_two_tools_may_establish_the_same_assertion() -> None:
-    """The run chooses which tools it was given; the catalogue may describe both."""
-    other = _other(tool="trivy", check_id="AWS-0080")
+    """The run chooses which tools it was given; the binding set may describe both."""
+    other = _other(tool="trivy", rule_id="AWS-0080")
     assert len(EvaluatorBindingSet.model_validate(_set(ENTRY, other)).bindings) == 2
 
 
@@ -162,8 +162,8 @@ def test_a_tool_version_is_read_against_the_constraint(constraint: str, version:
     ("changes", "message"),
     [
         ({"tool": "tfsec"}, "Input should be"),
-        ({"check_id": "-leading-hyphen"}, "String should match"),
-        ({"check_id": "x" * 129}, "at most 128"),
+        ({"rule_id": "-leading-hyphen"}, "String should match"),
+        ({"rule_id": "x" * 129}, "at most 128"),
         ({"stage": "runtime"}, None),
         ({"status_map": {}}, "at least 1 item"),
         ({"status_map": {f"S{n}": "pass" for n in range(MAX_STATUS_MAP + 1)}}, "at most 32 items"),

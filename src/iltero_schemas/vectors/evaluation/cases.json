@@ -7,7 +7,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -47,7 +47,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -87,7 +87,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -134,7 +134,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -171,7 +171,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -203,7 +203,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -237,7 +237,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -271,7 +271,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -306,7 +306,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -341,7 +341,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -378,7 +378,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -407,7 +407,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -440,7 +440,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -476,7 +476,7 @@
     "name": "subject_absent_still_evaluates",
     "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -607,7 +607,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -651,7 +651,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -680,7 +680,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -709,7 +709,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -738,7 +738,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -767,7 +767,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -796,7 +796,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -828,7 +828,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "staging",
           "production": false
@@ -853,14 +853,14 @@
     }
   },
   {
-    "name": "guard_false_hides_unknown_check",
+    "name": "guard_false_hides_unknown_assert",
     "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "staging",
           "production": false
@@ -896,7 +896,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": {
             "__redacted": true,
@@ -925,9 +925,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.production: redacted",
+      "reason": "organization_scope.environment.production: redacted",
       "unknown": {
-        "path": "context.environment.production",
+        "path": "organization_scope.environment.production",
         "reason": "redacted"
       },
       "when": "unknown"
@@ -941,7 +941,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {},
+      "organization_scope": {},
       "resource": {
         "id": "aws_db_instance.payments",
         "type": "aws_db_instance",
@@ -955,9 +955,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.production: path_missing",
+      "reason": "organization_scope.environment.production: path_missing",
       "unknown": {
-        "path": "context.environment.production",
+        "path": "organization_scope.environment.production",
         "reason": "path_missing"
       },
       "when": "unknown"
@@ -971,7 +971,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1007,7 +1007,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1046,7 +1046,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1090,7 +1090,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1122,7 +1122,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1154,7 +1154,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1183,7 +1183,7 @@
           "expected": true,
           "index": 0,
           "op": "equal",
-          "path": "context.environment.production",
+          "path": "organization_scope.environment.production",
           "status": "true"
         },
         {
@@ -1236,7 +1236,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1269,7 +1269,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1305,7 +1305,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1334,7 +1334,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1373,7 +1373,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1401,7 +1401,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1436,7 +1436,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1469,7 +1469,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1505,7 +1505,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1539,7 +1539,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1571,7 +1571,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1605,7 +1605,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1698,7 +1698,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1732,7 +1732,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1766,7 +1766,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1867,7 +1867,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1901,7 +1901,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1938,7 +1938,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -1976,7 +1976,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2012,7 +2012,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2048,7 +2048,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2150,7 +2150,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2251,7 +2251,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2310,7 +2310,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2342,7 +2342,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2369,7 +2369,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2410,7 +2410,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2440,7 +2440,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2475,7 +2475,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2515,7 +2515,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2564,7 +2564,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2600,7 +2600,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2637,7 +2637,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2680,7 +2680,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2720,7 +2720,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2767,7 +2767,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2806,7 +2806,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2837,7 +2837,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2867,7 +2867,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2905,7 +2905,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2938,7 +2938,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2970,7 +2970,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -2990,14 +2990,14 @@
     }
   },
   {
-    "name": "guard_unknown_hides_check",
+    "name": "guard_unknown_hides_assert",
     "assertion": "VEC.GUARD.UNKNOWN",
     "input": {
       "subject": {
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": {
             "__unknown": true,
@@ -3015,9 +3015,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.name: known_after_deploy",
+      "reason": "organization_scope.environment.name: known_after_deploy",
       "unknown": {
-        "path": "context.environment.name",
+        "path": "organization_scope.environment.name",
         "reason": "known_after_deploy"
       },
       "when": "unknown"
@@ -3031,7 +3031,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3078,7 +3078,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3125,7 +3125,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3172,7 +3172,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "staging",
           "production": false
@@ -3198,7 +3198,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3252,7 +3252,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3285,7 +3285,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3318,7 +3318,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3361,7 +3361,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3456,7 +3456,7 @@
         "kind": "deployment",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3465,13 +3465,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_basis": "plan_binary"
+        "artifact_digest_source": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:b",
-          "artifact_digest_basis": "plan_binary"
+          "artifact_digest_source": "plan_binary"
         }
       }
     },
@@ -3490,7 +3490,7 @@
         "kind": "deployment",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3499,13 +3499,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_basis": "plan_binary"
+        "artifact_digest_source": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:c",
-          "artifact_digest_basis": "plan_binary"
+          "artifact_digest_source": "plan_binary"
         }
       }
     },
@@ -3543,11 +3543,11 @@
           "actual": "plan_binary",
           "clause": "assert",
           "expected": {
-            "ref": "plan.artifact_digest_basis"
+            "ref": "plan.artifact_digest_source"
           },
           "index": 2,
           "op": "equal",
-          "path": "deployment.plan.artifact_digest_basis",
+          "path": "deployment.plan.artifact_digest_source",
           "resolved": "plan_binary",
           "status": "true"
         }
@@ -3562,7 +3562,7 @@
         "kind": "deployment",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3571,13 +3571,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": null,
-        "artifact_digest_basis": "not_provided"
+        "artifact_digest_source": "not_provided"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:b",
-          "artifact_digest_basis": "plan_binary"
+          "artifact_digest_source": "plan_binary"
         }
       }
     },
@@ -3596,7 +3596,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3630,7 +3630,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3668,7 +3668,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3706,7 +3706,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3744,7 +3744,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3778,7 +3778,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3856,7 +3856,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -3931,7 +3931,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": {
@@ -3968,9 +3968,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.production: server_facts_unavailable",
+      "reason": "organization_scope.environment.production: server_facts_unavailable",
       "unknown": {
-        "path": "context.environment.production",
+        "path": "organization_scope.environment.production",
         "reason": "server_facts_unavailable"
       },
       "when": "unknown"
@@ -3984,7 +3984,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": {
@@ -4006,9 +4006,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.production: server_facts_unavailable",
+      "reason": "organization_scope.environment.production: server_facts_unavailable",
       "unknown": {
-        "path": "context.environment.production",
+        "path": "organization_scope.environment.production",
         "reason": "server_facts_unavailable"
       },
       "when": "unknown"
@@ -4022,7 +4022,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4057,7 +4057,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4092,7 +4092,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4127,7 +4127,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4168,7 +4168,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4214,7 +4214,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4249,7 +4249,7 @@
         "kind": "change",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": false
@@ -4284,7 +4284,7 @@
         "kind": "deployment",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4293,13 +4293,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": null,
-        "artifact_digest_basis": "not_provided"
+        "artifact_digest_source": "not_provided"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": null,
-          "artifact_digest_basis": "not_provided"
+          "artifact_digest_source": "not_provided"
         }
       }
     },
@@ -4318,7 +4318,7 @@
         "kind": "deployment",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4327,13 +4327,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_basis": "plan_binary"
+        "artifact_digest_source": "plan_binary"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": null,
-          "artifact_digest_basis": "not_provided"
+          "artifact_digest_source": "not_provided"
         }
       }
     },
@@ -4352,7 +4352,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4380,7 +4380,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4414,7 +4414,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": null
       },
       "resource": {
@@ -4425,9 +4425,9 @@
     },
     "expected": {
       "status": "unknown",
-      "reason": "context.environment.production: path_missing",
+      "reason": "organization_scope.environment.production: path_missing",
       "unknown": {
-        "path": "context.environment.production",
+        "path": "organization_scope.environment.production",
         "reason": "path_missing"
       },
       "when": "unknown"
@@ -4441,7 +4441,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true
@@ -4477,7 +4477,7 @@
         "kind": "resource",
         "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
       },
-      "context": {
+      "organization_scope": {
         "environment": {
           "name": "production",
           "production": true

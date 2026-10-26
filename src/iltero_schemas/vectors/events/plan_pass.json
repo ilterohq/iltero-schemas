@@ -16,14 +16,14 @@
         }
       }
     ],
-    "authority": "unresolved"
+    "resolution": "unresolved"
   },
   "evaluation": {
     "stage": "plan",
     "status": "pass",
     "status_reason": null,
     "status_detail": null,
-    "reason": "assert: true",
+    "policy_reason": "assert: true",
     "observations": {
       "subject": {
         "kind": "resource"
@@ -46,7 +46,7 @@
   "provenance": {
     "run": {
       "id": "run_001",
-      "basis": "locally_derived",
+      "origin": "locally_derived",
       "unit": "root"
     },
     "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -60,15 +60,15 @@
       "engine": "opa",
       "version": "1.20.2",
       "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-      "environment": {
-        "timeout_s": 30.0,
-        "memory_cap": {
+      "limits": {
+        "timeout_seconds": 30.0,
+        "memory_limit": {
           "bytes": 536870912,
           "enforced": true,
           "kind": "rlimit_as"
         },
-        "output_bytes_per_answer": 1054720,
-        "contexts_per_process": 64,
+        "max_output_bytes": 1054720,
+        "evaluations_per_process": 64,
         "capabilities_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
         "platform": "linux-x86_64"
       }
@@ -90,7 +90,7 @@
     "executor": {
       "type": "human",
       "provider": "local",
-      "run_id": null
+      "ci_run_id": null
     },
     "facts_source": null
   },

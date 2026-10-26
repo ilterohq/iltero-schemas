@@ -51,7 +51,7 @@ CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.j
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
 APPROVALS = json.loads((VECTORS / "evaluation" / "approvals.json").read_text(encoding="utf-8"))
-INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
+INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "contexts": AssuranceContext,
@@ -161,7 +161,7 @@ def test_every_compiled_vector_has_its_source_and_nothing_else() -> None:
 
 @pytest.mark.parametrize("name", sorted(INVALID_EXPECTED), ids=str)
 def test_invalid_document_is_rejected_at_the_expected_path(name: str) -> None:
-    text = (VECTORS / "invalid" / f"{name}.yaml").read_text(encoding="utf-8")
+    text = (VECTORS / "assertions_invalid" / f"{name}.yaml").read_text(encoding="utf-8")
     with pytest.raises(AssertionSyntaxError) as raised:
         parse(text)
     assert raised.value.issues[0].path == INVALID_EXPECTED[name]["path"]
@@ -169,7 +169,7 @@ def test_invalid_document_is_rejected_at_the_expected_path(name: str) -> None:
 
 
 def test_every_invalid_document_is_listed() -> None:
-    assert {p.stem for p in (VECTORS / "invalid").glob("*.yaml")} == set(INVALID_EXPECTED)
+    assert {p.stem for p in (VECTORS / "assertions_invalid").glob("*.yaml")} == set(INVALID_EXPECTED)
 
 
 @pytest.mark.parametrize(("folder", "name"), DOCUMENT_FILES, ids=str)
@@ -192,15 +192,15 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in VECTORS.iterdir() if path.is_dir() and path.name != "__pycache__"}
     known = {
         "assertions",
+        "assertions_invalid",
         "canonical",
         "compiler",
         "evaluation",
         "identities_invalid",
         "identities_valid",
-        "invalid",
         "opa",
+        "records_integrity_failed",
         "records_invalid",
-        "records_tampered",
         "records_valid",
         "subjects",
     }

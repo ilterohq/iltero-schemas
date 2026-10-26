@@ -56,7 +56,7 @@ def test_a_property_has_one_of_six_states() -> None:
         (lambda d: d["record"].update(digest="sha256:abc"), "String should match pattern"),
         (lambda d: d["verifier"].update(name="server"), "Input should be 'iltero'"),
         (
-            lambda d: d["properties"]["integrity"].update(state="verified", basis="digest_linkage"),
+            lambda d: d["properties"]["integrity"].update(state="verified", basis="file_digests"),
             "verified only by a signature",
         ),
         (lambda d: d["properties"]["integrity"].update(state="verified", basis=None), "verified only by a signature"),
@@ -86,5 +86,5 @@ def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
     document = copy.deepcopy(REPORT)
     for name in document["properties"]:
         document["properties"][name] = {"state": "not_determined", "basis": "integrity_failed"}
-    document["properties"]["integrity"] = {"state": "failed", "basis": "digest_linkage"}
+    document["properties"]["integrity"] = {"state": "failed", "basis": "file_digests"}
     VerificationReport.model_validate(document)

@@ -20,14 +20,14 @@ SERVER_BUNDLE = {"kind": "server", "digest": "sha256:" + "5" * 64}
 def _opened_by_the_server() -> dict[str, Any]:
     document = record(
         **{
-            "run_id.basis": "server_issued",
+            "run.origin": "server_issued",
             "governance.run_opened_by": "server",
-            "stages.plan.coverage.assertions_expected.basis": "server_pinned",
-            "coverage.assertions_expected.basis": "server_pinned",
+            "stages.plan.coverage.assertions_expected.origin": "server_pinned",
+            "coverage.assertions_expected.origin": "server_pinned",
         }
     )
     for event in document["events"]:
-        event["provenance"]["run"]["basis"] = "server_issued"
+        event["provenance"]["run"]["origin"] = "server_issued"
     return document
 
 
@@ -40,17 +40,17 @@ def test_a_record_of_a_run_the_server_opened_is_self_attested_like_any_other() -
     ("field", "value", "message"),
     [
         ("governance.run_opened_by", "local", "says the server opened its run exactly when"),
-        ("run_id.basis", "locally_derived", "says the server opened its run exactly when"),
-        ("stages.plan.coverage.assertions_expected.basis", "locally_derived", "server_pinned exactly when"),
+        ("run.origin", "locally_derived", "says the server opened its run exactly when"),
+        ("stages.plan.coverage.assertions_expected.origin", "locally_derived", "server_pinned exactly when"),
     ],
     ids=["opened locally", "a local run id", "checks counted locally"],
 )
 def test_who_opened_the_run_is_said_the_same_way_everywhere(field: str, value: str, message: str) -> None:
     document = _opened_by_the_server()
     set_path(document, field, value)
-    if field == "run_id.basis":
+    if field == "run.origin":
         for event in document["events"]:
-            event["provenance"]["run"]["basis"] = value
+            event["provenance"]["run"]["origin"] = value
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(document, context=_READER)
 
@@ -72,20 +72,23 @@ def test_a_record_of_a_run_the_tool_opened_names_no_server_bundle(where: str) ->
     if where == "event":
         document["events"][0]["provenance"]["bundle"] = SERVER_BUNDLE
     else:
-        document["stages"]["plan"]["ran"]["bundle"] = {**document["stages"]["plan"]["ran"]["bundle"], **SERVER_BUNDLE}
+        document["stages"]["plan"]["execution"]["bundle"] = {
+            **document["stages"]["plan"]["execution"]["bundle"],
+            **SERVER_BUNDLE,
+        }
     with pytest.raises(ValidationError, match="names no server bundle"):
         CAR.model_validate(document)
 
 
-def test_a_record_of_a_run_the_tool_opened_has_no_checks_from_a_server_bundle() -> None:
+def test_a_record_of_a_run_the_tool_opened_has_no_evaluations_from_a_server_bundle() -> None:
     document = copy.deepcopy(record())
     document["events"][0]["provenance"]["assertion_source"] = "server_bundle"
-    with pytest.raises(ValidationError, match="has no checks from a server bundle"):
+    with pytest.raises(ValidationError, match="has no evaluations from a server bundle"):
         CAR.model_validate(document, context=_READER)
 
 
 def test_a_record_of_a_run_the_tool_opened_counts_its_checks_as_locally_derived() -> None:
-    document = record(**{"stages.plan.coverage.assertions_expected.basis": "server_pinned"})
+    document = record(**{"stages.plan.coverage.assertions_expected.origin": "server_pinned"})
     with pytest.raises(ValidationError, match="server_pinned exactly when"):
         CAR.model_validate(document, context=_READER)
 
@@ -104,7 +107,7 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     del document["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]
     document["stages"]["pre_deploy"] = stage("pre_deploy", **{"coverage.subjects_per_assertion": {moved: 1}})
     document["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
-    document["not_in_scope"] = [entry for entry in document["not_in_scope"] if entry["stage"] == "post_verify"]
+    document["out_of_scope"] = [entry for entry in document["out_of_scope"] if entry["stage"] == "post_verify"]
     document["complete"] = False
     with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)

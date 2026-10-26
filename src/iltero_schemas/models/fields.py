@@ -58,10 +58,10 @@ def plain_text(value: str) -> str:
     return value
 
 
-def check_artifact_digest(digest: str | None, basis: str) -> None:
-    """Raise ``ValueError`` unless the plan binary's digest is present exactly when its basis says it was given."""
-    if (digest is not None) != (basis == "plan_binary"):
-        raise ValueError("artifact_digest is present exactly when artifact_digest_basis is plan_binary")
+def check_artifact_digest(digest: str | None, source: str) -> None:
+    """Raise ``ValueError`` unless the plan binary's digest is present exactly when its source says it was given."""
+    if (digest is not None) != (source == "plan_binary"):
+        raise ValueError("artifact_digest is present exactly when artifact_digest_source is plan_binary")
 
 
 def _no_token(value: str) -> str:

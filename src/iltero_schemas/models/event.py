@@ -33,7 +33,7 @@ from iltero_schemas.models.assertion import (
     VERSION_PATTERN,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.context import Authority
+from iltero_schemas.models.context import Resolution
 from iltero_schemas.models.fields import (
     Commit,
     Digest,
@@ -73,7 +73,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "scanner_not_run",
             "credential_denied",
             "resource_type_unsupported",
-            "binding_unverified",
+            "results_binding_unverified",
             "timeout",
             "subject_unresolved",
             "evaluator_unavailable",
@@ -166,7 +166,7 @@ class EventSubject(StrictModel):
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest | None
     identities: list[Identity]
-    authority: Authority
+    resolution: Resolution
 
 
 class Evaluation(StrictModel):
@@ -176,7 +176,7 @@ class Evaluation(StrictModel):
     status: Status
     status_reason: Identifier | None
     status_detail: Detail | None
-    reason: Reason | None
+    policy_reason: Reason | None
     observations: Observations | None
 
     @model_validator(mode="after")
@@ -194,12 +194,12 @@ class Run(StrictModel):
     """The run this event belongs to, and the unit of the stack it was evaluated in."""
 
     id: Identifier
-    basis: Literal["server_issued", "locally_derived"]
+    origin: Literal["server_issued", "locally_derived"]
     unit: Identifier
 
 
 class PlanDigest(StrictModel):
-    """The digest of the plan a check is about, and the IaC tool and version of the rule that computed it."""
+    """The digest of the plan an evaluation is about, and the IaC tool and version of the rule that computed it."""
 
     value: Digest
     version: Identifier
@@ -222,10 +222,10 @@ class MemoryLimit(StrictModel):
 class EvaluationLimits(StrictModel):
     """The limits an evaluation ran under, as applied, so the same limits can be applied again."""
 
-    timeout_s: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_S)]
-    memory_cap: MemoryLimit
-    output_bytes_per_answer: Annotated[int, Field(ge=0)]
-    contexts_per_process: Annotated[int, Field(ge=1)]
+    timeout_seconds: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_S)]
+    memory_limit: MemoryLimit
+    max_output_bytes: Annotated[int, Field(ge=0)]
+    evaluations_per_process: Annotated[int, Field(ge=1)]
     capabilities_digest: Digest
     platform: Identifier
 
@@ -236,11 +236,11 @@ class OpaEvaluator(StrictModel):
     engine: Literal["opa"]
     version: Identifier
     digest: Digest
-    environment: EvaluationLimits
+    limits: EvaluationLimits
 
 
 class ScannerEvaluator(StrictModel):
-    """A scanner that ran elsewhere and whose result was credited to an assertion by a binding.
+    """A scanner that ran elsewhere and whose result was accepted for an assertion by a binding.
 
     Nothing was executed here, so there are no limits to record and usually
     no digest: the version is the one the tool wrote into its own output.
@@ -249,7 +249,7 @@ class ScannerEvaluator(StrictModel):
     engine: ScannerTool
     version: Identifier
     digest: Digest | None
-    basis: Literal["not_executed_by_cli"]
+    reason: Literal["not_executed_by_cli"]
 
 
 Evaluator = Annotated[OpaEvaluator | ScannerEvaluator, Field(discriminator="engine")]
@@ -297,7 +297,7 @@ class Executor(StrictModel):
 
     type: Literal["human", "workload"]
     provider: ExecutorProvider
-    run_id: Identifier | None
+    ci_run_id: Identifier | None
 
 
 # Where the facts document a check read came from: the server, a file given to the tool, or none.
@@ -352,17 +352,17 @@ class AssuranceEvent(StrictModel):
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
         if (self.provenance.facts_source is not None) != reads_server_facts(self.evaluation.stage):
-            raise ValueError("facts_source is present exactly when the check's stage reads server facts")
+            raise ValueError("facts_source is present exactly when the evaluation's stage reads server facts")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
-                f"a check with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
+                f"an evaluation with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
             )
-        # A scanner's result was read for this check — credited as a verdict, or found not to apply.
+        # A scanner's result was read for this check — accepted as a verdict, or found not to apply.
         from_scanner = isinstance(self.provenance.evaluator, ScannerEvaluator)
         if (self.provenance.bundle is not None) != isinstance(self.provenance.evaluator, OpaEvaluator):
             raise ValueError("a bundle is named exactly when this CLI ran the evaluator over one")
         if (self.provenance.binding is not None) != from_scanner:
-            raise ValueError("a binding is named exactly when a scanner's result was read for this check")
+            raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):
             raise ValueError("a scanner's result was not compiled here, so it names no module and no compiler")
         return self

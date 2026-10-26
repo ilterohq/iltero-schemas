@@ -50,7 +50,7 @@ ALLOWED_OPERATIONS: dict[str, tuple[tuple[str, ...], ...]] = {
     "forget": ((),),
 }
 # How an object that left the state left it: destroyed in the cloud, or still there but no longer managed.
-Fate = Literal["deleted", "forgotten"]
+Removal = Literal["deleted", "forgotten"]
 
 
 class AppliedPlan(StrictModel):
@@ -59,19 +59,19 @@ class AppliedPlan(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_basis: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestBasis
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_basis(self) -> AppliedPlan:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+    def _artifact_digest_has_its_source(self) -> AppliedPlan:
+        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
         return self
 
 
 # How a change's outcome is known. ``log``: the log's word, held to the plan and to the state's presence.
 # ``state``: the state settled which operations completed. That happens when the log lost what happened to a
-# change (the outcome may then stay unsettled: a failure and an attempt never made look the same).
-# ``unsettled``: nothing settles it.
-ChangeBasis = Literal["log", "state", "unsettled"]
+# change (the outcome may then stay unknown: a failure and an attempt never made look the same).
+# ``none``: neither settles it.
+OutcomeSource = Literal["apply_log", "state", "none"]
 # What the state can settle: whether an object was made or removed. An update leaves the object either way.
 STATE_SETTLES = frozenset({"create", "delete", "replace"})
 
@@ -82,7 +82,7 @@ class AppliedChange(StrictModel):
     address: Address
     action: Action
     required: list[Operation]
-    basis: ChangeBasis
+    outcome_from: OutcomeSource
     # The operations completed: all of ``required`` when applied, part of it when errored.
     completed: list[Operation] | ApplyLogIncomplete
     outcome: ChangeOutcome | ApplyLogIncomplete
@@ -95,7 +95,7 @@ class AppliedChange(StrictModel):
     def _a_change_the_tool_can_make(self) -> AppliedChange:
         if tuple(self.required) not in ALLOWED_OPERATIONS[self.action]:
             raise ValueError(f"not the operations a {self.action} needs")
-        self._check_basis()
+        self._check_outcome_source()
         self._check_completed()
         if self.action == "no-op" and self.moved_from is None and not self.imported:
             raise ValueError("an unchanged resource is listed only when it was renamed or imported")
@@ -105,21 +105,23 @@ class AppliedChange(StrictModel):
             raise ValueError("an import brings in a resource that is then kept or updated")
         return self
 
-    def _check_basis(self) -> None:
-        """What is unsettled follows from how the change is known; only an update's operations may stay unsettled.
+    def _check_outcome_source(self) -> None:
+        """What is unknown follows from how the change is known; only an update's operations may stay unknown.
 
         Every other change can remove an object from the state, and what left
         the state is never guessed. The state settles only what makes or
         removes an object, and only as done, failed or unknown.
         """
-        unsettled_completed = isinstance(self.completed, ApplyLogIncomplete)
-        if unsettled_completed != (self.basis == "unsettled"):
-            raise ValueError("a change's completed operations are unsettled exactly when its basis is unsettled")
-        if self.basis == "log" and isinstance(self.outcome, ApplyLogIncomplete):
+        completed_unknown = isinstance(self.completed, ApplyLogIncomplete)
+        if completed_unknown != (self.outcome_from == "none"):
+            raise ValueError(
+                "a change's completed operations are unknown exactly when neither the log nor the state says"
+            )
+        if self.outcome_from == "apply_log" and isinstance(self.outcome, ApplyLogIncomplete):
             raise ValueError("a change known from the log has a settled outcome")
-        if unsettled_completed and (self.action != "update" or not isinstance(self.outcome, ApplyLogIncomplete)):
-            raise ValueError("only an update's operations may stay unsettled, and then its outcome too")
-        if self.basis == "state" and (
+        if completed_unknown and (self.action != "update" or not isinstance(self.outcome, ApplyLogIncomplete)):
+            raise ValueError("only an update's operations may stay unknown, and then its outcome too")
+        if self.outcome_from == "state" and (
             self.action not in STATE_SETTLES or self.outcome in ("not_attempted", "no_operation")
         ):
             raise ValueError("the state settles only a create, delete or replace, as applied, errored or unknown")
@@ -155,11 +157,11 @@ class AppliedChange(StrictModel):
         if self.action not in ("delete", "replace"):
             return False
         if not isinstance(self.completed, list):
-            raise ValueError("only an update's operations may be unsettled, and an update leaves nothing")
+            raise ValueError("only an update's operations may be unknown, and an update leaves nothing")
         return "delete" in self.completed or (self.required == ["create"] and self.completed == ["create"])
 
     @property
-    def fate(self) -> Fate:
+    def removal(self) -> Removal:
         """How the object that left the state left it."""
         return "deleted" if "delete" in self.required else "forgotten"
 
@@ -214,7 +216,7 @@ class Apply(StrictModel):
     # How far the outcomes were checked: the log's word for each change, held to the applied plan by
     # address, action and operation, and to the state by which resources it holds — not by their values;
     # where the log lost messages, the state's word where it settles a change (each change says which).
-    basis: Literal["log_held_to_plan_and_state_presence", "log_and_state_where_log_incomplete"]
+    outcomes_from: Literal["apply_log", "apply_log_and_state"]
     changes: Annotated[list[AppliedChange], Field(max_length=MAX_RESOURCES)]
     # Null exactly when no operation ran.
     timing: ApplyTiming | None
@@ -231,9 +233,9 @@ class Apply(StrictModel):
         renamed = [change.moved_from for change in changes if change.moved_from is not None]
         if len(set(renamed)) != len(renamed):
             raise ValueError("two changes cannot be renamed from one address")
-        incomplete = self.tool_data.unsettled or any(change.basis != "log" for change in changes)
-        if incomplete != (self.basis == "log_and_state_where_log_incomplete"):
-            raise ValueError("the apply's basis says whether the state settled what the log lost")
+        incomplete = self.tool_data.outcome_unknown or any(change.outcome_from != "apply_log" for change in changes)
+        if incomplete != (self.outcomes_from == "apply_log_and_state"):
+            raise ValueError("outcomes_from says whether the state settled what the log lost")
         ran = self.tool_data.ran or any(change.outcome in ("applied", "errored") for change in changes)
         maybe = self.tool_data.maybe_ran or any(isinstance(change.outcome, ApplyLogIncomplete) for change in changes)
         if (self.timing is None and ran) or (self.timing is not None and not ran and not maybe):
@@ -250,7 +252,7 @@ class Superseded(StrictModel):
     applied plan is the evaluated one still fails.
     """
 
-    basis: Literal["dependency_replan"]
+    reason: Literal["dependency_replanned"]
 
 
 class Deployment(StrictModel):

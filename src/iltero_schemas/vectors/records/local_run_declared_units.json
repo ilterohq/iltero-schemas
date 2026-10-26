@@ -28,7 +28,7 @@
   "coverage": {
     "subjects_in_scope": {
       "value": 20,
-      "basis": "plan_resource_enumeration",
+      "counted_from": "plan_resource_enumeration",
       "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
       "removed_by_plan": 0,
       "excluded": []
@@ -36,8 +36,8 @@
     "subjects_evaluated": 2,
     "assertions_expected": {
       "value": 5,
-      "basis": "locally_derived",
-      "required_assertion_digest": "sha256:bb10fda8166fd6722f0595e599a7f0be8af78545a806cd2aa93c15e4aed7afa9"
+      "origin": "locally_derived",
+      "required_assertion_digest": "sha256:eab7f2b69bba3a58f579b5ae0b4b6028e32d1f6994861b986be0e46b00658a47"
     },
     "assertions_evaluated": 5,
     "subjects_per_assertion": {
@@ -55,7 +55,7 @@
       "not_evaluated": 0,
       "error": 0
     },
-    "checks": 5,
+    "evaluations": 5,
     "gaps": [],
     "truncated": {
       "value": false,
@@ -88,7 +88,7 @@
           "unknown": null,
           "when": null
         },
-        "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "policy_reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
         "stage": "plan",
         "status": "fail",
         "status_detail": null,
@@ -114,23 +114,23 @@
         "evaluator": {
           "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
           "engine": "opa",
-          "environment": {
+          "limits": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "contexts_per_process": 64,
-            "memory_cap": {
+            "evaluations_per_process": 64,
+            "memory_limit": {
               "bytes": 536870912,
               "enforced": false,
               "kind": "none"
             },
-            "output_bytes_per_answer": 1054720,
+            "max_output_bytes": 1054720,
             "platform": "linux-x86_64",
-            "timeout_s": 60
+            "timeout_seconds": 60
           },
           "version": "1.20.2"
         },
         "executor": {
           "provider": "local",
-          "run_id": null,
+          "ci_run_id": null,
           "type": "human"
         },
         "input_digest": "sha256:2306fe5d2fd8f81b1c13c6e366142462bc9c22bfe2c9a957a2278d8fa1e5084b",
@@ -140,7 +140,7 @@
           "tool": "terraform"
         },
         "run": {
-          "basis": "locally_derived",
+          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -158,7 +158,7 @@
             "value": "aws_db_instance.payments"
           }
         ],
-        "authority": "unresolved"
+        "resolution": "unresolved"
       }
     },
     {
@@ -183,7 +183,7 @@
           "unknown": null,
           "when": null
         },
-        "reason": "assert: true",
+        "policy_reason": "assert: true",
         "stage": "plan",
         "status": "pass",
         "status_detail": null,
@@ -209,23 +209,23 @@
         "evaluator": {
           "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
           "engine": "opa",
-          "environment": {
+          "limits": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "contexts_per_process": 64,
-            "memory_cap": {
+            "evaluations_per_process": 64,
+            "memory_limit": {
               "bytes": 536870912,
               "enforced": false,
               "kind": "none"
             },
-            "output_bytes_per_answer": 1054720,
+            "max_output_bytes": 1054720,
             "platform": "linux-x86_64",
-            "timeout_s": 60
+            "timeout_seconds": 60
           },
           "version": "1.20.2"
         },
         "executor": {
           "provider": "local",
-          "run_id": null,
+          "ci_run_id": null,
           "type": "human"
         },
         "input_digest": "sha256:56a0514fd7f10703afc1d85052fa13686f959bc5488cde54a195aeaa74b63cf8",
@@ -235,7 +235,7 @@
           "tool": "terraform"
         },
         "run": {
-          "basis": "locally_derived",
+          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -253,12 +253,12 @@
             "value": "aws_db_instance.payments"
           }
         ],
-        "authority": "unresolved"
+        "resolution": "unresolved"
       }
     },
     {
       "assertion": {
-        "digest": "sha256:82f921a67fc70581a2e62d37195a46ab2e074b01d0f491bba97ecfea4f363748",
+        "digest": "sha256:5bcab3d1ad877c3de9ab3fc378285e37320cc1f32968751cdca684d7f1ca8453",
         "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
         "version": "1.0.0"
       },
@@ -271,7 +271,7 @@
               "expected": true,
               "index": 0,
               "op": "equal",
-              "path": "context.environment.production",
+              "path": "organization_scope.environment.production",
               "status": "unknown"
             },
             {
@@ -315,12 +315,12 @@
             }
           ],
           "unknown": {
-            "path": "context.environment.production",
+            "path": "organization_scope.environment.production",
             "reason": "server_facts_unavailable"
           },
           "when": "unknown"
         },
-        "reason": "context.environment.production: server_facts_unavailable",
+        "policy_reason": "organization_scope.environment.production: server_facts_unavailable",
         "stage": "plan",
         "status": "unknown",
         "status_detail": null,
@@ -336,7 +336,7 @@
         },
         "binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:8bb264fafd13ce35460bd60a5e2cfd8100168c111d1eae6de6fc5cddab545706",
+        "compiled_digest": "sha256:99ede4ef53bc02f03faf371be21c8febf51a3d3442c8a76bb9cea45f2b3b81e1",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -346,23 +346,23 @@
         "evaluator": {
           "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
           "engine": "opa",
-          "environment": {
+          "limits": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "contexts_per_process": 64,
-            "memory_cap": {
+            "evaluations_per_process": 64,
+            "memory_limit": {
               "bytes": 536870912,
               "enforced": false,
               "kind": "none"
             },
-            "output_bytes_per_answer": 1054720,
+            "max_output_bytes": 1054720,
             "platform": "linux-x86_64",
-            "timeout_s": 60
+            "timeout_seconds": 60
           },
           "version": "1.20.2"
         },
         "executor": {
           "provider": "local",
-          "run_id": null,
+          "ci_run_id": null,
           "type": "human"
         },
         "input_digest": "sha256:9fd27a2af52fa5dadd34784004e79fa8a7658aea4f87ef6c85a427f1439cc877",
@@ -372,7 +372,7 @@
           "tool": "terraform"
         },
         "run": {
-          "basis": "locally_derived",
+          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -390,7 +390,7 @@
             "value": "aws_db_instance.payments"
           }
         ],
-        "authority": "unresolved"
+        "resolution": "unresolved"
       }
     },
     {
@@ -415,7 +415,7 @@
           "unknown": null,
           "when": null
         },
-        "reason": "assert: true",
+        "policy_reason": "assert: true",
         "stage": "plan",
         "status": "pass",
         "status_detail": null,
@@ -441,23 +441,23 @@
         "evaluator": {
           "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
           "engine": "opa",
-          "environment": {
+          "limits": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "contexts_per_process": 64,
-            "memory_cap": {
+            "evaluations_per_process": 64,
+            "memory_limit": {
               "bytes": 536870912,
               "enforced": false,
               "kind": "none"
             },
-            "output_bytes_per_answer": 1054720,
+            "max_output_bytes": 1054720,
             "platform": "linux-x86_64",
-            "timeout_s": 60
+            "timeout_seconds": 60
           },
           "version": "1.20.2"
         },
         "executor": {
           "provider": "local",
-          "run_id": null,
+          "ci_run_id": null,
           "type": "human"
         },
         "input_digest": "sha256:01f3774650b1c956e8eb921cfc80920d37e343ac42e41e4c3371646b5265cd06",
@@ -467,7 +467,7 @@
           "tool": "terraform"
         },
         "run": {
-          "basis": "locally_derived",
+          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -485,7 +485,7 @@
             "value": "aws_db_instance.payments"
           }
         ],
-        "authority": "unresolved"
+        "resolution": "unresolved"
       }
     },
     {
@@ -514,7 +514,7 @@
           "unknown": null,
           "when": null
         },
-        "reason": "assert: false; predicate 0 is false: resource.related exists",
+        "policy_reason": "assert: false; predicate 0 is false: resource.related exists",
         "stage": "plan",
         "status": "fail",
         "status_detail": null,
@@ -540,23 +540,23 @@
         "evaluator": {
           "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
           "engine": "opa",
-          "environment": {
+          "limits": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "contexts_per_process": 64,
-            "memory_cap": {
+            "evaluations_per_process": 64,
+            "memory_limit": {
               "bytes": 536870912,
               "enforced": false,
               "kind": "none"
             },
-            "output_bytes_per_answer": 1054720,
+            "max_output_bytes": 1054720,
             "platform": "linux-x86_64",
-            "timeout_s": 60
+            "timeout_seconds": 60
           },
           "version": "1.20.2"
         },
         "executor": {
           "provider": "local",
-          "run_id": null,
+          "ci_run_id": null,
           "type": "human"
         },
         "input_digest": "sha256:db998713f3e6f98c16c7760499c9441c9b840e3153dccad06790910ea61a23cb",
@@ -566,7 +566,7 @@
           "tool": "terraform"
         },
         "run": {
-          "basis": "locally_derived",
+          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -584,7 +584,7 @@
             "value": "aws_s3_bucket.logs"
           }
         ],
-        "authority": "unresolved"
+        "resolution": "unresolved"
       }
     }
   ],
@@ -599,8 +599,8 @@
       "digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
       "media_type": "application/json",
       "path": "units/app/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-      "redaction_applied": {
-        "policy_id": "iltero.redaction",
+      "redaction_policy": {
+        "id": "iltero.redaction",
         "version": "1"
       },
       "ref_id": "sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
@@ -622,7 +622,7 @@
       "digest": "sha256:2306fe5d2fd8f81b1c13c6e366142462bc9c22bfe2c9a957a2278d8fa1e5084b",
       "media_type": "application/json",
       "path": "units/app/plan/contexts/sha256-2306fe5d2fd8f81b1c13c6e366142462bc9c22bfe2c9a957a2278d8fa1e5084b",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "sha256-2306fe5d2fd8f81b1c13c6e366142462bc9c22bfe2c9a957a2278d8fa1e5084b",
       "retention_until": null,
       "size_bytes": 12980,
@@ -639,7 +639,7 @@
       "digest": "sha256:56a0514fd7f10703afc1d85052fa13686f959bc5488cde54a195aeaa74b63cf8",
       "media_type": "application/json",
       "path": "units/app/plan/contexts/sha256-56a0514fd7f10703afc1d85052fa13686f959bc5488cde54a195aeaa74b63cf8",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "sha256-56a0514fd7f10703afc1d85052fa13686f959bc5488cde54a195aeaa74b63cf8",
       "retention_until": null,
       "size_bytes": 12974,
@@ -656,7 +656,7 @@
       "digest": "sha256:9fd27a2af52fa5dadd34784004e79fa8a7658aea4f87ef6c85a427f1439cc877",
       "media_type": "application/json",
       "path": "units/app/plan/contexts/sha256-9fd27a2af52fa5dadd34784004e79fa8a7658aea4f87ef6c85a427f1439cc877",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "sha256-9fd27a2af52fa5dadd34784004e79fa8a7658aea4f87ef6c85a427f1439cc877",
       "retention_until": null,
       "size_bytes": 12983,
@@ -673,7 +673,7 @@
       "digest": "sha256:01f3774650b1c956e8eb921cfc80920d37e343ac42e41e4c3371646b5265cd06",
       "media_type": "application/json",
       "path": "units/app/plan/contexts/sha256-01f3774650b1c956e8eb921cfc80920d37e343ac42e41e4c3371646b5265cd06",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "sha256-01f3774650b1c956e8eb921cfc80920d37e343ac42e41e4c3371646b5265cd06",
       "retention_until": null,
       "size_bytes": 12981,
@@ -690,7 +690,7 @@
       "digest": "sha256:db998713f3e6f98c16c7760499c9441c9b840e3153dccad06790910ea61a23cb",
       "media_type": "application/json",
       "path": "units/app/plan/contexts/sha256-db998713f3e6f98c16c7760499c9441c9b840e3153dccad06790910ea61a23cb",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "sha256-db998713f3e6f98c16c7760499c9441c9b840e3153dccad06790910ea61a23cb",
       "retention_until": null,
       "size_bytes": 14919,
@@ -707,7 +707,7 @@
       "digest": "sha256:50d0e71f5914b3d8b640986296e26f92124d670485e68f411cf346202d863af9",
       "media_type": "application/yaml",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 465,
@@ -724,7 +724,7 @@
       "digest": "sha256:52067f64dc64e1ef5a83364cf683836b587dfbee78716d46d8a6961b65f9d0d5",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 11343,
@@ -741,7 +741,7 @@
       "digest": "sha256:f5e53a43176b6891a24979a398e147a1f7affcd926c000439d03e50b5d79b3ff",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 501,
@@ -758,7 +758,7 @@
       "digest": "sha256:72b725d0c6f2dda89ad880e99a4d6c918362c61e918d404e132c0c65f960ca2b",
       "media_type": "application/yaml",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 427,
@@ -775,7 +775,7 @@
       "digest": "sha256:639e804b50b2e0cd170e4feeaefa5093ac406cb0780c89bf5adc0a657a0a1786",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 11315,
@@ -792,7 +792,7 @@
       "digest": "sha256:52ebc015c2e2be560f7ab1574eef1341bd9b1156b07bdb9b24f9e4d6d524cec0",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 479,
@@ -806,13 +806,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:7732ea83aef05806e8d9877dab4849a1f1b5fc59e1f0b2ce626d6f7201587053",
+      "digest": "sha256:7334cdc0f8507e9c495ee618ef0d532e3497fd7ca793ae5f79967d1b4b61b25a",
       "media_type": "application/yaml",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 942,
+      "size_bytes": 953,
       "source": null,
       "storage_uri": null
     },
@@ -823,13 +823,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:8bb264fafd13ce35460bd60a5e2cfd8100168c111d1eae6de6fc5cddab545706",
+      "digest": "sha256:99ede4ef53bc02f03faf371be21c8febf51a3d3442c8a76bb9cea45f2b3b81e1",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11699,
+      "size_bytes": 11710,
       "source": null,
       "storage_uri": null
     },
@@ -840,13 +840,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:aaa05cb18c84a8d8ec6fc4627d9d225297329fcfdc5c765dc808553fc01c3340",
+      "digest": "sha256:b6e57df6a3f7e99cfe22ab37e9742070cc16edc98d8ad12a20106528a13ed99d",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 1204,
+      "size_bytes": 1215,
       "source": null,
       "storage_uri": null
     },
@@ -860,7 +860,7 @@
       "digest": "sha256:1cc045d09f86f15d90c4a0e745cfc0c0a150a1c9c292cf184513f176cf5cd6f5",
       "media_type": "application/yaml",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 422,
@@ -877,7 +877,7 @@
       "digest": "sha256:9bd973aac0945f05b13c2e67b15e779427e796c626300bdb9a332b7cde81b6d8",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 11326,
@@ -894,7 +894,7 @@
       "digest": "sha256:adf72eefe82cefff5b3f6370559aaed05136b9acabf4ffaf98962f98eb70813d",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 483,
@@ -911,7 +911,7 @@
       "digest": "sha256:5916afd34b786352205f3b2e418fb8dc9cbc07e45ced6f96ca853b5d20dea5c6",
       "media_type": "application/yaml",
       "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 967,
@@ -928,7 +928,7 @@
       "digest": "sha256:415f3b704fbfc6f9e98cc654437c2fb67acad5ddb6533f0c51402db0e67fa40c",
       "media_type": "application/vnd.iltero.rego",
       "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 11959,
@@ -945,7 +945,7 @@
       "digest": "sha256:005d830f80a329b5660e54f0d2dc9eb3b989b657270bc876311f60b3b0562f8d",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 1595,
@@ -959,10 +959,10 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+      "digest": "sha256:f184e0c5ed693d3170f9e44dbab2e8b5149f91801c4ea0efc031a225c4ae5d08",
       "media_type": "application/json",
       "path": "units/app/plan/assertions/compiled.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "compiled.json",
       "retention_until": null,
       "size_bytes": 4720,
@@ -976,13 +976,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:4b65178fb12ef66bf8c8117a697a0d3cf01c6fc9c9a95fe2c8ed41f6f2e51584",
+      "digest": "sha256:8dc007592a1ff1639676f818df0106dd89f522331aa110967e65b5f23b2c7ab4",
       "media_type": "application/json",
       "path": "units/app/plan/events.json",
-      "redaction_applied": null,
+      "redaction_policy": null,
       "ref_id": "events.json",
       "retention_until": null,
-      "size_bytes": 11311,
+      "size_bytes": 11399,
       "source": null,
       "storage_uri": null
     }
@@ -992,10 +992,10 @@
     "pre_deploy",
     "post_deploy"
   ],
-  "not_in_scope": [
+  "out_of_scope": [
     {
       "stage": "post_verify",
-      "basis": "not_supported",
+      "reason": "not_supported",
       "declared_in": null
     }
   ],
@@ -1006,7 +1006,7 @@
   "deployment": null,
   "identity": null,
   "integrity": {
-    "scheme": "digest_linkage",
+    "scheme": "file_digests",
     "signature": null
   },
   "issuer": {
@@ -1016,7 +1016,7 @@
   "plan": {
     "applyable": true,
     "artifact_digest": null,
-    "artifact_digest_basis": "not_provided",
+    "artifact_digest_source": "not_provided",
     "complete": true,
     "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
     "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -1025,17 +1025,17 @@
     "format_version": "1.2",
     "tool_version": "1.14.0"
   },
-  "retention_basis": "no_server_scope",
+  "retention_reason": "no_server_scope",
   "retention_class": null,
-  "run_id": {
-    "basis": "locally_derived",
-    "value": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+  "run": {
+    "origin": "locally_derived",
+    "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
   "stages": {
     "plan": {
       "assertions": {
         "count": 5,
-        "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+        "digest": "sha256:f184e0c5ed693d3170f9e44dbab2e8b5149f91801c4ea0efc031a225c4ae5d08",
         "index": "units/app/plan/assertions/compiled.json"
       },
       "compiler": {
@@ -1046,11 +1046,11 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:4b65178fb12ef66bf8c8117a697a0d3cf01c6fc9c9a95fe2c8ed41f6f2e51584",
+        "digest": "sha256:8dc007592a1ff1639676f818df0106dd89f522331aa110967e65b5f23b2c7ab4",
         "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
-      "ran": {
+      "execution": {
         "bundle": {
           "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
@@ -1065,7 +1065,7 @@
         "reason": null
       },
       "enforcement": "enforcing",
-      "redaction_applied": {
+      "redaction": {
         "allowed": [],
         "policy": {
           "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
@@ -1166,7 +1166,7 @@
             "reason": "sensitive_value_reuse"
           }
         ],
-        "subject": {
+        "input": {
           "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
           "kind": "observation"
         },
@@ -1522,18 +1522,18 @@
         "source": "runner_clock",
         "trust": "asserted",
         "value": "2026-09-22T13:00:13.568Z",
-        "bracket": null
+        "time_window": null
       },
       "stage": "plan",
       "scanners": null,
       "coverage": {
         "assertions_evaluated": 5,
         "assertions_expected": {
-          "basis": "locally_derived",
-          "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:b4398b4a5da8f1b3c585c65d671c4c47ddbeb0c061ee269bc10170ada6140ccc",
           "value": 5
         },
-        "checks": 5,
+        "evaluations": 5,
         "gaps": [],
         "sampled": false,
         "status_counts": {
@@ -1546,7 +1546,7 @@
         },
         "subjects_evaluated": 2,
         "subjects_in_scope": {
-          "basis": "plan_resource_enumeration",
+          "counted_from": "plan_resource_enumeration",
           "excluded": [],
           "removed_by_plan": 0,
           "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
@@ -1569,7 +1569,7 @@
       "verdict": {
         "value": "indeterminate",
         "exit_code": 3,
-        "basis": "status_counts",
+        "computed_from": "status_counts",
         "stage": null
       },
       "assurance_status": {
@@ -1602,7 +1602,7 @@
   "verdict": {
     "value": "indeterminate",
     "exit_code": 3,
-    "basis": "stage_precedence",
+    "computed_from": "stage_precedence",
     "stage": "plan"
   }
 }

@@ -78,20 +78,20 @@ def history_problems(
     ``new_tag`` is the release being made, or ``None`` for a change not yet released.
     """
     problems = []
-    for keyid, before in old.items():
-        after = new.get(keyid)
+    for key_id, before in old.items():
+        after = new.get(key_id)
         if after is None:
-            problems.append(f"key {keyid} was removed")
+            problems.append(f"key {key_id} was removed")
             continue
         for field in FIXED:
             if getattr(before, field) != getattr(after, field):
-                problems.append(f"key {keyid}: {field} changed")
+                problems.append(f"key {key_id}: {field} changed")
         if before.status != after.status and (before.status, after.status) not in FORWARD:
-            problems.append(f"key {keyid}: status moved from {before.status} to {after.status}")
+            problems.append(f"key {key_id}: status moved from {before.status} to {after.status}")
         for field in WRITE_ONCE:
             written = getattr(before, field)
             if written is not None and getattr(after, field) != written:
-                problems.append(f"key {keyid}: {field} changed after it was written")
+                problems.append(f"key {key_id}: {field} changed after it was written")
     if new_tag is not None and changed and version_of(new_tag)[:2] <= version_of(old_tag)[:2]:
         problems.append(f"the trusted keys changed, so {new_tag} must raise the major or minor version of {old_tag}")
     return problems

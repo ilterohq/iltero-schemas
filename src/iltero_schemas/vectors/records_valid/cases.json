@@ -42,15 +42,15 @@
     "name": "record_of_a_run_the_server_opened",
     "vector": "local_run.json",
     "set": {
-      "/run_id/basis": "server_issued",
+      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_expected/basis": "server_pinned",
-      "/events/0/provenance/run/basis": "server_issued",
-      "/events/1/provenance/run/basis": "server_issued",
-      "/events/2/provenance/run/basis": "server_issued",
-      "/events/3/provenance/run/basis": "server_issued",
-      "/events/4/provenance/run/basis": "server_issued",
-      "/coverage/assertions_expected/basis": "server_pinned"
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/run/origin": "server_issued",
+      "/events/1/provenance/run/origin": "server_issued",
+      "/events/2/provenance/run/origin": "server_issued",
+      "/events/3/provenance/run/origin": "server_issued",
+      "/events/4/provenance/run/origin": "server_issued",
+      "/coverage/assertions_expected/origin": "server_pinned"
     },
     "remove": []
   },
@@ -167,7 +167,7 @@
     "set": {
       "/assurance_status/value": "incomplete",
       "/assurance_status/reason": "required_policy_evaluation_failed",
-      "/assurance_status/detail": "plan: 1 of 5 checks ended in an evaluator error",
+      "/assurance_status/detail": "plan: 1 of 5 evaluations ended in an evaluator error",
       "/coverage/status_counts/pass": 1,
       "/coverage/status_counts/error": 1,
       "/coverage/gaps": [
@@ -207,7 +207,7 @@
               "unknown": null,
               "when": null
             },
-            "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+            "policy_reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
             "stage": "plan",
             "status": "fail",
             "status_detail": null,
@@ -233,23 +233,23 @@
             "evaluator": {
               "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
               "engine": "opa",
-              "environment": {
+              "limits": {
                 "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-                "contexts_per_process": 64,
-                "memory_cap": {
+                "evaluations_per_process": 64,
+                "memory_limit": {
                   "bytes": 536870912,
                   "enforced": false,
                   "kind": "none"
                 },
-                "output_bytes_per_answer": 1054720,
+                "max_output_bytes": 1054720,
                 "platform": "linux-x86_64",
-                "timeout_s": 60
+                "timeout_seconds": 60
               },
               "version": "1.20.2"
             },
             "executor": {
               "provider": "local",
-              "run_id": null,
+              "ci_run_id": null,
               "type": "human"
             },
             "input_digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
@@ -259,7 +259,7 @@
               "tool": "terraform"
             },
             "run": {
-              "basis": "locally_derived",
+              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -277,7 +277,7 @@
                 "value": "aws_db_instance.payments"
               }
             ],
-            "authority": "unresolved"
+            "resolution": "unresolved"
           }
         },
         {
@@ -302,7 +302,7 @@
               "unknown": null,
               "when": null
             },
-            "reason": "assert: true",
+            "policy_reason": "assert: true",
             "stage": "plan",
             "status": "error",
             "status_detail": null,
@@ -328,23 +328,23 @@
             "evaluator": {
               "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
               "engine": "opa",
-              "environment": {
+              "limits": {
                 "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-                "contexts_per_process": 64,
-                "memory_cap": {
+                "evaluations_per_process": 64,
+                "memory_limit": {
                   "bytes": 536870912,
                   "enforced": false,
                   "kind": "none"
                 },
-                "output_bytes_per_answer": 1054720,
+                "max_output_bytes": 1054720,
                 "platform": "linux-x86_64",
-                "timeout_s": 60
+                "timeout_seconds": 60
               },
               "version": "1.20.2"
             },
             "executor": {
               "provider": "local",
-              "run_id": null,
+              "ci_run_id": null,
               "type": "human"
             },
             "input_digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
@@ -354,7 +354,7 @@
               "tool": "terraform"
             },
             "run": {
-              "basis": "locally_derived",
+              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -372,12 +372,12 @@
                 "value": "aws_db_instance.payments"
               }
             ],
-            "authority": "unresolved"
+            "resolution": "unresolved"
           }
         },
         {
           "assertion": {
-            "digest": "sha256:82f921a67fc70581a2e62d37195a46ab2e074b01d0f491bba97ecfea4f363748",
+            "digest": "sha256:5bcab3d1ad877c3de9ab3fc378285e37320cc1f32968751cdca684d7f1ca8453",
             "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
             "version": "1.0.0"
           },
@@ -390,7 +390,7 @@
                   "expected": true,
                   "index": 0,
                   "op": "equal",
-                  "path": "context.environment.production",
+                  "path": "organization_scope.environment.production",
                   "status": "unknown"
                 },
                 {
@@ -434,12 +434,12 @@
                 }
               ],
               "unknown": {
-                "path": "context.environment.production",
+                "path": "organization_scope.environment.production",
                 "reason": "server_facts_unavailable"
               },
               "when": "unknown"
             },
-            "reason": "context.environment.production: server_facts_unavailable",
+            "policy_reason": "organization_scope.environment.production: server_facts_unavailable",
             "stage": "plan",
             "status": "unknown",
             "status_detail": null,
@@ -465,23 +465,23 @@
             "evaluator": {
               "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
               "engine": "opa",
-              "environment": {
+              "limits": {
                 "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-                "contexts_per_process": 64,
-                "memory_cap": {
+                "evaluations_per_process": 64,
+                "memory_limit": {
                   "bytes": 536870912,
                   "enforced": false,
                   "kind": "none"
                 },
-                "output_bytes_per_answer": 1054720,
+                "max_output_bytes": 1054720,
                 "platform": "linux-x86_64",
-                "timeout_s": 60
+                "timeout_seconds": 60
               },
               "version": "1.20.2"
             },
             "executor": {
               "provider": "local",
-              "run_id": null,
+              "ci_run_id": null,
               "type": "human"
             },
             "input_digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
@@ -491,7 +491,7 @@
               "tool": "terraform"
             },
             "run": {
-              "basis": "locally_derived",
+              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -509,7 +509,7 @@
                 "value": "aws_db_instance.payments"
               }
             ],
-            "authority": "unresolved"
+            "resolution": "unresolved"
           }
         },
         {
@@ -534,7 +534,7 @@
               "unknown": null,
               "when": null
             },
-            "reason": "assert: true",
+            "policy_reason": "assert: true",
             "stage": "plan",
             "status": "pass",
             "status_detail": null,
@@ -560,23 +560,23 @@
             "evaluator": {
               "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
               "engine": "opa",
-              "environment": {
+              "limits": {
                 "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-                "contexts_per_process": 64,
-                "memory_cap": {
+                "evaluations_per_process": 64,
+                "memory_limit": {
                   "bytes": 536870912,
                   "enforced": false,
                   "kind": "none"
                 },
-                "output_bytes_per_answer": 1054720,
+                "max_output_bytes": 1054720,
                 "platform": "linux-x86_64",
-                "timeout_s": 60
+                "timeout_seconds": 60
               },
               "version": "1.20.2"
             },
             "executor": {
               "provider": "local",
-              "run_id": null,
+              "ci_run_id": null,
               "type": "human"
             },
             "input_digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
@@ -586,7 +586,7 @@
               "tool": "terraform"
             },
             "run": {
-              "basis": "locally_derived",
+              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -604,7 +604,7 @@
                 "value": "aws_db_instance.payments"
               }
             ],
-            "authority": "unresolved"
+            "resolution": "unresolved"
           }
         },
         {
@@ -633,7 +633,7 @@
               "unknown": null,
               "when": null
             },
-            "reason": "assert: false; predicate 0 is false: resource.related exists",
+            "policy_reason": "assert: false; predicate 0 is false: resource.related exists",
             "stage": "plan",
             "status": "fail",
             "status_detail": null,
@@ -659,23 +659,23 @@
             "evaluator": {
               "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
               "engine": "opa",
-              "environment": {
+              "limits": {
                 "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-                "contexts_per_process": 64,
-                "memory_cap": {
+                "evaluations_per_process": 64,
+                "memory_limit": {
                   "bytes": 536870912,
                   "enforced": false,
                   "kind": "none"
                 },
-                "output_bytes_per_answer": 1054720,
+                "max_output_bytes": 1054720,
                 "platform": "linux-x86_64",
-                "timeout_s": 60
+                "timeout_seconds": 60
               },
               "version": "1.20.2"
             },
             "executor": {
               "provider": "local",
-              "run_id": null,
+              "ci_run_id": null,
               "type": "human"
             },
             "input_digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
@@ -685,7 +685,7 @@
               "tool": "terraform"
             },
             "run": {
-              "basis": "locally_derived",
+              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -703,7 +703,7 @@
                 "value": "aws_s3_bucket.logs"
               }
             ],
-            "authority": "unresolved"
+            "resolution": "unresolved"
           }
         }
       ],
@@ -728,7 +728,7 @@
       "/stages/plan/verdict/exit_code": 4,
       "/stages/plan/assurance_status/value": "incomplete",
       "/stages/plan/assurance_status/reason": "required_policy_evaluation_failed",
-      "/stages/plan/assurance_status/detail": "1 of 5 checks ended in an evaluator error",
+      "/stages/plan/assurance_status/detail": "1 of 5 evaluations ended in an evaluator error",
       "/verdict/value": "fail",
       "/verdict/exit_code": 4
     },

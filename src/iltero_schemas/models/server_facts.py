@@ -131,20 +131,20 @@ class ExceptionGrant(StrictModel):
 
 
 class EvaluatedSubject(StrictModel):
-    """What an earlier check was about: its kind and its key (``models.subjects``)."""
+    """What an earlier evaluation was about: its kind and its key (``models.subjects``)."""
 
     kind: TargetKindValue
     key: Digest
 
 
 class Result(StrictModel):
-    """What an earlier check found."""
+    """What an earlier evaluation found."""
 
     status: Status
 
 
 class EarlierEvaluation(StrictModel):
-    """The result of one check of an earlier stage, as the server recorded it."""
+    """The result of one evaluation of an earlier stage, as the server recorded it."""
 
     id: Identifier
     assertion: AssertionKey

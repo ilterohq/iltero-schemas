@@ -14,7 +14,7 @@ spec:
         provider: aws
         resource_types: [aws_db_instance]
   when:
-    path: context.environment.production
+    path: organization_scope.environment.production
     equal: true
   assert:
     all:

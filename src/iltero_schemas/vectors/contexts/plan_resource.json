@@ -9,7 +9,7 @@
       "version": "1.0.0"
     }
   },
-  "context": {
+  "organization_scope": {
     "organization": {
       "id": "acme"
     },
@@ -25,7 +25,7 @@
     "value": "2026-09-16T18:05:00Z",
     "source": "runner_clock",
     "trust": "asserted",
-    "bracket": null
+    "time_window": null
   },
   "source": {
     "vcs": "git",
@@ -55,7 +55,7 @@
         }
       }
     ],
-    "authority": "unresolved"
+    "resolution": "unresolved"
   },
   "change": {
     "resources": [
@@ -77,7 +77,7 @@
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,
-    "artifact_digest_basis": "not_provided",
+    "artifact_digest_source": "not_provided",
     "source_commit": "c84e7a1000000000000000000000000000000000",
     "complete": true,
     "applyable": true,

@@ -19,7 +19,7 @@
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "/coverage/assertions_expected/value": 10,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:e91b5f03a1fa4cd10fd9d369f40ca86cc228f2e3a50f8c6c4db91e5f490f8cbe",
+      "/coverage/assertions_expected/required_assertion_digest": "sha256:f8263265622d229ab28e5d279ca471255296fd9651f3256b50c71f9690f418bf",
       "/coverage/assertions_evaluated": 10,
       "/stages/pre_deploy": {
         "assertions": {
@@ -39,7 +39,7 @@
           "path": "units/root/pre_deploy/events.json"
         },
         "observed_at": "2026-09-22T13:00:13.568Z",
-        "ran": {
+        "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
             "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
@@ -54,7 +54,7 @@
           "reason": null
         },
         "enforcement": "enforcing",
-        "redaction_applied": {
+        "redaction": {
           "allowed": [],
           "policy": {
             "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
@@ -155,7 +155,7 @@
               "reason": "sensitive_value_reuse"
             }
           ],
-          "subject": {
+          "input": {
             "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
             "kind": "observation"
           },
@@ -511,18 +511,18 @@
           "source": "runner_clock",
           "trust": "asserted",
           "value": "2026-09-22T13:00:13.568Z",
-          "bracket": null
+          "time_window": null
         },
         "stage": "pre_deploy",
         "scanners": null,
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "basis": "locally_derived",
+            "origin": "locally_derived",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
-          "checks": 0,
+          "evaluations": 0,
           "gaps": [],
           "sampled": false,
           "status_counts": {
@@ -535,7 +535,7 @@
           },
           "subjects_evaluated": 2,
           "subjects_in_scope": {
-            "basis": "change_unit",
+            "counted_from": "change_unit",
             "excluded": [],
             "removed_by_plan": 0,
             "source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -552,7 +552,7 @@
         "verdict": {
           "value": "pass",
           "exit_code": 0,
-          "basis": "status_counts",
+          "computed_from": "status_counts",
           "stage": null
         },
         "assurance_status": {
@@ -576,7 +576,7 @@
     "vector": "local_run.json",
     "set": {
       "/coverage/assertions_expected/value": 10,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:e91b5f03a1fa4cd10fd9d369f40ca86cc228f2e3a50f8c6c4db91e5f490f8cbe",
+      "/coverage/assertions_expected/required_assertion_digest": "sha256:f8263265622d229ab28e5d279ca471255296fd9651f3256b50c71f9690f418bf",
       "/coverage/assertions_evaluated": 10,
       "/stages/pre_deploy": {
         "assertions": {
@@ -596,7 +596,7 @@
           "path": "units/root/pre_deploy/events.json"
         },
         "observed_at": "2026-09-22T13:00:13.568Z",
-        "ran": {
+        "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
             "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
@@ -611,7 +611,7 @@
           "reason": null
         },
         "enforcement": "enforcing",
-        "redaction_applied": {
+        "redaction": {
           "allowed": [],
           "policy": {
             "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
@@ -712,7 +712,7 @@
               "reason": "sensitive_value_reuse"
             }
           ],
-          "subject": {
+          "input": {
             "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
             "kind": "observation"
           },
@@ -1068,18 +1068,18 @@
           "source": "runner_clock",
           "trust": "asserted",
           "value": "2026-09-22T13:00:13.568Z",
-          "bracket": null
+          "time_window": null
         },
         "stage": "pre_deploy",
         "scanners": null,
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "basis": "locally_derived",
+            "origin": "locally_derived",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
-          "checks": 0,
+          "evaluations": 0,
           "gaps": [],
           "sampled": false,
           "status_counts": {
@@ -1092,7 +1092,7 @@
           },
           "subjects_evaluated": 2,
           "subjects_in_scope": {
-            "basis": "change_unit",
+            "counted_from": "change_unit",
             "excluded": [],
             "removed_by_plan": 0,
             "source_digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
@@ -1109,7 +1109,7 @@
         "verdict": {
           "value": "pass",
           "exit_code": 0,
-          "basis": "status_counts",
+          "computed_from": "status_counts",
           "stage": null
         },
         "assurance_status": {

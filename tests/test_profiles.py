@@ -49,7 +49,7 @@ def test_the_path_roots_are_the_documented_table() -> None:
 
 
 def test_always_is_what_every_profile_requires() -> None:
-    assert ALWAYS_REQUIRED_PARTS == {"evaluation", "context", "reference_time"}
+    assert ALWAYS_REQUIRED_PARTS == {"evaluation", "organization_scope", "reference_time"}
 
 
 def test_an_invalid_combination_has_no_profile() -> None:

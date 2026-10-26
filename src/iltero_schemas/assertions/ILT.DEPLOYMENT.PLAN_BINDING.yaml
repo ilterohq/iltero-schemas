@@ -17,6 +17,6 @@ spec:
       - path: deployment.plan.artifact_digest
         equal:
           path: plan.artifact_digest
-      - path: deployment.plan.artifact_digest_basis
+      - path: deployment.plan.artifact_digest_source
         equal:
-          path: plan.artifact_digest_basis
+          path: plan.artifact_digest_source

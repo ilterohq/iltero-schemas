@@ -214,7 +214,7 @@ Key rules:
   top-level keys `timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift` and
   `relevant_attributes` (`PLAN_EXCLUDED_TOP_LEVEL_KEYS`).
   `artifact_digest` is the digest of the saved plan file. It is present exactly when `artifact_digest_source` is
-  `plan_binary`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest`,
+  `saved_plan`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest`,
   `plan.artifact_digest` and `plan.artifact_digest_source` with the same fields of `deployment.plan`. When neither
   side was given the saved plan file, both artifact digests are `null` and both sources `not_provided`: the assertion
   passes, and the event's observations show `not_provided`. Such a pass shows that the applied plan's digest equals

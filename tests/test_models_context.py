@@ -178,14 +178,14 @@ def test_a_replan_is_a_plan_other_than_the_evaluated_one() -> None:
 @pytest.mark.parametrize("part", ["plan", "deployment"])
 @pytest.mark.parametrize(
     ("digest", "basis"),
-    [(None, "plan_binary"), ("sha256:" + "d" * 64, "not_provided")],
+    [(None, "saved_plan"), ("sha256:" + "d" * 64, "not_provided")],
     ids=["binary without digest", "digest without binary"],
 )
 def test_an_artifact_digest_is_present_exactly_when_a_binary_was_given(part: str, digest: Any, basis: str) -> None:
     document = copy.deepcopy(POST_DEPLOY)
     target = document["plan"] if part == "plan" else document["deployment"]["plan"]
     target.update(artifact_digest=digest, artifact_digest_source=basis)
-    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is plan_binary"):
+    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is saved_plan"):
         AssuranceContext.model_validate(document)
 
 

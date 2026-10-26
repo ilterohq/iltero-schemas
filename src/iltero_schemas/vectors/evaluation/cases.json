@@ -3465,13 +3465,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_source": "plan_binary"
+        "artifact_digest_source": "saved_plan"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:b",
-          "artifact_digest_source": "plan_binary"
+          "artifact_digest_source": "saved_plan"
         }
       }
     },
@@ -3499,13 +3499,13 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_source": "plan_binary"
+        "artifact_digest_source": "saved_plan"
       },
       "deployment": {
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:c",
-          "artifact_digest_source": "plan_binary"
+          "artifact_digest_source": "saved_plan"
         }
       }
     },
@@ -3540,7 +3540,7 @@
           "status": "false"
         },
         {
-          "actual": "plan_binary",
+          "actual": "saved_plan",
           "clause": "assert",
           "expected": {
             "ref": "plan.artifact_digest_source"
@@ -3548,7 +3548,7 @@
           "index": 2,
           "op": "equal",
           "path": "deployment.plan.artifact_digest_source",
-          "resolved": "plan_binary",
+          "resolved": "saved_plan",
           "status": "true"
         }
       ]
@@ -3577,7 +3577,7 @@
         "plan": {
           "digest": "sha256:a",
           "artifact_digest": "sha256:b",
-          "artifact_digest_source": "plan_binary"
+          "artifact_digest_source": "saved_plan"
         }
       }
     },
@@ -4327,7 +4327,7 @@
       "plan": {
         "digest": "sha256:a",
         "artifact_digest": "sha256:b",
-        "artifact_digest_source": "plan_binary"
+        "artifact_digest_source": "saved_plan"
       },
       "deployment": {
         "plan": {

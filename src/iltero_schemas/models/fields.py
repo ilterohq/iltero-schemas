@@ -42,7 +42,7 @@ MAX_RESOURCES = 100_000
 Count = Annotated[int, Field(ge=0)]
 # Ways a managed resource is planned to change; a data source's ``read`` never reaches a record.
 Action = Literal["create", "update", "delete", "replace", "no-op", "forget"]
-ArtifactDigestSource = Literal["plan_binary", "not_provided"]
+ArtifactDigestSource = Literal["saved_plan", "not_provided"]
 # The stages a governed run passes through; ``runtime`` evaluations never belong to a run.
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed evaluation stops the pipeline (``enforcing``) or is only reported (``advisory``).
@@ -59,9 +59,9 @@ def plain_text(value: str) -> str:
 
 
 def check_artifact_digest(digest: str | None, source: str) -> None:
-    """Raise ``ValueError`` unless the plan binary's digest is present exactly when its source says it was given."""
-    if (digest is not None) != (source == "plan_binary"):
-        raise ValueError("artifact_digest is present exactly when artifact_digest_source is plan_binary")
+    """Raise ``ValueError`` unless the saved plan's digest is present exactly when its source says it was given."""
+    if (digest is not None) != (source == "saved_plan"):
+        raise ValueError("artifact_digest is present exactly when artifact_digest_source is saved_plan")
 
 
 def _no_token(value: str) -> str:

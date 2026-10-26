@@ -669,7 +669,7 @@ with the module in the tarball before it runs anything.
 | `key_id` | identifier | The key that signed the bundle. |
 | `algorithm` | string | `ES256`. |
 | `compiler_version` | identifier | The compiler version the modules were built with. |
-| `min_cli_version` | string | The oldest CLI version able to evaluate the bundle. |
+| `minimum_cli_version` | string | The oldest CLI version able to evaluate the bundle. |
 | `assertion_set_digest` | digest | The digest of every assertion in the bundle, by id, version and document digest. |
 | `assertions` | list | 1 to 1,024 assertions, sorted by id: `id`, `version`, `digest`, `source_digest`, `compiled_digest` and the YAML `source`. |
 | `tarball` | string | The signed tarball, standard base64 with padding, at most 16 MiB decoded. |

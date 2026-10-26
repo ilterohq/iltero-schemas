@@ -40,7 +40,7 @@ from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
 SOURCES = [path.read_text(encoding="utf-8") for path in sorted(STARTER_ASSERTIONS.glob("*.yaml"))]
 KEY_ID = "iltero-bundle-test"
-MIN_CLI = "0.2.0"
+MINIMUM_CLI_VERSION = "0.2.0"
 # One key for the whole module: nothing here depends on which key it is.
 PRIVATE_KEY = ec.generate_private_key(ec.SECP256R1())
 
@@ -83,7 +83,7 @@ def _high_s(signature: bytes) -> bytes:
     return signature[:32] + (P256_ORDER - s).to_bytes(32, "big")
 
 
-BUNDLE = unsigned_bundle(SOURCES, min_cli_version=MIN_CLI)
+BUNDLE = unsigned_bundle(SOURCES, minimum_cli_version=MINIMUM_CLI_VERSION)
 SIGNED = signing_input(BUNDLE, key_id=KEY_ID)
 SIGNATURE = _raw(PRIVATE_KEY.sign(SIGNED, ec.ECDSA(hashes.SHA256())))
 DESCRIPTOR = descriptor(BUNDLE, key_id=KEY_ID, signature=SIGNATURE)
@@ -120,7 +120,13 @@ def test_the_manifest_names_every_assertion_and_its_revision_is_the_metadatas_di
     assert manifest["rego_version"] == 1
     assert manifest["revision"] == BUNDLE.revision == digest_of(manifest["metadata"]["iltero"])
     metadata = manifest["metadata"]["iltero"]
-    assert set(metadata) == {"apiVersion", "compiler_version", "min_cli_version", "assertion_set_digest", "assertions"}
+    assert set(metadata) == {
+        "apiVersion",
+        "compiler_version",
+        "minimum_cli_version",
+        "assertion_set_digest",
+        "assertions",
+    }
     assert metadata["compiler_version"] == COMPILER_VERSION
     assert [a["id"] for a in metadata["assertions"]] == ids
 
@@ -130,19 +136,19 @@ def test_the_manifest_is_written_in_the_form_opa_hashes() -> None:
 
 
 def test_the_same_sources_in_any_order_build_the_same_files_and_bytes_to_sign() -> None:
-    again = unsigned_bundle(list(reversed(SOURCES)), min_cli_version=MIN_CLI)
+    again = unsigned_bundle(list(reversed(SOURCES)), minimum_cli_version=MINIMUM_CLI_VERSION)
     assert dict(again.files) == dict(BUNDLE.files) and again.revision == BUNDLE.revision
     assert signing_input(again, key_id=KEY_ID) == SIGNED
 
 
 def test_the_minimum_tool_version_is_part_of_the_signed_content() -> None:
-    assert unsigned_bundle(SOURCES, min_cli_version="0.3.0").revision != BUNDLE.revision
+    assert unsigned_bundle(SOURCES, minimum_cli_version="0.3.0").revision != BUNDLE.revision
 
 
 @pytest.mark.parametrize("value", ["0.2", "v0.2.0", "0.2.0-rc1", "0.2.0 "])
 def test_the_minimum_tool_version_is_plain_x_y_z(value: str) -> None:
     with pytest.raises(BundleError, match="must be a version"):
-        unsigned_bundle(SOURCES, min_cli_version=value)
+        unsigned_bundle(SOURCES, minimum_cli_version=value)
 
 
 def test_the_signed_bytes_name_every_file_its_digest_the_key_and_the_scope() -> None:
@@ -172,13 +178,13 @@ def test_a_bundle_holds_at_least_one_assertion_each_id_once_and_a_bounded_number
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     with pytest.raises(BundleError, match="at least one"):
-        unsigned_bundle([], min_cli_version=MIN_CLI)
+        unsigned_bundle([], minimum_cli_version=MINIMUM_CLI_VERSION)
     newer = SOURCES[0].replace('version: "1.0.0"', 'version: "1.1.0"')
     with pytest.raises(BundleError, match="each assertion id once"):
-        unsigned_bundle([SOURCES[0], newer], min_cli_version=MIN_CLI)
+        unsigned_bundle([SOURCES[0], newer], minimum_cli_version=MINIMUM_CLI_VERSION)
     monkeypatch.setattr(build_module, "MAX_BUNDLE_ASSERTIONS", 2)
     with pytest.raises(BundleError, match="at most 2"):
-        unsigned_bundle(SOURCES[:3], min_cli_version=MIN_CLI)
+        unsigned_bundle(SOURCES[:3], minimum_cli_version=MINIMUM_CLI_VERSION)
 
 
 def test_the_descriptor_carries_the_sources_and_the_digests() -> None:
@@ -248,7 +254,7 @@ def test_a_revision_that_is_not_the_metadatas_digest_is_refused() -> None:
 
 def test_a_changed_minimum_tool_version_breaks_the_rebuilt_manifest() -> None:
     with pytest.raises(BundleError, match="revision"):
-        check_descriptor(_changed(min_cli_version="0.1.0"), _keys())
+        check_descriptor(_changed(minimum_cli_version="0.1.0"), _keys())
 
 
 _TOKEN = json.loads(signatures_file(SIGNED, SIGNATURE))["signatures"][0]

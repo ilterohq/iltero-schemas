@@ -84,7 +84,7 @@ class BundleDescriptor(StrictModel):
     key_id: Identifier
     algorithm: Literal["ES256"]
     compiler_version: Identifier
-    min_cli_version: Version
+    minimum_cli_version: Version
     assertion_set_digest: Digest
     assertions: Annotated[list[BundleAssertion], Field(min_length=1, max_length=MAX_BUNDLE_ASSERTIONS)]
     tarball: Tarball

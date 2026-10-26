@@ -25,7 +25,7 @@ supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
 the list it would have filled, and a fact the IaC tool did not report is one
 with its own reason. Null means a fact has no value, never that it is unknown:
 the evaluator reads a null as a known value. The one exception is a related
-resource's ``resource``, null when its values were not carried; a check that
+resource's ``resource``, null when its values were not carried; an evaluation that
 reads through it is ``unknown``.
 """
 
@@ -46,7 +46,7 @@ from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     Action,
     Address,
-    ArtifactDigestBasis,
+    ArtifactDigestSource,
     AssertionKey,
     Commit,
     Digest,
@@ -193,7 +193,7 @@ class Subject(StrictModel):
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest
     identities: Annotated[list[Identity], Field(min_length=1)]
-    # ``resolved`` once a verified resolver bound a cloud identity; ``unresolved`` until then.
+    # ``resolved`` once a resolver verified for its resource type bound a cloud identity; ``unresolved`` until then.
     resolution: Resolution
 
 
@@ -254,7 +254,7 @@ class Plan(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_source: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestSource
     source_commit: Commit
     # The marker when the tool's plan format has no such flag.
     complete: bool | NotReported

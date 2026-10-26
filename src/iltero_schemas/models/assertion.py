@@ -2,8 +2,8 @@
 
 A technical assertion names what is checked (``metadata``), at which point of
 the change lifecycle (``spec.stage``), about which kind of thing
-(``spec.target``), and the check itself (``spec.assert``) with an optional
-applicability guard (``spec.when``). The check is written in the assertion
+(``spec.target``), and the condition itself (``spec.assert``) with an optional
+applicability guard (``spec.when``). The condition is written in the assertion
 language, whose grammar is parsed and validated by ``iltero_schemas.ast``;
 this module validates everything around it.
 
@@ -179,7 +179,7 @@ class KindSelector(_Strict):
 class ToolSelector(_Strict):
     """Resources of the named types, from one provider, as one IaC tool names them.
 
-    The one place a target names a tool's own types: for a check that reads that
+    The one place a target names a tool's own types: for an assertion that reads that
     tool's attributes. Each tool spells types its own way, so a type is checked
     against the rule of the tool named.
     """

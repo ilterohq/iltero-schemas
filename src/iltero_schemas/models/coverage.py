@@ -110,8 +110,8 @@ class PlanIndexGap(_Gap):
     plan_index: Count
 
 
-# What a count gap may name: what the plan left out, why checks were not evaluated or ended in error, and checks a
-# scanner's result stands behind rather than an evaluation this run ran.
+# What a count gap may name: what the plan left out, why evaluations did not run or ended in error, and results a
+# scanner reported rather than an evaluation this run ran.
 COUNT_GAP_KINDS: frozenset[str] = (
     frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", "accepted_by_binding"})
     | STATUS_REASONS["not_evaluated"]

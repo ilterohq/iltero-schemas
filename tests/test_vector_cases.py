@@ -33,6 +33,21 @@ IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.jso
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 
 
+def _read(path: Any) -> Any:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _events(value: Any) -> list[dict[str, Any]]:
+    """Every event in ``value``, wherever it sits: an object with an assertion and a provenance."""
+    if isinstance(value, list):
+        return [event for item in value for event in _events(item)]
+    if not isinstance(value, dict):
+        return []
+    if "assertion" in value and "provenance" in value:
+        return [value]
+    return [event for item in value.values() for event in _events(item)]
+
+
 def _step(document: Any, token: str) -> Any:
     return document[int(token)] if isinstance(document, list) else document[token]
 
@@ -105,20 +120,31 @@ def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     assert len(names) == len(set(names))
 
 
-def test_every_check_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
+def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
     shipped = {}
     for path in ASSERTIONS.iterdir():
         if path.name.endswith(".yaml"):
             assertion = member(path.read_text(encoding="utf-8"))
-            shipped[assertion.id] = (assertion.version, assertion.digest, assertion.compiled_digest)
-    for path in sorted((VECTORS / "records").glob("*.json")):
-        if path.name == "digests.json":
-            continue
-        for event in json.loads(path.read_text(encoding="utf-8"))["events"]:
-            named = event["assertion"]
-            if named["id"] in shipped:
-                as_named = (named["version"], named["digest"], event["provenance"]["compiled_digest"])
-                assert as_named == shipped[named["id"]], (path.name, named["id"])
+            shipped[assertion.id] = (
+                assertion.version,
+                assertion.digest,
+                assertion.source_digest,
+                assertion.compiled_digest,
+            )
+    events = [e for p in sorted((VECTORS / "records").glob("local_run*.json")) for e in _events(_read(p))]
+    for folder in ("records_invalid", "records_valid", "records_integrity_failed"):
+        events += [e for case in _read(VECTORS / folder / "cases.json") for e in _events(case["set"])]
+    for event in events:
+        named = event["assertion"]
+        if named["id"] in shipped:
+            provenance = event["provenance"]
+            as_named = (
+                named["version"],
+                named["digest"],
+                provenance["assertion_source_digest"],
+                provenance["compiled_digest"],
+            )
+            assert as_named == shipped[named["id"]], named["id"]
 
 
 def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_events_owed() -> None:

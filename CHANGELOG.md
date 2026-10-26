@@ -274,8 +274,8 @@ These changes break documents written before them.
     `environment` is `limits`, with `timeout_seconds`, `memory_limit`,
     `max_output_bytes` and `evaluations_per_process`; a scanner evaluator's
     `basis` is `reason`; the run's `basis` is `origin`; the executor's
-    `run_id` is `ci_run_id`; the status reason `binding_unverified` is
-    `results_binding_unverified`.
+    `run_id` is `ci_run_id`; the status reason `evaluator_memory_cap` is
+    `evaluator_memory_limit`.
   - Records: `run_id` (`value`, `basis`) is `run` (`id`, `origin`);
     `not_in_scope` is `out_of_scope`, with a `reason`; `retention_basis` is
     `retention_reason`; the integrity scheme `digest_linkage` is

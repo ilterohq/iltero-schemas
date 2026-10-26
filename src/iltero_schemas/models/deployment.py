@@ -24,7 +24,7 @@ from iltero_schemas.models.fields import (
     MAX_RESOURCES,
     Action,
     Address,
-    ArtifactDigestBasis,
+    ArtifactDigestSource,
     Digest,
     Identifier,
     Timestamp,
@@ -59,7 +59,7 @@ class AppliedPlan(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_source: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestSource
 
     @model_validator(mode="after")
     def _artifact_digest_has_its_source(self) -> AppliedPlan:
@@ -67,10 +67,10 @@ class AppliedPlan(StrictModel):
         return self
 
 
-# How a change's outcome is known. ``log``: the log's word, held to the plan and to the state's presence.
+# How a change's outcome is known. ``apply_log``: the log's word, held to the plan and to the state's presence.
 # ``state``: the state settled which operations completed. That happens when the log lost what happened to a
 # change (the outcome may then stay unknown: a failure and an attempt never made look the same).
-# ``none``: neither settles it.
+# ``none``: neither settles it, so the outcome is unknown (``ApplyLogIncomplete``).
 OutcomeSource = Literal["apply_log", "state", "none"]
 # What the state can settle: whether an object was made or removed. An update leaves the object either way.
 STATE_SETTLES = frozenset({"create", "delete", "replace"})
@@ -213,9 +213,10 @@ class Apply(StrictModel):
     source: ApplySource
     # The state after the apply, which the outcomes were held to.
     state: StateSource
-    # How far the outcomes were checked: the log's word for each change, held to the applied plan by
+    # How far the outcomes were checked. ``apply_log``: the log's word for each change, held to the applied plan by
     # address, action and operation, and to the state by which resources it holds — not by their values;
-    # where the log lost messages, the state's word where it settles a change (each change says which).
+    # ``apply_log_and_state``: as well, where the log lost messages, the state's word where it settles a change (each
+    # change says which).
     outcomes_from: Literal["apply_log", "apply_log_and_state"]
     changes: Annotated[list[AppliedChange], Field(max_length=MAX_RESOURCES)]
     # Null exactly when no operation ran.

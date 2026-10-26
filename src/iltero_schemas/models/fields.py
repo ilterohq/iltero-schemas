@@ -42,10 +42,10 @@ MAX_RESOURCES = 100_000
 Count = Annotated[int, Field(ge=0)]
 # Ways a managed resource is planned to change; a data source's ``read`` never reaches a record.
 Action = Literal["create", "update", "delete", "replace", "no-op", "forget"]
-ArtifactDigestBasis = Literal["plan_binary", "not_provided"]
-# The stages a governed run passes through; ``runtime`` checks never belong to a run.
+ArtifactDigestSource = Literal["plan_binary", "not_provided"]
+# The stages a governed run passes through; ``runtime`` evaluations never belong to a run.
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
-# Whether a failed check stops the pipeline (``enforcing``) or is only reported (``advisory``).
+# Whether a failed evaluation stops the pipeline (``enforcing``) or is only reported (``advisory``).
 GateMode = Literal["enforcing", "advisory"]
 # The start of a JSON Web Token: a base64url header, a dot, and a base64url payload, both JSON objects.
 _JSON_WEB_TOKEN = re.compile(r"eyJ[A-Za-z0-9_-]*\.eyJ")
@@ -161,7 +161,7 @@ class Identity(StrictModel):
     scope: dict[Identifier, Identifier] | None = None
 
 
-# What a check found. The runner's reason for it is kept apart, per status (see ``models.event``).
+# What an evaluation found. The runner's reason for it is kept apart, per status (see ``models.event``).
 Status = Literal["pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"]
 
 AssertionId = Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]

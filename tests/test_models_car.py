@@ -191,7 +191,7 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        ({"results_without_binding": 70}, "the unbound count is the sum"),
+        ({"results_without_binding": 70}, "results_without_binding is the sum"),
         ({"results_accepted": 3}, "every result a tool reported"),
         ({"results_binding_unverified": 1}, "every result a tool reported"),
     ],

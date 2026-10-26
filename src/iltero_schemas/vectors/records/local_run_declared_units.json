@@ -329,7 +329,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:dfe4975c1f62bf907c4b80db5eab135d9ba013f7ffe2245acf9b5135d63045f8",
+        "assertion_source_digest": "sha256:ec20a46451f1349a9b22b2eed1980dc7113430d8c6c0921eccf2b4692ef832a2",
         "bundle": {
           "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle"
@@ -976,7 +976,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:8dc007592a1ff1639676f818df0106dd89f522331aa110967e65b5f23b2c7ab4",
+      "digest": "sha256:e0e9790d0e7fa5d1ac77034cb56da8ed1fea7565b7a6d7d5fd117a24594fe84c",
       "media_type": "application/json",
       "path": "units/app/plan/events.json",
       "redaction_policy": null,
@@ -1046,7 +1046,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:8dc007592a1ff1639676f818df0106dd89f522331aa110967e65b5f23b2c7ab4",
+        "digest": "sha256:e0e9790d0e7fa5d1ac77034cb56da8ed1fea7565b7a6d7d5fd117a24594fe84c",
         "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",

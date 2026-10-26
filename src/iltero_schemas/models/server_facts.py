@@ -12,7 +12,7 @@ fields only.
   is the provider's stable account id, never a login, a name or an address.
 - An **exception** waives one assertion for an environment and the resources
   it names, between two times.
-- An **earlier evaluation** is the result of one check of an earlier stage.
+- An **earlier evaluation** is the result of one evaluation of an earlier stage.
 
 All three are the server's claims, as served.
 """
@@ -151,7 +151,7 @@ class EarlierEvaluation(StrictModel):
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
-    # The digest of the plan the check read; null exactly for a stage that reads none, such as runtime.
+    # The digest of the plan the evaluation read; null exactly for a stage that reads none, such as runtime.
     plan_digest: Digest | None
     observed_at: Timestamp
 

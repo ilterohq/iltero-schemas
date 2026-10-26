@@ -448,14 +448,14 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:dfe4975c1f62bf907c4b80db5eab135d9ba013f7ffe2245acf9b5135d63045f8",
+            "assertion_source_digest": "sha256:ec20a46451f1349a9b22b2eed1980dc7113430d8c6c0921eccf2b4692ef832a2",
             "bundle": {
               "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:8bb264fafd13ce35460bd60a5e2cfd8100168c111d1eae6de6fc5cddab545706",
+            "compiled_digest": "sha256:99ede4ef53bc02f03faf371be21c8febf51a3d3442c8a76bb9cea45f2b3b81e1",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",

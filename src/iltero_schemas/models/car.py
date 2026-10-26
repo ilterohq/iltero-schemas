@@ -1,7 +1,7 @@
 """``CAR`` v1: the Change Assurance Record — what was checked about one change, against what, with which result.
 
 A Change Assurance Record (CAR) is a framework-neutral record of the
-evidence, the checks, the approvals, the deployment and the verification
+evidence, the evaluations, the approvals, the deployment and the verification
 after deployment for one infrastructure change. It keeps where each piece
 came from. A CAR records technical and process assurance facts. It does not,
 by itself, establish certification or compliance with a regulatory
@@ -9,7 +9,7 @@ framework, so ``compliance_determination`` is always null.
 
 One CAR describes one attempted change, whatever its outcome: deployed,
 failed, stopped, refused before deployment, or a plan that changes nothing.
-It is not a certificate of success. It exists even when a check fails, and it
+It is not a certificate of success. It exists even when an evaluation fails, and it
 need not reach every stage.
 
 How far a reader can trust a record is its ``trust_level``. The contract
@@ -48,7 +48,7 @@ from iltero_schemas.models.event import AssuranceEvent, Compiler
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
-    ArtifactDigestBasis,
+    ArtifactDigestSource,
     Count,
     Digest,
     GateMode,
@@ -197,13 +197,13 @@ class ScannerReport(StrictModel):
     tool_version: Identifier
     # What the tool was reading, in its own words. A tool that reads a configuration
     # and one that reads a plan answer different questions about the same resource,
-    # so a reader must be able to tell which produced a accepted verdict.
+    # so a reader must be able to tell which produced an accepted verdict.
     input_kinds: list[Identifier]
     # The digest of the report as the stage kept it, which is the ``input_digest`` of any verdict it stands behind.
     report_digest: Digest
     observations: MemberPath
     results_read: Count
-    # Results the stage read for no check at all: no entry allowed it, or it had nothing to answer.
+    # Results the stage read for no assertion at all: no binding allowed it, or it had nothing to answer.
     results_without_binding: Count
     parsing_errors: Count
 
@@ -245,10 +245,10 @@ class Scanners(StrictModel):
     @model_validator(mode="after")
     def _counts_add_up(self) -> Scanners:
         if self.results_without_binding != sum(report.results_without_binding for report in self.reports):
-            raise ValueError("the unbound count is the sum of the reports' own")
+            raise ValueError("results_without_binding is the sum of the reports' own")
         read = sum(report.results_read for report in self.reports)
         if self.results_accepted + self.results_binding_unverified + self.results_without_binding != read:
-            raise ValueError("every result a tool reported is accepted, unverified or unbound")
+            raise ValueError("every result a tool reported is accepted, binding_unverified or without a binding")
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
         return self
@@ -264,7 +264,7 @@ class StageRecord(StrictModel):
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
-    # The approvals the stage's checks read, whatever their source, each of this record's change or run; null at a
+    # The approvals the stage's evaluations read, whatever their source, each of this record's change or run; null at a
     # stage whose input carries no approvals.
     approvals: Approvals | None
     compiler: Compiler
@@ -296,7 +296,7 @@ class PlanRecord(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_source: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestSource
     context_digest: Digest
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool

@@ -1,6 +1,6 @@
 """The unknown marker: what stands where a fact could not be supplied.
 
-Some checks need facts only the server holds: who approved the change,
+Some assertions need facts only the server holds: who approved the change,
 which exceptions are in force, earlier evaluations. Until the server can
 supply such a part, the evaluation input holds an unknown marker in its place
 rather than an empty list. The difference decides the verdict: an assertion

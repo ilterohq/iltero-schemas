@@ -75,8 +75,8 @@ def constraint_met(constraint: str, version: str) -> bool:
     A pre-release satisfies nothing: ``4.0.0b1`` sits inside ``<4`` by
     version order, and a binding written against the released 3.x is not a
     licence for a 4.0 beta. A version string that is not a version at all
-    satisfies nothing either. Both leave the check not accepted rather than
-    accepted on a guess.
+    satisfies nothing either. Both leave the rule's result not accepted rather
+    than accepted on a guess.
     """
     try:
         parsed = Version(version)

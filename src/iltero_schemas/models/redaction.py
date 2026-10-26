@@ -1,8 +1,8 @@
 """The redaction marker: what stands in an evaluation input where a value was redacted.
 
-A runner may hide a value it must not pass on, such as a secret in a planned
+A runner may redact a value it must not pass on, such as a secret in a planned
 attribute. It writes a marker in its place that says a value was there, why
-it was hidden and its type, so a check can still tell a redacted value from a
+it was redacted and its type, so an assertion can still tell a redacted value from a
 missing one. The fields where a redacted value may legitimately sit accept one.
 """
 

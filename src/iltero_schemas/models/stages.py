@@ -34,11 +34,11 @@ SCOPE_COUNTED_FROM: dict[TargetKind, str] = {
 
 
 def scope_counted_from(stage: Stage, kinds: set[TargetKind]) -> str | None:
-    """How a stage whose checks are about subjects of ``kinds`` counts them; None when no basis is fixed.
+    """How a stage whose evaluations are about subjects of ``kinds`` counts them; None when nothing fixes it.
 
-    A stage's evaluations are about one kind of subject, one its assertions can target. A stage with no checks counts
-    by the one kind its assertions can target, if there is one. Only the plan stage enumerates the plan's
-    resources; a later stage's resources have no fixed basis yet.
+    A stage's evaluations are about one kind of subject, one its assertions can target. A stage with no evaluations
+    counts by the one kind its assertions can target, if there is one. Only the plan stage enumerates the plan's
+    resources; how a later stage counts resources is not fixed.
     """
     valid = {kind for _type, valid_stage, kind in VALID_COMBINATIONS if valid_stage is stage}
     if len(kinds) > 1:
@@ -64,7 +64,7 @@ def _assertions_of(car: CAR, stage: Stage) -> set[str]:
 
 
 def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
-    """A stage lists the approvals its checks read, once each, each of a change or of this record's run.
+    """A stage lists the approvals its evaluations read, once each, each of a change or of this record's run.
 
     Which change is an integrity check (``change_digest_problems``).
     """

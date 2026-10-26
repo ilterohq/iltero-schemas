@@ -198,6 +198,11 @@ These changes break documents written before them.
   coverage gap is one of three shapes, chosen by its `kind`: a plan flag, a
   resource's `plan_index`, or a count of at least 1 (`COUNT_GAP_KINDS`); the
   record's combined coverage names each gap's stage.
+- A record redacts under one policy. An evidence file's `redaction_policy`
+  names it as a stage's redaction report does (`id`, `version`, `digest`),
+  or is `null` for a file no redaction touched, and every stage and every
+  redacted evidence file name the same one, whatever the validation context.
+  Invalid-record vectors cover it.
 - A subject is keyed, in the evaluation input, in events and in an earlier
   evaluation, by `key`: the digest of its kind and its one local identity,
   computed by `models.subjects.subject_key` and checked in every document,
@@ -314,7 +319,7 @@ These changes break documents written before them.
     `Execution`, `BindingSetUsed`, `AcceptedStatus`, `TimeWindow`,
     `ExecutionEvaluator`, `ExecutionBundle`, `MemoryLimit`, `PlanIndexGap`,
     `RedactedPath`, `MaybeRedacted`, `MaybeRedactedAddress`, `RecordRun`,
-    `RedactionPolicyUsed`, `OutOfScopeReason`, `Resolution`, `Removal` and
+    `OutOfScopeReason`, `Resolution`, `Removal` and
     `OutcomeSource`; `RULE_ID_PATTERN` and `RULE_ID_MAX_LENGTH`.
   - Vector folders: `invalid/` is `assertions_invalid/`.
   The starter assertions that read the organization scope or the artifact

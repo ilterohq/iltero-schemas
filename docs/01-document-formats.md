@@ -342,7 +342,7 @@ with a regulatory framework.
 | `out_of_scope` | list | Each lifecycle stage the record does not expect, with a `reason` (`project_config` or `not_supported`). |
 | `deployment` | object or null | What the apply did. `null` until the `post_deploy` stage reports. |
 | `identity` | object or null | The unit's [identity bindings](#identitybindings) after the apply. Present exactly when `deployment` is. |
-| `evidence_refs` | list | The evidence register: every file the record cites, by `ref_id`, `media_type`, `digest`, `size_bytes` and `path`. |
+| `evidence_refs` | list | The evidence register: every file the record cites (see below). At most 100,000. |
 | `integrity` | object | `scheme: file_digests` (the record is bound together by its files' digests only) and `signature: null`. |
 | `expires_at`, `retention_class` | null | Always `null`. |
 | `retention_reason` | string | `no_server_scope`. |
@@ -372,6 +372,26 @@ path. It holds no value.
 A path is a path in the redacted tree. Map keys are part of it, so it is kept as written: any characters, at most
 64 KiB of UTF-8 (`iltero_schemas.models.fields.RAW_TEXT_MAX_BYTES`). A reader escapes it to show it, control,
 bidirectional and invisible characters included. Each list holds at most 1,000,000 entries.
+
+Each `evidence_refs` entry names one file in the record's directory:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `ref_id` | identifier | The entry's id. |
+| `media_type` | identifier | The file's media type, such as `application/json`. |
+| `digest` | digest | The SHA-256 of the file's bytes. |
+| `size_bytes` | integer | The file's size, from 0. |
+| `path` | string | Where the file sits in the record's directory. |
+| `storage_uri`, `retention_until` | null | Always `null`. |
+| `collected_at` | timestamp | When the file was collected. |
+| `collector` | object | The `tool` that produced the file and its `version` (identifiers). |
+| `source` | object or null | Identifiers that name what the file was made from, such as the `name` and `digest` of a tool's output. `null` when the entry names none. |
+| `canonicalization` | identifier or null | The canonical form the file's bytes are in, such as `RFC8785`, or `null`. |
+| `redaction_policy` | object or null | The redaction policy that redacted the file's content, in the shape of a redaction report's `policy`: `id`, `version` and `digest`. `null` for a file no redaction touched. |
+
+A redacted file can be a tool's output, such as the plan kept after redaction, or a file the record wrote, such as an
+evaluation context. An entry's `digest` is of the file's bytes; a stage's `redaction.input.digest` is of the redacted
+tree the report describes, so the two differ.
 
 A stage's `coverage.subjects_in_scope.excluded` lists the plan resources left out of the subjects in scope, at most
 100,000:
@@ -403,6 +423,9 @@ Key rules:
   Windows drive or file stream). A path in the
   record's directory is plain names joined by `/`, at most 6 deep and 1024 characters, each name using only letters,
   digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two `evidence_refs` entries share a `path` or a `ref_id`.
+- A record redacts under one policy: every stage's `redaction.policy` and every `evidence_refs[].redaction_policy`
+  that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. Before the first
+  release a policy keeps its version, so the digest tells two policies apart.
 - The first expected stage is `plan`, and `post_deploy` is always expected. `runtime` is never a stage of a record.
   Every lifecycle stage is either expected or listed once in `out_of_scope`. Only `pre_deploy` can be left out by
   `project_config`, and it then names the declaring file in `declared_in`.

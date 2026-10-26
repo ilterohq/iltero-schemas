@@ -84,10 +84,12 @@ Key rules:
 
   A kind is a tool-independent name for what a resource is, such as `rds_instance`, so one selector holds for every
   IaC tool. Each tool's table gives its resource types their kinds: `iltero_schemas/kinds/terraform.json`, read with
-  `iltero_schemas.kinds.kind_of`. The compiler writes a scope condition from a `change` or `deployment` target's
-  selectors, ahead of `when`: some resource of the provider has one of the kinds. A resource whose type the table
-  lacks holds the unknown marker, so the condition is `unknown`, not `false`. A target out of scope is
-  `not_applicable` with the reason `when: false`. A hand-written policy names no selectors.
+  `iltero_schemas.kinds.kind_of`. From a `change` or `deployment` target's selectors the compiler writes a scope
+  guard (`iltero_schemas.ast.scope.scope_guard`): a condition that decides whether the assertion applies. It is
+  checked ahead of `when`, and holds when some resource of the provider has one of the kinds. A resource whose type
+  the table lacks holds the unknown marker, so the guard is `unknown`, not `false`. When the guard is `false`, the
+  result is `not_applicable`: the policy's reason is `when: false`, and the status reason is `when_guard_excluded`.
+  A hand-written policy names no selectors.
 - A rule is built from predicates. A predicate names a `path` and exactly one comparison: `equal`, `not_equal`,
   `greater_than`, `greater_than_or_equal`, `less_than`, `less_than_or_equal`, `in`, `not_in` or `contains`. The
   operand is a literal or `{path: ...}`. Predicates combine with `all`, `any`, `not` and `exists` (`in` and an
@@ -506,7 +508,7 @@ never part of the record.
 | `apiVersion` | string | `iltero.io/verification-report/v1`. |
 | `record` | object | The record's `uuid`, and the `digest` of its bytes as the verifier read them. |
 | `verifier` | object | `name: iltero` and the verifier's `version`. |
-| `properties` | object | Nine properties, each with a `state` and a `basis` (a short name, or `null`). |
+| `properties` | object | Nine properties, each with a `state` and a `reason`: a short name for why the property has its state, or `null`. |
 
 | Property | It is `verified` when |
 | --- | --- |

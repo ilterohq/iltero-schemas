@@ -143,8 +143,9 @@ keep, so any two tools agree on what a record means.
   IaC tool's types (`{tool, provider, resource_types}`), whose values are
   that tool's own attributes. A change or deployment target may name a
   provider's tool-independent kinds (`{provider, kinds}`), and the compiler
-  writes its scope condition from them. Each tool's table gives its types their
-  kinds (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3
+  writes its scope guard from them: a condition that decides whether the
+  assertion applies. Each tool's table gives its types their kinds
+  (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3
   and RDS types). Each resource in the evaluation input names its provider's
   short name and the kind the table gives its type, or the unknown marker
   when the table lacks it, so an unnamed type makes the evaluation unknown rather
@@ -293,6 +294,7 @@ These changes break documents written before them.
     `assertions_expected.basis` is `origin`; `position` is `plan_index`;
     `identity_hidden` is `identity_redacted`; the gap kind
     `credited_by_binding` is `accepted_by_binding`.
+  - Verification report: a property's `basis` is `reason`.
   - Scanners: a stage's `catalogue` is `binding_set` (`copy_path`,
     `binding_count`); its counts are `results_accepted`,
     `results_binding_unverified` and `results_without_binding`, and a

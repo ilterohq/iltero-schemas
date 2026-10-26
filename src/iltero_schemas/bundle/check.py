@@ -167,8 +167,8 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
     described = [{k: v for k, v in a.model_dump().items() if k != "source"} for a in descriptor.assertions]
     if described != [m.record() for m in rebuilt.members]:
         raise BundleError("the digests the descriptor gives are not those of its sources")
-    if descriptor.revision != rebuilt.revision:
-        raise BundleError("the revision is not the digest of the bundle's metadata")
+    if descriptor.content_digest != rebuilt.content_digest:
+        raise BundleError("the content digest is not the digest of the bundle's metadata")
     files = read_tarball(base64.b64decode(descriptor.tarball))
     if set(files) != {*rebuilt.files, SIGNATURES}:
         raise BundleError(f"the tarball must hold {MANIFEST}, {SIGNATURES} and one module per assertion, nothing else")

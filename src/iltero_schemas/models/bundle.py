@@ -7,10 +7,11 @@ so a tool can recompile every source and compare the result byte for byte
 with the module in the tarball before running anything. It also names the
 key that signed the bundle and the oldest tool version able to evaluate it.
 
-A bundle is identified by two values together: ``revision``, the address of
-its content, and ``digest``, the digest of the signed tarball. The same content
-signed under two keys has one revision and two digests. ``digest`` is over
-the decoded tarball bytes, never over their base64 text.
+A bundle is identified by two values together: ``content_digest``, the address
+of its content, and ``tarball_digest``, the digest of the signed tarball. The
+same content signed under two keys has one content digest and two tarball
+digests. ``tarball_digest`` is over the decoded tarball bytes, never over their
+base64 text.
 
 A bundle may hold more assertions than one run owes: ``assertion_set_digest``
 names everything in the bundle.
@@ -79,8 +80,8 @@ class BundleDescriptor(StrictModel):
     """The bundle as served: identity, signing key, versions, the assertions it holds, and the tarball."""
 
     api_version: Literal["iltero.io/assertion-bundle/v1"] = Field(alias="apiVersion")
-    revision: Digest
-    digest: Digest
+    content_digest: Digest
+    tarball_digest: Digest
     key_id: Identifier
     algorithm: Literal["ES256"]
     compiler_version: Identifier
@@ -104,6 +105,6 @@ class BundleDescriptor(StrictModel):
         if self.assertion_set_digest != computed:
             raise ValueError("assertion_set_digest must be the digest of the bundle's assertions")
         tarball = base64.b64decode(self.tarball, validate=True)
-        if self.digest != DIGEST_PREFIX + hashlib.sha256(tarball).hexdigest():
-            raise ValueError("digest must be the digest of the tarball's bytes")
+        if self.tarball_digest != DIGEST_PREFIX + hashlib.sha256(tarball).hexdigest():
+            raise ValueError("tarball_digest must be the digest of the tarball's bytes")
         return self

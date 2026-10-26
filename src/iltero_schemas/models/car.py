@@ -51,7 +51,7 @@ from iltero_schemas.models.fields import (
     ArtifactDigestSource,
     Count,
     Digest,
-    GateMode,
+    EnforcementMode,
     Identifier,
     MemberPath,
     ProjectPath,
@@ -259,7 +259,7 @@ class StageRecord(StrictModel):
     execution: Execution
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
-    enforcement: GateMode
+    enforcement_mode: EnforcementMode
     # The approvals the stage's evaluations read, whatever their source, each of this record's change or run; null at a
     # stage whose input carries no approvals.
     approvals: Approvals | None

@@ -53,11 +53,11 @@
           },
           "reason": null
         },
-        "enforcement": "enforcing",
+        "enforcement_mode": "enforcing",
         "redaction": {
           "allowed": [],
           "policy": {
-            "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
             "id": "iltero.redaction",
             "version": "1"
           },
@@ -610,11 +610,11 @@
           },
           "reason": null
         },
-        "enforcement": "enforcing",
+        "enforcement_mode": "enforcing",
         "redaction": {
           "allowed": [],
           "policy": {
-            "digest": "sha256:85da0395e2ae7e6941cc40eecf826924c71dc6b0ec2106a6c9566ab1865ce8b8",
+            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
             "id": "iltero.redaction",
             "version": "1"
           },

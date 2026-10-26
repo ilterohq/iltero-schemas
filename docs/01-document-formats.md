@@ -214,7 +214,7 @@ Key rules:
   top-level keys `timestamp`, `terraform_version`, `format_version`, `prior_state`, `resource_drift` and
   `relevant_attributes` (`PLAN_EXCLUDED_TOP_LEVEL_KEYS`).
   `artifact_digest` is the digest of the saved plan file. It is present exactly when `artifact_digest_source` is
-  `plan_binary`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest`,
+  `saved_plan`, and `null` when it is `not_provided`. `ILT.DEPLOYMENT.PLAN_BINDING` compares `plan.digest`,
   `plan.artifact_digest` and `plan.artifact_digest_source` with the same fields of `deployment.plan`. When neither
   side was given the saved plan file, both artifact digests are `null` and both sources `not_provided`: the assertion
   passes, and the event's observations show `not_provided`. Such a pass shows that the applied plan's digest equals
@@ -329,12 +329,12 @@ with a regulatory framework.
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `issuer` | object | `type: local` and `identity_verified: false`. |
-| `governance` | object | `run_opened_by`: `server` for a run Iltero Platform issued (`run.origin: server_issued`), `local` otherwise. |
+| `governance` | object | `run_opened_by`: `server` when the writer says Iltero Platform issued the run (`run.origin: server_issued`), `local` otherwise. Only Iltero Platform confirms that it issued a run, by its `run.id`. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
 | `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_source`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
-| `stages` | object | One entry per stage that reported, keyed by stage: what ran its evaluations (`execution`: the evaluator and bundle, or the `reason` nothing ran), the mode its gate ran in (`enforcement`: `enforcing` or `advisory`), the approvals its evaluations read (`approvals`: whatever their source, each listed once and of the record's change or run; `null` at a stage whose input carries no approvals), what was redacted (`redaction`), the files written, what it read from scanner reports (`scanners`), and the stage's own `coverage`, `verdict` and `assurance_status`. Its `reference_time` has the shape and rules of an [AssuranceContext](#assurancecontext)'s; read from the runner's clock (`source: runner_clock`), its `value` is the same instant as the stage's `observed_at`. Its `redaction` is its redaction report (see below). |
+| `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `computed_from` (`status_counts` for a stage, `stage_precedence` for the record) and the deciding `stage`. |
@@ -353,12 +353,67 @@ Trust levels, from weakest to strongest:
 
 | Level | Meaning |
 | --- | --- |
-| `self_attested` | The tool that wrote the record is its only source. |
+| `self_attested` | The tool that wrote the record is its only source. The file digests show the files are the ones the record names. They do not show who wrote the record, and no other party confirms what it says. |
 | `source_authenticated` | A service other than the writer authenticated the repository, the CI system and the identities named in the record. |
 | `governed` | Iltero Platform enforced a declared assurance profile and verified the evidence chain. |
 
 Every level above `self_attested` requires a signature. This version of the record carries none, so the model
 accepts only `self_attested`.
+
+Each `stages` entry says what one stage did:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `stage` | stage | The stage, the same as the entry's key. |
+| `observed_at` | timestamp | When the stage observed the change. |
+| `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
+| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `digest`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
+| `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
+| `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (`pre_deploy`), `null` at every other. |
+| `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
+| `redaction` | object | The stage's redaction report (see below). |
+| `events` | object | The file of the stage's events: its `path`, `digest` and `count`, which equals the stage's `coverage.evaluations`. |
+| `assertions` | object | The index of the assertions the stage compiled: its path (`index`), `digest` and `count`. |
+| `scanners` | object or null | What the stage read from the scanner reports it was given (see below). `null` for a stage given no scanner report. |
+| `coverage`, `verdict`, `assurance_status` | object | The stage's own, in the shape of the record's. |
+
+A stage's `scanners` says what it read from scanner reports and how much of it became a verdict:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `binding_set` | object | The one [evaluator binding set](#evaluatorbindingset) in force (see below). |
+| `reports` | list | Each scanner report the stage was given, at most 16, one per scanner (see below). The model also accepts an empty list. |
+| `results_accepted` | integer | Results a binding accepted as the `pass` or `fail` of the assertion it names, from 0. Each is one event whose evaluator is the scanner. |
+| `results_binding_unverified` | integer | Results a binding entry matched, but whose scanner version does not satisfy the entry's `tool_version_constraint` (a pre-release or a string that is not a version satisfies none), from 0. Each evaluation stays `not_evaluated` with reason `binding_unverified`. |
+| `results_without_binding` | integer | Results that became no evaluation, from 0. It is the sum of the reports' own `results_without_binding`. |
+
+`results_accepted`, `results_binding_unverified` and `results_without_binding` add up to the sum of the reports'
+`results_read`: every result a scanner reported is counted once.
+
+`binding_set` names the binding set by:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `id` | string | The binding set's `metadata.id`: upper-case segments joined by dots, at least two, at most 128 characters. |
+| `version` | string | The binding set's `metadata.version`: a semantic version `X.Y.Z`. |
+| `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The writer sets it, not the binding set; in a self-attested record it is the writer's claim. |
+| `file_name` | string or null | The name of the file the set was read from, one line of at most 1024 characters. Present exactly when `origin` is `file`. |
+| `digest` | digest | The digest of the binding set's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. An event's `binding.digest` names an entry of the set, which a reader checks against the copy. |
+| `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
+| `binding_count` | integer | How many entries the set holds, for every scanner and stage, not only those this stage could use, from 0. |
+
+Each `reports` entry:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `tool` | string | `checkov`, `trivy` or `prowler`. |
+| `tool_version` | identifier | The version the scanner reported. |
+| `input_kinds` | list | What the scanner was reading, in its own words, such as `terraform_plan` (identifiers). |
+| `report_digest` | digest | The digest of the report as the stage kept it, the same value as that file's `evidence_refs` digest. Events answered from the report name it as their `input_digest`. |
+| `observations` | string | Where the stage kept what it read from the report, in the record's directory. |
+| `results_read` | integer | Results the stage read from the report, from 0. |
+| `results_without_binding` | integer | This report's results that became no evaluation, from 0. |
+| `parsing_errors` | integer | Inputs the scanner itself reported it could not parse, from 0. A value above 0 means the scanner did not cover everything it was given; 0 does not show that everything was parsed, because a scanner may not report parse errors at all. |
 
 A stage's redaction report (`redaction`) says what the stage's redaction hid, left unknown or allowed, by
 path. It holds no value.
@@ -442,7 +497,7 @@ Key rules:
   plan stage enumerates the plan's resources. A stage with no evaluations counts by the one kind its assertions can
   target. A stage that counts a change or a deployment has exactly one subject in scope, none removed by the plan and
   none excluded.
-- `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
+- `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
   `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise it is the tool's choice.
@@ -669,7 +724,7 @@ with the module in the tarball before it runs anything.
 | `key_id` | identifier | The key that signed the bundle. |
 | `algorithm` | string | `ES256`. |
 | `compiler_version` | identifier | The compiler version the modules were built with. |
-| `min_cli_version` | string | The oldest CLI version able to evaluate the bundle. |
+| `minimum_cli_version` | string | The oldest CLI version able to evaluate the bundle, such as `1.2.3`. |
 | `assertion_set_digest` | digest | The digest of every assertion in the bundle, by id, version and document digest. |
 | `assertions` | list | 1 to 1,024 assertions, sorted by id: `id`, `version`, `digest`, `source_digest`, `compiled_digest` and the YAML `source`. |
 | `tarball` | string | The signed tarball, standard base64 with padding, at most 16 MiB decoded. |

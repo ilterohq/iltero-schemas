@@ -4,7 +4,7 @@ A tool that receives a bundle descriptor does this, in order, before it
 evaluates anything:
 
 0. It refuses the bundle if the tool is older than the descriptor's
-   ``min_cli_version``. This package does not check that, because it does not
+   ``minimum_cli_version``. This package does not check that, because it does not
    know the tool's version.
 1. It calls :func:`check_descriptor`. That takes the key the descriptor names
    from the trust set and refuses a key that may not verify. It refuses a
@@ -159,7 +159,9 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
             f"the bundle was compiled by compiler {descriptor.compiler_version}; this package's is {COMPILER_VERSION}"
         )
     try:
-        rebuilt = unsigned_bundle([a.source for a in descriptor.assertions], min_cli_version=descriptor.min_cli_version)
+        rebuilt = unsigned_bundle(
+            [a.source for a in descriptor.assertions], minimum_cli_version=descriptor.minimum_cli_version
+        )
     except (DocumentError, AssertionSyntaxError, CanonicalizationError) as exc:
         raise BundleError(f"a source cannot be compiled: {exc}") from None
     described = [{k: v for k, v in a.model_dump().items() if k != "source"} for a in descriptor.assertions]

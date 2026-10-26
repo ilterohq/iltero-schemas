@@ -23,6 +23,11 @@ keep, so any two tools agree on what a record means.
   it; the source digest does not. Each starter assertion has one.
 - An evaluation of a starter assertion that a project added to its local run
   says so (`assertion_source: contract_starter`).
+- A typed text field (a name, an identifier, an address, a title) and an
+  assertion's literal refuse control, zero-width and bidirectional formatting
+  characters, and the characters that show as nothing: a soft hyphen, the
+  combining grapheme joiner, the Arabic letter mark, the Mongolian vowel
+  separator and the Hangul fillers.
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each stage.
 - A JSON document a tool writes has one form, so one set of facts has one
@@ -37,19 +42,66 @@ keep, so any two tools agree on what a record means.
   Invalid-record vectors cover them.
 - In an `AssuranceContext`, `null` means a fact has no value, never that it is
   unknown. A plan's `complete`, `applyable` and `tool_version` hold the unknown
-  marker with the new reason `not_reported_by_tool` when the tool's plan does
+  marker with the reason `not_reported_by_tool` when the tool's plan does
   not say. `change.digest` is required and is the change digest of its unit's
   plan. A resource's `type` and `name`, its provider source and a related
   resource's `type` are never `null`. An earlier evaluation names its plan's
   digest exactly when its stage reads a plan.
-- `ILT.DEPLOYMENT.PLAN_BINDING` also compares the two `artifact_digest_source` values,
-  so its observations show when neither side had the saved plan file. It
-  passes then, and fails when only one side has it. Evaluation vectors cover
-  both, and how a `null` value evaluates.
+- A plan resource in the evaluation input is a neutral core (`id`,
+  `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
+  `related`), and what only its IaC tool says about it is under `tool_data`,
+  keyed by `tool`: Terraform's `provider_source`, `action_reason`,
+  `previous_address`, `importing`, `replace_paths`, and a related resource's
+  `match`. Its `tool_data`, and each related resource's, must be the
+  variant of the plan's tool. It names the kind its tool's table gives its
+  type, like a change entry, and `provider` is required and is the
+  provider's short name.
+- The plan, the apply log and the state name their IaC tool (`tool`) and its
+  version (`tool_version`). An apply's timing source is `apply_log`.
+- A subject is keyed, in the evaluation input, in events and in an earlier
+  evaluation, by `key`: the digest of its kind and its one local identity,
+  computed by `models.subjects.subject_key` and checked in every document,
+  with a conformance vector. The local identity is a managed resource's
+  address scoped by its unit (scheme `terraform_address`), the cloud identity
+  of a resource only the cloud knows (after deployment), or the unit of a
+  change, a deployment or an assurance subject. The key is over the
+  identity's text as written, with no Unicode normalization. No stack or
+  other Iltero Platform scope is part of it. An event's subject has no key
+  and no identity exactly when no subject was in scope.
+- `ILT.DEPLOYMENT.PLAN_BINDING` compares the plan digests, the saved plan
+  file's digests and the two `artifact_digest_source` values, so its
+  observations show when neither side had the saved plan file. It passes
+  then, and fails when only one side has it. Evaluation vectors cover both,
+  and how a `null` value evaluates.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
-  v1): each stage's coverage and verdict, the rules that tie the stages
-  together, what a deployment did, the resources' cloud identities, and which
-  stages are in scope.
+  v1): the record of one attempted infrastructure change, whatever its
+  outcome. It holds each stage's coverage and verdict, the rules that tie the
+  stages together, what a deployment did, the resources' cloud identities, and
+  which stages are in scope. It says what was checked and how; on its own, it
+  does not show that anything is certified or complies with a regulation or
+  standard, and its `compliance_determination` is always `null`.
+- A record's `trust_level` is one of three levels (`self_attested`,
+  `source_authenticated`, `governed`), and a record may claim only
+  `self_attested`, since it carries no signature. Its issuer is always
+  `local`, and its identity is never verified, whoever opened the run.
+- Each part of a record has a fixed shape. A stage's `reference_time` and the
+  record's `subject.source` are those of the evaluation input. A stage's
+  `redaction` is a redaction report: the policy that ran, what was redacted,
+  and the paths redacted (each with a reason token), left unknown, or allowed
+  (each with the project's reason). A stage's `scanners` names the binding set
+  in force and counts each scanner result once: accepted as `pass` or `fail`,
+  matched by a binding whose version constraint the scanner does not satisfy,
+  or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
+  names its index in the plan's resource list (`plan_index`), its address as
+  written or `null`, and one of four reasons. A coverage gap is one of three
+  shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
+  count of at least 1 (`COUNT_GAP_KINDS`); the record's combined coverage
+  names each gap's stage.
+- A record redacts under one policy. An evidence file's `redaction_policy`
+  names it as a stage's redaction report does (`id`, `version`, `digest`),
+  or is `null` for a file no redaction touched, and every stage and every
+  redacted evidence file name the same one, whatever the validation context.
+  Invalid-record vectors cover it.
 - A record's plan `complete`, `applyable` and `tool_version`, and a
   plan-flag gap's `value`, hold the `not_reported_by_tool` marker when the
   tool's plan does not say; `null` is refused. A record's `change.digest` is
@@ -67,17 +119,38 @@ keep, so any two tools agree on what a record means.
 - The integrity checks: a record's values that a reader can recompute,
   including its `change.digest`, the pre-deploy stage's source digest and
   each approval of a change, must be what they recompute to. Change digest
-  problems come first, so a forged digest is refused as such. A reader that
-  sets `SKIP_INTEGRITY_CHECKS` to `True` (any other value is ignored) reads
-  the record and gets every problem from `integrity_problems`, to report as
-  integrity failures. Record vectors (`records_integrity_failed/`) cover it.
-- The identity document (`IdentityBindings` v1), and the shape of each AWS
-  resource name (ARN) it may hold. No two of its bindings, and no two of its
-  removed entries, name the same cloud identity.
-- Hand-written policy sources and scanner binding sets. Binding
-  sets, events and records name a scanner from one list.
-- A record's scanner report now refuses any scanner other than `checkov`,
-  `trivy` and `prowler`.
+  problems come first, so a change digest that does not recompute is refused
+  first. A reader that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other
+  value is ignored) reads the record and gets every problem from
+  `integrity_problems`, to report as integrity failures. The checks show that
+  a record agrees with itself, not that it is unchanged since it was written.
+  Record vectors (`records_integrity_failed/`) cover it.
+- An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
+  `version`, `tool`), and a record holds every event's to its own plan. An
+  event's executor provider is `local`, `ci` or a CI system's name, such as
+  `github_actions`.
+- A deployment's apply and the identity document are a neutral core plus
+  `tool_data`, keyed by `tool`, with that tool's validation in its own module.
+  For Terraform, the apply's `tool_data` holds the `summary` counts, the
+  `log_lines` it could not read, and the delete of each deposed object (an
+  old copy a replacement set aside) settled by the state; the identity
+  document's holds its deposed counts. The apply's `tool_data` must be the
+  variant of its log's tool, and the identity document's that of its state's
+  tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
+  each address's current object once.
+- The identity document (`IdentityBindings` v1). A binding's `iac` side names
+  its `tool`, and the document lists its `resolvers`, one per cloud provider.
+  The cloud side and resolver of an identity binding each have one shape per
+  cloud provider, chosen by a `provider` field; AWS is the first. Each AWS resource name (ARN) has the shape
+  AWS could issue: an S3 bucket name that looks like an IP address, holds two
+  dots in a row or uses a reserved prefix or suffix is refused, and so is an
+  RDS identifier that is not lowercase, ends with a hyphen or holds two
+  hyphens in a row. No two of its bindings, and no two of its removed
+  entries, name the same cloud identity.
+- Hand-written policy sources and scanner binding sets. An evaluator
+  binding's `input_kind` says what the scanner must have been reading, and a
+  record's scanner report lists its `input_kinds`. Binding sets, events and
+  records name a scanner from one list: `checkov`, `trivy` and `prowler`.
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
@@ -95,16 +168,17 @@ keep, so any two tools agree on what a record means.
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
   Iltero Platform opened, an identity document with no bindings, the identity
-  documents that must be refused, and changed ones that must still be
-  accepted. The rules about bindings have no vector, because a binding holds
-  a cloud identifier this repository does not publish.
+  documents that must be refused, and altered ones that must still be
+  accepted. The record vectors are in `vectors/records/`. The rules about
+  bindings have no vector, because a binding holds a cloud identifier this
+  repository does not publish.
 - A record says who opened its run (`run.origin` and
-  `governance.run_opened_by`), the same way everywhere. A record of a run
-  the tool opened claims nothing only Iltero Platform can give: no Iltero
-  Platform bundle or evaluation from one, no facts from Iltero Platform, and no
-  stage reference time from it. Every event names the record's own run and
-  unit. Every record is self-attested: only Iltero Platform can confirm a run
-  it opened, by its `run.id`.
+  `governance.run_opened_by`: `server` or `local`), the same way everywhere.
+  A record of a run the tool opened claims nothing only Iltero Platform can
+  give: no Iltero Platform bundle or evaluation from one, no facts from
+  Iltero Platform, and no stage reference time from it. Every event names the
+  record's own run and unit. Iltero Platform can confirm, by `run.id`, that
+  it opened a run; that does not confirm what the record says about it.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release
@@ -118,7 +192,7 @@ keep, so any two tools agree on what a record means.
 - A stage counts its subjects by their kind: resources by enumerating the
   plan, a change or a deployment as its one unit (`counted_from: change_unit`, by
   the record's change digest, or `deployment_unit`). Every stage records the
-  mode its gate ran in (`enforcement`: `enforcing` or `advisory`, always
+  mode its gate ran in (`enforcement_mode`: `enforcing` or `advisory`, always
   enforcing after the deployment).
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`: at most
@@ -150,8 +224,8 @@ keep, so any two tools agree on what a record means.
   short name and the kind the table gives its type, or the unknown marker
   when the table lacks it, so an unnamed type makes the evaluation unknown rather
   than out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
-  and network kinds instead of Terraform types, roles, policy attachments,
-  key policies and grants included.
+  and network kinds, roles, policy attachments, key policies and grants
+  included.
 - The facts only Iltero Platform holds, as items an assertion reads: approvals,
   exceptions and earlier evaluations. An approval names the change it
   approves by its digest, or the run by Iltero's run id, and says how it was
@@ -168,7 +242,7 @@ keep, so any two tools agree on what a record means.
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.
-  The set is empty until the first signing key is published.
+  The shipped set is empty.
   CI refuses a change to the set that does not raise the version, and a
   release that changes it raises the major or minor version.
 - Signed assertion bundles: building one from assertion sources (the files
@@ -184,157 +258,3 @@ keep, so any two tools agree on what a record means.
   calls a record's integrity verified, because no record carries a signature
   in this version. When the report cannot establish a record's integrity, it trusts
   nothing else the record says.
-
-### Changed
-
-These changes break documents written before them.
-
-- Parts of a record that accepted any content now have a fixed shape. A
-  stage's `reference_time` and the record's `subject.source` are those of
-  the evaluation input. A stage's `redaction` is a redaction report:
-  the policy that ran, what was redacted, and the paths redacted (each with a
-  reason token), left unknown, or allowed (each with the project's reason).
-  An excluded resource (`subjects_in_scope.excluded`) names its index in
-  the plan's resource list (`plan_index`), its address as written or `null`, and one of four reasons. A
-  coverage gap is one of three shapes, chosen by its `kind`: a plan flag, a
-  resource's `plan_index`, or a count of at least 1 (`COUNT_GAP_KINDS`); the
-  record's combined coverage names each gap's stage.
-- A record redacts under one policy. An evidence file's `redaction_policy`
-  names it as a stage's redaction report does (`id`, `version`, `digest`),
-  or is `null` for a file no redaction touched, and every stage and every
-  redacted evidence file name the same one, whatever the validation context.
-  Invalid-record vectors cover it.
-- A subject is keyed, in the evaluation input, in events and in an earlier
-  evaluation, by `key`: the digest of its kind and its one local identity,
-  computed by `models.subjects.subject_key` and checked in every document,
-  with a conformance vector. The local identity is a managed resource's
-  address scoped by its unit, the cloud identity of a resource only the
-  cloud knows (after deployment), or the unit of a change, a deployment or
-  an assurance subject. The key is over the identity's text as written, with
-  no Unicode normalization. `key` replaces `id`, which was the resource's
-  address. No stack or other Iltero Platform scope is part of it. An event's
-  subject has no key and no identity exactly when no subject was in scope.
-- A typed text field (a name, an identifier, an address, a title) and an
-  assertion's literal also refuse the characters that show as nothing: a
-  soft hyphen, the combining grapheme joiner, the Arabic letter mark, the
-  Mongolian vowel separator and the Hangul fillers.
-- A deployment's apply and the identity document are a neutral core plus
-  `tool_data`, keyed by `tool`, with that tool's validation in its own module.
-  For Terraform, the apply's `tool_data` holds the `summary` counts, the
-  `log_lines` it could not read, and the delete of each deposed object (an
-  old copy a replacement set aside) settled by the state; the identity
-  document's holds its deposed counts. The apply's `tool_data` must be the
-  variant of its log's tool, and the identity document's that of its state's
-  tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
-  each address's current object once.
-- A plan resource in the evaluation input is a neutral core (`id`,
-  `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
-  `related`), and what only its IaC tool says about it is under `tool_data`,
-  keyed by `tool`: Terraform's `provider_source`, `action_reason`,
-  `previous_address`, `importing`, `replace_paths`, and a related resource's
-  `match`. Its `tool_data`, and each related resource's, must be the
-  variant of the plan's tool. It names the kind its tool's table gives its
-  type, like a change entry, and `provider` is required and is the
-  provider's short name.
-- An identity binding accepts an S3 bucket or RDS instance only by an ARN AWS
-  could issue. A bucket name that looks like an IP address, holds two dots in a
-  row or uses a reserved prefix or suffix is refused. So is an RDS identifier
-  that is not lowercase, ends with a hyphen or holds two hyphens in a row.
-- CAR now stands for Change Assurance Record: the record of one attempted
-  infrastructure change, whatever its outcome. It records assurance facts and
-  does not, by itself, establish certification or compliance with a
-  regulatory framework. In plain words, a record says what was checked and
-  how. On its own, it does not show that anything is certified or complies
-  with a regulation or standard.
-- A record's `trust_level` replaces `assurance_level`. It lists three levels,
-  and a record may claim only `self_attested`, since it carries no signature.
-- A record has a new `compliance_determination` field, which is always `null`.
-- A record's issuer is always `local`, and its identity is never verified,
-  whoever opened the run.
-- `governance.run_opened_by` (`server` or `local`) replaces
-  the earlier field that said whether the service managed the run.
-- A CI identity, and the cloud side and resolver of an identity binding,
-  each have one shape per provider, chosen by a `provider`
-  field. GitHub Actions and AWS are the first providers.
-- An identity binding's `terraform` side is now `iac`, which names its
-  `tool`. A document lists its `resolvers`, one per cloud provider.
-- The plan, the apply log and the state name their IaC tool (`tool`) and its
-  version (`tool_version`), in place of `format` and `terraform_version`. An
-  apply's timing source is `apply_log`.
-- A resource assertion's target names its IaC tool (`tool: terraform`), so
-  every assertion's source digest and compiled program change.
-- An event's executor provider is `local`, `ci` or a CI system's name, such
-  as `github_actions`. A resource's identity scheme is `terraform_address`.
-- An evaluator binding's `framework` is now `input_kind`: what the scanner
-  must have been reading. A record's scanner report lists `input_kinds`, in
-  place of `frameworks`.
-- An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
-  `version`, `tool`), and a record holds every event's to its own plan.
-
-- Renamed:
-  - Evaluation input: `context` is `organization_scope`; a reference time's
-    `bracket` is `time_window`; a subject's `authority: authoritative` is
-    `resolution: resolved`; `artifact_digest_basis` is
-    `artifact_digest_source`.
-  - Events: the policy's `reason` is `policy_reason`; the OPA evaluator's
-    `environment` is `limits`, with `timeout_seconds`, `memory_limit`,
-    `max_output_bytes` and `evaluations_per_process`; a scanner evaluator's
-    `basis` is `reason`; the run's `basis` is `origin`; the executor's
-    `run_id` is `ci_run_id`; the status reason `evaluator_memory_cap` is
-    `evaluator_memory_limit`.
-  - Records: `run_id` (`value`, `basis`) is `run` (`id`, `origin`);
-    `not_in_scope` is `out_of_scope`, with a `reason`; `retention_basis` is
-    `retention_reason`; the integrity scheme `digest_linkage` is
-    `file_digests`. A stage's `ran` is `execution`, and its
-    `redaction_applied` is `redaction`, whose `subject` is `input`. An
-    evidence file's `redaction_applied` (`policy_id`) is `redaction_policy`
-    (`id`).
-  - Coverage: `checks` is `evaluations`; the verdict's `basis` is
-    `computed_from`; `subjects_in_scope.basis` is `counted_from`;
-    `assertions_expected.basis` is `origin`; `position` is `plan_index`;
-    `identity_hidden` is `identity_redacted`; the gap kind
-    `credited_by_binding` is `accepted_by_binding`.
-  - Verification report: a property's `basis` is `reason`.
-  - Scanners: a stage's `catalogue` is `binding_set` (`copy_path`,
-    `binding_count`); its counts are `results_accepted`,
-    `results_binding_unverified` and `results_without_binding`, and a
-    report's are `results_read` and `results_without_binding`.
-  - Deployments: the apply's `basis` is `outcomes_from` (`apply_log` or
-    `apply_log_and_state`); a change's `basis` is `outcome_from`
-    (`apply_log`, `state` or `none`); a re-plan's `basis: dependency_replan`
-    is `reason: dependency_replanned`; Terraform's log lines `noise` and
-    `damaged` are `other_output_lines` and `damaged_messages`.
-  - Identity documents: `authority: authoritative` is `resolution:
-    resolved`; `fate` is `removal`; the AWS `primary` identifier is
-    `identifier`; a resolver's `verified` is `verified_resource_types`;
-    Terraform's `deposed_destroyed` and `deposed_objects` are
-    `deposed_deleted` and `deposed_remaining`.
-  - Binding sets: an entry's `check_id` is `rule_id`. Trusted bundle keys:
-    `keyid` is `key_id`.
-  - Python names: `OPA_RELEASE_PIN` (was `PIN`), `RUNTIME_REGO`,
-    `ALWAYS_REQUIRED_PARTS`, `BUNDLE_SIGNING_SCOPE`, `SIGNING_ALGORITHM`,
-    `LITERAL_LIST_MAX_ITEMS`, `LITERAL_STRING_MAX_CHARS`,
-    `normalized_signature` (was `low_s`), `parse_timestamp`,
-    `ASSERTION_TYPE_FOR_TARGET`, `SCOPE_COUNTED_FROM` and
-    `scope_counted_from`; the types `ServerFactsUnavailable`,
-    `KindNotMapped`, `ApplyLogIncomplete`, `EventsFile`, `AssertionIndex`,
-    `Execution`, `BindingSetUsed`, `AcceptedStatus`, `TimeWindow`,
-    `ExecutionEvaluator`, `ExecutionBundle`, `MemoryLimit`, `PlanIndexGap`,
-    `RedactedPath`, `MaybeRedacted`, `MaybeRedactedAddress`, `RecordRun`,
-    `OutOfScopeReason`, `Resolution`, `Removal` and
-    `OutcomeSource`; `RULE_ID_PATTERN` and `RULE_ID_MAX_LENGTH`.
-  - Vector folders: `invalid/` is `assertions_invalid/`.
-  The starter assertions that read the organization scope or the artifact
-  digest source keep their versions and have new digests.
-
-### Removed
-
-- An event's `fs_hardening`.
-- The evaluation limits' `python_platform`: `platform` names the system the
-  evaluation ran on.
-- The messages a pipeline exchanges with Iltero Platform during a run: opening
-  a run, a stage's token, closing a run, uploads and their answers, the facts
-  document, the artifact store, and their vectors. The record vectors are in
-  `vectors/records/`.
-- The `Attestation` document and its media type, and the `assessor_reviewed`
-  and `authority_accepted` trust levels. A record states machine facts only.

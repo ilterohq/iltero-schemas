@@ -389,8 +389,8 @@ def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
 
 
 def test_a_record_refuses_an_artifact_digest_without_its_source() -> None:
-    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is plan_binary"):
-        CAR.model_validate(_record(**{"plan.artifact_digest_source": "plan_binary"}))
+    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is saved_plan"):
+        CAR.model_validate(_record(**{"plan.artifact_digest_source": "saved_plan"}))
 
 
 def test_a_plan_stage_observed_after_the_apply_started_is_refused() -> None:

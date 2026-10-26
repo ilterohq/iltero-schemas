@@ -120,6 +120,13 @@ def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     assert len(names) == len(set(names))
 
 
+@pytest.mark.parametrize(
+    "cases", [RECORD_INVALID_CASES, IDENTITY_INVALID_CASES], ids=["records invalid", "identities invalid"]
+)
+def test_every_expected_message_is_one_line_so_any_error_layout_contains_it(cases: list[dict[str, Any]]) -> None:
+    assert [case["name"] for case in cases if "\n" in case["message"]] == []
+
+
 def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
     shipped = {}
     for path in ASSERTIONS.iterdir():

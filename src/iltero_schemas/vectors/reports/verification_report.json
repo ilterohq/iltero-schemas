@@ -19,7 +19,7 @@
     },
     "approval_identity": {
       "state": "not_assessed",
-      "reason": "pre_deploy_not_in_scope"
+      "reason": "pre_deploy_out_of_scope"
     },
     "bundle_provenance": {
       "state": "not_performed",
@@ -43,7 +43,7 @@
     },
     "exceptions": {
       "state": "not_assessed",
-      "reason": "pre_deploy_not_in_scope"
+      "reason": "pre_deploy_out_of_scope"
     }
   }
 }

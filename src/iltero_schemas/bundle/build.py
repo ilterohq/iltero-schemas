@@ -116,19 +116,19 @@ class UnsignedBundle:
     files: Mapping[str, bytes]
 
 
-def unsigned_bundle(sources: Sequence[str], *, min_cli_version: str) -> UnsignedBundle:
+def unsigned_bundle(sources: Sequence[str], *, minimum_cli_version: str) -> UnsignedBundle:
     """The files of a bundle of ``sources``, built by this package's compiler.
 
     A bundle holds each assertion id once: two versions of one assertion would
-    compile to the same policy package. ``min_cli_version`` is the oldest tool
+    compile to the same policy package. ``minimum_cli_version`` is the oldest tool
     that may evaluate the bundle, written ``X.Y.Z``; it is signed with the rest.
     """
     if not sources:
         raise BundleError("a bundle holds at least one assertion")
     if len(sources) > MAX_BUNDLE_ASSERTIONS:
         raise BundleError(f"a bundle holds at most {MAX_BUNDLE_ASSERTIONS} assertions")
-    if not re.fullmatch(VERSION_PATTERN, min_cli_version):
-        raise BundleError("min_cli_version must be a version such as 1.2.3")
+    if not re.fullmatch(VERSION_PATTERN, minimum_cli_version):
+        raise BundleError("minimum_cli_version must be a version such as 1.2.3")
     members = tuple(sorted((member(source) for source in sources), key=lambda m: m.id))
     ids = [m.id for m in members]
     if len(set(ids)) != len(ids):
@@ -136,7 +136,7 @@ def unsigned_bundle(sources: Sequence[str], *, min_cli_version: str) -> Unsigned
     metadata = {
         "apiVersion": API_VERSION,
         "compiler_version": COMPILER_VERSION,
-        "min_cli_version": min_cli_version,
+        "minimum_cli_version": minimum_cli_version,
         "assertion_set_digest": required_assertion_digest((m.id, m.version, m.digest) for m in members),
         "assertions": [m.record() for m in members],
     }
@@ -240,7 +240,7 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
             "key_id": key_id,
             "algorithm": SIGNING_ALGORITHM,
             "compiler_version": bundle.metadata["compiler_version"],
-            "min_cli_version": bundle.metadata["min_cli_version"],
+            "minimum_cli_version": bundle.metadata["minimum_cli_version"],
             "assertion_set_digest": bundle.metadata["assertion_set_digest"],
             "assertions": [{**m.record(), "source": m.source} for m in bundle.members],
             "tarball": base64.b64encode(signed_bundle).decode("ascii"),

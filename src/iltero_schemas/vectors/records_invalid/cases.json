@@ -2261,6 +2261,6 @@
     "remove": [
       "/evidence_refs/0/redaction_policy/digest"
     ],
-    "message": "evidence_refs.0.redaction_policy.digest\n  Field required"
+    "message": "Field required"
   }
 ]

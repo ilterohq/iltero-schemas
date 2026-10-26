@@ -192,7 +192,7 @@ keep, so any two tools agree on what a record means.
 - A stage counts its subjects by their kind: resources by enumerating the
   plan, a change or a deployment as its one unit (`counted_from: change_unit`, by
   the record's change digest, or `deployment_unit`). Every stage records the
-  mode its gate ran in (`enforcement`: `enforcing` or `advisory`, always
+  mode its gate ran in (`enforcement_mode`: `enforcing` or `advisory`, always
   enforcing after the deployment).
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`: at most

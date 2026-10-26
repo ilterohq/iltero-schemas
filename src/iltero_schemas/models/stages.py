@@ -165,7 +165,7 @@ def check_structure(car: CAR) -> None:
         enumerates = scope == SCOPE_COUNTED_FROM[TargetKind.RESOURCE]
         if (counted_from is not None and scope != counted_from) or (stage is not Stage.PLAN and enumerates):
             raise ValueError(f"the {stage.value} stage counts its scope as {counted_from or 'its own'}")
-        if record.enforcement == "advisory" and stage not in ADVISORY_STAGES:
+        if record.enforcement_mode == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
         if (record.approvals is not None) != reads_server_facts(stage):
             raise ValueError(f"the {stage.value} stage lists approvals exactly when it reads server facts")

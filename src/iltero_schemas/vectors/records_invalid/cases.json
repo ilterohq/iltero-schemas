@@ -247,20 +247,20 @@
     "message": "Input should be 'upstream_state'"
   },
   {
-    "name": "stage_enforcement_outside_the_list",
+    "name": "stage_enforcement_mode_outside_the_list",
     "vector": "local_run.json",
     "set": {
-      "/stages/plan/enforcement": "waived"
+      "/stages/plan/enforcement_mode": "waived"
     },
     "remove": [],
     "message": "Input should be 'enforcing' or 'advisory'"
   },
   {
-    "name": "stage_without_an_enforcement_key",
+    "name": "stage_without_an_enforcement_mode_key",
     "vector": "local_run.json",
     "set": {},
     "remove": [
-      "/stages/plan/enforcement"
+      "/stages/plan/enforcement_mode"
     ],
     "message": "Field required"
   },
@@ -598,7 +598,7 @@
             },
             "reason": null
           },
-          "enforcement": "enforcing",
+          "enforcement_mode": "enforcing",
           "redaction": {
             "allowed": [],
             "policy": {
@@ -1150,7 +1150,7 @@
             },
             "reason": null
           },
-          "enforcement": "enforcing",
+          "enforcement_mode": "enforcing",
           "redaction": {
             "allowed": [],
             "policy": {
@@ -1732,7 +1732,7 @@
           },
           "reason": null
         },
-        "enforcement": "enforcing",
+        "enforcement_mode": "enforcing",
         "redaction": {
           "allowed": [],
           "policy": {

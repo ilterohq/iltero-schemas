@@ -368,7 +368,7 @@ Each `stages` entry says what one stage did:
 | `observed_at` | timestamp | When the stage observed the change. |
 | `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
 | `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `digest`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
-| `enforcement` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
+| `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
 | `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (`pre_deploy`), `null` at every other. |
 | `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
 | `redaction` | object | The stage's redaction report (see below). |
@@ -497,7 +497,7 @@ Key rules:
   plan stage enumerates the plan's resources. A stage with no evaluations counts by the one kind its assertions can
   target. A stage that counts a change or a deployment has exactly one subject in scope, none removed by the plan and
   none excluded.
-- `enforcement` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
+- `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
   Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
   happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
   `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise it is the tool's choice.

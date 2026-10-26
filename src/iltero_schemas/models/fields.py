@@ -46,7 +46,7 @@ ArtifactDigestSource = Literal["saved_plan", "not_provided"]
 # The stages a governed run passes through; ``runtime`` evaluations never belong to a run.
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed evaluation stops the pipeline (``enforcing``) or is only reported (``advisory``).
-GateMode = Literal["enforcing", "advisory"]
+EnforcementMode = Literal["enforcing", "advisory"]
 # The start of a JSON Web Token: a base64url header, a dot, and a base64url payload, both JSON objects.
 _JSON_WEB_TOKEN = re.compile(r"eyJ[A-Za-z0-9_-]*\.eyJ")
 

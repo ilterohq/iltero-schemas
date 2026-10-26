@@ -437,7 +437,7 @@ def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
 
 
 def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
-    document = _record({"post_deploy": _stage("post_deploy", enforcement="advisory")})
+    document = _record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")})
     with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
         CAR.model_validate(document, context=_READER)
 

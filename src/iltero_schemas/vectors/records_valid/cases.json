@@ -34,7 +34,7 @@
     "name": "local_stage_whose_gate_was_advisory",
     "vector": "local_run.json",
     "set": {
-      "/stages/plan/enforcement": "advisory"
+      "/stages/plan/enforcement_mode": "advisory"
     },
     "remove": []
   },

@@ -53,7 +53,7 @@
           },
           "reason": null
         },
-        "enforcement": "enforcing",
+        "enforcement_mode": "enforcing",
         "redaction": {
           "allowed": [],
           "policy": {
@@ -610,7 +610,7 @@
           },
           "reason": null
         },
-        "enforcement": "enforcing",
+        "enforcement_mode": "enforcing",
         "redaction": {
           "allowed": [],
           "policy": {

@@ -18,7 +18,7 @@ from typing import Any, get_args
 
 import pytest
 
-from iltero_schemas.opa import PIN, platform_key
+from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
@@ -53,9 +53,9 @@ def binding(address: str, resource_type: str = "rds_instance", unit: str = "root
         "cloud": {
             "provider": "aws",
             "resource_type": resource_type,
-            "primary": {"scheme": "aws_arn", "value": ARNS[resource_type]},
+            "identifier": {"scheme": "aws_arn", "value": ARNS[resource_type]},
         },
-        "authority": "authoritative",
+        "resolution": "resolved",
     }
 
 
@@ -75,10 +75,10 @@ def opa() -> Path:
         if os.environ.get("ILTERO_OPA_REQUIRED") == "1":
             pytest.fail("ILTERO_OPA_REQUIRED=1 but no pinned opa is available: set ILTERO_OPA_PATH")
         pytest.skip("pinned opa not available: set ILTERO_OPA_PATH")
-    expected = PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
+    expected = OPA_RELEASE_PIN.binaries[platform_key(platform.system(), platform.machine())].sha256
     actual = hashlib.sha256(binary.read_bytes()).hexdigest()
     if actual != expected:
-        pytest.fail(f"{binary} is not the pinned opa release {PIN.version} (sha256 {actual})")
+        pytest.fail(f"{binary} is not the pinned opa release {OPA_RELEASE_PIN.version} (sha256 {actual})")
     return binary
 
 
@@ -93,19 +93,19 @@ def identity_record(**fields: Any) -> dict[str, Any]:
             "state": {"digest": STATE_DIGEST, "tool": "terraform", "tool_version": "1.14.0"},
             "plan": {"digest": PLAN_DIGEST, "digest_version": "1"},
         },
-        "resolvers": [{"provider": "aws", "version": "1.0.0", "verified": sorted(ARNS)}],
+        "resolvers": [{"provider": "aws", "version": "1.0.0", "verified_resource_types": sorted(ARNS)}],
         "bindings": [],
         "unresolved": [],
         "removed": [],
         "removed_unresolved": [],
-        "tool_data": {"tool": "terraform", "deposed_destroyed": 0, "deposed_objects": 0},
+        "tool_data": {"tool": "terraform", "deposed_deleted": 0, "deposed_remaining": 0},
     }
     return {**record, **fields}
 
 
-def removed(address: str, resource_type: str = "rds_instance", fate: str = "deleted") -> dict[str, Any]:
+def removed(address: str, resource_type: str = "rds_instance", removal: str = "deleted") -> dict[str, Any]:
     """A binding of an object that left the state, and how it left."""
-    return {**binding(address, resource_type), "fate": fate}
+    return {**binding(address, resource_type), "removal": removal}
 
 
 def change(address: str, action: str, required: list[str], outcome: str, **fields: Any) -> dict[str, Any]:
@@ -115,7 +115,7 @@ def change(address: str, action: str, required: list[str], outcome: str, **field
     when never attempted or needing nothing; an errored change must say.
     """
     completed = sorted(required) if outcome == "applied" else []
-    entry = {"address": address, "action": action, "required": required, "basis": "log"}
+    entry = {"address": address, "action": action, "required": required, "outcome_from": "apply_log"}
     return {
         **entry,
         "completed": completed,

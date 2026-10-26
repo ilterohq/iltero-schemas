@@ -1,10 +1,10 @@
-"""The scope check a change or deployment target's selectors add to its ``when``.
+"""The scope guard a change or deployment target's selectors add to its ``when``.
 
 A process target that names ``resources`` is in scope only when the change
-touches a resource one of its selectors picks. The compiler writes that check
+touches a resource one of its selectors picks. The compiler writes that guard
 from the selectors, so no assertion writes resource kinds into its own logic: a
 resource of the selector's provider whose ``kind`` is one of its kinds. A
-resource of that provider whose kind is the unknown marker makes the check
+resource of that provider whose kind is the unknown marker makes the guard
 unknown rather than false, so a type a tool's adapter could not name never takes
 a change out of scope.
 """
@@ -32,7 +32,7 @@ def _picks(selector: Selector) -> Expr:
 
 
 def scope_guard(target: Target) -> Expr | None:
-    """The check that a change or deployment target is in scope; None when its target names no resources."""
+    """The guard that a change or deployment target is in scope; None when its target names no resources."""
     if target.kind not in SCOPED_KINDS or not target.selectors:
         return None
     picks = tuple(_picks(selector) for selector in target.selectors)

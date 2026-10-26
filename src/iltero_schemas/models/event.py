@@ -33,7 +33,7 @@ from iltero_schemas.models.assertion import (
     VERSION_PATTERN,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.context import Authority
+from iltero_schemas.models.context import Resolution
 from iltero_schemas.models.fields import (
     Commit,
     Digest,
@@ -85,7 +85,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
         {
             "evaluator_crash",
             "evaluator_timeout",
-            "evaluator_memory_cap",
+            "evaluator_memory_limit",
             "output_overflow",
             "output_contract_violation",
             "adapter_parse_failure",
@@ -94,7 +94,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
         }
     ),
 }
-# Every status, worst first: a check that did not run is worse than an error, an error worse than an
+# Every status, worst first: an evaluation that did not run is worse than an error, an error worse than an
 # unknown result, and an unknown result worse than a failure.
 # ``not_applicable`` claims less than ``pass``, so it ranks as worse.
 STATUS_SEVERITY: tuple[Status, ...] = ("not_evaluated", "error", "unknown", "fail", "not_applicable", "pass")
@@ -102,12 +102,12 @@ STATUS_SEVERITY: tuple[Status, ...] = ("not_evaluated", "error", "unknown", "fai
 
 # Statuses a policy answer may carry; the others come only from the runner's own observation.
 POLICY_STATUSES = frozenset({"pass", "fail", "unknown", "not_applicable"})
-# The checks for which no evaluator ran, so none can be named: there was none to run, or nothing to run it on.
+# The evaluations for which no evaluator ran, so none can be named: there was none to run, or nothing to run it on.
 NO_EVALUATOR_REASONS = frozenset({"evaluator_unavailable", "no_subject_in_scope"})
 # The runner's own words about a status (what went wrong, in one sentence): the same cap as a policy's reason.
 DETAIL_MAX_LENGTH = REASON_MAX_BYTES
 # An hour is already far longer than any evaluation this CLI starts; a record may not ask for more.
-MAX_TIMEOUT_S = 3600.0
+MAX_TIMEOUT_SECONDS = 3600.0
 
 Detail = Annotated[str, Field(max_length=DETAIL_MAX_LENGTH), AfterValidator(plain_text)]
 
@@ -166,7 +166,7 @@ class EventSubject(StrictModel):
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest | None
     identities: list[Identity]
-    authority: Authority
+    resolution: Resolution
 
 
 class Evaluation(StrictModel):
@@ -176,7 +176,7 @@ class Evaluation(StrictModel):
     status: Status
     status_reason: Identifier | None
     status_detail: Detail | None
-    reason: Reason | None
+    policy_reason: Reason | None
     observations: Observations | None
 
     @model_validator(mode="after")
@@ -194,12 +194,12 @@ class Run(StrictModel):
     """The run this event belongs to, and the unit of the stack it was evaluated in."""
 
     id: Identifier
-    basis: Literal["server_issued", "locally_derived"]
+    origin: Literal["server_issued", "locally_derived"]
     unit: Identifier
 
 
 class PlanDigest(StrictModel):
-    """The digest of the plan a check is about, and the IaC tool and version of the rule that computed it."""
+    """The digest of the plan an evaluation is about, and the IaC tool and version of the rule that computed it."""
 
     value: Digest
     version: Identifier
@@ -211,7 +211,7 @@ class PlanDigest(StrictModel):
         return self
 
 
-class MemoryCap(StrictModel):
+class MemoryLimit(StrictModel):
     """The memory cap as applied: not every platform can enforce one, and the record says which."""
 
     bytes: Annotated[int, Field(ge=0)] | None
@@ -222,10 +222,10 @@ class MemoryCap(StrictModel):
 class EvaluationLimits(StrictModel):
     """The limits an evaluation ran under, as applied, so the same limits can be applied again."""
 
-    timeout_s: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_S)]
-    memory_cap: MemoryCap
-    output_bytes_per_answer: Annotated[int, Field(ge=0)]
-    contexts_per_process: Annotated[int, Field(ge=1)]
+    timeout_seconds: Annotated[float, Field(gt=0, le=MAX_TIMEOUT_SECONDS)]
+    memory_limit: MemoryLimit
+    max_output_bytes: Annotated[int, Field(ge=0)]
+    evaluations_per_process: Annotated[int, Field(ge=1)]
     capabilities_digest: Digest
     platform: Identifier
 
@@ -236,11 +236,11 @@ class OpaEvaluator(StrictModel):
     engine: Literal["opa"]
     version: Identifier
     digest: Digest
-    environment: EvaluationLimits
+    limits: EvaluationLimits
 
 
 class ScannerEvaluator(StrictModel):
-    """A scanner that ran elsewhere and whose result was credited to an assertion by a binding.
+    """A scanner that ran elsewhere and whose result was accepted for an assertion by a binding.
 
     Nothing was executed here, so there are no limits to record and usually
     no digest: the version is the one the tool wrote into its own output.
@@ -249,7 +249,7 @@ class ScannerEvaluator(StrictModel):
     engine: ScannerTool
     version: Identifier
     digest: Digest | None
-    basis: Literal["not_executed_by_cli"]
+    reason: Literal["not_executed_by_cli"]
 
 
 Evaluator = Annotated[OpaEvaluator | ScannerEvaluator, Field(discriminator="engine")]
@@ -297,10 +297,10 @@ class Executor(StrictModel):
 
     type: Literal["human", "workload"]
     provider: ExecutorProvider
-    run_id: Identifier | None
+    ci_run_id: Identifier | None
 
 
-# Where the facts document a check read came from: the server, a file given to the tool, or none.
+# Where the facts document an evaluation read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
 
@@ -312,11 +312,11 @@ class Provenance(StrictModel):
     source_commit: Commit
     plan_digest: PlanDigest
     input_digest: Digest | None
-    # Absent only for a check no evaluator ran at all (see ``NO_EVALUATOR_REASONS``).
+    # Absent only for an evaluation no evaluator ran at all (see ``NO_EVALUATOR_REASONS``).
     evaluator: Evaluator | None
     # The bundle belongs to the evaluator this CLI ran; a scanner has none.
     bundle: Bundle | None
-    # Present exactly when a scanner's result was read for this check (see ``ScannerEvaluator``).
+    # Present exactly when a scanner's result was read for this evaluation (see ``ScannerEvaluator``).
     binding: BindingRef | None
     # Where the assertion came from: the server's bundle, the project's own files (``local``, hand-written Rego as
     # ``custom_rego``), or a starter assertion this package ships (``contract_starter``). The writer's claim.
@@ -325,7 +325,7 @@ class Provenance(StrictModel):
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    # Present exactly for a check at a stage whose input may carry server facts (``profiles.reads_server_facts``).
+    # Present exactly for an evaluation at a stage whose input may carry server facts (``profiles.reads_server_facts``).
     facts_source: FactsSource | None
 
 
@@ -352,17 +352,17 @@ class AssuranceEvent(StrictModel):
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
         if (self.provenance.facts_source is not None) != reads_server_facts(self.evaluation.stage):
-            raise ValueError("facts_source is present exactly when the check's stage reads server facts")
+            raise ValueError("facts_source is present exactly when the evaluation's stage reads server facts")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
-                f"a check with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
+                f"an evaluation with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
             )
-        # A scanner's result was read for this check — credited as a verdict, or found not to apply.
+        # A scanner's result was read for this evaluation — accepted as a verdict, or found not to apply.
         from_scanner = isinstance(self.provenance.evaluator, ScannerEvaluator)
         if (self.provenance.bundle is not None) != isinstance(self.provenance.evaluator, OpaEvaluator):
             raise ValueError("a bundle is named exactly when this CLI ran the evaluator over one")
         if (self.provenance.binding is not None) != from_scanner:
-            raise ValueError("a binding is named exactly when a scanner's result was read for this check")
+            raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):
             raise ValueError("a scanner's result was not compiled here, so it names no module and no compiler")
         return self

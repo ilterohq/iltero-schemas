@@ -10,7 +10,7 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, UnknownKind
+from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
@@ -34,7 +34,7 @@ def test_the_vector_validates_and_names_exactly_the_profile_parts() -> None:
     assert context.subject.key.startswith("sha256:")
     assert context.subject.identities[0].value == context.resource.id == "aws_db_instance.payments"
     named = {name for name, part in VECTOR.items() if part is not None}
-    assert named - {"apiVersion", "evaluation", "context", "reference_time"} == {
+    assert named - {"apiVersion", "evaluation", "organization_scope", "reference_time"} == {
         "source",
         "change",
         "plan",
@@ -45,7 +45,7 @@ def test_the_vector_validates_and_names_exactly_the_profile_parts() -> None:
 
 def test_every_profile_root_is_a_field_of_the_contract() -> None:
     roots = set().union(*(profile.roots for profile in PROFILES.values()))
-    assert roots - {"evaluation", "context", "reference_time"} == set(PARTS)
+    assert roots - {"evaluation", "organization_scope", "reference_time"} == set(PARTS)
     assert set(PARTS) <= set(AssuranceContext.model_fields)
 
 
@@ -117,14 +117,14 @@ def test_a_malformed_value_is_refused(path: tuple[str, ...], value: Any, message
 
 def test_the_context_and_source_are_sparse() -> None:
     document = copy.deepcopy(VECTOR)
-    document["context"] = {}
+    document["organization_scope"] = {}
     document["source"] = {"vcs": "git", "commit": {"sha": VECTOR["source"]["commit"]["sha"]}}
     context = AssuranceContext.model_validate(document)
-    assert context.context.environment is None
+    assert context.organization_scope.environment is None
     assert context.source is not None and context.source.repository is None
 
 
-def test_a_hidden_name_is_accepted_where_a_name_may_have_been_hidden() -> None:
+def test_a_redacted_name_is_accepted_where_a_name_may_have_been_redacted() -> None:
     marker = {"__redacted": True, "reason": "sensitive_value_reuse", "present": True, "type": "string"}
     document = copy.deepcopy(VECTOR)
     document["resource"]["name"] = marker
@@ -153,7 +153,7 @@ def test_a_long_terraform_address_is_accepted_where_an_id_would_not_be() -> None
     document["subject"]["key"] = subject_key("resource", identities)
     document["resource"]["id"] = address
     AssuranceContext.model_validate(document)
-    document["context"]["environment"]["name"] = "x" * 257
+    document["organization_scope"]["environment"]["name"] = "x" * 257
     with pytest.raises(ValidationError, match="at most 256"):
         AssuranceContext.model_validate(document)
 
@@ -167,7 +167,7 @@ def test_the_deployment_is_refused_outside_its_profile() -> None:
 
 def test_a_replan_is_a_plan_other_than_the_evaluated_one() -> None:
     document = copy.deepcopy(POST_DEPLOY)
-    document["deployment"]["superseded_by"] = {"basis": "dependency_replan"}
+    document["deployment"]["superseded_by"] = {"reason": "dependency_replanned"}
     with pytest.raises(ValidationError, match="a re-plan is a plan other than the evaluated one"):
         AssuranceContext.model_validate(document)
     document["deployment"]["plan"]["digest"] = "sha256:" + "b" * 64
@@ -184,8 +184,8 @@ def test_a_replan_is_a_plan_other_than_the_evaluated_one() -> None:
 def test_an_artifact_digest_is_present_exactly_when_a_binary_was_given(part: str, digest: Any, basis: str) -> None:
     document = copy.deepcopy(POST_DEPLOY)
     target = document["plan"] if part == "plan" else document["deployment"]["plan"]
-    target.update(artifact_digest=digest, artifact_digest_basis=basis)
-    with pytest.raises(ValidationError, match="present exactly when artifact_digest_basis is plan_binary"):
+    target.update(artifact_digest=digest, artifact_digest_source=basis)
+    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is plan_binary"):
         AssuranceContext.model_validate(document)
 
 
@@ -214,14 +214,18 @@ def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
 @pytest.mark.parametrize("production", [True, False, {"__unknown": True, "reason": "server_facts_unavailable"}])
 def test_the_environment_says_whether_it_is_production_or_that_nobody_knows(production: object) -> None:
     environment = {"name": "production", "production": production}
-    AssuranceContext.model_validate({**VECTOR, "context": {**VECTOR["context"], "environment": environment}})
+    AssuranceContext.model_validate(
+        {**VECTOR, "organization_scope": {**VECTOR["organization_scope"], "environment": environment}}
+    )
 
 
 @pytest.mark.parametrize("production", [None, "yes"], ids=["null", "text"])
 def test_an_environment_without_a_production_answer_is_refused(production: object) -> None:
     environment = {"name": "production", "production": production}
     with pytest.raises(ValidationError, match="production"):
-        AssuranceContext.model_validate({**VECTOR, "context": {**VECTOR["context"], "environment": environment}})
+        AssuranceContext.model_validate(
+            {**VECTOR, "organization_scope": {**VECTOR["organization_scope"], "environment": environment}}
+        )
 
 
 def test_only_a_pre_deploy_input_names_the_run_it_belongs_to() -> None:
@@ -332,7 +336,7 @@ def test_a_plan_resource_kind_is_unknown_or_absent_where_the_table_gives_none(
         ({"source": "timestamp_authority", "trust": "attested"}, "exactly when a timestamp authority"),
         (
             {
-                "bracket": {
+                "time_window": {
                     "not_before": "2026-09-16T18:04:00Z",
                     "not_after": "2026-09-16T18:06:00Z",
                     "nonce_digest": "sha256:" + "a" * 64,
@@ -341,7 +345,7 @@ def test_a_plan_resource_kind_is_unknown_or_absent_where_the_table_gives_none(
             "exactly when a timestamp authority",
         ),
     ],
-    ids=["clock-attested", "authority-no-bracket", "clock-bracket"],
+    ids=["clock-attested", "authority-no-time-window", "clock-time-window"],
 )
 def test_a_reference_time_claims_no_more_than_its_source(time: dict[str, Any], message: str) -> None:
     document = {**VECTOR, "reference_time": {**VECTOR["reference_time"], **time}}
@@ -349,25 +353,35 @@ def test_a_reference_time_claims_no_more_than_its_source(time: dict[str, Any], m
         AssuranceContext.model_validate(document)
 
 
-def test_a_timestamp_authority_time_carries_its_bracket() -> None:
-    bracket = {
+def test_a_timestamp_authority_time_carries_its_time_window() -> None:
+    time_window = {
         "not_before": "2026-09-16T18:04:00Z",
         "not_after": "2026-09-16T18:06:00Z",
         "nonce_digest": "sha256:" + "a" * 64,
     }
-    time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
+    time = {
+        "value": "2026-09-16T18:05:00Z",
+        "source": "timestamp_authority",
+        "trust": "attested",
+        "time_window": time_window,
+    }
     AssuranceContext.model_validate({**VECTOR, "reference_time": time})
 
 
 @pytest.mark.parametrize(
     ("not_before", "not_after"),
     [("2026-09-16T18:06:00Z", "2026-09-16T18:04:00Z"), ("2026-09-16T18:05:30Z", "2026-09-16T18:06:00Z")],
-    ids=["reversed", "time-before-bracket"],
+    ids=["reversed", "time-before-window"],
 )
-def test_a_timestamp_authority_time_lies_inside_its_bracket(not_before: str, not_after: str) -> None:
-    bracket = {"not_before": not_before, "not_after": not_after, "nonce_digest": "sha256:" + "a" * 64}
-    time = {"value": "2026-09-16T18:05:00Z", "source": "timestamp_authority", "trust": "attested", "bracket": bracket}
-    with pytest.raises(ValidationError, match="inside its bracket"):
+def test_a_timestamp_authority_time_lies_inside_its_time_window(not_before: str, not_after: str) -> None:
+    time_window = {"not_before": not_before, "not_after": not_after, "nonce_digest": "sha256:" + "a" * 64}
+    time = {
+        "value": "2026-09-16T18:05:00Z",
+        "source": "timestamp_authority",
+        "trust": "attested",
+        "time_window": time_window,
+    }
+    with pytest.raises(ValidationError, match="inside its time window"):
         AssuranceContext.model_validate({**VECTOR, "reference_time": time})
 
 
@@ -431,7 +445,7 @@ def test_a_plan_fact_the_tool_did_not_report_is_the_unknown_marker_never_null(fl
     [
         (("plan", "complete"), "server_facts_unavailable"),
         (("approvals",), "not_reported_by_tool"),
-        (("context", "environment", "production"), "not_reported_by_tool"),
+        (("organization_scope", "environment", "production"), "not_reported_by_tool"),
     ],
     ids=["a plan flag", "a server fact", "production"],
 )
@@ -442,5 +456,5 @@ def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tupl
 
 
 def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
-    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, UnknownKind)}
+    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, KindNotMapped)}
     assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]

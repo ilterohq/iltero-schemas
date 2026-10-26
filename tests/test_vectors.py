@@ -32,7 +32,7 @@ from iltero_schemas.canonical import (
     plan_digest,
     required_assertion_digest,
 )
-from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, compile, package_of
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, package_of
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
@@ -51,7 +51,7 @@ CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.j
 EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
 FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
 APPROVALS = json.loads((VECTORS / "evaluation" / "approvals.json").read_text(encoding="utf-8"))
-INVALID_EXPECTED = json.loads((VECTORS / "invalid" / "expected.json").read_text(encoding="utf-8"))
+INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "contexts": AssuranceContext,
@@ -128,7 +128,7 @@ def test_plan_digest_vectors_record_the_current_version_of_their_tool(case: dict
 
 def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:
     assert (COMPILER / "COMPILER_VERSION").read_text(encoding="utf-8") == f"{COMPILER_VERSION}\n"
-    assert (COMPILER / "RUNTIME.digest").read_text(encoding="utf-8") == f"{digest(RUNTIME.encode('utf-8'))}\n"
+    assert (COMPILER / "RUNTIME.digest").read_text(encoding="utf-8") == f"{digest(RUNTIME_REGO.encode('utf-8'))}\n"
 
 
 def test_the_vectors_ship_inside_the_package() -> None:
@@ -161,7 +161,7 @@ def test_every_compiled_vector_has_its_source_and_nothing_else() -> None:
 
 @pytest.mark.parametrize("name", sorted(INVALID_EXPECTED), ids=str)
 def test_invalid_document_is_rejected_at_the_expected_path(name: str) -> None:
-    text = (VECTORS / "invalid" / f"{name}.yaml").read_text(encoding="utf-8")
+    text = (VECTORS / "assertions_invalid" / f"{name}.yaml").read_text(encoding="utf-8")
     with pytest.raises(AssertionSyntaxError) as raised:
         parse(text)
     assert raised.value.issues[0].path == INVALID_EXPECTED[name]["path"]
@@ -169,7 +169,7 @@ def test_invalid_document_is_rejected_at_the_expected_path(name: str) -> None:
 
 
 def test_every_invalid_document_is_listed() -> None:
-    assert {p.stem for p in (VECTORS / "invalid").glob("*.yaml")} == set(INVALID_EXPECTED)
+    assert {p.stem for p in (VECTORS / "assertions_invalid").glob("*.yaml")} == set(INVALID_EXPECTED)
 
 
 @pytest.mark.parametrize(("folder", "name"), DOCUMENT_FILES, ids=str)
@@ -192,13 +192,14 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in VECTORS.iterdir() if path.is_dir() and path.name != "__pycache__"}
     known = {
         "assertions",
+        "assertions_invalid",
         "canonical",
         "compiler",
         "evaluation",
         "identities_invalid",
         "identities_valid",
-        "invalid",
         "opa",
+        "records_integrity_failed",
         "records_invalid",
         "records_valid",
         "subjects",

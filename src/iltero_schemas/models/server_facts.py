@@ -12,7 +12,7 @@ fields only.
   is the provider's stable account id, never a login, a name or an address.
 - An **exception** waives one assertion for an environment and the resources
   it names, between two times.
-- An **earlier evaluation** is the result of one check of an earlier stage.
+- An **earlier evaluation** is the result of one evaluation of an earlier stage.
 
 All three are the server's claims, as served.
 """
@@ -34,7 +34,7 @@ from iltero_schemas.models.fields import (
     Status,
     Timestamp,
     Uuid,
-    instant,
+    parse_timestamp,
     plain_text,
 )
 from iltero_schemas.profiles import reads_plan
@@ -125,33 +125,33 @@ class ExceptionGrant(StrictModel):
 
     @model_validator(mode="after")
     def _ends_after_it_starts(self) -> ExceptionGrant:
-        if instant(self.expires_at) <= instant(self.valid_from):
+        if parse_timestamp(self.expires_at) <= parse_timestamp(self.valid_from):
             raise ValueError("an exception expires after it starts")
         return self
 
 
 class EvaluatedSubject(StrictModel):
-    """What an earlier check was about: its kind and its key (``models.subjects``)."""
+    """What an earlier evaluation was about: its kind and its key (``models.subjects``)."""
 
     kind: TargetKindValue
     key: Digest
 
 
 class Result(StrictModel):
-    """What an earlier check found."""
+    """What an earlier evaluation found."""
 
     status: Status
 
 
 class EarlierEvaluation(StrictModel):
-    """The result of one check of an earlier stage, as the server recorded it."""
+    """The result of one evaluation of an earlier stage, as the server recorded it."""
 
     id: Identifier
     assertion: AssertionKey
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
-    # The digest of the plan the check read; null exactly for a stage that reads none, such as runtime.
+    # The digest of the plan the evaluation read; null exactly for a stage that reads none, such as runtime.
     plan_digest: Digest | None
     observed_at: Timestamp
 

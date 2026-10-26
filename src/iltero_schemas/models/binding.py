@@ -1,25 +1,25 @@
-"""``EvaluatorBindingSet``: which scanner check establishes which assertion.
+"""``EvaluatorBindingSet``: which scanner rule establishes which assertion.
 
-A scanner such as Checkov or Trivy runs its own checks and says which
-passed. An **evaluator binding** licenses one claim: *this check of this
-tool, at this version, establishes this assertion*. Nothing is executed
-for a bound check — the tool already ran, and its result is credited to
-the assertion the binding names.
+A scanner such as Checkov or Trivy runs its own rules (Checkov calls them
+checks) and says which passed. An **evaluator binding** licenses one claim:
+*this rule of this tool, at this version, establishes this assertion*.
+Nothing is executed for a bound rule — the tool already ran, and its result
+is accepted for the assertion the binding names.
 
 That is a strong claim, so the record must be able to show which licence
-it rested on: an event credited this way names the binding entry's id,
+it rested on: an event accepted this way names the binding entry's id,
 its version and the digest of the entry itself, so a later change to the
-catalogue cannot silently alter what a past record meant.
+binding set cannot silently alter what a past record meant.
 
-Two rules keep a record unambiguous, and both are checked when a set is
+Two rules keep a record unambiguous, and both are enforced when a set is
 read rather than when a run uses it:
 
-* a tool's check is bound once — one entry per ``(stage, tool, check_id)``;
-* an assertion is established by one check per tool — one entry per
+* a tool's rule is bound once — one entry per ``(stage, tool, rule_id)``;
+* an assertion is established by one rule per tool — one entry per
   ``(stage, tool, assertion id)``.
 
-A check with no entry anywhere is not an error: it is retained as evidence
-and counted, never turned into a verdict it was not licensed to give.
+A rule with no entry anywhere is not an error: its result is kept as
+evidence and counted, never turned into a verdict it was not licensed to give.
 """
 
 from __future__ import annotations
@@ -38,23 +38,23 @@ from iltero_schemas.models.scanners import ScannerTool
 API_VERSION = "iltero.io/v1"
 KIND = "EvaluatorBindingSet"
 # A tool names its checks in its own way: Checkov's ``CKV_AWS_16``, Trivy's ``AVD-AWS-0080``.
-CHECK_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
-CHECK_ID_MAX_LENGTH = 128
+RULE_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
+RULE_ID_MAX_LENGTH = 128
 # A tool's own word for the outcome of a check (``PASSED``, ``FAILED``, Trivy's ``STATUS_FAILURE``).
 TOOL_STATUS_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
 TOOL_STATUS_MAX_LENGTH = 64
-# Far more entries than any catalogue needs; the bound stops a file from being read without limit.
+# Far more entries than any binding set needs; the bound stops a file from being read without limit.
 MAX_BINDINGS = 10_000
 # How many of the tool's words one entry may translate.
 MAX_STATUS_MAP = 32
 
-# What a scanner's result may be credited as. Only a decision counts: the tool
+# What a scanner's result may be accepted as. Only a decision counts: the tool
 # either found the thing true or found it false. A check the tool skipped, or
 # could not settle, is not a decision, so it leaves the assertion exactly where
 # it was — unanswered — rather than being read as "does not apply here". That
 # matters most where the skip was written by the party being audited: a comment
 # in their own source must not close a gap in their own record.
-CreditedStatus = Literal["pass", "fail"]
+AcceptedStatus = Literal["pass", "fail"]
 
 
 def _specifier(value: str) -> str:
@@ -75,8 +75,8 @@ def constraint_met(constraint: str, version: str) -> bool:
     A pre-release satisfies nothing: ``4.0.0b1`` sits inside ``<4`` by
     version order, and a binding written against the released 3.x is not a
     licence for a 4.0 beta. A version string that is not a version at all
-    satisfies nothing either. Both leave the check uncredited rather than
-    credited on a guess.
+    satisfies nothing either. Both leave the rule's result not accepted rather
+    than accepted on a guess.
     """
     try:
         parsed = Version(version)
@@ -103,14 +103,14 @@ class AssertionCite(StrictModel):
 
 
 class SetMetadata(StrictModel):
-    """Which catalogue this is, and which revision of it."""
+    """Which binding set this is, and which revision of it."""
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
 
 
 class EvaluatorBinding(StrictModel):
-    """One licence: this tool's check, at a version that satisfies the constraint, establishes this assertion."""
+    """One licence: this tool's rule, at a version that satisfies the constraint, establishes this assertion."""
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
@@ -118,19 +118,19 @@ class EvaluatorBinding(StrictModel):
     # The tool's version is read from its own output; a version outside this
     # range is not evidence for this entry, and the check is not evaluated.
     tool_version_constraint: VersionConstraint
-    check_id: Annotated[str, Field(pattern=CHECK_ID_PATTERN, max_length=CHECK_ID_MAX_LENGTH)]
+    rule_id: Annotated[str, Field(pattern=RULE_ID_PATTERN, max_length=RULE_ID_MAX_LENGTH)]
     # What the tool must have been looking at for its result to be evidence for
     # this entry, in the tool's own words. It matters: Checkov's ``terraform``
     # reads the configuration, where a value may still be a variable, while
     # ``terraform_plan`` reads the values the plan settled on. A result from
-    # anything else is not credited. ``null`` for a tool with one thing to read.
-    input_kind: Annotated[str, Field(pattern=CHECK_ID_PATTERN, max_length=CHECK_ID_MAX_LENGTH)] | None
+    # anything else is not accepted. ``null`` for a tool with one thing to read.
+    input_kind: Annotated[str, Field(pattern=RULE_ID_PATTERN, max_length=RULE_ID_MAX_LENGTH)] | None
     assertion: AssertionCite
     stage: StageValue
     # The tool's vocabulary translated into the contract's: a word the tool
-    # may print and is not listed here leaves the observation uncredited.
+    # may print and is not listed here leaves the observation not accepted.
     status_map: Annotated[
-        dict[Annotated[str, Field(pattern=TOOL_STATUS_PATTERN, max_length=TOOL_STATUS_MAX_LENGTH)], CreditedStatus],
+        dict[Annotated[str, Field(pattern=TOOL_STATUS_PATTERN, max_length=TOOL_STATUS_MAX_LENGTH)], AcceptedStatus],
         Field(min_length=1, max_length=MAX_STATUS_MAP),
     ]
 
@@ -141,7 +141,7 @@ class EvaluatorBinding(StrictModel):
 
 
 class EvaluatorBindingSet(StrictModel):
-    """A catalogue of licences, read as a whole so its rules hold before any of it is used."""
+    """A binding set of licences, read as a whole so its rules hold before any of it is used."""
 
     api_version: Literal["iltero.io/v1"] = Field(alias="apiVersion")
     kind: Literal["EvaluatorBindingSet"]
@@ -152,11 +152,11 @@ class EvaluatorBindingSet(StrictModel):
     def _entries_are_unambiguous(self) -> EvaluatorBindingSet:
         _unique([entry.id for entry in self.bindings], "two entries share the id")
         _unique(
-            [(entry.stage.value, entry.tool, entry.check_id) for entry in self.bindings],
-            "two entries bind the same check of the same tool at the same stage",
+            [(entry.stage.value, entry.tool, entry.rule_id) for entry in self.bindings],
+            "two entries bind the same rule of the same tool at the same stage",
         )
         _unique(
             [(entry.stage.value, entry.tool, entry.assertion.id) for entry in self.bindings],
-            "two checks of the same tool establish the same assertion at the same stage",
+            "two rules of the same tool establish the same assertion at the same stage",
         )
         return self

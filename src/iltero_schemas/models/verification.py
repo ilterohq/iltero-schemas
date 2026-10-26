@@ -2,7 +2,7 @@
 
 A verifier, such as ``iltero car verify``, reads a Change Assurance Record
 and the files it cites. It reports on nine properties, one at a time. Each
-property gets a state and, where it helps, the basis the state rests on.
+property gets a state and, where it helps, the reason for it.
 There is no overall "verified". A reader looks at each property it needs.
 
 The report is a document of its own, not a part of the record. The tool that
@@ -37,10 +37,10 @@ VerificationState = Literal[
 
 
 class PropertyResult(StrictModel):
-    """One property's state, and a short name for what the state rests on (null when there is nothing to name)."""
+    """One property's state, and a short name for why it is that state (null when there is nothing to name)."""
 
     state: VerificationState
-    basis: Identifier | None
+    reason: Identifier | None
 
 
 class Properties(StrictModel):
@@ -52,9 +52,9 @@ class Properties(StrictModel):
     source_identity: PropertyResult
     # Every approval came from an authenticated identity.
     approval_identity: PropertyResult
-    # The checks ran from a bundle signed by an authorised key that was not revoked.
+    # The evaluations ran from a bundle signed by an authorised key that was not revoked.
     bundle_provenance: PropertyResult
-    # Every required stage is present, and every check owed has a result or is listed as not evaluated.
+    # Every required stage is present, and every assertion owed has a result or is listed as not evaluated.
     stage_completeness: PropertyResult
     # The plan that was approved is the plan that was applied.
     plan_apply_match: PropertyResult

@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.models.assertion import (
-    DERIVED_TYPE,
+    ASSERTION_TYPE_FOR_TARGET,
     REMEDIATION_MAX_LENGTH,
     VALID_COMBINATIONS,
     AssertionType,
@@ -53,7 +53,7 @@ def test_a_minimal_document_validates_and_type_is_derived() -> None:
 
 
 def test_every_target_kind_has_a_derived_type() -> None:
-    assert set(DERIVED_TYPE) == set(TargetKind)
+    assert set(ASSERTION_TYPE_FOR_TARGET) == set(TargetKind)
 
 
 def test_explicit_type_must_match_the_derived_one() -> None:
@@ -71,7 +71,7 @@ def test_only_listed_stage_and_target_combinations_are_accepted(stage: Stage, ki
     if kind is TargetKind.RESOURCE:
         target["resources"] = [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}]
     document = _document(spec__stage=stage.value, spec__target=target)
-    allowed = (DERIVED_TYPE[kind], stage, kind) in VALID_COMBINATIONS
+    allowed = (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) in VALID_COMBINATIONS
     if allowed:
         TechnicalAssertion.model_validate(document)
     else:

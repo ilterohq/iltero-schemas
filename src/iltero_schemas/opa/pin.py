@@ -1,6 +1,6 @@
 """The pinned Open Policy Agent (OPA) release.
 
-Every Iltero component evaluates assertions with the same OPA release. ``PIN``
+Every Iltero component evaluates assertions with the same OPA release. ``OPA_RELEASE_PIN``
 names that release and the SHA-256 digest of its published binary for each
 supported platform. A consumer must verify the binary it is about to execute
 against the digest for its platform before every invocation, and refuse to run
@@ -46,7 +46,7 @@ class OpaPin:
 
 
 def platform_key(system: str, machine: str) -> str:
-    """Return the ``PIN.binaries`` key for a host, e.g. ``linux-x86_64``.
+    """Return the ``OPA_RELEASE_PIN.binaries`` key for a host, e.g. ``linux-x86_64``.
 
     ``system`` is ``platform.system()`` and ``machine`` is
     ``platform.machine()``. Raises ``KeyError`` for an unsupported host.
@@ -54,7 +54,7 @@ def platform_key(system: str, machine: str) -> str:
     normalized_system = system.lower()
     normalized_machine = _MACHINE_ALIASES[machine.lower()]
     key = f"{normalized_system}-{normalized_machine}"
-    if key not in PIN.binaries:
+    if key not in OPA_RELEASE_PIN.binaries:
         raise KeyError(key)
     return key
 
@@ -69,4 +69,4 @@ def _load() -> OpaPin:
     return OpaPin(version=raw["version"], release_tag=raw["release_tag"], binaries=MappingProxyType(binaries))
 
 
-PIN: OpaPin = _load()
+OPA_RELEASE_PIN: OpaPin = _load()

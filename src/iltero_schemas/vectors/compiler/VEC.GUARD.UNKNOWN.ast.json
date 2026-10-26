@@ -18,7 +18,7 @@
   },
   "when": {
     "predicate": {
-      "path": "context.environment.name",
+      "path": "organization_scope.environment.name",
       "op": "equal",
       "literal": "production"
     }

@@ -1,6 +1,6 @@
 """The unknown marker: what stands where a fact could not be supplied.
 
-Some checks need facts only the server holds: who approved the change,
+Some assertions need facts only the server holds: who approved the change,
 which exceptions are in force, earlier evaluations. Until the server can
 supply such a part, the evaluation input holds an unknown marker in its place
 rather than an empty list. The difference decides the verdict: an assertion
@@ -25,7 +25,7 @@ from iltero_schemas.models.base import StrictModel
 UnknownReason = Literal["server_facts_unavailable"]
 
 
-class UnknownMarker(StrictModel):
+class ServerFactsUnavailable(StrictModel):
     """What stands where a fact could not be supplied: the evaluator reads it as ``unknown``, with this reason.
 
     It is always written under its marker name, ``__unknown``, which is the name the evaluator looks for.

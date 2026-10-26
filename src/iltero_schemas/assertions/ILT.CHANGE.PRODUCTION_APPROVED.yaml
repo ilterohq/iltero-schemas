@@ -10,7 +10,7 @@ spec:
   target:
     kind: change
   when:
-    path: context.environment.production
+    path: organization_scope.environment.production
     equal: true
   assert:
     any:

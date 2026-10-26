@@ -131,5 +131,5 @@ def test_a_manifest_outside_the_shape_is_refused(changes: dict[str, Any], messag
 
 def test_a_hand_written_policy_names_no_resources() -> None:
     scoped = {**CHANGE, "target": {"kind": "change", "resources": [{"provider": "aws", "kinds": ["kms_key"]}]}}
-    with pytest.raises(ValidationError, match="names no resources: no compiler writes its scope check"):
+    with pytest.raises(ValidationError, match="names no resources: no compiler writes its scope guard"):
         PolicySourceManifest.model_validate(_manifest(scoped))

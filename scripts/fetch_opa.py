@@ -20,7 +20,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from iltero_schemas.opa import PIN, platform_key
+from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 RELEASES = "https://github.com/open-policy-agent/opa/releases/download"
 # The largest published OPA binary is well under this; anything bigger is not the release asset.
@@ -55,12 +55,12 @@ def main(argv: list[str]) -> int:
     except KeyError as exc:
         print(f"no pinned OPA binary for this host: {exc}", file=sys.stderr)
         return 1
-    binary = PIN.binaries[key]
+    binary = OPA_RELEASE_PIN.binaries[key]
     destination = Path(argv[1]) / ("opa.exe" if key.startswith("windows") else "opa")
     destination.parent.mkdir(parents=True, exist_ok=True)
     if not destination.exists():
         partial = destination.with_suffix(".part")
-        _download(f"{RELEASES}/{PIN.release_tag}/{binary.asset}", partial)
+        _download(f"{RELEASES}/{OPA_RELEASE_PIN.release_tag}/{binary.asset}", partial)
         os.replace(partial, destination)
     actual = hashlib.sha256(destination.read_bytes()).hexdigest()
     if actual != binary.sha256:

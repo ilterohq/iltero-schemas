@@ -1,7 +1,7 @@
 """``CAR`` v1: the Change Assurance Record — what was checked about one change, against what, with which result.
 
 A Change Assurance Record (CAR) is a framework-neutral record of the
-evidence, the checks, the approvals, the deployment and the verification
+evidence, the evaluations, the approvals, the deployment and the verification
 after deployment for one infrastructure change. It keeps where each piece
 came from. A CAR records technical and process assurance facts. It does not,
 by itself, establish certification or compliance with a regulatory
@@ -9,7 +9,7 @@ framework, so ``compliance_determination`` is always null.
 
 One CAR describes one attempted change, whatever its outcome: deployed,
 failed, stopped, refused before deployment, or a plan that changes nothing.
-It is not a certificate of success. It exists even when a check fails, and it
+It is not a certificate of success. It exists even when an evaluation fails, and it
 need not reach every stage.
 
 How far a reader can trust a record is its ``trust_level``. The contract
@@ -48,7 +48,7 @@ from iltero_schemas.models.event import AssuranceEvent, Compiler
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
-    ArtifactDigestBasis,
+    ArtifactDigestSource,
     Count,
     Digest,
     GateMode,
@@ -58,25 +58,27 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
-    instant,
+    parse_timestamp,
     plain_text,
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.provenance import check_provenance
-from iltero_schemas.models.redaction import RedactionReport
+from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
-from iltero_schemas.models.stages import check_structure, derived_problems
+from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
 from iltero_schemas.models.tools.variants import check_identity_against_apply
 
 API_VERSION = "iltero.io/car/v1"
-# Validation context key, set to True (any other value is ignored): the reader recomputes the record's derived values
-# itself (``derived_problems``), so it can report an edited one as tampering rather than as a record it cannot read.
-# A reader that sets it must call ``derived_problems`` and act on what it returns before trusting the counts or the
-# verdicts. The change digest is not among them: approvals bind to it, so it is checked for every reader.
-DERIVED_CHECKED_BY_READER = "derived_checked_by_reader"
-# A run of one unit: far more checks than a plan of a few thousand resources needs, and bounded,
+# Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
+# each value a reader can recompute (the change digest and the digests bound to it, the counts, the verdicts) with what
+# it recomputes to, so the reader can report an edited value as an integrity failure rather than as a record it cannot
+# read. With it set, the model no longer checks that the change digest is the change's, or that an approval is of this
+# change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
+# trust the record while it returns any problem.
+SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
+# A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
 # More reports than a stage is ever given; one per tool is the rule the model enforces.
@@ -84,9 +86,9 @@ MAX_SCANNER_REPORTS = 16
 MAX_EVIDENCE_REFS = 100_000
 
 
-class RunId(StrictModel):
-    value: Uuid
-    basis: Literal["server_issued", "locally_derived"]
+class RecordRun(StrictModel):
+    id: Uuid
+    origin: Literal["server_issued", "locally_derived"]
 
 
 class Issuer(StrictModel):
@@ -117,11 +119,6 @@ class Collector(StrictModel):
     version: Identifier
 
 
-class RedactionApplied(StrictModel):
-    policy_id: Identifier
-    version: Identifier
-
-
 class EvidenceRef(StrictModel):
     """One file the record cites, named by its digest and by where it sits inside the record's directory."""
 
@@ -136,10 +133,11 @@ class EvidenceRef(StrictModel):
     collector: Collector
     source: dict[Identifier, Identifier] | None
     canonicalization: Identifier | None
-    redaction_applied: RedactionApplied | None
+    # The redaction policy that redacted the file's content; null for a file no redaction touched.
+    redaction_policy: RedactionPolicyRef | None
 
 
-class Written(StrictModel):
+class EventsFile(StrictModel):
     """A file a stage wrote, as the stage record names it."""
 
     path: MemberPath
@@ -147,7 +145,7 @@ class Written(StrictModel):
     count: Count
 
 
-class Compiled(StrictModel):
+class AssertionIndex(StrictModel):
     """Where the assertions a stage compiled are indexed, so a reader finds them without walking the directory."""
 
     index: MemberPath
@@ -155,15 +153,15 @@ class Compiled(StrictModel):
     count: Count
 
 
-class RanEvaluator(StrictModel):
-    """The program that ran a stage's checks; the limits it ran each one under are on the events."""
+class ExecutionEvaluator(StrictModel):
+    """The program that ran a stage's evaluations; the limits it ran each one under are on the events."""
 
     engine: Literal["opa"]
     version: Identifier
     digest: Digest
 
 
-class RanBundle(StrictModel):
+class ExecutionBundle(StrictModel):
     """The set of programs a stage loaded, and the allowlist they were built under."""
 
     kind: Literal["server", "local_bundle"]
@@ -171,16 +169,16 @@ class RanBundle(StrictModel):
     capabilities_digest: Digest
 
 
-class Ran(StrictModel):
-    """What ran a stage's checks, or why nothing did."""
+class Execution(StrictModel):
+    """What ran a stage's evaluations, or why nothing did."""
 
-    evaluator: RanEvaluator | None
-    bundle: RanBundle | None
+    evaluator: ExecutionEvaluator | None
+    bundle: ExecutionBundle | None
     reason: Identifier | None
     detail: str | None
 
     @model_validator(mode="after")
-    def _absent_together(self) -> Ran:
+    def _absent_together(self) -> Execution:
         if (self.evaluator is None) != (self.bundle is None):
             raise ValueError("the evaluator and the bundle are absent together")
         if (self.evaluator is None) != (self.reason is not None):
@@ -195,22 +193,22 @@ class ScannerReport(StrictModel):
     tool_version: Identifier
     # What the tool was reading, in its own words. A tool that reads a configuration
     # and one that reads a plan answer different questions about the same resource,
-    # so a reader must be able to tell which produced a credited verdict.
+    # so a reader must be able to tell which produced an accepted verdict.
     input_kinds: list[Identifier]
     # The digest of the report as the stage kept it, which is the ``input_digest`` of any verdict it stands behind.
     report_digest: Digest
     observations: MemberPath
-    checks_read: Count
-    # Results the stage read for no check at all: no entry allowed it, or it had nothing to answer.
-    unbound_checks: Count
+    results_read: Count
+    # Results the stage read for no assertion at all: no binding allowed it, or it had nothing to answer.
+    results_without_binding: Count
     parsing_errors: Count
 
 
-class BindingCatalogue(StrictModel):
+class BindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
-    ``origin`` is set by the tool, never by the catalogue: a file cannot claim
-    to be the set the contract package ships. ``digest`` is over the catalogue
+    ``origin`` is set by the tool, never by the binding set: a file cannot claim
+    to be the set the contract package ships. ``digest`` is over the binding set
     as it was read, and the stage retains it, so an event's ``binding.digest``
     resolves to an entry a reader can see.
     """
@@ -221,32 +219,32 @@ class BindingCatalogue(StrictModel):
     # The name of the file it was read from; absent for the shipped set.
     file_name: Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(plain_text)] | None
     digest: Digest
-    retained: MemberPath
-    entries: Count
+    copy_path: MemberPath
+    binding_count: Count
 
     @model_validator(mode="after")
-    def _a_file_is_named(self) -> BindingCatalogue:
+    def _a_file_is_named(self) -> BindingSetUsed:
         if (self.file_name is None) != (self.origin == "shipped"):
-            raise ValueError("a catalogue read from a file names it, and the shipped set names none")
+            raise ValueError("a binding set read from a file names it, and the shipped set names none")
         return self
 
 
 class Scanners(StrictModel):
     """What a stage read from the scanner reports it was given, and how much of it became a verdict."""
 
-    catalogue: BindingCatalogue
+    binding_set: BindingSetUsed
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
-    credited: Count
-    binding_unverified: Count
-    unbound_checks: Count
+    results_accepted: Count
+    results_binding_unverified: Count
+    results_without_binding: Count
 
     @model_validator(mode="after")
     def _counts_add_up(self) -> Scanners:
-        if self.unbound_checks != sum(report.unbound_checks for report in self.reports):
-            raise ValueError("the unbound count is the sum of the reports' own")
-        read = sum(report.checks_read for report in self.reports)
-        if self.credited + self.binding_unverified + self.unbound_checks != read:
-            raise ValueError("every result a tool reported is credited, unverified or unbound")
+        if self.results_without_binding != sum(report.results_without_binding for report in self.reports):
+            raise ValueError("results_without_binding is the sum of the reports' own")
+        read = sum(report.results_read for report in self.reports)
+        if self.results_accepted + self.results_binding_unverified + self.results_without_binding != read:
+            raise ValueError("every result a tool reported is accepted, binding_unverified or without a binding")
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
         return self
@@ -258,17 +256,17 @@ class StageRecord(StrictModel):
     stage: StageValue
     observed_at: Timestamp
     reference_time: ReferenceTime
-    ran: Ran
+    execution: Execution
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement: GateMode
-    # The approvals the stage's checks read, whatever their source, each of this record's change or run; null at a
+    # The approvals the stage's evaluations read, whatever their source, each of this record's change or run; null at a
     # stage whose input carries no approvals.
     approvals: Approvals | None
     compiler: Compiler
-    redaction_applied: RedactionReport
-    events: Written
-    assertions: Compiled
+    redaction: RedactionReport
+    events: EventsFile
+    assertions: AssertionIndex
     # Null for a stage that was given no scanner report.
     scanners: Scanners | None
     coverage: Coverage
@@ -277,9 +275,9 @@ class StageRecord(StrictModel):
 
     @model_validator(mode="after")
     def _clock_time_is_when_it_was_observed(self) -> StageRecord:
-        if self.reference_time.source == "runner_clock" and instant(self.reference_time.value) != instant(
-            self.observed_at
-        ):
+        if self.reference_time.source == "runner_clock" and parse_timestamp(
+            self.reference_time.value
+        ) != parse_timestamp(self.observed_at):
             raise ValueError("a stage that reads its runner's clock uses the time it observed")
         return self
 
@@ -294,7 +292,7 @@ class PlanRecord(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_basis: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestSource
     context_digest: Digest
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool
@@ -305,8 +303,8 @@ class PlanRecord(StrictModel):
     applyable: bool | NotReported
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_basis(self) -> PlanRecord:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+    def _artifact_digest_has_its_source(self) -> PlanRecord:
+        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
         return self
 
     @model_validator(mode="after")
@@ -316,9 +314,9 @@ class PlanRecord(StrictModel):
 
 
 class Integrity(StrictModel):
-    """How the record is bound together. Without a signature this is digest linkage and says so."""
+    """How the record is bound together: without a signature, by its files' digests only, and it says so."""
 
-    scheme: Literal["digest_linkage"]
+    scheme: Literal["file_digests"]
     signature: None
 
 
@@ -332,7 +330,7 @@ class RecordSubject(StrictModel):
 
 
 # Why a stage of the lifecycle is not in a record's scope.
-ScopeBasis = Literal["project_config", "not_supported"]
+OutOfScopeReason = Literal["project_config", "not_supported"]
 
 
 class DeclaredIn(StrictModel):
@@ -352,14 +350,14 @@ class OutOfScope(StrictModel):
     """
 
     stage: StageValue
-    basis: ScopeBasis
+    reason: OutOfScopeReason
     declared_in: DeclaredIn | None
 
     @model_validator(mode="after")
     def _declared(self) -> OutOfScope:
-        if (self.basis == "project_config") != (self.declared_in is not None):
+        if (self.reason == "project_config") != (self.declared_in is not None):
             raise ValueError("a stage the project left out names the file that says so, and only such a stage")
-        if self.basis == "project_config" and self.stage is not Stage.PRE_DEPLOY:
+        if self.reason == "project_config" and self.stage is not Stage.PRE_DEPLOY:
             raise ValueError("a project can leave out only the pre-deploy approval gate")
         return self
 
@@ -369,7 +367,7 @@ class CAR(StrictModel):
 
     api_version: Literal["iltero.io/car/v1"] = Field(alias="apiVersion")
     uuid: Uuid
-    run_id: RunId
+    run: RecordRun
     unit: Identifier
     trust_level: TrustLevel
     # Always null: a record never determines compliance with a framework. A view of a framework is built
@@ -391,7 +389,7 @@ class CAR(StrictModel):
     expected_stages: list[StageValue]
     # Every stage of the lifecycle the record does not expect, each with why. Expected and not in
     # scope together name every stage of the lifecycle once.
-    not_in_scope: list[OutOfScope]
+    out_of_scope: list[OutOfScope]
     # Null until the post-deploy stage has reported.
     deployment: Deployment | None
     # Null until the post-deploy stage has read the unit's state.
@@ -400,7 +398,7 @@ class CAR(StrictModel):
     integrity: Integrity
     expires_at: None
     retention_class: None
-    retention_basis: Literal["no_server_scope"]
+    retention_reason: Literal["no_server_scope"]
 
     @property
     def outcome(self) -> StageOutcome:
@@ -414,8 +412,11 @@ class CAR(StrictModel):
         ref_ids = [ref.ref_id for ref in self.evidence_refs]
         if len(set(ref_ids)) != len(ref_ids):
             raise ValueError("no two entries of the evidence register share a name")
-        # The stages compare their approvals and scope with the change digest, so it is checked first.
+        checks_integrity = (info.context or {}).get(SKIP_INTEGRITY_CHECKS) is not True
         check_change(self.unit, self.plan.digest, self.change, self.units_file)
+        # Approvals bind to the change digest, so a reader that checks integrity is refused on it first.
+        if checks_integrity:
+            _raise_first(change_digest_problems(self))
         check_structure(self)
         if self.complete != (set(self.stages) == {Stage(stage) for stage in self.expected_stages}):
             raise ValueError("a record is complete exactly when every expected stage has reported")
@@ -429,10 +430,8 @@ class CAR(StrictModel):
             raise ValueError("the record's subject is its own unit")
         self._check_identity()
         check_provenance(self)
-        # A verifier that reports these itself, as tampering rather than as an unreadable record, says so.
-        if (info.context or {}).get(DERIVED_CHECKED_BY_READER) is not True:
-            for where, problem in derived_problems(self):
-                raise ValueError(f"{where} {problem}")
+        if checks_integrity:
+            _raise_first(integrity_problems(self))
         return self
 
     def combined(self) -> StageOutcome:
@@ -455,7 +454,12 @@ class CAR(StrictModel):
             raise ValueError("the identities are read from the applied plan the deployment names")
         if self.identity.sources.state != self.deployment.apply.state:
             raise ValueError("the identities are read from the state the deployment was held to")
-        left = {change.address: change.fate for change in self.deployment.apply.changes if change.left_the_state}
+        left = {change.address: change.removal for change in self.deployment.apply.changes if change.left_the_state}
         if self.identity.left_the_state() != left:
             raise ValueError("what the identities list as removed is exactly what left the state, and how")
         check_identity_against_apply(self.identity.tool_data, self.deployment.apply.tool_data)
+
+
+def _raise_first(problems: list[tuple[str, str]]) -> None:
+    if problems:
+        raise ValueError(" ".join(problems[0]))

@@ -4,18 +4,18 @@ from __future__ import annotations
 
 import pytest
 
-from iltero_schemas.opa import PIN, OpaBinary, platform_key
+from iltero_schemas.opa import OPA_RELEASE_PIN, OpaBinary, platform_key
 
 _PLATFORMS = {"linux-x86_64", "linux-aarch64", "darwin-x86_64", "darwin-aarch64", "windows-x86_64"}
 
 
 def test_pin_names_one_release() -> None:
-    assert PIN.release_tag == f"v{PIN.version}"
+    assert OPA_RELEASE_PIN.release_tag == f"v{OPA_RELEASE_PIN.version}"
 
 
 def test_every_supported_platform_is_pinned() -> None:
-    assert set(PIN.binaries) == _PLATFORMS
-    for key, binary in PIN.binaries.items():
+    assert set(OPA_RELEASE_PIN.binaries) == _PLATFORMS
+    for key, binary in OPA_RELEASE_PIN.binaries.items():
         assert isinstance(binary, OpaBinary)
         assert binary.platform == key
         assert len(binary.sha256) == 64
@@ -24,7 +24,7 @@ def test_every_supported_platform_is_pinned() -> None:
 def test_digests_are_distinct_per_asset() -> None:
     """Two different assets never share a digest; two names for one binary may."""
     by_digest: dict[str, set[str]] = {}
-    for binary in PIN.binaries.values():
+    for binary in OPA_RELEASE_PIN.binaries.values():
         by_digest.setdefault(binary.sha256, set()).add(binary.asset)
     for assets in by_digest.values():
         stems = {asset.replace("_static", "") for asset in assets}
@@ -33,7 +33,7 @@ def test_digests_are_distinct_per_asset() -> None:
 
 def test_pin_is_immutable() -> None:
     with pytest.raises(TypeError):
-        PIN.binaries["linux-x86_64"] = OpaBinary("x", "y", "0" * 64)  # type: ignore[index]
+        OPA_RELEASE_PIN.binaries["linux-x86_64"] = OpaBinary("x", "y", "0" * 64)  # type: ignore[index]
 
 
 @pytest.mark.parametrize(

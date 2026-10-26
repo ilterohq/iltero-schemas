@@ -54,14 +54,14 @@ class Verdict(StrictModel):
 
     value: Literal["pass", "fail", "indeterminate"]
     exit_code: Annotated[int, Field(ge=0, le=10)]
-    basis: Literal["status_counts", "stage_precedence"]
+    computed_from: Literal["status_counts", "stage_precedence"]
     stage: StageValue | None
 
     @model_validator(mode="after")
     def _one_meaning(self) -> Verdict:
         if self.value != VERDICT_WORDS.get(self.exit_code, "fail"):
             raise ValueError(f"exit code {self.exit_code} is not a verdict of {self.value}")
-        if (self.stage is None) != (self.basis == "status_counts"):
+        if (self.stage is None) != (self.computed_from == "status_counts"):
             raise ValueError("a verdict names its stage exactly when it was taken from a stage")
         return self
 
@@ -76,15 +76,15 @@ class AssuranceStatus(StrictModel):
 
 
 # Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
-# an identity that was hidden or cannot be named.
-ExclusionReason = Literal["not_managed", "deposed", "identity_hidden", "identity_unnameable"]
+# an identity that was redacted or cannot be named.
+ExclusionReason = Literal["not_managed", "deposed", "identity_redacted", "identity_unnameable"]
 
 
 class Excluded(StrictModel):
-    """A plan resource left out of the subjects in scope, by its position in the plan."""
+    """A plan resource left out of the subjects in scope, by its index in the plan's resource list (``plan_index``)."""
 
-    position: Count
-    # The resource's address as the plan wrote it, null when it was hidden. An address that cannot be named is
+    plan_index: Count
+    # The resource's address as the plan wrote it, null when it was redacted. An address that cannot be named is
     # kept as written, whatever its characters.
     id: RawText | None
     reason: ExclusionReason
@@ -103,17 +103,17 @@ class PlanFlagGap(_Gap):
     value: Literal[False] | NotReported
 
 
-class PositionGap(_Gap):
-    """A plan resource whose identity was hidden or cannot be named, by its position in the plan."""
+class PlanIndexGap(_Gap):
+    """A plan resource whose identity was redacted or cannot be named, by its index in the plan's resource list."""
 
-    kind: Literal["identity_hidden", "identity_unnameable"]
-    position: Count
+    kind: Literal["identity_redacted", "identity_unnameable"]
+    plan_index: Count
 
 
-# What a count gap may name: what the plan left out, why checks were not evaluated or ended in error, and checks a
-# scanner's result stands behind rather than an evaluation this run ran.
+# What a count gap may name: what the plan left out, why evaluations did not run or ended in error, and results a
+# scanner reported rather than an evaluation this run ran.
 COUNT_GAP_KINDS: frozenset[str] = (
-    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", "credited_by_binding"})
+    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", "accepted_by_binding"})
     | STATUS_REASONS["not_evaluated"]
     | STATUS_REASONS["error"]
 )
@@ -133,7 +133,7 @@ class CountGap(_Gap):
 
 
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PositionGap | CountGap
+Gap = PlanFlagGap | PlanIndexGap | CountGap
 # The most gaps a coverage lists: one per resource a plan holds, and each flag or count kind once per stage.
 MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
 
@@ -142,14 +142,14 @@ class SubjectsInScope(StrictModel):
     value: Count
     # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
     # one deployment of the unit (after it).
-    basis: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
+    counted_from: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
     source_digest: Digest
     removed_by_plan: Count
     excluded: Annotated[list[Excluded], Field(max_length=MAX_RESOURCES)]
 
     @model_validator(mode="after")
     def _one_subject(self) -> SubjectsInScope:
-        if self.basis != "plan_resource_enumeration" and (self.value, self.removed_by_plan, self.excluded) != (
+        if self.counted_from != "plan_resource_enumeration" and (self.value, self.removed_by_plan, self.excluded) != (
             1,
             0,
             [],
@@ -167,7 +167,7 @@ class AssertionsExpected(StrictModel):
     """
 
     value: Count
-    basis: Literal["server_pinned", "locally_derived"]
+    origin: Literal["server_pinned", "locally_derived"]
     required_assertion_digest: Digest
 
 
@@ -201,7 +201,7 @@ class Coverage(StrictModel):
     assertions_evaluated: Count
     subjects_per_assertion: dict[str, Count]
     status_counts: dict[Status, Count]
-    checks: Count
+    evaluations: Count
     gaps: Annotated[list[Gap], Field(max_length=MAX_GAPS)]
     truncated: Truncated
     sampled: bool
@@ -219,8 +219,8 @@ class Coverage(StrictModel):
                 raise ValueError("a stage's substituted inputs are sorted by source")
         if set(self.status_counts) != set(STATUSES):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
-        if sum(self.status_counts.values()) != self.checks:
-            raise ValueError("the status counts add up to the number of checks")
+        if sum(self.status_counts.values()) != self.evaluations:
+            raise ValueError("the status counts add up to the number of evaluations")
         return self
 
 
@@ -276,7 +276,7 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     plan = next((gap for gap in coverage.gaps if isinstance(gap, PlanFlagGap) and gap.kind == "plan_incomplete"), None)
     substituted = len(coverage.substituted_inputs)
     if errors:
-        detail = f"{errors} of {coverage.checks} checks ended in an evaluator error"
+        detail = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
         status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
     elif plan is not None:
         detail = "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
@@ -289,7 +289,7 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     verdict = Verdict(
         value=VERDICT_WORDS.get(code, "fail"),
         exit_code=code,
-        basis="status_counts",
+        computed_from="status_counts",
         stage=None,
     )
     return StageOutcome(coverage=coverage, verdict=verdict, assurance_status=status)
@@ -298,7 +298,7 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
 def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     coverages = [outcome.coverage for _, outcome in stages]
     # The population is the plan's resources: exactly one stage enumerates them, and it comes first.
-    enumerating = [c for c in coverages if c.subjects_in_scope.basis == "plan_resource_enumeration"]
+    enumerating = [c for c in coverages if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
     if len(enumerating) != 1 or enumerating[0] is not coverages[0]:
         raise ValueError(
             "a record's resources in scope are its plan stage's: one stage counts them, and it comes first"
@@ -315,14 +315,14 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         if set(per_assertion) & set(coverage.subjects_per_assertion):
             raise ValueError("an assertion is counted by one stage only")
         per_assertion |= coverage.subjects_per_assertion
-    bases = {c.assertions_expected.basis for c in coverages}
+    origins = {c.assertions_expected.origin for c in coverages}
     return Coverage(
         subjects_in_scope=plan.subjects_in_scope,
         subjects_evaluated=plan.subjects_evaluated,
         assertions_expected=AssertionsExpected(
             value=sum(c.assertions_expected.value for c in coverages),
             # A set a server pinned in part is a set derived locally.
-            basis="locally_derived" if "locally_derived" in bases else "server_pinned",
+            origin="locally_derived" if "locally_derived" in origins else "server_pinned",
             required_assertion_digest=digest_of(
                 [
                     {"stage": name, "digest": o.coverage.assertions_expected.required_assertion_digest}
@@ -333,7 +333,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         assertions_evaluated=sum(c.assertions_evaluated for c in coverages),
         subjects_per_assertion=per_assertion,
         status_counts={status: sum(c.status_counts[status] for c in coverages) for status in STATUSES},
-        checks=sum(c.checks for c in coverages),
+        evaluations=sum(c.evaluations for c in coverages),
         gaps=[
             gap.model_copy(update={"stage": Stage(name)}) for name, outcome in stages for gap in outcome.coverage.gaps
         ],
@@ -386,7 +386,7 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
     return StageOutcome(
         coverage=_combined_coverage(stages),
         verdict=Verdict.model_validate(
-            {"value": winner.value, "exit_code": winner.exit_code, "basis": "stage_precedence", "stage": name}
+            {"value": winner.value, "exit_code": winner.exit_code, "computed_from": "stage_precedence", "stage": name}
         ),
         assurance_status=status,
     )

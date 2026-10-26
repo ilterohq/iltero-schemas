@@ -46,7 +46,7 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
     PLAN_STAGE,
     **{
         "coverage.subjects_in_scope.value": 1,
-        "coverage.subjects_in_scope.basis": "deployment_unit",
+        "coverage.subjects_in_scope.counted_from": "deployment_unit",
         "coverage.subjects_in_scope.removed_by_plan": 0,
         "coverage.subjects_in_scope.excluded": [],
         "coverage.subjects_evaluated": 1,
@@ -55,9 +55,9 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
         "coverage.assertions_evaluated": 1,
         "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.PLAN_BINDING@1.0.0": 1},
         "coverage.status_counts": dict.fromkeys(PLAN.coverage.status_counts, 0) | {"pass": 1},
-        "coverage.checks": 1,
+        "coverage.evaluations": 1,
         "coverage.gaps": [{"kind": "timeout", "count": 1}],
-        "verdict": {"value": "pass", "exit_code": 0, "basis": "status_counts", "stage": None},
+        "verdict": {"value": "pass", "exit_code": 0, "computed_from": "status_counts", "stage": None},
         "assurance_status": {"value": "complete", "reason": None, "detail": None},
     },
 ).model_dump(mode="json")
@@ -66,19 +66,19 @@ DEPLOYED = StageOutcome.model_validate(DEPLOYED_STAGE)
 
 def _verdict(code: int) -> dict[str, Any]:
     value = {0: "pass", 3: "indeterminate"}.get(code, "fail")
-    return {"value": value, "exit_code": code, "basis": "status_counts", "stage": None}
+    return {"value": value, "exit_code": code, "computed_from": "status_counts", "stage": None}
 
 
 def test_one_stage_is_its_own_record_by_precedence() -> None:
     combined = combine([("plan", PLAN)])
-    assert combined.coverage.checks == PLAN.coverage.checks
-    assert combined.verdict.basis == "stage_precedence" and combined.verdict.stage == "plan"
+    assert combined.coverage.evaluations == PLAN.coverage.evaluations
+    assert combined.verdict.computed_from == "stage_precedence" and combined.verdict.stage == "plan"
     assert combined.verdict.exit_code == PLAN.verdict.exit_code
 
 
 def test_two_stages_add_up_and_keep_the_plans_resources_in_scope() -> None:
     coverage = combine([("plan", PLAN), ("post_deploy", DEPLOYED)]).coverage
-    assert coverage.checks == PLAN.coverage.checks + 1
+    assert coverage.evaluations == PLAN.coverage.evaluations + 1
     assert coverage.status_counts["pass"] == PLAN.coverage.status_counts["pass"] + 1
     assert coverage.assertions_expected.value == PLAN.coverage.assertions_expected.value + 1
     assert coverage.subjects_in_scope == PLAN.coverage.subjects_in_scope
@@ -97,9 +97,9 @@ def test_the_assertion_set_of_several_stages_is_named_by_each_stages_own() -> No
 
 
 def test_a_set_pinned_in_part_is_derived_locally() -> None:
-    pinned = _outcome(PLAN_STAGE, **{"coverage.assertions_expected.basis": "server_pinned"})
-    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.basis": "locally_derived"})
-    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.basis == "locally_derived"
+    pinned = _outcome(PLAN_STAGE, **{"coverage.assertions_expected.origin": "server_pinned"})
+    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "locally_derived"})
+    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "locally_derived"
 
 
 @pytest.mark.parametrize(
@@ -129,10 +129,16 @@ def test_the_precedence_names_every_exit_code_once() -> None:
 @pytest.mark.parametrize(
     ("verdict", "message"),
     [
-        ({"value": "pass", "exit_code": 1, "basis": "status_counts", "stage": None}, "not a verdict of pass"),
-        ({"value": "fail", "exit_code": 3, "basis": "status_counts", "stage": None}, "not a verdict of fail"),
-        ({"value": "pass", "exit_code": 0, "basis": "status_counts", "stage": "plan"}, "names its stage exactly"),
-        ({"value": "pass", "exit_code": 0, "basis": "stage_precedence", "stage": None}, "names its stage exactly"),
+        ({"value": "pass", "exit_code": 1, "computed_from": "status_counts", "stage": None}, "not a verdict of pass"),
+        ({"value": "fail", "exit_code": 3, "computed_from": "status_counts", "stage": None}, "not a verdict of fail"),
+        (
+            {"value": "pass", "exit_code": 0, "computed_from": "status_counts", "stage": "plan"},
+            "names its stage exactly",
+        ),
+        (
+            {"value": "pass", "exit_code": 0, "computed_from": "stage_precedence", "stage": None},
+            "names its stage exactly",
+        ),
     ],
     ids=[
         "pass with a failing code",
@@ -200,7 +206,7 @@ def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
 
 @pytest.mark.parametrize(
     "scope",
-    [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"position": 0, "id": "a.x", "reason": "not_managed"}]}],
+    [{"value": 2}, {"removed_by_plan": 1}, {"excluded": [{"plan_index": 0, "id": "a.x", "reason": "not_managed"}]}],
     ids=["two deployments", "a removal", "an exclusion"],
 )
 def test_a_deployment_scope_is_its_one_deployment(scope: dict[str, Any]) -> None:
@@ -209,9 +215,9 @@ def test_a_deployment_scope_is_its_one_deployment(scope: dict[str, Any]) -> None
         _outcome(DEPLOYED_STAGE, **changes)
 
 
-def test_the_status_counts_add_up_to_the_checks() -> None:
-    with pytest.raises(ValidationError, match="add up to the number of checks"):
-        _outcome(DEPLOYED_STAGE, **{"coverage.checks": 2})
+def test_the_status_counts_add_up_to_the_evaluations() -> None:
+    with pytest.raises(ValidationError, match="add up to the number of evaluations"):
+        _outcome(DEPLOYED_STAGE, **{"coverage.evaluations": 2})
 
 
 PLACEHOLDER = {"kind": "upstream_state", "source": "data.terraform_remote_state.network", "stage": None}
@@ -315,7 +321,7 @@ def test_the_plans_reason_leads_a_later_stages_placeholders_and_yields_to_its_er
 
 
 def test_a_change_scope_is_its_one_change() -> None:
-    changes = {"coverage.subjects_in_scope.basis": "change_unit", "coverage.subjects_in_scope.value": 2}
+    changes = {"coverage.subjects_in_scope.counted_from": "change_unit", "coverage.subjects_in_scope.value": 2}
     with pytest.raises(ValidationError, match="that one subject"):
         _outcome(DEPLOYED_STAGE, **changes)
 
@@ -343,10 +349,10 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
     [
         {"kind": "plan_incomplete", "value": False},
         {"kind": "plan_not_applyable", "value": {"__unknown": True, "reason": "not_reported_by_tool"}},
-        {"kind": "identity_hidden", "position": 3},
+        {"kind": "identity_redacted", "plan_index": 3},
         {"kind": "deferred_changes", "count": 2},
         {"kind": "evaluator_timeout", "count": 1},
-        {"kind": "credited_by_binding", "count": 4},
+        {"kind": "accepted_by_binding", "count": 4},
     ],
 )
 def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
@@ -360,7 +366,7 @@ def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
         {"kind": "plan_incomplete", "value": True},
         {"kind": "plan_incomplete", "value": None},
         {"kind": "deferred_changes", "count": 0},
-        {"kind": "identity_hidden", "count": 1},
+        {"kind": "identity_redacted", "count": 1},
         {"kind": "pass", "count": 1},
         {"kind": "timeout", "count": 1, "detail": "x"},
     ],
@@ -372,8 +378,8 @@ def test_a_gap_outside_its_shapes_is_refused(gap: dict[str, Any]) -> None:
 
 
 def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_reason() -> None:
-    unnameable = {"position": 0, "id": "aws_s3_bucket.x\n" + "y" * 3000, "reason": "identity_unnameable"}
-    hidden = {"position": 1, "id": None, "reason": "identity_hidden"}
+    unnameable = {"plan_index": 0, "id": "aws_s3_bucket.x\n" + "y" * 3000, "reason": "identity_unnameable"}
+    hidden = {"plan_index": 1, "id": None, "reason": "identity_redacted"}
     scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": [unnameable, hidden]}
     Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
     with pytest.raises(ValidationError):
@@ -383,7 +389,7 @@ def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_rea
 
 
 def test_a_coverage_lists_at_most_max_gaps() -> None:
-    gaps = [{"kind": "identity_hidden", "position": n} for n in range(MAX_GAPS + 1)]
+    gaps = [{"kind": "identity_redacted", "plan_index": n} for n in range(MAX_GAPS + 1)]
     with pytest.raises(ValidationError, match="at most"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps})
 
@@ -391,9 +397,9 @@ def test_a_coverage_lists_at_most_max_gaps() -> None:
 @pytest.mark.parametrize(
     "excluded",
     [
-        [{"position": n, "id": None, "reason": "deposed"} for n in range(MAX_RESOURCES + 1)],
-        [{"position": 0, "id": "a" * (RAW_TEXT_MAX_BYTES + 1), "reason": "identity_unnameable"}],
-        [{"position": 0, "id": "", "reason": "identity_unnameable"}],
+        [{"plan_index": n, "id": None, "reason": "deposed"} for n in range(MAX_RESOURCES + 1)],
+        [{"plan_index": 0, "id": "a" * (RAW_TEXT_MAX_BYTES + 1), "reason": "identity_unnameable"}],
+        [{"plan_index": 0, "id": "", "reason": "identity_unnameable"}],
     ],
     ids=["too-many", "id-too-long", "id-empty"],
 )

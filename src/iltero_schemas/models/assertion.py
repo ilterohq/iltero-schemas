@@ -2,8 +2,8 @@
 
 A technical assertion names what is checked (``metadata``), at which point of
 the change lifecycle (``spec.stage``), about which kind of thing
-(``spec.target``), and the check itself (``spec.assert``) with an optional
-applicability guard (``spec.when``). The check is written in the assertion
+(``spec.target``), and the condition itself (``spec.assert``) with an optional
+applicability guard (``spec.when``). The condition is written in the assertion
 language, whose grammar is parsed and validated by ``iltero_schemas.ast``;
 this module validates everything around it.
 
@@ -82,7 +82,7 @@ class AssertionType(StrEnum):
     PROCESS = "process"
 
 
-DERIVED_TYPE: dict[TargetKind, AssertionType] = {
+ASSERTION_TYPE_FOR_TARGET: dict[TargetKind, AssertionType] = {
     TargetKind.RESOURCE: AssertionType.STATE,
     TargetKind.CHANGE: AssertionType.PROCESS,
     TargetKind.DEPLOYMENT: AssertionType.PROCESS,
@@ -179,7 +179,7 @@ class KindSelector(_Strict):
 class ToolSelector(_Strict):
     """Resources of the named types, from one provider, as one IaC tool names them.
 
-    The one place a target names a tool's own types: for a check that reads that
+    The one place a target names a tool's own types: for an assertion that reads that
     tool's attributes. Each tool spells types its own way, so a type is checked
     against the rule of the tool named.
     """
@@ -239,7 +239,7 @@ SCOPED_STAGES = frozenset({Stage.PRE_DEPLOY, Stage.POST_DEPLOY})
 def check_target(stage: Stage, target: ResourceTarget | ProcessTarget) -> None:
     """Raise ``ValueError`` unless ``target`` is valid at ``stage`` and its selectors have a change to scope."""
     kind = TargetKind(target.kind)
-    if (DERIVED_TYPE[kind], stage, kind) not in VALID_COMBINATIONS:
+    if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in VALID_COMBINATIONS:
         raise ValueError(f"stage {stage.value!r} is not valid for target kind {target.kind!r}")
     if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
         raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
@@ -256,7 +256,7 @@ class Spec(_Strict):
 
     @property
     def derived_type(self) -> AssertionType:
-        return DERIVED_TYPE[TargetKind(self.target.kind)]
+        return ASSERTION_TYPE_FOR_TARGET[TargetKind(self.target.kind)]
 
     @model_validator(mode="after")
     def _combination(self) -> Spec:

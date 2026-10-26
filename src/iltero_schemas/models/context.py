@@ -19,13 +19,13 @@ contents. The resources that refer to it
 (``resource.related``) are embedded as the plan adapter observed them,
 ``address`` included. ``provider`` is the short name an assertion targets
 (``aws``); what only the tool says about a resource is under ``tool_data``. A
-value hidden by redaction is a marker (``__redacted``), and the fields where
-a hidden value may legitimately sit accept one. A fact the server could not
+value removed by redaction is a marker (``__redacted``), and the fields where
+a redacted value may legitimately sit accept one. A fact the server could not
 supply is an unknown marker (``__unknown``, see ``models.facts``) in place of
 the list it would have filled, and a fact the IaC tool did not report is one
 with its own reason. Null means a fact has no value, never that it is unknown:
 the evaluator reads a null as a known value. The one exception is a related
-resource's ``resource``, null when its values were not carried; a check that
+resource's ``resource``, null when its values were not carried; an evaluation that
 reads through it is ``unknown``.
 """
 
@@ -42,11 +42,11 @@ from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.facts import NotReported, UnknownMarker
+from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     Action,
     Address,
-    ArtifactDigestBasis,
+    ArtifactDigestSource,
     AssertionKey,
     Commit,
     Digest,
@@ -55,20 +55,20 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
-    instant,
+    parse_timestamp,
 )
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
-from iltero_schemas.models.redaction import MaybeHidden, MaybeHiddenAddress
+from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
-from iltero_schemas.profiles import ALWAYS, profile_for
+from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
 ReferenceTimeSource = Literal["server", "timestamp_authority", "rekor", "runner_clock"]
 ReferenceTimeTrust = Literal["attested", "corroborated", "asserted"]
-Authority = Literal["authoritative", "unresolved"]
+Resolution = Literal["resolved", "unresolved"]
 # The parts a profile may name, whether or not this version specifies their shape.
 PARTS = (
     "source",
@@ -117,7 +117,7 @@ class Environment(StrictModel):
     """
 
     name: Identifier
-    production: bool | UnknownMarker
+    production: bool | ServerFactsUnavailable
 
 
 class OrganizationScope(StrictModel):
@@ -128,7 +128,7 @@ class OrganizationScope(StrictModel):
     environment: Environment | None = None
 
 
-class Bracket(StrictModel):
+class TimeWindow(StrictModel):
     """The two timestamp-authority tokens an evaluation sits between."""
 
     not_before: Timestamp
@@ -139,25 +139,27 @@ class Bracket(StrictModel):
 class ReferenceTime(StrictModel):
     """The time every expiry or ordering comparison uses, and how far it can be trusted.
 
-    A runner's own clock is only ever asserted. A timestamp authority's time comes with the bracket its two tokens
+    A runner's own clock is only ever asserted. A timestamp authority's time comes with the time window its two tokens
     set, and lies inside it; no other source has one.
     """
 
     value: Timestamp
     source: ReferenceTimeSource
     trust: ReferenceTimeTrust
-    bracket: Bracket | None = None
+    time_window: TimeWindow | None = None
 
     @model_validator(mode="after")
     def _trust_follows_source(self) -> ReferenceTime:
         if self.source == "runner_clock" and self.trust != "asserted":
             raise ValueError("a runner's clock is only ever asserted")
-        if (self.bracket is not None) != (self.source == "timestamp_authority"):
-            raise ValueError("a reference time has a bracket exactly when a timestamp authority gave it")
-        if self.bracket is not None and not (
-            instant(self.bracket.not_before) <= instant(self.value) <= instant(self.bracket.not_after)
+        if (self.time_window is not None) != (self.source == "timestamp_authority"):
+            raise ValueError("a reference time has a time window exactly when a timestamp authority gave it")
+        if self.time_window is not None and not (
+            parse_timestamp(self.time_window.not_before)
+            <= parse_timestamp(self.value)
+            <= parse_timestamp(self.time_window.not_after)
         ):
-            raise ValueError("a reference time lies inside its bracket, which runs forward")
+            raise ValueError("a reference time lies inside its time window, which runs forward")
         return self
 
 
@@ -191,12 +193,12 @@ class Subject(StrictModel):
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest
     identities: Annotated[list[Identity], Field(min_length=1)]
-    # ``authoritative`` once a verified resolver bound a cloud identity; ``unresolved`` until then.
-    authority: Authority
+    # ``resolved`` once a resolver verified for its resource type bound a cloud identity; ``unresolved`` until then.
+    resolution: Resolution
 
 
-class UnknownKind(StrictModel):
-    """What stands where a tool's adapter could not name a resource's kind: a check that reads it is unknown."""
+class KindNotMapped(StrictModel):
+    """What stands where a tool's adapter could not name a resource's kind: an evaluation that reads it is unknown."""
 
     model_config = ConfigDict(serialize_by_alias=True)
 
@@ -214,7 +216,7 @@ class ResourceIndexEntry(StrictModel):
     id: Address
     provider: ProviderName
     type: Identifier
-    kind: Identifier | UnknownKind | None
+    kind: Identifier | KindNotMapped | None
 
     action: Action
     module: Address | None
@@ -227,7 +229,7 @@ def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResour
         if entry.provider not in RESOURCE_KINDS:
             valid = entry.kind is None
         elif named is None:
-            valid = isinstance(entry.kind, UnknownKind)
+            valid = isinstance(entry.kind, KindNotMapped)
         else:
             valid = entry.kind == named
         if not valid:
@@ -252,7 +254,7 @@ class Plan(StrictModel):
     digest: Digest
     digest_version: Identifier
     artifact_digest: Digest | None
-    artifact_digest_basis: ArtifactDigestBasis
+    artifact_digest_source: ArtifactDigestSource
     source_commit: Commit
     # The marker when the tool's plan format has no such flag.
     complete: bool | NotReported
@@ -260,8 +262,8 @@ class Plan(StrictModel):
     resources: list[ResourceIndexEntry]
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_basis(self) -> Plan:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_basis)
+    def _artifact_digest_has_its_source(self) -> Plan:
+        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
         return self
 
     @model_validator(mode="after")
@@ -273,10 +275,10 @@ class Plan(StrictModel):
 class RelatedResource(StrictModel):
     """Another resource that refers to this one, with its values as planned, or null when they were not carried."""
 
-    address: MaybeHiddenAddress
-    type: MaybeHidden
+    address: MaybeRedactedAddress
+    type: MaybeRedacted
     relation: Relation
-    via: list[MaybeHidden]
+    via: list[MaybeRedacted]
     resource: dict[str, Any] | None
     # What only the plan's tool says about the match, keyed by ``tool`` (``models.tools.variants``).
     tool_data: RelatedToolData
@@ -288,8 +290,8 @@ class PlanResource(StrictModel):
     id: Address
     provider: ProviderName
     type: Identifier
-    kind: Identifier | UnknownKind | None
-    name: MaybeHidden
+    kind: Identifier | KindNotMapped | None
+    name: MaybeRedacted
     module: Address | None
     action: Action
     before: Any
@@ -310,7 +312,7 @@ class AssuranceContext(StrictModel):
 
     api_version: Literal["iltero.io/assurance-context/v1"] = Field(alias="apiVersion")
     evaluation: EvaluationRun
-    context: OrganizationScope
+    organization_scope: OrganizationScope
     reference_time: ReferenceTime
     source: Source | None = None
     change: ProposedChange | None = None
@@ -319,9 +321,9 @@ class AssuranceContext(StrictModel):
     resource: PlanResource | None = None
     deployment: Deployment | None = None
     # Facts only the server holds (``models.server_facts``); a marker when it could not supply them.
-    evaluations: Evaluations | UnknownMarker | None = None
-    approvals: Approvals | UnknownMarker | None = None
-    exceptions: Exceptions | UnknownMarker | None = None
+    evaluations: Evaluations | ServerFactsUnavailable | None = None
+    approvals: Approvals | ServerFactsUnavailable | None = None
+    exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     verification: dict[str, Any] | None = None
@@ -332,7 +334,7 @@ class AssuranceContext(StrictModel):
         if self.subject is None:
             raise ValueError("subject is required")
         profile = profile_for(self.evaluation.stage, self.subject.kind)
-        present = {name for name in PARTS if getattr(self, name) is not None} | ALWAYS
+        present = {name for name in PARTS if getattr(self, name) is not None} | ALWAYS_REQUIRED_PARTS
         missing = sorted(profile.required - present)
         extra = sorted(present - profile.roots)
         if missing:

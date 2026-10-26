@@ -38,11 +38,11 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     copied["approvals"] = [] if reads_server_facts(Stage(name)) else None
     copied["events"] = {**copied["events"], "count": 0, "path": f"units/root/{name}/events.json"}
     coverage = copied["coverage"]
-    basis = "change_unit" if name == "pre_deploy" else "deployment_unit"
-    coverage["subjects_in_scope"].update(value=1, basis=basis, removed_by_plan=0, excluded=[])
+    counted_from = "change_unit" if name == "pre_deploy" else "deployment_unit"
+    coverage["subjects_in_scope"].update(value=1, counted_from=counted_from, removed_by_plan=0, excluded=[])
     if name == "pre_deploy":
         coverage["subjects_in_scope"]["source_digest"] = RECORD["change"]["digest"]
-    coverage.update(subjects_per_assertion={}, checks=0, status_counts=dict.fromkeys(coverage["status_counts"], 0))
+    coverage.update(subjects_per_assertion={}, evaluations=0, status_counts=dict.fromkeys(coverage["status_counts"], 0))
     for dotted, value in changes.items():
         set_path(copied, dotted, value)
     outcome = stage_outcome(Coverage.model_validate(copied["coverage"])).model_dump(mode="json")

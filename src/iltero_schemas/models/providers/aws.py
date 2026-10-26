@@ -95,11 +95,11 @@ class AwsCloudSide(StrictModel):
 
     provider: Literal["aws"]
     resource_type: AwsResourceType
-    primary: ArnIdentifier
+    identifier: ArnIdentifier
 
     @model_validator(mode="after")
     def _arn_is_of_the_type(self) -> AwsCloudSide:
-        if not arn_matches(self.resource_type, self.primary.value):
+        if not arn_matches(self.resource_type, self.identifier.value):
             raise ValueError(f"primary is not the ARN of a {self.resource_type}")
         return self
 
@@ -114,10 +114,10 @@ class AwsResolver(StrictModel):
 
     provider: Literal["aws"]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    verified: list[AwsResourceType]
+    verified_resource_types: list[AwsResourceType]
 
     @model_validator(mode="after")
     def _sorted_once(self) -> AwsResolver:
-        if not sorted_unique(self.verified):
+        if not sorted_unique(self.verified_resource_types):
             raise ValueError("the verified types are sorted and named once")
         return self

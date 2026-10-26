@@ -4,7 +4,7 @@ from typing import Any
 
 from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.canonical import digest
-from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME, RegoModule, compile, package_of
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, RegoModule, compile, package_of
 
 RESOURCE = {
     "kind": "resource",
@@ -50,7 +50,7 @@ def test_module_is_self_describing_and_carries_the_runtime_verbatim() -> None:
     assert 'assertion_version := "2.1.0"\n' in rules
     assert "ast_version := 1\n" in rules
     assert f'assertion_source_digest := "{source_digest(parse_document(document))}"\n' in rules
-    assert module.source.decode("utf-8").endswith(RUNTIME)
+    assert module.source.decode("utf-8").endswith(RUNTIME_REGO)
     assert module.digest == digest(module.source)
 
 
@@ -69,10 +69,15 @@ def test_absent_when_is_a_constant_true_guard() -> None:
     assert "_has_when := false\n" in rules
     assert "_guard := _true\n" in rules
     rules = _rules(
-        _module({"path": "resource.x", "equal": 1}, when={"path": "context.environment.name", "equal": "production"})
+        _module(
+            {"path": "resource.x", "equal": 1},
+            when={"path": "organization_scope.environment.name", "equal": "production"},
+        )
     )
     assert "_has_when := true\n" in rules
-    assert '_guard := predicate("equal", lookup("context.environment.name"), literal("production"))\n' in rules
+    assert (
+        '_guard := predicate("equal", lookup("organization_scope.environment.name"), literal("production"))\n' in rules
+    )
 
 
 def test_literal_and_reference_operands() -> None:

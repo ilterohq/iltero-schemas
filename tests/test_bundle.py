@@ -20,11 +20,11 @@ from cryptography.hazmat.primitives.asymmetric.utils import Prehashed, decode_ds
 
 import iltero_schemas.bundle.build as build_module
 from iltero_schemas.bundle import (
-    SCOPE,
+    BUNDLE_SIGNING_SCOPE,
     BundleError,
     check_descriptor,
     descriptor,
-    low_s,
+    normalized_signature,
     signature_of,
     signing_input,
     unsigned_bundle,
@@ -55,7 +55,7 @@ def _keys(status: str = "active") -> Mapping[str, BundleKey]:
         "revoked": {"revoked_at": "2026-10-01T00:00:00Z", "revocation_reason": "compromised"},
     }[status]
     entry = {
-        "keyid": KEY_ID,
+        "key_id": KEY_ID,
         "algorithm": "ES256",
         "public_key": base64.b64encode(der).decode("ascii"),
         "spki_sha256": "sha256:" + hashlib.sha256(der).hexdigest(),
@@ -148,7 +148,7 @@ def test_the_minimum_tool_version_is_plain_x_y_z(value: str) -> None:
 def test_the_signed_bytes_name_every_file_its_digest_the_key_and_the_scope() -> None:
     header, payload = (json.loads(base64.urlsafe_b64decode(p + b"=" * (-len(p) % 4))) for p in SIGNED.split(b"."))
     assert header == {"alg": "ES256", "kid": KEY_ID, "typ": "JWT"}
-    assert payload["keyid"] == KEY_ID and payload["scope"] == SCOPE
+    assert payload["keyid"] == KEY_ID and payload["scope"] == BUNDLE_SIGNING_SCOPE
     assert {f["name"]: f["hash"] for f in payload["files"]} == {
         name: hashlib.sha256(data).hexdigest() for name, data in BUNDLE.files.items()
     }
@@ -193,7 +193,7 @@ def test_the_descriptor_carries_the_sources_and_the_digests() -> None:
 @pytest.mark.parametrize("status", ["active", "retired"])
 def test_a_genuine_bundle_passes_under_a_key_that_may_verify(status: str) -> None:
     checked = check_descriptor(DESCRIPTOR, _keys(status))
-    assert checked.key.keyid == KEY_ID
+    assert checked.key.key_id == KEY_ID
     assert dict(checked.files) == _signed_files()
 
 
@@ -433,12 +433,12 @@ def _opa_verify(
 
 
 def test_opa_verifies_a_genuine_bundle_under_its_scope(opa: Path, tmp_path: Path) -> None:
-    verified = _opa_verify(opa, tmp_path, TARBALL, "--scope", SCOPE)
+    verified = _opa_verify(opa, tmp_path, TARBALL, "--scope", BUNDLE_SIGNING_SCOPE)
     assert verified.returncode == 0, verified.stdout + verified.stderr
 
 
 def test_a_verified_bundle_evaluates_as_its_modules_do(opa: Path, tmp_path: Path) -> None:
-    assert _opa_verify(opa, tmp_path, TARBALL, "--scope", SCOPE).returncode == 0
+    assert _opa_verify(opa, tmp_path, TARBALL, "--scope", BUNDLE_SIGNING_SCOPE).returncode == 0
     assertion_id = "ILT.AWS.RDS.STORAGE_ENCRYPTED"
     context = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
     context["evaluation"]["assertion"]["id"] = assertion_id
@@ -468,9 +468,13 @@ def _changed_manifest() -> dict[str, bytes]:
 @pytest.mark.parametrize(
     ("files", "extra", "reason"),
     [
-        (_changed_module(), ("--scope", SCOPE), "digest mismatch"),
-        (_changed_manifest(), ("--scope", SCOPE), "digest mismatch"),
-        ({**_signed_files(), "extra.rego": b"package extra\n\nallow := true\n"}, ("--scope", SCOPE), "not included"),
+        (_changed_module(), ("--scope", BUNDLE_SIGNING_SCOPE), "digest mismatch"),
+        (_changed_manifest(), ("--scope", BUNDLE_SIGNING_SCOPE), "digest mismatch"),
+        (
+            {**_signed_files(), "extra.rego": b"package extra\n\nallow := true\n"},
+            ("--scope", BUNDLE_SIGNING_SCOPE),
+            "not included",
+        ),
         (_signed_files(), (), "scope mismatch"),
         (_signed_files(), ("--scope", "another-scope"), "scope mismatch"),
     ],
@@ -484,13 +488,15 @@ def test_opa_refuses_a_bundle_that_is_not_what_was_signed(
 
 
 def test_opa_refuses_a_bundle_under_another_key(opa: Path, tmp_path: Path) -> None:
-    refused = _opa_verify(opa, tmp_path, TARBALL, "--scope", SCOPE, key=ec.generate_private_key(ec.SECP256R1()))
+    refused = _opa_verify(
+        opa, tmp_path, TARBALL, "--scope", BUNDLE_SIGNING_SCOPE, key=ec.generate_private_key(ec.SECP256R1())
+    )
     assert refused.returncode != 0 and "invalid ECDSA signature" in refused.stdout + refused.stderr
 
 
 def test_a_signers_high_s_signature_is_written_in_its_low_s_form() -> None:
     """``s`` and ``order - s`` both verify, so the descriptor holds the low one and one signing gives one digest."""
-    assert low_s(_high_s(SIGNATURE)) == low_s(SIGNATURE) == SIGNATURE
+    assert normalized_signature(_high_s(SIGNATURE)) == normalized_signature(SIGNATURE) == SIGNATURE
     assert descriptor(BUNDLE, key_id=KEY_ID, signature=_high_s(SIGNATURE)) == DESCRIPTOR
 
 
@@ -511,6 +517,6 @@ def test_the_file_of_signatures_refuses_a_high_s_signature() -> None:
 )
 def test_a_signature_outside_the_curve_is_refused_before_it_is_written(signature: bytes) -> None:
     with pytest.raises(BundleError, match="between 0 and the curve order"):
-        low_s(signature)
+        normalized_signature(signature)
     with pytest.raises(BundleError, match="between 0 and the curve order"):
         signatures_file(SIGNED, signature)

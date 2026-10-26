@@ -17,7 +17,7 @@ from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKin
 
 # Present at every stage: what is being evaluated, for which organization,
 # workspace and environment, and the trusted time.
-ALWAYS = frozenset({"evaluation", "context", "reference_time"})
+ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "organization_scope", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
 # The parts only the server holds. A stage whose input may carry one reads server facts.
@@ -41,12 +41,16 @@ class Profile:
         return Profile(self.name, self.required | {"resource"}, self.optional)
 
 
-PLAN_RESOURCE = Profile("plan_resource", ALWAYS | _SOURCE | _CHANGE, frozenset())
+PLAN_RESOURCE = Profile("plan_resource", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE, frozenset())
 # A pre-deploy input names the run it belongs to, which an approval of a run names.
-PRE_DEPLOY_CHANGE = Profile("pre_deploy_change", ALWAYS | _SOURCE | _CHANGE | SERVER_FACTS | {"run"}, frozenset())
-POST_DEPLOY = Profile("post_deploy", ALWAYS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
-VERIFICATION = Profile("verification", ALWAYS | {"subject", "deployment"}, _SOURCE | {"verification", "assurance"})
-RUNTIME = Profile("runtime", ALWAYS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
+PRE_DEPLOY_CHANGE = Profile(
+    "pre_deploy_change", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | SERVER_FACTS | {"run"}, frozenset()
+)
+POST_DEPLOY = Profile("post_deploy", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
+VERIFICATION = Profile(
+    "verification", ALWAYS_REQUIRED_PARTS | {"subject", "deployment"}, _SOURCE | {"verification", "assurance"}
+)
+RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
 
 _BY_STAGE: dict[Stage, Profile] = {
     Stage.PLAN: PLAN_RESOURCE,

@@ -1,7 +1,7 @@
-"""The digest of a set of assertions: which checks a run owed, fixed before any result was known.
+"""The digest of a set of assertions: which assertions a run owed, fixed before any result was known.
 
 A record says how many checks it expected and names the set by this digest,
-so a reader can tell whether two runs owed the same checks and whether a set
+so a reader can tell whether two runs owed the same assertions and whether a set
 shrank between them. The set is the assertions' ``(id, version, digest)``
 triples, where ``digest`` is the digest of the assertion document, so the set
 names each assertion's exact document. The triples are sorted as text before

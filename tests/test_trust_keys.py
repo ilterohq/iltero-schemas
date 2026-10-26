@@ -32,9 +32,9 @@ KEY_B = (
 VALID_FROM = "2026-09-01T00:00:00Z"
 
 
-def _entry(keyid: str, public_key: str = KEY_A, **fields: Any) -> dict[str, Any]:
+def _entry(key_id: str, public_key: str = KEY_A, **fields: Any) -> dict[str, Any]:
     entry = {
-        "keyid": keyid,
+        "key_id": key_id,
         "algorithm": "ES256",
         "public_key": public_key,
         "spki_sha256": digest(base64.b64decode(public_key)),
@@ -65,7 +65,7 @@ def test_the_shipped_file_is_valid_and_its_digest_is_of_its_bytes() -> None:
 
 
 def test_the_shipped_file_holds_no_development_key() -> None:
-    assert not any(keyid.startswith(DEV_KEY_PREFIX) for keyid in BUNDLE_KEYS)
+    assert not any(key_id.startswith(DEV_KEY_PREFIX) for key_id in BUNDLE_KEYS)
 
 
 def test_an_empty_set_is_allowed() -> None:
@@ -113,16 +113,16 @@ def test_the_keys_are_read_only() -> None:
 
 
 @pytest.mark.parametrize(
-    ("dev", "keyid", "message"),
+    ("dev", "key_id", "message"),
     [
         (False, "dev-0a1b2c3d", "is not trusted here"),
         (True, "iltero-bundle-2026-09", "only a development key"),
     ],
     ids=["a development key in the shipped set", "a real key in a development file"],
 )
-def test_development_keys_and_real_keys_never_mix(dev: bool, keyid: str, message: str) -> None:
+def test_development_keys_and_real_keys_never_mix(dev: bool, key_id: str, message: str) -> None:
     with pytest.raises(TrustFileError, match=message):
-        parse_bundle_keys(_file(_entry(keyid)), dev=dev)
+        parse_bundle_keys(_file(_entry(key_id)), dev=dev)
 
 
 def test_a_development_tool_reads_its_own_development_keys() -> None:
@@ -141,7 +141,7 @@ def test_a_development_tool_reads_its_own_development_keys() -> None:
         ),
         (_entry("k1", algorithm="RS256"), "must be ES256"),
         (_entry("k1", status="expired"), "must be one of"),
-        (_entry("K1"), "keyid"),
+        (_entry("K1"), "key_id"),
         (_entry("k1", valid_from="2026-09-01"), "RFC 3339"),
         (_entry("k1", valid_from="2026-02-30T00:00:00Z"), "real date"),
         (_entry("k1", status="retired"), "a retired key has a retired_at"),
@@ -177,9 +177,9 @@ def test_a_development_tool_reads_its_own_development_keys() -> None:
         (_entry("k1", public_key=_with_byte(0, 0x31)), "uncompressed P-256"),
         (_entry("k1", public_key=_with_byte(20, 0x21)), "uncompressed P-256"),
         (_entry("k1", public_key=_with_byte(26, 0x02)), "uncompressed P-256"),
-        (_entry("k" * 129), "keyid"),
-        (_entry("-k1"), "keyid"),
-        ({**_entry("k1"), "keyid": 5}, "keyid"),
+        (_entry("k" * 129), "key_id"),
+        (_entry("-k1"), "key_id"),
+        ({**_entry("k1"), "key_id": 5}, "key_id"),
         ({**_entry("k1"), "comment": "x"}, "exactly the fields"),
         ({k: v for k, v in _entry("k1").items() if k != "retired_at"}, "exactly the fields"),
     ],

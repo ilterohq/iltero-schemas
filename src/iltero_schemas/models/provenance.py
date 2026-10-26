@@ -1,8 +1,8 @@
 """Who opened a record's run, and what a record of a run the tool opened may not claim.
 
-A run is opened by the server (``run_id.basis: server_issued``) or by the tool
+A run is opened by the server (``run.origin: server_issued``) or by the tool
 on its own (``locally_derived``); ``governance.run_opened_by`` says the same,
-and a stage counts its checks as ``server_pinned`` exactly for a run the
+and a stage counts its assertions as ``server_pinned`` exactly for a run the
 server opened. A record of a run the tool opened names no server bundle, and
 no facts and no time from the server. Every record stays self-attested: these
 labels are the writer's claims, and only the server can confirm a run it opened.
@@ -18,23 +18,23 @@ if TYPE_CHECKING:
 
 def check_provenance(car: CAR) -> None:
     """Raise ``ValueError`` unless the record's labels of who opened its run agree, and a local run claims no more."""
-    issued = car.run_id.basis == "server_issued"
+    issued = car.run.origin == "server_issued"
     if (car.governance.run_opened_by == "server") != issued:
         raise ValueError("a record says the server opened its run exactly when the server issued the run")
     for stage, record in car.stages.items():
-        if (record.coverage.assertions_expected.basis == "server_pinned") != issued:
+        if (record.coverage.assertions_expected.origin == "server_pinned") != issued:
             raise ValueError(
-                f"stages.{stage.value}: counts its checks as server_pinned exactly when the server issued the run"
+                f"stages.{stage.value}: counts its assertions as server_pinned exactly when the server issued the run"
             )
     if issued:
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
-    bundles += [r.ran.bundle.kind for r in car.stages.values() if r.ran.bundle]
+    bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]
     if "server" in bundles:
         raise ValueError("a record of a run the tool opened names no server bundle")
     provenance = [event.provenance for event in car.events]
     if any(p.assertion_source == "server_bundle" for p in provenance):
-        raise ValueError("a record of a run the tool opened has no checks from a server bundle")
+        raise ValueError("a record of a run the tool opened has no evaluations from a server bundle")
     if any(p.facts_source == "server" for p in provenance):
         raise ValueError("a record of a run the tool opened has no facts from the server")
     if any(record.reference_time.source == "server" for record in car.stages.values()):

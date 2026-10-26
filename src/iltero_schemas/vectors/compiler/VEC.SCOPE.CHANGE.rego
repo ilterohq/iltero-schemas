@@ -8,7 +8,7 @@ assertion_version := "1.0.0"
 
 ast_version := 1
 
-assertion_source_digest := "sha256:4b46a472853692038f7b67b7d867b2a640333e3381cda55b0cb8d8074c55db18"
+assertion_source_digest := "sha256:69ebf84e8b7ddc996e52ae0977b94380caa00bce492611c8d064d7648557bbbe"
 
 _has_when := true
 
@@ -17,7 +17,7 @@ _guard := all_of([
 		exists_of(lookup("change.resources"), [where_1(e1) | some e1 in elements(lookup("change.resources"))]),
 		exists_of(lookup("change.resources"), [where_2(e2) | some e2 in elements(lookup("change.resources"))]),
 	]),
-	predicate("equal", lookup("context.environment.production"), literal(true)),
+	predicate("equal", lookup("organization_scope.environment.production"), literal(true)),
 ])
 
 _check := predicate("equal", lookup("change.digest"), literal("sha256:0000000000000000000000000000000000000000000000000000000000000000"))

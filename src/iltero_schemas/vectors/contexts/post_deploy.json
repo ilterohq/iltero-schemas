@@ -9,7 +9,7 @@
       "version": "1.0.0"
     }
   },
-  "context": {
+  "organization_scope": {
     "organization": {
       "id": "acme"
     },
@@ -25,7 +25,7 @@
     "value": "2026-09-16T18:40:00Z",
     "source": "runner_clock",
     "trust": "asserted",
-    "bracket": null
+    "time_window": null
   },
   "source": {
     "vcs": "git",
@@ -63,7 +63,7 @@
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,
-    "artifact_digest_basis": "not_provided",
+    "artifact_digest_source": "not_provided",
     "source_commit": "c84e7a1000000000000000000000000000000000",
     "complete": true,
     "applyable": true,
@@ -88,14 +88,14 @@
         "scope": null
       }
     ],
-    "authority": "unresolved"
+    "resolution": "unresolved"
   },
   "deployment": {
     "plan": {
       "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "digest_version": "1",
       "artifact_digest": null,
-      "artifact_digest_basis": "not_provided"
+      "artifact_digest_source": "not_provided"
     },
     "apply": {
       "source": {
@@ -108,7 +108,7 @@
         "tool": "terraform",
         "tool_version": "1.14.0"
       },
-      "basis": "log_held_to_plan_and_state_presence",
+      "outcomes_from": "apply_log",
       "changes": [
         {
           "address": "aws_db_instance.payments",
@@ -116,7 +116,7 @@
           "required": [
             "update"
           ],
-          "basis": "log",
+          "outcome_from": "apply_log",
           "outcome": "applied",
           "moved_from": null,
           "imported": false,
@@ -140,8 +140,8 @@
           "removed": 0
         },
         "log_lines": {
-          "noise": 0,
-          "damaged": 0,
+          "other_output_lines": 0,
+          "damaged_messages": 0,
           "interrupted_operations": 0
         },
         "deposed": []

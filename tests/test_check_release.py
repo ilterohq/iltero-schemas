@@ -46,7 +46,7 @@ RELEASE = _load()
 
 def _key(public_key: str = PUBLIC_KEY, **fields: Any) -> dict[str, Any]:
     entry = {
-        "keyid": "k1",
+        "key_id": "k1",
         "algorithm": "ES256",
         "public_key": public_key,
         "spki_sha256": digest(base64.b64decode(public_key)),
@@ -87,7 +87,7 @@ def _problems(
         ((_key(),), (_key(**RETIRED),)),
         ((_key(),), (_key(**REVOKED),)),
         ((_key(**RETIRED),), (_key(**{**RETIRED, **REVOKED}),)),
-        ((_key(),), (_key(), _key(OTHER_KEY, keyid="k2"))),
+        ((_key(),), (_key(), _key(OTHER_KEY, key_id="k2"))),
     ],
     ids=["nothing", "a first key", "retired", "revoked", "retired then revoked", "another key added"],
 )

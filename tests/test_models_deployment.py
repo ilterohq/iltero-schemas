@@ -51,7 +51,7 @@ def test_every_kind_of_change_has_its_place() -> None:
 
 
 @pytest.mark.parametrize(
-    ("entry", "left", "fate"),
+    ("entry", "left", "removal"),
     [
         (change("a.x", "delete", ["delete"], "applied"), True, "deleted"),
         (change("a.x", "replace", ["create", "delete"], "applied"), True, "deleted"),
@@ -79,10 +79,10 @@ def test_every_kind_of_change_has_its_place() -> None:
         "a replacement forgetting its old object whose create failed",
     ],
 )
-def test_what_left_the_state_and_how(entry: dict[str, Any], left: bool, fate: str) -> None:
+def test_what_left_the_state_and_how(entry: dict[str, Any], left: bool, removal: str) -> None:
     applied = AppliedChange.model_validate(entry)
     assert applied.left_the_state is left
-    assert applied.fate == fate
+    assert applied.removal == removal
 
 
 @pytest.mark.parametrize(
@@ -190,7 +190,7 @@ UPDATED = change("a.x", "update", ["update"], "applied")
             {"source": {"digest": "sha256:abc", "tool": "terraform", "tool_version": "1.14.0"}},
             "String should match pattern",
         ),
-        ({"basis": "log_only"}, "Input should be 'log_held_to_plan_and_state_presence'"),
+        ({"outcomes_from": "log_only"}, "Input should be 'apply_log'"),
     ],
     ids=[
         "unsorted",
@@ -231,15 +231,15 @@ def test_the_counts_are_the_changes_own() -> None:
 def test_a_replan_names_only_its_reason() -> None:
     document = copy.deepcopy(POST_DEPLOY)
     document["deployment"]["plan"]["digest"] = "sha256:" + "b" * 64
-    document["deployment"]["superseded_by"] = {"basis": "operator_override"}
-    with pytest.raises(ValidationError, match="Input should be 'dependency_replan'"):
+    document["deployment"]["superseded_by"] = {"reason": "operator_override"}
+    with pytest.raises(ValidationError, match="Input should be 'dependency_replanned'"):
         AssuranceContext.model_validate(document)
-    document["deployment"]["superseded_by"] = {"basis": "dependency_replan", "digest": "sha256:" + "b" * 64}
+    document["deployment"]["superseded_by"] = {"reason": "dependency_replanned", "digest": "sha256:" + "b" * 64}
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         AssuranceContext.model_validate(document)
 
 
-UNSETTLED = {"__unknown": True, "reason": "deployment_log_incomplete"}
+LOG_INCOMPLETE = {"__unknown": True, "reason": "deployment_log_incomplete"}
 
 
 def _changed(address: str, action: str, required: list[str], **fields: Any) -> dict[str, Any]:
@@ -247,68 +247,78 @@ def _changed(address: str, action: str, required: list[str], **fields: Any) -> d
     return {**change(address, action, required, "applied"), **fields}
 
 
-DAMAGED = {**APPLY["tool_data"]["log_lines"], "damaged": 1}
+DAMAGED = {**APPLY["tool_data"]["log_lines"], "damaged_messages": 1}
 
 
-def _unsettled_update(address: str = "a.x") -> dict[str, Any]:
-    return _changed(address, "update", ["update"], basis="unsettled", completed=UNSETTLED, outcome=UNSETTLED)
+def _unknown_update(address: str = "a.x") -> dict[str, Any]:
+    return _changed(
+        address, "update", ["update"], outcome_from="none", completed=LOG_INCOMPLETE, outcome=LOG_INCOMPLETE
+    )
 
 
 def _created_by_the_state(address: str = "a.y") -> dict[str, Any]:
-    return _changed(address, "create", ["create"], basis="state", completed=[], outcome=UNSETTLED)
+    return _changed(address, "create", ["create"], outcome_from="state", completed=[], outcome=LOG_INCOMPLETE)
 
 
-def test_a_log_that_lost_messages_leaves_to_the_state_what_it_settles_and_unsettled_the_rest() -> None:
+def test_a_log_that_lost_messages_leaves_to_the_state_what_it_settles_and_leaves_the_rest_unknown() -> None:
     apply = Apply.model_validate(
         _apply(
             log_lines=DAMAGED,
-            basis="log_and_state_where_log_incomplete",
-            changes=[_unsettled_update(), _created_by_the_state()],
-            summary=UNSETTLED,
+            outcomes_from="apply_log_and_state",
+            changes=[_unknown_update(), _created_by_the_state()],
+            summary=LOG_INCOMPLETE,
         )
     )
-    assert [c.basis for c in apply.changes] == ["unsettled", "state"]
-    assert apply.model_dump(mode="json", by_alias=True)["tool_data"]["summary"] == UNSETTLED
+    assert [c.outcome_from for c in apply.changes] == ["none", "state"]
+    assert apply.model_dump(mode="json", by_alias=True)["tool_data"]["summary"] == LOG_INCOMPLETE
 
 
 @pytest.mark.parametrize(
     ("entry", "message"),
     [
-        (_changed("a.x", "update", ["update"], outcome=UNSETTLED), "known from the log has a settled"),
-        (change("a.x", "update", ["update"], "applied", basis="unsettled"), "unsettled exactly when its basis"),
-        (change("a.x", "update", ["update"], "applied", completed=UNSETTLED), "unsettled exactly when its basis"),
+        (_changed("a.x", "update", ["update"], outcome=LOG_INCOMPLETE), "known from the log has a settled"),
         (
-            _changed("a.x", "delete", ["delete"], basis="unsettled", completed=UNSETTLED, outcome=UNSETTLED),
-            "only an update's operations may stay unsettled",
+            change("a.x", "update", ["update"], "applied", outcome_from="none"),
+            "unknown exactly when neither the log nor the state",
         ),
         (
-            change("a.x", "update", ["update"], "applied", basis="unsettled", completed=UNSETTLED),
-            "only an update's operations may stay unsettled",
+            change("a.x", "update", ["update"], "applied", completed=LOG_INCOMPLETE),
+            "unknown exactly when neither the log nor the state",
         ),
-        (change("a.x", "create", ["create"], "applied", basis="state", completed=[]), "applied completed"),
+        (
+            _changed(
+                "a.x", "delete", ["delete"], outcome_from="none", completed=LOG_INCOMPLETE, outcome=LOG_INCOMPLETE
+            ),
+            "only an update's operations may stay unknown",
+        ),
+        (
+            change("a.x", "update", ["update"], "applied", outcome_from="none", completed=LOG_INCOMPLETE),
+            "only an update's operations may stay unknown",
+        ),
+        (change("a.x", "create", ["create"], "applied", outcome_from="state", completed=[]), "applied completed"),
         (_changed("a.x", "update", ["update"], outcome={"__unknown": True, "reason": "x"}), "Input should"),
         (
-            _changed("a.x", "update", ["update"], basis="state", completed=[], outcome=UNSETTLED),
+            _changed("a.x", "update", ["update"], outcome_from="state", completed=[], outcome=LOG_INCOMPLETE),
             "the state settles only a create, delete or replace",
         ),
         (
-            _changed("a.x", "create", ["create"], basis="state", completed=[], outcome="not_attempted"),
+            _changed("a.x", "create", ["create"], outcome_from="state", completed=[], outcome="not_attempted"),
             "the state settles only a create, delete or replace",
         ),
     ],
     ids=[
-        "an unsettled outcome from the log",
-        "an unsettled basis with settled operations",
-        "unsettled operations under another basis",
-        "a removal left unsettled",
-        "an update's operations unsettled but its outcome settled",
+        "an unknown outcome from the log",
+        "no outcome source with settled operations",
+        "unknown operations under another outcome source",
+        "a removal left unknown",
+        "an update's operations unknown but its outcome settled",
         "a state-settled change still held to its outcome",
-        "another reason for being unsettled",
+        "another reason for being unknown",
         "an update settled by the state",
         "a state-settled change never attempted",
     ],
 )
-def test_what_is_unsettled_follows_from_how_the_change_is_known(entry: dict[str, Any], message: str) -> None:
+def test_what_is_unknown_follows_from_how_the_change_is_known(entry: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         AppliedChange.model_validate(entry)
 
@@ -317,16 +327,16 @@ def test_what_is_unsettled_follows_from_how_the_change_is_known(entry: dict[str,
     ("fields", "message"),
     [
         (
-            {"changes": [_created_by_the_state()], "basis": "log_and_state_where_log_incomplete", "timing": None},
+            {"changes": [_created_by_the_state()], "outcomes_from": "apply_log_and_state", "timing": None},
             "only a log that lost messages",
         ),
-        ({"log_lines": DAMAGED, "changes": [_created_by_the_state()], "timing": None}, "the apply's basis says"),
-        ({"log_lines": DAMAGED, "summary": UNSETTLED}, "the apply's basis says"),
+        ({"log_lines": DAMAGED, "changes": [_created_by_the_state()], "timing": None}, "outcomes_from says"),
+        ({"log_lines": DAMAGED, "summary": LOG_INCOMPLETE}, "outcomes_from says"),
         (
             {
                 "log_lines": DAMAGED,
-                "basis": "log_and_state_where_log_incomplete",
-                "changes": [_unsettled_update()],
+                "outcomes_from": "apply_log_and_state",
+                "changes": [_unknown_update()],
                 "summary": {"added": 0, "changed": 1, "imported": 0, "removed": 0},
             },
             "reports its counts only when every change was made",
@@ -334,18 +344,18 @@ def test_what_is_unsettled_follows_from_how_the_change_is_known(entry: dict[str,
     ],
     ids=[
         "no lost message",
-        "a state-settled change under the log's basis",
-        "summary unsettled under the log's basis",
-        "counts beside an unsettled change",
+        "a state-settled change with outcomes from the log",
+        "summary unknown with outcomes from the log",
+        "counts beside a change of unknown outcome",
     ],
 )
-def test_only_a_log_that_lost_messages_leaves_anything_unsettled(fields: dict[str, Any], message: str) -> None:
+def test_only_a_log_that_lost_messages_leaves_anything_unknown(fields: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         Apply.model_validate(_apply(**fields))
 
 
-def test_an_unsettled_change_may_have_run_or_not() -> None:
-    fields = {"log_lines": DAMAGED, "basis": "log_and_state_where_log_incomplete", "changes": [_unsettled_update()]}
+def test_a_change_of_unknown_outcome_may_have_run_or_not() -> None:
+    fields = {"log_lines": DAMAGED, "outcomes_from": "apply_log_and_state", "changes": [_unknown_update()]}
     assert Apply.model_validate(_apply(**fields, summary=None)).timing is not None
     assert Apply.model_validate(_apply(**fields, summary=None, timing=None)).timing is None
 
@@ -353,18 +363,18 @@ def test_an_unsettled_change_may_have_run_or_not() -> None:
 def test_an_operation_that_started_and_never_ended_is_a_lost_message() -> None:
     """A job stopped mid-apply ends the log at a line break: no damaged line, but an operation never ended."""
     interrupted = {**APPLY["tool_data"]["log_lines"], "interrupted_operations": 1}
-    fields = {"log_lines": interrupted, "basis": "log_and_state_where_log_incomplete"}
+    fields = {"log_lines": interrupted, "outcomes_from": "apply_log_and_state"}
     assert Apply.model_validate(_apply(**fields, changes=[_created_by_the_state()], summary=None, timing=None)).changes
 
 
 def test_the_unknown_marker_is_written_under_its_marker_name() -> None:
-    change = AppliedChange.model_validate(_unsettled_update())
-    assert change.model_dump(mode="json")["outcome"] == UNSETTLED
+    change = AppliedChange.model_validate(_unknown_update())
+    assert change.model_dump(mode="json")["outcome"] == LOG_INCOMPLETE
 
 
 def test_a_current_object_settled_by_the_state_still_cannot_be_never_attempted() -> None:
     with pytest.raises(ValidationError, match="the state settles only"):
-        AppliedChange.model_validate(change("a.x", "delete", ["delete"], "not_attempted", basis="state"))
+        AppliedChange.model_validate(change("a.x", "delete", ["delete"], "not_attempted", outcome_from="state"))
 
 
 def test_the_apply_log_and_the_state_name_the_same_tool() -> None:

@@ -27,9 +27,9 @@
       },
       {
         "predicate": {
-          "path": "deployment.plan.artifact_digest_basis",
+          "path": "deployment.plan.artifact_digest_source",
           "op": "equal",
-          "ref": "plan.artifact_digest_basis"
+          "ref": "plan.artifact_digest_source"
         }
       }
     ]

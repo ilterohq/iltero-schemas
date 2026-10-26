@@ -5,7 +5,7 @@ A subject's ``key`` is the digest of its kind and its one local identity:
 - a resource an IaC tool manages: its address in the tool's configuration,
   scoped by its unit and nothing else;
 - a resource only the cloud knows, read after deployment: its cloud identity;
-- a change, a deployment or an assurance check: its unit.
+- a change, a deployment or a record's assurance: its unit.
 
 The key names an address in a unit, not a cloud resource. A resource replaced
 in the cloud keeps its key; a resource moved to another address gets a new

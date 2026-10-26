@@ -10,10 +10,11 @@ from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, DERIVED_CHECKED_BY_READER, PlanRecord, StageRecord
+from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, PlanRecord, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
+from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
 from tests.records import RECORD
 from tests.records import record as _record
@@ -23,7 +24,7 @@ def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
     assert car.trust_level == "self_attested" and car.complete is False
     assert car.compliance_determination is None and car.plan.tool == "terraform"
-    assert len(car.events) == car.coverage.checks == 5
+    assert len(car.events) == car.coverage.evaluations == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
 
@@ -58,7 +59,7 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        ({"coverage.checks": 4}, "add up to the number of checks"),
+        ({"coverage.evaluations": 4}, "add up to the number of evaluations"),
         ({"trust_level": "server_governed"}, "Input should be 'self_attested'"),
         ({"trust_level": "governed"}, "a record without a signature is self_attested"),
         ({"trust_level": "source_authenticated"}, "a record without a signature is self_attested"),
@@ -67,7 +68,7 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
         ({"compliance_determination": "compliant"}, "Input should be None"),
         ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
         ({"plan.tool": "pulumi"}, "Input should be 'terraform'"),
-        ({"run_id.basis": "guessed"}, "Input should be"),
+        ({"run.origin": "guessed"}, "Input should be"),
         ({"uuid": "not-a-uuid"}, "String should match pattern"),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
         ({"retention_class": "soc2_730d"}, "Input should be None"),
@@ -105,10 +106,10 @@ def test_a_stage_the_record_does_not_expect_is_refused() -> None:
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        ({"stages.plan.ran.bundle": None}, "absent together"),
-        ({"stages.plan.ran.reason": "why"}, "gives no reason"),
+        ({"stages.plan.execution.bundle": None}, "absent together"),
+        ({"stages.plan.execution.reason": "why"}, "gives no reason"),
         ({"stages.plan.compiler.install": "source"}, "Input should be"),
-        ({"stages.plan.ran.evaluator.environment": {}}, "Extra inputs"),
+        ({"stages.plan.execution.evaluator.limits": {}}, "Extra inputs"),
     ],
     ids=["half a runner", "a reason although it ran", "an install this build never writes", "limits on the stage"],
 )
@@ -120,18 +121,18 @@ def test_a_stage_that_does_not_describe_a_real_run_is_refused(change: dict[str, 
 @pytest.mark.parametrize(
     ("path", "value", "message"),
     [
-        ("timeout_s", 0, "greater than 0"),
-        ("timeout_s", 3601, "less than or equal to 3600"),
-        ("timeout_s", "30", "valid number"),
-        ("memory_cap", {"bytes": "lots", "enforced": True, "kind": "rlimit_as"}, "valid integer"),
+        ("timeout_seconds", 0, "greater than 0"),
+        ("timeout_seconds", 3601, "less than or equal to 3600"),
+        ("timeout_seconds", "30", "valid number"),
+        ("memory_limit", {"bytes": "lots", "enforced": True, "kind": "rlimit_as"}, "valid integer"),
         ("capabilities_digest", "sha256:nope", "String should match"),
     ],
     ids=["no time", "too long", "not a number", "not a size", "not a digest"],
 )
 def test_limits_a_record_names_must_be_limits(path: str, value: Any, message: str) -> None:
-    """A record says what its checks ran under; a replay applies those limits, so they are bounded here."""
+    """A record says what its evaluations ran under; a replay applies those limits, so they are bounded here."""
     document = _record()
-    document["events"][0]["provenance"]["evaluator"]["environment"][path] = value
+    document["events"][0]["provenance"]["evaluator"]["limits"][path] = value
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(document)
 
@@ -147,14 +148,14 @@ def test_the_evidence_register_names_each_file_once() -> None:
 
 
 SCANNERS: dict[str, Any] = {
-    "catalogue": {
+    "binding_set": {
         "id": "ILT.BINDINGS.STARTER",
         "version": "1.0.0",
         "origin": "shipped",
         "file_name": None,
         "digest": "sha256:" + "b" * 64,
-        "retained": "units/root/plan/bindings.json",
-        "entries": 2,
+        "copy_path": "units/root/plan/bindings.json",
+        "binding_count": 2,
     },
     "reports": [
         {
@@ -163,14 +164,14 @@ SCANNERS: dict[str, Any] = {
             "input_kinds": ["terraform_plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,
-            "checks_read": 73,
-            "unbound_checks": 71,
+            "results_read": 73,
+            "results_without_binding": 71,
             "parsing_errors": 0,
         }
     ],
-    "credited": 2,
-    "binding_unverified": 0,
-    "unbound_checks": 71,
+    "results_accepted": 2,
+    "results_binding_unverified": 0,
+    "results_without_binding": 71,
 }
 
 
@@ -183,16 +184,16 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     scanners = car.stages[Stage.PLAN].scanners
     assert scanners is not None
     (report,) = scanners.reports
-    assert report.tool == "checkov" and report.checks_read == 73
-    assert scanners.credited == 2 and scanners.catalogue.id == "ILT.BINDINGS.STARTER"
+    assert report.tool == "checkov" and report.results_read == 73
+    assert scanners.results_accepted == 2 and scanners.binding_set.id == "ILT.BINDINGS.STARTER"
 
 
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        ({"unbound_checks": 70}, "the unbound count is the sum"),
-        ({"credited": 3}, "every result a tool reported"),
-        ({"binding_unverified": 1}, "every result a tool reported"),
+        ({"results_without_binding": 70}, "results_without_binding is the sum"),
+        ({"results_accepted": 3}, "every result a tool reported"),
+        ({"results_binding_unverified": 1}, "every result a tool reported"),
     ],
 )
 def test_a_scanner_block_whose_counts_do_not_add_up_is_refused(change: dict[str, Any], message: str) -> None:
@@ -211,30 +212,30 @@ def test_a_report_of_a_scanner_outside_the_list_is_refused() -> None:
 def test_one_report_per_tool_per_stage() -> None:
     scanners = copy.deepcopy(SCANNERS)
     scanners["reports"] = [scanners["reports"][0], copy.deepcopy(scanners["reports"][0])]
-    scanners["unbound_checks"] = 142
-    scanners["credited"] = 4
+    scanners["results_without_binding"] = 142
+    scanners["results_accepted"] = 4
     with pytest.raises(ValidationError, match="one report per tool"):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 
 @pytest.mark.parametrize(
-    ("catalogue", "message"),
+    ("binding_set", "message"),
     [
-        ({"origin": "file"}, "a catalogue read from a file names it"),
-        ({"file_name": "bindings.yaml"}, "a catalogue read from a file names it"),
+        ({"origin": "file"}, "a binding set read from a file names it"),
+        ({"file_name": "bindings.yaml"}, "a binding set read from a file names it"),
     ],
 )
-def test_a_catalogue_must_say_where_it_came_from(catalogue: dict[str, Any], message: str) -> None:
+def test_a_binding_set_must_say_where_it_came_from(binding_set: dict[str, Any], message: str) -> None:
     """A file cannot claim to be the set the contract package ships."""
     scanners = copy.deepcopy(SCANNERS)
-    scanners["catalogue"] = {**scanners["catalogue"], **catalogue}
+    scanners["binding_set"] = {**scanners["binding_set"], **binding_set}
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 
-def test_a_catalogue_read_from_a_file_names_it() -> None:
+def test_a_binding_set_read_from_a_file_names_it() -> None:
     scanners = copy.deepcopy(SCANNERS)
-    scanners["catalogue"] = {**scanners["catalogue"], "origin": "file", "file_name": "bindings.yaml"}
+    scanners["binding_set"] = {**scanners["binding_set"], "origin": "file", "file_name": "bindings.yaml"}
     car = CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
     assert car.stages[Stage.PLAN].scanners is not None
 
@@ -268,13 +269,17 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     stage["events"] = {**plan_stage["events"], "count": 0, "path": "units/root/post_deploy/events.json"}
     stage["coverage"] = {
         **plan_stage["coverage"],
-        "subjects_in_scope": {**plan_stage["coverage"]["subjects_in_scope"], "value": 1, "basis": "deployment_unit"},
+        "subjects_in_scope": {
+            **plan_stage["coverage"]["subjects_in_scope"],
+            "value": 1,
+            "counted_from": "deployment_unit",
+        },
         "subjects_evaluated": 1,
         "assertions_expected": {**plan_stage["coverage"]["assertions_expected"], "value": 0},
         "assertions_evaluated": 0,
         "subjects_per_assertion": {},
         "status_counts": dict.fromkeys(plan_stage["coverage"]["status_counts"], 0),
-        "checks": 0,
+        "evaluations": 0,
     }
     outcome = stage_outcome(Coverage.model_validate(stage["coverage"])).model_dump(mode="json")
     return {**stage, "verdict": outcome["verdict"], "assurance_status": outcome["assurance_status"]}
@@ -325,7 +330,7 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
         CAR.model_validate(document)
     document["identity"]["sources"]["plan"] = None
     document["identity"].update(removed=None, removed_unresolved=None)
-    document["identity"]["tool_data"]["deposed_destroyed"] = None
+    document["identity"]["tool_data"]["deposed_deleted"] = None
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
 
@@ -345,13 +350,13 @@ def test_what_the_identities_list_as_removed_is_exactly_what_left_the_state() ->
         deleted,
         forgotten,
         removed=[removed("aws_db_instance.old")],
-        removed_unresolved=[{"address": "aws_s3_bucket.kept", "reason": "no_resolver", "fate": "forgotten"}],
+        removed_unresolved=[{"address": "aws_s3_bucket.kept", "reason": "no_resolver", "removal": "forgotten"}],
     )
     assert CAR.model_validate(good).identity is not None
 
 
 @pytest.mark.parametrize(
-    ("changes", "listed", "fate"),
+    ("changes", "listed", "removal"),
     [
         ([change("aws_db_instance.old", "delete", ["delete"], "applied")], [], "deleted"),
         ([change("aws_db_instance.old", "delete", ["delete"], "errored")], ["aws_db_instance.old"], "deleted"),
@@ -368,24 +373,24 @@ def test_what_the_identities_list_as_removed_is_exactly_what_left_the_state() ->
     ],
 )
 def test_a_record_that_misstates_what_left_the_state_is_refused(
-    changes: list[dict[str, Any]], listed: list[str], fate: str
+    changes: list[dict[str, Any]], listed: list[str], removal: str
 ) -> None:
-    document = _with_changes(*changes, removed=[removed(address, fate=fate) for address in listed])
+    document = _with_changes(*changes, removed=[removed(address, removal=removal) for address in listed])
     with pytest.raises(ValidationError, match="exactly what left the state, and how"):
         CAR.model_validate(document)
 
 
 def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
     document = _deployed()
-    document["deployment"]["superseded_by"] = {"basis": "dependency_replan"}
+    document["deployment"]["superseded_by"] = {"reason": "dependency_replanned"}
     document = _combined(document)
     with pytest.raises(ValidationError, match="a re-plan is a plan other than the evaluated one"):
         CAR.model_validate(document)
 
 
-def test_a_record_refuses_an_artifact_digest_without_its_basis() -> None:
-    with pytest.raises(ValidationError, match="present exactly when artifact_digest_basis is plan_binary"):
-        CAR.model_validate(_record(**{"plan.artifact_digest_basis": "plan_binary"}))
+def test_a_record_refuses_an_artifact_digest_without_its_source() -> None:
+    with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is plan_binary"):
+        CAR.model_validate(_record(**{"plan.artifact_digest_source": "plan_binary"}))
 
 
 def test_a_plan_stage_observed_after_the_apply_started_is_refused() -> None:
@@ -430,20 +435,20 @@ def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str,
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
-def test_a_change_digest_is_the_digest_of_its_unit_for_every_reader() -> None:
+def test_a_change_digest_is_the_digest_of_its_unit() -> None:
     document = _record(**{"change.digest": change_digest({"root": OTHER_PLAN})})
-    with pytest.raises(ValidationError, match="not the digest of the change's units"):
+    with pytest.raises(ValidationError, match="change.digest is not the digest of the change's units"):
         CAR.model_validate(document)
-    with pytest.raises(ValidationError, match="not the digest of the change's units"):
-        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+    car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+    assert integrity_problems(car) == [("change.digest", "is not the digest of the change's units")]
 
 
 @pytest.mark.parametrize("value", [1, "true", "no", [True]])
-def test_only_true_hands_the_derived_checks_to_the_reader(value: object) -> None:
+def test_only_true_skips_the_integrity_checks(value: object) -> None:
     document = _record(**{"stages.plan.verdict.value": "pass", "stages.plan.verdict.exit_code": 0})
-    CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: True})
+    CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
     with pytest.raises(ValidationError, match="is not the verdict the stage's counts give"):
-        CAR.model_validate(document, context={DERIVED_CHECKED_BY_READER: value})
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: value})
 
 
 def test_a_stage_compiled_from_a_wheel_names_the_wheel() -> None:
@@ -461,7 +466,7 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
     for counted, valid in ((1, True), (0, False), (2, False)):
         document = _deployed()
         document["deployment"]["apply"]["tool_data"].update(summary=None, deposed=deposed)
-        document["identity"]["tool_data"]["deposed_destroyed"] = counted
+        document["identity"]["tool_data"]["deposed_deleted"] = counted
         document = _combined(document)
         if valid:
             assert CAR.model_validate(document).identity is not None
@@ -475,9 +480,9 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
     [
         ("stages.plan.reference_time", {"value": "2026-09-22T13:00:13.568Z", "trust": "attested"}),
         ("stages.plan.reference_time.anything", [1, 2]),
-        ("stages.plan.redaction_applied", {}),
-        ("stages.plan.redaction_applied.subject.kind", "artifact"),
-        ("stages.plan.redaction_applied.redacted", [{"path": "resources[0].after.password", "reason": "Not A Token"}]),
+        ("stages.plan.redaction", {}),
+        ("stages.plan.redaction.input.kind", "artifact"),
+        ("stages.plan.redaction.redacted", [{"path": "resources[0].after.password", "reason": "Not A Token"}]),
         ("subject.source", {"x": 1}),
         ("subject.source.vcs", "svn"),
     ],
@@ -492,21 +497,21 @@ def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None
     odd = 'resources[0].after.tags["a key\nwith a line"]' + "x" * 3000
     document = _record(
         **{
-            "stages.plan.redaction_applied.unknown": [odd],
-            "stages.plan.redaction_applied.allowed": [{"path": odd, "reason": "Public by design"}],
+            "stages.plan.redaction.unknown": [odd],
+            "stages.plan.redaction.allowed": [{"path": odd, "reason": "Public by design"}],
         }
     )
-    assert CAR.model_validate(document).stages[Stage.PLAN].redaction_applied.unknown == [odd]
+    assert CAR.model_validate(document).stages[Stage.PLAN].redaction.unknown == [odd]
 
 
 @pytest.mark.parametrize(
     ("path", "value"),
     [
-        ("stages.plan.redaction_applied.unknown", ["x" * (RAW_TEXT_MAX_BYTES + 1)]),
-        ("stages.plan.redaction_applied.unknown", [""]),
-        ("stages.plan.redaction_applied.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
-        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": "line\nbreak"}]),
-        ("stages.plan.redaction_applied.allowed", [{"path": "p", "reason": ""}]),
+        ("stages.plan.redaction.unknown", ["x" * (RAW_TEXT_MAX_BYTES + 1)]),
+        ("stages.plan.redaction.unknown", [""]),
+        ("stages.plan.redaction.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
+        ("stages.plan.redaction.allowed", [{"path": "p", "reason": "line\nbreak"}]),
+        ("stages.plan.redaction.allowed", [{"path": "p", "reason": ""}]),
     ],
     ids=["path-too-long", "path-empty", "too-many-paths", "reason-control", "reason-empty"],
 )
@@ -517,10 +522,10 @@ def test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text(pa
 
 def test_raw_text_is_bounded_in_utf8_bytes() -> None:
     at_limit = "\u00e9" * (RAW_TEXT_MAX_BYTES // 2)
-    accepted = CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit]}))
-    assert accepted.stages[Stage.PLAN].redaction_applied.unknown == [at_limit]
+    accepted = CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [at_limit]}))
+    assert accepted.stages[Stage.PLAN].redaction.unknown == [at_limit]
     with pytest.raises(ValidationError, match=f"at most {RAW_TEXT_MAX_BYTES} bytes"):
-        CAR.model_validate(_record(**{"stages.plan.redaction_applied.unknown": [at_limit + "\u00e9"]}))
+        CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [at_limit + "\u00e9"]}))
 
 
 @pytest.mark.parametrize(
@@ -531,7 +536,7 @@ def test_raw_text_is_bounded_in_utf8_bytes() -> None:
         ({"source": "server", "trust": "attested"}, "no time from the server"),
         (
             {
-                "bracket": {
+                "time_window": {
                     "not_before": "2026-09-22T13:00:00Z",
                     "not_after": "2026-09-22T13:01:00Z",
                     "nonce_digest": "sha256:" + "a" * 64,
@@ -541,7 +546,7 @@ def test_raw_text_is_bounded_in_utf8_bytes() -> None:
         ),
         ({"source": "timestamp_authority", "trust": "attested"}, "exactly when a timestamp authority"),
     ],
-    ids=["clock-attested", "clock-not-observed", "local-server-time", "clock-bracket", "authority-no-bracket"],
+    ids=["clock-attested", "clock-not-observed", "local-server-time", "clock-time-window", "authority-no-time-window"],
 )
 def test_a_stage_reference_time_claims_no_more_than_its_source(time: dict[str, Any], message: str) -> None:
     reference_time = {**RECORD["stages"]["plan"]["reference_time"], **time}

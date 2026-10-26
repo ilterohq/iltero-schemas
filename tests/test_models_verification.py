@@ -49,17 +49,17 @@ def test_a_property_has_one_of_six_states() -> None:
     ("change", "message"),
     [
         (lambda d: d["properties"].pop("exceptions"), "Field required"),
-        (lambda d: d["properties"].update(verified={"state": "verified", "basis": None}), "Extra inputs"),
+        (lambda d: d["properties"].update(verified={"state": "verified", "reason": None}), "Extra inputs"),
         (lambda d: d.update(verified=True), "Extra inputs"),
         (lambda d: d["properties"]["integrity"].update(state="passed"), "Input should be"),
-        (lambda d: d["properties"]["integrity"].pop("basis"), "Field required"),
+        (lambda d: d["properties"]["integrity"].pop("reason"), "Field required"),
         (lambda d: d["record"].update(digest="sha256:abc"), "String should match pattern"),
         (lambda d: d["verifier"].update(name="server"), "Input should be 'iltero'"),
         (
-            lambda d: d["properties"]["integrity"].update(state="verified", basis="digest_linkage"),
+            lambda d: d["properties"]["integrity"].update(state="verified", reason="file_digests"),
             "verified only by a signature",
         ),
-        (lambda d: d["properties"]["integrity"].update(state="verified", basis=None), "verified only by a signature"),
+        (lambda d: d["properties"]["integrity"].update(state="verified", reason=None), "verified only by a signature"),
         (lambda d: d["properties"]["integrity"].update(state="failed"), "every other property is not_determined"),
     ],
     ids=[
@@ -67,11 +67,11 @@ def test_a_property_has_one_of_six_states() -> None:
         "an overall verdict among the properties",
         "an overall verdict on the report",
         "an unknown state",
-        "no basis",
+        "no reason",
         "a record digest of the wrong shape",
         "another verifier",
         "integrity verified by digests",
-        "integrity verified on no basis",
+        "integrity verified with no reason",
         "claims beside a failed integrity",
     ],
 )
@@ -85,6 +85,6 @@ def test_a_report_that_does_not_hold_together_is_refused(change: Any, message: s
 def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
     document = copy.deepcopy(REPORT)
     for name in document["properties"]:
-        document["properties"][name] = {"state": "not_determined", "basis": "integrity_failed"}
-    document["properties"]["integrity"] = {"state": "failed", "basis": "digest_linkage"}
+        document["properties"][name] = {"state": "not_determined", "reason": "integrity_failed"}
+    document["properties"]["integrity"] = {"state": "failed", "reason": "file_digests"}
     VerificationReport.model_validate(document)

@@ -28,7 +28,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.deployment import Fate, StateSource
+from iltero_schemas.models.deployment import Removal, StateSource
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
@@ -66,7 +66,7 @@ class IdentityBinding(StrictModel):
 
     iac: IacSide
     cloud: CloudSide
-    authority: Literal["authoritative"]
+    resolution: Literal["resolved"]
 
 
 class Unresolved(StrictModel):
@@ -79,13 +79,13 @@ class Unresolved(StrictModel):
 class RemovedBinding(IdentityBinding):
     """A resource that left the state, by its identity before the apply, and how it left."""
 
-    fate: Fate
+    removal: Removal
 
 
 class RemovedUnresolved(Unresolved):
     """A resource that left the state and could not be bound, and how it left."""
 
-    fate: Fate
+    removal: Removal
 
 
 Bindings = Annotated[list[IdentityBinding], Field(max_length=MAX_RESOURCES)]
@@ -104,7 +104,9 @@ def _one_list_each(bindings: Sequence[IdentityBinding], unresolved: Sequence[Unr
 
 def _one_entry_per_cloud_identity(entries: Sequence[IdentityBinding], name: str) -> None:
     """Raise ``ValueError`` when two of ``entries`` name one cloud identity: the same provider, scheme and value."""
-    identities = [(entry.cloud.provider, entry.cloud.primary.scheme, entry.cloud.primary.value) for entry in entries]
+    identities = [
+        (entry.cloud.provider, entry.cloud.identifier.scheme, entry.cloud.identifier.value) for entry in entries
+    ]
     if len(set(identities)) != len(identities):
         raise ValueError(f"no two entries of {name} name the same cloud identity")
 
@@ -129,7 +131,7 @@ class IdentityRecord(StrictModel):
 
     Every managed resource of the state is bound or unresolved. Every object
     that left the state in the apply is listed under ``removed`` or
-    ``removed_unresolved``, by its identity before the apply, with its fate:
+    ``removed_unresolved``, by its identity before the apply, with how it was removed (``removal``):
     ``deleted`` (destroyed in the cloud) or ``forgotten`` (still in the cloud,
     no longer managed). A replacement's old object appears there while its
     new one is bound. What only the tool that wrote the state says is under
@@ -158,7 +160,7 @@ class IdentityRecord(StrictModel):
         checked = (
             self.removed is not None,
             self.removed_unresolved is not None,
-            self.tool_data.deposed_destroyed is not None,
+            self.tool_data.deposed_deleted is not None,
         )
         if set(checked) != {self.sources.plan is not None}:
             raise ValueError("what left the state is listed exactly when the applied plan was read, and null otherwise")
@@ -167,7 +169,9 @@ class IdentityRecord(StrictModel):
         _one_entry_per_cloud_identity(self.removed or [], "removed")
         if not sorted_unique([resolver.provider for resolver in self.resolvers]):
             raise ValueError("the resolvers are sorted by provider, one for each")
-        verified = {(resolver.provider, kind) for resolver in self.resolvers for kind in resolver.verified}
+        verified = {
+            (resolver.provider, kind) for resolver in self.resolvers for kind in resolver.verified_resource_types
+        }
         bound = [*self.bindings, *(self.removed or [])]
         if any((entry.cloud.provider, entry.cloud.resource_type) not in verified for entry in bound):
             raise ValueError("only a resource type verified for its provider's resolver is ever bound")
@@ -180,10 +184,10 @@ class IdentityRecord(StrictModel):
         if any(binding.iac.unit != unit for binding in [*self.bindings, *(self.removed or [])]):
             raise ValueError("every binding belongs to the unit")
 
-    def left_the_state(self) -> dict[str, Fate]:
+    def left_the_state(self) -> dict[str, Removal]:
         """Every address listed as having left the state, with how it left."""
-        return {entry.iac.address: entry.fate for entry in self.removed or []} | {
-            entry.address: entry.fate for entry in self.removed_unresolved or []
+        return {entry.iac.address: entry.removal for entry in self.removed or []} | {
+            entry.address: entry.removal for entry in self.removed_unresolved or []
         }
 
 

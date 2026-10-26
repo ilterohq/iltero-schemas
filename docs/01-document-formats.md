@@ -329,7 +329,7 @@ with a regulatory framework.
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `issuer` | object | `type: local` and `identity_verified: false`. |
-| `governance` | object | `run_opened_by`: `server` for a run Iltero Platform issued (`run.origin: server_issued`), `local` otherwise. |
+| `governance` | object | `run_opened_by`: `server` when the writer says Iltero Platform issued the run (`run.origin: server_issued`), `local` otherwise. Only Iltero Platform confirms that it issued a run, by its `run.id`. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
@@ -353,7 +353,7 @@ Trust levels, from weakest to strongest:
 
 | Level | Meaning |
 | --- | --- |
-| `self_attested` | The tool that wrote the record is its only source. |
+| `self_attested` | The tool that wrote the record is its only source. The file digests show the files are the ones the record names. They do not show who wrote the record, and no other party confirms what it says. |
 | `source_authenticated` | A service other than the writer authenticated the repository, the CI system and the identities named in the record. |
 | `governed` | Iltero Platform enforced a declared assurance profile and verified the evidence chain. |
 
@@ -382,10 +382,10 @@ A stage's `scanners` says what it read from scanner reports and how much of it b
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `binding_set` | object | The one [evaluator binding set](#evaluatorbindingset) in force (see below). |
-| `reports` | list | Each scanner report the stage was given, at most 16, one per scanner (see below). |
-| `results_accepted` | integer | Results a binding accepted for an assertion, from 0. |
-| `results_binding_unverified` | integer | Results whose binding could not be verified, from 0. |
-| `results_without_binding` | integer | Results read for no assertion, because no binding allowed it or it had nothing to answer, from 0. It is the sum of the reports' own `results_without_binding`. |
+| `reports` | list | Each scanner report the stage was given, at most 16, one per scanner (see below). The model also accepts an empty list. |
+| `results_accepted` | integer | Results a binding accepted as the `pass` or `fail` of the assertion it names, from 0. Each is one event whose evaluator is the scanner. |
+| `results_binding_unverified` | integer | Results a binding entry matched, but whose scanner version does not satisfy the entry's `tool_version_constraint` (a pre-release or a string that is not a version satisfies none), from 0. Each evaluation stays `not_evaluated` with reason `binding_unverified`. |
+| `results_without_binding` | integer | Results that became no evaluation, from 0. It is the sum of the reports' own `results_without_binding`. |
 
 `results_accepted`, `results_binding_unverified` and `results_without_binding` add up to the sum of the reports'
 `results_read`: every result a scanner reported is counted once.
@@ -396,11 +396,11 @@ A stage's `scanners` says what it read from scanner reports and how much of it b
 | --- | --- | --- |
 | `id` | string | The binding set's `metadata.id`: upper-case segments joined by dots, at least two, at most 128 characters. |
 | `version` | string | The binding set's `metadata.version`: a semantic version `X.Y.Z`. |
-| `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The tool sets it, never the binding set. |
+| `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The writer sets it, not the binding set; in a self-attested record it is the writer's claim. |
 | `file_name` | string or null | The name of the file the set was read from, one line of at most 1024 characters. Present exactly when `origin` is `file`. |
-| `digest` | digest | The digest of the binding set as it was read. An event's `binding.digest` resolves to an entry of it. |
+| `digest` | digest | The digest of the binding set's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. An event's `binding.digest` names an entry of the set, which a reader checks against the copy. |
 | `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
-| `binding_count` | integer | How many bindings the set holds, from 0. |
+| `binding_count` | integer | How many entries the set holds, for every scanner and stage, not only those this stage could use, from 0. |
 
 Each `reports` entry:
 
@@ -409,11 +409,11 @@ Each `reports` entry:
 | `tool` | string | `checkov`, `trivy` or `prowler`. |
 | `tool_version` | identifier | The version the scanner reported. |
 | `input_kinds` | list | What the scanner was reading, in its own words, such as `terraform_plan` (identifiers). |
-| `report_digest` | digest | The digest of the report as the stage kept it: the `input_digest` of every verdict it stands behind. |
+| `report_digest` | digest | The digest of the report as the stage kept it, the same value as that file's `evidence_refs` digest. Events answered from the report name it as their `input_digest`. |
 | `observations` | string | Where the stage kept what it read from the report, in the record's directory. |
 | `results_read` | integer | Results the stage read from the report, from 0. |
-| `results_without_binding` | integer | Results read for no assertion, from 0. |
-| `parsing_errors` | integer | Parsing errors the stage met reading the report, from 0. |
+| `results_without_binding` | integer | This report's results that became no evaluation, from 0. |
+| `parsing_errors` | integer | Inputs the scanner itself reported it could not parse, from 0. A value above 0 means the scanner did not cover everything it was given; 0 does not show that everything was parsed, because a scanner may not report parse errors at all. |
 
 A stage's redaction report (`redaction`) says what the stage's redaction hid, left unknown or allowed, by
 path. It holds no value.

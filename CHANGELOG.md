@@ -80,7 +80,8 @@ keep, so any two tools agree on what a record means.
   which stages are in scope. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
   standard, and its `compliance_determination` is always `null`.
-- A record's `trust_level` lists three levels, and a record may claim only
+- A record's `trust_level` is one of three levels (`self_attested`,
+  `source_authenticated`, `governed`), and a record may claim only
   `self_attested`, since it carries no signature. Its issuer is always
   `local`, and its identity is never verified, whoever opened the run.
 - Each part of a record has a fixed shape. A stage's `reference_time` and the
@@ -88,8 +89,9 @@ keep, so any two tools agree on what a record means.
   `redaction` is a redaction report: the policy that ran, what was redacted,
   and the paths redacted (each with a reason token), left unknown, or allowed
   (each with the project's reason). A stage's `scanners` names the binding set
-  in force and counts each scanner result once: accepted, binding unverified
-  or without a binding. An excluded resource (`subjects_in_scope.excluded`)
+  in force and counts each scanner result once: accepted as `pass` or `fail`,
+  matched by a binding whose version constraint the scanner does not satisfy,
+  or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
   names its index in the plan's resource list (`plan_index`), its address as
   written or `null`, and one of four reasons. A coverage gap is one of three
   shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
@@ -117,10 +119,12 @@ keep, so any two tools agree on what a record means.
 - The integrity checks: a record's values that a reader can recompute,
   including its `change.digest`, the pre-deploy stage's source digest and
   each approval of a change, must be what they recompute to. Change digest
-  problems come first, so a forged digest is refused as such. A reader that
-  sets `SKIP_INTEGRITY_CHECKS` to `True` (any other value is ignored) reads
-  the record and gets every problem from `integrity_problems`, to report as
-  integrity failures. Record vectors (`records_integrity_failed/`) cover it.
+  problems come first, so a change digest that does not recompute is refused
+  first. A reader that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other
+  value is ignored) reads the record and gets every problem from
+  `integrity_problems`, to report as integrity failures. The checks show that
+  a record agrees with itself, not that it is unchanged since it was written.
+  Record vectors (`records_integrity_failed/`) cover it.
 - An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
   `version`, `tool`), and a record holds every event's to its own plan. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
@@ -136,9 +140,8 @@ keep, so any two tools agree on what a record means.
   each address's current object once.
 - The identity document (`IdentityBindings` v1). A binding's `iac` side names
   its `tool`, and the document lists its `resolvers`, one per cloud provider.
-  A CI identity, and the cloud side and resolver of an identity binding, each
-  have one shape per provider, chosen by a `provider` field; GitHub Actions
-  and AWS are the first providers. Each AWS resource name (ARN) has the shape
+  The cloud side and resolver of an identity binding each have one shape per
+  cloud provider, chosen by a `provider` field; AWS is the first. Each AWS resource name (ARN) has the shape
   AWS could issue: an S3 bucket name that looks like an IP address, holds two
   dots in a row or uses a reserved prefix or suffix is refused, and so is an
   RDS identifier that is not lowercase, ends with a hyphen or holds two
@@ -165,7 +168,7 @@ keep, so any two tools agree on what a record means.
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
   Iltero Platform opened, an identity document with no bindings, the identity
-  documents that must be refused, and changed ones that must still be
+  documents that must be refused, and altered ones that must still be
   accepted. The record vectors are in `vectors/records/`. The rules about
   bindings have no vector, because a binding holds a cloud identifier this
   repository does not publish.
@@ -174,8 +177,8 @@ keep, so any two tools agree on what a record means.
   A record of a run the tool opened claims nothing only Iltero Platform can
   give: no Iltero Platform bundle or evaluation from one, no facts from
   Iltero Platform, and no stage reference time from it. Every event names the
-  record's own run and unit. Every record is self-attested: only Iltero
-  Platform can confirm a run it opened, by its `run.id`.
+  record's own run and unit. Iltero Platform can confirm, by `run.id`, that
+  it opened a run; that does not confirm what the record says about it.
 - The contract digest a record names is defined in the package
   (`iltero_schemas.distribution`): the same value from the published wheel
   and from its installation, which is checked file by file; each release

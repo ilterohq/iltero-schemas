@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from typing import Annotated, Final, Literal
 
-from pydantic import AfterValidator, Field, ValidationInfo, model_validator
+from pydantic import Field, ValidationInfo, model_validator
 
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
@@ -44,22 +44,22 @@ from iltero_schemas.models.change import Change, UnitsFile, check_change
 from iltero_schemas.models.context import ReferenceTime, Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.event import AssuranceEvent, Compiler
+from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
-    MAX_PATH_LENGTH,
     ArtifactDigestSource,
     Count,
     Digest,
     EnforcementMode,
+    FileName,
     Identifier,
     MemberPath,
     ProjectPath,
     Timestamp,
     Uuid,
     check_artifact_digest,
+    check_artifact_file_name,
     parse_timestamp,
-    plain_text,
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
@@ -161,11 +161,9 @@ class ExecutionEvaluator(StrictModel):
     digest: Digest
 
 
-class ExecutionBundle(StrictModel):
-    """The set of programs a stage loaded, and the allowlist they were built under."""
+class ExecutionBundle(Bundle):
+    """The bundle a stage loaded, named as an event names it, and the allowlist its programs were built under."""
 
-    kind: Literal["server", "local_bundle"]
-    digest: Digest
     capabilities_digest: Digest
 
 
@@ -216,8 +214,8 @@ class BindingSetUsed(StrictModel):
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     origin: Literal["shipped", "file"]
-    # The name of the file it was read from; absent for the shipped set.
-    file_name: Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(plain_text)] | None
+    # The name of the file it was read from, without its directories; absent for the shipped set.
+    file_name: FileName | None
     digest: Digest
     copy_path: MemberPath
     binding_count: Count
@@ -293,6 +291,8 @@ class PlanRecord(StrictModel):
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_source: ArtifactDigestSource
+    # The saved plan file's name without its directories; a path is never written.
+    artifact_file_name: FileName | None
     context_digest: Digest
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool
@@ -303,8 +303,9 @@ class PlanRecord(StrictModel):
     applyable: bool | NotReported
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_source(self) -> PlanRecord:
+    def _a_saved_plan_names_its_digest_and_file(self) -> PlanRecord:
         check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
+        check_artifact_file_name(self.artifact_file_name, self.artifact_digest_source)
         return self
 
     @model_validator(mode="after")

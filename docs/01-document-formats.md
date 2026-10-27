@@ -277,7 +277,7 @@ who produced it and to reproduce it.
 | `source_commit`, `plan_digest` | The commit and the plan the evaluation is about. `plan_digest` holds the plan's digest (`value`), the IaC `tool` that wrote the plan, and the `version` of that tool's plan digest rule; any other `version` is refused. |
 | `input_digest` | The digest of the assurance context the evaluator received. |
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov`, `trivy` or `prowler`): its reported `version`, a `digest` when known, and `reason: not_executed_by_cli`. |
-| `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`) and `digest`. Present exactly when the evaluator is `opa`. |
+| `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`), `tarball_digest`, the SHA-256 of the bytes of the bundle tarball the evaluator loaded, `content_digest` and `key_id`. For `server`, they are the served [descriptor](#bundledescriptor)'s `tarball_digest`, `content_digest` and `key_id`. For `local_bundle`, `tarball_digest` is the digest of the tarball the tool built, and `content_digest` and `key_id` are `null`, because a bundle the tool built has no descriptor. Any other combination is refused: "a bundle names its content digest and signing key exactly when its kind is server". The writer's claim: nothing compares these values with a descriptor. Present exactly when the evaluator is `opa`. An evaluation whose `assertion_source` is `server_bundle` and that ran over a bundle names a bundle of kind `server`; otherwise it is refused: "an assertion from the server's bundle is evaluated over the server's bundle". |
 | `binding` | The evaluator binding that let a scanner's result stand for the assertion. Present exactly when the evaluator is a scanner. |
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
@@ -333,7 +333,7 @@ with a regulatory framework.
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
 | `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
 | `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
-| `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest`, `artifact_digest_source`, `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
+| `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest_source`, `artifact_digest` and `artifact_file_name` (the saved plan file's digest, and its file name without its directories). The record keeps the file's digest and name, not the file. Both are present exactly when `artifact_digest_source` is `saved_plan`, and `null` when it is `not_provided`. A name that holds `/`, `\`, `:` or a character that looks like a slash or backslash (fullwidth and small forms included), or that consists only of dots and spaces, is refused: "must be a file name without its directories". The name is at most 255 UTF-8 bytes as written, with no control character; only the separator and dots-and-spaces checks use its NFKC (Unicode compatibility) form. It also holds `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
@@ -367,7 +367,7 @@ Each `stages` entry says what one stage did:
 | `stage` | stage | The stage, the same as the entry's key. |
 | `observed_at` | timestamp | When the stage observed the change. |
 | `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
-| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `digest`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
+| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`, `tarball_digest`, `content_digest` and `key_id`, with the rules of an event's `bundle`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. The bundle is the writer's claim: nothing compares it with a descriptor. A `local_bundle` has no descriptor. The stage's compiled index (`assertions`) and `coverage.assertions_expected.required_assertion_digest` describe what it held; both are the writer's claims, and nothing compares them with the tarball. |
 | `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
 | `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (`pre_deploy`), `null` at every other. |
 | `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
@@ -397,7 +397,7 @@ A stage's `scanners` says what it read from scanner reports and how much of it b
 | `id` | string | The binding set's `metadata.id`: upper-case segments joined by dots, at least two, at most 128 characters. |
 | `version` | string | The binding set's `metadata.version`: a semantic version `X.Y.Z`. |
 | `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The writer sets it, not the binding set; in a self-attested record it is the writer's claim. |
-| `file_name` | string or null | The name of the file the set was read from, one line of at most 1024 characters. Present exactly when `origin` is `file`. |
+| `file_name` | string or null | The name of the file the set was read from, without its directories. It follows the same rule as the plan's `artifact_file_name`. Present exactly when `origin` is `file`. |
 | `digest` | digest | The digest of the binding set's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. An event's `binding.digest` names an entry of the set, which a reader checks against the copy. |
 | `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
 | `binding_count` | integer | How many entries the set holds, for every scanner and stage, not only those this stage could use, from 0. |
@@ -719,11 +719,12 @@ with the module in the tarball before it runs anything.
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `apiVersion` | string | `iltero.io/assertion-bundle/v1`. |
-| `revision` | digest | The address of the bundle's content. |
-| `digest` | digest | The SHA-256 of the decoded tarball bytes. |
+| `content_digest` | digest | The digest of the bundle's content: the `metadata.iltero` object of its `.manifest` file, which holds the `apiVersion`, `compiler_version`, `capabilities_digest`, `minimum_cli_version`, `assertion_set_digest` and `assertions` (each without its `source`). The `.manifest` file carries the same value under OPA's key `revision`. |
+| `tarball_digest` | digest | The SHA-256 of the decoded tarball bytes, signature included, never of their base64 text. |
 | `key_id` | identifier | The key that signed the bundle. |
 | `algorithm` | string | `ES256`. |
 | `compiler_version` | identifier | The compiler version the modules were built with. |
+| `capabilities_digest` | digest | The digest of the evaluator's allowlist of built-in functions the modules were built under. |
 | `minimum_cli_version` | string | The oldest CLI version able to evaluate the bundle, such as `1.2.3`. |
 | `assertion_set_digest` | digest | The digest of every assertion in the bundle, by id, version and document digest. |
 | `assertions` | list | 1 to 1,024 assertions, sorted by id: `id`, `version`, `digest`, `source_digest`, `compiled_digest` and the YAML `source`. |
@@ -731,8 +732,19 @@ with the module in the tarball before it runs anything.
 
 Key rules:
 
-- The same content signed under two keys has one `revision` and two `digest` values.
+- A bundle is identified by `content_digest` and `tarball_digest` together. Content has one `content_digest` but can
+  have several `tarball_digest` values, because an ES256 signature can differ on each signing, under the same key or
+  another.
+- `content_digest` is recomputed from the assertions' sources (`iltero_schemas.bundle.check_descriptor`); a
+  descriptor whose value differs is refused.
+- `tarball_digest` is taken over the bytes served, because compression libraries can write different bytes for the
+  same files. A descriptor whose `tarball_digest` is not the SHA-256 of its decoded `tarball` is refused.
 - `assertion_set_digest` names everything in the bundle.
+- `check_descriptor` refuses a descriptor whose `compiler_version` is not `iltero_schemas.compiler.COMPILER_VERSION`:
+  `the bundle was compiled by compiler <version>; this package's is <version>`.
+- `check_descriptor` refuses a descriptor whose `capabilities_digest` is not `iltero_schemas.opa.CAPABILITIES_DIGEST`:
+  `the bundle was built under allowlist <digest>; this package's is <digest>`. The content digest covers the
+  allowlist, so the same assertions built under another allowlist have another `content_digest`.
 - The signing key must be in the trusted keys and must not be revoked.
 - A descriptor is at most 64 MiB as canonical JSON (`iltero_schemas.models.bundle.MAX_DESCRIPTOR_BYTES`); a larger
   one is refused. The limit is applied to the parsed descriptor, so a tool also caps the bytes it reads before parsing.

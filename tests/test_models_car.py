@@ -388,7 +388,7 @@ def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
         CAR.model_validate(document)
 
 
-def test_a_record_refuses_an_artifact_digest_without_its_source() -> None:
+def test_a_record_refuses_a_saved_plan_without_its_artifact_digest() -> None:
     with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is saved_plan"):
         CAR.model_validate(_record(**{"plan.artifact_digest_source": "saved_plan"}))
 
@@ -559,3 +559,17 @@ def test_a_clock_time_written_another_way_is_the_same_instant() -> None:
     written = observed.replace("Z", "000Z") if "." in observed else observed.replace("Z", ".000Z")
     reference_time = {**RECORD["stages"]["plan"]["reference_time"], "value": written}
     CAR.model_validate(_record(**{"stages.plan.reference_time": reference_time}))
+
+
+def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
+    document = _record()
+    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-bundle-2026-09"
+    with pytest.raises(ValidationError, match="exactly when its kind is server"):
+        CAR.model_validate(document)
+
+
+def test_a_binding_set_file_is_named_without_its_directories() -> None:
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["binding_set"] = {**scanners["binding_set"], "origin": "file", "file_name": "config/bindings.yaml"}
+    with pytest.raises(ValidationError, match="without its directories"):
+        CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))

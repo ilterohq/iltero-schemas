@@ -3,7 +3,7 @@
 An assertion bundle is an Open Policy Agent (OPA) bundle: a gzip-compressed
 tar file holding
 
-- ``.manifest``: the bundle's ``revision``, its ``roots`` (one path per
+- ``.manifest``: the bundle's content digest (under OPA's key ``revision``), its ``roots`` (one path per
   assertion under the policy tree), the policy language version, and
   ``metadata.iltero``, which names every assertion with the digests of its
   document, its source and its compiled module;
@@ -12,12 +12,13 @@ tar file holding
 
 The files and the bytes to sign are a pure function of the assertions'
 source documents and the versions, so anyone holding the sources builds the
-same ones. ``revision`` is the digest of ``metadata.iltero``: the assertions
-together with the compiler version and the oldest tool allowed. Signing is
+same ones. The content digest is the digest of ``metadata.iltero``: the assertions
+together with the compiler version, the evaluator's allowlist and the oldest tool
+allowed. Signing is
 left to the holder of the key; this module produces the bytes to sign and
 places the signature. The compressed tarball itself can differ between
-compression libraries, which is why a bundle's ``digest`` is taken over the
-bytes that were served.
+compression libraries, which is why a bundle's ``tarball_digest`` is taken over
+the bytes that were served.
 
 A file's digest is SHA-256 over its bytes. OPA hashes a JSON file over its
 own compact, key-sorted encoding; the manifest is written in exactly that
@@ -43,6 +44,7 @@ from iltero_schemas.canonical import canonical_bytes, digest, digest_of, require
 from iltero_schemas.compiler import COMPILER_VERSION, PACKAGE_PREFIX, compile
 from iltero_schemas.models.assertion import VERSION_PATTERN
 from iltero_schemas.models.bundle import API_VERSION, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 
 MANIFEST = ".manifest"
 SIGNATURES = ".signatures.json"
@@ -108,11 +110,11 @@ def member(source: str) -> Member:
 
 @dataclass(frozen=True)
 class UnsignedBundle:
-    """Every file of a bundle except its signature, with the metadata and revision the manifest carries."""
+    """Every file of a bundle except its signature, with the metadata and content digest the manifest carries."""
 
     members: tuple[Member, ...]
     metadata: Mapping[str, Any]
-    revision: str
+    content_digest: str
     files: Mapping[str, bytes]
 
 
@@ -136,19 +138,20 @@ def unsigned_bundle(sources: Sequence[str], *, minimum_cli_version: str) -> Unsi
     metadata = {
         "apiVersion": API_VERSION,
         "compiler_version": COMPILER_VERSION,
+        "capabilities_digest": CAPABILITIES_DIGEST,
         "minimum_cli_version": minimum_cli_version,
         "assertion_set_digest": required_assertion_digest((m.id, m.version, m.digest) for m in members),
         "assertions": [m.record() for m in members],
     }
-    revision = digest_of(metadata)
+    content_digest = digest_of(metadata)
     manifest = {
-        "revision": revision,
+        "revision": content_digest,
         "roots": [f"{_ROOT_PREFIX}/{m.id}" for m in members],
         "rego_version": REGO_VERSION,
         "metadata": {"iltero": metadata},
     }
     files = {MANIFEST: canonical_bytes(manifest), **{m.file: m.module for m in members}}
-    return UnsignedBundle(members, MappingProxyType(metadata), revision, MappingProxyType(files))
+    return UnsignedBundle(members, MappingProxyType(metadata), content_digest, MappingProxyType(files))
 
 
 def _b64url(data: bytes) -> bytes:
@@ -235,11 +238,12 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
     return BundleDescriptor.model_validate(
         {
             "apiVersion": API_VERSION,
-            "revision": bundle.revision,
-            "digest": digest(signed_bundle),
+            "content_digest": bundle.content_digest,
+            "tarball_digest": digest(signed_bundle),
             "key_id": key_id,
             "algorithm": SIGNING_ALGORITHM,
             "compiler_version": bundle.metadata["compiler_version"],
+            "capabilities_digest": bundle.metadata["capabilities_digest"],
             "minimum_cli_version": bundle.metadata["minimum_cli_version"],
             "assertion_set_digest": bundle.metadata["assertion_set_digest"],
             "assertions": [{**m.record(), "source": m.source} for m in bundle.members],

@@ -34,7 +34,7 @@ from iltero_schemas.bundle.check import MAX_MEMBERS, MAX_UNPACKED_BYTES, read_ta
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of
 from iltero_schemas.compiler import COMPILER_VERSION, package_of
 from iltero_schemas.models.bundle import BundleDescriptor
-from iltero_schemas.opa import CAPABILITIES
+from iltero_schemas.opa import CAPABILITIES, CAPABILITIES_DIGEST
 from iltero_schemas.trust import BundleKey, parse_bundle_keys
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
@@ -100,7 +100,7 @@ def _serving(files: Mapping[str, bytes]) -> BundleDescriptor:
     packed = tarball(files)
     document = DESCRIPTOR.model_dump(by_alias=True)
     return BundleDescriptor.model_validate(
-        {**document, "tarball": base64.b64encode(packed).decode("ascii"), "digest": digest(packed)}
+        {**document, "tarball": base64.b64encode(packed).decode("ascii"), "tarball_digest": digest(packed)}
     )
 
 
@@ -113,21 +113,23 @@ def _changed_module() -> dict[str, bytes]:
 # --- building -------------------------------------------------------------
 
 
-def test_the_manifest_names_every_assertion_and_its_revision_is_the_metadatas_digest() -> None:
+def test_the_manifest_names_every_assertion_and_its_revision_is_the_content_digest_of_the_metadata() -> None:
     manifest = json.loads(BUNDLE.files[MANIFEST])
     ids = sorted(path.stem for path in STARTER_ASSERTIONS.glob("*.yaml"))
     assert manifest["roots"] == [f"iltero/assertions/{assertion_id}" for assertion_id in ids]
     assert manifest["rego_version"] == 1
-    assert manifest["revision"] == BUNDLE.revision == digest_of(manifest["metadata"]["iltero"])
+    assert manifest["revision"] == BUNDLE.content_digest == digest_of(manifest["metadata"]["iltero"])
     metadata = manifest["metadata"]["iltero"]
     assert set(metadata) == {
         "apiVersion",
         "compiler_version",
+        "capabilities_digest",
         "minimum_cli_version",
         "assertion_set_digest",
         "assertions",
     }
     assert metadata["compiler_version"] == COMPILER_VERSION
+    assert metadata["capabilities_digest"] == CAPABILITIES_DIGEST
     assert [a["id"] for a in metadata["assertions"]] == ids
 
 
@@ -137,12 +139,12 @@ def test_the_manifest_is_written_in_the_form_opa_hashes() -> None:
 
 def test_the_same_sources_in_any_order_build_the_same_files_and_bytes_to_sign() -> None:
     again = unsigned_bundle(list(reversed(SOURCES)), minimum_cli_version=MINIMUM_CLI_VERSION)
-    assert dict(again.files) == dict(BUNDLE.files) and again.revision == BUNDLE.revision
+    assert dict(again.files) == dict(BUNDLE.files) and again.content_digest == BUNDLE.content_digest
     assert signing_input(again, key_id=KEY_ID) == SIGNED
 
 
 def test_the_minimum_tool_version_is_part_of_the_signed_content() -> None:
-    assert unsigned_bundle(SOURCES, minimum_cli_version="0.3.0").revision != BUNDLE.revision
+    assert unsigned_bundle(SOURCES, minimum_cli_version="0.3.0").content_digest != BUNDLE.content_digest
 
 
 @pytest.mark.parametrize("value", ["0.2", "v0.2.0", "0.2.0-rc1", "0.2.0 "])
@@ -188,7 +190,7 @@ def test_a_bundle_holds_at_least_one_assertion_each_id_once_and_a_bounded_number
 
 
 def test_the_descriptor_carries_the_sources_and_the_digests() -> None:
-    assert DESCRIPTOR.revision == BUNDLE.revision and DESCRIPTOR.key_id == KEY_ID
+    assert DESCRIPTOR.content_digest == BUNDLE.content_digest and DESCRIPTOR.key_id == KEY_ID
     assert [a.source for a in DESCRIPTOR.assertions] == [m.source for m in BUNDLE.members]
     assert read_tarball(TARBALL) == _signed_files()
 
@@ -231,6 +233,11 @@ def test_a_bundle_the_compiler_cannot_reproduce_is_refused() -> None:
         check_descriptor(_changed(compiler_version=COMPILER_VERSION + "0"), _keys())
 
 
+def test_a_bundle_made_for_another_allowlist_is_refused() -> None:
+    with pytest.raises(BundleError, match="built under allowlist"):
+        check_descriptor(_changed(capabilities_digest="sha256:" + "0" * 64), _keys())
+
+
 def test_a_source_that_is_not_the_one_the_digests_name_is_refused() -> None:
     edited = DESCRIPTOR.assertions[0].source.replace("title:", "title: Edited")
     with pytest.raises(BundleError, match="not those of its sources"):
@@ -247,13 +254,13 @@ def test_a_source_that_does_not_compile_is_refused(source: str) -> None:
         check_descriptor(_with_source(0, source), _keys())
 
 
-def test_a_revision_that_is_not_the_metadatas_digest_is_refused() -> None:
-    with pytest.raises(BundleError, match="revision"):
-        check_descriptor(_changed(revision="sha256:" + "0" * 64), _keys())
+def test_a_content_digest_that_is_not_the_metadatas_digest_is_refused() -> None:
+    with pytest.raises(BundleError, match="content digest"):
+        check_descriptor(_changed(content_digest="sha256:" + "0" * 64), _keys())
 
 
 def test_a_changed_minimum_tool_version_breaks_the_rebuilt_manifest() -> None:
-    with pytest.raises(BundleError, match="revision"):
+    with pytest.raises(BundleError, match="content digest"):
         check_descriptor(_changed(minimum_cli_version="0.1.0"), _keys())
 
 
@@ -468,7 +475,7 @@ def test_a_verified_bundle_evaluates_as_its_modules_do(opa: Path, tmp_path: Path
 
 def _changed_manifest() -> dict[str, bytes]:
     files = _signed_files()
-    return {**files, MANIFEST: files[MANIFEST].replace(BUNDLE.revision.encode(), b"sha256:" + b"0" * 64)}
+    return {**files, MANIFEST: files[MANIFEST].replace(BUNDLE.content_digest.encode(), b"sha256:" + b"0" * 64)}
 
 
 @pytest.mark.parametrize(

@@ -557,6 +557,7 @@
         "applyable": true,
         "artifact_digest": null,
         "artifact_digest_source": "not_provided",
+        "artifact_file_name": null,
         "complete": false,
         "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
         "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -587,8 +588,10 @@
           "execution": {
             "bundle": {
               "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-              "kind": "local_bundle"
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle",
+              "content_digest": null,
+              "key_id": null
             },
             "detail": null,
             "evaluator": {
@@ -1139,8 +1142,10 @@
           "execution": {
             "bundle": {
               "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-              "kind": "local_bundle"
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle",
+              "content_digest": null,
+              "key_id": null
             },
             "detail": null,
             "evaluator": {
@@ -1721,8 +1726,10 @@
         "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-            "kind": "local_bundle"
+            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "kind": "local_bundle",
+            "content_digest": null,
+            "key_id": null
           },
           "detail": null,
           "evaluator": {
@@ -2262,5 +2269,119 @@
       "/evidence_refs/0/redaction_policy/digest"
     ],
     "message": "Field required"
+  },
+  {
+    "name": "saved_plan_without_its_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "artifact_digest_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_without_its_file_name",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_file_name is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_named_by_its_path",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "build/tfplan"
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
+  },
+  {
+    "name": "local_bundle_naming_a_signing_key",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09"
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_bundle_without_its_content_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": null,
+        "key_id": "iltero-bundle-2026-09"
+      }
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_assertion_evaluated_over_a_local_bundle",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/assertion_source": "server_bundle"
+    },
+    "remove": [],
+    "message": "an assertion from the server's bundle is evaluated over the server's bundle"
+  },
+  {
+    "name": "artifact_file_name_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_file_name": "tfplan"
+    },
+    "remove": [],
+    "message": "artifact_file_name is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_named_with_a_look_alike_slash",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "build／tfplan"
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
+  },
+  {
+    "name": "binding_set_file_named_by_its_path",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/scanners": {
+        "binding_set": {
+          "id": "ILT.BINDINGS.STARTER",
+          "version": "1.0.0",
+          "origin": "file",
+          "file_name": "config/bindings.yaml",
+          "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "copy_path": "units/root/plan/bindings.json",
+          "binding_count": 2
+        },
+        "reports": [],
+        "results_accepted": 0,
+        "results_binding_unverified": 0,
+        "results_without_binding": 0
+      }
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
   }
 ]

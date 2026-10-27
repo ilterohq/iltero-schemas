@@ -41,6 +41,7 @@ from iltero_schemas.models.fields import (
     Identity,
     Status,
     Timestamp,
+    check_server_bundle,
     plain_text,
 )
 from iltero_schemas.models.iac import IacTool
@@ -264,8 +265,18 @@ class BindingRef(StrictModel):
 
 
 class Bundle(StrictModel):
+    """The bundle the evaluator loaded: who built it, the SHA-256 of its tarball's bytes, and for a served bundle
+    the descriptor's content digest and signing key."""
+
     kind: Literal["server", "local_bundle"]
-    digest: Digest
+    tarball_digest: Digest
+    content_digest: Digest | None
+    key_id: Identifier | None
+
+    @model_validator(mode="after")
+    def _a_server_bundle_names_its_content_and_key(self) -> Bundle:
+        check_server_bundle(self.kind, self.content_digest, self.key_id)
+        return self
 
 
 class Compiler(StrictModel):
@@ -361,6 +372,9 @@ class AssuranceEvent(StrictModel):
         from_scanner = isinstance(self.provenance.evaluator, ScannerEvaluator)
         if (self.provenance.bundle is not None) != isinstance(self.provenance.evaluator, OpaEvaluator):
             raise ValueError("a bundle is named exactly when this CLI ran the evaluator over one")
+        bundle = self.provenance.bundle
+        if self.provenance.assertion_source == "server_bundle" and bundle is not None and bundle.kind != "server":
+            raise ValueError("an assertion from the server's bundle is evaluated over the server's bundle")
         if (self.provenance.binding is not None) != from_scanner:
             raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):

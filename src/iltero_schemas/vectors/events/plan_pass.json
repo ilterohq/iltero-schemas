@@ -75,7 +75,9 @@
     },
     "bundle": {
       "kind": "local_bundle",
-      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      "tarball_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "content_digest": null,
+      "key_id": null
     },
     "binding": null,
     "assertion_source": "contract_starter",

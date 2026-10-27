@@ -8,7 +8,7 @@ evaluates anything:
    know the tool's version.
 1. It calls :func:`check_descriptor`. That takes the key the descriptor names
    from the trust set and refuses a key that may not verify. It refuses a
-   bundle built by another compiler version. It rebuilds the bundle from the
+   bundle built by another compiler version or under another allowlist. It rebuilds the bundle from the
    assertion sources the descriptor carries, with this package's compiler, and
    requires the tarball to hold exactly those files, byte for byte, and a
    ``.signatures.json`` that is exactly the one a signer of those files under
@@ -50,6 +50,7 @@ from iltero_schemas.bundle.build import (
 from iltero_schemas.canonical import CanonicalizationError
 from iltero_schemas.compiler import COMPILER_VERSION
 from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 from iltero_schemas.trust import BundleKey
 
 # The tar entry types OPA loads as files; it skips every other type, so no other is accepted here either.
@@ -158,6 +159,9 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
         raise BundleError(
             f"the bundle was compiled by compiler {descriptor.compiler_version}; this package's is {COMPILER_VERSION}"
         )
+    if descriptor.capabilities_digest != CAPABILITIES_DIGEST:
+        built_under, ours = descriptor.capabilities_digest, CAPABILITIES_DIGEST
+        raise BundleError(f"the bundle was built under allowlist {built_under}; this package's is {ours}")
     try:
         rebuilt = unsigned_bundle(
             [a.source for a in descriptor.assertions], minimum_cli_version=descriptor.minimum_cli_version
@@ -167,8 +171,8 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
     described = [{k: v for k, v in a.model_dump().items() if k != "source"} for a in descriptor.assertions]
     if described != [m.record() for m in rebuilt.members]:
         raise BundleError("the digests the descriptor gives are not those of its sources")
-    if descriptor.revision != rebuilt.revision:
-        raise BundleError("the revision is not the digest of the bundle's metadata")
+    if descriptor.content_digest != rebuilt.content_digest:
+        raise BundleError("the content digest is not the digest of the bundle's metadata")
     files = read_tarball(base64.b64decode(descriptor.tarball))
     if set(files) != {*rebuilt.files, SIGNATURES}:
         raise BundleError(f"the tarball must hold {MANIFEST}, {SIGNATURES} and one module per assertion, nothing else")

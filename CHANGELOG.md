@@ -107,8 +107,14 @@ keep, so any two tools agree on what a record means.
   tool's plan does not say; `null` is refused. A record's `change.digest` is
   required. The plan stage lists one plan-flag gap for each plan flag that is
   not `true`, with the plan's value, in kind order; a plan-flag gap in any
-  other stage is refused.
-  Record vectors cover each rule.
+  other stage is refused. When the plan was read from a saved plan file, the
+  record's plan names the file's digest and its file name without its
+  directories (`artifact_digest`, `artifact_file_name`); the record keeps
+  them, not the file. A name that holds `/`, `\`, `:` or a character that
+  looks like a slash or backslash, or consists only of dots and spaces, in
+  its NFKC (Unicode compatibility) form, is refused. A name is at most 255
+  UTF-8 bytes as written, with no control character. A binding set's
+  `file_name` follows the same rule. Record vectors cover each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
   incomplete or did not say it is complete, is incomplete with reason
   `plan_not_complete`. Its verdict still follows its evaluations. An evaluator
@@ -128,7 +134,12 @@ keep, so any two tools agree on what a record means.
 - An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
   `version`, `tool`), and a record holds every event's to its own plan. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
-  `github_actions`.
+  `github_actions`. An event's and a record stage's `bundle` give its
+  `kind`, its `tarball_digest` and, for a bundle the server served, the
+  descriptor's `content_digest` and `key_id`, which are `null` for a bundle
+  the tool built; a stage's also gives its `capabilities_digest`. An
+  evaluation of an assertion from the server's bundle that ran over a
+  bundle names a bundle of kind `server`.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
@@ -248,11 +259,16 @@ keep, so any two tools agree on what a record means.
 - Signed assertion bundles: building one from assertion sources (the files
   and the bytes a key signs are reproducible), and `check_descriptor`, which
   rebuilds a served bundle from its sources and compares it byte for byte
-  before anything in it is evaluated. It returns an `UnverifiedBundle`: the
-  pinned OPA, or the signer's library, verifies the signature. Signatures are
-  accepted only in their low-S form (`normalized_signature`), which `descriptor` writes whatever form
-  the signer returned, so one signing gives one digest. A run
-  and a bundle each hold one version of an assertion.
+  before anything in it is evaluated. A bundle's content digest covers its
+  assertions, the compiler version, the evaluator's allowlist
+  (`capabilities_digest`) and the oldest CLI version allowed;
+  `check_descriptor` refuses a bundle built by another compiler version or
+  under another allowlist, naming both values. It returns an
+  `UnverifiedBundle`: the pinned OPA, or the signer's library, verifies the
+  signature. Signatures are accepted only in their low-S form
+  (`normalized_signature`), which `descriptor` writes whatever form the
+  signer returned, so one signing gives one digest. A run and a bundle each
+  hold one version of an assertion.
 - The verification report (`VerificationReport` v1): what a verifier found
   about one record, property by property, with no overall verdict. It never
   calls a record's integrity verified, because no record carries a signature

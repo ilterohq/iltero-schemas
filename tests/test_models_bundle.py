@@ -40,11 +40,12 @@ def _assertion(assertion_id: str, version: str, document_digest: str) -> dict[st
 ASSERTIONS = [_assertion(*triple) for triple in sorted(STARTER_SET["assertions"])]
 DESCRIPTOR: dict[str, Any] = {
     "apiVersion": API_VERSION,
-    "revision": "sha256:" + "3" * 64,
-    "digest": "sha256:" + "4" * 64,
+    "content_digest": "sha256:" + "3" * 64,
+    "tarball_digest": "sha256:" + "4" * 64,
     "key_id": "iltero-bundle-2026-09",
     "algorithm": "ES256",
     "compiler_version": "1",
+    "capabilities_digest": "sha256:" + "5" * 64,
     "minimum_cli_version": "0.2.0",
     "assertion_set_digest": STARTER_SET["digest"],
     "assertions": ASSERTIONS,
@@ -54,7 +55,7 @@ DESCRIPTOR: dict[str, Any] = {
 
 def _with_tarball(tarball: str) -> dict[str, Any]:
     digest = "sha256:" + hashlib.sha256(base64.b64decode(tarball)).hexdigest()
-    return {**DESCRIPTOR, "tarball": tarball, "digest": digest}
+    return {**DESCRIPTOR, "tarball": tarball, "tarball_digest": digest}
 
 
 DESCRIPTOR = _with_tarball(DESCRIPTOR["tarball"])
@@ -77,9 +78,9 @@ def test_the_set_digest_must_be_the_digest_of_the_bundles_assertions() -> None:
         )
 
 
-def test_the_digest_must_be_the_digest_of_the_tarballs_bytes() -> None:
+def test_the_tarball_digest_must_be_the_digest_of_the_tarballs_bytes() -> None:
     with pytest.raises(ValidationError, match="digest of the tarball's bytes"):
-        BundleDescriptor.model_validate({**DESCRIPTOR, "digest": "sha256:" + "4" * 64})
+        BundleDescriptor.model_validate({**DESCRIPTOR, "tarball_digest": "sha256:" + "4" * 64})
 
 
 def test_the_assertions_are_sorted_and_each_appears_once() -> None:

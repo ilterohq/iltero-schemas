@@ -9,6 +9,7 @@ carry a plan by the same four fields.
 from __future__ import annotations
 
 import re
+import unicodedata
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -64,6 +65,19 @@ def check_artifact_digest(digest: str | None, source: str) -> None:
         raise ValueError("artifact_digest is present exactly when artifact_digest_source is saved_plan")
 
 
+def check_artifact_file_name(file_name: str | None, source: str) -> None:
+    """Raise ``ValueError`` unless the saved plan file's name is present exactly when its source says it was given."""
+    if (file_name is not None) != (source == "saved_plan"):
+        raise ValueError("artifact_file_name is present exactly when artifact_digest_source is saved_plan")
+
+
+def check_server_bundle(kind: str, content_digest: str | None, key_id: str | None) -> None:
+    """Raise ``ValueError`` unless a bundle names its content digest and signing key exactly when it was served."""
+    served = kind == "server"
+    if (content_digest is not None) != served or (key_id is not None) != served:
+        raise ValueError("a bundle names its content digest and signing key exactly when its kind is server")
+
+
 def _no_token(value: str) -> str:
     """``value`` when no JSON Web Token appears anywhere in it; raises ``ValueError`` otherwise."""
     if _JSON_WEB_TOKEN.search(value):
@@ -99,6 +113,27 @@ MAX_PATH_COMPONENTS = 6
 MAX_PATH_LENGTH = 1024
 # Components that name a directory rather than a file, whatever the pattern allows.
 _NOT_A_COMPONENT = frozenset({".", ".."})
+
+
+# The longest file name most file systems allow, in UTF-8 bytes.
+FILE_NAME_MAX_BYTES = 255
+# Characters that separate directories or name a drive, and characters that look like a slash. A name is checked in
+# its compatibility form (NFKC), which also turns fullwidth and small forms of these into the plain ones.
+_NOT_IN_A_FILE_NAME = frozenset("/\\:\u2044\u2215\u2216\u29f5\u29f8\u29f9")
+
+
+def _file_name(value: str) -> str:
+    """A file's name without its directories, at most ``FILE_NAME_MAX_BYTES`` UTF-8 bytes as written.
+
+    No separator, colon or look-alike slash, not only dots and spaces, and no control character.
+    """
+    folded = unicodedata.normalize("NFKC", value)
+    # Windows drops trailing dots and spaces, so a name made only of them would name a directory.
+    if any(c in _NOT_IN_A_FILE_NAME for c in folded) or not folded.strip(". "):
+        raise ValueError("must be a file name without its directories")
+    if len(value.encode("utf-8")) > FILE_NAME_MAX_BYTES:
+        raise ValueError(f"must be at most {FILE_NAME_MAX_BYTES} bytes")
+    return plain_text(value)
 
 
 def _member_path(value: str) -> str:
@@ -148,6 +183,7 @@ Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 Version = Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
 EnvironmentKey = Annotated[str, Field(pattern=ENVIRONMENT_KEY_PATTERN)]
 MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_member_path)]
+FileName = Annotated[str, Field(min_length=1), AfterValidator(_file_name)]
 ProjectPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_project_path)]
 # A unit's name as a units file declares it: lowercase letters, digits, "_" and "-", starting with a letter or digit.
 UnitName = Annotated[str, Field(pattern=r"^[a-z0-9_][a-z0-9_-]{0,63}$")]

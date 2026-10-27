@@ -741,9 +741,9 @@ Key rules:
   same files. A descriptor whose `tarball_digest` is not the SHA-256 of its decoded `tarball` is refused.
 - `assertion_set_digest` names everything in the bundle.
 - `check_descriptor` refuses a descriptor whose `compiler_version` is not `iltero_schemas.compiler.COMPILER_VERSION`:
-  "the bundle was compiled by compiler <version>; this package's is <version>".
+  `the bundle was compiled by compiler <version>; this package's is <version>`.
 - `check_descriptor` refuses a descriptor whose `capabilities_digest` is not `iltero_schemas.opa.CAPABILITIES_DIGEST`:
-  "the bundle was built under allowlist <digest>; this package's is <digest>". The content digest covers the
+  `the bundle was built under allowlist <digest>; this package's is <digest>`. The content digest covers the
   allowlist, so the same assertions built under another allowlist have another `content_digest`.
 - The signing key must be in the trusted keys and must not be revoked.
 - A descriptor is at most 64 MiB as canonical JSON (`iltero_schemas.models.bundle.MAX_DESCRIPTOR_BYTES`); a larger

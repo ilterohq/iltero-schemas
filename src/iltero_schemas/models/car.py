@@ -52,12 +52,14 @@ from iltero_schemas.models.fields import (
     Count,
     Digest,
     EnforcementMode,
+    FileName,
     Identifier,
     MemberPath,
     ProjectPath,
     Timestamp,
     Uuid,
     check_artifact_digest,
+    check_artifact_file_name,
     check_server_bundle,
     parse_timestamp,
     plain_text,
@@ -303,6 +305,8 @@ class PlanRecord(StrictModel):
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_source: ArtifactDigestSource
+    # The saved plan file's name without its directories; a path is never written.
+    artifact_file_name: FileName | None
     context_digest: Digest
     # The IaC tool that wrote the plan, which is the tool the whole record is about.
     tool: IacTool
@@ -315,6 +319,7 @@ class PlanRecord(StrictModel):
     @model_validator(mode="after")
     def _artifact_digest_has_its_source(self) -> PlanRecord:
         check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
+        check_artifact_file_name(self.artifact_file_name, self.artifact_digest_source)
         return self
 
     @model_validator(mode="after")

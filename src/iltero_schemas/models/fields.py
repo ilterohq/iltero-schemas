@@ -64,6 +64,12 @@ def check_artifact_digest(digest: str | None, source: str) -> None:
         raise ValueError("artifact_digest is present exactly when artifact_digest_source is saved_plan")
 
 
+def check_artifact_file_name(file_name: str | None, source: str) -> None:
+    """Raise ``ValueError`` unless the saved plan file's name is present exactly when its source says it was given."""
+    if (file_name is not None) != (source == "saved_plan"):
+        raise ValueError("artifact_file_name is present exactly when artifact_digest_source is saved_plan")
+
+
 def check_server_bundle(kind: str, content_digest: str | None, key_id: str | None) -> None:
     """Raise ``ValueError`` unless a bundle names its content digest and signing key exactly when it was served."""
     served = kind == "server"
@@ -106,6 +112,17 @@ MAX_PATH_COMPONENTS = 6
 MAX_PATH_LENGTH = 1024
 # Components that name a directory rather than a file, whatever the pattern allows.
 _NOT_A_COMPONENT = frozenset({".", ".."})
+
+
+# The longest file name most file systems allow.
+FILE_NAME_MAX_LENGTH = 255
+
+
+def _file_name(value: str) -> str:
+    """A file's name without its directories: no separator, not a directory name, no control character."""
+    if "/" in value or "\\" in value or value in _NOT_A_COMPONENT:
+        raise ValueError("must be a file name without its directories")
+    return plain_text(value)
 
 
 def _member_path(value: str) -> str:
@@ -155,6 +172,7 @@ Uuid = Annotated[str, Field(pattern=UUID_PATTERN)]
 Version = Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
 EnvironmentKey = Annotated[str, Field(pattern=ENVIRONMENT_KEY_PATTERN)]
 MemberPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_member_path)]
+FileName = Annotated[str, Field(min_length=1, max_length=FILE_NAME_MAX_LENGTH), AfterValidator(_file_name)]
 ProjectPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(_project_path)]
 # A unit's name as a units file declares it: lowercase letters, digits, "_" and "-", starting with a letter or digit.
 UnitName = Annotated[str, Field(pattern=r"^[a-z0-9_][a-z0-9_-]{0,63}$")]

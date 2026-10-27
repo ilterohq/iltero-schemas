@@ -1065,6 +1065,7 @@
     "applyable": true,
     "artifact_digest": null,
     "artifact_digest_source": "not_provided",
+    "artifact_file_name": null,
     "complete": true,
     "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
     "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",

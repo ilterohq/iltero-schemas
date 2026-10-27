@@ -749,7 +749,8 @@
     "vector": "local_run.json",
     "set": {
       "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/plan/artifact_digest_source": "saved_plan"
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "tfplan"
     },
     "remove": []
   }

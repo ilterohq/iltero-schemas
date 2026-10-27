@@ -160,7 +160,8 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
             f"the bundle was compiled by compiler {descriptor.compiler_version}; this package's is {COMPILER_VERSION}"
         )
     if descriptor.capabilities_digest != CAPABILITIES_DIGEST:
-        raise BundleError("the bundle was built under another allowlist than this package's capabilities")
+        built_under, ours = descriptor.capabilities_digest, CAPABILITIES_DIGEST
+        raise BundleError(f"the bundle was built under allowlist {built_under}; this package's is {ours}")
     try:
         rebuilt = unsigned_bundle(
             [a.source for a in descriptor.assertions], minimum_cli_version=descriptor.minimum_cli_version

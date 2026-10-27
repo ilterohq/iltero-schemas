@@ -753,5 +753,63 @@
       "/plan/artifact_file_name": "tfplan"
     },
     "remove": []
+  },
+  {
+    "name": "record_of_a_run_the_server_opened_from_a_served_bundle",
+    "vector": "local_run.json",
+    "set": {
+      "/run/origin": "server_issued",
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/run/origin": "server_issued",
+      "/events/1/provenance/run/origin": "server_issued",
+      "/events/2/provenance/run/origin": "server_issued",
+      "/events/3/provenance/run/origin": "server_issued",
+      "/events/4/provenance/run/origin": "server_issued",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/execution/bundle": {
+        "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "kind": "server",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/0/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/2/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/events/4/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "key_id": "iltero-bundle-2026-09"
+      },
+      "/events/4/provenance/assertion_source": "server_bundle"
+    },
+    "remove": []
   }
 ]

@@ -87,7 +87,10 @@ def test_a_record_of_a_run_the_tool_opened_names_no_server_bundle(where: str) ->
 
 def test_a_record_of_a_run_the_tool_opened_has_no_evaluations_from_a_server_bundle() -> None:
     document = copy.deepcopy(record())
-    document["events"][0]["provenance"]["assertion_source"] = "server_bundle"
+    # An evaluation that ran no evaluator names no bundle, so only the record can refuse its source.
+    event = document["events"][0]
+    event["provenance"].update({"assertion_source": "server_bundle", "bundle": None, "evaluator": None})
+    event["evaluation"].update({"status": "not_evaluated", "status_reason": "evaluator_unavailable"})
     with pytest.raises(ValidationError, match="has no evaluations from a server bundle"):
         CAR.model_validate(document, context=_READER)
 

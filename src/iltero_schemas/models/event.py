@@ -372,6 +372,9 @@ class AssuranceEvent(StrictModel):
         from_scanner = isinstance(self.provenance.evaluator, ScannerEvaluator)
         if (self.provenance.bundle is not None) != isinstance(self.provenance.evaluator, OpaEvaluator):
             raise ValueError("a bundle is named exactly when this CLI ran the evaluator over one")
+        bundle = self.provenance.bundle
+        if self.provenance.assertion_source == "server_bundle" and bundle is not None and bundle.kind != "server":
+            raise ValueError("an assertion from the server's bundle is evaluated over the server's bundle")
         if (self.provenance.binding is not None) != from_scanner:
             raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):

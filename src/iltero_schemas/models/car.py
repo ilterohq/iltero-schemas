@@ -44,7 +44,7 @@ from iltero_schemas.models.change import Change, UnitsFile, check_change
 from iltero_schemas.models.context import ReferenceTime, Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.event import AssuranceEvent, Compiler
+from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     MAX_PATH_LENGTH,
@@ -60,7 +60,6 @@ from iltero_schemas.models.fields import (
     Uuid,
     check_artifact_digest,
     check_artifact_file_name,
-    check_server_bundle,
     parse_timestamp,
     plain_text,
 )
@@ -164,21 +163,10 @@ class ExecutionEvaluator(StrictModel):
     digest: Digest
 
 
-class ExecutionBundle(StrictModel):
-    """The bundle a stage loaded, named by the SHA-256 of its tarball's bytes, and the allowlist its programs were built
-    under."""
+class ExecutionBundle(Bundle):
+    """The bundle a stage loaded, named as an event names it, and the allowlist its programs were built under."""
 
-    kind: Literal["server", "local_bundle"]
-    tarball_digest: Digest
-    # For a served bundle, the descriptor's content digest and signing key; null for a local bundle.
-    content_digest: Digest | None
-    key_id: Identifier | None
     capabilities_digest: Digest
-
-    @model_validator(mode="after")
-    def _a_server_bundle_names_its_content_and_key(self) -> ExecutionBundle:
-        check_server_bundle(self.kind, self.content_digest, self.key_id)
-        return self
 
 
 class Execution(StrictModel):
@@ -317,7 +305,7 @@ class PlanRecord(StrictModel):
     applyable: bool | NotReported
 
     @model_validator(mode="after")
-    def _artifact_digest_has_its_source(self) -> PlanRecord:
+    def _a_saved_plan_names_its_digest_and_file(self) -> PlanRecord:
         check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
         check_artifact_file_name(self.artifact_file_name, self.artifact_digest_source)
         return self

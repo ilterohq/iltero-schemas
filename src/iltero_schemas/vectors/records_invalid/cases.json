@@ -2308,5 +2308,57 @@
     },
     "remove": [],
     "message": "must be a file name without its directories"
+  },
+  {
+    "name": "local_bundle_naming_a_signing_key",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09"
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_bundle_without_its_content_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": null,
+        "key_id": "iltero-bundle-2026-09"
+      }
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_assertion_evaluated_over_a_local_bundle",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/assertion_source": "server_bundle"
+    },
+    "remove": [],
+    "message": "an assertion from the server's bundle is evaluated over the server's bundle"
+  },
+  {
+    "name": "artifact_file_name_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_file_name": "tfplan"
+    },
+    "remove": [],
+    "message": "artifact_file_name is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_named_with_a_look_alike_slash",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "build／tfplan"
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
   }
 ]

@@ -222,9 +222,19 @@ def test_the_status_order_ranks_every_status_once() -> None:
     assert sorted(STATUS_SEVERITY) == sorted(get_args(Status))
 
 
+SERVED = {"kind": "server", "tarball_digest": "sha256:" + "5" * 64, "content_digest": "sha256:" + "6" * 64}
+
+
 @pytest.mark.parametrize("source", ["server_bundle", "local", "custom_rego", "contract_starter"])
 def test_a_check_names_where_its_assertion_came_from(source: str) -> None:
-    AssuranceEvent.model_validate(_event(**{"provenance.assertion_source": source}))
+    bundle = {**SERVED, "key_id": "iltero-bundle-2026-09"} if source == "server_bundle" else None
+    changes = {"provenance.assertion_source": source} | ({"provenance.bundle": bundle} if bundle else {})
+    AssuranceEvent.model_validate(_event(**changes))
+
+
+def test_an_assertion_from_the_servers_bundle_is_not_evaluated_over_a_local_bundle() -> None:
+    with pytest.raises(ValidationError, match="evaluated over the server's bundle"):
+        AssuranceEvent.model_validate(_event(**{"provenance.assertion_source": "server_bundle"}))
 
 
 def test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment() -> None:

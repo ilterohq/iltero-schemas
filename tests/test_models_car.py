@@ -566,3 +566,10 @@ def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
     document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-bundle-2026-09"
     with pytest.raises(ValidationError, match="exactly when its kind is server"):
         CAR.model_validate(document)
+
+
+def test_a_binding_set_file_is_named_without_its_directories() -> None:
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["binding_set"] = {**scanners["binding_set"], "origin": "file", "file_name": "config/bindings.yaml"}
+    with pytest.raises(ValidationError, match="without its directories"):
+        CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))

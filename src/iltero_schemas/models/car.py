@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from typing import Annotated, Final, Literal
 
-from pydantic import AfterValidator, Field, ValidationInfo, model_validator
+from pydantic import Field, ValidationInfo, model_validator
 
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
@@ -47,7 +47,6 @@ from iltero_schemas.models.deployment import Deployment, check_superseded, check
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
-    MAX_PATH_LENGTH,
     ArtifactDigestSource,
     Count,
     Digest,
@@ -61,7 +60,6 @@ from iltero_schemas.models.fields import (
     check_artifact_digest,
     check_artifact_file_name,
     parse_timestamp,
-    plain_text,
 )
 from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.identity import IdentityRecord
@@ -217,7 +215,8 @@ class BindingSetUsed(StrictModel):
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     origin: Literal["shipped", "file"]
     # The name of the file it was read from; absent for the shipped set.
-    file_name: Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), AfterValidator(plain_text)] | None
+    # The binding set file's name without its directories, when it was read from a file.
+    file_name: FileName | None
     digest: Digest
     copy_path: MemberPath
     binding_count: Count

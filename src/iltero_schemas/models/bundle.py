@@ -86,6 +86,8 @@ class BundleDescriptor(StrictModel):
     key_id: Identifier
     algorithm: Literal["ES256"]
     compiler_version: Identifier
+    # The digest of the evaluator's allowlist of built-in functions the modules were built under.
+    capabilities_digest: Digest
     minimum_cli_version: Version
     assertion_set_digest: Digest
     assertions: Annotated[list[BundleAssertion], Field(min_length=1, max_length=MAX_BUNDLE_ASSERTIONS)]

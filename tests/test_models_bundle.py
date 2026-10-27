@@ -45,6 +45,7 @@ DESCRIPTOR: dict[str, Any] = {
     "key_id": "iltero-bundle-2026-09",
     "algorithm": "ES256",
     "compiler_version": "1",
+    "capabilities_digest": "sha256:" + "5" * 64,
     "minimum_cli_version": "0.2.0",
     "assertion_set_digest": STARTER_SET["digest"],
     "assertions": ASSERTIONS,

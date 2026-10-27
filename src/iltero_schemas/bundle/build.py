@@ -13,7 +13,8 @@ tar file holding
 The files and the bytes to sign are a pure function of the assertions'
 source documents and the versions, so anyone holding the sources builds the
 same ones. The content digest is the digest of ``metadata.iltero``: the assertions
-together with the compiler version and the oldest tool allowed. Signing is
+together with the compiler version, the evaluator's allowlist and the oldest tool
+allowed. Signing is
 left to the holder of the key; this module produces the bytes to sign and
 places the signature. The compressed tarball itself can differ between
 compression libraries, which is why a bundle's ``tarball_digest`` is taken over
@@ -43,6 +44,7 @@ from iltero_schemas.canonical import canonical_bytes, digest, digest_of, require
 from iltero_schemas.compiler import COMPILER_VERSION, PACKAGE_PREFIX, compile
 from iltero_schemas.models.assertion import VERSION_PATTERN
 from iltero_schemas.models.bundle import API_VERSION, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 
 MANIFEST = ".manifest"
 SIGNATURES = ".signatures.json"
@@ -136,6 +138,7 @@ def unsigned_bundle(sources: Sequence[str], *, minimum_cli_version: str) -> Unsi
     metadata = {
         "apiVersion": API_VERSION,
         "compiler_version": COMPILER_VERSION,
+        "capabilities_digest": CAPABILITIES_DIGEST,
         "minimum_cli_version": minimum_cli_version,
         "assertion_set_digest": required_assertion_digest((m.id, m.version, m.digest) for m in members),
         "assertions": [m.record() for m in members],
@@ -240,6 +243,7 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
             "key_id": key_id,
             "algorithm": SIGNING_ALGORITHM,
             "compiler_version": bundle.metadata["compiler_version"],
+            "capabilities_digest": bundle.metadata["capabilities_digest"],
             "minimum_cli_version": bundle.metadata["minimum_cli_version"],
             "assertion_set_digest": bundle.metadata["assertion_set_digest"],
             "assertions": [{**m.record(), "source": m.source} for m in bundle.members],

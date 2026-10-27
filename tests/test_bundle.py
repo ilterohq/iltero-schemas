@@ -34,7 +34,7 @@ from iltero_schemas.bundle.check import MAX_MEMBERS, MAX_UNPACKED_BYTES, read_ta
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of
 from iltero_schemas.compiler import COMPILER_VERSION, package_of
 from iltero_schemas.models.bundle import BundleDescriptor
-from iltero_schemas.opa import CAPABILITIES
+from iltero_schemas.opa import CAPABILITIES, CAPABILITIES_DIGEST
 from iltero_schemas.trust import BundleKey, parse_bundle_keys
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
@@ -123,11 +123,13 @@ def test_the_manifest_names_every_assertion_and_its_revision_is_the_content_dige
     assert set(metadata) == {
         "apiVersion",
         "compiler_version",
+        "capabilities_digest",
         "minimum_cli_version",
         "assertion_set_digest",
         "assertions",
     }
     assert metadata["compiler_version"] == COMPILER_VERSION
+    assert metadata["capabilities_digest"] == CAPABILITIES_DIGEST
     assert [a["id"] for a in metadata["assertions"]] == ids
 
 
@@ -229,6 +231,11 @@ def _with_source(index: int, source: str) -> BundleDescriptor:
 def test_a_bundle_the_compiler_cannot_reproduce_is_refused() -> None:
     with pytest.raises(BundleError, match="compiled by compiler"):
         check_descriptor(_changed(compiler_version=COMPILER_VERSION + "0"), _keys())
+
+
+def test_a_bundle_made_for_another_allowlist_is_refused() -> None:
+    with pytest.raises(BundleError, match="another allowlist"):
+        check_descriptor(_changed(capabilities_digest="sha256:" + "0" * 64), _keys())
 
 
 def test_a_source_that_is_not_the_one_the_digests_name_is_refused() -> None:

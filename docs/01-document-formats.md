@@ -277,7 +277,7 @@ who produced it and to reproduce it.
 | `source_commit`, `plan_digest` | The commit and the plan the evaluation is about. `plan_digest` holds the plan's digest (`value`), the IaC `tool` that wrote the plan, and the `version` of that tool's plan digest rule; any other `version` is refused. |
 | `input_digest` | The digest of the assurance context the evaluator received. |
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov`, `trivy` or `prowler`): its reported `version`, a `digest` when known, and `reason: not_executed_by_cli`. |
-| `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`) and `digest`. Present exactly when the evaluator is `opa`. |
+| `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`) and `tarball_digest`, the SHA-256 of the bytes of the bundle tarball the evaluator loaded. For `server`, the served descriptor's `tarball_digest`; for `local_bundle`, the digest of the tarball the tool built. The writer's claim. Present exactly when the evaluator is `opa`. |
 | `binding` | The evaluator binding that let a scanner's result stand for the assertion. Present exactly when the evaluator is a scanner. |
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
@@ -367,7 +367,7 @@ Each `stages` entry says what one stage did:
 | `stage` | stage | The stage, the same as the entry's key. |
 | `observed_at` | timestamp | When the stage observed the change. |
 | `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
-| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `digest`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
+| `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`: `server` or `local_bundle`, `tarball_digest`, as in an event's `bundle`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. |
 | `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
 | `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (`pre_deploy`), `null` at every other. |
 | `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
@@ -731,8 +731,9 @@ with the module in the tarball before it runs anything.
 
 Key rules:
 
-- A bundle is identified by `content_digest` and `tarball_digest` together. The same content signed under two keys
-  has one `content_digest` and two `tarball_digest` values.
+- A bundle is identified by `content_digest` and `tarball_digest` together. Content has one `content_digest` but can
+  have several `tarball_digest` values, because an ES256 signature can differ on each signing, under the same key or
+  another.
 - `content_digest` is recomputed from the assertions' sources (`iltero_schemas.bundle.check_descriptor`); a
   descriptor whose value differs is refused.
 - `tarball_digest` is taken over the bytes served, because compression libraries can write different bytes for the

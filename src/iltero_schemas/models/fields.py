@@ -119,11 +119,14 @@ _NOT_A_COMPONENT = frozenset({".", ".."})
 FILE_NAME_MAX_BYTES = 255
 # Characters that separate directories or name a drive, and characters that look like a slash. A name is checked in
 # its compatibility form (NFKC), which also turns fullwidth and small forms of these into the plain ones.
-_NOT_IN_A_FILE_NAME = frozenset("/\\:\u2044\u2215\u29f8\u29f9")
+_NOT_IN_A_FILE_NAME = frozenset("/\\:\u2044\u2215\u2216\u29f5\u29f8\u29f9")
 
 
 def _file_name(value: str) -> str:
-    """A file's name without its directories: no separator, not a directory name, no control character."""
+    """A file's name without its directories, at most ``FILE_NAME_MAX_BYTES`` UTF-8 bytes as written.
+
+    No separator, colon or look-alike slash, not only dots and spaces, and no control character.
+    """
     folded = unicodedata.normalize("NFKC", value)
     # Windows drops trailing dots and spaces, so a name made only of them would name a directory.
     if any(c in _NOT_IN_A_FILE_NAME for c in folded) or not folded.strip(". "):

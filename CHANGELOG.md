@@ -31,9 +31,9 @@ keep, so any two tools agree on what a record means.
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each stage.
 - A JSON document a tool writes has one form, so one set of facts has one
-  digest: every optional field is written, as `null` when it has no value,
-  as its model dumps it. A context part outside its stage's profile is `null`. A field
-  left out still reads. Every document vector is in this form.
+  digest: every optional field is written, as `null` when it has no value, as
+  its model dumps it. A context part outside its stage's profile is `null`. A
+  field left out still reads. Every document vector is in this form.
 - A reference time claims no more than its source: a runner's clock is
   always `asserted`, and a `time_window` is present exactly when a timestamp
   authority gave the time, with the time inside it. A stage's reference time
@@ -91,12 +91,12 @@ keep, so any two tools agree on what a record means.
   (each with the project's reason). A stage's `scanners` names the binding set
   in force and counts each scanner result once: accepted as `pass` or `fail`,
   matched by a binding whose version constraint the scanner does not satisfy,
-  or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
-  names its index in the plan's resource list (`plan_index`), its address as
-  written or `null`, and one of four reasons. A coverage gap is one of three
-  shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
-  count of at least 1 (`COUNT_GAP_KINDS`); the record's combined coverage
-  names each gap's stage.
+  or one that became no evaluation. An excluded resource
+  (`subjects_in_scope.excluded`) names its index in the plan's resource list
+  (`plan_index`), its address as written or `null`, and one of four reasons. A
+  coverage gap is one of three shapes, chosen by its `kind`: a plan flag, a
+  resource's `plan_index`, or a count of at least 1 (`COUNT_GAP_KINDS`); the
+  record's combined coverage names each gap's stage.
 - A record redacts under one policy. An evidence file's `redaction_policy`
   names it as a stage's redaction report does (`id`, `version`, `digest`),
   or is `null` for a file no redaction touched, and every stage and every
@@ -109,9 +109,12 @@ keep, so any two tools agree on what a record means.
   not `true`, with the plan's value, in kind order; a plan-flag gap in any
   other stage is refused. When the plan was read from a saved plan file, the
   record's plan names the file's digest and its file name without its
-  directories (`artifact_digest`, `artifact_file_name`); a name that holds a
-  directory is refused.
-  Record vectors cover each rule.
+  directories (`artifact_digest`, `artifact_file_name`); the record keeps
+  them, not the file. The name is checked in its NFKC (Unicode
+  compatibility) form: one that holds `/`, `\`, `:` or a character that
+  looks like a slash, or consists only of dots and spaces, is refused. A
+  name is at most 255 UTF-8 bytes, with no control character. Record
+  vectors cover each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
   incomplete or did not say it is complete, is incomplete with reason
   `plan_not_complete`. Its verdict still follows its evaluations. An evaluator
@@ -131,10 +134,12 @@ keep, so any two tools agree on what a record means.
 - An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
   `version`, `tool`), and a record holds every event's to its own plan. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
-  `github_actions`. The bundle an event and a record stage name gives its
+  `github_actions`. An event's and a record stage's `bundle` give its
   `kind`, its `tarball_digest` and, for a bundle the server served, the
   descriptor's `content_digest` and `key_id`, which are `null` for a bundle
-  the tool built.
+  the tool built; a stage's also gives its `capabilities_digest`. An
+  evaluation of an assertion from the server's bundle that ran over a
+  bundle names a bundle of kind `server`.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
@@ -147,12 +152,12 @@ keep, so any two tools agree on what a record means.
 - The identity document (`IdentityBindings` v1). A binding's `iac` side names
   its `tool`, and the document lists its `resolvers`, one per cloud provider.
   The cloud side and resolver of an identity binding each have one shape per
-  cloud provider, chosen by a `provider` field; AWS is the first. Each AWS resource name (ARN) has the shape
-  AWS could issue: an S3 bucket name that looks like an IP address, holds two
-  dots in a row or uses a reserved prefix or suffix is refused, and so is an
-  RDS identifier that is not lowercase, ends with a hyphen or holds two
-  hyphens in a row. No two of its bindings, and no two of its removed
-  entries, name the same cloud identity.
+  cloud provider, chosen by a `provider` field; AWS is the first. Each AWS
+  resource name (ARN) has the shape AWS could issue: an S3 bucket name that
+  looks like an IP address, holds two dots in a row or uses a reserved prefix
+  or suffix is refused, and so is an RDS identifier that is not lowercase,
+  ends with a hyphen or holds two hyphens in a row. No two of its bindings,
+  and no two of its removed entries, name the same cloud identity.
 - Hand-written policy sources and scanner binding sets. An evaluator
   binding's `input_kind` says what the scanner must have been reading, and a
   record's scanner report lists its `input_kinds`. Binding sets, events and
@@ -196,10 +201,10 @@ keep, so any two tools agree on what a record means.
 - The signed bundle's descriptor, at most 64 MiB of canonical JSON
   (`MAX_DESCRIPTOR_BYTES`).
 - A stage counts its subjects by their kind: resources by enumerating the
-  plan, a change or a deployment as its one unit (`counted_from: change_unit`, by
-  the record's change digest, or `deployment_unit`). Every stage records the
-  mode its gate ran in (`enforcement_mode`: `enforcing` or `advisory`, always
-  enforcing after the deployment).
+  plan, a change or a deployment as its one unit (`counted_from: change_unit`,
+  by the record's change digest, or `deployment_unit`). Every stage records
+  the mode its gate ran in (`enforcement_mode`: `enforcing` or `advisory`,
+  always enforcing after the deployment).
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`: at most
   256, by the tool's address of the input, sorted). Its verdict still
@@ -219,19 +224,18 @@ keep, so any two tools agree on what a record means.
   the starter assertions guard on that, not on the environment's name. A run
   Iltero Platform did not open holds the unknown marker there, so an
   assertion that guards on production is `unknown`, never skipped.
-- Resource selectors on an assertion's target. A resource target names one
-  IaC tool's types (`{tool, provider, resource_types}`), whose values are
-  that tool's own attributes. A change or deployment target may name a
-  provider's tool-independent kinds (`{provider, kinds}`), and the compiler
-  writes its scope guard from them: a condition that decides whether the
-  assertion applies. Each tool's table gives its types their kinds
-  (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3
-  and RDS types). Each resource in the evaluation input names its provider's
-  short name and the kind the table gives its type, or the unknown marker
-  when the table lacks it, so an unnamed type makes the evaluation unknown rather
-  than out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
-  and network kinds, roles, policy attachments, key policies and grants
-  included.
+- Resource selectors on an assertion's target. A resource target names one IaC
+  tool's types (`{tool, provider, resource_types}`), whose values are that
+  tool's own attributes. A change or deployment target may name a provider's
+  tool-independent kinds (`{provider, kinds}`), and the compiler writes its
+  scope guard from them: a condition that decides whether the assertion
+  applies. Each tool's table gives its types their kinds
+  (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3 and RDS
+  types). Each resource in the evaluation input names its provider's short
+  name and the kind the table gives its type, or the unknown marker when the
+  table lacks it, so an unnamed type makes the evaluation unknown rather than
+  out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS and
+  network kinds, roles, policy attachments, key policies and grants included.
 - The facts only Iltero Platform holds, as items an assertion reads: approvals,
   exceptions and earlier evaluations. An approval names the change it
   approves by its digest, or the run by Iltero's run id, and says how it was
@@ -257,14 +261,15 @@ keep, so any two tools agree on what a record means.
   before anything in it is evaluated. A bundle's content digest covers its
   assertions, the compiler version, the evaluator's allowlist
   (`capabilities_digest`) and the oldest CLI version allowed;
-  `check_descriptor` refuses a bundle built by
-  another compiler version or under another allowlist. It returns an `UnverifiedBundle`: the
-  pinned OPA, or the signer's library, verifies the signature. Signatures are
-  accepted only in their low-S form (`normalized_signature`), which `descriptor` writes whatever form
-  the signer returned, so one signing gives one digest. A run
-  and a bundle each hold one version of an assertion.
+  `check_descriptor` refuses a bundle built by another compiler version or
+  under another allowlist, naming both values. It returns an `UnverifiedBundle`:
+  the pinned OPA, or the signer's library, verifies the signature.
+  Signatures are accepted only in their low-S form (`normalized_signature`),
+  which `descriptor` writes whatever form the signer returned, so one
+  signing gives one digest. A run and a bundle each hold one version of an
+  assertion.
 - The verification report (`VerificationReport` v1): what a verifier found
   about one record, property by property, with no overall verdict. It never
   calls a record's integrity verified, because no record carries a signature
-  in this version. When the report cannot establish a record's integrity, it trusts
-  nothing else the record says.
+  in this version. When the report cannot establish a record's integrity, it
+  trusts nothing else the record says.

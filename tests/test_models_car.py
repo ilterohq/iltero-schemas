@@ -388,7 +388,7 @@ def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
         CAR.model_validate(document)
 
 
-def test_a_record_refuses_an_artifact_digest_without_its_source() -> None:
+def test_a_record_refuses_a_saved_plan_without_its_artifact_digest() -> None:
     with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is saved_plan"):
         CAR.model_validate(_record(**{"plan.artifact_digest_source": "saved_plan"}))
 

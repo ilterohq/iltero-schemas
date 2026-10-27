@@ -42,7 +42,7 @@
         "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "kind": "local_bundle"
           },
           "detail": null,
@@ -599,7 +599,7 @@
         "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "kind": "local_bundle"
           },
           "detail": null,

@@ -264,8 +264,10 @@ class BindingRef(StrictModel):
 
 
 class Bundle(StrictModel):
+    """The bundle the evaluator loaded: who built it, and the SHA-256 of its tarball's bytes."""
+
     kind: Literal["server", "local_bundle"]
-    digest: Digest
+    tarball_digest: Digest
 
 
 class Compiler(StrictModel):

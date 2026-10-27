@@ -218,7 +218,7 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c",
             "bundle": {
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,
@@ -313,7 +313,7 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc",
             "bundle": {
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,
@@ -450,7 +450,7 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:ec20a46451f1349a9b22b2eed1980dc7113430d8c6c0921eccf2b4692ef832a2",
             "bundle": {
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,
@@ -545,7 +545,7 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:5f5e1fa285c8854c11ca2cd2e814dae9313320ec3d3ea7252f43820370bb6d5d",
             "bundle": {
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,
@@ -644,7 +644,7 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064",
             "bundle": {
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "binding": null,

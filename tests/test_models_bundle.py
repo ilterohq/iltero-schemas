@@ -77,7 +77,7 @@ def test_the_set_digest_must_be_the_digest_of_the_bundles_assertions() -> None:
         )
 
 
-def test_the_digest_must_be_the_digest_of_the_tarballs_bytes() -> None:
+def test_the_tarball_digest_must_be_the_digest_of_the_tarballs_bytes() -> None:
     with pytest.raises(ValidationError, match="digest of the tarball's bytes"):
         BundleDescriptor.model_validate({**DESCRIPTOR, "tarball_digest": "sha256:" + "4" * 64})
 

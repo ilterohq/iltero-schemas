@@ -587,7 +587,7 @@
           "execution": {
             "bundle": {
               "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "detail": null,
@@ -1139,7 +1139,7 @@
           "execution": {
             "bundle": {
               "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-              "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle"
             },
             "detail": null,
@@ -1721,7 +1721,7 @@
         "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "kind": "local_bundle"
           },
           "detail": null,
@@ -2268,6 +2268,15 @@
     "vector": "local_run.json",
     "set": {
       "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "artifact_digest_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
     },
     "remove": [],
     "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"

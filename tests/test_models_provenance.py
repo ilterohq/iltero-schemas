@@ -14,7 +14,7 @@ from iltero_schemas.models.subjects import subject_key
 from tests.records import record, set_path, stage
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
-SERVER_BUNDLE = {"kind": "server", "digest": "sha256:" + "5" * 64}
+SERVER_BUNDLE = {"kind": "server", "tarball_digest": "sha256:" + "5" * 64}
 
 
 def _opened_by_the_server() -> dict[str, Any]:

@@ -7,11 +7,12 @@ so a tool can recompile every source and compare the result byte for byte
 with the module in the tarball before running anything. It also names the
 key that signed the bundle and the oldest tool version able to evaluate it.
 
-A bundle is identified by two values together: ``content_digest``, the address
-of its content, and ``tarball_digest``, the digest of the signed tarball. The
-same content signed under two keys has one content digest and two tarball
-digests. ``tarball_digest`` is over the decoded tarball bytes, never over their
-base64 text.
+A bundle is identified by two values together: ``content_digest``, the digest
+of its content (its manifest's ``metadata.iltero``), and ``tarball_digest``, the
+digest of the signed tarball. Content has one content digest but can have
+several tarball digests: an ES256 signature can differ on each signing, under
+the same key or another. ``tarball_digest`` is over the decoded tarball bytes,
+never over their base64 text.
 
 A bundle may hold more assertions than one run owes: ``assertion_set_digest``
 names everything in the bundle.

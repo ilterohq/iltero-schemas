@@ -162,10 +162,11 @@ class ExecutionEvaluator(StrictModel):
 
 
 class ExecutionBundle(StrictModel):
-    """The set of programs a stage loaded, and the allowlist they were built under."""
+    """The bundle a stage loaded, named by the SHA-256 of its tarball's bytes, and the allowlist its programs were built
+    under."""
 
     kind: Literal["server", "local_bundle"]
-    digest: Digest
+    tarball_digest: Digest
     capabilities_digest: Digest
 
 

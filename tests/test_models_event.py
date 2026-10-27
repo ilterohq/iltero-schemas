@@ -16,6 +16,7 @@ from iltero_schemas.models.event import (
     STATUS_REASONS,
     STATUS_SEVERITY,
     AssuranceEvent,
+    Bundle,
 )
 from iltero_schemas.models.fields import Status
 from tests.conftest import ARNS, VECTORS
@@ -230,3 +231,44 @@ def test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment() ->
     identity = {"scheme": "aws_arn", "value": ARNS["rds_instance"]}
     with pytest.raises(ValidationError, match="read after deployment"):
         AssuranceEvent.model_validate(_event(**{"subject.identities": [identity]}))
+
+
+@pytest.mark.parametrize(
+    ("kind", "content_digest", "key_id"),
+    [
+        ("server", None, None),
+        ("server", "sha256:" + "6" * 64, None),
+        ("server", None, "iltero-bundle-2026-09"),
+        ("local_bundle", "sha256:" + "6" * 64, None),
+        ("local_bundle", None, "iltero-bundle-2026-09"),
+    ],
+    ids=[
+        "server naming neither",
+        "server without key",
+        "server without content",
+        "local with content",
+        "local with key",
+    ],
+)
+def test_a_bundle_names_its_content_digest_and_key_exactly_when_the_server_served_it(
+    kind: str, content_digest: str | None, key_id: str | None
+) -> None:
+    document = {
+        "kind": kind,
+        "tarball_digest": "sha256:" + "5" * 64,
+        "content_digest": content_digest,
+        "key_id": key_id,
+    }
+    with pytest.raises(ValidationError, match="exactly when its kind is server"):
+        Bundle.model_validate(document)
+
+
+def test_a_served_bundle_with_its_content_digest_and_key_is_accepted() -> None:
+    Bundle.model_validate(
+        {
+            "kind": "server",
+            "tarball_digest": "sha256:" + "5" * 64,
+            "content_digest": "sha256:" + "6" * 64,
+            "key_id": "iltero-bundle-2026-09",
+        }
+    )

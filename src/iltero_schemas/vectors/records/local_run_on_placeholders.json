@@ -99,7 +99,9 @@
         "assertion_source_digest": "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "binding": null,
         "facts_source": null,
@@ -194,7 +196,9 @@
         "assertion_source_digest": "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "binding": null,
         "facts_source": null,
@@ -331,7 +335,9 @@
         "assertion_source_digest": "sha256:ec20a46451f1349a9b22b2eed1980dc7113430d8c6c0921eccf2b4692ef832a2",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "binding": null,
         "facts_source": null,
@@ -426,7 +432,9 @@
         "assertion_source_digest": "sha256:5f5e1fa285c8854c11ca2cd2e814dae9313320ec3d3ea7252f43820370bb6d5d",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "binding": null,
         "facts_source": null,
@@ -525,7 +533,9 @@
         "assertion_source_digest": "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "binding": null,
         "facts_source": null,
@@ -1013,13 +1023,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:7a5fa2e0b43b8baca012308ffabdfa0c1eef1ca20c3102c487d8a6c0ee88c165",
+      "digest": "sha256:4a2113287777121f4f7b7bd0de4d6bc1c1955c31a0db3ddf663ba2462421d5cf",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11314,
+      "size_bytes": 11494,
       "source": null,
       "storage_uri": null
     }
@@ -1083,7 +1093,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:7a5fa2e0b43b8baca012308ffabdfa0c1eef1ca20c3102c487d8a6c0ee88c165",
+        "digest": "sha256:4a2113287777121f4f7b7bd0de4d6bc1c1955c31a0db3ddf663ba2462421d5cf",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1091,7 +1101,9 @@
         "bundle": {
           "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "kind": "local_bundle"
+          "kind": "local_bundle",
+          "content_digest": null,
+          "key_id": null
         },
         "detail": null,
         "evaluator": {

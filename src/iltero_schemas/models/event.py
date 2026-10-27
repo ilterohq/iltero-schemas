@@ -41,6 +41,7 @@ from iltero_schemas.models.fields import (
     Identity,
     Status,
     Timestamp,
+    check_server_bundle,
     plain_text,
 )
 from iltero_schemas.models.iac import IacTool
@@ -264,10 +265,18 @@ class BindingRef(StrictModel):
 
 
 class Bundle(StrictModel):
-    """The bundle the evaluator loaded: who built it, and the SHA-256 of its tarball's bytes."""
+    """The bundle the evaluator loaded: who built it, the SHA-256 of its tarball's bytes, and for a served bundle
+    the descriptor's content digest and signing key."""
 
     kind: Literal["server", "local_bundle"]
     tarball_digest: Digest
+    content_digest: Digest | None
+    key_id: Identifier | None
+
+    @model_validator(mode="after")
+    def _a_server_bundle_names_its_content_and_key(self) -> Bundle:
+        check_server_bundle(self.kind, self.content_digest, self.key_id)
+        return self
 
 
 class Compiler(StrictModel):

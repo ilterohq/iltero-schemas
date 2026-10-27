@@ -559,3 +559,10 @@ def test_a_clock_time_written_another_way_is_the_same_instant() -> None:
     written = observed.replace("Z", "000Z") if "." in observed else observed.replace("Z", ".000Z")
     reference_time = {**RECORD["stages"]["plan"]["reference_time"], "value": written}
     CAR.model_validate(_record(**{"stages.plan.reference_time": reference_time}))
+
+
+def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
+    document = _record()
+    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-bundle-2026-09"
+    with pytest.raises(ValidationError, match="exactly when its kind is server"):
+        CAR.model_validate(document)

@@ -58,6 +58,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
+    check_server_bundle,
     parse_timestamp,
     plain_text,
 )
@@ -167,7 +168,15 @@ class ExecutionBundle(StrictModel):
 
     kind: Literal["server", "local_bundle"]
     tarball_digest: Digest
+    # For a served bundle, the descriptor's content digest and signing key; null for a local bundle.
+    content_digest: Digest | None
+    key_id: Identifier | None
     capabilities_digest: Digest
+
+    @model_validator(mode="after")
+    def _a_server_bundle_names_its_content_and_key(self) -> ExecutionBundle:
+        check_server_bundle(self.kind, self.content_digest, self.key_id)
+        return self
 
 
 class Execution(StrictModel):

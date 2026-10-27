@@ -64,6 +64,13 @@ def check_artifact_digest(digest: str | None, source: str) -> None:
         raise ValueError("artifact_digest is present exactly when artifact_digest_source is saved_plan")
 
 
+def check_server_bundle(kind: str, content_digest: str | None, key_id: str | None) -> None:
+    """Raise ``ValueError`` unless a bundle names its content digest and signing key exactly when it was served."""
+    served = kind == "server"
+    if (content_digest is not None) != served or (key_id is not None) != served:
+        raise ValueError("a bundle names its content digest and signing key exactly when its kind is server")
+
+
 def _no_token(value: str) -> str:
     """``value`` when no JSON Web Token appears anywhere in it; raises ``ValueError`` otherwise."""
     if _JSON_WEB_TOKEN.search(value):

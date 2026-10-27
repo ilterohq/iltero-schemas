@@ -2360,5 +2360,28 @@
     },
     "remove": [],
     "message": "must be a file name without its directories"
+  },
+  {
+    "name": "binding_set_file_named_by_its_path",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/scanners": {
+        "binding_set": {
+          "id": "ILT.BINDINGS.STARTER",
+          "version": "1.0.0",
+          "origin": "file",
+          "file_name": "config/bindings.yaml",
+          "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "copy_path": "units/root/plan/bindings.json",
+          "binding_count": 2
+        },
+        "reports": [],
+        "results_accepted": 0,
+        "results_binding_unverified": 0,
+        "results_without_binding": 0
+      }
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
   }
 ]

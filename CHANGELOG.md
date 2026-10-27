@@ -107,7 +107,10 @@ keep, so any two tools agree on what a record means.
   tool's plan does not say; `null` is refused. A record's `change.digest` is
   required. The plan stage lists one plan-flag gap for each plan flag that is
   not `true`, with the plan's value, in kind order; a plan-flag gap in any
-  other stage is refused.
+  other stage is refused. When the plan was read from a saved plan file, the
+  record's plan names the file's digest and its file name without its
+  directories (`artifact_digest`, `artifact_file_name`); a name that holds a
+  directory is refused.
   Record vectors cover each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
   incomplete or did not say it is complete, is incomplete with reason
@@ -128,7 +131,10 @@ keep, so any two tools agree on what a record means.
 - An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
   `version`, `tool`), and a record holds every event's to its own plan. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
-  `github_actions`.
+  `github_actions`. The bundle an event and a record stage name gives its
+  `kind`, its `tarball_digest` and, for a bundle the server served, the
+  descriptor's `content_digest` and `key_id`, which are `null` for a bundle
+  the tool built.
 - A deployment's apply and the identity document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
@@ -248,7 +254,11 @@ keep, so any two tools agree on what a record means.
 - Signed assertion bundles: building one from assertion sources (the files
   and the bytes a key signs are reproducible), and `check_descriptor`, which
   rebuilds a served bundle from its sources and compares it byte for byte
-  before anything in it is evaluated. It returns an `UnverifiedBundle`: the
+  before anything in it is evaluated. A bundle's content digest covers its
+  assertions, the compiler version, the evaluator's allowlist
+  (`capabilities_digest`) and the oldest CLI version allowed;
+  `check_descriptor` refuses a bundle built by
+  another compiler version or under another allowlist. It returns an `UnverifiedBundle`: the
   pinned OPA, or the signer's library, verifies the signature. Signatures are
   accepted only in their low-S form (`normalized_signature`), which `descriptor` writes whatever form
   the signer returned, so one signing gives one digest. A run

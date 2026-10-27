@@ -397,7 +397,7 @@ A stage's `scanners` says what it read from scanner reports and how much of it b
 | `id` | string | The binding set's `metadata.id`: upper-case segments joined by dots, at least two, at most 128 characters. |
 | `version` | string | The binding set's `metadata.version`: a semantic version `X.Y.Z`. |
 | `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The writer sets it, not the binding set; in a self-attested record it is the writer's claim. |
-| `file_name` | string or null | The name of the file the set was read from, one line of at most 1024 characters. Present exactly when `origin` is `file`. |
+| `file_name` | string or null | The name of the file the set was read from, without its directories. It follows the same rule as the plan's `artifact_file_name`. Present exactly when `origin` is `file`. |
 | `digest` | digest | The digest of the binding set's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. An event's `binding.digest` names an entry of the set, which a reader checks against the copy. |
 | `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
 | `binding_count` | integer | How many entries the set holds, for every scanner and stage, not only those this stage could use, from 0. |

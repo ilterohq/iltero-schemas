@@ -113,8 +113,8 @@ keep, so any two tools agree on what a record means.
   them, not the file. A name that holds `/`, `\`, `:` or a character that
   looks like a slash or backslash, or consists only of dots and spaces, in
   its NFKC (Unicode compatibility) form, is refused. A name is at most 255
-  UTF-8 bytes as written, with no control character. Record vectors cover
-  each rule.
+  UTF-8 bytes as written, with no control character. A binding set's
+  `file_name` follows the same rule. Record vectors cover each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
   incomplete or did not say it is complete, is incomplete with reason
   `plan_not_complete`. Its verdict still follows its evaluations. An evaluator

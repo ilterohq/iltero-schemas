@@ -214,8 +214,7 @@ class BindingSetUsed(StrictModel):
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
     origin: Literal["shipped", "file"]
-    # The name of the file it was read from; absent for the shipped set.
-    # The binding set file's name without its directories, when it was read from a file.
+    # The name of the file it was read from, without its directories; absent for the shipped set.
     file_name: FileName | None
     digest: Digest
     copy_path: MemberPath

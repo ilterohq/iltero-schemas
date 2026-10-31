@@ -243,9 +243,9 @@ def test_an_assertion_from_the_servers_bundle_is_not_evaluated_over_a_local_bund
         AssuranceEvent.model_validate(_event(**{"provenance.assertion_source": "server_bundle"}))
 
 
-def test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment() -> None:
+def test_a_resource_only_the_cloud_knows_is_a_subject_only_at_runtime() -> None:
     identity = {"scheme": "aws_arn", "value": ARNS["rds_instance"]}
-    with pytest.raises(ValidationError, match="read after deployment"):
+    with pytest.raises(ValidationError, match="read at runtime"):
         AssuranceEvent.model_validate(_event(**{"subject.identities": [identity]}))
 
 

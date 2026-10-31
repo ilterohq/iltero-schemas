@@ -77,7 +77,7 @@ keep, so any two tools agree on what a record means.
   computed by `models.subjects.subject_key` and checked in every document,
   with a conformance vector. The local identity is a managed resource's
   address scoped by its unit (scheme `terraform_address`), the cloud identity
-  of a resource only the cloud knows (after deployment), or the unit of a
+  of a resource only the cloud knows (at runtime), or the unit of a
   change, a deployment or an assurance subject. The key is over the
   identity's text as written, with no Unicode normalization. No stack or
   other Iltero Platform scope is part of it. An event's subject has no key

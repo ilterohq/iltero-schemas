@@ -61,6 +61,9 @@ RENAMED_TESTS = {
     "test_every_event_names_the_plan_the_record_evaluated": (
         "test_every_event_names_the_content_the_records_change_checked"
     ),
+    "test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment": (
+        "test_a_resource_only_the_cloud_knows_is_a_subject_only_at_runtime"
+    ),
 }
 REMOVED_TESTS = {
     "tests/test_canonical_digests.py::test_the_change_digest_ignores_the_order_units_are_given_in",

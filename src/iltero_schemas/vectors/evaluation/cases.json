@@ -3483,6 +3483,40 @@
     }
   },
   {
+    "name": "applied_plan_is_another_plan",
+    "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b",
+        "artifact_digest_source": "saved_plan"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:z",
+          "artifact_digest": "sha256:b",
+          "artifact_digest_source": "saved_plan"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: deployment.plan.digest equal",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
     "name": "applied_plan_differs",
     "assertion": "ILT.DEPLOYMENT.PLAN_BINDING",
     "input": {
@@ -4496,6 +4530,95 @@
         "path": "resource.related",
         "reason": "not_a_list"
       },
+      "when": null
+    }
+  },
+  {
+    "name": "no_resource_drifted_after_the_apply",
+    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "drift_check": {
+        "differences": [],
+        "differences_count": 0
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "a_resource_differed_in_the_first_reading_only",
+    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "drift_check": {
+        "differences": [],
+        "differences_count": 0,
+        "first_reading_only_differences": [
+          {
+            "address": "aws_db_instance.payments",
+            "difference": "changed"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "a_resource_drifted_after_the_apply",
+    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "drift_check": {
+        "differences": [
+          {
+            "address": "aws_db_instance.payments",
+            "difference": "changed"
+          }
+        ],
+        "differences_count": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: drift_check.differences_count equal",
+      "unknown": null,
       "when": null
     }
   }

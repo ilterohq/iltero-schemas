@@ -50,9 +50,10 @@
       "unit": "root"
     },
     "source_commit": "c84e7a1000000000000000000000000000000000",
-    "plan_digest": {
-      "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "version": "1",
+    "checked_content": {
+      "kind": "plan",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digest_version": "1",
       "tool": "terraform"
     },
     "input_digest": "sha256:634949b8b2ce11c8bf968dd798be85b9236901a7284637cc935df9be409e5bfe",

@@ -1,0 +1,117 @@
+[
+  {
+    "name": "what_left_the_state_listed_without_an_applied_plan",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/plan": null
+    },
+    "remove": [],
+    "message": "what left the state is listed exactly when the applied plan was read, and null otherwise"
+  },
+  {
+    "name": "unresolved_resources_out_of_order",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/unresolved": [
+        {
+          "address": "aws_lambda_function.worker",
+          "reason": "no_resolver"
+        },
+        {
+          "address": "aws_db_instance.payments",
+          "reason": "identifier_sensitive"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "bindings and unresolved are sorted by address and name each resource once"
+  },
+  {
+    "name": "a_resource_unresolved_twice",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/unresolved": [
+        {
+          "address": "aws_db_instance.payments",
+          "reason": "identifier_sensitive"
+        },
+        {
+          "address": "aws_db_instance.payments",
+          "reason": "identifier_sensitive"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "bindings and unresolved are sorted by address and name each resource once"
+  },
+  {
+    "name": "an_unresolved_reason_outside_the_list",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/unresolved/0/reason": "guessed"
+    },
+    "remove": [],
+    "message": "Input should be 'no_resolver'"
+  },
+  {
+    "name": "a_resolver_named_twice",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/resolvers": [
+        {
+          "provider": "aws",
+          "version": "1.0.0",
+          "verified_resource_types": [
+            "iam_role",
+            "kms_key",
+            "rds_instance",
+            "s3_bucket",
+            "security_group"
+          ]
+        },
+        {
+          "provider": "aws",
+          "version": "1.0.0",
+          "verified_resource_types": [
+            "iam_role",
+            "kms_key",
+            "rds_instance",
+            "s3_bucket",
+            "security_group"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the resolvers are sorted by provider, one for each"
+  },
+  {
+    "name": "a_removed_resource_listed_twice",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/removed_unresolved": [
+        {
+          "address": "aws_kms_key.old",
+          "reason": "identifier_missing",
+          "removal": "forgotten"
+        },
+        {
+          "address": "aws_kms_key.old",
+          "reason": "identifier_missing",
+          "removal": "forgotten"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "bindings and unresolved are sorted by address and name each resource once"
+  },
+  {
+    "name": "applied_plan_digest_version_not_the_tools",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/plan/digest_version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
+  }
+]

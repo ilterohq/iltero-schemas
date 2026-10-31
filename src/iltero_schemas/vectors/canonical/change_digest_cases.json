@@ -1,55 +1,94 @@
 {
   "cases": [
     {
-      "name": "one_unit",
-      "description": "A change of one unit, named root.",
-      "units": {
-        "root": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "name": "one_unit_in_production",
+      "description": "The root unit's plan, deployed to the production environment.",
+      "change_type": "iac_change",
+      "unit": "root",
+      "environment_key": "production",
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
       },
-      "canonical": "[{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"root\"}]",
-      "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"1\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"production\",\"unit\":\"root\"}",
+      "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
     },
     {
-      "name": "units_sorted_by_name",
-      "description": "Units are listed by name in code-point order, whatever order they are given in.",
-      "units": {
-        "network": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "database": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "app": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      "name": "no_environment",
+      "description": "The same plan of the same unit, changed outside any environment: the environment key is null.",
+      "change_type": "iac_change",
+      "unit": "root",
+      "environment_key": null,
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
       },
-      "canonical": "[{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"app\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"database\"},{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"network\"}]",
-      "digest": "sha256:7a63bd6473a738a62038be8aae3e6a8a0142279e6fd2ed36a4d36be264c87c4a"
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"1\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":null,\"unit\":\"root\"}",
+      "digest": "sha256:9b42675bc694b0f41e1b6363c04a4b71e6169dc1ae6486009d1efd76823756bf"
+    },
+    {
+      "name": "another_environment",
+      "description": "The same plan of the same unit, deployed to staging: another change digest, so an approval for production does not count.",
+      "change_type": "iac_change",
+      "unit": "root",
+      "environment_key": "staging",
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
+      },
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"1\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"staging\",\"unit\":\"root\"}",
+      "digest": "sha256:23f69ef44ed01a1fdb22d1fbe5253f99985bbe432818a65639feec7c8943f28f"
     },
     {
       "name": "replanned_unit",
-      "description": "Re-planning one unit gives another change digest.",
-      "units": {
-        "network": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "database": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-        "app": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      "description": "Re-planning the unit gives another change digest.",
+      "change_type": "iac_change",
+      "unit": "root",
+      "environment_key": "production",
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "digest_version": "1",
+        "tool": "terraform"
       },
-      "canonical": "[{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"app\"},{\"plan\":{\"digest\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"},\"unit\":\"database\"},{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"network\"}]",
-      "digest": "sha256:0f561254af123d3739c0d2b62f05b7f274e6a4ea35002cbab12981c2faf270a2"
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"digest_version\":\"1\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"production\",\"unit\":\"root\"}",
+      "digest": "sha256:973528c9293963d7aafea5157ea2fb384706aade0a5f737b9a6b7542b6a5224a"
     },
     {
-      "name": "uppercase_sorts_first",
-      "description": "Code-point order puts an upper-case name before a lower-case one.",
-      "units": {
-        "b": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "B": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "name": "another_unit",
+      "description": "The same plan digest in another unit gives another change digest.",
+      "change_type": "iac_change",
+      "unit": "network",
+      "environment_key": "production",
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
       },
-      "canonical": "[{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"B\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"b\"}]",
-      "digest": "sha256:47f0daf49cc4996bc8626ff2722fd4698e391e770d9c3582d7bd6ece9818cad7"
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"1\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"production\",\"unit\":\"network\"}",
+      "digest": "sha256:d158f8e6bfdb67773b7ebcc8aaf78066569c0421a1229a93783969c23f6af914"
     },
     {
-      "name": "code_point_order",
-      "description": "Names are sorted by Unicode code point: U+FF61 sorts before U+1F600, although UTF-16 order would put it after.",
-      "units": {
-        "😀": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "｡": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "name": "another_digest_rule_version",
+      "description": "The same plan digest under another version of the rule that computed it gives another change digest.",
+      "change_type": "iac_change",
+      "unit": "root",
+      "environment_key": "production",
+      "checked_content": {
+        "kind": "plan",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "2",
+        "tool": "terraform"
       },
-      "canonical": "[{\"plan\":{\"digest\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"unit\":\"｡\"},{\"plan\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"unit\":\"😀\"}]",
-      "digest": "sha256:8a38b021dd23eb527595c28027f2dc6c3d1b68ccc85c38a458dd3cf0359eaeb0"
+      "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"2\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"production\",\"unit\":\"root\"}",
+      "digest": "sha256:25c89971186ff4689ca5d5d4a7798c0dc43fb663ee5e335a4741eafa2a847b9a"
     }
   ]
 }

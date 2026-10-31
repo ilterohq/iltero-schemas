@@ -1,0 +1,2387 @@
+[
+  {
+    "name": "record_issued_by_the_server",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/type": "server"
+    },
+    "remove": [],
+    "message": "Input should be 'local'"
+  },
+  {
+    "name": "record_with_a_verified_issuer",
+    "vector": "local_run.json",
+    "set": {
+      "/issuer/identity_verified": true
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "record_trust_level_above_self_attested",
+    "vector": "local_run.json",
+    "set": {
+      "/trust_level": "governed"
+    },
+    "remove": [],
+    "message": "a record without a signature is self_attested"
+  },
+  {
+    "name": "record_with_a_compliance_determination",
+    "vector": "local_run.json",
+    "set": {
+      "/compliance_determination": "compliant"
+    },
+    "remove": [],
+    "message": "Input should be None"
+  },
+  {
+    "name": "record_says_the_server_opened_a_run_without_pins",
+    "vector": "local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server"
+    },
+    "remove": [],
+    "message": "exactly when the server issued the run"
+  },
+  {
+    "name": "change_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/change/unit/name": "network"
+    },
+    "remove": [],
+    "message": "the change is the record's own unit with the plan the record names"
+  },
+  {
+    "name": "unit_not_declared_in_its_units_file",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "network",
+        "web"
+      ]
+    },
+    "remove": [],
+    "message": "the record's unit is one of the units its units file declares"
+  },
+  {
+    "name": "units_file_names_a_unit_twice",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "a units file names each unit once"
+  },
+  {
+    "name": "record_without_the_units_file_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/units_file"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "change_digest_of_another_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "not the digest of the change's units"
+  },
+  {
+    "name": "subject_of_another_unit",
+    "vector": "local_run.json",
+    "set": {
+      "/subject/unit": "network"
+    },
+    "remove": [],
+    "message": "the record's subject is its own unit"
+  },
+  {
+    "name": "units_file_with_no_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": []
+    },
+    "remove": [],
+    "message": "at least 1"
+  },
+  {
+    "name": "units_file_over_64_units",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "app",
+        "u0",
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9",
+        "u10",
+        "u11",
+        "u12",
+        "u13",
+        "u14",
+        "u15",
+        "u16",
+        "u17",
+        "u18",
+        "u19",
+        "u20",
+        "u21",
+        "u22",
+        "u23",
+        "u24",
+        "u25",
+        "u26",
+        "u27",
+        "u28",
+        "u29",
+        "u30",
+        "u31",
+        "u32",
+        "u33",
+        "u34",
+        "u35",
+        "u36",
+        "u37",
+        "u38",
+        "u39",
+        "u40",
+        "u41",
+        "u42",
+        "u43",
+        "u44",
+        "u45",
+        "u46",
+        "u47",
+        "u48",
+        "u49",
+        "u50",
+        "u51",
+        "u52",
+        "u53",
+        "u54",
+        "u55",
+        "u56",
+        "u57",
+        "u58",
+        "u59",
+        "u60",
+        "u61",
+        "u62",
+        "u63"
+      ]
+    },
+    "remove": [],
+    "message": "at most 64"
+  },
+  {
+    "name": "units_file_path_leaves_the_project",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/path": "../units.json"
+    },
+    "remove": [],
+    "message": "must be a relative path inside the project"
+  },
+  {
+    "name": "units_file_unit_not_lowercase",
+    "vector": "local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        "Network",
+        "app"
+      ]
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "local_plan_with_a_placeholder_marked_complete",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ],
+      "/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "assurance_status"
+  },
+  {
+    "name": "substituted_input_of_an_unknown_kind",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "cached_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Input should be 'upstream_state'"
+  },
+  {
+    "name": "stage_enforcement_mode_outside_the_list",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/enforcement_mode": "waived"
+    },
+    "remove": [],
+    "message": "Input should be 'enforcing' or 'advisory'"
+  },
+  {
+    "name": "stage_without_an_enforcement_mode_key",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/stages/plan/enforcement_mode"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "substituted_input_listed_twice",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a substituted input is listed once"
+  },
+  {
+    "name": "placeholders_out_of_order",
+    "vector": "local_run_on_placeholders.json",
+    "set": {
+      "/stages/plan/coverage/substituted_inputs": [
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.z",
+          "stage": null
+        },
+        {
+          "kind": "upstream_state",
+          "source": "data.terraform_remote_state.network",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "sorted by source"
+  },
+  {
+    "name": "record_plan_digest_version_not_the_tools",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/digest_version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
+  },
+  {
+    "name": "event_plan_digest_version_not_the_tools",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/plan_digest/version": "2"
+    },
+    "remove": [],
+    "message": "is not the version of the terraform plan digest rule"
+  },
+  {
+    "name": "record_of_a_local_run_with_attested_clock_time",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/trust": "attested"
+    },
+    "remove": [],
+    "message": "a runner's clock is only ever asserted"
+  },
+  {
+    "name": "record_of_a_local_run_with_server_time",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/source": "server",
+      "/stages/plan/reference_time/trust": "attested"
+    },
+    "remove": [],
+    "message": "no time from the server"
+  },
+  {
+    "name": "record_with_a_clock_time_other_than_observed",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/value": "2026-09-22T13:00:14Z"
+    },
+    "remove": [],
+    "message": "uses the time it observed"
+  },
+  {
+    "name": "record_with_a_time_window_on_clock_time",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time/time_window": {
+        "not_before": "2026-09-22T13:00:00Z",
+        "not_after": "2026-09-22T13:01:00Z",
+        "nonce_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    "remove": [],
+    "message": "exactly when a timestamp authority"
+  },
+  {
+    "name": "record_with_a_reversed_time_window",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/reference_time": {
+        "value": "2026-09-22T13:00:13.568Z",
+        "source": "timestamp_authority",
+        "trust": "attested",
+        "time_window": {
+          "not_before": "2026-09-22T13:01:00Z",
+          "not_after": "2026-09-22T13:00:00Z",
+          "nonce_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    "remove": [],
+    "message": "inside its time window"
+  },
+  {
+    "name": "plan_flag_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": null
+    },
+    "remove": [],
+    "message": "Input should be a valid boolean"
+  },
+  {
+    "name": "plan_tool_version_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/tool_version": null
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "plan_flag_gap_written_as_null",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": null,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": null,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Input should be False"
+  },
+  {
+    "name": "change_without_a_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": null
+    },
+    "remove": [],
+    "message": "Input should be a valid string"
+  },
+  {
+    "name": "plan_incomplete_without_its_gap",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not match plan.complete and plan.applyable"
+  },
+  {
+    "name": "plan_flag_gap_for_a_complete_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": "plan"
+        }
+      ],
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "the plan says it is incomplete"
+      },
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "plan_not_complete",
+        "detail": "plan: the plan says it is incomplete"
+      }
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not match plan.complete and plan.applyable"
+  },
+  {
+    "name": "plan_flag_gap_of_another_value",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/applyable": {
+        "__unknown": true,
+        "reason": "not_reported_by_tool"
+      },
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_not_applyable",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_not_applyable",
+          "value": false,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "stages.plan.coverage.gaps does not match plan.complete and plan.applyable"
+  },
+  {
+    "name": "plan_flag_gap_in_a_later_stage",
+    "vector": "local_run.json",
+    "set": {
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 20,
+          "counted_from": "plan_resource_enumeration",
+          "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 2,
+        "assertions_expected": {
+          "value": 10,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:e91b5f03a1fa4cd10fd9d369f40ca86cc228f2e3a50f8c6c4db91e5f490f8cbe"
+        },
+        "assertions_evaluated": 10,
+        "subjects_per_assertion": {
+          "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+          "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+          "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+          "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+          "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 2,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 5,
+        "gaps": [
+          {
+            "stage": "plan",
+            "kind": "plan_incomplete",
+            "value": false
+          },
+          {
+            "stage": "pre_deploy",
+            "kind": "plan_incomplete",
+            "value": false
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/plan": {
+        "applyable": true,
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "artifact_file_name": null,
+        "complete": false,
+        "context_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+        "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+        "digest_version": "1",
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0"
+      },
+      "/stages": {
+        "plan": {
+          "assertions": {
+            "count": 5,
+            "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+            "index": "units/root/plan/assertions/compiled.json"
+          },
+          "compiler": {
+            "contract_digest": null,
+            "contract_version": "0.1.0",
+            "install": "editable",
+            "version": "1.0.0"
+          },
+          "events": {
+            "count": 5,
+            "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
+            "path": "units/root/plan/events.json"
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "execution": {
+            "bundle": {
+              "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle",
+              "content_digest": null,
+              "key_id": null
+            },
+            "detail": null,
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "version": "1.20.2"
+            },
+            "reason": null
+          },
+          "enforcement_mode": "enforcing",
+          "redaction": {
+            "allowed": [],
+            "policy": {
+              "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+              "id": "iltero.redaction",
+              "version": "1"
+            },
+            "redacted": [
+              {
+                "path": "resources[0].after.password",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[0].after.password_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[1].after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[1].after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[2].after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[2].after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[3].related[0].resource.after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[3].related[0].resource.after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[4].related[0].resource.after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[4].related[0].resource.after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[5].after.user_data",
+                "reason": "deny_key"
+              },
+              {
+                "path": "resources[6].related[0].resource.after.password",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[6].related[0].resource.after.password_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[1].resource.after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[1].resource.after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[7].related[2].resource.after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[2].resource.after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[10].after.value",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[10].after.value_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[14].after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[14].after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[16].after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[16].after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              }
+            ],
+            "input": {
+              "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+              "kind": "observation"
+            },
+            "unknown": [
+              "resources[0].after.address",
+              "resources[0].after.arn",
+              "resources[0].after.availability_zone",
+              "resources[0].after.backup_target",
+              "resources[0].after.backup_window",
+              "resources[0].after.ca_cert_identifier",
+              "resources[0].after.character_set_name",
+              "resources[0].after.database_insights_mode",
+              "resources[0].after.db_name",
+              "resources[0].after.db_subnet_group_name",
+              "resources[0].after.domain_fqdn",
+              "resources[0].after.endpoint",
+              "resources[0].after.engine_lifecycle_support",
+              "resources[0].after.engine_version_actual",
+              "resources[0].after.hosted_zone_id",
+              "resources[0].after.id",
+              "resources[0].after.identifier_prefix",
+              "resources[0].after.iops",
+              "resources[0].after.kms_key_id",
+              "resources[0].after.latest_restorable_time",
+              "resources[0].after.license_model",
+              "resources[0].after.listener_endpoint",
+              "resources[0].after.maintenance_window",
+              "resources[0].after.master_user_secret",
+              "resources[0].after.master_user_secret_kms_key_id",
+              "resources[0].after.monitoring_role_arn",
+              "resources[0].after.multi_az",
+              "resources[0].after.nchar_character_set_name",
+              "resources[0].after.network_type",
+              "resources[0].after.option_group_name",
+              "resources[0].after.parameter_group_name",
+              "resources[0].after.performance_insights_kms_key_id",
+              "resources[0].after.performance_insights_retention_period",
+              "resources[0].after.port",
+              "resources[0].after.replica_mode",
+              "resources[0].after.replicas",
+              "resources[0].after.resource_id",
+              "resources[0].after.snapshot_identifier",
+              "resources[0].after.status",
+              "resources[0].after.storage_throughput",
+              "resources[0].after.storage_type",
+              "resources[0].after.timezone",
+              "resources[0].after.vpc_security_group_ids",
+              "resources[1].after.create_date",
+              "resources[1].after.encrypted_secret",
+              "resources[1].after.encrypted_ses_smtp_password_v4",
+              "resources[1].after.id",
+              "resources[1].after.key_fingerprint",
+              "resources[1].after.secret",
+              "resources[1].after.ses_smtp_password_v4",
+              "resources[2].after.create_date",
+              "resources[2].after.encrypted_secret",
+              "resources[2].after.encrypted_ses_smtp_password_v4",
+              "resources[2].after.id",
+              "resources[2].after.key_fingerprint",
+              "resources[2].after.secret",
+              "resources[2].after.ses_smtp_password_v4",
+              "resources[3].after.arn",
+              "resources[3].after.id",
+              "resources[3].after.tags_all",
+              "resources[3].after.unique_id",
+              "resources[3].related[0].resource.after.create_date",
+              "resources[3].related[0].resource.after.encrypted_secret",
+              "resources[3].related[0].resource.after.encrypted_ses_smtp_password_v4",
+              "resources[3].related[0].resource.after.id",
+              "resources[3].related[0].resource.after.key_fingerprint",
+              "resources[3].related[0].resource.after.secret",
+              "resources[3].related[0].resource.after.ses_smtp_password_v4",
+              "resources[4].after.arn",
+              "resources[4].after.id",
+              "resources[4].after.tags_all",
+              "resources[4].after.unique_id",
+              "resources[4].related[0].resource.after.create_date",
+              "resources[4].related[0].resource.after.encrypted_secret",
+              "resources[4].related[0].resource.after.encrypted_ses_smtp_password_v4",
+              "resources[4].related[0].resource.after.id",
+              "resources[4].related[0].resource.after.key_fingerprint",
+              "resources[4].related[0].resource.after.secret",
+              "resources[4].related[0].resource.after.ses_smtp_password_v4",
+              "resources[5].after.arn",
+              "resources[5].after.associate_public_ip_address",
+              "resources[5].after.availability_zone",
+              "resources[5].after.capacity_reservation_specification",
+              "resources[5].after.cpu_core_count",
+              "resources[5].after.cpu_options",
+              "resources[5].after.cpu_threads_per_core",
+              "resources[5].after.disable_api_stop",
+              "resources[5].after.disable_api_termination",
+              "resources[5].after.ebs_block_device",
+              "resources[5].after.ebs_optimized",
+              "resources[5].after.enable_primary_ipv6",
+              "resources[5].after.enclave_options",
+              "resources[5].after.ephemeral_block_device",
+              "resources[5].after.host_id",
+              "resources[5].after.host_resource_group_arn",
+              "resources[5].after.iam_instance_profile",
+              "resources[5].after.id",
+              "resources[5].after.instance_initiated_shutdown_behavior",
+              "resources[5].after.instance_lifecycle",
+              "resources[5].after.instance_market_options",
+              "resources[5].after.instance_state",
+              "resources[5].after.ipv6_address_count",
+              "resources[5].after.ipv6_addresses",
+              "resources[5].after.key_name",
+              "resources[5].after.maintenance_options",
+              "resources[5].after.metadata_options",
+              "resources[5].after.monitoring",
+              "resources[5].after.network_interface",
+              "resources[5].after.outpost_arn",
+              "resources[5].after.password_data",
+              "resources[5].after.placement_group",
+              "resources[5].after.placement_partition_number",
+              "resources[5].after.primary_network_interface_id",
+              "resources[5].after.private_dns",
+              "resources[5].after.private_dns_name_options",
+              "resources[5].after.private_ip",
+              "resources[5].after.public_dns",
+              "resources[5].after.public_ip",
+              "resources[5].after.root_block_device",
+              "resources[5].after.secondary_private_ips",
+              "resources[5].after.security_groups",
+              "resources[5].after.spot_instance_request_id",
+              "resources[5].after.subnet_id",
+              "resources[5].after.tenancy",
+              "resources[5].after.user_data_base64",
+              "resources[5].after.vpc_security_group_ids",
+              "resources[6].after.arn",
+              "resources[6].after.id",
+              "resources[6].after.key_id",
+              "resources[6].after.multi_region",
+              "resources[6].after.policy",
+              "resources[6].after.rotation_period_in_days",
+              "resources[6].after.tags_all",
+              "resources[6].related[0].resource.after.address",
+              "resources[6].related[0].resource.after.arn",
+              "resources[6].related[0].resource.after.availability_zone",
+              "resources[6].related[0].resource.after.backup_target",
+              "resources[6].related[0].resource.after.backup_window",
+              "resources[6].related[0].resource.after.ca_cert_identifier",
+              "resources[6].related[0].resource.after.character_set_name",
+              "resources[6].related[0].resource.after.database_insights_mode",
+              "resources[6].related[0].resource.after.db_name",
+              "resources[6].related[0].resource.after.db_subnet_group_name",
+              "resources[6].related[0].resource.after.domain_fqdn",
+              "resources[6].related[0].resource.after.endpoint",
+              "resources[6].related[0].resource.after.engine_lifecycle_support",
+              "resources[6].related[0].resource.after.engine_version_actual",
+              "resources[6].related[0].resource.after.hosted_zone_id",
+              "resources[6].related[0].resource.after.id",
+              "resources[6].related[0].resource.after.identifier_prefix",
+              "resources[6].related[0].resource.after.iops",
+              "resources[6].related[0].resource.after.kms_key_id",
+              "resources[6].related[0].resource.after.latest_restorable_time",
+              "resources[6].related[0].resource.after.license_model",
+              "resources[6].related[0].resource.after.listener_endpoint",
+              "resources[6].related[0].resource.after.maintenance_window",
+              "resources[6].related[0].resource.after.master_user_secret",
+              "resources[6].related[0].resource.after.master_user_secret_kms_key_id",
+              "resources[6].related[0].resource.after.monitoring_role_arn",
+              "resources[6].related[0].resource.after.multi_az",
+              "resources[6].related[0].resource.after.nchar_character_set_name",
+              "resources[6].related[0].resource.after.network_type",
+              "resources[6].related[0].resource.after.option_group_name",
+              "resources[6].related[0].resource.after.parameter_group_name",
+              "resources[6].related[0].resource.after.performance_insights_kms_key_id",
+              "resources[6].related[0].resource.after.performance_insights_retention_period",
+              "resources[6].related[0].resource.after.port",
+              "resources[6].related[0].resource.after.replica_mode",
+              "resources[6].related[0].resource.after.replicas",
+              "resources[6].related[0].resource.after.resource_id",
+              "resources[6].related[0].resource.after.snapshot_identifier",
+              "resources[6].related[0].resource.after.status",
+              "resources[6].related[0].resource.after.storage_throughput",
+              "resources[6].related[0].resource.after.storage_type",
+              "resources[6].related[0].resource.after.timezone",
+              "resources[6].related[0].resource.after.vpc_security_group_ids",
+              "resources[7].after.acceleration_status",
+              "resources[7].after.acl",
+              "resources[7].after.arn",
+              "resources[7].after.bucket_domain_name",
+              "resources[7].after.bucket_prefix",
+              "resources[7].after.bucket_regional_domain_name",
+              "resources[7].after.cors_rule",
+              "resources[7].after.grant",
+              "resources[7].after.hosted_zone_id",
+              "resources[7].after.id",
+              "resources[7].after.lifecycle_rule",
+              "resources[7].after.logging",
+              "resources[7].after.object_lock_configuration",
+              "resources[7].after.object_lock_enabled",
+              "resources[7].after.policy",
+              "resources[7].after.region",
+              "resources[7].after.replication_configuration",
+              "resources[7].after.request_payer",
+              "resources[7].after.server_side_encryption_configuration",
+              "resources[7].after.versioning",
+              "resources[7].after.website",
+              "resources[7].after.website_domain",
+              "resources[7].after.website_endpoint",
+              "resources[7].related[0].resource.after.bucket",
+              "resources[7].related[0].resource.after.id",
+              "resources[7].related[1].resource.after.arn",
+              "resources[7].related[1].resource.after.beginning_archive_time",
+              "resources[7].related[1].resource.after.display_name",
+              "resources[7].related[1].resource.after.fifo_throughput_scope",
+              "resources[7].related[1].resource.after.id",
+              "resources[7].related[1].resource.after.name_prefix",
+              "resources[7].related[1].resource.after.owner",
+              "resources[7].related[1].resource.after.policy",
+              "resources[7].related[1].resource.after.signature_version",
+              "resources[7].related[1].resource.after.tracing_config",
+              "resources[7].related[2].resource.after.arn",
+              "resources[7].related[2].resource.after.beginning_archive_time",
+              "resources[7].related[2].resource.after.display_name",
+              "resources[7].related[2].resource.after.fifo_throughput_scope",
+              "resources[7].related[2].resource.after.id",
+              "resources[7].related[2].resource.after.name_prefix",
+              "resources[7].related[2].resource.after.owner",
+              "resources[7].related[2].resource.after.policy",
+              "resources[7].related[2].resource.after.signature_version",
+              "resources[7].related[2].resource.after.tracing_config",
+              "resources[8].after.bucket",
+              "resources[8].after.id",
+              "resources[9].after.arn",
+              "resources[9].after.egress",
+              "resources[9].after.id",
+              "resources[9].after.name_prefix",
+              "resources[9].after.owner_id",
+              "resources[9].after.tags_all",
+              "resources[9].after.vpc_id",
+              "resources[10].after.arn",
+              "resources[10].after.data_type",
+              "resources[10].after.has_value_wo",
+              "resources[10].after.id",
+              "resources[10].after.insecure_value",
+              "resources[10].after.key_id",
+              "resources[10].after.tags_all",
+              "resources[10].after.tier",
+              "resources[10].after.version",
+              "resources[11].after.arn",
+              "resources[11].after.availability_zone",
+              "resources[11].after.availability_zone_id",
+              "resources[11].after.id",
+              "resources[11].after.ipv6_cidr_block_association_id",
+              "resources[11].after.owner_id",
+              "resources[11].after.private_dns_hostname_type_on_launch",
+              "resources[11].after.tags_all",
+              "resources[11].after.vpc_id",
+              "resources[12].after.arn",
+              "resources[12].after.availability_zone",
+              "resources[12].after.availability_zone_id",
+              "resources[12].after.id",
+              "resources[12].after.ipv6_cidr_block_association_id",
+              "resources[12].after.owner_id",
+              "resources[12].after.private_dns_hostname_type_on_launch",
+              "resources[12].after.tags_all",
+              "resources[12].after.vpc_id",
+              "resources[13].after.arn",
+              "resources[13].after.default_network_acl_id",
+              "resources[13].after.default_route_table_id",
+              "resources[13].after.default_security_group_id",
+              "resources[13].after.dhcp_options_id",
+              "resources[13].after.enable_dns_hostnames",
+              "resources[13].after.enable_network_address_usage_metrics",
+              "resources[13].after.id",
+              "resources[13].after.ipv6_association_id",
+              "resources[13].after.ipv6_cidr_block",
+              "resources[13].after.ipv6_cidr_block_network_border_group",
+              "resources[13].after.main_route_table_id",
+              "resources[13].after.owner_id",
+              "resources[13].after.tags_all",
+              "resources[13].related[0].resource.after.arn",
+              "resources[13].related[0].resource.after.availability_zone",
+              "resources[13].related[0].resource.after.availability_zone_id",
+              "resources[13].related[0].resource.after.id",
+              "resources[13].related[0].resource.after.ipv6_cidr_block_association_id",
+              "resources[13].related[0].resource.after.owner_id",
+              "resources[13].related[0].resource.after.private_dns_hostname_type_on_launch",
+              "resources[13].related[0].resource.after.tags_all",
+              "resources[13].related[0].resource.after.vpc_id",
+              "resources[13].related[1].resource.after.arn",
+              "resources[13].related[1].resource.after.availability_zone",
+              "resources[13].related[1].resource.after.availability_zone_id",
+              "resources[13].related[1].resource.after.id",
+              "resources[13].related[1].resource.after.ipv6_cidr_block_association_id",
+              "resources[13].related[1].resource.after.owner_id",
+              "resources[13].related[1].resource.after.private_dns_hostname_type_on_launch",
+              "resources[13].related[1].resource.after.tags_all",
+              "resources[13].related[1].resource.after.vpc_id",
+              "resources[14].after.arn",
+              "resources[14].after.beginning_archive_time",
+              "resources[14].after.display_name",
+              "resources[14].after.fifo_throughput_scope",
+              "resources[14].after.id",
+              "resources[14].after.name_prefix",
+              "resources[14].after.owner",
+              "resources[14].after.policy",
+              "resources[14].after.signature_version",
+              "resources[14].after.tracing_config",
+              "resources[14].related[0].resource.after.arn",
+              "resources[14].related[0].resource.after.id",
+              "resources[14].related[0].resource.after.owner",
+              "resources[15].after.arn",
+              "resources[15].after.id",
+              "resources[15].after.owner",
+              "resources[16].after.arn",
+              "resources[16].after.beginning_archive_time",
+              "resources[16].after.display_name",
+              "resources[16].after.fifo_throughput_scope",
+              "resources[16].after.id",
+              "resources[16].after.name_prefix",
+              "resources[16].after.owner",
+              "resources[16].after.policy",
+              "resources[16].after.signature_version",
+              "resources[16].after.tracing_config",
+              "resources[16].related[0].resource.after.arn",
+              "resources[16].related[0].resource.after.id",
+              "resources[16].related[0].resource.after.owner",
+              "resources[17].after.arn",
+              "resources[17].after.id",
+              "resources[17].after.owner",
+              "resources[18].after.arn",
+              "resources[18].after.deduplication_scope",
+              "resources[18].after.fifo_throughput_limit",
+              "resources[18].after.id",
+              "resources[18].after.kms_data_key_reuse_period_seconds",
+              "resources[18].after.name_prefix",
+              "resources[18].after.policy",
+              "resources[18].after.redrive_allow_policy",
+              "resources[18].after.redrive_policy",
+              "resources[18].after.sqs_managed_sse_enabled",
+              "resources[18].after.tags_all",
+              "resources[18].after.url",
+              "resources[19].after.arn",
+              "resources[19].after.deduplication_scope",
+              "resources[19].after.fifo_throughput_limit",
+              "resources[19].after.id",
+              "resources[19].after.kms_data_key_reuse_period_seconds",
+              "resources[19].after.name_prefix",
+              "resources[19].after.policy",
+              "resources[19].after.redrive_allow_policy",
+              "resources[19].after.redrive_policy",
+              "resources[19].after.sqs_managed_sse_enabled",
+              "resources[19].after.tags_all",
+              "resources[19].after.url"
+            ]
+          },
+          "reference_time": {
+            "source": "runner_clock",
+            "trust": "asserted",
+            "value": "2026-09-22T13:00:13.568Z",
+            "time_window": null
+          },
+          "stage": "plan",
+          "scanners": null,
+          "coverage": {
+            "assertions_evaluated": 5,
+            "assertions_expected": {
+              "origin": "locally_derived",
+              "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
+              "value": 5
+            },
+            "evaluations": 5,
+            "gaps": [
+              {
+                "kind": "plan_incomplete",
+                "value": false
+              }
+            ],
+            "sampled": false,
+            "status_counts": {
+              "error": 0,
+              "fail": 2,
+              "not_applicable": 0,
+              "not_evaluated": 0,
+              "pass": 2,
+              "unknown": 1
+            },
+            "subjects_evaluated": 2,
+            "subjects_in_scope": {
+              "counted_from": "plan_resource_enumeration",
+              "excluded": [],
+              "removed_by_plan": 0,
+              "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+              "value": 20
+            },
+            "subjects_per_assertion": {
+              "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+              "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+              "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+              "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+              "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+            },
+            "truncated": {
+              "limit": null,
+              "reason": null,
+              "value": false
+            },
+            "substituted_inputs": []
+          },
+          "verdict": {
+            "value": "indeterminate",
+            "exit_code": 3,
+            "computed_from": "status_counts",
+            "stage": null
+          },
+          "assurance_status": {
+            "value": "complete",
+            "reason": null,
+            "detail": null
+          },
+          "approvals": null
+        },
+        "pre_deploy": {
+          "assertions": {
+            "count": 5,
+            "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+            "index": "units/root/plan/assertions/compiled.json"
+          },
+          "compiler": {
+            "contract_digest": null,
+            "contract_version": "0.1.0",
+            "install": "editable",
+            "version": "1.0.0"
+          },
+          "events": {
+            "count": 0,
+            "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
+            "path": "units/root/pre_deploy/events.json"
+          },
+          "observed_at": "2026-09-22T13:00:13.568Z",
+          "execution": {
+            "bundle": {
+              "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+              "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+              "kind": "local_bundle",
+              "content_digest": null,
+              "key_id": null
+            },
+            "detail": null,
+            "evaluator": {
+              "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "engine": "opa",
+              "version": "1.20.2"
+            },
+            "reason": null
+          },
+          "enforcement_mode": "enforcing",
+          "redaction": {
+            "allowed": [],
+            "policy": {
+              "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+              "id": "iltero.redaction",
+              "version": "1"
+            },
+            "redacted": [
+              {
+                "path": "resources[0].after.password",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[0].after.password_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[1].after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[1].after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[2].after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[2].after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[3].related[0].resource.after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[3].related[0].resource.after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[4].related[0].resource.after.secret",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[4].related[0].resource.after.ses_smtp_password_v4",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[5].after.user_data",
+                "reason": "deny_key"
+              },
+              {
+                "path": "resources[6].related[0].resource.after.password",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[6].related[0].resource.after.password_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[1].resource.after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[1].resource.after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[7].related[2].resource.after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[7].related[2].resource.after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[10].after.value",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[10].after.value_wo",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[14].after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[14].after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              },
+              {
+                "path": "resources[16].after.tags.login",
+                "reason": "terraform_sensitive"
+              },
+              {
+                "path": "resources[16].after.tags_all.login",
+                "reason": "sensitive_value_reuse"
+              }
+            ],
+            "input": {
+              "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+              "kind": "observation"
+            },
+            "unknown": [
+              "resources[0].after.address",
+              "resources[0].after.arn",
+              "resources[0].after.availability_zone",
+              "resources[0].after.backup_target",
+              "resources[0].after.backup_window",
+              "resources[0].after.ca_cert_identifier",
+              "resources[0].after.character_set_name",
+              "resources[0].after.database_insights_mode",
+              "resources[0].after.db_name",
+              "resources[0].after.db_subnet_group_name",
+              "resources[0].after.domain_fqdn",
+              "resources[0].after.endpoint",
+              "resources[0].after.engine_lifecycle_support",
+              "resources[0].after.engine_version_actual",
+              "resources[0].after.hosted_zone_id",
+              "resources[0].after.id",
+              "resources[0].after.identifier_prefix",
+              "resources[0].after.iops",
+              "resources[0].after.kms_key_id",
+              "resources[0].after.latest_restorable_time",
+              "resources[0].after.license_model",
+              "resources[0].after.listener_endpoint",
+              "resources[0].after.maintenance_window",
+              "resources[0].after.master_user_secret",
+              "resources[0].after.master_user_secret_kms_key_id",
+              "resources[0].after.monitoring_role_arn",
+              "resources[0].after.multi_az",
+              "resources[0].after.nchar_character_set_name",
+              "resources[0].after.network_type",
+              "resources[0].after.option_group_name",
+              "resources[0].after.parameter_group_name",
+              "resources[0].after.performance_insights_kms_key_id",
+              "resources[0].after.performance_insights_retention_period",
+              "resources[0].after.port",
+              "resources[0].after.replica_mode",
+              "resources[0].after.replicas",
+              "resources[0].after.resource_id",
+              "resources[0].after.snapshot_identifier",
+              "resources[0].after.status",
+              "resources[0].after.storage_throughput",
+              "resources[0].after.storage_type",
+              "resources[0].after.timezone",
+              "resources[0].after.vpc_security_group_ids",
+              "resources[1].after.create_date",
+              "resources[1].after.encrypted_secret",
+              "resources[1].after.encrypted_ses_smtp_password_v4",
+              "resources[1].after.id",
+              "resources[1].after.key_fingerprint",
+              "resources[1].after.secret",
+              "resources[1].after.ses_smtp_password_v4",
+              "resources[2].after.create_date",
+              "resources[2].after.encrypted_secret",
+              "resources[2].after.encrypted_ses_smtp_password_v4",
+              "resources[2].after.id",
+              "resources[2].after.key_fingerprint",
+              "resources[2].after.secret",
+              "resources[2].after.ses_smtp_password_v4",
+              "resources[3].after.arn",
+              "resources[3].after.id",
+              "resources[3].after.tags_all",
+              "resources[3].after.unique_id",
+              "resources[3].related[0].resource.after.create_date",
+              "resources[3].related[0].resource.after.encrypted_secret",
+              "resources[3].related[0].resource.after.encrypted_ses_smtp_password_v4",
+              "resources[3].related[0].resource.after.id",
+              "resources[3].related[0].resource.after.key_fingerprint",
+              "resources[3].related[0].resource.after.secret",
+              "resources[3].related[0].resource.after.ses_smtp_password_v4",
+              "resources[4].after.arn",
+              "resources[4].after.id",
+              "resources[4].after.tags_all",
+              "resources[4].after.unique_id",
+              "resources[4].related[0].resource.after.create_date",
+              "resources[4].related[0].resource.after.encrypted_secret",
+              "resources[4].related[0].resource.after.encrypted_ses_smtp_password_v4",
+              "resources[4].related[0].resource.after.id",
+              "resources[4].related[0].resource.after.key_fingerprint",
+              "resources[4].related[0].resource.after.secret",
+              "resources[4].related[0].resource.after.ses_smtp_password_v4",
+              "resources[5].after.arn",
+              "resources[5].after.associate_public_ip_address",
+              "resources[5].after.availability_zone",
+              "resources[5].after.capacity_reservation_specification",
+              "resources[5].after.cpu_core_count",
+              "resources[5].after.cpu_options",
+              "resources[5].after.cpu_threads_per_core",
+              "resources[5].after.disable_api_stop",
+              "resources[5].after.disable_api_termination",
+              "resources[5].after.ebs_block_device",
+              "resources[5].after.ebs_optimized",
+              "resources[5].after.enable_primary_ipv6",
+              "resources[5].after.enclave_options",
+              "resources[5].after.ephemeral_block_device",
+              "resources[5].after.host_id",
+              "resources[5].after.host_resource_group_arn",
+              "resources[5].after.iam_instance_profile",
+              "resources[5].after.id",
+              "resources[5].after.instance_initiated_shutdown_behavior",
+              "resources[5].after.instance_lifecycle",
+              "resources[5].after.instance_market_options",
+              "resources[5].after.instance_state",
+              "resources[5].after.ipv6_address_count",
+              "resources[5].after.ipv6_addresses",
+              "resources[5].after.key_name",
+              "resources[5].after.maintenance_options",
+              "resources[5].after.metadata_options",
+              "resources[5].after.monitoring",
+              "resources[5].after.network_interface",
+              "resources[5].after.outpost_arn",
+              "resources[5].after.password_data",
+              "resources[5].after.placement_group",
+              "resources[5].after.placement_partition_number",
+              "resources[5].after.primary_network_interface_id",
+              "resources[5].after.private_dns",
+              "resources[5].after.private_dns_name_options",
+              "resources[5].after.private_ip",
+              "resources[5].after.public_dns",
+              "resources[5].after.public_ip",
+              "resources[5].after.root_block_device",
+              "resources[5].after.secondary_private_ips",
+              "resources[5].after.security_groups",
+              "resources[5].after.spot_instance_request_id",
+              "resources[5].after.subnet_id",
+              "resources[5].after.tenancy",
+              "resources[5].after.user_data_base64",
+              "resources[5].after.vpc_security_group_ids",
+              "resources[6].after.arn",
+              "resources[6].after.id",
+              "resources[6].after.key_id",
+              "resources[6].after.multi_region",
+              "resources[6].after.policy",
+              "resources[6].after.rotation_period_in_days",
+              "resources[6].after.tags_all",
+              "resources[6].related[0].resource.after.address",
+              "resources[6].related[0].resource.after.arn",
+              "resources[6].related[0].resource.after.availability_zone",
+              "resources[6].related[0].resource.after.backup_target",
+              "resources[6].related[0].resource.after.backup_window",
+              "resources[6].related[0].resource.after.ca_cert_identifier",
+              "resources[6].related[0].resource.after.character_set_name",
+              "resources[6].related[0].resource.after.database_insights_mode",
+              "resources[6].related[0].resource.after.db_name",
+              "resources[6].related[0].resource.after.db_subnet_group_name",
+              "resources[6].related[0].resource.after.domain_fqdn",
+              "resources[6].related[0].resource.after.endpoint",
+              "resources[6].related[0].resource.after.engine_lifecycle_support",
+              "resources[6].related[0].resource.after.engine_version_actual",
+              "resources[6].related[0].resource.after.hosted_zone_id",
+              "resources[6].related[0].resource.after.id",
+              "resources[6].related[0].resource.after.identifier_prefix",
+              "resources[6].related[0].resource.after.iops",
+              "resources[6].related[0].resource.after.kms_key_id",
+              "resources[6].related[0].resource.after.latest_restorable_time",
+              "resources[6].related[0].resource.after.license_model",
+              "resources[6].related[0].resource.after.listener_endpoint",
+              "resources[6].related[0].resource.after.maintenance_window",
+              "resources[6].related[0].resource.after.master_user_secret",
+              "resources[6].related[0].resource.after.master_user_secret_kms_key_id",
+              "resources[6].related[0].resource.after.monitoring_role_arn",
+              "resources[6].related[0].resource.after.multi_az",
+              "resources[6].related[0].resource.after.nchar_character_set_name",
+              "resources[6].related[0].resource.after.network_type",
+              "resources[6].related[0].resource.after.option_group_name",
+              "resources[6].related[0].resource.after.parameter_group_name",
+              "resources[6].related[0].resource.after.performance_insights_kms_key_id",
+              "resources[6].related[0].resource.after.performance_insights_retention_period",
+              "resources[6].related[0].resource.after.port",
+              "resources[6].related[0].resource.after.replica_mode",
+              "resources[6].related[0].resource.after.replicas",
+              "resources[6].related[0].resource.after.resource_id",
+              "resources[6].related[0].resource.after.snapshot_identifier",
+              "resources[6].related[0].resource.after.status",
+              "resources[6].related[0].resource.after.storage_throughput",
+              "resources[6].related[0].resource.after.storage_type",
+              "resources[6].related[0].resource.after.timezone",
+              "resources[6].related[0].resource.after.vpc_security_group_ids",
+              "resources[7].after.acceleration_status",
+              "resources[7].after.acl",
+              "resources[7].after.arn",
+              "resources[7].after.bucket_domain_name",
+              "resources[7].after.bucket_prefix",
+              "resources[7].after.bucket_regional_domain_name",
+              "resources[7].after.cors_rule",
+              "resources[7].after.grant",
+              "resources[7].after.hosted_zone_id",
+              "resources[7].after.id",
+              "resources[7].after.lifecycle_rule",
+              "resources[7].after.logging",
+              "resources[7].after.object_lock_configuration",
+              "resources[7].after.object_lock_enabled",
+              "resources[7].after.policy",
+              "resources[7].after.region",
+              "resources[7].after.replication_configuration",
+              "resources[7].after.request_payer",
+              "resources[7].after.server_side_encryption_configuration",
+              "resources[7].after.versioning",
+              "resources[7].after.website",
+              "resources[7].after.website_domain",
+              "resources[7].after.website_endpoint",
+              "resources[7].related[0].resource.after.bucket",
+              "resources[7].related[0].resource.after.id",
+              "resources[7].related[1].resource.after.arn",
+              "resources[7].related[1].resource.after.beginning_archive_time",
+              "resources[7].related[1].resource.after.display_name",
+              "resources[7].related[1].resource.after.fifo_throughput_scope",
+              "resources[7].related[1].resource.after.id",
+              "resources[7].related[1].resource.after.name_prefix",
+              "resources[7].related[1].resource.after.owner",
+              "resources[7].related[1].resource.after.policy",
+              "resources[7].related[1].resource.after.signature_version",
+              "resources[7].related[1].resource.after.tracing_config",
+              "resources[7].related[2].resource.after.arn",
+              "resources[7].related[2].resource.after.beginning_archive_time",
+              "resources[7].related[2].resource.after.display_name",
+              "resources[7].related[2].resource.after.fifo_throughput_scope",
+              "resources[7].related[2].resource.after.id",
+              "resources[7].related[2].resource.after.name_prefix",
+              "resources[7].related[2].resource.after.owner",
+              "resources[7].related[2].resource.after.policy",
+              "resources[7].related[2].resource.after.signature_version",
+              "resources[7].related[2].resource.after.tracing_config",
+              "resources[8].after.bucket",
+              "resources[8].after.id",
+              "resources[9].after.arn",
+              "resources[9].after.egress",
+              "resources[9].after.id",
+              "resources[9].after.name_prefix",
+              "resources[9].after.owner_id",
+              "resources[9].after.tags_all",
+              "resources[9].after.vpc_id",
+              "resources[10].after.arn",
+              "resources[10].after.data_type",
+              "resources[10].after.has_value_wo",
+              "resources[10].after.id",
+              "resources[10].after.insecure_value",
+              "resources[10].after.key_id",
+              "resources[10].after.tags_all",
+              "resources[10].after.tier",
+              "resources[10].after.version",
+              "resources[11].after.arn",
+              "resources[11].after.availability_zone",
+              "resources[11].after.availability_zone_id",
+              "resources[11].after.id",
+              "resources[11].after.ipv6_cidr_block_association_id",
+              "resources[11].after.owner_id",
+              "resources[11].after.private_dns_hostname_type_on_launch",
+              "resources[11].after.tags_all",
+              "resources[11].after.vpc_id",
+              "resources[12].after.arn",
+              "resources[12].after.availability_zone",
+              "resources[12].after.availability_zone_id",
+              "resources[12].after.id",
+              "resources[12].after.ipv6_cidr_block_association_id",
+              "resources[12].after.owner_id",
+              "resources[12].after.private_dns_hostname_type_on_launch",
+              "resources[12].after.tags_all",
+              "resources[12].after.vpc_id",
+              "resources[13].after.arn",
+              "resources[13].after.default_network_acl_id",
+              "resources[13].after.default_route_table_id",
+              "resources[13].after.default_security_group_id",
+              "resources[13].after.dhcp_options_id",
+              "resources[13].after.enable_dns_hostnames",
+              "resources[13].after.enable_network_address_usage_metrics",
+              "resources[13].after.id",
+              "resources[13].after.ipv6_association_id",
+              "resources[13].after.ipv6_cidr_block",
+              "resources[13].after.ipv6_cidr_block_network_border_group",
+              "resources[13].after.main_route_table_id",
+              "resources[13].after.owner_id",
+              "resources[13].after.tags_all",
+              "resources[13].related[0].resource.after.arn",
+              "resources[13].related[0].resource.after.availability_zone",
+              "resources[13].related[0].resource.after.availability_zone_id",
+              "resources[13].related[0].resource.after.id",
+              "resources[13].related[0].resource.after.ipv6_cidr_block_association_id",
+              "resources[13].related[0].resource.after.owner_id",
+              "resources[13].related[0].resource.after.private_dns_hostname_type_on_launch",
+              "resources[13].related[0].resource.after.tags_all",
+              "resources[13].related[0].resource.after.vpc_id",
+              "resources[13].related[1].resource.after.arn",
+              "resources[13].related[1].resource.after.availability_zone",
+              "resources[13].related[1].resource.after.availability_zone_id",
+              "resources[13].related[1].resource.after.id",
+              "resources[13].related[1].resource.after.ipv6_cidr_block_association_id",
+              "resources[13].related[1].resource.after.owner_id",
+              "resources[13].related[1].resource.after.private_dns_hostname_type_on_launch",
+              "resources[13].related[1].resource.after.tags_all",
+              "resources[13].related[1].resource.after.vpc_id",
+              "resources[14].after.arn",
+              "resources[14].after.beginning_archive_time",
+              "resources[14].after.display_name",
+              "resources[14].after.fifo_throughput_scope",
+              "resources[14].after.id",
+              "resources[14].after.name_prefix",
+              "resources[14].after.owner",
+              "resources[14].after.policy",
+              "resources[14].after.signature_version",
+              "resources[14].after.tracing_config",
+              "resources[14].related[0].resource.after.arn",
+              "resources[14].related[0].resource.after.id",
+              "resources[14].related[0].resource.after.owner",
+              "resources[15].after.arn",
+              "resources[15].after.id",
+              "resources[15].after.owner",
+              "resources[16].after.arn",
+              "resources[16].after.beginning_archive_time",
+              "resources[16].after.display_name",
+              "resources[16].after.fifo_throughput_scope",
+              "resources[16].after.id",
+              "resources[16].after.name_prefix",
+              "resources[16].after.owner",
+              "resources[16].after.policy",
+              "resources[16].after.signature_version",
+              "resources[16].after.tracing_config",
+              "resources[16].related[0].resource.after.arn",
+              "resources[16].related[0].resource.after.id",
+              "resources[16].related[0].resource.after.owner",
+              "resources[17].after.arn",
+              "resources[17].after.id",
+              "resources[17].after.owner",
+              "resources[18].after.arn",
+              "resources[18].after.deduplication_scope",
+              "resources[18].after.fifo_throughput_limit",
+              "resources[18].after.id",
+              "resources[18].after.kms_data_key_reuse_period_seconds",
+              "resources[18].after.name_prefix",
+              "resources[18].after.policy",
+              "resources[18].after.redrive_allow_policy",
+              "resources[18].after.redrive_policy",
+              "resources[18].after.sqs_managed_sse_enabled",
+              "resources[18].after.tags_all",
+              "resources[18].after.url",
+              "resources[19].after.arn",
+              "resources[19].after.deduplication_scope",
+              "resources[19].after.fifo_throughput_limit",
+              "resources[19].after.id",
+              "resources[19].after.kms_data_key_reuse_period_seconds",
+              "resources[19].after.name_prefix",
+              "resources[19].after.policy",
+              "resources[19].after.redrive_allow_policy",
+              "resources[19].after.redrive_policy",
+              "resources[19].after.sqs_managed_sse_enabled",
+              "resources[19].after.tags_all",
+              "resources[19].after.url"
+            ]
+          },
+          "reference_time": {
+            "source": "runner_clock",
+            "trust": "asserted",
+            "value": "2026-09-22T13:00:13.568Z",
+            "time_window": null
+          },
+          "stage": "pre_deploy",
+          "scanners": null,
+          "coverage": {
+            "assertions_evaluated": 5,
+            "assertions_expected": {
+              "origin": "locally_derived",
+              "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
+              "value": 5
+            },
+            "evaluations": 0,
+            "gaps": [
+              {
+                "kind": "plan_incomplete",
+                "value": false
+              }
+            ],
+            "sampled": false,
+            "status_counts": {
+              "error": 0,
+              "fail": 0,
+              "not_applicable": 0,
+              "not_evaluated": 0,
+              "pass": 0,
+              "unknown": 0
+            },
+            "subjects_evaluated": 2,
+            "subjects_in_scope": {
+              "counted_from": "change_unit",
+              "excluded": [],
+              "removed_by_plan": 0,
+              "source_digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
+              "value": 1
+            },
+            "subjects_per_assertion": {},
+            "truncated": {
+              "limit": null,
+              "reason": null,
+              "value": false
+            },
+            "substituted_inputs": []
+          },
+          "verdict": {
+            "value": "pass",
+            "exit_code": 0,
+            "computed_from": "status_counts",
+            "stage": null
+          },
+          "assurance_status": {
+            "value": "complete",
+            "reason": null,
+            "detail": null
+          },
+          "approvals": []
+        }
+      }
+    },
+    "remove": [],
+    "message": "the pre_deploy stage lists a plan-flag gap, which only the plan stage lists"
+  },
+  {
+    "name": "incomplete_plan_reported_as_complete",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/complete": false,
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": null
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "kind": "plan_incomplete",
+          "value": false,
+          "stage": "plan"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "stages.plan.assurance_status is not the status the stage's counts give"
+  },
+  {
+    "name": "pre_deploy_stage_of_a_forged_change_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/coverage/assertions_expected/value": 10,
+      "/coverage/assertions_expected/required_assertion_digest": "sha256:f8263265622d229ab28e5d279ca471255296fd9651f3256b50c71f9690f418bf",
+      "/coverage/assertions_evaluated": 10,
+      "/stages/pre_deploy": {
+        "assertions": {
+          "count": 5,
+          "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+          "index": "units/root/plan/assertions/compiled.json"
+        },
+        "compiler": {
+          "contract_digest": null,
+          "contract_version": "0.1.0",
+          "install": "editable",
+          "version": "1.0.0"
+        },
+        "events": {
+          "count": 0,
+          "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
+          "path": "units/root/pre_deploy/events.json"
+        },
+        "observed_at": "2026-09-22T13:00:13.568Z",
+        "execution": {
+          "bundle": {
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "kind": "local_bundle",
+            "content_digest": null,
+            "key_id": null
+          },
+          "detail": null,
+          "evaluator": {
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "engine": "opa",
+            "version": "1.20.2"
+          },
+          "reason": null
+        },
+        "enforcement_mode": "enforcing",
+        "redaction": {
+          "allowed": [],
+          "policy": {
+            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+            "id": "iltero.redaction",
+            "version": "1"
+          },
+          "redacted": [
+            {
+              "path": "resources[0].after.password",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[0].after.password_wo",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[1].after.secret",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[1].after.ses_smtp_password_v4",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[2].after.secret",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[2].after.ses_smtp_password_v4",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[3].related[0].resource.after.secret",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[3].related[0].resource.after.ses_smtp_password_v4",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[4].related[0].resource.after.secret",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[4].related[0].resource.after.ses_smtp_password_v4",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[5].after.user_data",
+              "reason": "deny_key"
+            },
+            {
+              "path": "resources[6].related[0].resource.after.password",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[6].related[0].resource.after.password_wo",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[7].related[1].resource.after.tags.login",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[7].related[1].resource.after.tags_all.login",
+              "reason": "sensitive_value_reuse"
+            },
+            {
+              "path": "resources[7].related[2].resource.after.tags.login",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[7].related[2].resource.after.tags_all.login",
+              "reason": "sensitive_value_reuse"
+            },
+            {
+              "path": "resources[10].after.value",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[10].after.value_wo",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[14].after.tags.login",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[14].after.tags_all.login",
+              "reason": "sensitive_value_reuse"
+            },
+            {
+              "path": "resources[16].after.tags.login",
+              "reason": "terraform_sensitive"
+            },
+            {
+              "path": "resources[16].after.tags_all.login",
+              "reason": "sensitive_value_reuse"
+            }
+          ],
+          "input": {
+            "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+            "kind": "observation"
+          },
+          "unknown": [
+            "resources[0].after.address",
+            "resources[0].after.arn",
+            "resources[0].after.availability_zone",
+            "resources[0].after.backup_target",
+            "resources[0].after.backup_window",
+            "resources[0].after.ca_cert_identifier",
+            "resources[0].after.character_set_name",
+            "resources[0].after.database_insights_mode",
+            "resources[0].after.db_name",
+            "resources[0].after.db_subnet_group_name",
+            "resources[0].after.domain_fqdn",
+            "resources[0].after.endpoint",
+            "resources[0].after.engine_lifecycle_support",
+            "resources[0].after.engine_version_actual",
+            "resources[0].after.hosted_zone_id",
+            "resources[0].after.id",
+            "resources[0].after.identifier_prefix",
+            "resources[0].after.iops",
+            "resources[0].after.kms_key_id",
+            "resources[0].after.latest_restorable_time",
+            "resources[0].after.license_model",
+            "resources[0].after.listener_endpoint",
+            "resources[0].after.maintenance_window",
+            "resources[0].after.master_user_secret",
+            "resources[0].after.master_user_secret_kms_key_id",
+            "resources[0].after.monitoring_role_arn",
+            "resources[0].after.multi_az",
+            "resources[0].after.nchar_character_set_name",
+            "resources[0].after.network_type",
+            "resources[0].after.option_group_name",
+            "resources[0].after.parameter_group_name",
+            "resources[0].after.performance_insights_kms_key_id",
+            "resources[0].after.performance_insights_retention_period",
+            "resources[0].after.port",
+            "resources[0].after.replica_mode",
+            "resources[0].after.replicas",
+            "resources[0].after.resource_id",
+            "resources[0].after.snapshot_identifier",
+            "resources[0].after.status",
+            "resources[0].after.storage_throughput",
+            "resources[0].after.storage_type",
+            "resources[0].after.timezone",
+            "resources[0].after.vpc_security_group_ids",
+            "resources[1].after.create_date",
+            "resources[1].after.encrypted_secret",
+            "resources[1].after.encrypted_ses_smtp_password_v4",
+            "resources[1].after.id",
+            "resources[1].after.key_fingerprint",
+            "resources[1].after.secret",
+            "resources[1].after.ses_smtp_password_v4",
+            "resources[2].after.create_date",
+            "resources[2].after.encrypted_secret",
+            "resources[2].after.encrypted_ses_smtp_password_v4",
+            "resources[2].after.id",
+            "resources[2].after.key_fingerprint",
+            "resources[2].after.secret",
+            "resources[2].after.ses_smtp_password_v4",
+            "resources[3].after.arn",
+            "resources[3].after.id",
+            "resources[3].after.tags_all",
+            "resources[3].after.unique_id",
+            "resources[3].related[0].resource.after.create_date",
+            "resources[3].related[0].resource.after.encrypted_secret",
+            "resources[3].related[0].resource.after.encrypted_ses_smtp_password_v4",
+            "resources[3].related[0].resource.after.id",
+            "resources[3].related[0].resource.after.key_fingerprint",
+            "resources[3].related[0].resource.after.secret",
+            "resources[3].related[0].resource.after.ses_smtp_password_v4",
+            "resources[4].after.arn",
+            "resources[4].after.id",
+            "resources[4].after.tags_all",
+            "resources[4].after.unique_id",
+            "resources[4].related[0].resource.after.create_date",
+            "resources[4].related[0].resource.after.encrypted_secret",
+            "resources[4].related[0].resource.after.encrypted_ses_smtp_password_v4",
+            "resources[4].related[0].resource.after.id",
+            "resources[4].related[0].resource.after.key_fingerprint",
+            "resources[4].related[0].resource.after.secret",
+            "resources[4].related[0].resource.after.ses_smtp_password_v4",
+            "resources[5].after.arn",
+            "resources[5].after.associate_public_ip_address",
+            "resources[5].after.availability_zone",
+            "resources[5].after.capacity_reservation_specification",
+            "resources[5].after.cpu_core_count",
+            "resources[5].after.cpu_options",
+            "resources[5].after.cpu_threads_per_core",
+            "resources[5].after.disable_api_stop",
+            "resources[5].after.disable_api_termination",
+            "resources[5].after.ebs_block_device",
+            "resources[5].after.ebs_optimized",
+            "resources[5].after.enable_primary_ipv6",
+            "resources[5].after.enclave_options",
+            "resources[5].after.ephemeral_block_device",
+            "resources[5].after.host_id",
+            "resources[5].after.host_resource_group_arn",
+            "resources[5].after.iam_instance_profile",
+            "resources[5].after.id",
+            "resources[5].after.instance_initiated_shutdown_behavior",
+            "resources[5].after.instance_lifecycle",
+            "resources[5].after.instance_market_options",
+            "resources[5].after.instance_state",
+            "resources[5].after.ipv6_address_count",
+            "resources[5].after.ipv6_addresses",
+            "resources[5].after.key_name",
+            "resources[5].after.maintenance_options",
+            "resources[5].after.metadata_options",
+            "resources[5].after.monitoring",
+            "resources[5].after.network_interface",
+            "resources[5].after.outpost_arn",
+            "resources[5].after.password_data",
+            "resources[5].after.placement_group",
+            "resources[5].after.placement_partition_number",
+            "resources[5].after.primary_network_interface_id",
+            "resources[5].after.private_dns",
+            "resources[5].after.private_dns_name_options",
+            "resources[5].after.private_ip",
+            "resources[5].after.public_dns",
+            "resources[5].after.public_ip",
+            "resources[5].after.root_block_device",
+            "resources[5].after.secondary_private_ips",
+            "resources[5].after.security_groups",
+            "resources[5].after.spot_instance_request_id",
+            "resources[5].after.subnet_id",
+            "resources[5].after.tenancy",
+            "resources[5].after.user_data_base64",
+            "resources[5].after.vpc_security_group_ids",
+            "resources[6].after.arn",
+            "resources[6].after.id",
+            "resources[6].after.key_id",
+            "resources[6].after.multi_region",
+            "resources[6].after.policy",
+            "resources[6].after.rotation_period_in_days",
+            "resources[6].after.tags_all",
+            "resources[6].related[0].resource.after.address",
+            "resources[6].related[0].resource.after.arn",
+            "resources[6].related[0].resource.after.availability_zone",
+            "resources[6].related[0].resource.after.backup_target",
+            "resources[6].related[0].resource.after.backup_window",
+            "resources[6].related[0].resource.after.ca_cert_identifier",
+            "resources[6].related[0].resource.after.character_set_name",
+            "resources[6].related[0].resource.after.database_insights_mode",
+            "resources[6].related[0].resource.after.db_name",
+            "resources[6].related[0].resource.after.db_subnet_group_name",
+            "resources[6].related[0].resource.after.domain_fqdn",
+            "resources[6].related[0].resource.after.endpoint",
+            "resources[6].related[0].resource.after.engine_lifecycle_support",
+            "resources[6].related[0].resource.after.engine_version_actual",
+            "resources[6].related[0].resource.after.hosted_zone_id",
+            "resources[6].related[0].resource.after.id",
+            "resources[6].related[0].resource.after.identifier_prefix",
+            "resources[6].related[0].resource.after.iops",
+            "resources[6].related[0].resource.after.kms_key_id",
+            "resources[6].related[0].resource.after.latest_restorable_time",
+            "resources[6].related[0].resource.after.license_model",
+            "resources[6].related[0].resource.after.listener_endpoint",
+            "resources[6].related[0].resource.after.maintenance_window",
+            "resources[6].related[0].resource.after.master_user_secret",
+            "resources[6].related[0].resource.after.master_user_secret_kms_key_id",
+            "resources[6].related[0].resource.after.monitoring_role_arn",
+            "resources[6].related[0].resource.after.multi_az",
+            "resources[6].related[0].resource.after.nchar_character_set_name",
+            "resources[6].related[0].resource.after.network_type",
+            "resources[6].related[0].resource.after.option_group_name",
+            "resources[6].related[0].resource.after.parameter_group_name",
+            "resources[6].related[0].resource.after.performance_insights_kms_key_id",
+            "resources[6].related[0].resource.after.performance_insights_retention_period",
+            "resources[6].related[0].resource.after.port",
+            "resources[6].related[0].resource.after.replica_mode",
+            "resources[6].related[0].resource.after.replicas",
+            "resources[6].related[0].resource.after.resource_id",
+            "resources[6].related[0].resource.after.snapshot_identifier",
+            "resources[6].related[0].resource.after.status",
+            "resources[6].related[0].resource.after.storage_throughput",
+            "resources[6].related[0].resource.after.storage_type",
+            "resources[6].related[0].resource.after.timezone",
+            "resources[6].related[0].resource.after.vpc_security_group_ids",
+            "resources[7].after.acceleration_status",
+            "resources[7].after.acl",
+            "resources[7].after.arn",
+            "resources[7].after.bucket_domain_name",
+            "resources[7].after.bucket_prefix",
+            "resources[7].after.bucket_regional_domain_name",
+            "resources[7].after.cors_rule",
+            "resources[7].after.grant",
+            "resources[7].after.hosted_zone_id",
+            "resources[7].after.id",
+            "resources[7].after.lifecycle_rule",
+            "resources[7].after.logging",
+            "resources[7].after.object_lock_configuration",
+            "resources[7].after.object_lock_enabled",
+            "resources[7].after.policy",
+            "resources[7].after.region",
+            "resources[7].after.replication_configuration",
+            "resources[7].after.request_payer",
+            "resources[7].after.server_side_encryption_configuration",
+            "resources[7].after.versioning",
+            "resources[7].after.website",
+            "resources[7].after.website_domain",
+            "resources[7].after.website_endpoint",
+            "resources[7].related[0].resource.after.bucket",
+            "resources[7].related[0].resource.after.id",
+            "resources[7].related[1].resource.after.arn",
+            "resources[7].related[1].resource.after.beginning_archive_time",
+            "resources[7].related[1].resource.after.display_name",
+            "resources[7].related[1].resource.after.fifo_throughput_scope",
+            "resources[7].related[1].resource.after.id",
+            "resources[7].related[1].resource.after.name_prefix",
+            "resources[7].related[1].resource.after.owner",
+            "resources[7].related[1].resource.after.policy",
+            "resources[7].related[1].resource.after.signature_version",
+            "resources[7].related[1].resource.after.tracing_config",
+            "resources[7].related[2].resource.after.arn",
+            "resources[7].related[2].resource.after.beginning_archive_time",
+            "resources[7].related[2].resource.after.display_name",
+            "resources[7].related[2].resource.after.fifo_throughput_scope",
+            "resources[7].related[2].resource.after.id",
+            "resources[7].related[2].resource.after.name_prefix",
+            "resources[7].related[2].resource.after.owner",
+            "resources[7].related[2].resource.after.policy",
+            "resources[7].related[2].resource.after.signature_version",
+            "resources[7].related[2].resource.after.tracing_config",
+            "resources[8].after.bucket",
+            "resources[8].after.id",
+            "resources[9].after.arn",
+            "resources[9].after.egress",
+            "resources[9].after.id",
+            "resources[9].after.name_prefix",
+            "resources[9].after.owner_id",
+            "resources[9].after.tags_all",
+            "resources[9].after.vpc_id",
+            "resources[10].after.arn",
+            "resources[10].after.data_type",
+            "resources[10].after.has_value_wo",
+            "resources[10].after.id",
+            "resources[10].after.insecure_value",
+            "resources[10].after.key_id",
+            "resources[10].after.tags_all",
+            "resources[10].after.tier",
+            "resources[10].after.version",
+            "resources[11].after.arn",
+            "resources[11].after.availability_zone",
+            "resources[11].after.availability_zone_id",
+            "resources[11].after.id",
+            "resources[11].after.ipv6_cidr_block_association_id",
+            "resources[11].after.owner_id",
+            "resources[11].after.private_dns_hostname_type_on_launch",
+            "resources[11].after.tags_all",
+            "resources[11].after.vpc_id",
+            "resources[12].after.arn",
+            "resources[12].after.availability_zone",
+            "resources[12].after.availability_zone_id",
+            "resources[12].after.id",
+            "resources[12].after.ipv6_cidr_block_association_id",
+            "resources[12].after.owner_id",
+            "resources[12].after.private_dns_hostname_type_on_launch",
+            "resources[12].after.tags_all",
+            "resources[12].after.vpc_id",
+            "resources[13].after.arn",
+            "resources[13].after.default_network_acl_id",
+            "resources[13].after.default_route_table_id",
+            "resources[13].after.default_security_group_id",
+            "resources[13].after.dhcp_options_id",
+            "resources[13].after.enable_dns_hostnames",
+            "resources[13].after.enable_network_address_usage_metrics",
+            "resources[13].after.id",
+            "resources[13].after.ipv6_association_id",
+            "resources[13].after.ipv6_cidr_block",
+            "resources[13].after.ipv6_cidr_block_network_border_group",
+            "resources[13].after.main_route_table_id",
+            "resources[13].after.owner_id",
+            "resources[13].after.tags_all",
+            "resources[13].related[0].resource.after.arn",
+            "resources[13].related[0].resource.after.availability_zone",
+            "resources[13].related[0].resource.after.availability_zone_id",
+            "resources[13].related[0].resource.after.id",
+            "resources[13].related[0].resource.after.ipv6_cidr_block_association_id",
+            "resources[13].related[0].resource.after.owner_id",
+            "resources[13].related[0].resource.after.private_dns_hostname_type_on_launch",
+            "resources[13].related[0].resource.after.tags_all",
+            "resources[13].related[0].resource.after.vpc_id",
+            "resources[13].related[1].resource.after.arn",
+            "resources[13].related[1].resource.after.availability_zone",
+            "resources[13].related[1].resource.after.availability_zone_id",
+            "resources[13].related[1].resource.after.id",
+            "resources[13].related[1].resource.after.ipv6_cidr_block_association_id",
+            "resources[13].related[1].resource.after.owner_id",
+            "resources[13].related[1].resource.after.private_dns_hostname_type_on_launch",
+            "resources[13].related[1].resource.after.tags_all",
+            "resources[13].related[1].resource.after.vpc_id",
+            "resources[14].after.arn",
+            "resources[14].after.beginning_archive_time",
+            "resources[14].after.display_name",
+            "resources[14].after.fifo_throughput_scope",
+            "resources[14].after.id",
+            "resources[14].after.name_prefix",
+            "resources[14].after.owner",
+            "resources[14].after.policy",
+            "resources[14].after.signature_version",
+            "resources[14].after.tracing_config",
+            "resources[14].related[0].resource.after.arn",
+            "resources[14].related[0].resource.after.id",
+            "resources[14].related[0].resource.after.owner",
+            "resources[15].after.arn",
+            "resources[15].after.id",
+            "resources[15].after.owner",
+            "resources[16].after.arn",
+            "resources[16].after.beginning_archive_time",
+            "resources[16].after.display_name",
+            "resources[16].after.fifo_throughput_scope",
+            "resources[16].after.id",
+            "resources[16].after.name_prefix",
+            "resources[16].after.owner",
+            "resources[16].after.policy",
+            "resources[16].after.signature_version",
+            "resources[16].after.tracing_config",
+            "resources[16].related[0].resource.after.arn",
+            "resources[16].related[0].resource.after.id",
+            "resources[16].related[0].resource.after.owner",
+            "resources[17].after.arn",
+            "resources[17].after.id",
+            "resources[17].after.owner",
+            "resources[18].after.arn",
+            "resources[18].after.deduplication_scope",
+            "resources[18].after.fifo_throughput_limit",
+            "resources[18].after.id",
+            "resources[18].after.kms_data_key_reuse_period_seconds",
+            "resources[18].after.name_prefix",
+            "resources[18].after.policy",
+            "resources[18].after.redrive_allow_policy",
+            "resources[18].after.redrive_policy",
+            "resources[18].after.sqs_managed_sse_enabled",
+            "resources[18].after.tags_all",
+            "resources[18].after.url",
+            "resources[19].after.arn",
+            "resources[19].after.deduplication_scope",
+            "resources[19].after.fifo_throughput_limit",
+            "resources[19].after.id",
+            "resources[19].after.kms_data_key_reuse_period_seconds",
+            "resources[19].after.name_prefix",
+            "resources[19].after.policy",
+            "resources[19].after.redrive_allow_policy",
+            "resources[19].after.redrive_policy",
+            "resources[19].after.sqs_managed_sse_enabled",
+            "resources[19].after.tags_all",
+            "resources[19].after.url"
+          ]
+        },
+        "reference_time": {
+          "source": "runner_clock",
+          "trust": "asserted",
+          "value": "2026-09-22T13:00:13.568Z",
+          "time_window": null
+        },
+        "stage": "pre_deploy",
+        "scanners": null,
+        "coverage": {
+          "assertions_evaluated": 5,
+          "assertions_expected": {
+            "origin": "locally_derived",
+            "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
+            "value": 5
+          },
+          "evaluations": 0,
+          "gaps": [],
+          "sampled": false,
+          "status_counts": {
+            "error": 0,
+            "fail": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "pass": 0,
+            "unknown": 0
+          },
+          "subjects_evaluated": 2,
+          "subjects_in_scope": {
+            "counted_from": "change_unit",
+            "excluded": [],
+            "removed_by_plan": 0,
+            "source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "value": 1
+          },
+          "subjects_per_assertion": {},
+          "truncated": {
+            "limit": null,
+            "reason": null,
+            "value": false
+          },
+          "substituted_inputs": []
+        },
+        "verdict": {
+          "value": "pass",
+          "exit_code": 0,
+          "computed_from": "status_counts",
+          "stage": null
+        },
+        "assurance_status": {
+          "value": "complete",
+          "reason": null,
+          "detail": null
+        },
+        "approvals": []
+      }
+    },
+    "remove": [],
+    "message": "change.digest is not the digest of the change's units"
+  },
+  {
+    "name": "evidence_file_redacted_under_another_policy",
+    "vector": "local_run.json",
+    "set": {
+      "/evidence_refs/0/redaction_policy/digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "remove": [],
+    "message": "every stage and every redacted evidence file name the same redaction policy"
+  },
+  {
+    "name": "evidence_file_policy_without_its_digest",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/evidence_refs/0/redaction_policy/digest"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "saved_plan_without_its_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "artifact_digest_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "remove": [],
+    "message": "artifact_digest is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_without_its_file_name",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan"
+    },
+    "remove": [],
+    "message": "artifact_file_name is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_named_by_its_path",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "build/tfplan"
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
+  },
+  {
+    "name": "local_bundle_naming_a_signing_key",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09"
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_bundle_without_its_content_digest",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/bundle": {
+        "kind": "server",
+        "tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "content_digest": null,
+        "key_id": "iltero-bundle-2026-09"
+      }
+    },
+    "remove": [],
+    "message": "a bundle names its content digest and signing key exactly when its kind is server"
+  },
+  {
+    "name": "served_assertion_evaluated_over_a_local_bundle",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/assertion_source": "server_bundle"
+    },
+    "remove": [],
+    "message": "an assertion from the server's bundle is evaluated over the server's bundle"
+  },
+  {
+    "name": "artifact_file_name_without_a_saved_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_file_name": "tfplan"
+    },
+    "remove": [],
+    "message": "artifact_file_name is present exactly when artifact_digest_source is saved_plan"
+  },
+  {
+    "name": "saved_plan_named_with_a_look_alike_slash",
+    "vector": "local_run.json",
+    "set": {
+      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/plan/artifact_digest_source": "saved_plan",
+      "/plan/artifact_file_name": "build／tfplan"
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
+  },
+  {
+    "name": "binding_set_file_named_by_its_path",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/scanners": {
+        "binding_set": {
+          "id": "ILT.BINDINGS.STARTER",
+          "version": "1.0.0",
+          "origin": "file",
+          "file_name": "config/bindings.yaml",
+          "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "copy_path": "units/root/plan/bindings.json",
+          "binding_count": 2
+        },
+        "reports": [],
+        "results_accepted": 0,
+        "results_binding_unverified": 0,
+        "results_without_binding": 0
+      }
+    },
+    "remove": [],
+    "message": "must be a file name without its directories"
+  }
+]

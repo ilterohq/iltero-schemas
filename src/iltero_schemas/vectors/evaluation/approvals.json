@@ -85,7 +85,7 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
             },
             "method": "iltero_review",
             "independence": "independent",
@@ -203,7 +203,7 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
             },
             "method": "iltero_review",
             "independence": "self_permitted_by_policy",
@@ -236,7 +236,7 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
             },
             "method": "iltero_review",
             "independence": "independent",
@@ -321,7 +321,7 @@
               "kind": "rds_instance"
             }
           ],
-          "digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454"
+          "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
         }
       },
       "expected": {

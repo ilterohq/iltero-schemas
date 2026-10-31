@@ -113,5 +113,23 @@
     },
     "remove": [],
     "message": "is not the version of the terraform plan digest rule"
+  },
+  {
+    "name": "identities_read_from_a_refresh_only_plan_naming_an_applied_plan",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/read_from": "refresh_plan"
+    },
+    "remove": [],
+    "message": "identities read from a refresh-only plan name no applied plan"
+  },
+  {
+    "name": "identities_read_from_an_unknown_source",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/read_from": "cloud_api"
+    },
+    "remove": [],
+    "message": "Input should be 'state_file' or 'refresh_plan'"
   }
 ]

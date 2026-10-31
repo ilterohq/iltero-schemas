@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: A collection is non-empty
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

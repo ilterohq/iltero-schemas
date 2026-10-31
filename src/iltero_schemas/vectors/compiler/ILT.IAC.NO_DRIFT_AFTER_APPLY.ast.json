@@ -1,0 +1,20 @@
+{
+  "ast_version": 1,
+  "id": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+  "version": "1.0.0",
+  "type": "process",
+  "change_type": "iac_change",
+  "stage": "post_verify",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "when": null,
+  "assert": {
+    "predicate": {
+      "path": "drift_check.differences_count",
+      "op": "equal",
+      "literal": 0
+    }
+  }
+}

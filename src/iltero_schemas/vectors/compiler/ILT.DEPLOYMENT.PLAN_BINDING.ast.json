@@ -3,6 +3,7 @@
   "id": "ILT.DEPLOYMENT.PLAN_BINDING",
   "version": "1.0.0",
   "type": "process",
+  "change_type": "iac_change",
   "stage": "post_deploy",
   "target": {
     "kind": "deployment",

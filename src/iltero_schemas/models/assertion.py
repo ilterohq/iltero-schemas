@@ -16,12 +16,15 @@ accepted.
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from enum import StrEnum
+from types import MappingProxyType
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
+from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, ChangeTypeName
 from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
 
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
@@ -66,6 +69,11 @@ class Stage(StrEnum):
     RUNTIME = "runtime"
 
 
+def stage_name(stage: Stage) -> str:
+    """The stage as a reader says it in a sentence, such as "post-verify"."""
+    return stage.value.replace("_", "-")
+
+
 class TargetKind(StrEnum):
     """What kind of thing an assertion is about."""
 
@@ -89,20 +97,29 @@ ASSERTION_TYPE_FOR_TARGET: dict[TargetKind, AssertionType] = {
     TargetKind.ASSURANCE: AssertionType.PROCESS,
 }
 
-# The only combinations an assertion may declare; anything else is rejected.
-VALID_COMBINATIONS: frozenset[tuple[AssertionType, Stage, TargetKind]] = frozenset(
+Combination = tuple[AssertionType, Stage, TargetKind]
+# The combinations an assertion about each change type may declare.
+COMBINATIONS: Mapping[ChangeTypeName, frozenset[Combination]] = MappingProxyType(
     {
-        (AssertionType.STATE, Stage.PLAN, TargetKind.RESOURCE),
-        (AssertionType.STATE, Stage.POST_VERIFY, TargetKind.RESOURCE),
-        (AssertionType.STATE, Stage.RUNTIME, TargetKind.RESOURCE),
-        (AssertionType.PROCESS, Stage.PRE_DEPLOY, TargetKind.CHANGE),
-        (AssertionType.PROCESS, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
-        (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
-        (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.ASSURANCE),
-        (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.DEPLOYMENT),
-        (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.ASSURANCE),
+        IAC_CHANGE_TYPE: frozenset(
+            {
+                (AssertionType.STATE, Stage.PLAN, TargetKind.RESOURCE),
+                (AssertionType.STATE, Stage.POST_VERIFY, TargetKind.RESOURCE),
+                (AssertionType.STATE, Stage.RUNTIME, TargetKind.RESOURCE),
+                (AssertionType.PROCESS, Stage.PRE_DEPLOY, TargetKind.CHANGE),
+                (AssertionType.PROCESS, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
+                (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
+                (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.ASSURANCE),
+                (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.DEPLOYMENT),
+                (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.ASSURANCE),
+            }
+        ),
     }
 )
+# The combinations every change type allows, which an assertion about any change may declare.
+SHARED_COMBINATIONS: frozenset[Combination] = frozenset.intersection(*COMBINATIONS.values())
+# Every combination some change type allows; anything else is rejected.
+VALID_COMBINATIONS: frozenset[Combination] = frozenset().union(*COMBINATIONS.values())
 
 
 _ID = re.compile(ID_PATTERN)
@@ -236,19 +253,31 @@ Target = Annotated[ResourceTarget | ProcessTarget, Field(discriminator="kind")]
 SCOPED_STAGES = frozenset({Stage.PRE_DEPLOY, Stage.POST_DEPLOY})
 
 
-def check_target(stage: Stage, target: ResourceTarget | ProcessTarget) -> None:
-    """Raise ``ValueError`` unless ``target`` is valid at ``stage`` and its selectors have a change to scope."""
+def check_target(stage: Stage, target: ResourceTarget | ProcessTarget, change_type: ChangeTypeName | None) -> None:
+    """Raise ``ValueError`` unless ``target`` is valid at ``stage`` for ``change_type``, or for every change type when
+    it is None, and its selectors have a change to scope."""
     kind = TargetKind(target.kind)
-    if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in VALID_COMBINATIONS:
-        raise ValueError(f"stage {stage.value!r} is not valid for target kind {target.kind!r}")
+    valid = SHARED_COMBINATIONS if change_type is None else COMBINATIONS[change_type]
+    if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in valid:
+        about = "any change" if change_type is None else f"a change of type {change_type!r}"
+        raise ValueError(
+            f"stage {stage.value!r} is not valid for target kind {target.kind!r} in an assertion about {about}"
+        )
     if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
         raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
+
+
+# What an author is told when an assertion does not say which change type it is about.
+CHANGE_TYPE_MISSING = "change_type is missing: give iac_change, or null for an assertion about any change"
 
 
 class Spec(_Strict):
     """What is checked, when, and about what."""
 
     type: AssertionType | None = None
+    # The change type the assertion is about, or null for an assertion about any change, which may declare only the
+    # stages and targets every change type allows.
+    change_type: ChangeTypeName | None
     stage: Stage
     target: Target
     when: dict[str, Any] | None = None
@@ -258,6 +287,13 @@ class Spec(_Strict):
     def derived_type(self) -> AssertionType:
         return ASSERTION_TYPE_FOR_TARGET[TargetKind(self.target.kind)]
 
+    @model_validator(mode="before")
+    @classmethod
+    def _names_its_change_type(cls, data: Any) -> Any:
+        if isinstance(data, dict) and "change_type" not in data:
+            raise ValueError(CHANGE_TYPE_MISSING)
+        return data
+
     @model_validator(mode="after")
     def _combination(self) -> Spec:
         derived = self.derived_type
@@ -265,7 +301,7 @@ class Spec(_Strict):
             raise ValueError(
                 f"type {self.type.value!r} does not match target kind {self.target.kind!r} ({derived.value})"
             )
-        check_target(self.stage, self.target)
+        check_target(self.stage, self.target, self.change_type)
         return self
 
 

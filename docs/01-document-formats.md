@@ -40,7 +40,17 @@ The tables below use these value types:
 | UUID | A lowercase, hyphenated UUID. |
 | commit | A full git object id: 40 hexadecimal digits (SHA-1) or 64 (SHA-256). |
 | identifier | Text of 1 to 256 characters. |
-| stage | `plan`, `pre_deploy`, `post_deploy`, `post_verify` or `runtime`. |
+| stage | `plan`, `pre_deploy`, `post_deploy`, `post_verify` or `runtime` (see below). |
+
+A stage is a point in a change's life at which assertions are checked:
+
+| Stage | What is checked |
+| --- | --- |
+| `plan` | The change to deploy, once it is produced and before anyone approves it. For an IaC (infrastructure-as-code) change, the IaC tool's plan. |
+| `pre_deploy` | The change, at the gate before it is deployed: approvals, exceptions and earlier evaluations. |
+| `post_deploy` | What the deployment did. |
+| `post_verify` | The deployed resources, read back after the deployment. |
+| `runtime` | Resources as they run, outside any change. No record has a `runtime` stage. |
 
 ## TechnicalAssertion
 
@@ -58,6 +68,7 @@ a change it is checked, and what kind of thing it is about. The compiler turns i
 | `metadata.version` | string | A semantic version `X.Y.Z`. Evidence cites the assertion's digest, not this version. |
 | `metadata.title` | string | One line, at most 200 characters. |
 | `metadata.remediation` | string | Optional; when absent, the key is left out, never `null`. What a person does to make a failing subject meet the assertion. One line, at most 300 characters. |
+| `spec.change_type` | string or null | Required. The [change type](#change-types-and-activities) the assertion is about: `iac_change`. `null` for an assertion about any change, which reads only what every change type's input shares. Left out, it is refused: "change_type is missing: give iac_change, or null for an assertion about any change". |
 | `spec.stage` | stage | When the assertion is checked. |
 | `spec.target` | object | What the assertion is about. `kind` is `resource`, `change`, `deployment` or `assurance`. `resources` lists resource selectors: a `resource` target names exactly one; a `change` or `deployment` target may name up to 16, and is then in scope only when the change touches a resource one of them picks. |
 | `spec.type` | string | Optional. `state` for a `resource` target, `process` otherwise. When written, it must match the target. |
@@ -66,7 +77,9 @@ a change it is checked, and what kind of thing it is about. The compiler turns i
 
 Key rules:
 
-- Only these stage and target pairs are valid:
+- Each change type allows its own stage and target pairs (`iltero_schemas.models.assertion.COMBINATIONS`). An
+  assertion whose `change_type` is `null` may use only the pairs every change type allows (`SHARED_COMBINATIONS`).
+  Any other pair is refused: "stage ... is not valid for target kind ... in an assertion about ...". For `iac_change`:
 
   | Target kind | Stages |
   | --- | --- |
@@ -74,6 +87,8 @@ Key rules:
   | `change` | `pre_deploy` |
   | `deployment` | `post_deploy`, `post_verify`, `runtime` |
   | `assurance` | `post_verify`, `runtime` |
+
+  `iac_change` is the only change type, so the shared pairs are the same.
 
 - A resource selector is one of:
 
@@ -105,9 +120,9 @@ Key rules:
   at most 256 values in an `in` list; text values of at most 1024 characters; integers within ±(2^53 − 1). YAML
   anchors, aliases, tags, merge keys and duplicate keys are refused. The document is read as YAML 1.1, so unquoted
   `yes`, `no`, `on` and `off` are booleans.
-- `iltero_schemas.ast.source_digest` gives the assertion's source digest. It covers the id, version, type, stage,
-  target, `when` and `assert`, and not the title or the remediation. The compiler ignores both. The assertion's
-  digest, the one evidence cites, is taken over the whole document and covers both.
+- `iltero_schemas.ast.source_digest` gives the assertion's source digest. It covers the id, version, type, change
+  type, stage, target, `when` and `assert`, and not the title or the remediation. The compiler ignores both. The
+  assertion's digest, the one evidence cites, is taken over the whole document and covers both.
 
 ```yaml
 apiVersion: iltero.io/v1
@@ -118,6 +133,7 @@ metadata:
   title: Production databases are encrypted and private
   remediation: Set storage_encrypted to true and publicly_accessible to false.
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource
@@ -152,14 +168,15 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `organization_scope` | object | The `organization`, `workspace` and `environment`, each `null` when the run has none. The `environment` has its `name` and `production`: whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run Iltero Platform did not open. |
 | `reference_time` | object | The time every expiry and ordering comparison uses: `value`, `source` (`server`, `timestamp_authority`, `rekor` or `runner_clock`), `trust` (`attested`, `corroborated` or `asserted`; always `asserted` for `runner_clock`), and `time_window`: the two timestamps the evaluation sits between (`not_before`, `not_after`) and a `nonce_digest`, present exactly when `source` is `timestamp_authority`, otherwise left out or `null`. `not_before` ≤ `value` ≤ `not_after`. |
 | `source` | object | The code the change comes from: `vcs` (`git`) and the `commit` (`sha`); the `repository` (`name`), `null` for a checkout with no remote; the `ref` (`type`: `branch` or `tag`, and `name`), `null` for a detached head; and the `pull_request` (`id`), `null` for a run outside a pull request. A run on a developer's machine is never a pull request. |
-| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`, where the unit is the subject's unit. A context with any other `digest` is refused. `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
+| `change` | object | The resources the plan changes (`id`, `provider`, `type`, `kind`, `action`, `module`), and the change `digest`: the [change digest](#the-change-digest) of `iac_change`, the subject's unit, the environment key `organization_scope.environment.name` (`null` when the environment is `null`) and `plan.digest`. A context with any other `digest` is refused: "change.digest is the digest of its unit's plan in its environment". `provider` is the provider's short name: lower-case letters, digits, `_` and `-`, starting with a letter (`aws`, `google-beta`). `kind` is the kind the plan tool's table gives the type, or the unknown marker `{"__unknown": true, "reason": "kind_unmapped"}` when the table lacks it; it is `null` exactly for a provider with no kinds. A context whose kinds differ from the table's is refused. |
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, whether the plan is `complete` and `applyable`, and the same table of contents for every resource the plan covers. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `subject` | object | The subject's `kind`, its `key`, its `identities` (`scheme`, `value`, `scope`), and `resolution` (`resolved` once a cloud identity is bound, `unresolved` until then). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, `outcomes_from` (`apply_log`, or `apply_log_and_state` when the log lost messages and the state settled what it could), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
-| `verification`, `assurance` | object | Facts after deployment. |
+| `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). |
+| `assurance` | object | Facts after deployment. |
 
 Key rules:
 
@@ -173,7 +190,7 @@ Key rules:
   | `plan` | `source`, `change`, `plan`, `subject` | none |
   | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions`, `run` | none |
   | `post_deploy` | `source`, `change`, `plan`, `subject`, `deployment` | none |
-  | `post_verify` | `subject`, `deployment` | `source`, `verification`, `assurance` |
+  | `post_verify` | `subject`, `deployment`, `drift_check` | `source`, `assurance` |
   | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
 
 - A subject's `key` is `sha256:` and the hex SHA-256 of the canonical bytes of `{"kind": <kind>, "identity": {"scheme":
@@ -235,6 +252,11 @@ Key rules:
   `unknown`, never `false`: such a run never silently skips an assertion that guards on production.
 - A fact Iltero Platform could not supply is the marker `{"__unknown": true, "reason": "server_facts_unavailable"}`,
   never an empty list. A predicate that reads it is `unknown`, never `fail`.
+- A `drift_check` was read by the IaC tool that applied the `deployment` (`deployment.apply.source.tool`), and its
+  first reading is no earlier than the end of the apply (`deployment.apply.timing.ended_at`), when the apply's timing
+  is known. A first reading dated on a whole second is compared with the whole second the apply ended in; one with a
+  fraction of a second is compared exactly. An IaC tool may date a reading in whole seconds, from when the reading
+  started; Terraform does.
 - The context holds no evaluator version, bundle digest or provenance.
 
 The facts only Iltero Platform holds are normalised whatever produced them. Each item is Iltero Platform's claim, as
@@ -244,7 +266,7 @@ served.
 | --- | --- |
 | Approval | `id`, `actor` (`provider`, and `id`: the provider's stable account id, never a login, a name or an address), `roles`, `status` (`approved`), `subject`, `method` (`ci_deployment_review` or `iltero_review`), `independence` (`independent` when the approver neither started the run nor triggered the attempt; `self_permitted_by_policy` otherwise, with the permitting `policy_version`, `null` when independent), `timestamp`. An approval from a CI deployment review names no role, since none is verified. |
 | Exception | `id`, `status` (`approved`: only granted exceptions are served), `scope` (`assertion.id`, `environment`, and the `resources` it covers, by their identities), `valid_from`, `expires_at` (after `valid_from`), `approved_by`, `reason`. |
-| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result.status`, `plan_digest` (`null` exactly for an evaluation at a stage that reads no plan, such as `runtime`), `observed_at`. |
+| Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result.status`, `checked_content` (the [checked content](#checked-content) it read; `null` exactly for an evaluation at a stage that reads no plan, such as `runtime`), `observed_at`. |
 
 - An approval's `subject` names what it approves: `{kind: change, digest}`, that plan and no other, or `{kind: run,
   id}`, Iltero's run, never a CI run. An approval of a run approves the run, not a plan's content: a CI deployment
@@ -274,7 +296,7 @@ who produced it and to reproduce it.
 | `provenance` field | Meaning |
 | --- | --- |
 | `run` | The run `id`, its `origin` (`server_issued` or `locally_derived`) and the `unit`. A unit is the part of a project the IaC tool plans and applies as one. |
-| `source_commit`, `plan_digest` | The commit and the plan the evaluation is about. `plan_digest` holds the plan's digest (`value`), the IaC `tool` that wrote the plan, and the `version` of that tool's plan digest rule; any other `version` is refused. |
+| `source_commit`, `checked_content` | The commit and the [checked content](#checked-content) the evaluation is about. |
 | `input_digest` | The digest of the assurance context the evaluator received. |
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov`, `trivy` or `prowler`): its reported `version`, a `digest` when known, and `reason: not_executed_by_cli`. |
 | `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`), `tarball_digest`, the SHA-256 of the bytes of the bundle tarball the evaluator loaded, `content_digest` and `key_id`. For `server`, they are the served [descriptor](#bundledescriptor)'s `tarball_digest`, `content_digest` and `key_id`. For `local_bundle`, `tarball_digest` is the digest of the tarball the tool built, and `content_digest` and `key_id` are `null`, because a bundle the tool built has no descriptor. Any other combination is refused: "a bundle names its content digest and signing key exactly when its kind is server". The writer's claim: nothing compares these values with a descriptor. Present exactly when the evaluator is `opa`. An evaluation whose `assertion_source` is `server_bundle` and that ran over a bundle names a bundle of kind `server`; otherwise it is refused: "an assertion from the server's bundle is evaluated over the server's bundle". |
@@ -331,9 +353,8 @@ with a regulatory framework.
 | `issuer` | object | `type: local` and `identity_verified: false`. |
 | `governance` | object | `run_opened_by`: `server` when the writer says Iltero Platform issued the run (`run.origin: server_issued`), `local` otherwise. Only Iltero Platform confirms that it issued a run, by its `run.id`. |
 | `subject` | object | `kind: change`, the `environment`, the `unit` and the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`. |
-| `change` | object | `unit`: the record's own unit, by `name`, with its `plan.digest` (a change covers one unit); and the change `digest`: `iltero_schemas.canonical.change_digest({<unit>: plan.digest})`. |
-| `units_file` | object or null | The project's units file as the writer read it: its `path` in the project, the SHA-256 `digest` of its bytes, and its `units` in deploy order (1 to 64 names of lowercase letters, digits, `_` and `-`, not starting with `-`, each once). `null` for a project that declares none. |
-| `plan` | object | The plan's `digest`, `digest_version`, `artifact_digest_source`, `artifact_digest` and `artifact_file_name` (the saved plan file's digest, and its file name without its directories). The record keeps the file's digest and name, not the file. Both are present exactly when `artifact_digest_source` is `saved_plan`, and `null` when it is `not_provided`. A name that holds `/`, `\`, `:` or a character that looks like a slash or backslash (fullwidth and small forms included), or that consists only of dots and spaces, is refused: "must be a file name without its directories". The name is at most 255 UTF-8 bytes as written, with no control character; only the separator and dots-and-spaces checks use its NFKC (Unicode compatibility) form. It also holds `context_digest` (the plan as kept after redaction), the IaC `tool`, `tool_version` and `format_version`, and whether the plan is `complete` and `applyable`. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
+| `change` | object | The change the record is about: the body of its [activity](#change-types-and-activities), named by `change.activity` (see [The `iac_change` body](#the-iac_change-body)). |
+| `units_file` | object or null | The project's [units file](#units-file) as the writer read it. `null` for a project that declares none. |
 | `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
@@ -341,9 +362,7 @@ with a regulatory framework.
 | `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (an evaluation ended in an evaluator error), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
-| `out_of_scope` | list | Each lifecycle stage the record does not expect, with a `reason` (`project_config` or `not_supported`). |
-| `deployment` | object or null | What the apply did. `null` until the `post_deploy` stage reports. |
-| `identity` | object or null | The unit's [identity bindings](#identitybindings) after the apply. Present exactly when `deployment` is. |
+| `out_of_scope` | list | Each stage of the activity the record does not expect, with a `reason` and `declared_in` (see below). |
 | `evidence_refs` | list | The evidence register: every file the record cites (see below). At most 100,000. |
 | `integrity` | object | `scheme: file_digests` (the record is bound together by its files' digests only) and `signature: null`. |
 | `expires_at`, `retention_class` | null | Always `null`. |
@@ -473,6 +492,40 @@ names the stage each gap came from. The kinds a count gap may name are
 `iltero_schemas.models.coverage.COUNT_GAP_KINDS`. A coverage lists at most
 `iltero_schemas.models.coverage.MAX_GAPS` gaps.
 
+Each `out_of_scope` entry names a `stage`, a `reason` and `declared_in`. The stages each reason can leave out are
+the record's activity's (see [Change types and activities](#change-types-and-activities)); for `iac_change`:
+
+| `reason` | Meaning | Stage it can leave out | `declared_in` |
+| --- | --- | --- | --- |
+| `project_config` | The project declared the stage out of scope. | `pre_deploy` or `post_verify` | The project file that says so, by its `path` and its `digest`. |
+| `environment_policy` | The environment policy of the environment Iltero Platform opened the run for does not require the stage. Iltero Platform holds the policy; the record does not name it. | `post_verify`, in a record whose `governance.run_opened_by` is `server` | `null` |
+| `not_supported` | The plan's IaC tool cannot run the stage. | `post_verify`, for a tool with no drift reader. A tool with a drift reader (`iltero_schemas.models.drift_check.TOOLS_WITH_DRIFT_READER`: `terraform`) runs every stage, so none. | `null` |
+
+A record's `change.drift_check` says what two readings of the unit's deployed resources found. After the apply, the
+pipeline asks the IaC tool to read every resource its state holds back from the cloud, twice, through a
+refresh-only plan: a plan that reads the resources and changes nothing. A resource has drifted when a reading finds
+it changed or gone since the apply wrote it. The second reading, the latest, is taken at least
+`minimum_interval_seconds` after the first, and what differs in it has drifted. A resource that differed in the first
+reading but not in the latest is listed apart, and the check does not say why. Neither reading writes the state, so
+both compare the resources with the state the apply wrote.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `run_id` | UUID | The run the readings were taken for: the record's `run.id`. |
+| `change_digest` | digest | The change the readings were taken for: the record's `change.digest`. A drift check of another change is an integrity failure: "change.drift_check.change_digest is not change.digest". |
+| `tool`, `tool_version` | string, identifier | The IaC tool that took the readings, the one that applied the deployment, and its version. |
+| `resources_read` | integer | The managed resources of the state, which each reading read, from 0 to 100,000. |
+| `first_reading_at`, `second_reading_at` | timestamp | When each reading was taken, by the time the tool wrote into it. |
+| `first_reading_digest`, `second_reading_digest` | digest | The SHA-256 of each refresh-only plan's bytes as the tool wrote them, so a kept copy can be matched to its reading. The two differ. |
+| `minimum_interval_seconds` | integer | The least time the readings had to be apart, from 1 to 86,400 (a day). |
+| `differences` | list | Each resource that differed from the apply in the second reading: its `address` and its `difference`, `changed` (its values changed) or `deleted` (it is no longer there). Sorted by address, each once, at most 100,000. |
+| `differences_count` | integer | The number of `differences`, which an assertion compares. |
+| `first_reading_only_differences` | list | Each resource that differed in the first reading but not in the latest, for a reason the check does not give: its `address` and its `difference` as the first reading found it. Sorted by address, each once, at most 100,000. No address is also in `differences`. |
+
+The drift check keeps addresses only: no attribute value, and no copy of either reading. It reports what the
+pipeline that ran the apply saw, and nothing about resources outside the state or attributes the tool does not read
+back.
+
 Key rules:
 
 - Every path in the record is relative to the record's directory, except `units_file.path` and
@@ -483,25 +536,31 @@ Key rules:
 - A record redacts under one policy: every stage's `redaction.policy` and every `evidence_refs[].redaction_policy`
   that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. The digest tells
   apart two policies that share an `id` and `version`.
-- The first expected stage is `plan`, and `post_deploy` is always expected. `runtime` is never a stage of a record.
-  Every lifecycle stage is either expected or listed once in `out_of_scope`. Only `pre_deploy` can be left out by
-  `project_config`, and it then names the declaring file in `declared_in`.
+- The first expected stage is the activity's first stage (`plan` for `iac_change`): "a record starts at its plan
+  stage". `runtime` is never a stage of a record. Every stage of the activity is either expected or listed once in
+  `out_of_scope`, with a reason that can leave it out, so `plan` and `post_deploy` are always expected. A stage left
+  out by `project_config` names the declaring file in `declared_in`; any other stage is refused: "a project can leave
+  out only the pre-deploy and post-verify stages". A stage the plan's tool can run is refused as `not_supported`:
+  "the post-verify stage is supported for terraform: expect it, or say who leaves it out". A stage left out by
+  `environment_policy` other than `post_verify` is refused: "an environment's policy can leave out only the
+  post-verify stage"; and only a record of a run Iltero Platform opened may name that reason: "only a run the server
+  opened has an environment policy that leaves a stage out".
 - A stage's verdict follows from its own counts. Exit code `6` (coverage gap), `4` (evaluator error), `3`
   (indeterminate), `1` (assertion failed) or `0` applies, and the stage takes the first in the order
   `2, 5, 9, 10, 7, 8, 6, 4, 3, 1, 0`. The record's verdict is the stage verdict that comes first in that order, and
   it names that stage.
-- A stage's evaluations are about one kind of subject, one its assertions can target, and the stage counts its
-  subjects by that kind (`iltero_schemas.models.stages.scope_counted_from`): the plan stage enumerates the plan's
-  resources (`counted_from: plan_resource_enumeration`); a change counts as its one unit (`change_unit`, with the
-  record's `change.digest` as its `source_digest`); a deployment counts as its one unit (`deployment_unit`). Only the
-  plan stage enumerates the plan's resources. A stage with no evaluations counts by the one kind its assertions can
-  target. A stage that counts a change or a deployment has exactly one subject in scope, none removed by the plan and
-  none excluded.
-- `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every non-zero exit code stopped the pipeline.
-  Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every other non-zero code did. A waiver
-  happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan and pre-deploy stages can be
-  `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise it is the tool's choice.
-  It is the writer's claim; only the CI job's own result shows what the pipeline did.
+- A stage's evaluations are about one kind of subject, one its assertions can target, and the stage counts its subjects
+  by that kind (`iltero_schemas.models.stages.scope_counted_from`): the plan stage enumerates the plan's resources
+  (`counted_from: plan_resource_enumeration`); a change counts as its one unit (`change_unit`, with the record's
+  `change.digest` as its `source_digest`); a deployment counts as its one unit (`deployment_unit`), with the digest of
+  the record's `change.deployment` as its `source_digest` at `post_deploy`, and of its `change.drift_check` at
+  `post_verify`. Only the plan stage enumerates the plan's resources. A stage with no evaluations counts by the one kind
+  its assertions can target. A stage that counts a change or a deployment has exactly one subject in scope, none removed
+  by the plan and none excluded. - `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every
+  non-zero exit code stopped the pipeline. Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every
+  other non-zero code did. A waiver happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan
+  and pre-deploy stages can be `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise
+  it is the tool's choice. It is the writer's claim; only the CI job's own result shows what the pipeline did.
 - A stage that could not read an input, such as the state of a unit it reads from, lists each replaced input once in
   `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
   a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
@@ -518,29 +577,41 @@ Key rules:
   follows its evaluations. The `detail` is `the plan says it is incomplete` (`value: false`) or `the plan does not say
   it is complete` (the marker). An evaluator error's reason wins over it; it wins over `upstream_state_unavailable`. A
   `plan_not_applyable` gap leaves the status as it is: Terraform marks a plan that changes nothing as not applyable.
+- A record's `change.drift_check` names the record's run (`run_id`) and the IaC tool that applied the deployment
+  (`change.deployment.apply.source.tool`). Its first reading is no earlier than the `post_deploy` stage's
+  `observed_at`, nor than the end of the apply (`change.deployment.apply.timing.ended_at`, when the apply's timing
+  is known). A first reading dated on a whole second is compared with the whole second each of these fell in; one
+  with a fraction of a second is compared exactly. The `post_verify` stage's `observed_at` is no earlier than its
+  second reading, and the second reading is at least `minimum_interval_seconds` after the first, to the nanosecond.
+- `resources_read` equals the number of managed resources the record's identities list (`change.identity.bindings` and
+  `change.identity.unresolved`), and every `differences[].address` and `first_reading_only_differences[].address` is one
+  of their addresses. `differences_count` equals the number of `differences`, no address is in both lists, and the two
+  lists together hold at most `resources_read` entries. `first_reading_digest` and `second_reading_digest` differ.
 - The model runs the integrity checks: it recomputes every value a reader can recompute and refuses a record whose
   value differs. They cover the change digest and the digests bound to it (the pre-deploy stage's
-  `coverage.subjects_in_scope.source_digest` and each approval of a change), status counts from events, each stage's
-  verdict and status, the plan stage's plan-flag gaps and the combined top level. The change digest problems come
-  first, so a forged `change.digest` is refused as `change.digest is not the digest of the change's units`. A reader
-  that reports integrity failures itself sets `SKIP_INTEGRITY_CHECKS` (`iltero_schemas.models.car`) to `True` in the
-  validation context (any other value is ignored), then calls `iltero_schemas.models.stages.integrity_problems`, which
+  `coverage.subjects_in_scope.source_digest`, each approval of a change and `change.drift_check.change_digest`), status
+  counts from events, each stage's verdict and status, the plan stage's plan-flag gaps and the combined top level.
+  The change digest problems come first, so a forged `change.digest` is refused as `change.digest is not the digest
+  of the change type, unit, environment and plan`. A reader that reports integrity failures itself sets
+  `SKIP_INTEGRITY_CHECKS` (`iltero_schemas.models.car`) to `True` in the validation context (any other value is
+  ignored), then calls `iltero_schemas.models.stages.integrity_problems`, which
   returns every problem as a `(where, what)` pair. An approval of another run is refused whatever the context.
 - A record of a run the tool opened (`run.origin: locally_derived`) names no Iltero Platform bundle, no evaluation
   from one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). A record of a
   run Iltero Platform opened says so everywhere: `run.origin: server_issued`, `governance.run_opened_by: server`, and
-  every stage's `coverage.assertions_expected.origin` is `server_pinned`. Either way the record is the writer's own:
-  only Iltero Platform can confirm a run it opened, by its `run.id`.
-- `plan.digest_version` is the version of the plan digest rule for `plan.tool`; any other version is refused. Every
-  event's `provenance.plan_digest` names the record's plan: the same `value`, `version` and `tool`.
-- The change digest is the digest of `[{"unit": name, "plan": {"digest": ...}}]`, sorted by unit name
-  (`iltero_schemas.canonical.change_digest`), over the change's one unit. Approvals bind to it. A record's
-  `change.unit` is its own unit with the plan it names. A unit is planned, approved and applied on its own.
-- A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its `units`.
+  every stage's `coverage.assertions_expected.origin` is `server_pinned`, and `subject.environment` names the
+  environment the run was opened for. Either way the record is the writer's own: only Iltero Platform can confirm a
+  run it opened, by its `run.id`.
+- Every event's `provenance.checked_content` is the record's [checked content](#checked-content): "every event names
+  the content the record's change checked".
+- `change.digest` is the [change digest](#the-change-digest) of the record's change type, its `unit`, its
+  `subject.environment` and its checked content. Approvals bind to it.
+- A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its units' names:
+  "the record's unit is one of the units its units file declares".
 - Across records: the records of one run share `run.id`, and every one of them names the same `units_file`, or
-  every one names `null`. The run has a record for each declared unit when the records' units equal `units_file.units`.
-  The units file is the writer's copy: records cannot show a run with no record at all, or a units file the writer
-  left out or shortened. Only the file at the record's commit can, by its digest.
+  every one names `null`. The run has a record for each declared unit when the records' units are the names in
+  `units_file.units`. The units file is the writer's copy: records cannot show a run with no record at all, or a
+  units file the writer left out or shortened. Only the file at the record's commit can, by its digest.
 - A stage's `coverage.assertions_expected.required_assertion_digest` is the digest of the assertions it owed, whether
   or not each was evaluated: as the project's files gave them (`origin: locally_derived`), or as Iltero Platform set
   them for the run (`origin: server_pinned`). The model does not recompute a stage's digest.
@@ -549,6 +620,145 @@ Key rules:
 - `compiler.contract_digest` is the SHA-256 over the sorted `path,hash` lines of the wheel's `RECORD` entries for the
   package's own files. `iltero_schemas.distribution.installed_identity()` returns it for the installed package. An
   editable install has none.
+
+### Change types and activities
+
+A change type is the kind of thing a change changes. An activity is one kind of work a single record describes; a
+change type is made of one or more activities. A record's `change` is the body of its activity, named by
+`change.activity`, and a record of any other activity is refused. The contract knows one change type, `iac_change`:
+a change to infrastructure made with an IaC tool, whichever tool. It has one activity, also named `iac_change`.
+
+Each activity declares how its records are checked (`iltero_schemas.change_types.ACTIVITIES`, and the change types in
+`CHANGE_TYPES`):
+
+| Declaration | `iac_change` (`iltero_schemas.change_types.IAC_CHANGE`) |
+| --- | --- |
+| `run_type` | `change`: a run of a project's unit in an environment. |
+| `stages` | `plan`, `pre_deploy`, `post_deploy`, `post_verify`, in the order they run. A record starts at the first. |
+| `project_may_leave_out` | `pre_deploy`, `post_verify`. |
+| `environment_policy_may_leave_out` | `post_verify`. |
+| `not_supported(tool)` | `post_verify` for an IaC tool with no drift reader; none for `terraform`. |
+| `required_documents` | The record at every stage, and the identity document at `post_deploy` as well. |
+| `checked_content` | The record's plan (see [Checked content](#checked-content)). |
+
+### The `iac_change` body
+
+The `change` of a record whose activity is `iac_change`: one unit's plan and, once applied, what the deployment did.
+
+- **Model:** `iltero_schemas.change_types.IacChange`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `activity` | string | `iac_change`. |
+| `digest` | digest | The [change digest](#the-change-digest). Approvals bind to it. |
+| `plan` | object | The plan the record is about (see below). |
+| `deployment` | object or null | What the apply did, in the shape of an [AssuranceContext](#assurancecontext)'s `deployment`. Present exactly when the `post_deploy` stage has reported. |
+| `identity` | object or null | The unit's [identity bindings](#identitybindings) after the apply. Present exactly when `deployment` is. Read from the state file the apply left (`sources.read_from: state_file`), with the deployment's applied plan as `sources.plan` and its state as `sources.state`. |
+| `drift_check` | object or null | What two readings of the deployed resources, taken after the apply, found (see the drift check above). Present exactly when the `post_verify` stage has reported. |
+
+`plan` (`iltero_schemas.change_types.PlanRecord`):
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `digest`, `digest_version` | digest, identifier | The plan's digest by its tool's rule, and that rule's version. Any other version is refused. |
+| `artifact_digest_source` | string | `saved_plan` when the plan was read from a saved plan file, `not_provided` otherwise. |
+| `artifact_digest`, `artifact_file_name` | digest, string | The saved plan file's digest, and its file name without its directories. Present exactly when `artifact_digest_source` is `saved_plan`, and `null` when it is `not_provided`. The record keeps the file's digest and name, not the file. |
+| `context_digest` | digest | The plan as kept after redaction. The plan stage counts its resources by it. |
+| `tool`, `format_version` | string, identifier | The IaC tool that wrote the plan, which is the tool the whole record is about, and the plan's format version. |
+| `tool_version`, `complete`, `applyable` | identifier, boolean | What the tool's plan says: its version, and whether the plan is complete and can be applied. Each holds the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the plan does not say; `null` is refused. |
+
+A file name that holds `/`, `\`, `:` or a character that looks like a slash or backslash (fullwidth and small forms
+included), or that consists only of dots and spaces, is refused: "must be a file name without its directories". The
+name is at most 255 UTF-8 bytes as written, with no control character; only the separator and dots-and-spaces checks
+use its NFKC (Unicode compatibility) form.
+
+### Checked content
+
+The checked content is what a record's change is about and its evaluations ran on, named by its digest. Every event
+names it in `provenance.checked_content`, and an earlier evaluation in `checked_content`, so an evaluation of other
+content cannot stand in a record. For `iac_change` it is the plan.
+
+- **Model:** `iltero_schemas.models.checked_content.CheckedContent`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `kind` | string | `plan`. |
+| `digest` | digest | The plan's digest by its tool's rule (`iltero_schemas.canonical.plan_digest`). |
+| `digest_version` | identifier | The version of that rule. Any other version is refused. |
+| `tool` | string | The IaC tool that wrote the plan. |
+
+In a record, it is `change.plan`'s `digest`, `digest_version` and `tool`.
+
+### The change digest
+
+The change digest names one change: one checked content, of one change type, in one unit, deployed to one
+environment. `iltero_schemas.canonical.change_digest(change_type, unit, environment_key, checked_content)` is the
+SHA-256 of the RFC 8785 canonical JSON of the following, where `checked_content` is the
+[checked content](#checked-content) as every evaluation names it:
+
+```json
+{
+  "change_type": "iac_change",
+  "checked_content": {
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest_version": "1",
+    "kind": "plan",
+    "tool": "terraform"
+  },
+  "environment_key": "production",
+  "unit": "root"
+}
+```
+
+| Input | In a record | In an evaluation input |
+| --- | --- | --- |
+| `change_type` | `iac_change` | `iac_change` |
+| `unit` | `unit` | The subject's unit |
+| `environment_key` | `subject.environment` | `organization_scope.environment.name` |
+| `checked_content` | `change.plan`'s `digest`, `digest_version` and `tool`, with `kind: plan` | `plan`'s `digest`, `digest_version` and `tool`, with `kind: plan` |
+
+`environment_key` is `null` for a change made outside any environment; a record of a run Iltero Platform opened
+always names its environment. An approval of a change binds to this digest, so it counts for that content, in that
+unit and environment: a plan that does something else, or the same plan deployed to another environment, is another
+change. The digest names no project or organization; Iltero Platform holds an approval to the project it was given
+in. A record whose change digest is not this one is an integrity failure: "change.digest is not the digest of the
+change type, unit, environment and plan". A record that lists an approval of another change is one too, naming the
+approval: "stages.pre_deploy.approvals lists approval apr_0001 of another change: another change type, unit,
+environment or plan".
+
+### Units file
+
+A units file is the file in which a project declares its units, in the order they deploy. A record names it as the
+writer read it.
+
+- **Model:** `iltero_schemas.models.units_file.UnitsFile`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `path` | string | The file's path in the project. |
+| `digest` | digest | The SHA-256 of the file's bytes. |
+| `units` | list | 1 to 64 units in deploy order, each a `name` and the units it `depends_on` (`DeclaredUnit`). |
+
+A unit name is 1 to 64 lowercase letters, digits, `_` and `-`, not starting with `-`. Rules:
+
+| Rule | Refused with |
+| --- | --- |
+| Each unit is named once. | "a units file names each unit once" |
+| `depends_on` lists at most 64 names, sorted by Unicode code point, each once. | "a unit's dependencies are sorted by name and name each unit once" |
+| A unit does not depend on itself. | "a unit does not depend on itself" |
+| A unit depends only on units the file declares. | "a unit depends only on units the units file declares" |
+| A unit comes after every unit it depends on. | "a unit comes after every unit it depends on, in deploy order" |
+
+```json
+{
+  "path": ".iltero/units.json",
+  "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+  "units": [
+    {"name": "network", "depends_on": []},
+    {"name": "app", "depends_on": ["network"]}
+  ]
+}
+```
 
 ## VerificationReport
 
@@ -573,7 +783,7 @@ never part of the record.
 | `bundle_provenance` | The evaluations ran from a bundle signed by an authorised key that was not revoked. |
 | `stage_completeness` | Every required stage is present, and every evaluation owed has a result or is listed as not evaluated. |
 | `plan_apply_match` | The approved plan is the applied plan. |
-| `runtime_verification` | A verification ran after the deployment. |
+| `runtime_verification` | Never: it has one of the results the key rules list. |
 | `deployment_coverage` | No deployment visible to the verifier is missing a record. |
 | `exceptions` | Every exception used was approved and valid at deployment time. |
 
@@ -591,6 +801,19 @@ Key rules:
 - `integrity` is never `verified`, because no record carries a signature in this version. Matching digests give
   `client_asserted`.
 - When `integrity` is `failed` or `not_determined`, every other property is `not_determined`.
+- When the record's integrity is established, `runtime_verification`, the verification after the deployment, is
+  one of these results (`iltero_schemas.models.verification.RUNTIME_VERIFICATION_RESULTS`), and any other is
+  refused. Otherwise it is `not_determined`, as every other property is.
+
+  | State | Reason | Meaning |
+  | --- | --- | --- |
+  | `client_asserted` | `reported_by_pipeline` | The pipeline reported the `post_verify` stage, which only the pipeline's word supports. |
+  | `not_assessed` | `stage_pending` | The record expects the stage, and the run that would report it is still in progress. |
+  | `not_performed` | `stage_not_reported` | The record expects the stage, and it was never reported. |
+  | `not_assessed` | `project_config` | The record leaves the stage out of scope by `project_config`. |
+  | `not_assessed` | `environment_policy` | The record leaves the stage out of scope by `environment_policy`. |
+  | `not_assessed` | `not_supported` | The record leaves the stage out of scope as `not_supported`. |
+
 - The report has no overall verdict. A report in which every property is `verified` does not establish
   certification or compliance with a regulatory framework.
 
@@ -608,7 +831,7 @@ with a reason. A resolver is the part of a tool that reads identifiers for one c
 | `apiVersion` | string | `iltero.io/identity-bindings/v1`. |
 | `unit` | identifier | The unit. |
 | `generator` | object | `name: iltero` and the writer's `version`. |
-| `sources` | object | The `state` read (its digest, IaC `tool` and `tool_version`) and the applied `plan` (`digest`, `digest_version`), or `null` when no applied plan was read. |
+| `sources` | object | The `state` read (its `digest`, IaC `tool` and `tool_version`); where it was read from (`read_from`: `state_file`, the state file the apply left, or `refresh_plan`, the state a refresh-only plan read back after the deployment, as the plan records it); and the applied `plan` (`digest`, `digest_version`), or `null` when no applied plan was read. `state.digest` is the digest of the bytes read: the state file or the refresh-only plan. |
 | `resolvers` | list | One resolver per cloud provider, sorted by provider, at most 16. Each names its `provider`, `version` and the resource types verified for it (`verified_resource_types`). |
 | `bindings` | list | Each managed resource in the state after the apply that was bound: `iac` (`tool`, `unit`, `address`), `cloud` (per provider) and `resolution: resolved`. |
 | `unresolved` | list | Each managed resource that was not bound: `address` and `reason`. |
@@ -634,6 +857,9 @@ Key rules:
   lowercase, as AWS stores them.
 - `removed`, `removed_unresolved` and `tool_data.deposed_deleted` are `null` exactly when `sources.plan` is
   `null`.
+- Identities read from a refresh-only plan (`read_from: refresh_plan`), a plan that reads the resources back and
+  changes nothing, name no applied plan: `sources.plan` is `null`, and so are the removed lists. Otherwise the
+  document is refused: "identities read from a refresh-only plan name no applied plan".
 - `sources.plan.digest_version` is the version of the plan digest rule for `sources.state.tool`, since the tool that
   wrote the state wrote the applied plan. Any other version is refused.
 - The document carries identifiers only. The state file it was read from never leaves the machine that read it.
@@ -701,7 +927,8 @@ Each entry:
 
 Key rules:
 
-- The stage and the target kind form a combination a TechnicalAssertion also allows.
+- The stage and the target kind form a combination every change type allows, as for a TechnicalAssertion whose
+  `change_type` is `null`: a hand-written policy names no change type.
 - One policy decides an assertion at a stage. Two policies are never written in the same file.
 - Each file declares the package `iltero.assertions["<id>"]` of the assertion it decides.
 - A record that ran a hand-written policy says so, and a replay runs the retained code, because nothing can derive

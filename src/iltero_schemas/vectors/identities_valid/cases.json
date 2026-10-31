@@ -9,5 +9,17 @@
       "/tool_data/deposed_deleted": null
     },
     "remove": []
+  },
+  {
+    "name": "identities_read_from_a_refresh_only_plan_after_the_deployment",
+    "vector": "identity_bindings.json",
+    "set": {
+      "/sources/read_from": "refresh_plan",
+      "/sources/plan": null,
+      "/removed": null,
+      "/removed_unresolved": null,
+      "/tool_data/deposed_deleted": null
+    },
+    "remove": []
   }
 ]

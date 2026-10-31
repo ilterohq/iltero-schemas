@@ -163,7 +163,11 @@ def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_event
             if name.endswith(".yaml") and assertion_id in shipped:
                 body = shipped[assertion_id]
                 assert (ref["digest"], ref["size_bytes"]) == (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
-        (stage,) = record["stages"].values()
-        owed = {(e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"]) for e in record["events"]}
-        expected = stage["coverage"]["assertions_expected"]["required_assertion_digest"]
-        assert expected == required_assertion_digest(owed), path.name
+        for name, stage in record["stages"].items():
+            owed = {
+                (e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"])
+                for e in record["events"]
+                if e["evaluation"]["stage"] == name
+            }
+            expected = stage["coverage"]["assertions_expected"]["required_assertion_digest"]
+            assert expected == required_assertion_digest(owed), f"{path.name} {name}"

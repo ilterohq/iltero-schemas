@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: Truth table of all
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

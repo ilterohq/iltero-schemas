@@ -6,6 +6,7 @@ metadata:
   title: RDS storage encryption enabled
   remediation: Set storage_encrypted to true.
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

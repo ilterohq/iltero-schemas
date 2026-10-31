@@ -91,6 +91,7 @@ def identity_record(**fields: Any) -> dict[str, Any]:
     record: dict[str, Any] = {
         "sources": {
             "state": {"digest": STATE_DIGEST, "tool": "terraform", "tool_version": "1.14.0"},
+            "read_from": "state_file",
             "plan": {"digest": PLAN_DIGEST, "digest_version": "1"},
         },
         "resolvers": [{"provider": "aws", "version": "1.0.0", "verified_resource_types": sorted(ARNS)}],

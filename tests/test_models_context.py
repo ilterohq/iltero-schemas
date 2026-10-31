@@ -10,6 +10,7 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
@@ -118,6 +119,10 @@ def test_a_malformed_value_is_refused(path: tuple[str, ...], value: Any, message
 def test_the_context_and_source_are_sparse() -> None:
     document = copy.deepcopy(VECTOR)
     document["organization_scope"] = {}
+    # A change made outside any environment is named by a digest whose environment key is null.
+    plan = VECTOR["plan"]
+    checked = {"kind": "plan", "digest": plan["digest"], "digest_version": plan["digest_version"], "tool": plan["tool"]}
+    document["change"]["digest"] = change_digest("iac_change", "root", None, checked)
     document["source"] = {"vcs": "git", "commit": {"sha": VECTOR["source"]["commit"]["sha"]}}
     context = AssuranceContext.model_validate(document)
     assert context.organization_scope.environment is None
@@ -458,3 +463,27 @@ def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tupl
 def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
     reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, KindNotMapped)}
     assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]
+
+
+POST_VERIFY: dict[str, Any] = json.loads((VECTORS / "contexts" / "post_verify.json").read_text(encoding="utf-8"))
+
+
+def test_a_post_verify_input_carries_its_drift_check() -> None:
+    document = copy.deepcopy(POST_VERIFY)
+    assert AssuranceContext.model_validate(document).drift_check is not None
+    document["drift_check"] = None
+    with pytest.raises(ValidationError, match="post_verify: missing drift_check"):
+        AssuranceContext.model_validate(document)
+
+
+def test_a_post_verify_input_takes_a_drift_check_read_in_the_second_the_apply_ended() -> None:
+    document = copy.deepcopy(POST_VERIFY)
+    document["deployment"]["apply"]["timing"]["ended_at"] = "2026-09-16T18:40:30.285Z"
+    assert AssuranceContext.model_validate(document).drift_check is not None
+
+
+def test_a_post_verify_input_refuses_a_drift_check_read_before_the_apply_ended() -> None:
+    document = copy.deepcopy(POST_VERIFY)
+    document["drift_check"].update(first_reading_at="2026-09-16T18:38:30Z", second_reading_at="2026-09-16T18:39:30Z")
+    with pytest.raises(ValidationError, match="first reading was taken no earlier than the second the apply ended in"):
+        AssuranceContext.model_validate(document)

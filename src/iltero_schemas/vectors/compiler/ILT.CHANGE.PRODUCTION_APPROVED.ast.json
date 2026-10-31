@@ -3,6 +3,7 @@
   "id": "ILT.CHANGE.PRODUCTION_APPROVED",
   "version": "1.0.0",
   "type": "process",
+  "change_type": null,
   "stage": "pre_deploy",
   "target": {
     "kind": "change",

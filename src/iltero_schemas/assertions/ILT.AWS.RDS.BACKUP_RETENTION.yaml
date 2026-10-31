@@ -6,6 +6,7 @@ metadata:
   title: RDS backups retained for at least seven days
   remediation: Set backup_retention_period to 7 or more.
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

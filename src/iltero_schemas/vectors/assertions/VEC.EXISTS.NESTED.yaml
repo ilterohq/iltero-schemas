@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: Nested collection quantifiers
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

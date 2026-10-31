@@ -47,8 +47,9 @@ PRE_DEPLOY_CHANGE = Profile(
     "pre_deploy_change", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | SERVER_FACTS | {"run"}, frozenset()
 )
 POST_DEPLOY = Profile("post_deploy", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
-VERIFICATION = Profile(
-    "verification", ALWAYS_REQUIRED_PARTS | {"subject", "deployment"}, _SOURCE | {"verification", "assurance"}
+# A post-verify input carries the drift check: what reading the deployed resources back found.
+POST_VERIFY = Profile(
+    "post_verify", ALWAYS_REQUIRED_PARTS | {"subject", "deployment", "drift_check"}, _SOURCE | {"assurance"}
 )
 RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
 
@@ -56,7 +57,7 @@ _BY_STAGE: dict[Stage, Profile] = {
     Stage.PLAN: PLAN_RESOURCE,
     Stage.PRE_DEPLOY: PRE_DEPLOY_CHANGE,
     Stage.POST_DEPLOY: POST_DEPLOY,
-    Stage.POST_VERIFY: VERIFICATION,
+    Stage.POST_VERIFY: POST_VERIFY,
     Stage.RUNTIME: RUNTIME,
 }
 

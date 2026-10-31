@@ -13,7 +13,7 @@ DOCUMENTED = {
     Stage.PLAN: {"source", "change", "plan", "subject"},
     Stage.PRE_DEPLOY: {"source", "change", "plan", "subject", "evaluations", "approvals", "exceptions", "run"},
     Stage.POST_DEPLOY: {"source", "change", "plan", "subject", "deployment"},
-    Stage.POST_VERIFY: {"source", "subject", "deployment", "verification", "assurance"},
+    Stage.POST_VERIFY: {"source", "subject", "deployment", "drift_check", "assurance"},
     Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},
 }
 

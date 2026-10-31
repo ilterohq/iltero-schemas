@@ -98,8 +98,14 @@ def test_required_assertion_digest_vector_is_reproduced(case: dict[str, Any]) ->
 
 @pytest.mark.parametrize("case", CHANGE_DIGEST_CASES["cases"], ids=[c["name"] for c in CHANGE_DIGEST_CASES["cases"]])
 def test_change_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
-    assert canonical_change_bytes(case["units"]).decode("utf-8") == case["canonical"]
-    assert change_digest(case["units"]) == case["digest"]
+    parts = (case["change_type"], case["unit"], case["environment_key"], case["checked_content"])
+    assert canonical_change_bytes(*parts).decode("utf-8") == case["canonical"]
+    assert change_digest(*parts) == case["digest"]
+
+
+def test_each_part_of_a_change_gives_another_change_digest() -> None:
+    digests = [case["digest"] for case in CHANGE_DIGEST_CASES["cases"]]
+    assert len(set(digests)) == len(digests)
 
 
 def test_the_reversed_starter_set_names_the_same_assertions_in_reverse() -> None:
@@ -118,7 +124,11 @@ def test_the_starter_set_vector_holds_every_starter_assertion() -> None:
 
 def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
     context = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
-    assert context["change"]["digest"] == change_digest({"root": context["plan"]["digest"]})
+    environment = context["organization_scope"]["environment"]
+    key = environment["name"] if environment is not None else None
+    plan = context["plan"]
+    checked = {"kind": "plan", "digest": plan["digest"], "digest_version": plan["digest_version"], "tool": plan["tool"]}
+    assert context["change"]["digest"] == change_digest("iac_change", "root", key, checked)
 
 
 @pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
@@ -258,6 +268,7 @@ def test_an_id_that_prefixes_another_still_bundles(opa: Path, capabilities: Path
             "kind": "TechnicalAssertion",
             "metadata": {"id": assertion_id, "version": "1.0.0", "title": "t"},
             "spec": {
+                "change_type": "iac_change",
                 "stage": "plan",
                 "target": {
                     "kind": "resource",
@@ -440,6 +451,7 @@ metadata:
   version: "1.0.0"
   title: The apply changed one resource
 spec:
+  change_type: iac_change
   stage: post_deploy
   target:
     kind: deployment

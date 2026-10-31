@@ -3,6 +3,7 @@
   "id": "VEC.TRUTH.ANY",
   "version": "1.0.0",
   "type": "state",
+  "change_type": "iac_change",
   "stage": "plan",
   "target": {
     "kind": "resource",

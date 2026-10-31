@@ -37,17 +37,13 @@ from typing import Annotated, Final, Literal
 
 from pydantic import Field, ValidationInfo, model_validator
 
-from iltero_schemas.canonical.plan import check_plan_digest_version
+from iltero_schemas.change_types.iac import IacChange
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.change import Change, UnitsFile, check_change
 from iltero_schemas.models.context import ReferenceTime, Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
-from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
-from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
-    ArtifactDigestSource,
     Count,
     Digest,
     EnforcementMode,
@@ -57,18 +53,14 @@ from iltero_schemas.models.fields import (
     ProjectPath,
     Timestamp,
     Uuid,
-    check_artifact_digest,
-    check_artifact_file_name,
     parse_timestamp,
 )
-from iltero_schemas.models.iac import IacTool
-from iltero_schemas.models.identity import IdentityRecord
 from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
-from iltero_schemas.models.tools.variants import check_identity_against_apply
+from iltero_schemas.models.units_file import UnitsFile
 
 API_VERSION = "iltero.io/car/v1"
 # Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
@@ -284,36 +276,6 @@ class StageRecord(StrictModel):
         return StageOutcome(coverage=self.coverage, verdict=self.verdict, assurance_status=self.assurance_status)
 
 
-class PlanRecord(StrictModel):
-    """The plan the stage evaluated, by its fingerprints and by what the IaC tool said about it."""
-
-    digest: Digest
-    digest_version: Identifier
-    artifact_digest: Digest | None
-    artifact_digest_source: ArtifactDigestSource
-    # The saved plan file's name without its directories; a path is never written.
-    artifact_file_name: FileName | None
-    context_digest: Digest
-    # The IaC tool that wrote the plan, which is the tool the whole record is about.
-    tool: IacTool
-    format_version: Identifier
-    # What the tool's plan says; the not-reported marker stands where it does not say.
-    tool_version: Identifier | NotReported
-    complete: bool | NotReported
-    applyable: bool | NotReported
-
-    @model_validator(mode="after")
-    def _a_saved_plan_names_its_digest_and_file(self) -> PlanRecord:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
-        check_artifact_file_name(self.artifact_file_name, self.artifact_digest_source)
-        return self
-
-    @model_validator(mode="after")
-    def _digest_version_is_the_tools(self) -> PlanRecord:
-        check_plan_digest_version(self.tool, self.digest_version)
-        return self
-
-
 class Integrity(StrictModel):
     """How the record is bound together: without a signature, by its files' digests only, and it says so."""
 
@@ -331,7 +293,7 @@ class RecordSubject(StrictModel):
 
 
 # Why a stage of the lifecycle is not in a record's scope.
-OutOfScopeReason = Literal["project_config", "not_supported"]
+OutOfScopeReason = Literal["project_config", "environment_policy", "not_supported"]
 
 
 class DeclaredIn(StrictModel):
@@ -345,9 +307,14 @@ class OutOfScope(StrictModel):
     """A stage of the lifecycle the record does not expect, and why.
 
     ``project_config``: the project declared it out of scope, in the file
-    ``declared_in`` names. Only the pre-deploy approval gate can be left out
-    this way; a record always expects the stages that observe the change.
+    ``declared_in`` names.
+    ``environment_policy``: the policy of the environment the server opened the
+    run for does not require it, so only a record of a run the server opened
+    says so; the record does not name the policy, which the server holds.
     ``not_supported``: the tool that wrote the record cannot run that stage yet.
+
+    Which stages each reason may leave out is the record's activity's
+    declaration (``change_types``).
     """
 
     stage: StageValue
@@ -358,8 +325,6 @@ class OutOfScope(StrictModel):
     def _declared(self) -> OutOfScope:
         if (self.reason == "project_config") != (self.declared_in is not None):
             raise ValueError("a stage the project left out names the file that says so, and only such a stage")
-        if self.reason == "project_config" and self.stage is not Stage.PRE_DEPLOY:
-            raise ValueError("a project can leave out only the pre-deploy approval gate")
         return self
 
 
@@ -377,24 +342,20 @@ class CAR(StrictModel):
     issuer: Issuer
     governance: Governance
     subject: RecordSubject
-    change: Change
+    # The change the record is about: the body of its activity, told apart by ``activity``.
+    change: IacChange
     # The project's units file; null for a project that declares none.
     units_file: UnitsFile | None
-    plan: PlanRecord
     stages: dict[StageValue, StageRecord]
     events: Annotated[list[AssuranceEvent], Field(max_length=MAX_EVENTS)]
     coverage: Coverage
     verdict: Verdict
     assurance_status: AssuranceStatus
     complete: bool
-    expected_stages: list[StageValue]
+    expected_stages: Annotated[list[StageValue], Field(max_length=len(Stage))]
     # Every stage of the lifecycle the record does not expect, each with why. Expected and not in
     # scope together name every stage of the lifecycle once.
-    out_of_scope: list[OutOfScope]
-    # Null until the post-deploy stage has reported.
-    deployment: Deployment | None
-    # Null until the post-deploy stage has read the unit's state.
-    identity: IdentityRecord | None
+    out_of_scope: Annotated[list[OutOfScope], Field(max_length=len(Stage))]
     evidence_refs: Annotated[list[EvidenceRef], Field(max_length=MAX_EVIDENCE_REFS)]
     integrity: Integrity
     expires_at: None
@@ -414,22 +375,18 @@ class CAR(StrictModel):
         if len(set(ref_ids)) != len(ref_ids):
             raise ValueError("no two entries of the evidence register share a name")
         checks_integrity = (info.context or {}).get(SKIP_INTEGRITY_CHECKS) is not True
-        check_change(self.unit, self.plan.digest, self.change, self.units_file)
+        if self.units_file is not None and self.unit not in self.units_file.names:
+            raise ValueError("the record's unit is one of the units its units file declares")
         # Approvals bind to the change digest, so a reader that checks integrity is refused on it first.
         if checks_integrity:
             _raise_first(change_digest_problems(self))
         check_structure(self)
         if self.complete != (set(self.stages) == {Stage(stage) for stage in self.expected_stages}):
             raise ValueError("a record is complete exactly when every expected stage has reported")
-        if (self.deployment is None) == (Stage.POST_DEPLOY in self.stages):
-            raise ValueError("a record describes the deployment exactly when its post-deploy stage has reported")
         if self.trust_level != UNSIGNED_TRUST_LEVEL:
             raise ValueError(f"a record without a signature is {UNSIGNED_TRUST_LEVEL}")
-        check_superseded(self.plan.digest, self.deployment)
-        check_tool(self.plan.tool, self.deployment)
         if self.subject.unit != self.unit:
             raise ValueError("the record's subject is its own unit")
-        self._check_identity()
         check_provenance(self)
         if checks_integrity:
             _raise_first(integrity_problems(self))
@@ -439,26 +396,6 @@ class CAR(StrictModel):
         """The record's count and verdict as its stages give them, in the order the record expects them."""
         outcomes = {stage.value: record.outcome for stage, record in self.stages.items()}
         return combine_in_order([stage.value for stage in self.expected_stages], outcomes)
-
-    def _check_identity(self) -> None:
-        """The identities are the deployment's: read after it, from its plan, naming exactly what left the state."""
-        if (self.identity is None) != (self.deployment is None):
-            raise ValueError("a record names its identities exactly when its post-deploy stage has reported")
-        if self.identity is None or self.deployment is None:
-            return
-        self.identity.check_unit(self.unit)
-        plan = self.identity.sources.plan
-        if plan is None or (plan.digest, plan.digest_version) != (
-            self.deployment.plan.digest,
-            self.deployment.plan.digest_version,
-        ):
-            raise ValueError("the identities are read from the applied plan the deployment names")
-        if self.identity.sources.state != self.deployment.apply.state:
-            raise ValueError("the identities are read from the state the deployment was held to")
-        left = {change.address: change.removal for change in self.deployment.apply.changes if change.left_the_state}
-        if self.identity.left_the_state() != left:
-            raise ValueError("what the identities list as removed is exactly what left the state, and how")
-        check_identity_against_apply(self.identity.tool_data, self.deployment.apply.tool_data)
 
 
 def _raise_first(problems: list[tuple[str, str]]) -> None:

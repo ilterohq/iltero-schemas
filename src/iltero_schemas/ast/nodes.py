@@ -13,6 +13,7 @@ from enum import StrEnum
 from typing import Any, TypeAlias
 
 from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind
+from iltero_schemas.models.change_type import ChangeTypeName
 from iltero_schemas.models.iac import IacTool
 
 # Bumped when the JSON form below changes shape; part of every digest.
@@ -116,6 +117,7 @@ class Assertion:
     id: str
     version: str
     type: AssertionType
+    change_type: ChangeTypeName | None
     stage: Stage
     target: Target
     when: Expr | None
@@ -161,6 +163,7 @@ def to_json(assertion: Assertion) -> dict[str, Any]:
         "id": assertion.id,
         "version": assertion.version,
         "type": assertion.type.value,
+        "change_type": assertion.change_type,
         "stage": assertion.stage.value,
         "target": target,
         "when": None if assertion.when is None else _expr_json(assertion.when),

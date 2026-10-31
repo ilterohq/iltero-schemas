@@ -115,11 +115,12 @@ def read_no_earlier_than(reading_at: str, event_at: str) -> bool:
     """Whether a reading dated ``reading_at`` was taken no earlier than ``event_at``, at the reading's precision.
 
     An IaC tool may date a reading in whole seconds, from when it started (Terraform does), so a reading that starts
-    in the second an event happened can be dated before the event's fraction of that second. A reading dated in
-    whole seconds is compared with the whole second the event fell in; one with a fraction, exactly.
+    in the second an event happened can be dated before the event's fraction of that second. A reading written without
+    a fraction of a second is compared with the whole second the event fell in; one written with a fraction, even
+    ``.000``, exactly.
     """
     reading, event = parse_timestamp(reading_at), parse_timestamp(event_at)
-    return reading >= (event if reading[1] else (event[0], 0))
+    return reading >= (event if "." in reading_at else (event[0], 0))
 
 
 def check_against_deployment(check: DriftCheck, deployment: Deployment) -> None:

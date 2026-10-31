@@ -317,11 +317,12 @@ keep, so any two tools agree on what a record means.
   the resources with the state the apply wrote. A record carries it exactly
   when its post-verify stage has reported, and the post-verify evaluation
   input requires it. A drift check of another change is an integrity
-  failure. A first reading dated on a whole second is compared with the whole
-  second the apply ended in and the whole second the post-deploy stage was
-  observed in; one with a fraction of a second is compared exactly. An IaC
-  tool may date a reading in whole seconds, from when it started; Terraform
-  does. Record, context and evaluation vectors cover it.
+  failure. A first reading written without a fraction of a second is compared
+  with the whole second the apply ended in and the whole second the
+  post-deploy stage was observed in; one written with a fraction, even
+  `.000`, is compared exactly. An IaC tool may date a reading in whole
+  seconds, from when it started; Terraform does. Record, context and
+  evaluation vectors cover it.
 - A record of a run Iltero Platform opened can leave out its post-verify
   stage because the environment's policy does not require it
   (`out_of_scope[].reason: environment_policy`). The record does not name

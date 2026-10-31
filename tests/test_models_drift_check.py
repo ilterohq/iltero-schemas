@@ -104,6 +104,7 @@ def test_a_drift_check_lists_what_differed_in_the_latest_reading() -> None:
         ("2026-10-29T02:28:12Z", "2026-10-29T02:28:13Z", False),
         ("2026-10-29T02:28:13.100Z", "2026-10-29T02:28:13.285Z", False),
         ("2026-10-29T02:28:13.285Z", "2026-10-29T02:28:13.285Z", True),
+        ("2026-10-29T02:28:13.000Z", "2026-10-29T02:28:13.285Z", False),
     ],
     ids=[
         "in the event's second",
@@ -112,6 +113,7 @@ def test_a_drift_check_lists_what_differed_in_the_latest_reading() -> None:
         "a second before",
         "a fraction before, to a fraction",
         "at the event, to a fraction",
+        "a zero fraction before, to a fraction",
     ],
 )
 def test_a_reading_is_compared_with_an_events_whole_second(reading_at: str, event_at: str, no_earlier: bool) -> None:

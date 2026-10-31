@@ -254,9 +254,9 @@ Key rules:
   never an empty list. A predicate that reads it is `unknown`, never `fail`.
 - A `drift_check` was read by the IaC tool that applied the `deployment` (`deployment.apply.source.tool`), and its
   first reading is no earlier than the end of the apply (`deployment.apply.timing.ended_at`), when the apply's timing
-  is known. A first reading dated on a whole second is compared with the whole second the apply ended in; one with a
-  fraction of a second is compared exactly. An IaC tool may date a reading in whole seconds, from when the reading
-  started; Terraform does.
+  is known. A first reading written without a fraction of a second (`2026-10-29T02:28:13Z`) is compared with the whole
+  second the apply ended in; one written with a fraction, even `.000`, is compared exactly. An IaC tool may date a
+  reading in whole seconds, from when the reading started; Terraform does.
 - The context holds no evaluator version, bundle digest or provenance.
 
 The facts only Iltero Platform holds are normalised whatever produced them. Each item is Iltero Platform's claim, as
@@ -580,9 +580,10 @@ Key rules:
 - A record's `change.drift_check` names the record's run (`run_id`) and the IaC tool that applied the deployment
   (`change.deployment.apply.source.tool`). Its first reading is no earlier than the `post_deploy` stage's
   `observed_at`, nor than the end of the apply (`change.deployment.apply.timing.ended_at`, when the apply's timing
-  is known). A first reading dated on a whole second is compared with the whole second each of these fell in; one
-  with a fraction of a second is compared exactly. The `post_verify` stage's `observed_at` is no earlier than its
-  second reading, and the second reading is at least `minimum_interval_seconds` after the first, to the nanosecond.
+  is known). A first reading written without a fraction of a second (`2026-10-29T02:28:13Z`) is compared with the
+  whole second each of these fell in; one written with a fraction, even `.000`, is compared exactly. The `post_verify`
+  stage's `observed_at` is no earlier than its second reading, and the second reading is at least
+  `minimum_interval_seconds` after the first, to the nanosecond.
 - `resources_read` equals the number of managed resources the record's identities list (`change.identity.bindings` and
   `change.identity.unresolved`), and every `differences[].address` and `first_reading_only_differences[].address` is one
   of their addresses. `differences_count` equals the number of `differences`, no address is in both lists, and the two

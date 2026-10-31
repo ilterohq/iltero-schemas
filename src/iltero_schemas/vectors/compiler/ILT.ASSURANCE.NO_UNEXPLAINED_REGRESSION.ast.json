@@ -3,6 +3,7 @@
   "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
   "version": "1.0.0",
   "type": "process",
+  "change_type": "iac_change",
   "stage": "runtime",
   "target": {
     "kind": "assurance",

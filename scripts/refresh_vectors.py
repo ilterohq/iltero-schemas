@@ -107,7 +107,9 @@ def canonical_vectors() -> dict[str, bytes]:
         case.update({"canonical": encoded.decode("utf-8"), "digest": digest(encoded)})
     changes = json.loads((CANONICAL_VECTORS / "change_digest_cases.json").read_text(encoding="utf-8"))
     for case in changes["cases"]:
-        encoded = canonical_change_bytes(case["units"])
+        encoded = canonical_change_bytes(
+            case["change_type"], case["unit"], case["environment_key"], case["checked_content"]
+        )
         case.update({"canonical": encoded.decode("utf-8"), "digest": digest(encoded)})
     return {
         "cases.json": _dump(cases),

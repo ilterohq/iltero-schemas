@@ -71,7 +71,8 @@ def test_a_key_is_over_the_text_as_written_never_normalized() -> None:
         ("resource", [ADDRESS], "plan", "network", "its own unit"),
         ("change", [UNIT.model_copy(update={"scope": {"stack_id": "s"}})], "pre_deploy", None, "no scope"),
         ("change", [UNIT], "pre_deploy", "network", "its own unit"),
-        ("resource", [ARN], "plan", None, "read after deployment"),
+        ("resource", [ARN], "plan", None, "read at runtime"),
+        ("resource", [ARN], "post_verify", None, "read at runtime"),
     ],
     ids=[
         "an address scoped by a stack too",
@@ -80,6 +81,7 @@ def test_a_key_is_over_the_text_as_written_never_normalized() -> None:
         "a unit scoped by a stack",
         "another unit",
         "a cloud-only resource at plan",
+        "a cloud-only resource at post_verify",
     ],
 )
 def test_a_local_identity_is_of_its_unit_and_stage(
@@ -89,9 +91,8 @@ def test_a_local_identity_is_of_its_unit_and_stage(
         check_subject(kind, subject_key(kind, identities), identities, stage, unit)
 
 
-def test_a_cloud_only_resource_is_a_subject_after_deployment() -> None:
-    for stage in ("post_verify", "runtime"):
-        check_subject("resource", subject_key("resource", [ARN]), [ARN], stage, None)
+def test_a_cloud_only_resource_is_a_subject_at_runtime() -> None:
+    check_subject("resource", subject_key("resource", [ARN]), [ARN], "runtime", None)
 
 
 def test_a_subjects_key_is_the_digest_of_its_own_identity() -> None:

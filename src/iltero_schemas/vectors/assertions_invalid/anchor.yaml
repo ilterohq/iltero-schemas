@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: An invalid document
 spec:
+  change_type: iac_change
   stage: plan
   target: &t {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [aws_db_instance]}]}
   assert:

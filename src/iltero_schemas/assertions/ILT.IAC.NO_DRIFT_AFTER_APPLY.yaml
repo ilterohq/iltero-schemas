@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.NO_DRIFT_AFTER_APPLY
+  version: "1.0.0"
+  title: No resource of the state differed from the apply in the latest reading
+  remediation: Find what changed each differing resource since the apply, then apply the reviewed configuration again.
+spec:
+  change_type: iac_change
+  stage: post_verify
+  target:
+    kind: deployment
+  assert:
+    path: drift_check.differences_count
+    equal: 0

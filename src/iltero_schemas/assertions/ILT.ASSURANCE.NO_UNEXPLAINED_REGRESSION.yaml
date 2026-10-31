@@ -6,6 +6,7 @@ metadata:
   title: An assurance regression corresponds to a recorded deployment or an approved exception
   remediation: Record the deployment made since the last passing result, or get an exception approved.
 spec:
+  change_type: iac_change
   stage: runtime
   target:
     kind: assurance

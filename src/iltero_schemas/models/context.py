@@ -41,7 +41,10 @@ from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.change_type import IAC_CHANGE_TYPE
+from iltero_schemas.models.checked_content import checked_plan
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
+from iltero_schemas.models.drift_check import DriftCheck, check_against_deployment
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     Action,
@@ -81,7 +84,7 @@ PARTS = (
     "exceptions",
     "run",
     "deployment",
-    "verification",
+    "drift_check",
     "assurance",
 )
 
@@ -237,7 +240,8 @@ def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResour
 
 
 class ProposedChange(StrictModel):
-    """The proposed change: the resources it touches, and its digest, ``canonical.change_digest`` of its unit's plan."""
+    """The proposed change: the resources it touches, and its digest, ``canonical.change_digest`` of its unit's plan
+    in the input's environment."""
 
     resources: list[ResourceIndexEntry]
     digest: Digest
@@ -326,7 +330,7 @@ class AssuranceContext(StrictModel):
     exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
-    verification: dict[str, Any] | None = None
+    drift_check: DriftCheck | None = None
     assurance: dict[str, Any] | None = None
 
     @model_validator(mode="after")
@@ -349,12 +353,17 @@ class AssuranceContext(StrictModel):
             if (local.scheme, local.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
         if self.plan is not None and self.change is not None:
-            if self.change.digest != change_digest({unit_of(local): self.plan.digest}):
-                raise ValueError("change.digest is the digest of its unit's plan")
+            environment = self.organization_scope.environment
+            key = environment.name if environment is not None else None
+            plan = checked_plan(self.plan.digest, self.plan.digest_version, self.plan.tool).model_dump(mode="json")
+            if self.change.digest != change_digest(IAC_CHANGE_TYPE, unit_of(local), key, plan):
+                raise ValueError("change.digest is the digest of its unit's plan in its environment")
         if self.plan is not None:
             check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
             if self.resource is not None:
                 check_tool_data(self.plan.tool, [self.resource.tool_data], "resource.tool_data")
             check_superseded(self.plan.digest, self.deployment)
             check_tool(self.plan.tool, self.deployment)
+        if self.drift_check is not None and self.deployment is not None:
+            check_against_deployment(self.drift_check, self.deployment)
         return self

@@ -9,7 +9,35 @@
     "problems": [
       [
         "change.digest",
-        "is not the digest of the change's units"
+        "is not the digest of the change type, unit, environment and plan"
+      ]
+    ]
+  },
+  {
+    "name": "change_digest_of_another_unit_with_the_same_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:84a057fe7933139fc19ea3be448fa5b7c8f8c18bd2caa38647bc4f7beaeddd6d"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.digest",
+        "is not the digest of the change type, unit, environment and plan"
+      ]
+    ]
+  },
+  {
+    "name": "change_digest_computed_without_the_records_environment",
+    "vector": "local_run.json",
+    "set": {
+      "/change/digest": "sha256:5143ac1df03ca4fea7aec7440b2069b126924a008cc986f66bdd946dadedadcd"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.digest",
+        "is not the digest of the change type, unit, environment and plan"
       ]
     ]
   },
@@ -19,7 +47,7 @@
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "/coverage/assertions_expected/value": 10,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:f8263265622d229ab28e5d279ca471255296fd9651f3256b50c71f9690f418bf",
+      "/coverage/assertions_expected/required_assertion_digest": "sha256:e4c2e70b248e8c5c185f29fff747bfadd8193fd9ed27d43f6d61a55086d99bd4",
       "/coverage/assertions_evaluated": 10,
       "/stages/pre_deploy": {
         "assertions": {
@@ -569,7 +597,7 @@
     "problems": [
       [
         "change.digest",
-        "is not the digest of the change's units"
+        "is not the digest of the change type, unit, environment and plan"
       ]
     ]
   },
@@ -578,7 +606,7 @@
     "vector": "local_run.json",
     "set": {
       "/coverage/assertions_expected/value": 10,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:f8263265622d229ab28e5d279ca471255296fd9651f3256b50c71f9690f418bf",
+      "/coverage/assertions_expected/required_assertion_digest": "sha256:e4c2e70b248e8c5c185f29fff747bfadd8193fd9ed27d43f6d61a55086d99bd4",
       "/coverage/assertions_evaluated": 10,
       "/stages/pre_deploy": {
         "assertions": {
@@ -1099,7 +1127,7 @@
             "counted_from": "change_unit",
             "excluded": [],
             "removed_by_plan": 0,
-            "source_digest": "sha256:41fe32e2d5ca1d128d4a5de00d6a854ed300cb3a02fd9d181778311e91204454",
+            "source_digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e",
             "value": 1
           },
           "subjects_per_assertion": {},
@@ -1148,7 +1176,7 @@
     "problems": [
       [
         "stages.pre_deploy.approvals",
-        "lists an approval of another change"
+        "lists approval apr_0001 of another change: another change type, unit, environment or plan"
       ]
     ]
   },
@@ -1183,7 +1211,7 @@
     "problems": [
       [
         "change.digest",
-        "is not the digest of the change's units"
+        "is not the digest of the change type, unit, environment and plan"
       ],
       [
         "stages.plan.verdict",
@@ -1192,6 +1220,58 @@
       [
         "verdict",
         "is not the record's stages combined"
+      ]
+    ]
+  },
+  {
+    "name": "drift_check_of_another_change",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e6cbc0742fcfdfcdb7dc46ba0245ffb16d6961547e1ef34f42a9d7442a4f4971"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.drift_check.change_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "approval_of_the_change_in_production_presented_for_staging",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/subject/environment": "staging",
+      "/stages/pre_deploy/approvals": [
+        {
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
+          "roles": [
+            "security"
+          ],
+          "status": "approved",
+          "subject": {
+            "kind": "change",
+            "digest": "sha256:d1884afa2e39d7ab7764a8b21aa1576a6f2fcf6f76c79f4f7b0e58707d6f434a"
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-10-29T00:23:59.760Z"
+        }
+      ],
+      "/change/digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e",
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.pre_deploy.approvals",
+        "lists approval apr_0001 of another change: another change type, unit, environment or plan"
       ]
     ]
   }

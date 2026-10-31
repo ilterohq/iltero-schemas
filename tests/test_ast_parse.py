@@ -43,7 +43,12 @@ RESOURCE = {
 def _document(
     assert_: Any, *, stage: str = "plan", target: dict[str, Any] | None = None, when: Any = None
 ) -> dict[str, Any]:
-    spec: dict[str, Any] = {"stage": stage, "target": target or RESOURCE, "assert": assert_}
+    spec: dict[str, Any] = {
+        "change_type": "iac_change",
+        "stage": stage,
+        "target": target or RESOURCE,
+        "assert": assert_,
+    }
     if when is not None:
         spec["when"] = when
     return {
@@ -176,8 +181,8 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
 
 
 def test_resource_root_exists_only_for_resource_targets() -> None:
-    assert "resource" in allowed_roots(Stage.POST_VERIFY, TargetKind.RESOURCE)
-    assert "resource" not in allowed_roots(Stage.POST_VERIFY, TargetKind.DEPLOYMENT)
+    assert "resource" in allowed_roots(Stage.RUNTIME, TargetKind.RESOURCE)
+    assert "resource" not in allowed_roots(Stage.RUNTIME, TargetKind.DEPLOYMENT)
     assert "reference_time" in allowed_roots(Stage.RUNTIME, TargetKind.ASSURANCE)
 
 
@@ -287,7 +292,7 @@ def test_parse_reads_yaml_text_and_reports_document_errors() -> None:
     ast = parse(
         "apiVersion: iltero.io/v1\nkind: TechnicalAssertion\n"
         "metadata: {id: A.B, version: '1.0.0', title: t}\n"
-        "spec:\n  stage: plan\n"
+        "spec:\n  change_type: iac_change\n  stage: plan\n"
         "  target: {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [x]}]}\n"
         "  assert: {path: resource.x, equal: 1}\n"
     )

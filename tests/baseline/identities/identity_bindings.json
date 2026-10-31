@@ -1,0 +1,56 @@
+{
+  "apiVersion": "iltero.io/identity-bindings/v1",
+  "unit": "root",
+  "generator": {
+    "name": "iltero",
+    "version": "0.1.0"
+  },
+  "sources": {
+    "state": {
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "tool": "terraform",
+      "tool_version": "1.14.0"
+    },
+    "plan": {
+      "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "digest_version": "1"
+    }
+  },
+  "resolvers": [
+    {
+      "provider": "aws",
+      "version": "1.0.0",
+      "verified_resource_types": [
+        "iam_role",
+        "kms_key",
+        "rds_instance",
+        "s3_bucket",
+        "security_group"
+      ]
+    }
+  ],
+  "bindings": [],
+  "unresolved": [
+    {
+      "address": "aws_db_instance.payments",
+      "reason": "identifier_sensitive"
+    },
+    {
+      "address": "aws_lambda_function.worker",
+      "reason": "no_resolver"
+    }
+  ],
+  "removed": [],
+  "removed_unresolved": [
+    {
+      "address": "aws_kms_key.old",
+      "reason": "identifier_missing",
+      "removal": "forgotten"
+    }
+  ],
+  "tool_data": {
+    "tool": "terraform",
+    "deposed_deleted": 0,
+    "deposed_remaining": 1
+  }
+}

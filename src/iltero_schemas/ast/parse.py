@@ -280,6 +280,7 @@ def parse_document(document: dict[str, Any]) -> Assertion:
         id=model.metadata.id,
         version=model.metadata.version,
         type=model.spec.derived_type,
+        change_type=model.spec.change_type,
         stage=model.spec.stage,
         target=target,
         when=when,

@@ -87,13 +87,14 @@ def test_an_exception_waives_one_assertion_for_the_resources_it_names_between_tw
         ExceptionGrant.model_validate({**EXCEPTION, "scope": {**EXCEPTION["scope"], "resources": []}})
 
 
+CHECKED_PLAN = {"kind": "plan", "digest": "sha256:" + "8" * 64, "digest_version": "1", "tool": "terraform"}
 EARLIER = {
     "id": "aevt_0001",
     "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
     "stage": "plan",
     "subject": {"kind": "resource", "key": "sha256:" + "5" * 64},
     "result": {"status": "pass"},
-    "plan_digest": "sha256:" + "8" * 64,
+    "checked_content": CHECKED_PLAN,
     "observed_at": "2026-09-22T13:00:13.568Z",
 }
 
@@ -103,16 +104,24 @@ def test_an_earlier_evaluation_names_its_assertion_stage_subject_and_result() ->
 
 
 @pytest.mark.parametrize(
-    ("stage", "plan_digest"),
-    [("plan", None), ("post_deploy", None), ("runtime", "sha256:" + "8" * 64)],
+    ("stage", "checked_content"),
+    [("plan", None), ("post_deploy", None), ("runtime", CHECKED_PLAN)],
     ids=["a plan check without its plan", "a post-deploy check without its plan", "a runtime check with a plan"],
 )
-def test_an_earlier_evaluation_names_its_plans_digest_exactly_when_its_stage_reads_a_plan(
-    stage: str, plan_digest: str | None
+def test_an_earlier_evaluation_names_the_content_it_checked_exactly_when_its_stage_reads_a_plan(
+    stage: str, checked_content: dict[str, str] | None
 ) -> None:
-    EarlierEvaluation.model_validate({**EARLIER, "stage": "runtime", "plan_digest": None})
+    EarlierEvaluation.model_validate({**EARLIER, "stage": "runtime", "checked_content": None})
     with pytest.raises(ValidationError, match="exactly when its stage reads a plan"):
-        EarlierEvaluation.model_validate({**EARLIER, "stage": stage, "plan_digest": plan_digest})
+        EarlierEvaluation.model_validate({**EARLIER, "stage": stage, "checked_content": checked_content})
+
+
+def test_an_earlier_evaluation_names_the_plan_by_its_digest_and_rule_as_an_evaluation_does() -> None:
+    earlier = EarlierEvaluation.model_validate(EARLIER)
+    assert earlier.checked_content is not None and earlier.checked_content.digest_version == "1"
+    old_shape = {"value": CHECKED_PLAN["digest"], "version": "1", "tool": "terraform"}
+    with pytest.raises(ValidationError, match="Field required"):
+        EarlierEvaluation.model_validate({**EARLIER, "checked_content": old_shape})
 
 
 def test_an_earlier_evaluation_names_its_subject_by_its_key() -> None:

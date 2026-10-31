@@ -60,6 +60,17 @@ def test_two_resources_of_one_type_with_their_own_identities_are_both_bound() ->
     assert len(IdentityBindings.model_validate(document).bindings) == 3
 
 
+def test_identities_read_from_a_refresh_only_plan_name_no_applied_plan() -> None:
+    document = copy.deepcopy(DOCUMENT)
+    document["sources"]["read_from"] = "refresh_plan"
+    with pytest.raises(ValidationError, match="identities read from a refresh-only plan name no applied plan"):
+        IdentityBindings.model_validate(document)
+    document["sources"]["plan"] = None
+    document.update(removed=None, removed_unresolved=None)
+    document["tool_data"]["deposed_deleted"] = None
+    assert IdentityBindings.model_validate(document).sources.read_from == "refresh_plan"
+
+
 def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> None:
     """Without the applied plan nothing was checked, so the document says "not checked", never "none"."""
     document = copy.deepcopy(DOCUMENT)

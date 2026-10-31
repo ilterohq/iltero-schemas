@@ -44,6 +44,7 @@ def _maximal_document() -> dict[str, Any]:
         "kind": "TechnicalAssertion",
         "metadata": {"id": "VEC.LIMITS.MAXIMAL", "version": "1.0.0", "title": "As large as the language allows"},
         "spec": {
+            "change_type": "iac_change",
             "stage": "plan",
             "target": {
                 "kind": "resource",

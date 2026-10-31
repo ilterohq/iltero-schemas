@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: An invalid document
 spec:
+  change_type: iac_change
   stage: post_deploy
   target: {kind: deployment}
   assert:

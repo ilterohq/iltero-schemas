@@ -25,6 +25,7 @@ from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.checked_content import CheckedContent
 from iltero_schemas.models.fields import (
     AssertionId,
     AssertionKey,
@@ -60,7 +61,8 @@ class Actor(StrictModel):
 
 
 class ChangeSubject(StrictModel):
-    """An approval of one change: its digest binds it to that plan and no other."""
+    """An approval of one change: its digest (``canonical.change_digest``) binds it to that change type, unit,
+    environment and checked content."""
 
     kind: Literal["change"]
     digest: Digest
@@ -151,14 +153,14 @@ class EarlierEvaluation(StrictModel):
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
-    # The digest of the plan the evaluation read; null exactly for a stage that reads none, such as runtime.
-    plan_digest: Digest | None
+    # The content the evaluation read; null exactly for a stage that reads none, such as runtime.
+    checked_content: CheckedContent | None
     observed_at: Timestamp
 
     @model_validator(mode="after")
-    def _plan_digest_where_a_plan_was_read(self) -> EarlierEvaluation:
-        if (self.plan_digest is None) == reads_plan(Stage(self.stage)):
-            raise ValueError("an earlier evaluation names its plan's digest exactly when its stage reads a plan")
+    def _checked_content_where_a_plan_was_read(self) -> EarlierEvaluation:
+        if (self.checked_content is None) == reads_plan(Stage(self.stage)):
+            raise ValueError("an earlier evaluation names the content it checked exactly when its stage reads a plan")
         return self
 
 

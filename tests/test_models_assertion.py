@@ -8,7 +8,9 @@ from pydantic import ValidationError
 from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.models.assertion import (
     ASSERTION_TYPE_FOR_TARGET,
+    COMBINATIONS,
     REMEDIATION_MAX_LENGTH,
+    SHARED_COMBINATIONS,
     VALID_COMBINATIONS,
     AssertionType,
     Stage,
@@ -23,6 +25,7 @@ def _document(**overrides: Any) -> dict[str, Any]:
         "kind": "TechnicalAssertion",
         "metadata": {"id": "ACME.AWS.RDS.ENCRYPTED", "version": "1.0.0", "title": "RDS encrypted"},
         "spec": {
+            "change_type": "iac_change",
             "stage": "plan",
             "target": {
                 "kind": "resource",
@@ -54,6 +57,15 @@ def test_a_minimal_document_validates_and_type_is_derived() -> None:
 
 def test_every_target_kind_has_a_derived_type() -> None:
     assert set(ASSERTION_TYPE_FOR_TARGET) == set(TargetKind)
+
+
+@pytest.mark.parametrize("kind", [TargetKind.RESOURCE, TargetKind.ASSURANCE])
+def test_a_post_verify_assertion_is_about_the_deployment(kind: TargetKind) -> None:
+    target: dict[str, Any] = {"kind": kind.value}
+    if kind is TargetKind.RESOURCE:
+        target["resources"] = [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}]
+    with pytest.raises(ValidationError, match=f"stage 'post_verify' is not valid for target kind '{kind.value}'"):
+        TechnicalAssertion.model_validate(_document(spec__stage="post_verify", spec__target=target))
 
 
 def test_explicit_type_must_match_the_derived_one() -> None:
@@ -247,7 +259,7 @@ def test_a_resource_target_names_exactly_one_selector() -> None:
 
 def test_an_assurance_target_names_no_resources() -> None:
     target = {"kind": "assurance", "resources": [{"provider": "aws", "kinds": ["rds_instance"]}]}
-    assert _error_locations(_document(spec__stage="post_verify", spec__target=target)) == ["spec.target.assurance"]
+    assert _error_locations(_document(spec__stage="runtime", spec__target=target)) == ["spec.target.assurance"]
 
 
 def test_a_resource_target_names_its_tools_types_and_a_change_target_names_kinds() -> None:
@@ -273,3 +285,23 @@ def test_a_provider_short_name_may_hold_a_hyphen() -> None:
     for provider in ("-aws", "Aws", "hashicorp/aws"):
         target = {"kind": "resource", "resources": [{**selector, "provider": provider}]}
         assert _error_locations(_document(spec__target=target)) == ["spec.target.resource.resources.0.provider"]
+
+
+def test_an_assertion_says_which_change_type_it_is_about() -> None:
+    document = _document()
+    del document["spec"]["change_type"]
+    with pytest.raises(ValidationError, match="change_type is missing: give iac_change, or null for an assertion"):
+        TechnicalAssertion.model_validate(document)
+    with pytest.raises(ValidationError, match="Input should be 'iac_change'"):
+        TechnicalAssertion.model_validate(_document(spec__change_type="image_release"))
+
+
+def test_an_assertion_about_any_change_is_checked_against_what_every_change_type_allows() -> None:
+    assert SHARED_COMBINATIONS == COMBINATIONS["iac_change"] == VALID_COMBINATIONS
+    assert TechnicalAssertion.model_validate(_document(spec__change_type=None)).spec.change_type is None
+
+
+def test_the_change_type_is_part_of_the_assertions_source_digest() -> None:
+    about_any_change = parse_document(_document(spec__change_type=None))
+    assert about_any_change.change_type is None
+    assert source_digest(about_any_change) != source_digest(parse_document(_document()))

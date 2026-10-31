@@ -13,7 +13,7 @@ DOCUMENTED = {
     Stage.PLAN: {"source", "change", "plan", "subject"},
     Stage.PRE_DEPLOY: {"source", "change", "plan", "subject", "evaluations", "approvals", "exceptions", "run"},
     Stage.POST_DEPLOY: {"source", "change", "plan", "subject", "deployment"},
-    Stage.POST_VERIFY: {"source", "subject", "deployment", "verification", "assurance"},
+    Stage.POST_VERIFY: {"source", "subject", "deployment", "drift_check", "assurance"},
     Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},
 }
 
@@ -37,8 +37,8 @@ def test_the_plan_resource_profile_is_exactly_what_a_plan_can_know() -> None:
 
 
 def test_resource_is_required_only_for_a_resource_target() -> None:
-    assert "resource" in profile_for(Stage.POST_VERIFY, TargetKind.RESOURCE).required
-    assert "resource" not in profile_for(Stage.POST_VERIFY, TargetKind.DEPLOYMENT).roots
+    assert "resource" in profile_for(Stage.RUNTIME, TargetKind.RESOURCE).required
+    assert "resource" not in profile_for(Stage.RUNTIME, TargetKind.DEPLOYMENT).roots
     assert "resource" not in profile_for(Stage.PRE_DEPLOY, TargetKind.CHANGE).roots
 
 
@@ -55,3 +55,9 @@ def test_always_is_what_every_profile_requires() -> None:
 def test_an_invalid_combination_has_no_profile() -> None:
     with pytest.raises(ValueError, match="stage 'plan' is not valid for target kind 'change'"):
         profile_for(Stage.PLAN, TargetKind.CHANGE)
+
+
+@pytest.mark.parametrize("kind", [TargetKind.RESOURCE, TargetKind.ASSURANCE])
+def test_the_post_verify_stage_has_a_profile_only_for_the_deployment(kind: TargetKind) -> None:
+    with pytest.raises(ValueError, match=f"stage 'post_verify' is not valid for target kind '{kind.value}'"):
+        profile_for(Stage.POST_VERIFY, kind)

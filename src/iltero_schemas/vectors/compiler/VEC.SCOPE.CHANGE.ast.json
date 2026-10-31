@@ -3,6 +3,7 @@
   "id": "VEC.SCOPE.CHANGE",
   "version": "1.0.0",
   "type": "process",
+  "change_type": "iac_change",
   "stage": "pre_deploy",
   "target": {
     "kind": "change",

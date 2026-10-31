@@ -114,8 +114,8 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
     del document["stages"]["plan"]["coverage"]["subjects_per_assertion"][moved]
     document["stages"]["pre_deploy"] = stage("pre_deploy", **{"coverage.subjects_per_assertion": {moved: 1}})
-    document["expected_stages"] = ["plan", "pre_deploy", "post_deploy"]
-    document["out_of_scope"] = [entry for entry in document["out_of_scope"] if entry["stage"] == "post_verify"]
+    document["expected_stages"] = ["plan", "pre_deploy", "post_deploy", "post_verify"]
+    document["out_of_scope"] = []
     document["complete"] = False
     with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)

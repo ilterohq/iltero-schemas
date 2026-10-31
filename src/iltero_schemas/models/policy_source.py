@@ -78,7 +78,8 @@ class PolicyEntry(StrictModel):
 
     @model_validator(mode="after")
     def _the_combination_is_one_that_exists(self) -> PolicyEntry:
-        check_target(self.stage, self.target)
+        # A hand-written policy names no change type, so it may declare only what every change type allows.
+        check_target(self.stage, self.target, None)
         if isinstance(self.target, ProcessTarget) and self.target.resources is not None:
             raise ValueError("a hand-written policy names no resources: no compiler writes its scope guard")
         return self

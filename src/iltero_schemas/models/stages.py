@@ -15,13 +15,13 @@ from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING
 
-from iltero_schemas.canonical import change_digest, digest_of
-from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind
-from iltero_schemas.models.coverage import PlanFlagGap, StageOutcome, combine_in_order, stage_outcome
-from iltero_schemas.models.fields import parse_timestamp
+from iltero_schemas.change_types.registry import ACTIVITIES
+from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind, stage_name
+from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.profiles import reads_server_facts
 
 if TYPE_CHECKING:
+    from iltero_schemas.change_types.activity import Activity
     from iltero_schemas.models.car import CAR, StageRecord
 
 # How a stage counts its subjects, by their kind: resources by enumerating the plan, a change or a deployment as
@@ -54,9 +54,6 @@ def scope_counted_from(stage: Stage, kinds: set[TargetKind]) -> str | None:
 # The stages whose gate may run in advisory mode: those before the deployment.
 ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)
 _ORDER = list(Stage)
-# The stages one deployment passes through, in order. A record accounts for each: it expects the
-# stage, or says why the stage is not in scope. Runtime observations belong to no deployment.
-LIFECYCLE = (Stage.PLAN, Stage.PRE_DEPLOY, Stage.POST_DEPLOY, Stage.POST_VERIFY)
 
 
 def _assertions_of(car: CAR, stage: Stage) -> set[str]:
@@ -75,57 +72,52 @@ def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
         raise ValueError(f"the {stage.value} stage lists only approvals of a change or of this record's run")
 
 
-def _check_plan_first(car: CAR) -> None:
-    """The record starts at the plan it names, which was observed before the apply it gates started."""
+def _check_order(car: CAR, activity: Activity) -> None:
+    """The record starts at its activity's first stage, and runs its stages in order."""
     expected = list(car.expected_stages)
     if len(set(expected)) != len(expected) or expected != sorted(expected, key=_ORDER.index):
         raise ValueError("the expected stages are named once each, in the order they run")
-    if not expected or expected[0] is not Stage.PLAN or Stage.PLAN not in car.stages:
-        raise ValueError("a record starts at its plan stage")
+    first = activity.stages[0]
+    if not expected or expected[0] is not first or first not in car.stages:
+        raise ValueError(f"a record starts at its {first.value} stage")
     if Stage.RUNTIME in expected:
         raise ValueError("runtime observations belong to no deployment, so to no record")
     if Stage.POST_VERIFY in car.stages and Stage.POST_DEPLOY not in car.stages:
         raise ValueError("a record verifies a deployment only after its post-deploy stage")
-    plan_stage = car.stages[Stage.PLAN]
-    if plan_stage.coverage.subjects_in_scope.source_digest != car.plan.context_digest:
-        raise ValueError("the plan stage counts the resources of the plan the record names")
-    timing = car.deployment.apply.timing if car.deployment is not None else None
-    if timing is not None and parse_timestamp(plan_stage.observed_at) > parse_timestamp(timing.started_at):
-        raise ValueError("the plan stage was observed no later than the apply started, by the clocks that wrote them")
 
 
-def _check_scope(car: CAR) -> None:
-    """Every stage of the lifecycle is expected, or named once as not in scope with why; never both.
-
-    A record gates a deployment, so it always expects the stage that observes it.
-    """
+def _check_scope(car: CAR, activity: Activity) -> None:
+    """Every stage of the activity is expected, or named once as not in scope with a reason that may leave it out."""
     left_out = [item.stage for item in car.out_of_scope]
     if len(set(left_out)) != len(left_out):
         raise ValueError("a stage is named not in scope once")
     if set(left_out) & set(car.expected_stages):
         raise ValueError("a stage is expected or not in scope, never both")
-    if Stage.POST_DEPLOY not in car.expected_stages:
-        raise ValueError("a record always expects its post-deploy stage: the stage that observes the deployment")
-    if set(left_out) | set(car.expected_stages) != set(LIFECYCLE):
+    for item in car.out_of_scope:
+        if item.reason == "project_config" and item.stage not in activity.project_may_leave_out:
+            raise ValueError(f"a project can leave out only the {_named(activity.project_may_leave_out)}")
+        if item.reason == "environment_policy" and item.stage not in activity.environment_policy_may_leave_out:
+            raise ValueError(
+                f"an environment's policy can leave out only the {_named(activity.environment_policy_may_leave_out)}"
+            )
+    by_policy = any(item.reason == "environment_policy" for item in car.out_of_scope)
+    if by_policy and car.governance.run_opened_by != "server":
+        raise ValueError("only a run the server opened has an environment policy that leaves a stage out")
+    if set(left_out) | set(car.expected_stages) != set(activity.stages):
         raise ValueError("the record accounts for every stage of the lifecycle: expected, or not in scope")
 
 
-def _check_deployment(car: CAR) -> None:
-    """The post-deploy stage counts the one deployment the record describes, by that deployment's digest."""
-    stage = car.stages.get(Stage.POST_DEPLOY)
-    if stage is None or car.deployment is None:
-        return
-    scope = stage.coverage.subjects_in_scope
-    if scope.value != 1 or scope.source_digest != digest_of(car.deployment.model_dump(mode="json", by_alias=True)):
-        raise ValueError("the post_deploy stage must count the one deployment the record describes, by its digest")
+def _named(stages: frozenset[Stage]) -> str:
+    """``stages`` as a reader says them, such as "pre-deploy and post-verify stages"."""
+    *first, last = [stage_name(stage) for stage in sorted(stages, key=_ORDER.index)]
+    return f"{', '.join(first)} and {last} stages" if first else f"{last} stage"
 
 
-def _check_plan_of_events(car: CAR) -> None:
-    """Every event names the plan the record evaluated, whichever stage it came from."""
-    evaluated = (car.plan.digest, car.plan.digest_version, car.plan.tool)
-    named = (e.provenance.plan_digest for e in car.events)
-    if any((plan.value, plan.version, plan.tool) != evaluated for plan in named):
-        raise ValueError("every event names the plan the record evaluated")
+def _check_checked_content_of_events(car: CAR, activity: Activity) -> None:
+    """Every event names the content the record's change checked, whichever stage it came from."""
+    checked = activity.checked_content(car)
+    if any(event.provenance.checked_content != checked for event in car.events):
+        raise ValueError("every event names the content the record's change checked")
 
 
 def _check_run_of_events(car: CAR) -> None:
@@ -145,10 +137,10 @@ def _check_one_redaction_policy(car: CAR) -> None:
 
 def check_structure(car: CAR) -> None:
     """Raise ``ValueError`` unless the stages hold together, whatever values they carry."""
-    _check_plan_first(car)
-    _check_scope(car)
-    _check_deployment(car)
-    _check_plan_of_events(car)
+    activity = ACTIVITIES[car.change.activity]
+    _check_order(car, activity)
+    _check_scope(car, activity)
+    _check_checked_content_of_events(car, activity)
     _check_run_of_events(car)
     _check_one_redaction_policy(car)
     for stage, record in car.stages.items():
@@ -156,8 +148,6 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
-        if stage is not Stage.PLAN and any(isinstance(gap, PlanFlagGap) for gap in record.coverage.gaps):
-            raise ValueError(f"the {stage.value} stage lists a plan-flag gap, which only the plan stage lists")
         counted_from = scope_counted_from(
             stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage}
         )
@@ -183,38 +173,20 @@ def check_structure(car: CAR) -> None:
         seen |= assertions
         if not set(record.coverage.subjects_per_assertion) <= assertions:
             raise ValueError(f"the {stage.value} stage counts subjects only for assertions it has events for")
-
-
-def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
-    """The plan stage lists one plan-flag gap for each plan flag that is not true, with the plan's value, in kind
-    order."""
-    plan = car.plan
-    # In kind order.
-    owed = [
-        (kind, value)
-        for kind, value in (("plan_incomplete", plan.complete), ("plan_not_applyable", plan.applyable))
-        if value is not True
-    ]
-    gaps = car.stages[Stage.PLAN].coverage.gaps
-    if [(gap.kind, gap.value) for gap in gaps if isinstance(gap, PlanFlagGap)] != owed:
-        where, what = "stages.plan.coverage.gaps", "does not match plan.complete and plan.applyable"
-        return [(where, f"{what}: one gap, in kind order, for each that is not true, with its value")]
-    return []
+    activity.check_record(car)
 
 
 def change_digest_problems(car: CAR) -> list[tuple[str, str]]:
-    """The change digest is the digest of the change's units, and every stage that binds to the change names it."""
-    problems: list[tuple[str, str]] = []
-    unit = car.change.unit
-    if car.change.digest != change_digest({unit.name: unit.plan.digest}):
-        problems.append(("change.digest", "is not the digest of the change's units"))
+    """The change digest is the change's, and every stage and part that binds to the change names it."""
+    problems = ACTIVITIES[car.change.activity].change_digest_problems(car)
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
     if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != car.change.digest:
         problems.append(("stages.pre_deploy.coverage.subjects_in_scope.source_digest", "is not change.digest"))
     for stage, record in car.stages.items():
-        approvals = record.approvals or []
-        if any(a.subject.kind == "change" and a.subject.digest != car.change.digest for a in approvals):
-            problems.append((f"stages.{stage.value}.approvals", "lists an approval of another change"))
+        for approval in record.approvals or []:
+            if approval.subject.kind == "change" and approval.subject.digest != car.change.digest:
+                what = f"lists approval {approval.id} of another change: another change type, unit, environment or plan"
+                problems.append((f"stages.{stage.value}.approvals", what))
     return problems
 
 
@@ -238,7 +210,7 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
-    problems.extend(_plan_flag_problems(car))
+    problems.extend(ACTIVITIES[car.change.activity].integrity_problems(car))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)
     for key in ("coverage", "verdict", "assurance_status"):

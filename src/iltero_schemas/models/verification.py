@@ -36,6 +36,24 @@ VerificationState = Literal[
 ]
 
 
+# The results a verifier gives the verification after deployment, each a state and its reason.
+# reported_by_pipeline: the pipeline reported its post-verify stage, which only the pipeline's word supports.
+# stage_pending: the record expects the stage, and the run that would report it is still in progress.
+# stage_not_reported: the record expects the stage, and it was never reported. project_config, environment_policy
+# and not_supported: the record leaves the stage out of scope for that reason. When the record's integrity is not
+# established, the property is not_determined, as every other one is.
+RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str]] = frozenset(
+    {
+        ("client_asserted", "reported_by_pipeline"),
+        ("not_assessed", "stage_pending"),
+        ("not_performed", "stage_not_reported"),
+        ("not_assessed", "project_config"),
+        ("not_assessed", "environment_policy"),
+        ("not_assessed", "not_supported"),
+    }
+)
+
+
 class PropertyResult(StrictModel):
     """One property's state, and a short name for why it is that state (null when there is nothing to name)."""
 
@@ -99,4 +117,8 @@ class VerificationReport(StrictModel):
         others = {result.state for name, result in self.properties if name != "integrity"}
         if integrity in ("failed", "not_determined") and others != {"not_determined"}:
             raise ValueError("when a record's integrity is not established, every other property is not_determined")
+        runtime = self.properties.runtime_verification
+        established = integrity not in ("failed", "not_determined")
+        if established and (runtime.state, runtime.reason) not in RUNTIME_VERIFICATION_RESULTS:
+            raise ValueError("runtime_verification is one of the results a verifier gives the stage after deployment")
         return self

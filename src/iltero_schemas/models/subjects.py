@@ -4,7 +4,7 @@ A subject's ``key`` is the digest of its kind and its one local identity:
 
 - a resource an IaC tool manages: its address in the tool's configuration,
   scoped by its unit and nothing else;
-- a resource only the cloud knows, read after deployment: its cloud identity;
+- a resource only the cloud knows, read at runtime: its cloud identity;
 - a change, a deployment or a record's assurance: its unit.
 
 The key names an address in a unit, not a cloud resource. A resource replaced
@@ -35,7 +35,7 @@ ADDRESS_IDENTITY_SCHEMES = frozenset(ADDRESS_SCHEMES.values())
 # The schemes a resource's cloud identity is written in: each cloud provider's primary identifier.
 CLOUD_IDENTITY_SCHEMES = frozenset({SCHEME_AWS_ARN})
 # The stages that read resources from the cloud, where a resource no IaC tool manages may be a subject.
-CLOUD_STAGES = frozenset({Stage.POST_VERIFY.value, Stage.RUNTIME.value})
+CLOUD_STAGES = frozenset({Stage.RUNTIME.value})
 
 
 def local_identity(kind: str, identities: Sequence[Identity]) -> Identity:
@@ -85,6 +85,6 @@ def check_subject(kind: str, key: str, identities: Sequence[Identity], stage: st
     if identity.scheme == SCHEME_UNIT and (identity.scope is not None or unit not in (None, identity.value)):
         raise ValueError(f"a {kind} subject is its own unit, with no scope")
     if identity.scheme in CLOUD_IDENTITY_SCHEMES and stage not in CLOUD_STAGES:
-        raise ValueError(f"a resource only the cloud knows is read after deployment, never at {stage}")
+        raise ValueError(f"a resource only the cloud knows is read at runtime, never at {stage}")
     if key != subject_key(kind, identities):
         raise ValueError("a subject's key is the digest of its kind and its local identity")

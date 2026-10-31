@@ -1,6 +1,7 @@
 {
-  "plan_resource.json": "sha256:04e15afe2807405e704fc235796ec743e0a22edd6c2ee6fe713bc7c0e96f491d",
-  "post_deploy.json": "sha256:c66bbf5ec6eb08e47b328dc23f7894aaf1cbd9906dd381788ea4cbefff517522",
-  "pre_deploy_approvals.json": "sha256:3892626a0aa47d8a4362d0210fdd83a1092c255a070c2255fa1e419124ddc477",
-  "pre_deploy_change.json": "sha256:474cfa1b1cc54416a75084e863902f3fc498826a8660a84cd29585b458fc0322"
+  "plan_resource.json": "sha256:94e7432d23ce88a776aa3b03d789c0f9852c5bcdf2aaa95e34749d8dbcb22d4c",
+  "post_deploy.json": "sha256:24e729b70f512fa71199108cf7f8e0a7293dbdb6b1639ebda39bce14a8a1e2e2",
+  "post_verify.json": "sha256:7824aefb69b2ccd1e9347dd966a612b65b7124f9e7d44531573411ccf91d0a7c",
+  "pre_deploy_approvals.json": "sha256:fe0b1babffa94539cafb45c13efde1aec85262d349301f26908b7cbc719063d5",
+  "pre_deploy_change.json": "sha256:693ce9337fe7a8373350d2c11349034e52d7875c83231e57deaf6a10fc8a685c"
 }

@@ -68,7 +68,7 @@
         "kind": "rds_instance"
       }
     ],
-    "digest": "sha256:b2229dc17c6be609da3c63490894da8c45939df04d5c276f41dff1df69ba4fa4"
+    "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
   },
   "plan": {
     "tool": "terraform",
@@ -127,6 +127,6 @@
   "approvals": null,
   "exceptions": null,
   "run": null,
-  "verification": null,
+  "drift_check": null,
   "assurance": null
 }

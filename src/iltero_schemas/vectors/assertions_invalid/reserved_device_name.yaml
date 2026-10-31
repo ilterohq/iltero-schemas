@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: An id Windows would take for a device
 spec:
+  change_type: iac_change
   stage: plan
   target: {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [aws_db_instance]}]}
   assert:

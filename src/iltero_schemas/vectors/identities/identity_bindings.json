@@ -11,6 +11,7 @@
       "tool": "terraform",
       "tool_version": "1.14.0"
     },
+    "read_from": "state_file",
     "plan": {
       "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "digest_version": "1"

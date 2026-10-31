@@ -13,7 +13,7 @@ RESOURCE = {
 
 
 def _source(assert_: Any, when: Any = None, assertion_id: str = "ACME.TEST.CASE") -> dict[str, Any]:
-    spec: dict[str, Any] = {"stage": "plan", "target": RESOURCE, "assert": assert_}
+    spec: dict[str, Any] = {"change_type": "iac_change", "stage": "plan", "target": RESOURCE, "assert": assert_}
     if when is not None:
         spec["when"] = when
     return {

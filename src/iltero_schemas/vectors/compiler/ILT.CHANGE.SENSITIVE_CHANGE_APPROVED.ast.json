@@ -3,6 +3,7 @@
   "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
   "version": "1.0.0",
   "type": "process",
+  "change_type": "iac_change",
   "stage": "pre_deploy",
   "target": {
     "kind": "change",

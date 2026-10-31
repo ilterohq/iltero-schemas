@@ -3,6 +3,7 @@
   "id": "ILT.AWS.RDS.BACKUP_RETENTION",
   "version": "1.0.0",
   "type": "state",
+  "change_type": "iac_change",
   "stage": "plan",
   "target": {
     "kind": "resource",

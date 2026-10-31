@@ -6,6 +6,7 @@ metadata:
   title: S3 bucket blocks all public access
   remediation: Add an aws_s3_bucket_public_access_block for the bucket that sets all four settings to true.
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

@@ -88,3 +88,44 @@ def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
         document["properties"][name] = {"state": "not_determined", "reason": "integrity_failed"}
     document["properties"]["integrity"] = {"state": "failed", "reason": "file_digests"}
     VerificationReport.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("state", "reason"),
+    [
+        ("client_asserted", "reported_by_pipeline"),
+        ("not_assessed", "stage_pending"),
+        ("not_performed", "stage_not_reported"),
+        ("not_assessed", "project_config"),
+        ("not_assessed", "environment_policy"),
+        ("not_assessed", "not_supported"),
+    ],
+)
+def test_the_verification_after_deployment_is_one_of_six_results(state: str, reason: str) -> None:
+    document = copy.deepcopy(REPORT)
+    document["properties"]["runtime_verification"] = {"state": state, "reason": reason}
+    assert VerificationReport.model_validate(document).properties.runtime_verification.reason == reason
+
+
+@pytest.mark.parametrize(
+    ("state", "reason"),
+    [
+        ("verified", "reported_by_pipeline"),
+        ("failed", "refused"),
+        ("not_performed", "no_post_verify_stage"),
+        ("not_assessed", None),
+        ("not_determined", "integrity_failed"),
+    ],
+    ids=[
+        "verified by the pipeline's word",
+        "a refusal only the server knows",
+        "an unlisted reason",
+        "no reason",
+        "undetermined with the record's integrity established",
+    ],
+)
+def test_a_verification_after_deployment_outside_the_six_results_is_refused(state: str, reason: str | None) -> None:
+    document = copy.deepcopy(REPORT)
+    document["properties"]["runtime_verification"] = {"state": state, "reason": reason}
+    with pytest.raises(ValidationError, match="one of the results a verifier gives the stage after deployment"):
+        VerificationReport.model_validate(document)

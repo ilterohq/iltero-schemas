@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: A change target scoped by two selectors, with a when of its own
 spec:
+  change_type: iac_change
   stage: pre_deploy
   target:
     kind: change

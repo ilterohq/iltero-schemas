@@ -6,6 +6,7 @@ and a stage counts its assertions as ``server_pinned`` exactly for a run the
 server opened. A record of a run the tool opened names no server bundle, and
 no facts and no time from the server. Every record stays self-attested: these
 labels are the writer's claims, and only the server can confirm a run it opened.
+The server opens a run for one environment, so a record of such a run names it.
 """
 
 from __future__ import annotations
@@ -27,6 +28,8 @@ def check_provenance(car: CAR) -> None:
                 f"stages.{stage.value}: counts its assertions as server_pinned exactly when the server issued the run"
             )
     if issued:
+        if car.subject.environment is None:
+            raise ValueError("a record of a run the server opened names the environment the run was opened for")
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]

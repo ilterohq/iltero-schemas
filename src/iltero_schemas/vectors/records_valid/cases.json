@@ -58,15 +58,15 @@
     "name": "plan_whose_tool_did_not_report_its_flags",
     "vector": "local_run.json",
     "set": {
-      "/plan/tool_version": {
+      "/change/plan/tool_version": {
         "__unknown": true,
         "reason": "not_reported_by_tool"
       },
-      "/plan/complete": {
+      "/change/plan/complete": {
         "__unknown": true,
         "reason": "not_reported_by_tool"
       },
-      "/plan/applyable": {
+      "/change/plan/applyable": {
         "__unknown": true,
         "reason": "not_reported_by_tool"
       },
@@ -140,7 +140,7 @@
           "stage": "plan"
         }
       ],
-      "/plan/complete": false,
+      "/change/plan/complete": false,
       "/stages/plan/coverage/gaps": [
         {
           "kind": "plan_incomplete",
@@ -187,7 +187,7 @@
       "/events": [
         {
           "assertion": {
-            "digest": "sha256:6fc1aa36d1cf8e748d86ab67740d20f63e7694aad71168b1592934a4defd5e24",
+            "digest": "sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa",
             "id": "ILT.AWS.RDS.BACKUP_RETENTION",
             "version": "1.0.0"
           },
@@ -216,7 +216,7 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:8a1671f34d2a236a8e7b898011c608713ca22076a174097dc6f386883c6d503c",
+            "assertion_source_digest": "sha256:c1d464fb46f9faaba033872050743ad0a218192b56ae5962d89381a58830aa1e",
             "bundle": {
               "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle",
@@ -225,7 +225,7 @@
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:52067f64dc64e1ef5a83364cf683836b587dfbee78716d46d8a6961b65f9d0d5",
+            "compiled_digest": "sha256:afcd1cc0a702cce43e5bb8dbca8009dd102e8062727d23c63295453fb7fcd252",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",
@@ -255,9 +255,10 @@
               "type": "human"
             },
             "input_digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-            "plan_digest": {
-              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-              "version": "1",
+            "checked_content": {
+              "kind": "plan",
+              "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "digest_version": "1",
               "tool": "terraform"
             },
             "run": {
@@ -284,7 +285,7 @@
         },
         {
           "assertion": {
-            "digest": "sha256:fcac909238e5bfe590c2313c66139f53487de2ab711e95b0e56d6ad2c7981e95",
+            "digest": "sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48",
             "id": "ILT.AWS.RDS.NOT_PUBLIC",
             "version": "1.0.0"
           },
@@ -313,7 +314,7 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:82e2f3e8ca1936662df14c6eef5c7c63ff991ce79f42fab96fe52008a6f42ccc",
+            "assertion_source_digest": "sha256:15cdc9887022de976424ab0cc18f64d017050e7ed0032dabc319edaba11b9e67",
             "bundle": {
               "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle",
@@ -322,7 +323,7 @@
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:639e804b50b2e0cd170e4feeaefa5093ac406cb0780c89bf5adc0a657a0a1786",
+            "compiled_digest": "sha256:7f067c8c0df02601f5295b39058ba0d2e169fd48dd8aaf7c89a9b0194643a194",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",
@@ -352,9 +353,10 @@
               "type": "human"
             },
             "input_digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-            "plan_digest": {
-              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-              "version": "1",
+            "checked_content": {
+              "kind": "plan",
+              "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "digest_version": "1",
               "tool": "terraform"
             },
             "run": {
@@ -381,7 +383,7 @@
         },
         {
           "assertion": {
-            "digest": "sha256:5bcab3d1ad877c3de9ab3fc378285e37320cc1f32968751cdca684d7f1ca8453",
+            "digest": "sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5",
             "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
             "version": "1.0.0"
           },
@@ -452,7 +454,7 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:ec20a46451f1349a9b22b2eed1980dc7113430d8c6c0921eccf2b4692ef832a2",
+            "assertion_source_digest": "sha256:7de3b5c928821a4834121fcfcf1dcc5697bc8f0f2ad7d406f791f98c123c28c8",
             "bundle": {
               "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle",
@@ -461,7 +463,7 @@
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:99ede4ef53bc02f03faf371be21c8febf51a3d3442c8a76bb9cea45f2b3b81e1",
+            "compiled_digest": "sha256:af6e92314b510629e8144aa8eee88e36f22608149373bc470721ee4050a2b73d",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",
@@ -491,9 +493,10 @@
               "type": "human"
             },
             "input_digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-            "plan_digest": {
-              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-              "version": "1",
+            "checked_content": {
+              "kind": "plan",
+              "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "digest_version": "1",
               "tool": "terraform"
             },
             "run": {
@@ -520,7 +523,7 @@
         },
         {
           "assertion": {
-            "digest": "sha256:aa53deb187e7bac4440e74c2308c69115addf907a3537cab32b1a1af6f64aa55",
+            "digest": "sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c",
             "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
             "version": "1.0.0"
           },
@@ -549,7 +552,7 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:5f5e1fa285c8854c11ca2cd2e814dae9313320ec3d3ea7252f43820370bb6d5d",
+            "assertion_source_digest": "sha256:257e10c2a78e4d48f64201c152db12c131dfc83465111e000a04802bb49cae94",
             "bundle": {
               "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle",
@@ -558,7 +561,7 @@
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:9bd973aac0945f05b13c2e67b15e779427e796c626300bdb9a332b7cde81b6d8",
+            "compiled_digest": "sha256:63d7af7e77eb053a5bca77f3999306c5e6948e0d18f48463e7bdff2255699cd3",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",
@@ -588,9 +591,10 @@
               "type": "human"
             },
             "input_digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-            "plan_digest": {
-              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-              "version": "1",
+            "checked_content": {
+              "kind": "plan",
+              "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "digest_version": "1",
               "tool": "terraform"
             },
             "run": {
@@ -617,7 +621,7 @@
         },
         {
           "assertion": {
-            "digest": "sha256:3b6a980e5c35fcc71264245fb50af07f015f0a333611f3cd8d16a514bed44e36",
+            "digest": "sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3",
             "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
             "version": "1.0.0"
           },
@@ -650,7 +654,7 @@
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
-            "assertion_source_digest": "sha256:81487be49611baa47c3611225c8a5c08a7c5276ca5eaa87a35704e8644aa0064",
+            "assertion_source_digest": "sha256:73387764b0b66627b8a0bdbe429d1dc176f3a49ce8e70fd9e02389d1d34ed57a",
             "bundle": {
               "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
               "kind": "local_bundle",
@@ -659,7 +663,7 @@
             },
             "binding": null,
             "facts_source": null,
-            "compiled_digest": "sha256:415f3b704fbfc6f9e98cc654437c2fb67acad5ddb6533f0c51402db0e67fa40c",
+            "compiled_digest": "sha256:e7d5bbfb023dea497f2961f8612a8d9df77ec3460afc5b30d796a11604e13b0c",
             "compiler": {
               "contract_digest": null,
               "contract_version": "0.1.0",
@@ -689,9 +693,10 @@
               "type": "human"
             },
             "input_digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-            "plan_digest": {
-              "value": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-              "version": "1",
+            "checked_content": {
+              "kind": "plan",
+              "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+              "digest_version": "1",
               "tool": "terraform"
             },
             "run": {
@@ -717,7 +722,7 @@
           }
         }
       ],
-      "/plan/complete": false,
+      "/change/plan/complete": false,
       "/stages/plan/coverage/gaps": [
         {
           "kind": "plan_incomplete",
@@ -748,9 +753,9 @@
     "name": "local_plan_read_from_a_saved_plan_file",
     "vector": "local_run.json",
     "set": {
-      "/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/plan/artifact_digest_source": "saved_plan",
-      "/plan/artifact_file_name": "tfplan"
+      "/change/plan/artifact_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/change/plan/artifact_digest_source": "saved_plan",
+      "/change/plan/artifact_file_name": "tfplan"
     },
     "remove": []
   },
@@ -809,6 +814,150 @@
         "key_id": "iltero-bundle-2026-09"
       },
       "/events/4/provenance/assertion_source": "server_bundle"
+    },
+    "remove": []
+  },
+  {
+    "name": "post_verify_not_required_by_the_environment_policy",
+    "vector": "local_run.json",
+    "set": {
+      "/run/origin": "server_issued",
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/run/origin": "server_issued",
+      "/events/1/provenance/run/origin": "server_issued",
+      "/events/2/provenance/run/origin": "server_issued",
+      "/events/3/provenance/run/origin": "server_issued",
+      "/events/4/provenance/run/origin": "server_issued",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/out_of_scope": [
+        {
+          "stage": "post_verify",
+          "reason": "environment_policy",
+          "declared_in": null
+        }
+      ],
+      "/expected_stages": [
+        "plan",
+        "pre_deploy",
+        "post_deploy"
+      ]
+    },
+    "remove": []
+  },
+  {
+    "name": "deployment_that_applied_another_plan_fails_the_plan_binding_check",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 0,
+      "/change/deployment/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/events/3/evaluation/observations/predicates/0/actual": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/events/3/evaluation/observations/predicates/0/status": "false",
+      "/events/3/evaluation/policy_reason": "assert: false; predicate 0 is false: deployment.plan.digest equal",
+      "/events/3/evaluation/status": "fail",
+      "/change/identity/sources/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/stages/post_deploy/coverage/status_counts/fail": 1,
+      "/stages/post_deploy/coverage/status_counts/pass": 0,
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:f6140e456e4f97dd9afd8281246eafd20685e3b28ee00ba69ebd227767a9e969",
+      "/stages/post_deploy/verdict/exit_code": 1,
+      "/stages/post_deploy/verdict/value": "fail"
+    },
+    "remove": []
+  },
+  {
+    "name": "deployed_resource_that_drifted_after_the_apply_fails_the_drift_check",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/coverage/status_counts/pass": 1,
+      "/coverage/status_counts/fail": 1,
+      "/events/4/evaluation/observations/predicates/0/actual": 1,
+      "/events/4/evaluation/observations/predicates/0/status": "false",
+      "/events/4/evaluation/policy_reason": "assert: false; predicate 0 is false: drift_check.differences_count equal",
+      "/events/4/evaluation/status": "fail",
+      "/change/drift_check/differences": [
+        {
+          "address": "local_file.manifest",
+          "difference": "changed"
+        }
+      ],
+      "/change/drift_check/differences_count": 1,
+      "/stages/post_verify/coverage/status_counts/fail": 1,
+      "/stages/post_verify/coverage/status_counts/pass": 0,
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4209bd3fe60e5fbae04888c749434127184c651916b7201cc3f0042bda87e6d2",
+      "/stages/post_verify/verdict/value": "fail",
+      "/stages/post_verify/verdict/exit_code": 1
+    },
+    "remove": []
+  },
+  {
+    "name": "deployed_resource_deleted_after_the_apply_fails_the_drift_check",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/coverage/status_counts/pass": 1,
+      "/coverage/status_counts/fail": 1,
+      "/events/4/evaluation/observations/predicates/0/actual": 1,
+      "/events/4/evaluation/observations/predicates/0/status": "false",
+      "/events/4/evaluation/policy_reason": "assert: false; predicate 0 is false: drift_check.differences_count equal",
+      "/events/4/evaluation/status": "fail",
+      "/change/drift_check/differences": [
+        {
+          "address": "local_file.manifest",
+          "difference": "deleted"
+        }
+      ],
+      "/change/drift_check/differences_count": 1,
+      "/stages/post_verify/coverage/status_counts/fail": 1,
+      "/stages/post_verify/coverage/status_counts/pass": 0,
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:d03587ffabf8c5be445172d1f06947fcf18e760763a2942acc446b0e11fd0fea",
+      "/stages/post_verify/verdict/value": "fail",
+      "/stages/post_verify/verdict/exit_code": 1
+    },
+    "remove": []
+  },
+  {
+    "name": "resource_that_differed_in_the_first_reading_only_passes_the_drift_check",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/change/drift_check/first_reading_only_differences": [
+        {
+          "address": "local_file.manifest",
+          "difference": "deleted"
+        }
+      ],
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:b851d320f3b107d88a8ea01e257a16d660c411578a6ce5cbf851bc6f3582c1a2"
+    },
+    "remove": []
+  },
+  {
+    "name": "post_verify_left_out_by_the_project_configuration",
+    "vector": "local_run.json",
+    "set": {
+      "/expected_stages": [
+        "plan",
+        "pre_deploy",
+        "post_deploy"
+      ],
+      "/out_of_scope": [
+        {
+          "stage": "post_verify",
+          "reason": "project_config",
+          "declared_in": {
+            "path": ".iltero/config.yml",
+            "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          }
+        }
+      ]
+    },
+    "remove": []
+  },
+  {
+    "name": "drift_check_read_at_the_instant_the_post_deploy_stage_was_observed",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/change/drift_check/first_reading_at": "2026-10-29T02:28:13.300Z",
+      "/change/drift_check/second_reading_at": "2026-10-29T02:29:15Z",
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:0683097f7877f892357022fe70e20c5dd09439155b1c419a04216b07cbb67272"
     },
     "remove": []
   }

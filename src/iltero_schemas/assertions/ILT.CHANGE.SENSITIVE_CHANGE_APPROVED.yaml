@@ -6,6 +6,7 @@ metadata:
   title: "IAM, network or key change approved: its digest by a security reviewer, or its run"
   remediation: Have an independent security reviewer approve the change's digest, or get the run approved.
 spec:
+  change_type: iac_change
   stage: pre_deploy
   target:
     kind: change

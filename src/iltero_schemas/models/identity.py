@@ -118,12 +118,28 @@ class PlanSource(StrictModel):
     digest_version: Identifier
 
 
+# Where the state the identities were read from came from. ``state_file``: the state file the apply left.
+# ``refresh_plan``: the state a refresh-only plan read back after the deployment, as the plan records it.
+StateReadFrom = Literal["state_file", "refresh_plan"]
+
+
 class IdentitySources(StrictModel):
-    """What the identities were read from: the state, and the applied plan for what left it."""
+    """What the identities were read from: the state, where it was read from, and the applied plan for what left it.
+
+    ``state.digest`` is the digest of the bytes that were read: the state file, or the refresh-only plan. A
+    refresh-only plan applies nothing, so identities read from one name no applied plan and list nothing as removed.
+    """
 
     state: StateSource
+    read_from: StateReadFrom
     # Null when no applied plan was given, and then nothing is listed as removed.
     plan: PlanSource | None
+
+    @model_validator(mode="after")
+    def _a_refresh_applied_nothing(self) -> IdentitySources:
+        if self.read_from == "refresh_plan" and self.plan is not None:
+            raise ValueError("identities read from a refresh-only plan name no applied plan")
+        return self
 
 
 class IdentityRecord(StrictModel):

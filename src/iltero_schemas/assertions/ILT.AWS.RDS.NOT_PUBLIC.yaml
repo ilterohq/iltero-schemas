@@ -6,6 +6,7 @@ metadata:
   title: RDS instance not publicly accessible
   remediation: Set publicly_accessible to false.
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

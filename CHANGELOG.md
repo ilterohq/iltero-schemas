@@ -15,8 +15,22 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Nine starter assertions, among them the one that holds the plan applied to
-  the plan that was evaluated.
+- Ten starter assertions, among them the one that holds the plan applied to
+  the plan that was evaluated, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`, which holds
+  that no deployed resource drifted after the apply. These two are built in
+  (`PLAN_BINDING` and `NO_DRIFT_AFTER_APPLY` in `iltero_schemas.assertions`):
+  a runner evaluates the first at every post-deploy stage and the second at
+  every post-verify stage, whatever a project's own assertions are.
+  `ILT.CHANGE.PRODUCTION_APPROVED` is about any change (`change_type: null`);
+  the others are about `iac_change`.
+- Every `TechnicalAssertion` says which change type it is about
+  (`spec.change_type`: `iac_change`, or `null` for an assertion about any
+  change); an assertion that leaves it out is refused. Each change type
+  allows its own stage and target pairs (`COMBINATIONS`); an assertion about
+  any change, and a hand-written policy, may use only the pairs every change
+  type allows (`SHARED_COMBINATIONS`). At the post-verify stage an
+  assertion targets only the deployment. The change type is part of the
+  abstract syntax tree and of the source digest.
 - An optional `metadata.remediation` on a `TechnicalAssertion`: one line, at
   most 300 characters, saying what a person does to make a failing subject
   meet the assertion. The compiler ignores it. The assertion's digest covers
@@ -44,9 +58,9 @@ keep, so any two tools agree on what a record means.
   unknown. A plan's `complete`, `applyable` and `tool_version` hold the unknown
   marker with the reason `not_reported_by_tool` when the tool's plan does
   not say. `change.digest` is required and is the change digest of its unit's
-  plan. A resource's `type` and `name`, its provider source and a related
-  resource's `type` are never `null`. An earlier evaluation names its plan's
-  digest exactly when its stage reads a plan.
+  plan in the input's environment. A resource's `type` and `name`, its provider source and a related
+  resource's `type` are never `null`. An earlier evaluation names the content it
+  checked (`checked_content`) exactly when its stage reads a plan.
 - A plan resource in the evaluation input is a neutral core (`id`,
   `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
   `related`), and what only its IaC tool says about it is under `tool_data`,
@@ -63,7 +77,7 @@ keep, so any two tools agree on what a record means.
   computed by `models.subjects.subject_key` and checked in every document,
   with a conformance vector. The local identity is a managed resource's
   address scoped by its unit (scheme `terraform_address`), the cloud identity
-  of a resource only the cloud knows (after deployment), or the unit of a
+  of a resource only the cloud knows (at runtime), or the unit of a
   change, a deployment or an assurance subject. The key is over the
   identity's text as written, with no Unicode normalization. No stack or
   other Iltero Platform scope is part of it. An event's subject has no key
@@ -102,7 +116,7 @@ keep, so any two tools agree on what a record means.
   or is `null` for a file no redaction touched, and every stage and every
   redacted evidence file name the same one, whatever the validation context.
   Invalid-record vectors cover it.
-- A record's plan `complete`, `applyable` and `tool_version`, and a
+- A record's `change.plan` `complete`, `applyable` and `tool_version`, and a
   plan-flag gap's `value`, hold the `not_reported_by_tool` marker when the
   tool's plan does not say; `null` is refused. A record's `change.digest` is
   required. The plan stage lists one plan-flag gap for each plan flag that is
@@ -131,8 +145,10 @@ keep, so any two tools agree on what a record means.
   `integrity_problems`, to report as integrity failures. The checks show that
   a record agrees with itself, not that it is unchanged since it was written.
   Record vectors (`records_integrity_failed/`) cover it.
-- An event's `provenance.plan_digest` names the plan's IaC tool (`value`,
-  `version`, `tool`), and a record holds every event's to its own plan. An
+- An event's `provenance.checked_content` names the content its evaluation
+  checked: for an IaC change, the plan, by its `digest`, the `digest_version`
+  of its tool's rule and the IaC `tool`. A record holds every event's to the
+  content its own change checked. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
   `github_actions`. An event's and a record stage's `bundle` give its
   `kind`, its `tarball_digest` and, for a bundle the server served, the
@@ -214,11 +230,27 @@ keep, so any two tools agree on what a record means.
   record. A record of a run Iltero Platform opened has none.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change, with vectors.
-  A record's change covers its own unit only: that unit's plan, bound by
-  the change digest, which readers check. A record names its project's
-  units file as the writer read it (`units_file`: path, digest of its
-  bytes, units in deploy order), and its unit is one of them, so the
+  The change digest (`change_digest`) is taken over the change type, the
+  unit, the environment key and the checked content (its kind, digest,
+  digest rule version and tool), so an
+  approval of a change counts only for that content, in that unit and
+  environment. A record's environment key is its `subject.environment`, null
+  for a change made outside any environment, and a record of a run Iltero
+  Platform opened always names one; an evaluation input's is
+  `organization_scope.environment.name`. A record names
+  its project's units file as the writer read it (`units_file`: path, digest
+  of its bytes, and its units in deploy order, each with the units it
+  `depends_on`, which come before it), and its unit is one of them, so the
   records of one run can be checked against it.
+- Change types and activities (`iltero_schemas.change_types`). A change type
+  is the kind of thing a change changes; an activity is one kind of work a
+  single record describes. The one change type, `iac_change`, a change made
+  with an IaC tool, has one activity of the same name. A record's `change` is
+  the body of its activity (`change.activity`), holding the change digest,
+  the `plan`, and once they are known the `deployment`, the `identity` and
+  the `drift_check`. The activity declares the stages a record passes
+  through, which of them a project, an environment's policy or the tool may
+  leave out, and the documents each stage owes.
 - The evaluation input's environment says whether Iltero Platform's policy
   treats it as production (`organization_scope.environment.production`), and
   the starter assertions guard on that, not on the environment's name. A run
@@ -274,3 +306,36 @@ keep, so any two tools agree on what a record means.
   calls a record's integrity verified, because no record carries a signature
   in this version. When the report cannot establish a record's integrity, it trusts
   nothing else the record says.
+- The drift check (`change.drift_check`): what two readings of a unit's
+  deployed resources, taken after the apply by a refresh-only plan (a plan that reads
+  the resources back and changes nothing), found. It names the run, the
+  change, the IaC tool, how many resources were read, when each reading was
+  taken and how far apart they had to be, and each resource that changed or
+  was deleted in the second reading, the latest, by address only, each
+  resource that differed in the first reading but not in the latest
+  (`first_reading_only_differences`; the check does not say why), and the
+  digest of each reading. Neither reading writes the state, so both compare
+  the resources with the state the apply wrote. A record carries it exactly
+  when its post-verify stage has reported, and the post-verify evaluation
+  input requires it. A drift check of another change is an integrity
+  failure. A first reading written without a fraction of a second is compared
+  with the whole second the apply ended in and the whole second the
+  post-deploy stage was observed in; one written with a fraction, even
+  `.000`, is compared exactly. An IaC tool may date a reading in whole
+  seconds, from when it started; Terraform does. Record, context and
+  evaluation vectors cover it.
+- A record of a run Iltero Platform opened can leave out its post-verify
+  stage because the environment's policy does not require it
+  (`out_of_scope[].reason: environment_policy`). The record does not name
+  the policy. A project's configuration can leave out the post-verify stage
+  as well as the pre-deploy approval gate. A record calls a stage
+  unsupported only when its plan's IaC tool cannot run it; Terraform, which
+  has a drift reader, runs every stage.
+  The sample records expect all four stages.
+- An identity document says where its state was read from
+  (`sources.read_from`): the state file the apply left, or a refresh-only
+  plan, which names no applied plan. A record's identities are always read
+  from the state file.
+- A verification report's `runtime_verification` is one of six results,
+  each a state and its reason, or `not_determined` when the record's
+  integrity is not established.

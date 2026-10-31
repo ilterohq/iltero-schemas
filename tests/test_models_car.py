@@ -9,21 +9,22 @@ import pytest
 from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.canonical import change_digest, digest_of
+from iltero_schemas.change_types import PlanRecord
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, PlanRecord, StageRecord
+from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, StageRecord
 from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-from tests.records import RECORD
+from tests.records import RECORD, set_path
 from tests.records import record as _record
 
 
 def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
     assert car.trust_level == "self_attested" and car.complete is False
-    assert car.compliance_determination is None and car.plan.tool == "terraform"
+    assert car.compliance_determination is None and car.change.plan.tool == "terraform"
     assert len(car.events) == car.coverage.evaluations == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
@@ -67,7 +68,7 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
         ({"trust_level": "assessor_reviewed"}, "Input should be 'self_attested'"),
         ({"compliance_determination": "compliant"}, "Input should be None"),
         ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
-        ({"plan.tool": "pulumi"}, "Input should be 'terraform'"),
+        ({"change.plan.tool": "pulumi"}, "Input should be 'terraform'"),
         ({"run.origin": "guessed"}, "Input should be"),
         ({"uuid": "not-a-uuid"}, "String should match pattern"),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
@@ -249,14 +250,19 @@ def test_a_results_file_outside_the_record_is_refused() -> None:
 
 def _deployed(**changes: Any) -> dict[str, Any]:
     """The plan record after a post-deploy stage reported, with ``changes`` applied."""
-    document = _record(deployment=copy.deepcopy(POST_DEPLOY["deployment"]), identity=identity_record())
-    document["deployment"]["plan"]["digest"] = document["plan"]["digest"]
+    document = _record(
+        **{"change.deployment": copy.deepcopy(POST_DEPLOY["deployment"]), "change.identity": identity_record()}
+    )
+    document["change"]["deployment"]["plan"]["digest"] = document["change"]["plan"]["digest"]
     # The apply ran after the plan the record evaluated.
-    document["deployment"]["apply"]["timing"].update(started_at="2026-09-22T14:00:00Z", ended_at="2026-09-22T14:01:00Z")
-    document["identity"]["sources"]["plan"]["digest"] = document["plan"]["digest"]
-    document["identity"]["sources"]["state"] = dict(document["deployment"]["apply"]["state"])
+    document["change"]["deployment"]["apply"]["timing"].update(
+        started_at="2026-09-22T14:00:00Z", ended_at="2026-09-22T14:01:00Z"
+    )
+    document["change"]["identity"]["sources"]["plan"]["digest"] = document["change"]["plan"]["digest"]
+    document["change"]["identity"]["sources"]["state"] = dict(document["change"]["deployment"]["apply"]["state"])
     document["stages"]["post_deploy"] = _post_deploy_stage(document["stages"]["plan"])
-    document.update(changes)
+    for dotted, value in changes.items():
+        set_path(document, dotted, value)
     return _combined(document)
 
 
@@ -287,59 +293,62 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
 
 def _combined(document: dict[str, Any]) -> dict[str, Any]:
     """The record with its post-deploy scope naming its deployment, and its top level set from its stages."""
-    if "post_deploy" in document["stages"] and document["deployment"] is not None:
+    if "post_deploy" in document["stages"] and document["change"]["deployment"] is not None:
         scope = document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]
-        scope["source_digest"] = digest_of(document["deployment"])
+        scope["source_digest"] = digest_of(document["change"]["deployment"])
     outcomes = {name: StageRecord.model_validate(stage).outcome for name, stage in document["stages"].items()}
     return {**document, **combine_in_order(document["expected_stages"], outcomes).model_dump(mode="json")}
 
 
 def test_a_record_describes_the_deployment_and_its_identities_exactly_when_post_deploy_reported() -> None:
-    assert CAR.model_validate(_deployed()).deployment is not None
+    assert CAR.model_validate(_deployed()).change.deployment is not None
     document = _deployed()
     del document["stages"]["post_deploy"]
     with pytest.raises(ValidationError, match="the deployment exactly when its post-deploy stage has reported"):
         CAR.model_validate(document)
-    document = _deployed(identity=None)
+    document = _deployed(**{"change.identity": None})
     with pytest.raises(ValidationError, match="its identities exactly when its post-deploy stage has reported"):
         CAR.model_validate(document)
     with pytest.raises(ValidationError, match="its identities exactly when"):
-        CAR.model_validate(_record(identity=identity_record()))
+        CAR.model_validate(_record(**{"change.identity": identity_record()}))
 
 
 def test_a_record_carries_the_identities_of_its_own_unit() -> None:
     bindings = [binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")]
     unresolved = [{"address": "aws_lambda_function.worker", "reason": "identifier_invalid"}]
     document = _deployed()
-    document["identity"].update(bindings=bindings, unresolved=unresolved)
+    document["change"]["identity"].update(bindings=bindings, unresolved=unresolved)
     car = CAR.model_validate(document)
-    assert car.identity is not None and len(car.identity.bindings) == 2
-    document["identity"].update(bindings=[binding("a.x", unit="network")], unresolved=[])
+    assert car.change.identity is not None and len(car.change.identity.bindings) == 2
+    document["change"]["identity"].update(bindings=[binding("a.x", unit="network")], unresolved=[])
     with pytest.raises(ValidationError, match="belongs to the unit"):
         CAR.model_validate(document)
 
 
 def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() -> None:
     document = _deployed()
-    document["identity"]["sources"]["plan"]["digest"] = "sha256:" + "c" * 64
+    document["change"]["identity"]["sources"]["plan"]["digest"] = "sha256:" + "c" * 64
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
     # Another version is refused before the two plans are compared: no rule but the tool's has a digest.
-    document["identity"]["sources"]["plan"] = {"digest": document["plan"]["digest"], "digest_version": "2"}
+    document["change"]["identity"]["sources"]["plan"] = {
+        "digest": document["change"]["plan"]["digest"],
+        "digest_version": "2",
+    }
     with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
         CAR.model_validate(document)
-    document["identity"]["sources"]["plan"] = None
-    document["identity"].update(removed=None, removed_unresolved=None)
-    document["identity"]["tool_data"]["deposed_deleted"] = None
+    document["change"]["identity"]["sources"]["plan"] = None
+    document["change"]["identity"].update(removed=None, removed_unresolved=None)
+    document["change"]["identity"]["tool_data"]["deposed_deleted"] = None
     with pytest.raises(ValidationError, match="read from the applied plan the deployment names"):
         CAR.model_validate(document)
 
 
 def _with_changes(*changes: dict[str, Any], **identity: Any) -> dict[str, Any]:
     document = _deployed()
-    apply = document["deployment"]["apply"]
+    apply = document["change"]["deployment"]["apply"]
     apply["changes"], apply["tool_data"]["summary"] = list(changes), None
-    document["identity"].update(identity)
+    document["change"]["identity"].update(identity)
     return _combined(document)
 
 
@@ -352,7 +361,7 @@ def test_what_the_identities_list_as_removed_is_exactly_what_left_the_state() ->
         removed=[removed("aws_db_instance.old")],
         removed_unresolved=[{"address": "aws_s3_bucket.kept", "reason": "no_resolver", "removal": "forgotten"}],
     )
-    assert CAR.model_validate(good).identity is not None
+    assert CAR.model_validate(good).change.identity is not None
 
 
 @pytest.mark.parametrize(
@@ -382,7 +391,7 @@ def test_a_record_that_misstates_what_left_the_state_is_refused(
 
 def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
     document = _deployed()
-    document["deployment"]["superseded_by"] = {"reason": "dependency_replanned"}
+    document["change"]["deployment"]["superseded_by"] = {"reason": "dependency_replanned"}
     document = _combined(document)
     with pytest.raises(ValidationError, match="a re-plan is a plan other than the evaluated one"):
         CAR.model_validate(document)
@@ -390,35 +399,46 @@ def test_a_record_refuses_a_replan_that_is_the_evaluated_plan() -> None:
 
 def test_a_record_refuses_a_saved_plan_without_its_artifact_digest() -> None:
     with pytest.raises(ValidationError, match="present exactly when artifact_digest_source is saved_plan"):
-        CAR.model_validate(_record(**{"plan.artifact_digest_source": "saved_plan"}))
+        CAR.model_validate(_record(**{"change.plan.artifact_digest_source": "saved_plan"}))
 
 
 def test_a_plan_stage_observed_after_the_apply_started_is_refused() -> None:
     document = _deployed()
-    document["deployment"]["apply"]["timing"]["started_at"] = "2026-09-22T13:00:13Z"
+    document["change"]["deployment"]["apply"]["timing"]["started_at"] = "2026-09-22T13:00:13Z"
     with pytest.raises(ValidationError, match="the plan stage was observed no later than the apply started"):
         CAR.model_validate(document)
 
 
 def test_the_post_deploy_stage_counts_the_deployment_the_record_describes() -> None:
     document = _deployed()
-    assert CAR.model_validate(document).deployment is not None
-    document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = document["plan"]["digest"]
+    assert CAR.model_validate(document).change.deployment is not None
+    document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = document["change"]["plan"][
+        "digest"
+    ]
     with pytest.raises(ValidationError, match="must count the one deployment the record describes"):
+        CAR.model_validate(document)
+
+
+def test_the_identities_of_a_record_are_read_from_the_state_file() -> None:
+    document = _deployed()
+    document["change"]["identity"]["sources"].update(read_from="refresh_plan", plan=None)
+    document["change"]["identity"].update(removed=None, removed_unresolved=None)
+    document["change"]["identity"]["tool_data"]["deposed_deleted"] = None
+    with pytest.raises(ValidationError, match="read from the state file the deployment left"):
         CAR.model_validate(document)
 
 
 def test_the_identities_are_read_from_the_state_the_deployment_was_held_to() -> None:
     document = _deployed()
-    document["identity"]["sources"]["state"]["digest"] = "sha256:" + "9" * 64
+    document["change"]["identity"]["sources"]["state"]["digest"] = "sha256:" + "9" * 64
     with pytest.raises(ValidationError, match="read from the state the deployment was held to"):
         CAR.model_validate(document)
 
 
-def test_every_event_names_the_plan_the_record_evaluated() -> None:
+def test_every_event_names_the_content_the_records_change_checked() -> None:
     document = _record()
-    document["events"][0]["provenance"]["plan_digest"]["value"] = "sha256:" + "a" * 64
-    with pytest.raises(ValidationError, match="every event names the plan the record evaluated"):
+    document["events"][0]["provenance"]["checked_content"]["digest"] = "sha256:" + "a" * 64
+    with pytest.raises(ValidationError, match="every event names the content the record's change checked"):
         CAR.model_validate(document)
 
 
@@ -428,19 +448,52 @@ def test_every_event_names_the_plan_the_record_evaluated() -> None:
 )
 def test_a_plan_flag_the_tool_did_not_report_is_its_marker_never_null(flag: str, message: str) -> None:
     with pytest.raises(ValidationError, match=message):
-        PlanRecord.model_validate({**RECORD["plan"], flag: None})
-    PlanRecord.model_validate({**RECORD["plan"], flag: {"__unknown": True, "reason": "not_reported_by_tool"}})
+        PlanRecord.model_validate({**RECORD["change"]["plan"], flag: None})
+    PlanRecord.model_validate({**RECORD["change"]["plan"], flag: {"__unknown": True, "reason": "not_reported_by_tool"}})
 
 
 OTHER_PLAN = "sha256:" + "e" * 64
 
 
+def _checked(plan_digest: str) -> dict[str, str]:
+    """The record's plan, as checked content, with ``plan_digest`` for its digest."""
+    plan = RECORD["change"]["plan"]
+    return {"kind": "plan", "digest": plan_digest, "digest_version": plan["digest_version"], "tool": plan["tool"]}
+
+
 def test_a_change_digest_is_the_digest_of_its_unit() -> None:
-    document = _record(**{"change.digest": change_digest({"root": OTHER_PLAN})})
-    with pytest.raises(ValidationError, match="change.digest is not the digest of the change's units"):
+    document = _record(**{"change.digest": change_digest("iac_change", "root", "production", _checked(OTHER_PLAN))})
+    with pytest.raises(
+        ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
+    ):
         CAR.model_validate(document)
     car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
-    assert integrity_problems(car) == [("change.digest", "is not the digest of the change's units")]
+    assert integrity_problems(car) == [
+        ("change.digest", "is not the digest of the change type, unit, environment and plan")
+    ]
+
+
+def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
+    document = _record(
+        **{"governance.run_opened_by": "server", "run.origin": "server_issued", "subject.environment": None}
+    )
+    for event in document["events"]:
+        event["provenance"]["run"]["origin"] = "server_issued"
+    for coverage in (document["coverage"], document["stages"]["plan"]["coverage"]):
+        coverage["assertions_expected"]["origin"] = "server_pinned"
+    with pytest.raises(ValidationError, match="a record of a run the server opened names the environment"):
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_a_change_digest_names_the_records_environment() -> None:
+    plan = _checked(RECORD["change"]["plan"]["digest"])
+    document = _record(**{"subject.environment": "staging"})
+    with pytest.raises(
+        ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
+    ):
+        CAR.model_validate(document)
+    document["change"]["digest"] = change_digest("iac_change", "root", "staging", plan)
+    assert CAR.model_validate(document).change.digest == change_digest("iac_change", "root", "staging", plan)
 
 
 @pytest.mark.parametrize("value", [1, "true", "no", [True]])
@@ -465,11 +518,11 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
     ]
     for counted, valid in ((1, True), (0, False), (2, False)):
         document = _deployed()
-        document["deployment"]["apply"]["tool_data"].update(summary=None, deposed=deposed)
-        document["identity"]["tool_data"]["deposed_deleted"] = counted
+        document["change"]["deployment"]["apply"]["tool_data"].update(summary=None, deposed=deposed)
+        document["change"]["identity"]["tool_data"]["deposed_deleted"] = counted
         document = _combined(document)
         if valid:
-            assert CAR.model_validate(document).identity is not None
+            assert CAR.model_validate(document).change.identity is not None
             continue
         with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
             CAR.model_validate(document)

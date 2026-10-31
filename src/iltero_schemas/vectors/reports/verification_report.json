@@ -34,8 +34,8 @@
       "reason": "no_post_deploy_stage"
     },
     "runtime_verification": {
-      "state": "not_performed",
-      "reason": "no_post_verify_stage"
+      "state": "not_assessed",
+      "reason": "stage_pending"
     },
     "deployment_coverage": {
       "state": "not_assessed",

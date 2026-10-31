@@ -5,6 +5,7 @@ metadata:
   version: "1.0.0"
   title: A bare item path names the element itself
 spec:
+  change_type: iac_change
   stage: plan
   target:
     kind: resource

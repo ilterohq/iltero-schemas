@@ -6,6 +6,7 @@ metadata:
   title: The applied plan is the evaluated plan
   remediation: Apply the plan that was evaluated, or evaluate the plan you apply.
 spec:
+  change_type: iac_change
   stage: post_deploy
   target:
     kind: deployment

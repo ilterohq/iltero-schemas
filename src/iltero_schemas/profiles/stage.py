@@ -3,7 +3,7 @@
 An evaluation input is a projection, not an accumulation: it carries only
 the parts the stage can know. A profile names the parts that must be
 present (``required``) and the parts that may be (``optional``); a part
-outside the profile is never present. Five profiles cover the nine valid
+outside the profile is never present. Five profiles cover the seven valid
 stage and target combinations, and ``resource`` is added for a resource
 target. The path roots the parser accepts for an assertion are exactly a
 profile's parts, so an assertion can only name what its input will hold.

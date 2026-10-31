@@ -104,12 +104,10 @@ COMBINATIONS: Mapping[ChangeTypeName, frozenset[Combination]] = MappingProxyType
         IAC_CHANGE_TYPE: frozenset(
             {
                 (AssertionType.STATE, Stage.PLAN, TargetKind.RESOURCE),
-                (AssertionType.STATE, Stage.POST_VERIFY, TargetKind.RESOURCE),
                 (AssertionType.STATE, Stage.RUNTIME, TargetKind.RESOURCE),
                 (AssertionType.PROCESS, Stage.PRE_DEPLOY, TargetKind.CHANGE),
                 (AssertionType.PROCESS, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
                 (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
-                (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.ASSURANCE),
                 (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.DEPLOYMENT),
                 (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.ASSURANCE),
             }

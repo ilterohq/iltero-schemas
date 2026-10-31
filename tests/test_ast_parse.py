@@ -181,8 +181,8 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
 
 
 def test_resource_root_exists_only_for_resource_targets() -> None:
-    assert "resource" in allowed_roots(Stage.POST_VERIFY, TargetKind.RESOURCE)
-    assert "resource" not in allowed_roots(Stage.POST_VERIFY, TargetKind.DEPLOYMENT)
+    assert "resource" in allowed_roots(Stage.RUNTIME, TargetKind.RESOURCE)
+    assert "resource" not in allowed_roots(Stage.RUNTIME, TargetKind.DEPLOYMENT)
     assert "reference_time" in allowed_roots(Stage.RUNTIME, TargetKind.ASSURANCE)
 
 

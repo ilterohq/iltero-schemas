@@ -83,10 +83,10 @@ Key rules:
 
   | Target kind | Stages |
   | --- | --- |
-  | `resource` | `plan`, `post_verify`, `runtime` |
+  | `resource` | `plan`, `runtime` |
   | `change` | `pre_deploy` |
   | `deployment` | `post_deploy`, `post_verify`, `runtime` |
-  | `assurance` | `post_verify`, `runtime` |
+  | `assurance` | `runtime` |
 
   `iac_change` is the only change type, so the shared pairs are the same.
 
@@ -203,7 +203,7 @@ Key rules:
   | Subject | Local identity |
   | --- | --- |
   | A resource an IaC tool manages | Its address (`scheme: terraform_address`), with `scope` exactly `{"unit": <its unit>}`. |
-  | A resource no IaC tool manages, read at `post_verify` or `runtime` | Its cloud identity (`scheme: aws_arn`). |
+  | A resource no IaC tool manages, read at `runtime` | Its cloud identity (`scheme: aws_arn`). |
   | A `change`, `deployment` or `assurance` subject | Its unit (`scheme: iltero_unit`), with no `scope`. |
 
   The key names an address in a unit, not a cloud resource: a resource replaced in the cloud keeps its key, and a
@@ -555,8 +555,9 @@ Key rules:
   `change.digest` as its `source_digest`); a deployment counts as its one unit (`deployment_unit`), with the digest of
   the record's `change.deployment` as its `source_digest` at `post_deploy`, and of its `change.drift_check` at
   `post_verify`. Only the plan stage enumerates the plan's resources. A stage with no evaluations counts by the one kind
-  its assertions can target. A stage that counts a change or a deployment has exactly one subject in scope, none removed
-  by the plan and none excluded. - `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every
+  its assertions can target, so a `post_verify` stage with none counts the deployment. A stage that counts a change or
+  a deployment has exactly one subject in scope, none removed by the plan and none excluded.
+- `enforcement_mode` is the mode the stage's gate ran in. Under `enforcing`, every
   non-zero exit code stopped the pipeline. Under `advisory`, a verdict with exit code `1` or `3` did not stop it; every
   other non-zero code did. A waiver happened when a stage is `advisory` and its exit code is `1` or `3`. Only the plan
   and pre-deploy stages can be `advisory`. In a run Iltero Platform opened, Iltero Platform's policy sets it; otherwise

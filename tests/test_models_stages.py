@@ -535,8 +535,7 @@ def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
         (Stage.PRE_DEPLOY, set(), "change_unit"),
         (Stage.POST_DEPLOY, {TargetKind.DEPLOYMENT}, "deployment_unit"),
         (Stage.POST_VERIFY, {TargetKind.DEPLOYMENT}, "deployment_unit"),
-        (Stage.POST_VERIFY, {TargetKind.RESOURCE}, None),
-        (Stage.POST_VERIFY, set(), None),
+        (Stage.POST_VERIFY, set(), "deployment_unit"),
     ],
 )
 def test_a_stage_counts_by_the_kind_of_subject_its_checks_are_about(
@@ -550,6 +549,8 @@ def test_a_stage_counts_by_the_kind_of_subject_its_checks_are_about(
     [
         (Stage.POST_VERIFY, {TargetKind.DEPLOYMENT, TargetKind.RESOURCE}, "about one kind of subject"),
         (Stage.PRE_DEPLOY, {TargetKind.RESOURCE}, "subjects its assertions can target"),
+        (Stage.POST_VERIFY, {TargetKind.RESOURCE}, "subjects its assertions can target"),
+        (Stage.POST_VERIFY, {TargetKind.ASSURANCE}, "subjects its assertions can target"),
     ],
 )
 def test_a_stages_checks_are_about_one_kind_of_subject_it_can_target(

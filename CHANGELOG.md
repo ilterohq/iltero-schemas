@@ -28,7 +28,8 @@ keep, so any two tools agree on what a record means.
   change); an assertion that leaves it out is refused. Each change type
   allows its own stage and target pairs (`COMBINATIONS`); an assertion about
   any change, and a hand-written policy, may use only the pairs every change
-  type allows (`SHARED_COMBINATIONS`). The change type is part of the
+  type allows (`SHARED_COMBINATIONS`). At the post-verify stage an
+  assertion targets only the deployment. The change type is part of the
   abstract syntax tree and of the source digest.
 - An optional `metadata.remediation` on a `TechnicalAssertion`: one line, at
   most 300 characters, saying what a person does to make a failing subject

@@ -59,6 +59,15 @@ def test_every_target_kind_has_a_derived_type() -> None:
     assert set(ASSERTION_TYPE_FOR_TARGET) == set(TargetKind)
 
 
+@pytest.mark.parametrize("kind", [TargetKind.RESOURCE, TargetKind.ASSURANCE])
+def test_a_post_verify_assertion_is_about_the_deployment(kind: TargetKind) -> None:
+    target: dict[str, Any] = {"kind": kind.value}
+    if kind is TargetKind.RESOURCE:
+        target["resources"] = [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}]
+    with pytest.raises(ValidationError, match=f"stage 'post_verify' is not valid for target kind '{kind.value}'"):
+        TechnicalAssertion.model_validate(_document(spec__stage="post_verify", spec__target=target))
+
+
 def test_explicit_type_must_match_the_derived_one() -> None:
     document = _document()
     document["spec"]["type"] = "state"
@@ -250,7 +259,7 @@ def test_a_resource_target_names_exactly_one_selector() -> None:
 
 def test_an_assurance_target_names_no_resources() -> None:
     target = {"kind": "assurance", "resources": [{"provider": "aws", "kinds": ["rds_instance"]}]}
-    assert _error_locations(_document(spec__stage="post_verify", spec__target=target)) == ["spec.target.assurance"]
+    assert _error_locations(_document(spec__stage="runtime", spec__target=target)) == ["spec.target.assurance"]
 
 
 def test_a_resource_target_names_its_tools_types_and_a_change_target_names_kinds() -> None:

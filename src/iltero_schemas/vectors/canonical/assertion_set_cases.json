@@ -2,7 +2,7 @@
   "cases": [
     {
       "name": "starter_set",
-      "description": "The nine starter assertions, each with the digest of its document as a tool reads it.",
+      "description": "Every starter assertion, each with the digest of its document as a tool reads it.",
       "assertions": [
         [
           "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
@@ -45,6 +45,11 @@
           "sha256:46b92a9f1ae0893c0d7ea91f3dc03f48531624dcc86caf61c1426f24a7e7f66f"
         ],
         [
+          "ILT.DEPLOYMENT.IMAGE_BINDING",
+          "1.0.0",
+          "sha256:5f6b8d7b6721f9730024b24aa56d164929f9806228843235f49befcb6e2ab4fa"
+        ],
+        [
           "ILT.DEPLOYMENT.PLAN_BINDING",
           "1.0.0",
           "sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8"
@@ -53,16 +58,56 @@
           "ILT.IAC.NO_DRIFT_AFTER_APPLY",
           "1.0.0",
           "sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42"
+        ],
+        [
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+          "1.0.0",
+          "sha256:a9ab24d7bda98c9d65457d204e17ed5a462340124d5f05d3d2bb027f1f5ca9a3"
+        ],
+        [
+          "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+          "1.0.0",
+          "sha256:809f805cfdc6fbbda6885bb29a618ea20dfd0f8b92f9f526ead1aa5155e11261"
+        ],
+        [
+          "ILT.IMAGE.SCAN_RAN",
+          "1.0.0",
+          "sha256:7ec6fc2dfb3417beb9e2c0436f60fc0292d635fdfb11cd7ee558972a647f0928"
+        ],
+        [
+          "ILT.IMAGE.TESTS_RAN",
+          "1.0.0",
+          "sha256:fa95d53391b9cc51845dc9073fe6f19b0470f3ad2ab0efa4dc9fddce592a6154"
         ]
       ],
-      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:7d20f42214b758accd17b525663a52af4298c9f12a3d5200cafdfa1a1166c6b2\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:1ab521cbc5266f3d2963de225a792f4c71299ed51051cf637dfb01133bb05684\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:46b92a9f1ae0893c0d7ea91f3dc03f48531624dcc86caf61c1426f24a7e7f66f\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8\"],[\"ILT.IAC.NO_DRIFT_AFTER_APPLY\",\"1.0.0\",\"sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42\"]]",
-      "digest": "sha256:ebd92fdac1b1ecedc9913760dfc84c6a236380c9c1172d91bdb7267184d5b279"
+      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:7d20f42214b758accd17b525663a52af4298c9f12a3d5200cafdfa1a1166c6b2\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:1ab521cbc5266f3d2963de225a792f4c71299ed51051cf637dfb01133bb05684\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:46b92a9f1ae0893c0d7ea91f3dc03f48531624dcc86caf61c1426f24a7e7f66f\"],[\"ILT.DEPLOYMENT.IMAGE_BINDING\",\"1.0.0\",\"sha256:5f6b8d7b6721f9730024b24aa56d164929f9806228843235f49befcb6e2ab4fa\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8\"],[\"ILT.IAC.NO_DRIFT_AFTER_APPLY\",\"1.0.0\",\"sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42\"],[\"ILT.IMAGE.BUILT_FROM_RUN_COMMIT\",\"1.0.0\",\"sha256:a9ab24d7bda98c9d65457d204e17ed5a462340124d5f05d3d2bb027f1f5ca9a3\"],[\"ILT.IMAGE.RUNNING_DIGEST_MATCHES\",\"1.0.0\",\"sha256:809f805cfdc6fbbda6885bb29a618ea20dfd0f8b92f9f526ead1aa5155e11261\"],[\"ILT.IMAGE.SCAN_RAN\",\"1.0.0\",\"sha256:7ec6fc2dfb3417beb9e2c0436f60fc0292d635fdfb11cd7ee558972a647f0928\"],[\"ILT.IMAGE.TESTS_RAN\",\"1.0.0\",\"sha256:fa95d53391b9cc51845dc9073fe6f19b0470f3ad2ab0efa4dc9fddce592a6154\"]]",
+      "digest": "sha256:aadfe51cc0d48e80dbbecb9b75d04d8989161c1ba4b6259f812f1d18dd01c844"
     },
     {
       "name": "starter_set_reversed",
       "description": "The same set given in reverse order has the same digest: the triples are sorted first.",
       "assertions": [
         [
+          "ILT.IMAGE.TESTS_RAN",
+          "1.0.0",
+          "sha256:fa95d53391b9cc51845dc9073fe6f19b0470f3ad2ab0efa4dc9fddce592a6154"
+        ],
+        [
+          "ILT.IMAGE.SCAN_RAN",
+          "1.0.0",
+          "sha256:7ec6fc2dfb3417beb9e2c0436f60fc0292d635fdfb11cd7ee558972a647f0928"
+        ],
+        [
+          "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+          "1.0.0",
+          "sha256:809f805cfdc6fbbda6885bb29a618ea20dfd0f8b92f9f526ead1aa5155e11261"
+        ],
+        [
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+          "1.0.0",
+          "sha256:a9ab24d7bda98c9d65457d204e17ed5a462340124d5f05d3d2bb027f1f5ca9a3"
+        ],
+        [
           "ILT.IAC.NO_DRIFT_AFTER_APPLY",
           "1.0.0",
           "sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42"
@@ -71,6 +116,11 @@
           "ILT.DEPLOYMENT.PLAN_BINDING",
           "1.0.0",
           "sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8"
+        ],
+        [
+          "ILT.DEPLOYMENT.IMAGE_BINDING",
+          "1.0.0",
+          "sha256:5f6b8d7b6721f9730024b24aa56d164929f9806228843235f49befcb6e2ab4fa"
         ],
         [
           "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
@@ -113,8 +163,8 @@
           "sha256:7d20f42214b758accd17b525663a52af4298c9f12a3d5200cafdfa1a1166c6b2"
         ]
       ],
-      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:7d20f42214b758accd17b525663a52af4298c9f12a3d5200cafdfa1a1166c6b2\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:1ab521cbc5266f3d2963de225a792f4c71299ed51051cf637dfb01133bb05684\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:46b92a9f1ae0893c0d7ea91f3dc03f48531624dcc86caf61c1426f24a7e7f66f\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8\"],[\"ILT.IAC.NO_DRIFT_AFTER_APPLY\",\"1.0.0\",\"sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42\"]]",
-      "digest": "sha256:ebd92fdac1b1ecedc9913760dfc84c6a236380c9c1172d91bdb7267184d5b279"
+      "canonical": "[[\"ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION\",\"1.0.0\",\"sha256:7d20f42214b758accd17b525663a52af4298c9f12a3d5200cafdfa1a1166c6b2\"],[\"ILT.AWS.RDS.BACKUP_RETENTION\",\"1.0.0\",\"sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa\"],[\"ILT.AWS.RDS.NOT_PUBLIC\",\"1.0.0\",\"sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48\"],[\"ILT.AWS.RDS.PRODUCTION_BASELINE\",\"1.0.0\",\"sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5\"],[\"ILT.AWS.RDS.STORAGE_ENCRYPTED\",\"1.0.0\",\"sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c\"],[\"ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED\",\"1.0.0\",\"sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3\"],[\"ILT.CHANGE.PRODUCTION_APPROVED\",\"1.0.0\",\"sha256:1ab521cbc5266f3d2963de225a792f4c71299ed51051cf637dfb01133bb05684\"],[\"ILT.CHANGE.SENSITIVE_CHANGE_APPROVED\",\"1.0.0\",\"sha256:46b92a9f1ae0893c0d7ea91f3dc03f48531624dcc86caf61c1426f24a7e7f66f\"],[\"ILT.DEPLOYMENT.IMAGE_BINDING\",\"1.0.0\",\"sha256:5f6b8d7b6721f9730024b24aa56d164929f9806228843235f49befcb6e2ab4fa\"],[\"ILT.DEPLOYMENT.PLAN_BINDING\",\"1.0.0\",\"sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8\"],[\"ILT.IAC.NO_DRIFT_AFTER_APPLY\",\"1.0.0\",\"sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42\"],[\"ILT.IMAGE.BUILT_FROM_RUN_COMMIT\",\"1.0.0\",\"sha256:a9ab24d7bda98c9d65457d204e17ed5a462340124d5f05d3d2bb027f1f5ca9a3\"],[\"ILT.IMAGE.RUNNING_DIGEST_MATCHES\",\"1.0.0\",\"sha256:809f805cfdc6fbbda6885bb29a618ea20dfd0f8b92f9f526ead1aa5155e11261\"],[\"ILT.IMAGE.SCAN_RAN\",\"1.0.0\",\"sha256:7ec6fc2dfb3417beb9e2c0436f60fc0292d635fdfb11cd7ee558972a647f0928\"],[\"ILT.IMAGE.TESTS_RAN\",\"1.0.0\",\"sha256:fa95d53391b9cc51845dc9073fe6f19b0470f3ad2ab0efa4dc9fddce592a6154\"]]",
+      "digest": "sha256:aadfe51cc0d48e80dbbecb9b75d04d8989161c1ba4b6259f812f1d18dd01c844"
     },
     {
       "name": "one_assertion",

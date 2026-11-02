@@ -2,6 +2,7 @@
   "apiVersion": "iltero.io/assurance-context/v1",
   "evaluation": {
     "id": "eval_003",
+    "activity": "iac_change",
     "stage": "post_verify",
     "timestamp": "2026-09-16T18:43:00Z",
     "assertion": {
@@ -136,5 +137,9 @@
     "differences_count": 0,
     "first_reading_only_differences": []
   },
-  "assurance": null
+  "assurance": null,
+  "artifact": null,
+  "tests": null,
+  "scans": null,
+  "verified_source": null
 }

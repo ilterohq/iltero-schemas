@@ -8,14 +8,14 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.change_types import IAC_CHANGE
+from iltero_schemas.change_types import IAC_CHANGE, IMAGE_BUILD
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
-from tests.records import RECORD
+from tests.records import RECORD, add_built_in
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
@@ -403,7 +403,7 @@ def test_a_stage_left_out_says_why_in_a_way_that_holds(entry: dict[str, Any], me
         ),
         (
             {"stage": "pre_deploy", "reason": "not_supported", "declared_in": None},
-            "the pre-deploy stage is supported for terraform",
+            "the pre-deploy stage is supported for this record",
         ),
     ],
     ids=["a project leaving out post-deploy", "a policy leaving out pre-deploy", "a tool that runs pre-deploy"],
@@ -444,7 +444,7 @@ def test_a_local_run_has_no_environment_policy_to_leave_a_stage_out() -> None:
 def test_a_terraform_record_cannot_call_its_post_verify_stage_unsupported() -> None:
     unsupported = [{"stage": "post_verify", "reason": "not_supported", "declared_in": None}]
     scoped = _record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=unsupported)
-    with pytest.raises(ValidationError, match="the post-verify stage is supported for terraform"):
+    with pytest.raises(ValidationError, match="the post-verify stage is supported for this record"):
         CAR.model_validate(scoped, context=_READER)
 
 
@@ -465,7 +465,7 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
     [
         ("project_config", CONFIG, "a project can leave out only the pre-deploy and post-verify stages"),
         ("environment_policy", None, "an environment's policy can leave out only the post-verify stage"),
-        ("not_supported", None, "the post-deploy stage is supported for terraform"),
+        ("not_supported", None, "the post-deploy stage is supported for this record"),
     ],
     ids=["by the project", "by an environment's policy", "as not supported"],
 )
@@ -522,7 +522,7 @@ def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
 
 
 def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
-    document = _record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")})
+    document = add_built_in(_record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")}), "post_deploy")
     with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
         CAR.model_validate(document, context=_READER)
 
@@ -541,7 +541,17 @@ def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
 def test_a_stage_counts_by_the_kind_of_subject_its_checks_are_about(
     stage: Stage, kinds: set[TargetKind], basis: str | None
 ) -> None:
-    assert scope_counted_from(stage, kinds) == basis
+    assert scope_counted_from(IAC_CHANGE, stage, kinds) == basis
+
+
+@pytest.mark.parametrize("kinds", [set(), {TargetKind.ARTIFACT}])
+def test_a_builds_plan_stage_counts_the_artifact_it_built(kinds: set[TargetKind]) -> None:
+    assert scope_counted_from(IMAGE_BUILD, Stage.PLAN, kinds) == "artifact_unit"
+
+
+def test_a_builds_plan_stage_counts_no_resources() -> None:
+    with pytest.raises(ValueError, match="subjects its assertions can target"):
+        scope_counted_from(IMAGE_BUILD, Stage.PLAN, {TargetKind.RESOURCE})
 
 
 @pytest.mark.parametrize(
@@ -557,7 +567,7 @@ def test_a_stages_checks_are_about_one_kind_of_subject_it_can_target(
     stage: Stage, kinds: set[TargetKind], message: str
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        scope_counted_from(stage, kinds)
+        scope_counted_from(IAC_CHANGE, stage, kinds)
 
 
 def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[str, Any]:
@@ -605,7 +615,7 @@ def test_a_stage_lists_no_approval_of_another_run_and_each_once(approvals: list[
 
 def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
     document = _pre_deploy_reading(_approval({"kind": "change", "digest": "sha256:" + "e" * 64}))
-    what = "lists approval apr_0001 of another change: another change type, unit, environment or plan"
+    what = "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
     with pytest.raises(ValidationError, match=f"stages.pre_deploy.approvals {what}"):
         CAR.model_validate(document)
     car = CAR.model_validate(document, context=_READER)
@@ -662,3 +672,13 @@ def test_a_file_no_redaction_touched_names_no_policy() -> None:
     for ref in document["evidence_refs"]:
         ref["redaction_policy"] = None
     CAR.model_validate(document)
+
+
+@pytest.mark.parametrize("name", ["post_deploy", "post_verify"])
+def test_an_infrastructure_stage_after_the_deployment_evaluates_its_always_evaluated_check(name: str) -> None:
+    stages = {"post_deploy": _stage("post_deploy"), "post_verify": _stage("post_verify")}
+    document = _record(stages)
+    if name == "post_verify":
+        add_built_in(document, "post_deploy")
+    with pytest.raises(ValidationError, match="is evaluated once, at the .* stage, once it has reported"):
+        CAR.model_validate(document, context=_READER)

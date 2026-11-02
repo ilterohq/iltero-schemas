@@ -1,0 +1,28 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.SCAN_RAN
+  version: "1.0.0"
+  title: A vulnerability scan ran whose report names the built image or one of its platform images
+  remediation: Scan the pushed image by its digest and give the build the scanner's JSON report.
+spec:
+  change_type: image_release
+  stage: plan
+  target:
+    kind: artifact
+  assert:
+    exists:
+      in: scans
+      where:
+        all:
+          - path: item.kind
+            equal: image_vulnerability
+          - path: item.image_digest_source
+            equal: report
+          - any:
+              - path: item.image_digest
+                equal:
+                  path: artifact.digest
+              - path: item.image_digest
+                in:
+                  path: artifact.platform_digests

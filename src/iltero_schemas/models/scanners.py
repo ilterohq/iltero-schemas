@@ -10,6 +10,6 @@ from __future__ import annotations
 
 from typing import Literal, get_args
 
-ScannerTool = Literal["checkov", "trivy", "prowler"]
+ScannerTool = Literal["checkov", "trivy"]
 # The same names as a tuple, in the order the type lists them.
 SCANNER_TOOLS: tuple[str, ...] = get_args(ScannerTool)

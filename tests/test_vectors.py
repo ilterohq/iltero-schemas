@@ -203,6 +203,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
     known = {
         "assertions",
         "assertions_invalid",
+        "buildx",
         "canonical",
         "compiler",
         "evaluation",

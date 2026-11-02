@@ -1,7 +1,9 @@
 {
-  "local_run.json": "sha256:3e35a03295141006dadc160db39f445009c29137498a5e2c3cd3c9abb0d71139",
-  "local_run_declared_units.json": "sha256:013bd382597c84fa21d1e70cef6f9e405f00e0fa6510e45afe00300397d220cc",
-  "local_run_deployed.json": "sha256:d78e497ece9b8d3a95ca80a6c1c4f954ae29931f2d6e5ab6564570226238b028",
-  "local_run_on_placeholders.json": "sha256:b3c5386b10e3e01e6c608e45fa8b5b162360cfc3ba031810c10317d0badea27e",
-  "local_run_verified.json": "sha256:5265b1e398f0926f986937fd4b414aad5e42709aad0022005c1eb1bd99c18098"
+  "local_run.json": "sha256:a7379ae4ead4017409d200988cefa5bac53eaa303becf9342e8bb87ee88c9b0f",
+  "local_run_declared_units.json": "sha256:a8bfbbc224bfa89ef5774d6aa4aca3752410723c9ce15afce9eb0f1076e33f73",
+  "local_run_deployed.json": "sha256:53204e53af103b244fc033f9a2bb7ddb0332e89a3d39ff71e6f6c0926622a42a",
+  "local_run_image_build.json": "sha256:164a2e21300ee2458ab4eeab5d34272577a1ad45da6b8f0974967bdea46850bc",
+  "local_run_image_deploy.json": "sha256:968fcd91191039588897ff3b526a7aa56eec966c0a22253ee6aaf0745ba3657f",
+  "local_run_on_placeholders.json": "sha256:72734637b1c99612b1ef105e5a2860c9d4000dfcd89c88f198f8a0b99695cb44",
+  "local_run_verified.json": "sha256:77c7785fcf655d284ed14cbe9c6a07cbcc8c264e64fe6c55f425dfe014b243c4"
 }

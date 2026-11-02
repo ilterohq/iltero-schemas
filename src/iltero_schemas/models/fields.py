@@ -15,6 +15,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field
 
+from iltero_schemas.canonical.encoding import INT_MAX
 from iltero_schemas.models.assertion import (
     CONTROL_CHARACTERS,
     ID_MAX_LENGTH,
@@ -39,8 +40,8 @@ IDENTIFIER_MAX_LENGTH = 256
 ADDRESS_MAX_LENGTH = 2048
 # The most resources one list of a deployment or its identities may name.
 MAX_RESOURCES = 100_000
-# A number of things counted: never negative.
-Count = Annotated[int, Field(ge=0)]
+# A number of things counted: never negative, and no larger than the evaluator reads exactly.
+Count = Annotated[int, Field(ge=0, le=INT_MAX)]
 # Ways a managed resource is planned to change; a data source's ``read`` never reaches a record.
 Action = Literal["create", "update", "delete", "replace", "no-op", "forget"]
 ArtifactDigestSource = Literal["saved_plan", "not_provided"]

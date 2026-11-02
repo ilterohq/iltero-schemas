@@ -1,0 +1,44 @@
+{
+  "buildx.build.provenance": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "https://mobyproject.org/buildkit@v1",
+    "materials": [
+      {
+        "uri": "pkg:docker/alpine@3.18.0?platform=linux%2Famd64",
+        "digest": {
+          "sha256": "02bb6f428431fbc2809c5d1b41eab5a68350194fb508869a33cb1af4444c9b11"
+        }
+      }
+    ],
+    "invocation": {
+      "configSource": {
+        "entryPoint": "Dockerfile"
+      },
+      "parameters": {
+        "frontend": "dockerfile.v0",
+        "locals": [
+          {
+            "name": "context"
+          },
+          {
+            "name": "dockerfile"
+          }
+        ]
+      },
+      "environment": {
+        "dockerfileVersion": "1.27.0",
+        "platform": "linux/arm64"
+      }
+    }
+  },
+  "buildx.build.ref": "iltero-fixtures/iltero-fixtures0/uf7w4wjs8kzkc7ckz3e6qo61g",
+  "containerimage.descriptor": {
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "digest": "sha256:7c12a3af76a11eb982375fe406c252946d20277e5f75e89e8124bcf91b3a72b0",
+    "size": 855
+  },
+  "containerimage.digest": "sha256:7c12a3af76a11eb982375fe406c252946d20277e5f75e89e8124bcf91b3a72b0",
+  "image.name": "127.0.0.1:5000/acme/local:min"
+}

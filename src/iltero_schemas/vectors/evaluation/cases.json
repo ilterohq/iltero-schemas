@@ -4621,5 +4621,3207 @@
       "unknown": null,
       "when": null
     }
+  },
+  {
+    "name": "image_from_the_verified_commit",
+    "assertion": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "c84e7a1000000000000000000000000000000000",
+          "clause": "assert",
+          "expected": {
+            "ref": "verified_source.commit"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "artifact.build_commit",
+          "resolved": "c84e7a1000000000000000000000000000000000",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_from_another_commit",
+    "assertion": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "commit": "dddddddddddddddddddddddddddddddddddddddd",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: artifact.build_commit equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "c84e7a1000000000000000000000000000000000",
+          "clause": "assert",
+          "expected": {
+            "ref": "verified_source.commit"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "artifact.build_commit",
+          "resolved": "dddddddddddddddddddddddddddddddddddddddd",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_whose_build_names_no_commit",
+    "assertion": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": {
+          "__unknown": true,
+          "reason": "not_reported_by_tool"
+        }
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "artifact.build_commit: not_reported_by_tool",
+      "unknown": {
+        "path": "artifact.build_commit",
+        "reason": "not_reported_by_tool"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": {
+            "ref": "verified_source.commit"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "artifact.build_commit",
+          "resolved": "c84e7a1000000000000000000000000000000000",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_build_commit_not_verified_by_a_server",
+    "assertion": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "verified_source.commit: server_facts_unavailable",
+      "unknown": {
+        "path": "verified_source.commit",
+        "reason": "server_facts_unavailable"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": {
+            "ref": "verified_source.commit"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "artifact.build_commit",
+          "resolved": null,
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_ran_on_the_index",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [
+        {
+          "format": "junit",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "image_digest_source": "pipeline",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      ],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 1,
+          "op": "exists",
+          "path": "tests",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_ran_on_one_platform",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [
+        {
+          "format": "junit",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "image_digest_source": "pipeline",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      ],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 1,
+          "op": "exists",
+          "path": "tests",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_ran_on_another_image",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [
+        {
+          "format": "junit",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest_source": "pipeline",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      ],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: tests exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "tests",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_report_with_no_tests",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [
+        {
+          "format": "junit",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "image_digest_source": "pipeline",
+          "counts": {
+            "tests": 0,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      ],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: tests exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "tests",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_report_with_every_test_skipped",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [
+        {
+          "format": "junit",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "image_digest_source": "pipeline",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 3
+          }
+        }
+      ],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: tests exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "tests",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_tests_none",
+    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: tests exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": [],
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "tests",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_scan_names_the_index",
+    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [
+        {
+          "kind": "image_vulnerability",
+          "format": "trivy_json",
+          "tool_version": "0.58.1",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "image_digest_source": "report",
+          "reported_at": "2026-11-01T10:00:00Z",
+          "finding_counts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 3,
+            "low": 7,
+            "negligible": 0,
+            "unknown": 0
+          }
+        }
+      ],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 1,
+          "op": "exists",
+          "path": "scans",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_scan_names_one_platform",
+    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [
+        {
+          "kind": "image_vulnerability",
+          "format": "trivy_json",
+          "tool_version": "0.58.1",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "image_digest_source": "report",
+          "reported_at": "2026-11-01T10:00:00Z",
+          "finding_counts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 3,
+            "low": 7,
+            "negligible": 0,
+            "unknown": 0
+          }
+        }
+      ],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 1,
+          "op": "exists",
+          "path": "scans",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_scan_tied_only_by_the_pipeline",
+    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [
+        {
+          "kind": "image_vulnerability",
+          "format": "trivy_json",
+          "tool_version": "0.58.1",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "image_digest_source": "pipeline",
+          "reported_at": "2026-11-01T10:00:00Z",
+          "finding_counts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 3,
+            "low": 7,
+            "negligible": 0,
+            "unknown": 0
+          }
+        }
+      ],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: scans exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "scans",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_scan_of_another_image",
+    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [
+        {
+          "kind": "image_vulnerability",
+          "format": "trivy_json",
+          "tool_version": "0.58.1",
+          "file_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "image_digest_source": "report",
+          "reported_at": "2026-11-01T10:00:00Z",
+          "finding_counts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 3,
+            "low": 7,
+            "negligible": 0,
+            "unknown": 0
+          }
+        }
+      ],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: scans exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "scans",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_scan_none",
+    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "input": {
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "artifact": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "build_commit": "c84e7a1000000000000000000000000000000000"
+      },
+      "tests": [],
+      "scans": [],
+      "verified_source": {
+        "commit": "c84e7a1000000000000000000000000000000000",
+        "ci_provider": "github_actions",
+        "ci_instance": "github.com",
+        "repository_id": "812345678",
+        "repository": "acme/api",
+        "ci_run_id": "14520384761",
+        "ci_run_attempt": 1
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: scans exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": [],
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "matched": 0,
+          "op": "exists",
+          "path": "scans",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_deployed_as_checked",
+    "assertion": "ILT.DEPLOYMENT.IMAGE_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "deployment": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "ghcr.io/acme/api",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.repository"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "deployment.repository",
+          "resolved": "ghcr.io/acme/api",
+          "status": "true"
+        },
+        {
+          "actual": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.digest"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "deployment.digest",
+          "resolved": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_deployed_of_another_digest",
+    "assertion": "ILT.DEPLOYMENT.IMAGE_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "deployment": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: deployment.digest equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "ghcr.io/acme/api",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.repository"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "deployment.repository",
+          "resolved": "ghcr.io/acme/api",
+          "status": "true"
+        },
+        {
+          "actual": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.digest"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "deployment.digest",
+          "resolved": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "image_deployed_from_another_repository",
+    "assertion": "ILT.DEPLOYMENT.IMAGE_BINDING",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "deployment": {
+        "repository": "ghcr.io/acme/other",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: deployment.repository equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "ghcr.io/acme/other",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.repository"
+          },
+          "index": 0,
+          "op": "equal",
+          "path": "deployment.repository",
+          "resolved": "ghcr.io/acme/api",
+          "status": "false"
+        },
+        {
+          "actual": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "clause": "assert",
+          "expected": {
+            "ref": "change.image.digest"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "deployment.digest",
+          "resolved": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_the_index",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_platform_images",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "pod_state": "live",
+            "pods": [
+              "api-1"
+            ]
+          },
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "pod_state": "live",
+            "pods": [
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 2,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_another_image",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1"
+            ]
+          },
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; a negated expression held",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 2,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_no_compared_container",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "log-shipper",
+            "compared": false,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 3 is false: drift_check.containers_read exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_another_image_in_an_uncompared_container",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "compared": false,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_whose_rollout_has_not_finished",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": false,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: drift_check.rollout.complete equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": false,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "false"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_with_fewer_live_pods_read_than_its_rollout_calls_for",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 1,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: drift_check.live_pods_read equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 1,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "false"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_with_a_terminating_pod_on_another_image",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          },
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "terminating",
+            "pods": [
+              "api-0"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_running_an_image_whose_digest_was_not_reported",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1"
+            ]
+          },
+          {
+            "name": "api",
+            "compared": true,
+            "digest": {
+              "__unknown": true,
+              "reason": "not_reported_by_tool"
+            },
+            "pod_state": "live",
+            "pods": [
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.digest: not_reported_by_tool",
+      "unknown": {
+        "path": "item.digest",
+        "reason": "not_reported_by_tool"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 2,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_whose_rollout_has_not_finished_running_an_image_whose_digest_was_not_reported",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": false,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": {
+              "__unknown": true,
+              "reason": "not_reported_by_tool"
+            },
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: drift_check.rollout.complete equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": false,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "false"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_running_another_image_and_one_whose_digest_was_not_reported",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1"
+            ]
+          },
+          {
+            "name": "api",
+            "compared": true,
+            "digest": {
+              "__unknown": true,
+              "reason": "not_reported_by_tool"
+            },
+            "pod_state": "live",
+            "pods": [
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; a negated expression held",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 2,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_with_a_finished_pod_on_another_image",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          },
+          {
+            "name": "migrate",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "finished",
+            "pods": [
+              "api-migrate-1"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_whose_template_compares_no_container_running_the_image_in_an_added_one",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": false
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "debug",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "compared": false,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 2 is false: drift_check.template_containers exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "false"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_scaled_to_zero",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 0
+        },
+        "live_pods_read": 0,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": []
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 3 is false: drift_check.containers_read exists",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 0,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": [],
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        },
+        {
+          "actual": [],
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_another_image_with_no_accepted_build",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": null
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "change.build.platform_digests: path_missing",
+      "unknown": {
+        "path": "change.build.platform_digests",
+        "reason": "path_missing"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_a_platform_image_with_no_accepted_build",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": null
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "change.build.platform_digests: path_missing",
+      "unknown": {
+        "path": "change.build.platform_digests",
+        "reason": "path_missing"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "workload_runs_the_index_with_no_accepted_build",
+    "assertion": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": null
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "false"
+        }
+      ]
+    }
   }
 ]

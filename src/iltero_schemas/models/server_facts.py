@@ -13,8 +13,12 @@ fields only.
 - An **exception** waives one assertion for an environment and the resources
   it names, between two times.
 - An **earlier evaluation** is the result of one evaluation of an earlier stage.
+- The **verified source** is the commit the server verified from the identity
+  the continuous integration (CI) system gave the job that opened the run, not
+  the commit the tool reads from its checkout, with the CI run and repository
+  that identity named.
 
-All three are the server's claims, as served.
+All four are the server's claims, as served.
 """
 
 from __future__ import annotations
@@ -23,12 +27,15 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
+from iltero_schemas.canonical.encoding import INT_MAX
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.checked_content import CheckedContent
+from iltero_schemas.models.ci import CiSystem
 from iltero_schemas.models.fields import (
     AssertionId,
     AssertionKey,
+    Commit,
     Digest,
     Identifier,
     Identity,
@@ -38,7 +45,7 @@ from iltero_schemas.models.fields import (
     parse_timestamp,
     plain_text,
 )
-from iltero_schemas.profiles import reads_plan
+from iltero_schemas.profiles import reads_checked_content
 
 # The most items of each kind one facts document carries: more than one stage needs.
 MAX_FACT_ITEMS = 256
@@ -153,15 +160,36 @@ class EarlierEvaluation(StrictModel):
     stage: StageValue
     subject: EvaluatedSubject
     result: Result
-    # The content the evaluation read; null exactly for a stage that reads none, such as runtime.
+    # The content the evaluation read; null for an evaluation whose input carried none, such as at runtime.
     checked_content: CheckedContent | None
     observed_at: Timestamp
 
     @model_validator(mode="after")
-    def _checked_content_where_a_plan_was_read(self) -> EarlierEvaluation:
-        if (self.checked_content is None) == reads_plan(Stage(self.stage)):
-            raise ValueError("an earlier evaluation names the content it checked exactly when its stage reads a plan")
+    def _checked_content_where_it_was_read(self) -> EarlierEvaluation:
+        kind = self.checked_content.kind if self.checked_content is not None else None
+        if kind not in reads_checked_content(Stage(self.stage)):
+            raise ValueError(
+                "an earlier evaluation names the content it checked exactly when its stage reads that content"
+            )
         return self
+
+
+class VerifiedSource(StrictModel):
+    """The commit the server verified from the CI system's identity for the job that opened the run, and what that
+    identity named: the CI system and the instance of it, the repository and the run.
+
+    A CI system's ids are unique only within one instance of it, so each id is read with the system and instance.
+    """
+
+    commit: Commit
+    ci_provider: CiSystem
+    # The instance of the CI system, by its host name, such as github.com.
+    ci_instance: Identifier
+    # The repository's id at the CI system, which does not change when the repository is renamed, and its name.
+    repository_id: Identifier
+    repository: Identifier
+    ci_run_id: Identifier
+    ci_run_attempt: Annotated[int, Field(ge=1, le=INT_MAX)]
 
 
 Approvals = Annotated[list[Approval], Field(max_length=MAX_FACT_ITEMS)]

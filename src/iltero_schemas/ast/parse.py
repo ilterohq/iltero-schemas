@@ -271,7 +271,7 @@ def parse_document(document: dict[str, Any]) -> Assertion:
     except ValidationError as exc:
         raise AssertionSyntaxError(_model_issues(document, exc)) from None
     target = _target(model)
-    parser = _ExpressionParser(allowed_roots(model.spec.stage, target.kind))
+    parser = _ExpressionParser(allowed_roots(model.spec.change_type, model.spec.stage, target.kind))
     when = None if model.spec.when is None else parser.expr(model.spec.when, "spec.when", 1, False)
     assert_ = parser.expr(model.spec.assert_, "spec.assert", 1, False)
     if parser.issues or assert_ is None:

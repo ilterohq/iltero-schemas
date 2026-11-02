@@ -92,6 +92,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -190,6 +191,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -288,6 +290,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -428,6 +431,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -526,6 +530,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -1048,13 +1053,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:1977ebefab5d69e7000081e1bb6b19eee13e36ad2b79380ebd03d7bfa5e322e8",
+      "digest": "sha256:226932ebbd6d2b1de292ac0254d27d8ef4afbd3f0b3f9e0ea077596c2775a565",
       "media_type": "application/json",
       "path": "units/app/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11749,
+      "size_bytes": 11869,
       "source": null,
       "storage_uri": null
     }
@@ -1099,7 +1104,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:1977ebefab5d69e7000081e1bb6b19eee13e36ad2b79380ebd03d7bfa5e322e8",
+        "digest": "sha256:226932ebbd6d2b1de292ac0254d27d8ef4afbd3f0b3f9e0ea077596c2775a565",
         "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",

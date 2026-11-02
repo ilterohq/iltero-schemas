@@ -99,9 +99,10 @@ def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
         ("not_assessed", "project_config"),
         ("not_assessed", "environment_policy"),
         ("not_assessed", "not_supported"),
+        ("not_assessed", "not_in_activity"),
     ],
 )
-def test_the_verification_after_deployment_is_one_of_six_results(state: str, reason: str) -> None:
+def test_the_verification_after_deployment_is_one_of_seven_results(state: str, reason: str) -> None:
     document = copy.deepcopy(REPORT)
     document["properties"]["runtime_verification"] = {"state": state, "reason": reason}
     assert VerificationReport.model_validate(document).properties.runtime_verification.reason == reason

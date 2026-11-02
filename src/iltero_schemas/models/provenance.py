@@ -6,12 +6,15 @@ and a stage counts its assertions as ``server_pinned`` exactly for a run the
 server opened. A record of a run the tool opened names no server bundle, and
 no facts and no time from the server. Every record stays self-attested: these
 labels are the writer's claims, and only the server can confirm a run it opened.
-The server opens a run for one environment, so a record of such a run names it.
+The server opens a change run for one environment, so a record of such a run
+names it; a build run belongs to no environment.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
+from iltero_schemas.change_types.registry import ACTIVITIES
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
@@ -28,7 +31,7 @@ def check_provenance(car: CAR) -> None:
                 f"stages.{stage.value}: counts its assertions as server_pinned exactly when the server issued the run"
             )
     if issued:
-        if car.subject.environment is None:
+        if car.subject.environment is None and ACTIVITIES[car.change.activity].run_type == "change":
             raise ValueError("a record of a run the server opened names the environment the run was opened for")
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]

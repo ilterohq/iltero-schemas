@@ -17,14 +17,14 @@ from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-from tests.records import RECORD, set_path
+from tests.records import RECORD, add_built_in, iac_change, set_path
 from tests.records import record as _record
 
 
 def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
     assert car.trust_level == "self_attested" and car.complete is False
-    assert car.compliance_determination is None and car.change.plan.tool == "terraform"
+    assert car.compliance_determination is None and iac_change(car).plan.tool == "terraform"
     assert len(car.events) == car.coverage.evaluations == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
@@ -261,6 +261,7 @@ def _deployed(**changes: Any) -> dict[str, Any]:
     document["change"]["identity"]["sources"]["plan"]["digest"] = document["change"]["plan"]["digest"]
     document["change"]["identity"]["sources"]["state"] = dict(document["change"]["deployment"]["apply"]["state"])
     document["stages"]["post_deploy"] = _post_deploy_stage(document["stages"]["plan"])
+    add_built_in(document, "post_deploy")
     for dotted, value in changes.items():
         set_path(document, dotted, value)
     return _combined(document)
@@ -301,9 +302,10 @@ def _combined(document: dict[str, Any]) -> dict[str, Any]:
 
 
 def test_a_record_describes_the_deployment_and_its_identities_exactly_when_post_deploy_reported() -> None:
-    assert CAR.model_validate(_deployed()).change.deployment is not None
+    assert iac_change(CAR.model_validate(_deployed())).deployment is not None
     document = _deployed()
     del document["stages"]["post_deploy"]
+    document["events"] = [e for e in document["events"] if e["evaluation"]["stage"] != "post_deploy"]
     with pytest.raises(ValidationError, match="the deployment exactly when its post-deploy stage has reported"):
         CAR.model_validate(document)
     document = _deployed(**{"change.identity": None})
@@ -318,8 +320,8 @@ def test_a_record_carries_the_identities_of_its_own_unit() -> None:
     unresolved = [{"address": "aws_lambda_function.worker", "reason": "identifier_invalid"}]
     document = _deployed()
     document["change"]["identity"].update(bindings=bindings, unresolved=unresolved)
-    car = CAR.model_validate(document)
-    assert car.change.identity is not None and len(car.change.identity.bindings) == 2
+    identity = iac_change(CAR.model_validate(document)).identity
+    assert identity is not None and len(identity.bindings) == 2
     document["change"]["identity"].update(bindings=[binding("a.x", unit="network")], unresolved=[])
     with pytest.raises(ValidationError, match="belongs to the unit"):
         CAR.model_validate(document)
@@ -361,7 +363,7 @@ def test_what_the_identities_list_as_removed_is_exactly_what_left_the_state() ->
         removed=[removed("aws_db_instance.old")],
         removed_unresolved=[{"address": "aws_s3_bucket.kept", "reason": "no_resolver", "removal": "forgotten"}],
     )
-    assert CAR.model_validate(good).change.identity is not None
+    assert iac_change(CAR.model_validate(good)).identity is not None
 
 
 @pytest.mark.parametrize(
@@ -411,7 +413,7 @@ def test_a_plan_stage_observed_after_the_apply_started_is_refused() -> None:
 
 def test_the_post_deploy_stage_counts_the_deployment_the_record_describes() -> None:
     document = _deployed()
-    assert CAR.model_validate(document).change.deployment is not None
+    assert iac_change(CAR.model_validate(document)).deployment is not None
     document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = document["change"]["plan"][
         "digest"
     ]
@@ -493,7 +495,7 @@ def test_a_change_digest_names_the_records_environment() -> None:
     ):
         CAR.model_validate(document)
     document["change"]["digest"] = change_digest("iac_change", "root", "staging", plan)
-    assert CAR.model_validate(document).change.digest == change_digest("iac_change", "root", "staging", plan)
+    assert iac_change(CAR.model_validate(document)).digest == change_digest("iac_change", "root", "staging", plan)
 
 
 @pytest.mark.parametrize("value", [1, "true", "no", [True]])
@@ -522,7 +524,7 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
         document["change"]["identity"]["tool_data"]["deposed_deleted"] = counted
         document = _combined(document)
         if valid:
-            assert CAR.model_validate(document).change.identity is not None
+            assert iac_change(CAR.model_validate(document)).identity is not None
             continue
         with pytest.raises(ValidationError, match="count exactly the deposed objects the apply destroyed"):
             CAR.model_validate(document)

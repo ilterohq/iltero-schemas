@@ -96,6 +96,7 @@ def test_every_status_the_starter_set_accepts_makes_a_valid_event() -> None:
     assert accepted == {"pass", "fail"}
     for status in sorted(accepted):
         evaluation = {
+            "activity": "iac_change",
             "stage": "plan",
             "status": status,
             "status_reason": None,

@@ -1,0 +1,115 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "eval_006",
+    "activity": "image_build",
+    "stage": "plan",
+    "timestamp": "2026-11-01T10:05:00Z",
+    "assertion": {
+      "id": "ILT.IMAGE.SCAN_RAN",
+      "version": "1.0.0"
+    }
+  },
+  "organization_scope": {
+    "organization": {
+      "id": "acme"
+    },
+    "workspace": {
+      "id": "api"
+    },
+    "environment": null
+  },
+  "reference_time": {
+    "value": "2026-11-01T10:05:00Z",
+    "source": "server",
+    "trust": "attested",
+    "time_window": null
+  },
+  "source": {
+    "vcs": "git",
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "repository": {
+      "name": "acme/api"
+    },
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    },
+    "pull_request": null
+  },
+  "change": null,
+  "plan": null,
+  "subject": {
+    "kind": "artifact",
+    "key": "sha256:a809024ae012833745b2c821c65739d03e08c8aa6eb7fea8294a7b3550aae9aa",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "api",
+        "scope": null
+      }
+    ],
+    "resolution": "unresolved"
+  },
+  "resource": null,
+  "deployment": null,
+  "evaluations": null,
+  "approvals": null,
+  "exceptions": null,
+  "run": null,
+  "drift_check": null,
+  "assurance": null,
+  "artifact": {
+    "repository": "ghcr.io/acme/api",
+    "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+    "platform_digests": [
+      "sha256:6e71808a3bf4bf44c542c7b36d9238aa5dd0aa326142728cb9cea1329863d8cb",
+      "sha256:74e10716813f65cf00bbc5e24a03473682755d2ba436b114f8baadbb8066ef55"
+    ],
+    "build_commit": "c84e7a1000000000000000000000000000000000"
+  },
+  "tests": [
+    {
+      "format": "junit",
+      "file_digest": "sha256:0eaea31ca99000cce2346dc16ca7e019a248aa70fc13d72b2bb940c5f16badf9",
+      "image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "image_digest_source": "pipeline",
+      "counts": {
+        "tests": 214,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 3
+      }
+    }
+  ],
+  "scans": [
+    {
+      "kind": "image_vulnerability",
+      "format": "trivy_json",
+      "tool_version": "0.58.1",
+      "file_digest": "sha256:11aac8c631e72d3a5acfb76f6ab1ab31091b5a868c7d566f7dfbc06e429ef28e",
+      "image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "image_digest_source": "report",
+      "reported_at": "2026-11-01T10:03:12Z",
+      "finding_counts": {
+        "critical": 0,
+        "high": 2,
+        "medium": 9,
+        "low": 17,
+        "negligible": 0,
+        "unknown": 1
+      }
+    }
+  ],
+  "verified_source": {
+    "commit": "c84e7a1000000000000000000000000000000000",
+    "ci_provider": "github_actions",
+    "ci_instance": "github.com",
+    "repository_id": "812345678",
+    "repository": "acme/api",
+    "ci_run_id": "14520384761",
+    "ci_run_attempt": 1
+  }
+}

@@ -1176,7 +1176,7 @@
     "problems": [
       [
         "stages.pre_deploy.approvals",
-        "lists approval apr_0001 of another change: another change type, unit, environment or plan"
+        "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
       ]
     ]
   },
@@ -1271,7 +1271,354 @@
     "problems": [
       [
         "stages.pre_deploy.approvals",
-        "lists approval apr_0001 of another change: another change type, unit, environment or plan"
+        "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_a_forged_change_digest",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.digest",
+        "is not the digest of the change type, unit, environment and image"
+      ],
+      [
+        "change.drift_check.change_digest",
+        "is not change.digest"
+      ],
+      [
+        "stages.pre_deploy.coverage.subjects_in_scope.source_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "image_drift_check_of_another_change",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:de848f26c3fbc6df7d18eb35f2fd6c4a1c5defcae255a7ac5d28170a364ec3d9"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.drift_check.change_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_of_another_image_whose_binding_check_still_passed",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/deployment": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "deployed_at": {
+          "value": "2026-11-02T09:02:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "reported_by": "pipeline"
+      },
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:75e191c6a9cc2f776f76220432662eb0278c674599ad6733b679e7e2f9a681d5"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_running_another_image_whose_reading_check_still_passed",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "read_at": {
+          "value": "2026-11-02T09:05:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:6f7f6a671b6e52ab4b62dc1c74391637abc29a5b8879c1f168034a3fee73e56e"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.2.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_whose_rollout_had_not_finished_and_whose_reading_check_still_passed",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": false,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 1,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "read_at": {
+          "value": "2026-11-02T09:05:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:97f51b31fa18b8bb3ee713de031fcf7111ac5b45046d2e825ef8353fee253bdf"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.2.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_running_an_image_whose_digest_was_not_reported_and_whose_reading_check_still_passed",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "read_at": {
+          "value": "2026-11-02T09:05:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": {
+              "__unknown": true,
+              "reason": "not_reported_by_tool"
+            },
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:0ef2af432ddd374fe27bb1745d6a686bb8c77d94e27be73384efd304687293f7"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.2.evaluation.status",
+        "is not unknown, what the record's change gives"
       ]
     ]
   }

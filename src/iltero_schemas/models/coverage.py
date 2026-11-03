@@ -161,13 +161,13 @@ class SubjectsInScope(StrictModel):
 class AssertionsExpected(StrictModel):
     """The assertions a stage owed, whether or not each was evaluated, and the digest of that set.
 
-    ``locally_derived``: the set as the project's files gave it.
+    ``project_files``: the set as the project's files gave it.
     ``server_pinned``: the assertions the server set for this stage of the run. The record's top level combines the
     stage digests by stage name.
     """
 
     value: Count
-    origin: Literal["server_pinned", "locally_derived"]
+    origin: Literal["server_pinned", "project_files"]
     required_assertion_digest: Digest
 
 
@@ -324,7 +324,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         assertions_expected=AssertionsExpected(
             value=sum(c.assertions_expected.value for c in coverages),
             # A set a server pinned in part is a set derived locally.
-            origin="locally_derived" if "locally_derived" in origins else "server_pinned",
+            origin="project_files" if "project_files" in origins else "server_pinned",
             required_assertion_digest=digest_of(
                 [
                     {"stage": name, "digest": o.coverage.assertions_expected.required_assertion_digest}
@@ -363,7 +363,7 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
     - The checks, the assertions and the statuses are summed; an assertion is
       counted by one stage only.
     - The assertion set is named by the digest over each stage's, in order, and
-      is ``locally_derived`` when any stage's is.
+      is ``project_files`` when any stage's is.
     - The gaps and the substituted inputs are kept, each naming its stage; the
       record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,

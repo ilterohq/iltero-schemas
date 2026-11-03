@@ -50,7 +50,29 @@ REWORDED = {
     "a project can leave out only the pre-deploy approval gate and the post-verify stage": (
         "a project can leave out only the pre-deploy and post-verify stages"
     ),
+    "a resource is bound or unresolved, never both": "a resource is resolved or unresolved, never both",
+    "every binding names the tool that wrote the state it was read from": (
+        "every resolved identity names the tool that wrote the state it was read from"
+    ),
+    "every binding belongs to the unit": "every resolved identity belongs to the unit",
+    "bindings and unresolved are sorted": "resolved and unresolved are sorted",
+    "no two entries of bindings name": "no two entries of resolved name",
+    "a binding is named exactly when": "an evaluator binding is named exactly when",
+    "exactly when the server issued the run": "exactly when the server opened the run",
 }
+# Names changed since the baseline so each says what it is: a key renamed in every document (old name: new name),
+# a value renamed wherever it appears, and the run's origin, which said who opened the run a second time.
+RENAMED_KEYS = {
+    "binding_set": "evaluator_binding_set",
+    "results_binding_unverified": "results_scanner_version_not_allowed",
+    "verified_resource_types": "supported_resource_types",
+}
+RENAMED_VALUES = {
+    "locally_derived": "project_files",
+    "binding_unverified": "scanner_version_not_allowed",
+    "iltero.io/identity-bindings/v1": "iltero.io/resource-identities/v1",
+}
+RENAMED_VECTORS = {"identity_bindings.json": "resource_identities.json"}
 # Each problem's location moved since the baseline, by its old location.
 MOVED_PROBLEMS = {"drift_check.change_digest": "change.drift_check.change_digest"}
 # Cases removed since the baseline: the change no longer names a unit of its own.
@@ -64,6 +86,11 @@ RENAMED_TESTS = {
     "test_a_resource_only_the_cloud_knows_is_a_subject_only_after_deployment": (
         "test_a_resource_only_the_cloud_knows_is_a_subject_only_at_runtime"
     ),
+    "test_a_record_of_a_run_the_tool_opened_counts_its_checks_as_locally_derived": (
+        "test_a_record_of_a_run_the_tool_opened_counts_its_checks_from_the_projects_files"
+    ),
+    "test_invalid_identity_document_is_rejected": "test_invalid_resource_identities_document_is_rejected",
+    "test_valid_identity_document_case_is_accepted": "test_valid_resource_identities_document_case_is_accepted",
 }
 REMOVED_TESTS = {
     "tests/test_canonical_digests.py::test_the_change_digest_ignores_the_order_units_are_given_in",
@@ -133,6 +160,35 @@ def _new_change_digest(document: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def _renamed(value: Any, key: str | None = None) -> Any:
+    """``value`` with every key and value named as it is now: the event's evaluator binding, the identity document's
+    resolved list, and no run origin."""
+    if isinstance(value, list):
+        return [_renamed(item, key) for item in value]
+    if isinstance(value, str):
+        return RENAMED_VALUES.get(value, value)
+    if not isinstance(value, dict):
+        return value
+    renamed: dict[str, Any] = {}
+    for field, item in value.items():
+        if field == "origin" and key == "run":
+            continue
+        new = str(RENAMED_KEYS.get(field, field))
+        if field == "binding" and key == "provenance":
+            new = "evaluator_binding"
+        if field == "bindings" and "unresolved" in value:
+            new = "resolved"
+        renamed[new] = _renamed(item, new)
+    return renamed
+
+
+def _renamed_pointer(pointer: str, vector: str) -> str:
+    for old, new in RENAMED_KEYS.items():
+        pointer = pointer.replace(f"/{old}", f"/{new}")
+    pointer = pointer.replace("/provenance/binding", "/provenance/evaluator_binding")
+    return pointer.replace("/bindings", "/resolved") if "identit" in vector or "/identity/" in pointer else pointer
+
+
 def _replaced(value: Any, digests: dict[str, str]) -> Any:
     """``value`` with each digest in ``digests`` replaced by the one it maps to."""
     if isinstance(value, str):
@@ -148,7 +204,7 @@ def _moved_record(document: dict[str, Any]) -> dict[str, Any]:
     """A baseline record in the change-type envelope, with the change digest the new rule gives and every value bound
     to it, and each stage's events file digested from its events."""
     digests = STARTER_DIGESTS["digests"] | _new_change_digest(document)
-    moved: dict[str, Any] = _replaced(_with_activity(_checked_content(document)), digests)
+    moved: dict[str, Any] = _renamed(_replaced(_with_activity(_checked_content(document)), digests))
     for ref in moved["evidence_refs"]:
         ref["size_bytes"] = STARTER_DIGESTS["sizes"].get(ref["digest"], ref["size_bytes"])
     moved["change"] = {
@@ -190,13 +246,17 @@ def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
     path = BASELINE / "records" / case["vector"]
     digests = STARTER_DIGESTS["digests"] | (_new_change_digest(_read(path)) if path.exists() else {})
     moved["set"] = {
-        _moved_pointer(pointer): _replaced(_with_activity(_checked_content(value)), digests)
+        _renamed_pointer(_moved_pointer(pointer), case["vector"]): _renamed(
+            _replaced(_with_activity(_checked_content(value)), digests), pointer.rsplit("/", 1)[-1]
+        )
         for pointer, value in case["set"].items()
+        if not pointer.endswith("/run/origin")
     }
     if isinstance(units := moved["set"].get(UNITS), list):
         # A unit a case lists by name alone now names the units it depends on: none.
         moved["set"][UNITS] = [{"name": name, "depends_on": []} for name in units]
-    moved["remove"] = [_moved_pointer(pointer) for pointer in case["remove"]]
+    moved["remove"] = [_renamed_pointer(_moved_pointer(pointer), case["vector"]) for pointer in case["remove"]]
+    moved["vector"] = RENAMED_VECTORS.get(case["vector"], case["vector"])
     if "message" in case:
         moved["message"] = _reworded(case["message"])
     if "problems" in case:
@@ -206,7 +266,7 @@ def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
 
 def _with_changes(folder: str, document: Any) -> Any:
     """The baseline ``document`` of ``folder`` with every field changed since the baseline set to its declared value."""
-    changed = _moved_record(document) if folder == "records" else copy.deepcopy(document)
+    changed = _moved_record(document) if folder == "records" else _renamed(copy.deepcopy(document))
     for changed_in, pointer, value in CHANGED:
         if changed_in != folder:
             continue
@@ -231,13 +291,13 @@ BASELINE_DOCUMENTS = [
     ("folder", "path"), BASELINE_DOCUMENTS, ids=[f"{folder}/{path.name}" for folder, path in BASELINE_DOCUMENTS]
 )
 def test_a_vector_differs_from_its_baseline_only_by_the_declared_changes(folder: str, path: Path) -> None:
-    assert _read(VECTORS / folder / path.name) == _with_changes(folder, _read(path))
+    assert _read(VECTORS / folder / RENAMED_VECTORS.get(path.name, path.name)) == _with_changes(folder, _read(path))
 
 
 @pytest.mark.parametrize("folder", DOCUMENT_FOLDERS)
 def test_no_baseline_vector_was_removed(folder: str) -> None:
     shipped = {path.name for path in (VECTORS / folder).glob("*.json")}
-    assert {path.name for path in (BASELINE / folder).glob("*.json")} <= shipped
+    assert {RENAMED_VECTORS.get(path.name, path.name) for path in (BASELINE / folder).glob("*.json")} <= shipped
 
 
 @pytest.mark.parametrize("folder", CASE_FOLDERS)

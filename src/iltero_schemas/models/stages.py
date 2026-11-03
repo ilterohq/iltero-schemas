@@ -133,8 +133,8 @@ def _check_checked_content_of_events(car: CAR, activity: Activity) -> None:
 
 def _check_run_of_events(car: CAR) -> None:
     """Every event belongs to the record's run, unit and activity, so no evaluation from another run can be added."""
-    own = (car.run.id, car.run.origin, car.unit)
-    if any((e.provenance.run.id, e.provenance.run.origin, e.provenance.run.unit) != own for e in car.events):
+    own = (car.run.id, car.unit)
+    if any((e.provenance.run.id, e.provenance.run.unit) != own for e in car.events):
         raise ValueError("every event names the record's run, how that run was opened, and the record's unit")
     if any(event.evaluation.activity != car.change.activity for event in car.events):
         raise ValueError("every event names the record's activity")

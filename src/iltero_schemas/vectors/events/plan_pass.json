@@ -47,7 +47,6 @@
   "provenance": {
     "run": {
       "id": "run_001",
-      "origin": "locally_derived",
       "unit": "root"
     },
     "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -81,7 +80,7 @@
       "content_digest": null,
       "key_id": null
     },
-    "binding": null,
+    "evaluator_binding": null,
     "assertion_source": "contract_starter",
     "assertion_source_digest": "sha256:7d0e58fd64fad627fc20be7a6c45da5a483572aa79b977fd8b6cf86b2ad71d0a",
     "compiled_digest": "sha256:439bfafcbf6eb8464fde368da526000035441f72536dfe3c404dbd3e7febacaa",

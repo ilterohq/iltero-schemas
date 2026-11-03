@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import model_validator
 
-from iltero_schemas.assertions.paths import NO_DRIFT_AFTER_APPLY_ID, PLAN_BINDING_ID
+from iltero_schemas.assertions.paths import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, NO_DRIFT_AFTER_APPLY_ID
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.change_types.activity import Activity
@@ -192,7 +192,7 @@ def _check_drift_check(car: CAR) -> None:
             "the drift check's first reading was taken no earlier than the second the post-deploy stage was observed in"
         )
     identity = change.identity
-    read = {binding.iac.address for binding in identity.bindings} | {u.address for u in identity.unresolved}
+    read = {entry.iac.address for entry in identity.resolved} | {u.address for u in identity.unresolved}
     if check.resources_read != len(read):
         raise ValueError("the drift check read every managed resource the record's identities list")
     if any(resource.address not in read for resource in check.differences):
@@ -239,7 +239,7 @@ def _owed_statuses(change: IacChange) -> dict[str, str]:
             evaluated.artifact_digest,
             evaluated.artifact_digest_source,
         )
-        owed[PLAN_BINDING_ID] = "pass" if same else "fail"
+        owed[APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID] = "pass" if same else "fail"
     if change.drift_check is not None:
         owed[NO_DRIFT_AFTER_APPLY_ID] = "pass" if change.drift_check.differences_count == 0 else "fail"
     return owed
@@ -282,13 +282,15 @@ IAC_CHANGE = Activity(
         {
             Stage.PLAN: ("record",),
             Stage.PRE_DEPLOY: ("record",),
-            Stage.POST_DEPLOY: ("record", "identity_document"),
+            Stage.POST_DEPLOY: ("record", "resource_identities"),
             Stage.POST_VERIFY: ("record",),
         }
     ),
     named_documents=lambda _car: MappingProxyType({}),
-    binding_check=(PLAN_BINDING_ID, Stage.POST_DEPLOY),
-    always_evaluated=MappingProxyType({Stage.POST_DEPLOY: PLAN_BINDING_ID, Stage.POST_VERIFY: NO_DRIFT_AFTER_APPLY_ID}),
+    carried_out_matches_checked=(APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, Stage.POST_DEPLOY),
+    always_evaluated=MappingProxyType(
+        {Stage.POST_DEPLOY: APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, Stage.POST_VERIFY: NO_DRIFT_AFTER_APPLY_ID}
+    ),
     checked_content=_checked_content,
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,

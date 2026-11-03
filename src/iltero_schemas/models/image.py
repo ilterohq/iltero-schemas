@@ -193,7 +193,7 @@ class ImageArtifact(StrictModel):
     # empty for an image pushed as a single manifest.
     platform_digests: Annotated[list[Digest], Field(max_length=MAX_PLATFORM_DIGESTS)]
     # The commit the build tool's provenance names (``ImageBuild.build_commit``); the unknown marker when it names
-    # none. ILT.IMAGE.BUILT_FROM_RUN_COMMIT compares it with the commit the server verified for the run.
+    # none. ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT compares it with the commit the server verified for the run.
     build_commit: Commit | NotReported
 
     @model_validator(mode="after")

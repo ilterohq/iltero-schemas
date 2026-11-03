@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from iltero_schemas.models.drift_check import DriftCheck, read_no_earlier_than
 from tests.conftest import VECTORS
 
-CHECK: dict[str, Any] = json.loads((VECTORS / "records" / "local_run_verified.json").read_text(encoding="utf-8"))[
+CHECK: dict[str, Any] = json.loads((VECTORS / "records" / "local_run_post_verify.json").read_text(encoding="utf-8"))[
     "change"
 ]["drift_check"]
 

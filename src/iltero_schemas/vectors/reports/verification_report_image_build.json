@@ -1,0 +1,49 @@
+{
+  "apiVersion": "iltero.io/verification-report/v1",
+  "record": {
+    "uuid": "0b6e5d4c-3b2a-5918-8f7e-6d5c4b3a2918",
+    "digest": "sha256:db87b891f8a616a05e8c1a6eb427562778e6626e66522e261ed7eddced474a43"
+  },
+  "verifier": {
+    "name": "iltero",
+    "version": "0.1.0"
+  },
+  "properties": {
+    "integrity": {
+      "state": "client_asserted",
+      "reason": "file_digests"
+    },
+    "source_identity": {
+      "state": "not_performed",
+      "reason": "run_opened_locally"
+    },
+    "approval_identity": {
+      "state": "not_assessed",
+      "reason": null
+    },
+    "bundle_provenance": {
+      "state": "not_performed",
+      "reason": "local_assertions"
+    },
+    "stage_completeness": {
+      "state": "verified",
+      "reason": null
+    },
+    "plan_apply_match": {
+      "state": "not_assessed",
+      "reason": null
+    },
+    "runtime_verification": {
+      "state": "not_assessed",
+      "reason": "not_in_activity"
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "reason": null
+    },
+    "exceptions": {
+      "state": "not_assessed",
+      "reason": null
+    }
+  }
+}

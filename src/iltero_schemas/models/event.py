@@ -77,7 +77,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "scanner_not_run",
             "credential_denied",
             "resource_type_unsupported",
-            "binding_unverified",
+            "scanner_version_not_allowed",
             "timeout",
             "subject_unresolved",
             "evaluator_unavailable",
@@ -200,7 +200,6 @@ class Run(StrictModel):
     """The run this event belongs to, and the unit of the stack it was evaluated in."""
 
     id: Identifier
-    origin: Literal["server_issued", "locally_derived"]
     unit: Identifier
 
 
@@ -248,7 +247,7 @@ class ScannerEvaluator(StrictModel):
 Evaluator = Annotated[OpaEvaluator | ScannerEvaluator, Field(discriminator="engine")]
 
 
-class BindingRef(StrictModel):
+class EvaluatorBindingRef(StrictModel):
     """The entry that licensed a scanner's result to stand for an assertion (see ``models.binding``)."""
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
@@ -319,7 +318,7 @@ class Provenance(StrictModel):
     # The bundle belongs to the evaluator this CLI ran; a scanner has none.
     bundle: Bundle | None
     # Present exactly when a scanner's result was read for this evaluation (see ``ScannerEvaluator``).
-    binding: BindingRef | None
+    evaluator_binding: EvaluatorBindingRef | None
     # Where the assertion came from: the server's bundle, the project's own files (``local``, hand-written Rego as
     # ``custom_rego``), or a starter assertion this package ships (``contract_starter``). The writer's claim.
     assertion_source: Literal["server_bundle", "local", "custom_rego", "contract_starter"]
@@ -348,7 +347,7 @@ class AssuranceEvent(StrictModel):
         provenance = self.provenance
         if (self.assertion.version, self.assertion.digest) != (shipped.version, shipped.digest):
             raise ValueError(f"{self.assertion.id} is a built-in assertion: it names the document this package ships")
-        if provenance.assertion_source not in BUILT_IN_SOURCES or provenance.binding is not None:
+        if provenance.assertion_source not in BUILT_IN_SOURCES or provenance.evaluator_binding is not None:
             raise ValueError(
                 f"{self.assertion.id} is evaluated from this package or the server's bundle, never a scanner"
             )
@@ -392,8 +391,10 @@ class AssuranceEvent(StrictModel):
         bundle = self.provenance.bundle
         if self.provenance.assertion_source == "server_bundle" and bundle is not None and bundle.kind != "server":
             raise ValueError("an assertion from the server's bundle is evaluated over the server's bundle")
-        if (self.provenance.binding is not None) != from_scanner:
-            raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
+        if (self.provenance.evaluator_binding is not None) != from_scanner:
+            raise ValueError(
+                "an evaluator binding is named exactly when a scanner's result was read for this evaluation"
+            )
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):
             raise ValueError("a scanner's result was not compiled here, so it names no module and no compiler")
         return self

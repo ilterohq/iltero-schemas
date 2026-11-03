@@ -129,8 +129,8 @@ def _key_problems(repo: Path, previous: str, new: bytes, new_tag: str | None) ->
     old = _show(repo, previous, TRUST_FILE)
     try:
         return history_problems(
-            parse_bundle_keys(old, dev=False),
-            parse_bundle_keys(new, dev=False),
+            parse_bundle_keys(old, development=False),
+            parse_bundle_keys(new, development=False),
             changed=old != new,
             old_tag=previous,
             new_tag=new_tag,

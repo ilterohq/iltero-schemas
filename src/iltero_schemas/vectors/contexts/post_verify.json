@@ -141,5 +141,6 @@
   "artifact": null,
   "tests": null,
   "scans": null,
-  "verified_source": null
+  "verified_source": null,
+  "attestation_outcome": null
 }

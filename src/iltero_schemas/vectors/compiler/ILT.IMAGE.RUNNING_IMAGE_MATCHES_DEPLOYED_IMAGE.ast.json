@@ -1,0 +1,105 @@
+{
+  "ast_version": 1,
+  "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+  "version": "1.0.0",
+  "type": "process",
+  "change_type": "image_release",
+  "stage": "post_verify",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "when": null,
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "drift_check.rollout.complete",
+          "op": "equal",
+          "literal": true
+        }
+      },
+      {
+        "predicate": {
+          "path": "drift_check.live_pods_read",
+          "op": "equal",
+          "ref": "drift_check.rollout.expected_live_pods"
+        }
+      },
+      {
+        "exists": {
+          "in": "drift_check.template_containers",
+          "where": {
+            "predicate": {
+              "path": "item.compared",
+              "op": "equal",
+              "literal": true
+            }
+          }
+        }
+      },
+      {
+        "exists": {
+          "in": "drift_check.containers_read",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "path": "item.pod_state",
+                  "op": "equal",
+                  "literal": "live"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.compared",
+                  "op": "equal",
+                  "literal": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "not": {
+          "exists": {
+            "in": "drift_check.containers_read",
+            "where": {
+              "all": [
+                {
+                  "predicate": {
+                    "path": "item.pod_state",
+                    "op": "equal",
+                    "literal": "live"
+                  }
+                },
+                {
+                  "predicate": {
+                    "path": "item.compared",
+                    "op": "equal",
+                    "literal": true
+                  }
+                },
+                {
+                  "predicate": {
+                    "path": "item.digest",
+                    "op": "not_equal",
+                    "ref": "change.image.digest"
+                  }
+                },
+                {
+                  "predicate": {
+                    "path": "item.digest",
+                    "op": "not_in",
+                    "ref": "change.build.platform_digests"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

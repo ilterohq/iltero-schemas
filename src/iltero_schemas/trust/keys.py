@@ -45,7 +45,7 @@ from iltero_schemas.models.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
 
 API_VERSION = "iltero.io/bundle-keys/v1"
 # Local development keys carry this prefix, and only a development tool accepts them.
-DEV_KEY_PREFIX = "dev-"
+DEVELOPMENT_KEY_PREFIX = "dev-"
 KeyStatus = Literal["active", "retired", "revoked"]
 _STATUSES = frozenset({"active", "retired", "revoked"})
 _FIELDS = frozenset(
@@ -156,14 +156,18 @@ def _status_dates(key: BundleKey, where: str) -> None:
         raise TrustFileError(f"{where}: valid_from, retired_at and revoked_at must be in that order")
 
 
-def _key(entry: Any, where: str, *, dev: bool) -> BundleKey:
+def _key(entry: Any, where: str, *, development: bool) -> BundleKey:
     if not isinstance(entry, dict) or set(entry) != _FIELDS:
         raise TrustFileError(f"{where}: must have exactly the fields {', '.join(sorted(_FIELDS))}")
     key_id = entry["key_id"]
     if not isinstance(key_id, str) or not _KEY_ID.fullmatch(key_id):
         raise TrustFileError(f"{where}.key_id: must be lower-case letters, digits, '.', '_' or '-', at most 128")
-    if key_id.startswith(DEV_KEY_PREFIX) != dev:
-        rule = "only a development key" if dev else f"a development key ({DEV_KEY_PREFIX}…) is not trusted here"
+    if key_id.startswith(DEVELOPMENT_KEY_PREFIX) != development:
+        rule = (
+            "only a development key"
+            if development
+            else f"a development key ({DEVELOPMENT_KEY_PREFIX}…) is not trusted here"
+        )
         raise TrustFileError(f"{where}.key_id: {rule}")
     if entry["algorithm"] != "ES256":
         raise TrustFileError(f"{where}.algorithm: must be ES256")
@@ -184,10 +188,10 @@ def _key(entry: Any, where: str, *, dev: bool) -> BundleKey:
     return key
 
 
-def parse_bundle_keys(raw: bytes, *, dev: bool) -> Mapping[str, BundleKey]:
+def parse_bundle_keys(raw: bytes, *, development: bool) -> Mapping[str, BundleKey]:
     """The keys of a trust file, by key id, read-only; raises ``TrustFileError`` on any broken rule.
 
-    ``dev`` is true only for a development tool reading its own local file:
+    ``development`` is true only for a development tool reading its own local file:
     then every key must be a ``dev-`` key, and otherwise none may be. The keys
     are listed in key-id order, and no key id or public key appears twice.
     """
@@ -201,7 +205,7 @@ def parse_bundle_keys(raw: bytes, *, dev: bool) -> Mapping[str, BundleKey]:
         raise TrustFileError(f"apiVersion: must be {API_VERSION}")
     if not isinstance(document["keys"], list):
         raise TrustFileError("keys: must be a list")
-    keys = [_key(entry, f"keys[{index}]", dev=dev) for index, entry in enumerate(document["keys"])]
+    keys = [_key(entry, f"keys[{index}]", development=development) for index, entry in enumerate(document["keys"])]
     ids = [key.key_id for key in keys]
     if any(earlier >= later for earlier, later in zip(ids, ids[1:], strict=False)):
         raise TrustFileError("keys: must be in key-id order, with no key id twice")
@@ -212,4 +216,4 @@ def parse_bundle_keys(raw: bytes, *, dev: bool) -> Mapping[str, BundleKey]:
 
 _TRUST_FILE: bytes = resources.files("iltero_schemas.trust").joinpath("bundle-keys.json").read_bytes()
 TRUST_FILE_DIGEST: str = digest(_TRUST_FILE)
-BUNDLE_KEYS: Mapping[str, BundleKey] = parse_bundle_keys(_TRUST_FILE, dev=False)
+BUNDLE_KEYS: Mapping[str, BundleKey] = parse_bundle_keys(_TRUST_FILE, development=False)

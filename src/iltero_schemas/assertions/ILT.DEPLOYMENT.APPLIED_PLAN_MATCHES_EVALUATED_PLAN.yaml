@@ -1,0 +1,23 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN
+  version: "1.0.0"
+  title: The applied plan is the evaluated plan
+  remediation: Apply the plan that was evaluated, or evaluate the plan you apply.
+spec:
+  change_type: iac_change
+  stage: post_deploy
+  target:
+    kind: deployment
+  assert:
+    all:
+      - path: deployment.plan.digest
+        equal:
+          path: plan.digest
+      - path: deployment.plan.artifact_digest
+        equal:
+          path: plan.artifact_digest
+      - path: deployment.plan.artifact_digest_source
+        equal:
+          path: plan.artifact_digest_source

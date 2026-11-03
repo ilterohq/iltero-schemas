@@ -69,7 +69,6 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
         ({"compliance_determination": "compliant"}, "Input should be None"),
         ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
         ({"change.plan.tool": "pulumi"}, "Input should be 'terraform'"),
-        ({"run.origin": "guessed"}, "Input should be"),
         ({"uuid": "not-a-uuid"}, "String should match pattern"),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
         ({"retention_class": "soc2_730d"}, "Input should be None"),
@@ -149,7 +148,7 @@ def test_the_evidence_register_names_each_file_once() -> None:
 
 
 SCANNERS: dict[str, Any] = {
-    "binding_set": {
+    "evaluator_binding_set": {
         "id": "ILT.BINDINGS.STARTER",
         "version": "1.0.0",
         "origin": "shipped",
@@ -171,7 +170,7 @@ SCANNERS: dict[str, Any] = {
         }
     ],
     "results_accepted": 2,
-    "results_binding_unverified": 0,
+    "results_scanner_version_not_allowed": 0,
     "results_without_binding": 71,
 }
 
@@ -186,7 +185,7 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     assert scanners is not None
     (report,) = scanners.reports
     assert report.tool == "checkov" and report.results_read == 73
-    assert scanners.results_accepted == 2 and scanners.binding_set.id == "ILT.BINDINGS.STARTER"
+    assert scanners.results_accepted == 2 and scanners.evaluator_binding_set.id == "ILT.BINDINGS.STARTER"
 
 
 @pytest.mark.parametrize(
@@ -194,7 +193,7 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     [
         ({"results_without_binding": 70}, "results_without_binding is the sum"),
         ({"results_accepted": 3}, "every result a tool reported"),
-        ({"results_binding_unverified": 1}, "every result a tool reported"),
+        ({"results_scanner_version_not_allowed": 1}, "every result a tool reported"),
     ],
 )
 def test_a_scanner_block_whose_counts_do_not_add_up_is_refused(change: dict[str, Any], message: str) -> None:
@@ -229,14 +228,18 @@ def test_one_report_per_tool_per_stage() -> None:
 def test_a_binding_set_must_say_where_it_came_from(binding_set: dict[str, Any], message: str) -> None:
     """A file cannot claim to be the set the contract package ships."""
     scanners = copy.deepcopy(SCANNERS)
-    scanners["binding_set"] = {**scanners["binding_set"], **binding_set}
+    scanners["evaluator_binding_set"] = {**scanners["evaluator_binding_set"], **binding_set}
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 
 def test_a_binding_set_read_from_a_file_names_it() -> None:
     scanners = copy.deepcopy(SCANNERS)
-    scanners["binding_set"] = {**scanners["binding_set"], "origin": "file", "file_name": "bindings.yaml"}
+    scanners["evaluator_binding_set"] = {
+        **scanners["evaluator_binding_set"],
+        "origin": "file",
+        "file_name": "bindings.yaml",
+    }
     car = CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
     assert car.stages[Stage.PLAN].scanners is not None
 
@@ -319,10 +322,10 @@ def test_a_record_carries_the_identities_of_its_own_unit() -> None:
     bindings = [binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")]
     unresolved = [{"address": "aws_lambda_function.worker", "reason": "identifier_invalid"}]
     document = _deployed()
-    document["change"]["identity"].update(bindings=bindings, unresolved=unresolved)
+    document["change"]["identity"].update(resolved=bindings, unresolved=unresolved)
     identity = iac_change(CAR.model_validate(document)).identity
-    assert identity is not None and len(identity.bindings) == 2
-    document["change"]["identity"].update(bindings=[binding("a.x", unit="network")], unresolved=[])
+    assert identity is not None and len(identity.resolved) == 2
+    document["change"]["identity"].update(resolved=[binding("a.x", unit="network")], unresolved=[])
     with pytest.raises(ValidationError, match="belongs to the unit"):
         CAR.model_validate(document)
 
@@ -476,11 +479,7 @@ def test_a_change_digest_is_the_digest_of_its_unit() -> None:
 
 
 def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
-    document = _record(
-        **{"governance.run_opened_by": "server", "run.origin": "server_issued", "subject.environment": None}
-    )
-    for event in document["events"]:
-        event["provenance"]["run"]["origin"] = "server_issued"
+    document = _record(**{"governance.run_opened_by": "server", "subject.environment": None})
     for coverage in (document["coverage"], document["stages"]["plan"]["coverage"]):
         coverage["assertions_expected"]["origin"] = "server_pinned"
     with pytest.raises(ValidationError, match="a record of a run the server opened names the environment"):
@@ -625,6 +624,10 @@ def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
 
 def test_a_binding_set_file_is_named_without_its_directories() -> None:
     scanners = copy.deepcopy(SCANNERS)
-    scanners["binding_set"] = {**scanners["binding_set"], "origin": "file", "file_name": "config/bindings.yaml"}
+    scanners["evaluator_binding_set"] = {
+        **scanners["evaluator_binding_set"],
+        "origin": "file",
+        "file_name": "config/bindings.yaml",
+    }
     with pytest.raises(ValidationError, match="without its directories"):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))

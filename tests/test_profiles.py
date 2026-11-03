@@ -28,7 +28,7 @@ DOCUMENTED = {
     Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},
 }
 # The parts a build's input provides at its plan stage, beyond the three every stage has.
-BUILD = {"source", "subject", "artifact", "tests", "scans", "verified_source"}
+BUILD = {"source", "subject", "artifact", "tests", "scans", "verified_source", "attestation_outcome"}
 
 
 def test_every_activity_has_one_profile_for_each_combination_at_its_stages() -> None:

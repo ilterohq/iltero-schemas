@@ -6,7 +6,7 @@
     "stage": "post_verify",
     "timestamp": "2026-11-02T09:05:30Z",
     "assertion": {
-      "id": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+      "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
       "version": "1.0.0"
     }
   },
@@ -149,5 +149,6 @@
   "artifact": null,
   "tests": null,
   "scans": null,
-  "verified_source": null
+  "verified_source": null,
+  "attestation_outcome": null
 }

@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.identity import API_VERSION, IdentityBindings
+from iltero_schemas.models.identity import API_VERSION, ResourceIdentities
 from tests.conftest import binding, identity_record, removed
 
 DOCUMENT: dict[str, Any] = {
@@ -16,7 +16,7 @@ DOCUMENT: dict[str, Any] = {
     "unit": "root",
     "generator": {"name": "iltero", "version": "0.1.0"},
     **identity_record(
-        bindings=[binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")],
+        resolved=[binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")],
         unresolved=[{"address": "aws_lambda_function.worker", "reason": "no_resolver"}],
         removed=[removed("aws_db_instance.payments")],
         removed_unresolved=[{"address": "aws_kms_key.old", "reason": "identifier_missing", "removal": "forgotten"}],
@@ -26,22 +26,22 @@ DOCUMENT: dict[str, Any] = {
 
 
 def test_a_document_of_bound_and_unresolved_resources_validates() -> None:
-    bindings = IdentityBindings.model_validate(DOCUMENT)
-    addresses = [entry.iac.address for entry in bindings.bindings]
+    identities = ResourceIdentities.model_validate(DOCUMENT)
+    addresses = [entry.iac.address for entry in identities.resolved]
     assert addresses == ["aws_db_instance.payments", "aws_s3_bucket.logs"]
-    assert bindings.unresolved[0].reason == "no_resolver"
-    assert bindings.sources.state.tool_version == "1.14.0" and bindings.tool_data.deposed_remaining == 1
+    assert identities.unresolved[0].reason == "no_resolver"
+    assert identities.sources.state.tool_version == "1.14.0" and identities.tool_data.deposed_remaining == 1
 
 
 def test_a_replacement_old_object_is_removed_while_its_new_one_is_bound() -> None:
-    """One address and one cloud identity in both halves: bindings and removed are never compared."""
-    document = IdentityBindings.model_validate(DOCUMENT)
+    """One address and one cloud identity in both halves: resolved and removed are never compared."""
+    document = ResourceIdentities.model_validate(DOCUMENT)
     assert document.removed is not None
-    assert document.removed[0].iac.address == document.bindings[0].iac.address
-    assert document.removed[0].cloud == document.bindings[0].cloud
+    assert document.removed[0].iac.address == document.resolved[0].iac.address
+    assert document.removed[0].cloud == document.resolved[0].cloud
 
 
-@pytest.mark.parametrize("half", ["bindings", "removed"])
+@pytest.mark.parametrize("half", ["resolved", "removed"])
 def test_two_entries_of_one_list_never_name_one_cloud_identity(half: str) -> None:
     """Two addresses on one cloud resource would make its address depend on the order of the list."""
     document = copy.deepcopy(DOCUMENT)
@@ -49,26 +49,26 @@ def test_two_entries_of_one_list_never_name_one_cloud_identity(half: str) -> Non
     duplicate = removed("aws_db_instance.reports") if half == "removed" else binding("aws_db_instance.reports")
     document[half].insert(1, duplicate)
     with pytest.raises(ValidationError, match=f"no two entries of {half} name the same cloud identity"):
-        IdentityBindings.model_validate(document)
+        ResourceIdentities.model_validate(document)
 
 
 def test_two_resources_of_one_type_with_their_own_identities_are_both_bound() -> None:
     document = copy.deepcopy(DOCUMENT)
     other = binding("aws_db_instance.reports")
     other["cloud"]["identifier"]["value"] = other["cloud"]["identifier"]["value"].replace("db:payments", "db:reports")
-    document["bindings"].insert(1, other)
-    assert len(IdentityBindings.model_validate(document).bindings) == 3
+    document["resolved"].insert(1, other)
+    assert len(ResourceIdentities.model_validate(document).resolved) == 3
 
 
 def test_identities_read_from_a_refresh_only_plan_name_no_applied_plan() -> None:
     document = copy.deepcopy(DOCUMENT)
     document["sources"]["read_from"] = "refresh_plan"
     with pytest.raises(ValidationError, match="identities read from a refresh-only plan name no applied plan"):
-        IdentityBindings.model_validate(document)
+        ResourceIdentities.model_validate(document)
     document["sources"]["plan"] = None
     document.update(removed=None, removed_unresolved=None)
     document["tool_data"]["deposed_deleted"] = None
-    assert IdentityBindings.model_validate(document).sources.read_from == "refresh_plan"
+    assert ResourceIdentities.model_validate(document).sources.read_from == "refresh_plan"
 
 
 def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> None:
@@ -76,52 +76,52 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
     document = copy.deepcopy(DOCUMENT)
     document["sources"]["plan"] = None
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
-        IdentityBindings.model_validate(document)
+        ResourceIdentities.model_validate(document)
     document.update(removed=None, removed_unresolved=None)
     document["tool_data"]["deposed_deleted"] = None
-    assert IdentityBindings.model_validate(document).removed is None
+    assert ResourceIdentities.model_validate(document).removed is None
     document["removed"] = []
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
-        IdentityBindings.model_validate(document)
+        ResourceIdentities.model_validate(document)
     checked = copy.deepcopy(DOCUMENT)
     checked["tool_data"]["deposed_deleted"] = None
     with pytest.raises(ValidationError, match="exactly when the applied plan was read"):
-        IdentityBindings.model_validate(checked)
+        ResourceIdentities.model_validate(checked)
 
 
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        (lambda d: d["bindings"].reverse(), "sorted by address"),
-        (lambda d: d["bindings"].append(binding("aws_s3_bucket.logs", "s3_bucket")), "name each resource once"),
+        (lambda d: d["resolved"].reverse(), "sorted by address"),
+        (lambda d: d["resolved"].append(binding("aws_s3_bucket.logs", "s3_bucket")), "name each resource once"),
         (lambda d: d["unresolved"].insert(0, {"address": "zz.x", "reason": "no_resolver"}), "sorted by address"),
         (lambda d: d["unresolved"].append({"address": "aws_s3_bucket.logs", "reason": "no_resolver"}), "never both"),
-        (lambda d: d["bindings"][0]["iac"].update(unit="network"), "belongs to the unit"),
-        (lambda d: d["bindings"][0]["cloud"].update(resource_type="kms_key"), "not the ARN of a kms_key"),
-        (lambda d: d["bindings"][0]["cloud"]["identifier"].update(value="x" * 2049), "at most 2048"),
-        (lambda d: d["bindings"][0].update(resolution="heuristic"), "Input should be 'resolved'"),
+        (lambda d: d["resolved"][0]["iac"].update(unit="network"), "belongs to the unit"),
+        (lambda d: d["resolved"][0]["cloud"].update(resource_type="kms_key"), "not the ARN of a kms_key"),
+        (lambda d: d["resolved"][0]["cloud"]["identifier"].update(value="x" * 2049), "at most 2048"),
+        (lambda d: d["resolved"][0].update(resolution="heuristic"), "Input should be 'resolved'"),
         (lambda d: d["resolvers"][0].update(version="latest build"), "String should match pattern"),
         (lambda d: d["generator"].update(name="terraform"), "Input should be 'iltero'"),
         (lambda d: d.pop("generator"), "Field required"),
         (
-            lambda d: d["resolvers"][0].update(verified_resource_types=["s3_bucket"]),
-            "only a resource type verified for its provider",
+            lambda d: d["resolvers"][0].update(supported_resource_types=["s3_bucket"]),
+            "only a resource type its provider's resolver supports",
         ),
         (
-            lambda d: d["resolvers"][0].update(verified_resource_types=[]),
-            "only a resource type verified for its provider",
+            lambda d: d["resolvers"][0].update(supported_resource_types=[]),
+            "only a resource type its provider's resolver supports",
         ),
         (
-            lambda d: d["resolvers"][0].update(verified_resource_types=["s3_bucket", "rds_instance"]),
+            lambda d: d["resolvers"][0].update(supported_resource_types=["s3_bucket", "rds_instance"]),
             "sorted and named once",
         ),
         (
-            lambda d: d["resolvers"][0].update(verified_resource_types=["rds_instance", "rds_instance"]),
+            lambda d: d["resolvers"][0].update(supported_resource_types=["rds_instance", "rds_instance"]),
             "sorted and named once",
         ),
-        (lambda d: d["bindings"][0].update(resolver={"provider": "aws", "version": "1.0.0"}), "Extra inputs"),
+        (lambda d: d["resolved"][0].update(resolver={"provider": "aws", "version": "1.0.0"}), "Extra inputs"),
         (lambda d: d["unresolved"][0].update(reason="guessed"), "Input should be"),
-        (lambda d: d["bindings"][0].update(state={"password": "x"}), "Extra inputs are not permitted"),
+        (lambda d: d["resolved"][0].update(state={"password": "x"}), "Extra inputs are not permitted"),
         (lambda d: d.update(unresolved=[{"address": "x", "reason": "no_resolver"}] * 100_001), "at most 100000"),
         (lambda d: d["removed"].append(removed("aws_db_instance.payments")), "name each resource once"),
         (
@@ -136,17 +136,17 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d["removed"][0].pop("removal"), "Field required"),
         (lambda d: d["removed"][0]["iac"].update(unit="network"), "belongs to the unit"),
         (lambda d: d["sources"]["state"].update(digest="sha256:abc"), "String should match pattern"),
-        (lambda d: d.update(resolvers=[]), "only a resource type verified for its provider"),
+        (lambda d: d.update(resolvers=[]), "only a resource type its provider's resolver supports"),
         (lambda d: d["resolvers"].append(d["resolvers"][0]), "sorted by provider, one for each"),
-        (lambda d: d["bindings"][0]["cloud"].update(provider="gcp"), "'aws'"),
-        (lambda d: d["bindings"][0]["iac"].update(tool="pulumi"), "Input should be 'terraform'"),
+        (lambda d: d["resolved"][0]["cloud"].update(provider="gcp"), "'aws'"),
+        (lambda d: d["resolved"][0]["iac"].update(tool="pulumi"), "Input should be 'terraform'"),
         (lambda d: d["sources"]["state"].pop("tool"), "Field required"),
     ],
     ids=[
         "unsorted",
         "twice",
         "unresolved unsorted",
-        "bound and unresolved",
+        "resolved and unresolved",
         "other unit",
         "wrong type",
         "long identifier",
@@ -154,8 +154,8 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         "resolver version",
         "another generator",
         "no generator",
-        "a type bound that was not verified",
-        "bound with nothing verified",
+        "a type resolved that is not supported",
+        "resolved with nothing supported",
         "verified types unsorted",
         "verified type twice",
         "a resolver on a binding",
@@ -170,7 +170,7 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         "no removal",
         "removed from another unit",
         "state digest",
-        "no resolver for a bound provider",
+        "no resolver for a resolved provider",
         "a resolver twice",
         "an unknown cloud provider",
         "an unknown IaC tool",
@@ -181,4 +181,4 @@ def test_a_document_that_does_not_hold_together_is_refused(change: Any, message:
     document = copy.deepcopy(DOCUMENT)
     change(document)
     with pytest.raises(ValidationError, match=message):
-        IdentityBindings.model_validate(document)
+        ResourceIdentities.model_validate(document)

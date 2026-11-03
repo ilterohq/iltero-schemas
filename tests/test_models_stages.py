@@ -425,11 +425,7 @@ POLICY_LEAVES_OUT_POST_VERIFY = {
 
 
 def test_the_environment_policy_of_a_run_the_server_opened_can_leave_out_post_verify() -> None:
-    scoped = _record(
-        **POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server", "run.origin": "server_issued"}
-    )
-    for event in scoped["events"]:
-        event["provenance"]["run"]["origin"] = "server_issued"
+    scoped = _record(**POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server"})
     for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
         coverage["assertions_expected"]["origin"] = "server_pinned"
     (left_out,) = CAR.model_validate(scoped, context=_READER).out_of_scope
@@ -478,8 +474,8 @@ def test_no_reason_leaves_out_the_post_deploy_stage(reason: str, declared_in: An
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("origin", "server_issued"), ("unit", "network")],
-    ids=["another run", "another way of opening it", "another unit"],
+    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("unit", "network")],
+    ids=["another run", "another unit"],
 )
 def test_every_event_names_the_records_run(field: str, value: str) -> None:
     document = _record()

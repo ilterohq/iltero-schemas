@@ -1,9 +1,9 @@
 """Amazon Web Services (AWS), the first cloud provider the contract supports.
 
 AWS names each resource by an Amazon Resource Name (ARN). This module holds
-the rules an ARN must follow for each resource type a resolver may bind. It
-also holds the AWS variants of two shared shapes: the cloud side of an
-identity binding, and the resolver that wrote it. Each cloud provider keeps
+the rules an ARN must follow for each resource type a resolver may resolve. It
+also holds the AWS variants of two shared shapes: the cloud side of a
+resolved identity, and the resolver that wrote it. Each cloud provider keeps
 its own rules and variants in its own module, so another provider adds a
 module and changes none here.
 """
@@ -105,19 +105,19 @@ class AwsCloudSide(StrictModel):
 
 
 class AwsResolver(StrictModel):
-    """The AWS resolver that bound resources: its version, and the resource types verified for it at the time.
+    """The AWS resolver that resolved resources: its version, and the resource types it supported at the time.
 
-    Only a verified type is ever bound, so the list says which resources the
-    resolver could have bound at all. An empty list means it bound none by
+    Only a supported type is ever resolved, so the list says which resources the
+    resolver could have resolved at all. An empty list means it resolved none by
     design.
     """
 
     provider: Literal["aws"]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    verified_resource_types: list[AwsResourceType]
+    supported_resource_types: list[AwsResourceType]
 
     @model_validator(mode="after")
     def _sorted_once(self) -> AwsResolver:
-        if not sorted_unique(self.verified_resource_types):
+        if not sorted_unique(self.supported_resource_types):
             raise ValueError("the verified types are sorted and named once")
         return self

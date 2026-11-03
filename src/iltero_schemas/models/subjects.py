@@ -9,7 +9,7 @@ A subject's ``key`` is the digest of its kind and its one local identity:
 
 The key names an address in a unit, not a cloud resource. A resource replaced
 in the cloud keeps its key; a resource moved to another address gets a new
-one. Only an identity document ties a key to a cloud resource over time. A
+one. Only a resource identities document ties a key to a cloud resource over time. A
 stack, a workspace or an organization is never an input, so a project keeps
 every key when it connects to the server. A cloud identity bound later is
 added beside the local identity, never in its place.

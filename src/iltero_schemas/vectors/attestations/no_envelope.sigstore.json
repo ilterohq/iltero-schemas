@@ -1,0 +1,9 @@
+{
+  "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+  "verificationMaterial": {
+    "certificate": {
+      "rawBytes": "bm90IGEgcmVhbCBjZXJ0aWZpY2F0ZTogdGhlIHJlYWRlciBuZXZlciByZWFkcyBpdA=="
+    },
+    "tlogEntries": []
+  }
+}

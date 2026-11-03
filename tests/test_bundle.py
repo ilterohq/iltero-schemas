@@ -67,7 +67,7 @@ def _keys(status: str = "active") -> Mapping[str, BundleKey]:
         **dates,
     }
     return parse_bundle_keys(
-        json.dumps({"apiVersion": "iltero.io/bundle-keys/v1", "keys": [entry]}).encode(), dev=False
+        json.dumps({"apiVersion": "iltero.io/bundle-keys/v1", "keys": [entry]}).encode(), development=False
     )
 
 

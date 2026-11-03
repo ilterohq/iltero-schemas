@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
 from iltero_schemas.models.checked_content import CheckedPlan
-from iltero_schemas.models.server_facts import MAX_ROLES, Approval, EarlierEvaluation, ExceptionGrant, VerifiedSource
+from iltero_schemas.models.server_facts import (
+    MAX_ROLES,
+    Approval,
+    EarlierEvaluation,
+    ExceptionGrant,
+    RefusedAttestation,
+    VerifiedAttestation,
+    VerifiedSource,
+)
+from tests.conftest import VECTORS
 
 RUN_ID = "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
 OF_RUN: dict[str, Any] = {
@@ -156,6 +166,46 @@ def test_the_verified_source_names_its_commit_and_what_the_ci_identity_named() -
 def test_a_verified_run_attempt_counts_from_one() -> None:
     with pytest.raises(ValidationError, match="greater than or equal to 1"):
         VerifiedSource.model_validate({**VERIFIED, "ci_run_attempt": 0})
+
+
+ATTESTATION: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_artifact.json").read_text(encoding="utf-8"))[
+    "attestation_outcome"
+]
+
+
+def test_a_attestation_outcome_names_its_log_entry_exactly_when_the_log_timed_its_signature() -> None:
+    assert VerifiedAttestation.model_validate(ATTESTATION).log_entry is not None
+    by_authority = {**ATTESTATION, "timestamp_source": "timestamp_authority", "log_entry": None}
+    assert VerifiedAttestation.model_validate(by_authority).log_entry is None
+    for changed in ({**ATTESTATION, "log_entry": None}, {**by_authority, "log_entry": ATTESTATION["log_entry"]}):
+        with pytest.raises(ValidationError, match="names its transparency log entry exactly when the log timed"):
+            VerifiedAttestation.model_validate(changed)
+
+
+def test_an_attestation_was_signed_no_later_than_it_was_verified() -> None:
+    with pytest.raises(ValidationError, match="signed no later than the server verified it"):
+        VerifiedAttestation.model_validate({**ATTESTATION, "signed_at": "2026-11-01T10:05:30Z"})
+
+
+def test_a_refused_attestation_keeps_what_the_server_checked_it_against() -> None:
+    refused = {
+        "outcome": "refused",
+        "reason": "not_an_attestation",
+        "attestation_digest": ATTESTATION["attestation_digest"],
+    }
+    for field in ("trust_root", "verifier", "verified_at"):
+        with pytest.raises(ValidationError, match="Field required"):
+            RefusedAttestation.model_validate(
+                {
+                    **refused,
+                    **{key: ATTESTATION[key] for key in ("trust_root", "verifier", "verified_at") if key != field},
+                }
+            )
+
+
+def test_a_attestation_outcome_names_no_repository_name_only_its_id() -> None:
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        VerifiedAttestation.model_validate({**ATTESTATION, "repository": "acme/api"})
 
 
 def test_an_earlier_evaluation_names_its_subject_by_its_key() -> None:

@@ -42,7 +42,7 @@
       "/governance/run_opened_by": "server"
     },
     "remove": [],
-    "message": "exactly when the server issued the run"
+    "message": "exactly when the server opened the run"
   },
   {
     "name": "unit_not_declared_in_its_units_file",
@@ -821,7 +821,7 @@
         "subjects_evaluated": 2,
         "assertions_expected": {
           "value": 10,
-          "origin": "locally_derived",
+          "origin": "project_files",
           "required_assertion_digest": "sha256:e91b5f03a1fa4cd10fd9d369f40ca86cc228f2e3a50f8c6c4db91e5f490f8cbe"
         },
         "assertions_evaluated": 10,
@@ -1374,7 +1374,7 @@
           "coverage": {
             "assertions_evaluated": 5,
             "assertions_expected": {
-              "origin": "locally_derived",
+              "origin": "project_files",
               "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
               "value": 5
             },
@@ -1928,7 +1928,7 @@
           "coverage": {
             "assertions_evaluated": 5,
             "assertions_expected": {
-              "origin": "locally_derived",
+              "origin": "project_files",
               "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
               "value": 5
             },
@@ -2512,7 +2512,7 @@
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "origin": "locally_derived",
+            "origin": "project_files",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
@@ -2674,7 +2674,7 @@
     "vector": "local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "binding_set": {
+        "evaluator_binding_set": {
           "id": "ILT.BINDINGS.STARTER",
           "version": "1.0.0",
           "origin": "file",
@@ -2685,7 +2685,7 @@
         },
         "reports": [],
         "results_accepted": 0,
-        "results_binding_unverified": 0,
+        "results_scanner_version_not_allowed": 0,
         "results_without_binding": 0
       }
     },
@@ -3198,7 +3198,7 @@
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "origin": "locally_derived",
+            "origin": "project_files",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
@@ -3335,7 +3335,7 @@
   },
   {
     "name": "post_verify_stage_without_its_drift_check",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check": null
     },
@@ -3367,7 +3367,7 @@
   },
   {
     "name": "drift_check_of_another_run",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/run_id": "0b6d3c52-5f0e-4b8a-9a40-2f1c7e5d9a11"
     },
@@ -3376,7 +3376,7 @@
   },
   {
     "name": "drift_check_read_before_the_apply_ended",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_at": "2026-09-23T01:46:00.000Z",
       "/change/drift_check/second_reading_at": "2026-09-23T01:47:00.000Z"
@@ -3386,7 +3386,7 @@
   },
   {
     "name": "drift_check_readings_closer_than_the_minimum_interval",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/second_reading_at": "2026-10-29T00:25:30.000Z"
     },
@@ -3395,7 +3395,7 @@
   },
   {
     "name": "post_verify_stage_observed_before_the_second_reading",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/stages/post_verify/observed_at": "2026-10-29T00:25:30.000Z",
       "/stages/post_verify/reference_time/value": "2026-10-29T00:25:30.000Z"
@@ -3405,7 +3405,7 @@
   },
   {
     "name": "post_verify_stage_counting_another_deployment",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
     },
@@ -3414,7 +3414,7 @@
   },
   {
     "name": "drift_check_miscounting_its_differences",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/differences_count": 1
     },
@@ -3423,7 +3423,7 @@
   },
   {
     "name": "drift_check_differences_out_of_order",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/resources_read": 2,
       "/change/drift_check/differences_count": 2,
@@ -3443,7 +3443,7 @@
   },
   {
     "name": "drift_check_difference_of_a_resource_not_read",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/resources_read": 0,
       "/change/drift_check/differences_count": 1,
@@ -3459,7 +3459,7 @@
   },
   {
     "name": "drift_check_difference_outside_the_list",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/differences_count": 1,
       "/change/drift_check/differences": [
@@ -3474,7 +3474,7 @@
   },
   {
     "name": "drift_check_first_reading_difference_outside_the_list",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_only_differences": [
         {
@@ -3488,7 +3488,7 @@
   },
   {
     "name": "drift_check_first_reading_differences_out_of_order",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_only_differences": [
         {
@@ -3506,7 +3506,7 @@
   },
   {
     "name": "drift_check_resource_listed_as_differing_in_the_first_reading_only_and_in_the_latest",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/differences": [
         {
@@ -3527,7 +3527,7 @@
   },
   {
     "name": "drift_check_with_no_interval",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/minimum_interval_seconds": 0
     },
@@ -3536,7 +3536,7 @@
   },
   {
     "name": "drift_check_that_read_fewer_resources_than_the_state_holds",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/resources_read": 10
     },
@@ -3545,7 +3545,7 @@
   },
   {
     "name": "drift_check_difference_of_a_resource_outside_the_state",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/differences_count": 1,
       "/change/drift_check/differences": [
@@ -3560,7 +3560,7 @@
   },
   {
     "name": "drift_check_read_before_the_post_deploy_stage",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/deployment/apply/timing/started_at": "2026-10-29T02:28:00.100Z",
       "/change/deployment/apply/timing/ended_at": "2026-10-29T02:28:00.200Z",
@@ -3573,7 +3573,7 @@
   },
   {
     "name": "drift_check_read_in_the_second_before_the_post_deploy_stage",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/deployment/apply/timing/started_at": "2026-10-29T02:28:00.100Z",
       "/change/deployment/apply/timing/ended_at": "2026-10-29T02:28:00.200Z",
@@ -3586,7 +3586,7 @@
   },
   {
     "name": "drift_check_read_a_fraction_of_a_second_before_the_post_deploy_stage",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_at": "2026-10-29T02:28:13.285Z",
       "/change/drift_check/second_reading_at": "2026-10-29T02:29:15Z"
@@ -3616,7 +3616,7 @@
   },
   {
     "name": "drift_check_naming_one_reading_twice",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/second_reading_digest": "sha256:e8e58cdc606f0ec3dbc7bd21d881cadb53b30fc0d5065c5682bc92c27b8cf523"
     },
@@ -3733,7 +3733,8 @@
     "name": "image_index_without_platform_digests",
     "vector": "local_run_image_build.json",
     "set": {
-      "/change/platform_digests": []
+      "/change/platform_digests": [],
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
     },
     "remove": [],
     "message": "an image pushed as an index names both its raw index and its platform digests; an image pushed as one manifest names neither"
@@ -3978,13 +3979,13 @@
         {
           "evidence_ref": "plan/reports/trivy.json",
           "format": "trivy_json",
-          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
           "image_digest_source": "report"
         },
         {
           "evidence_ref": "plan/reports/zz-missing.json",
           "format": "trivy_json",
-          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
           "image_digest_source": "report"
         }
       ]
@@ -4037,7 +4038,7 @@
         {
           "evidence_ref": "plan/reports/trivy.json",
           "format": "trivy_json",
-          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
           "image_digest_source": "report"
         }
       ]
@@ -4046,7 +4047,38 @@
     "message": "the raw index, the attestation, the build tool's metadata file and each report are different files"
   },
   {
-    "name": "image_build_without_its_binding_check",
+    "name": "image_scan_report_of_an_index_naming_the_index",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "message": "a scan of an image built for several platforms names the platform it scanned"
+  },
+  {
+    "name": "image_attestation_redacted",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/evidence_refs/7/redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    "remove": [],
+    "message": "the attestation is kept as the pipeline gave it, so its signature can be checked again"
+  },
+  {
+    "name": "image_attestation_without_its_source",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/evidence_refs/7/source": null
+    },
+    "remove": [],
+    "message": "the attestation names the digest of the file as the pipeline gave it, in its source"
+  },
+  {
+    "name": "image_build_without_its_match_check",
     "vector": "local_run_image_build.json",
     "set": {
       "/events/0/assertion/id": "ACME.IMAGE.COMMIT",
@@ -4062,16 +4094,16 @@
       }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is evaluated once, at the plan stage, once it has reported"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported"
   },
   {
-    "name": "image_build_naming_another_binding_check",
+    "name": "image_build_naming_another_match_check",
     "vector": "local_run_image_build.json",
     "set": {
       "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is a built-in assertion: it names the document this package ships"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is a built-in assertion: it names the document this package ships"
   },
   {
     "name": "image_build_of_a_local_run_claiming_its_commit_was_verified",
@@ -4081,7 +4113,7 @@
       "/events/0/evaluation/status_reason": null
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
     "name": "image_build_of_a_local_run_whose_commit_check_failed",
@@ -4091,7 +4123,7 @@
       "/events/0/evaluation/status_reason": null
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
     "name": "image_build_of_a_local_run_whose_commit_check_is_unknown_for_another_reason",
@@ -4100,17 +4132,17 @@
       "/events/0/evaluation/status_reason": "path_missing"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
-    "name": "image_build_whose_binding_check_did_not_apply",
+    "name": "image_build_whose_match_check_did_not_apply",
     "vector": "local_run_image_build.json",
     "set": {
       "/events/0/evaluation/status": "not_applicable",
       "/events/0/evaluation/status_reason": "when_guard_excluded"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT always applies to the plan stage's one subject"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT always applies to the plan stage's one subject"
   },
   {
     "name": "image_report_with_a_source_that_is_not_a_digest",
@@ -4154,7 +4186,7 @@
       "/events/2/provenance/facts_source": "server"
     },
     "remove": [],
-    "message": "every evaluation of a build whose run was locally_derived reads its facts from none"
+    "message": "every evaluation of a build whose run was opened by local reads its facts from none"
   },
   {
     "name": "image_build_commit_read_from_another_file_than_the_tag",
@@ -4253,7 +4285,7 @@
       "/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILT_FROM_RUN_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
   },
   {
     "name": "infrastructure_record_whose_post_deploy_stage_left_out_its_always_evaluated_check",
@@ -4262,11 +4294,11 @@
     "remove": [
       "/events/3"
     ],
-    "message": "ILT.DEPLOYMENT.PLAN_BINDING is evaluated once, at the post_deploy stage, once it has reported"
+    "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is evaluated once, at the post_deploy stage, once it has reported"
   },
   {
     "name": "infrastructure_record_whose_post_verify_stage_left_out_its_always_evaluated_check",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {},
     "remove": [
       "/events/4"
@@ -4826,14 +4858,14 @@
     "vector": "local_run_image_deploy.json",
     "set": {
       "/events/1/assertion": {
-        "id": "ILT.DEPLOYMENT.PLAN_BINDING",
+        "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
         "version": "1.0.0",
-        "digest": "sha256:803bee9122a9d783cc34f290e7e10b088736284daeaf13f246455555e9ca17f8"
+        "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a"
       },
-      "/events/1/provenance/compiled_digest": "sha256:9bff9e2fc4c07deda7bb8c02b6612260ee8a6fbc8e228fe903ce09e3e210a513"
+      "/events/1/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7"
     },
     "remove": [],
-    "message": "ILT.DEPLOYMENT.PLAN_BINDING is a built-in assertion of another activity, not of image_deploy"
+    "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
   },
   {
     "name": "image_deploy_with_a_tag_whose_metadata_file_is_not_kept",
@@ -4880,6 +4912,6 @@
       "/events/2/assertion/id": "ACME.IMAGE.RUNNING"
     },
     "remove": [],
-    "message": "ILT.IMAGE.RUNNING_DIGEST_MATCHES is evaluated once, at the post_verify stage, once it has reported"
+    "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
   }
 ]

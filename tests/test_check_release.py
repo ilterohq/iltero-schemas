@@ -64,7 +64,7 @@ def _file(*entries: dict[str, Any]) -> bytes:
 
 
 def _keys(*entries: dict[str, Any]) -> Mapping[str, BundleKey]:
-    return parse_bundle_keys(_file(*entries), dev=False)
+    return parse_bundle_keys(_file(*entries), development=False)
 
 
 def _problems(

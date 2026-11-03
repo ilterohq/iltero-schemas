@@ -90,7 +90,7 @@
       "format": "trivy_json",
       "tool_version": "0.58.1",
       "file_digest": "sha256:11aac8c631e72d3a5acfb76f6ab1ab31091b5a868c7d566f7dfbc06e429ef28e",
-      "image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "image_digest": "sha256:6e71808a3bf4bf44c542c7b36d9238aa5dd0aa326142728cb9cea1329863d8cb",
       "image_digest_source": "report",
       "reported_at": "2026-11-01T10:03:12Z",
       "finding_counts": {
@@ -111,5 +111,39 @@
     "repository": "acme/api",
     "ci_run_id": "14520384761",
     "ci_run_attempt": 1
+  },
+  "attestation_outcome": {
+    "commit": "c84e7a1000000000000000000000000000000000",
+    "ci_provider": "github_actions",
+    "ci_instance": "github.com",
+    "repository_id": "812345678",
+    "ci_run_id": "14520384761",
+    "ci_run_attempt": 1,
+    "outcome": "verified",
+    "attestation_digest": "sha256:f2168ec310ea3d35dc929b480c85a91c21775cbbf36db3a37e041e5fe815f586",
+    "image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+    "predicate_type": "https://slsa.dev/provenance/v1",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "source_ref": "refs/heads/main",
+    "signer_identity": "https://github.com/acme/api/.github/workflows/release.yml@refs/heads/main",
+    "signer_commit": "c84e7a1000000000000000000000000000000000",
+    "build_config": "https://github.com/acme/api/.github/workflows/release.yml@refs/heads/main",
+    "signed_by_same_job": true,
+    "runner_environment": "ci_hosted",
+    "signed_at": "2026-11-01T10:02:41Z",
+    "timestamp_source": "transparency_log",
+    "log_entry": {
+      "log_id": "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d",
+      "log_index": 151234567
+    },
+    "trust_root": {
+      "name": "sigstore_public_good",
+      "digest": "sha256:4b2a5e1c0d3f6a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d"
+    },
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-11-01T10:04:58Z"
   }
 }

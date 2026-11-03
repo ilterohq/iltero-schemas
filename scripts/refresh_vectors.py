@@ -42,7 +42,7 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
-from iltero_schemas.models.identity import IdentityBindings
+from iltero_schemas.models.identity import ResourceIdentities
 from iltero_schemas.models.verification import VerificationReport
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,7 +54,7 @@ CANONICAL_VECTORS = PACKAGE / "vectors" / "canonical"
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     PACKAGE / "vectors" / "contexts": AssuranceContext,
     PACKAGE / "vectors" / "events": AssuranceEvent,
-    PACKAGE / "vectors" / "identities": IdentityBindings,
+    PACKAGE / "vectors" / "identities": ResourceIdentities,
     PACKAGE / "vectors" / "records": CAR,
     PACKAGE / "vectors" / "reports": VerificationReport,
 }

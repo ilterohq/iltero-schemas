@@ -548,7 +548,7 @@
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "origin": "locally_derived",
+            "origin": "project_files",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
@@ -1107,7 +1107,7 @@
         "coverage": {
           "assertions_evaluated": 5,
           "assertions_expected": {
-            "origin": "locally_derived",
+            "origin": "project_files",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
           },
@@ -1225,7 +1225,7 @@
   },
   {
     "name": "drift_check_of_another_change",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
       "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e6cbc0742fcfdfcdb7dc46ba0245ffb16d6961547e1ef34f42a9d7442a4f4971"
@@ -1276,7 +1276,7 @@
     ]
   },
   {
-    "name": "deployment_of_another_plan_whose_plan_binding_check_still_passed",
+    "name": "deployment_of_another_plan_whose_plan_match_check_still_passed",
     "vector": "local_run_deployed.json",
     "set": {
       "/change/deployment/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
@@ -1293,7 +1293,7 @@
   },
   {
     "name": "drifted_resource_whose_drift_check_still_passed",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/differences": [
         {
@@ -1313,7 +1313,7 @@
     ]
   },
   {
-    "name": "deployment_of_the_evaluated_plan_without_its_saved_file_whose_plan_binding_check_still_passed",
+    "name": "deployment_of_the_evaluated_plan_without_its_saved_file_whose_plan_match_check_still_passed",
     "vector": "local_run_deployed.json",
     "set": {
       "/change/plan/artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -1329,7 +1329,7 @@
     ]
   },
   {
-    "name": "deployment_of_the_evaluated_plan_whose_plan_binding_check_failed",
+    "name": "deployment_of_the_evaluated_plan_whose_plan_match_check_failed",
     "vector": "local_run_deployed.json",
     "set": {
       "/events/3/evaluation/status": "fail"
@@ -1384,7 +1384,7 @@
     ]
   },
   {
-    "name": "image_deploy_of_another_image_whose_binding_check_still_passed",
+    "name": "image_deploy_of_another_image_whose_match_check_still_passed",
     "vector": "local_run_image_deploy.json",
     "set": {
       "/change/deployment": {

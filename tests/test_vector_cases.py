@@ -1,5 +1,5 @@
-"""The record and identity cases are refused, accepted or read with their integrity problems, and the two-stage
-record's evaluations name their inputs.
+"""The record, identity and context cases are refused, accepted or read with their integrity problems, a build's scan
+coverage is counted, and the two-stage record's evaluations name their inputs.
 
 Each case names a document vector and changes it by JSON Pointer (RFC 6901); a
 refused case names the message the refusal carries, and a case that fails its
@@ -19,8 +19,10 @@ from pydantic import ValidationError
 from iltero_schemas.assertions import ASSERTIONS
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
+from iltero_schemas.change_types import ImageBuild, scan_coverage
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.identity import IdentityBindings
+from iltero_schemas.models.context import AssuranceContext
+from iltero_schemas.models.identity import ResourceIdentities
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import VECTORS
 
@@ -31,6 +33,8 @@ RECORD_INTEGRITY_FAILED_CASES = json.loads(
 )
 IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
+CONTEXT_INVALID_CASES = json.loads((VECTORS / "contexts_invalid" / "cases.json").read_text(encoding="utf-8"))
+SCAN_COVERAGE_CASES = json.loads((VECTORS / "scan_coverage" / "cases.json").read_text(encoding="utf-8"))
 
 
 def _read(path: Any) -> Any:
@@ -94,14 +98,28 @@ def test_a_record_that_fails_its_integrity_checks_is_read_and_its_problems_repor
 
 
 @pytest.mark.parametrize("case", IDENTITY_INVALID_CASES, ids=[c["name"] for c in IDENTITY_INVALID_CASES])
-def test_invalid_identity_document_is_rejected(case: dict[str, Any]) -> None:
+def test_invalid_resource_identities_document_is_rejected(case: dict[str, Any]) -> None:
     with pytest.raises(ValidationError, match=re.escape(case["message"])):
-        IdentityBindings.model_validate(_patched(case, "identities"))
+        ResourceIdentities.model_validate(_patched(case, "identities"))
 
 
 @pytest.mark.parametrize("case", IDENTITY_VALID_CASES, ids=[c["name"] for c in IDENTITY_VALID_CASES])
-def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
-    IdentityBindings.model_validate(_patched(case, "identities"))
+def test_valid_resource_identities_document_case_is_accepted(case: dict[str, Any]) -> None:
+    ResourceIdentities.model_validate(_patched(case, "identities"))
+
+
+@pytest.mark.parametrize("case", CONTEXT_INVALID_CASES, ids=[c["name"] for c in CONTEXT_INVALID_CASES])
+def test_invalid_context_is_rejected(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        AssuranceContext.model_validate(_patched(case, "contexts"))
+
+
+@pytest.mark.parametrize("case", SCAN_COVERAGE_CASES, ids=[c["name"] for c in SCAN_COVERAGE_CASES])
+def test_a_builds_scan_coverage_is_counted(case: dict[str, Any]) -> None:
+    build = ImageBuild.model_validate(_patched(case, "records")["change"])
+    coverage = scan_coverage(build)
+    assert list(coverage.platforms_scanned) == case["platforms_scanned"]
+    assert list(coverage.platforms_not_scanned) == case["platforms_not_scanned"]
 
 
 @pytest.mark.parametrize(
@@ -112,8 +130,18 @@ def test_valid_identity_document_case_is_accepted(case: dict[str, Any]) -> None:
         RECORD_INTEGRITY_FAILED_CASES,
         IDENTITY_INVALID_CASES,
         IDENTITY_VALID_CASES,
+        CONTEXT_INVALID_CASES,
+        SCAN_COVERAGE_CASES,
     ],
-    ids=["records invalid", "records valid", "records integrity failed", "identities invalid", "identities valid"],
+    ids=[
+        "records invalid",
+        "records valid",
+        "records integrity failed",
+        "identities invalid",
+        "identities valid",
+        "contexts invalid",
+        "scan coverage",
+    ],
 )
 def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
     names = [case["name"] for case in cases]
@@ -121,7 +149,9 @@ def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
 
 
 @pytest.mark.parametrize(
-    "cases", [RECORD_INVALID_CASES, IDENTITY_INVALID_CASES], ids=["records invalid", "identities invalid"]
+    "cases",
+    [RECORD_INVALID_CASES, IDENTITY_INVALID_CASES, CONTEXT_INVALID_CASES],
+    ids=["records invalid", "identities invalid", "contexts invalid"],
 )
 def test_every_expected_message_is_one_line_so_any_error_layout_contains_it(cases: list[dict[str, Any]]) -> None:
     assert [case["name"] for case in cases if "\n" in case["message"]] == []

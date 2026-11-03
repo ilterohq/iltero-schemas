@@ -42,14 +42,8 @@
     "name": "record_of_a_run_the_server_opened",
     "vector": "local_run.json",
     "set": {
-      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
       "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/events/0/provenance/run/origin": "server_issued",
-      "/events/1/provenance/run/origin": "server_issued",
-      "/events/2/provenance/run/origin": "server_issued",
-      "/events/3/provenance/run/origin": "server_issued",
-      "/events/4/provenance/run/origin": "server_issued",
       "/coverage/assertions_expected/origin": "server_pinned"
     },
     "remove": []
@@ -224,7 +218,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "binding": null,
+            "evaluator_binding": null,
             "facts_source": null,
             "compiled_digest": "sha256:afcd1cc0a702cce43e5bb8dbca8009dd102e8062727d23c63295453fb7fcd252",
             "compiler": {
@@ -263,7 +257,6 @@
               "tool": "terraform"
             },
             "run": {
-              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -323,7 +316,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "binding": null,
+            "evaluator_binding": null,
             "facts_source": null,
             "compiled_digest": "sha256:7f067c8c0df02601f5295b39058ba0d2e169fd48dd8aaf7c89a9b0194643a194",
             "compiler": {
@@ -362,7 +355,6 @@
               "tool": "terraform"
             },
             "run": {
-              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -464,7 +456,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "binding": null,
+            "evaluator_binding": null,
             "facts_source": null,
             "compiled_digest": "sha256:af6e92314b510629e8144aa8eee88e36f22608149373bc470721ee4050a2b73d",
             "compiler": {
@@ -503,7 +495,6 @@
               "tool": "terraform"
             },
             "run": {
-              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -563,7 +554,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "binding": null,
+            "evaluator_binding": null,
             "facts_source": null,
             "compiled_digest": "sha256:63d7af7e77eb053a5bca77f3999306c5e6948e0d18f48463e7bdff2255699cd3",
             "compiler": {
@@ -602,7 +593,6 @@
               "tool": "terraform"
             },
             "run": {
-              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -666,7 +656,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "binding": null,
+            "evaluator_binding": null,
             "facts_source": null,
             "compiled_digest": "sha256:e7d5bbfb023dea497f2961f8612a8d9df77ec3460afc5b30d796a11604e13b0c",
             "compiler": {
@@ -705,7 +695,6 @@
               "tool": "terraform"
             },
             "run": {
-              "origin": "locally_derived",
               "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
               "unit": "root"
             },
@@ -768,14 +757,8 @@
     "name": "record_of_a_run_the_server_opened_from_a_served_bundle",
     "vector": "local_run.json",
     "set": {
-      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
       "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/events/0/provenance/run/origin": "server_issued",
-      "/events/1/provenance/run/origin": "server_issued",
-      "/events/2/provenance/run/origin": "server_issued",
-      "/events/3/provenance/run/origin": "server_issued",
-      "/events/4/provenance/run/origin": "server_issued",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/stages/plan/execution/bundle": {
         "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
@@ -826,14 +809,8 @@
     "name": "post_verify_not_required_by_the_environment_policy",
     "vector": "local_run.json",
     "set": {
-      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
       "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/events/0/provenance/run/origin": "server_issued",
-      "/events/1/provenance/run/origin": "server_issued",
-      "/events/2/provenance/run/origin": "server_issued",
-      "/events/3/provenance/run/origin": "server_issued",
-      "/events/4/provenance/run/origin": "server_issued",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/out_of_scope": [
         {
@@ -851,7 +828,7 @@
     "remove": []
   },
   {
-    "name": "deployment_that_applied_another_plan_fails_the_plan_binding_check",
+    "name": "deployment_that_applied_another_plan_fails_the_plan_match_check",
     "vector": "local_run_deployed.json",
     "set": {
       "/coverage/status_counts/fail": 1,
@@ -872,7 +849,7 @@
   },
   {
     "name": "deployed_resource_that_drifted_after_the_apply_fails_the_drift_check",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/coverage/status_counts/pass": 1,
       "/coverage/status_counts/fail": 1,
@@ -897,7 +874,7 @@
   },
   {
     "name": "deployed_resource_deleted_after_the_apply_fails_the_drift_check",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/coverage/status_counts/pass": 1,
       "/coverage/status_counts/fail": 1,
@@ -922,7 +899,7 @@
   },
   {
     "name": "resource_that_differed_in_the_first_reading_only_passes_the_drift_check",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_only_differences": [
         {
@@ -958,7 +935,7 @@
   },
   {
     "name": "drift_check_read_at_the_instant_the_post_deploy_stage_was_observed",
-    "vector": "local_run_verified.json",
+    "vector": "local_run_post_verify.json",
     "set": {
       "/change/drift_check/first_reading_at": "2026-10-29T02:28:13.300Z",
       "/change/drift_check/second_reading_at": "2026-10-29T02:29:15Z",
@@ -973,7 +950,8 @@
       "/change/platform_digests": [],
       "/change/index_evidence_ref": null,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649",
-      "/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649"
+      "/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649",
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
     },
     "remove": []
   },
@@ -984,8 +962,8 @@
       "/change/image/tag_resolution": null,
       "/change/build_commit": null,
       "/change/attestation": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:eaeeeac1ce876b815f5df59a7de24ce2ab49ca010cdc6e0c453f933bda416e24",
-      "/coverage/subjects_in_scope/source_digest": "sha256:eaeeeac1ce876b815f5df59a7de24ce2ab49ca010cdc6e0c453f933bda416e24",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
+      "/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
       "/events/0/evaluation/status_reason": "not_reported_by_tool"
     },
     "remove": []
@@ -1004,15 +982,11 @@
     "name": "image_build_of_a_run_the_server_opened_names_no_environment",
     "vector": "local_run_image_build.json",
     "set": {
-      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
       "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/assertions_expected/origin": "server_pinned",
-      "/events/0/provenance/run/origin": "server_issued",
       "/events/0/provenance/facts_source": "server",
-      "/events/1/provenance/run/origin": "server_issued",
       "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/run/origin": "server_issued",
       "/events/2/provenance/facts_source": "server"
     },
     "remove": []
@@ -1037,19 +1011,19 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
           "removed_by_plan": 0,
           "excluded": []
         },
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 3,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:1b22729e0e3cd477c920707c3a3df0195acfef31f4338c19ac249a13087bc740"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:2dd49db08b97118e6e93ed7632a5c6f661595eb93b3a5b346b4d9bacf7a990e8"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
           "ILT.IMAGE.TESTS_RAN@1.0.0": 1
         },
@@ -1086,19 +1060,19 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
           "removed_by_plan": 0,
           "excluded": []
         },
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 3,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:fbc902a49d431fad2e78859ec3d3a86350c3be95e8d45ec7b83ca06a5c3ac5bb"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:4ac7ba57d44aae99bfcbdc503762998159b0fad67c3360f90fdd40e57538623b"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
           "ILT.IMAGE.TESTS_RAN@1.0.0": 1
         },
@@ -1146,19 +1120,19 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
           "removed_by_plan": 0,
           "excluded": []
         },
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 3,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:1b22729e0e3cd477c920707c3a3df0195acfef31f4338c19ac249a13087bc740"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:2dd49db08b97118e6e93ed7632a5c6f661595eb93b3a5b346b4d9bacf7a990e8"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
           "ILT.IMAGE.TESTS_RAN@1.0.0": 1
         },
@@ -1195,19 +1169,19 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
           "removed_by_plan": 0,
           "excluded": []
         },
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 3,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:fbc902a49d431fad2e78859ec3d3a86350c3be95e8d45ec7b83ca06a5c3ac5bb"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:4ac7ba57d44aae99bfcbdc503762998159b0fad67c3360f90fdd40e57538623b"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
           "ILT.IMAGE.TESTS_RAN@1.0.0": 1
         },
@@ -1248,8 +1222,8 @@
     "vector": "local_run_image_build.json",
     "set": {
       "/change/build_commit": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847",
-      "/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:f9af3a70cd3729920089803ffb709318c33acffc45187e049eb0e22e2e347100",
+      "/coverage/subjects_in_scope/source_digest": "sha256:f9af3a70cd3729920089803ffb709318c33acffc45187e049eb0e22e2e347100",
       "/events/0/evaluation/status_reason": "not_reported_by_tool"
     },
     "remove": []
@@ -1450,7 +1424,6 @@
     "name": "image_deploy_of_a_run_the_server_opened_with_its_accepted_build",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/run/origin": "server_issued",
       "/governance/run_opened_by": "server",
       "/change/build": {
         "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
@@ -1464,10 +1437,7 @@
       "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
       "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/assertions_expected/origin": "server_pinned",
-      "/events/0/provenance/run/origin": "server_issued",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/provenance/run/origin": "server_issued",
-      "/events/2/provenance/run/origin": "server_issued"
+      "/events/0/provenance/facts_source": "server"
     },
     "remove": []
   },
@@ -1498,13 +1468,13 @@
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 2,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:374c6c50129fdcca4de74fe79d8091c5d6c898a82ceb9d0f67d42567302313f0"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:cb3a88d2f58380f28528a29bc4d262ebb6b74dc0c4358eebe4fac1243a592537"
         },
         "assertions_evaluated": 2,
         "subjects_per_assertion": {
           "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
-          "ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0": 1
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,

@@ -357,6 +357,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": null,
         "policy_reason": null,
         "stage": "plan",
@@ -433,6 +434,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -552,6 +554,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -672,6 +675,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -927,13 +931,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:6ca2b1d704ce7b1458adeea678dd85276845d999c12cc39741edd21bc690b7c3",
+      "digest": "sha256:4810ba47235b7e279c2c5bb9ec8254cd956f1b90bfef13b289a17b36b4a45e3a",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 1894,
+      "size_bytes": 1918,
       "source": null,
       "storage_uri": null
     },
@@ -1122,13 +1126,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:63d2f427b10f41325c9057f3fc498479fb3e4a4d388b4b93881dafda1ffdc4e1",
+      "digest": "sha256:979dc5d6e092695c31ea33e6fdc0bc51648a3c16e03c9df961379816a659743c",
       "media_type": "application/json",
       "path": "units/root/pre_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "pre_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 5166,
+      "size_bytes": 5214,
       "source": null,
       "storage_uri": null
     },
@@ -1252,13 +1256,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:31501a7553c348403736496ae4d1da495f3bce98e15e334be72ec0bc2b3a2236",
+      "digest": "sha256:a4328bd47cc34d5998373e9075d8b04e10a243b5596c017a278076c82c524e80",
       "media_type": "application/json",
       "path": "units/root/post_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "post_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 2790,
+      "size_bytes": 2814,
       "source": null,
       "storage_uri": null
     }
@@ -1352,7 +1356,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:6ca2b1d704ce7b1458adeea678dd85276845d999c12cc39741edd21bc690b7c3",
+        "digest": "sha256:4810ba47235b7e279c2c5bb9ec8254cd956f1b90bfef13b289a17b36b4a45e3a",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -1559,7 +1563,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:31501a7553c348403736496ae4d1da495f3bce98e15e334be72ec0bc2b3a2236",
+        "digest": "sha256:a4328bd47cc34d5998373e9075d8b04e10a243b5596c017a278076c82c524e80",
         "path": "units/root/post_deploy/events.json"
       },
       "execution": {
@@ -1666,7 +1670,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 2,
-        "digest": "sha256:63d2f427b10f41325c9057f3fc498479fb3e4a4d388b4b93881dafda1ffdc4e1",
+        "digest": "sha256:979dc5d6e092695c31ea33e6fdc0bc51648a3c16e03c9df961379816a659743c",
         "path": "units/root/pre_deploy/events.json"
       },
       "execution": {

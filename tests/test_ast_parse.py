@@ -172,7 +172,7 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
     if stage is Stage.PLAN:
         target = RESOURCE
     kind = TargetKind(target["kind"])
-    roots = allowed_roots(stage, kind)
+    roots = allowed_roots("iac_change", stage, kind)
     for root in roots:
         parse_document(_document({"path": f"{root}.x", "equal": 1}, stage=stage.value, target=target))
     assert _issues(_document({"path": "nowhere.x", "equal": 1}, stage=stage.value, target=target)) == [
@@ -181,9 +181,9 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
 
 
 def test_resource_root_exists_only_for_resource_targets() -> None:
-    assert "resource" in allowed_roots(Stage.RUNTIME, TargetKind.RESOURCE)
-    assert "resource" not in allowed_roots(Stage.RUNTIME, TargetKind.DEPLOYMENT)
-    assert "reference_time" in allowed_roots(Stage.RUNTIME, TargetKind.ASSURANCE)
+    assert "resource" in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.RESOURCE)
+    assert "resource" not in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.DEPLOYMENT)
+    assert "reference_time" in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.ASSURANCE)
 
 
 @pytest.mark.parametrize(

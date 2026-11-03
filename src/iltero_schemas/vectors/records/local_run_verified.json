@@ -372,6 +372,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": null,
         "policy_reason": null,
         "stage": "plan",
@@ -448,6 +449,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -567,6 +569,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -687,6 +690,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -810,6 +814,7 @@
         "version": "1.0.0"
       },
       "evaluation": {
+        "activity": "iac_change",
         "observations": {
           "predicates": [
             {
@@ -1038,13 +1043,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:ed20902b9dcf0241b20819ea063623c66080a9c0e68cc69f588716a1c0d08a1e",
+      "digest": "sha256:304aa87cfc60e7a0ab4cf64941e7ec71f3bb61cdd86fc3307a5faa0aa9fbff4d",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 1894,
+      "size_bytes": 1918,
       "source": null,
       "storage_uri": null
     },
@@ -1233,13 +1238,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:ce39b8d5eabd42bfb67240c43d5968ba8445dac406c4d4cc37c4639acb20eb5c",
+      "digest": "sha256:386b1458953c8bdf8144cdac2ffba86ba660dbf8c74412f21edc97475ff80c3b",
       "media_type": "application/json",
       "path": "units/root/pre_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "pre_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 5166,
+      "size_bytes": 5214,
       "source": null,
       "storage_uri": null
     },
@@ -1363,13 +1368,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:928c2ba6c3e7b6b218598df9025fa3086b830412374e9d5e95087321a1188f25",
+      "digest": "sha256:9bd5f0ecd11975d370b7a3d6cdad1596dc789dc8e8449701397cdd34676bd152",
       "media_type": "application/json",
       "path": "units/root/post_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "post_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 2790,
+      "size_bytes": 2814,
       "source": null,
       "storage_uri": null
     },
@@ -1486,13 +1491,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:adc9a17191debb1a895becec90b0c6c5c306af840c5ce049156dbe5aee536f59",
+      "digest": "sha256:c1ba787e3ac54c409273cf6216cc72c4198b19a36b7c26c218d1efa522798f49",
       "media_type": "application/json",
       "path": "units/root/post_verify/events.json",
       "redaction_policy": null,
       "ref_id": "post_verify/events.json",
       "retention_until": null,
-      "size_bytes": 2243,
+      "size_bytes": 2267,
       "source": null,
       "storage_uri": null
     }
@@ -1586,7 +1591,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:ed20902b9dcf0241b20819ea063623c66080a9c0e68cc69f588716a1c0d08a1e",
+        "digest": "sha256:304aa87cfc60e7a0ab4cf64941e7ec71f3bb61cdd86fc3307a5faa0aa9fbff4d",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -1793,7 +1798,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:928c2ba6c3e7b6b218598df9025fa3086b830412374e9d5e95087321a1188f25",
+        "digest": "sha256:9bd5f0ecd11975d370b7a3d6cdad1596dc789dc8e8449701397cdd34676bd152",
         "path": "units/root/post_deploy/events.json"
       },
       "execution": {
@@ -1899,7 +1904,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:adc9a17191debb1a895becec90b0c6c5c306af840c5ce049156dbe5aee536f59",
+        "digest": "sha256:c1ba787e3ac54c409273cf6216cc72c4198b19a36b7c26c218d1efa522798f49",
         "path": "units/root/post_verify/events.json"
       },
       "execution": {
@@ -2006,7 +2011,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 2,
-        "digest": "sha256:ce39b8d5eabd42bfb67240c43d5968ba8445dac406c4d4cc37c4639acb20eb5c",
+        "digest": "sha256:386b1458953c8bdf8144cdac2ffba86ba660dbf8c74412f21edc97475ff80c3b",
         "path": "units/root/pre_deploy/events.json"
       },
       "execution": {

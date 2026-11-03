@@ -407,3 +407,14 @@ def test_the_excluded_resources_are_bounded(excluded: list[dict[str, Any]]) -> N
     scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
     with pytest.raises(ValidationError):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+
+
+def test_a_build_record_counts_the_one_artifact_its_plan_stage_counts() -> None:
+    artifact = {"value": 1, "counted_from": "artifact_unit", "source_digest": "sha256:" + "7" * 64}
+    built = _outcome(
+        DEPLOYED_STAGE,
+        **{"coverage.subjects_in_scope": {**artifact, "removed_by_plan": 0, "excluded": []}},
+    )
+    assert combine([("plan", built)]).coverage.subjects_in_scope.counted_from == "artifact_unit"
+    with pytest.raises(ValueError, match="one stage counts them, and it comes first"):
+        combine([("plan", built), ("post_deploy", PLAN)])

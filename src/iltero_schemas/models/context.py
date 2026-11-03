@@ -34,15 +34,29 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Annotated, Any, Literal
 
-from pydantic import ConfigDict, Field, model_validator
+from pydantic import (
+    ConfigDict,
+    Field,
+    ValidationInfo,
+    ValidatorFunctionWrapHandler,
+    field_validator,
+    model_validator,
+)
 
 from iltero_schemas.canonical.change import change_digest
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.change_type import IAC_CHANGE_TYPE
-from iltero_schemas.models.checked_content import checked_plan
+from iltero_schemas.models.change_type import (
+    IAC_CHANGE_ACTIVITY,
+    IAC_CHANGE_TYPE,
+    IMAGE_BUILD_ACTIVITY,
+    IMAGE_DEPLOY_ACTIVITY,
+    IMAGE_RELEASE_TYPE,
+    ActivityName,
+)
+from iltero_schemas.models.checked_content import checked_image, checked_plan
 from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.drift_check import DriftCheck, check_against_deployment
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
@@ -61,16 +75,18 @@ from iltero_schemas.models.fields import (
     parse_timestamp,
 )
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
+from iltero_schemas.models.image import ImageArtifact
+from iltero_schemas.models.image_deploy import ImageChange, ImageDeployment, ImageDriftCheck, check_compared
+from iltero_schemas.models.image_evidence import ScanReports, TestReports
 from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
-from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions
+from iltero_schemas.models.reference_time import ReferenceTime
+from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions, VerifiedSource
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
-ReferenceTimeSource = Literal["server", "timestamp_authority", "rekor", "runner_clock"]
-ReferenceTimeTrust = Literal["attested", "corroborated", "asserted"]
 Resolution = Literal["resolved", "unresolved"]
 # The parts a profile may name, whether or not this version specifies their shape.
 PARTS = (
@@ -86,6 +102,10 @@ PARTS = (
     "deployment",
     "drift_check",
     "assurance",
+    "artifact",
+    "tests",
+    "scans",
+    "verified_source",
 )
 
 
@@ -98,9 +118,10 @@ class Identified(StrictModel):
 
 
 class EvaluationRun(StrictModel):
-    """This evaluation run: its id, stage, the runner's own clock, and the assertion."""
+    """This evaluation run: its id, the activity and stage it belongs to, the runner's own clock, and the assertion."""
 
     id: Identifier
+    activity: ActivityName
     stage: StageValue
     timestamp: Timestamp
     assertion: AssertionKey
@@ -129,41 +150,6 @@ class OrganizationScope(StrictModel):
     organization: Identified | None = None
     workspace: Identified | None = None
     environment: Environment | None = None
-
-
-class TimeWindow(StrictModel):
-    """The two timestamp-authority tokens an evaluation sits between."""
-
-    not_before: Timestamp
-    not_after: Timestamp
-    nonce_digest: Digest
-
-
-class ReferenceTime(StrictModel):
-    """The time every expiry or ordering comparison uses, and how far it can be trusted.
-
-    A runner's own clock is only ever asserted. A timestamp authority's time comes with the time window its two tokens
-    set, and lies inside it; no other source has one.
-    """
-
-    value: Timestamp
-    source: ReferenceTimeSource
-    trust: ReferenceTimeTrust
-    time_window: TimeWindow | None = None
-
-    @model_validator(mode="after")
-    def _trust_follows_source(self) -> ReferenceTime:
-        if self.source == "runner_clock" and self.trust != "asserted":
-            raise ValueError("a runner's clock is only ever asserted")
-        if (self.time_window is not None) != (self.source == "timestamp_authority"):
-            raise ValueError("a reference time has a time window exactly when a timestamp authority gave it")
-        if self.time_window is not None and not (
-            parse_timestamp(self.time_window.not_before)
-            <= parse_timestamp(self.value)
-            <= parse_timestamp(self.time_window.not_after)
-        ):
-            raise ValueError("a reference time lies inside its time window, which runs forward")
-        return self
 
 
 class CommitRef(StrictModel):
@@ -319,25 +305,55 @@ class AssuranceContext(StrictModel):
     organization_scope: OrganizationScope
     reference_time: ReferenceTime
     source: Source | None = None
-    change: ProposedChange | None = None
+    # The change: an infrastructure change's resources, or a deployed image and its build; its digest either way.
+    change: ProposedChange | ImageChange | None = None
     plan: Plan | None = None
     subject: Subject | None = None
     resource: PlanResource | None = None
-    deployment: Deployment | None = None
+    deployment: Deployment | ImageDeployment | None = None
     # Facts only the server holds (``models.server_facts``); a marker when it could not supply them.
     evaluations: Evaluations | ServerFactsUnavailable | None = None
     approvals: Approvals | ServerFactsUnavailable | None = None
     exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
-    drift_check: DriftCheck | None = None
+    drift_check: DriftCheck | ImageDriftCheck | None = None
     assurance: dict[str, Any] | None = None
+    # The image a build produced, and the test and scan reports the build was given.
+    artifact: ImageArtifact | None = None
+    tests: TestReports | None = None
+    scans: ScanReports | None = None
+    # The commit the server verified for the run's job; a marker when it could not supply it.
+    verified_source: VerifiedSource | ServerFactsUnavailable | None = None
+
+    @field_validator("change", "deployment", "drift_check", mode="wrap")
+    @classmethod
+    def _shape_of_the_activity(cls, value: Any, handler: ValidatorFunctionWrapHandler, info: ValidationInfo) -> Any:
+        """The change, deployment and drift check parts are read in the shapes of the input's activity."""
+        evaluation = info.data.get("evaluation")
+        shapes = _SHAPES.get(evaluation.activity) if isinstance(evaluation, EvaluationRun) else None
+        if value is None or shapes is None or info.field_name is None:
+            return handler(value)
+        return shapes[_SHAPED_PARTS.index(info.field_name)].model_validate(value)
+
+    def _check_image_change(self, change: ImageChange, local: Identity) -> None:
+        """A deployed image's change digest is of its image in its unit and environment, and what the deployment
+        and the reading after it name is that change."""
+        environment = self.organization_scope.environment
+        key = environment.name if environment is not None else None
+        image = checked_image(change.image.repository, change.image.digest).model_dump(mode="json")
+        if change.digest != change_digest(IMAGE_RELEASE_TYPE, unit_of(local), key, image):
+            raise ValueError("change.digest is the digest of its unit's image in its environment")
+        if isinstance(self.drift_check, ImageDriftCheck):
+            if self.drift_check.change_digest != change.digest:
+                raise ValueError("drift_check.change_digest is change.digest")
+            check_compared(self.drift_check, change.image.repository)
 
     @model_validator(mode="after")
     def _parts_match_the_profile(self) -> AssuranceContext:
         if self.subject is None:
             raise ValueError("subject is required")
-        profile = profile_for(self.evaluation.stage, self.subject.kind)
+        profile = profile_for(self.evaluation.activity, self.evaluation.stage, self.subject.kind)
         present = {name for name in PARTS if getattr(self, name) is not None} | ALWAYS_REQUIRED_PARTS
         missing = sorted(profile.required - present)
         extra = sorted(present - profile.roots)
@@ -352,18 +368,36 @@ class AssuranceContext(StrictModel):
         if self.resource is not None and local.scheme in ADDRESS_IDENTITY_SCHEMES:
             if (local.scheme, local.value) != (ADDRESS_SCHEMES[self.resource.tool_data.tool], self.resource.id):
                 raise ValueError("a resource subject is named by the address of the resource the input carries")
-        if self.plan is not None and self.change is not None:
+        if self.plan is not None and isinstance(self.change, ProposedChange):
             environment = self.organization_scope.environment
             key = environment.name if environment is not None else None
             plan = checked_plan(self.plan.digest, self.plan.digest_version, self.plan.tool).model_dump(mode="json")
             if self.change.digest != change_digest(IAC_CHANGE_TYPE, unit_of(local), key, plan):
                 raise ValueError("change.digest is the digest of its unit's plan in its environment")
         if self.plan is not None:
-            check_kinds(self.plan.tool, self.plan.resources + (self.change.resources if self.change else []))
+            change_resources = self.change.resources if isinstance(self.change, ProposedChange) else []
+            check_kinds(self.plan.tool, self.plan.resources + change_resources)
             if self.resource is not None:
                 check_tool_data(self.plan.tool, [self.resource.tool_data], "resource.tool_data")
-            check_superseded(self.plan.digest, self.deployment)
-            check_tool(self.plan.tool, self.deployment)
-        if self.drift_check is not None and self.deployment is not None:
+            deployment = self.deployment if isinstance(self.deployment, Deployment) else None
+            check_superseded(self.plan.digest, deployment)
+            check_tool(self.plan.tool, deployment)
+        if isinstance(self.drift_check, DriftCheck) and isinstance(self.deployment, Deployment):
             check_against_deployment(self.drift_check, self.deployment)
+        if isinstance(self.change, ImageChange):
+            self._check_image_change(self.change, local)
+        if isinstance(self.drift_check, ImageDriftCheck) and isinstance(self.deployment, ImageDeployment):
+            read, deployed = self.drift_check.read_at.value, self.deployment.deployed_at.value
+            if parse_timestamp(read) < parse_timestamp(deployed):
+                raise ValueError("drift_check.read_at must be no earlier than deployment.deployed_at")
+        if self.evaluation.activity == IMAGE_BUILD_ACTIVITY and self.organization_scope.environment is not None:
+            raise ValueError("a build's input names no environment: a build belongs to none")
         return self
+
+
+# The parts whose shape depends on the input's activity, and their shapes for each activity that has them.
+_SHAPED_PARTS = ("change", "deployment", "drift_check")
+_SHAPES: dict[str, tuple[type[StrictModel], type[StrictModel], type[StrictModel]]] = {
+    IAC_CHANGE_ACTIVITY: (ProposedChange, Deployment, DriftCheck),
+    IMAGE_DEPLOY_ACTIVITY: (ImageChange, ImageDeployment, ImageDriftCheck),
+}

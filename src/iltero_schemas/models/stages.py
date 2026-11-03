@@ -15,32 +15,36 @@ from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING
 
+from iltero_schemas.assertions.built_in import BUILT_INS
 from iltero_schemas.change_types.registry import ACTIVITIES
-from iltero_schemas.models.assertion import VALID_COMBINATIONS, Stage, TargetKind, stage_name
+from iltero_schemas.models.assertion import COMBINATIONS, Stage, TargetKind, stage_name
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
-from iltero_schemas.profiles import reads_server_facts
+from iltero_schemas.profiles import reads_approvals
 
 if TYPE_CHECKING:
     from iltero_schemas.change_types.activity import Activity
     from iltero_schemas.models.car import CAR, StageRecord
 
-# How a stage counts its subjects, by their kind: resources by enumerating the plan, a change or a deployment as
-# its one unit. Only the plan stage enumerates the plan's resources.
+# How a stage counts its subjects, by their kind: resources by enumerating the plan, a change, a deployment or a
+# built artifact as its one unit. Only the plan stage enumerates the plan's resources.
 SCOPE_COUNTED_FROM: dict[TargetKind, str] = {
     TargetKind.RESOURCE: "plan_resource_enumeration",
     TargetKind.CHANGE: "change_unit",
     TargetKind.DEPLOYMENT: "deployment_unit",
+    TargetKind.ARTIFACT: "artifact_unit",
 }
 
 
-def scope_counted_from(stage: Stage, kinds: set[TargetKind]) -> str | None:
-    """How a stage whose evaluations are about subjects of ``kinds`` counts them; None when nothing fixes it.
+def scope_counted_from(activity: Activity, stage: Stage, kinds: set[TargetKind]) -> str | None:
+    """How a stage of ``activity`` whose evaluations are about subjects of ``kinds`` counts them; None when nothing
+    fixes it.
 
-    A stage's evaluations are about one kind of subject, one its assertions can target. A stage with no evaluations
-    counts by the one kind its assertions can target, if there is one. Only the plan stage enumerates the plan's
+    A stage's evaluations are about one kind of subject, one its change type's assertions can target. A stage with no
+    evaluations counts by the one kind they can target, if there is one. Only the plan stage enumerates the plan's
     resources; how a later stage counts resources is not fixed.
     """
-    valid = {kind for _type, valid_stage, kind in VALID_COMBINATIONS if valid_stage is stage}
+    combinations = COMBINATIONS[activity.change_type]
+    valid = {kind for _type, valid_stage, kind in combinations if valid_stage is stage}
     if len(kinds) > 1:
         raise ValueError(f"the {stage.value} stage's evaluations are about one kind of subject")
     if not kinds <= valid:
@@ -100,6 +104,13 @@ def _check_scope(car: CAR, activity: Activity) -> None:
             raise ValueError(
                 f"an environment's policy can leave out only the {_named(activity.environment_policy_may_leave_out)}"
             )
+    unsupported = {item.stage for item in car.out_of_scope if item.reason == "not_supported"}
+    supported = unsupported - activity.not_supported(car)
+    if supported:
+        stage = min(supported, key=_ORDER.index)
+        raise ValueError(
+            f"the {stage_name(stage)} stage is supported for this record: expect it, or say who leaves it out"
+        )
     by_policy = any(item.reason == "environment_policy" for item in car.out_of_scope)
     if by_policy and car.governance.run_opened_by != "server":
         raise ValueError("only a run the server opened has an environment policy that leaves a stage out")
@@ -121,10 +132,28 @@ def _check_checked_content_of_events(car: CAR, activity: Activity) -> None:
 
 
 def _check_run_of_events(car: CAR) -> None:
-    """Every event belongs to the record's run and unit, so no evaluation from another run can be added to it."""
+    """Every event belongs to the record's run, unit and activity, so no evaluation from another run can be added."""
     own = (car.run.id, car.run.origin, car.unit)
     if any((e.provenance.run.id, e.provenance.run.origin, e.provenance.run.unit) != own for e in car.events):
         raise ValueError("every event names the record's run, how that run was opened, and the record's unit")
+    if any(event.evaluation.activity != car.change.activity for event in car.events):
+        raise ValueError("every event names the record's activity")
+
+
+def _check_always_evaluated(car: CAR, activity: Activity) -> None:
+    """Each built-in assertion of the activity is evaluated once, at its own stage, once that stage has reported, and
+    found to apply: it always has the stage's one subject."""
+    foreign = {e.assertion.id for e in car.events if e.assertion.id in BUILT_INS} - set(
+        activity.always_evaluated.values()
+    )
+    if foreign:
+        raise ValueError(f"{min(foreign)} is a built-in assertion of another activity, not of {activity.name}")
+    for stage, assertion_id in activity.always_evaluated.items():
+        found = [e for e in car.events if e.assertion.id == assertion_id]
+        if any(e.evaluation.stage is not stage for e in found) or len(found) != (stage in car.stages):
+            raise ValueError(f"{assertion_id} is evaluated once, at the {stage.value} stage, once it has reported")
+        if found and found[0].evaluation.status == "not_applicable":
+            raise ValueError(f"{assertion_id} always applies to the {stage.value} stage's one subject")
 
 
 def _check_one_redaction_policy(car: CAR) -> None:
@@ -142,6 +171,7 @@ def check_structure(car: CAR) -> None:
     _check_scope(car, activity)
     _check_checked_content_of_events(car, activity)
     _check_run_of_events(car)
+    _check_always_evaluated(car, activity)
     _check_one_redaction_policy(car)
     for stage, record in car.stages.items():
         if stage not in car.expected_stages:
@@ -149,7 +179,7 @@ def check_structure(car: CAR) -> None:
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
         counted_from = scope_counted_from(
-            stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage}
+            activity, stage, {TargetKind(e.subject.kind) for e in car.events if e.evaluation.stage is stage}
         )
         scope = record.coverage.subjects_in_scope.counted_from
         enumerates = scope == SCOPE_COUNTED_FROM[TargetKind.RESOURCE]
@@ -157,8 +187,8 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage counts its scope as {counted_from or 'its own'}")
         if record.enforcement_mode == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
-        if (record.approvals is not None) != reads_server_facts(stage):
-            raise ValueError(f"the {stage.value} stage lists approvals exactly when it reads server facts")
+        if (record.approvals is not None) != reads_approvals(activity.name, stage):
+            raise ValueError(f"the {stage.value} stage lists approvals exactly when its evaluations read them")
         _check_approvals(car, stage, record)
     stages_of_events = [event.evaluation.stage for event in car.events]
     if not set(stages_of_events) <= set(car.stages):
@@ -178,16 +208,7 @@ def check_structure(car: CAR) -> None:
 
 def change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     """The change digest is the change's, and every stage and part that binds to the change names it."""
-    problems = ACTIVITIES[car.change.activity].change_digest_problems(car)
-    pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
-    if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != car.change.digest:
-        problems.append(("stages.pre_deploy.coverage.subjects_in_scope.source_digest", "is not change.digest"))
-    for stage, record in car.stages.items():
-        for approval in record.approvals or []:
-            if approval.subject.kind == "change" and approval.subject.digest != car.change.digest:
-                what = f"lists approval {approval.id} of another change: another change type, unit, environment or plan"
-                problems.append((f"stages.{stage.value}.approvals", what))
-    return problems
+    return ACTIVITIES[car.change.activity].change_digest_problems(car)
 
 
 def integrity_problems(car: CAR) -> list[tuple[str, str]]:

@@ -40,8 +40,9 @@ VerificationState = Literal[
 # reported_by_pipeline: the pipeline reported its post-verify stage, which only the pipeline's word supports.
 # stage_pending: the record expects the stage, and the run that would report it is still in progress.
 # stage_not_reported: the record expects the stage, and it was never reported. project_config, environment_policy
-# and not_supported: the record leaves the stage out of scope for that reason. When the record's integrity is not
-# established, the property is not_determined, as every other one is.
+# and not_supported: the record leaves the stage out of scope for that reason. not_in_activity: the record's activity
+# has no stage after deployment, as a build has none. When the record's integrity is not established, the property is
+# not_determined, as every other one is.
 RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str]] = frozenset(
     {
         ("client_asserted", "reported_by_pipeline"),
@@ -50,6 +51,7 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str]] = frozens
         ("not_assessed", "project_config"),
         ("not_assessed", "environment_policy"),
         ("not_assessed", "not_supported"),
+        ("not_assessed", "not_in_activity"),
     }
 )
 

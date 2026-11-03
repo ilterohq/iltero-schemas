@@ -1,0 +1,50 @@
+{
+  "buildx.build.provenance": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "https://mobyproject.org/buildkit@v1",
+    "materials": [
+      {
+        "uri": "https://github.com/docker-library/hello-world.git#master",
+        "digest": {
+          "sha1": "522bcd2faf422c60b9d20e64d7cd6d56600aec97"
+        }
+      }
+    ],
+    "invocation": {
+      "configSource": {
+        "uri": "https://github.com/docker-library/hello-world.git#master:amd64",
+        "digest": {
+          "sha1": "522bcd2faf422c60b9d20e64d7cd6d56600aec97"
+        },
+        "entryPoint": "Dockerfile"
+      },
+      "parameters": {
+        "frontend": "dockerfile.v0",
+        "secrets": [
+          {
+            "id": "GIT_AUTH_HEADER",
+            "optional": true
+          },
+          {
+            "id": "GIT_AUTH_TOKEN",
+            "optional": true
+          }
+        ]
+      },
+      "environment": {
+        "dockerfileVersion": "1.27.0",
+        "platform": "linux/arm64"
+      }
+    }
+  },
+  "buildx.build.ref": "iltero-fixtures/iltero-fixtures0/n3vcbeedeseqncnjlym644d69",
+  "containerimage.descriptor": {
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "digest": "sha256:e4b3653f84a41453bb7d64680a12fddfcd00ebda7ec7323642a7773608891bdc",
+    "size": 855
+  },
+  "containerimage.digest": "sha256:e4b3653f84a41453bb7d64680a12fddfcd00ebda7ec7323642a7773608891bdc",
+  "image.name": "127.0.0.1:5000/acme/hello:min"
+}

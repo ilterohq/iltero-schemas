@@ -19,6 +19,7 @@
     "resolution": "unresolved"
   },
   "evaluation": {
+    "activity": "iac_change",
     "stage": "plan",
     "status": "pass",
     "status_reason": null,

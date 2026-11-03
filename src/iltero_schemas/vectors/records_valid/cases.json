@@ -192,6 +192,7 @@
             "version": "1.0.0"
           },
           "evaluation": {
+            "activity": "iac_change",
             "observations": {
               "predicates": [
                 {
@@ -290,6 +291,7 @@
             "version": "1.0.0"
           },
           "evaluation": {
+            "activity": "iac_change",
             "observations": {
               "predicates": [
                 {
@@ -388,6 +390,7 @@
             "version": "1.0.0"
           },
           "evaluation": {
+            "activity": "iac_change",
             "observations": {
               "predicates": [
                 {
@@ -528,6 +531,7 @@
             "version": "1.0.0"
           },
           "evaluation": {
+            "activity": "iac_change",
             "observations": {
               "predicates": [
                 {
@@ -626,6 +630,7 @@
             "version": "1.0.0"
           },
           "evaluation": {
+            "activity": "iac_change",
             "observations": {
               "predicates": [
                 {
@@ -960,5 +965,580 @@
       "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:0683097f7877f892357022fe70e20c5dd09439155b1c419a04216b07cbb67272"
     },
     "remove": []
+  },
+  {
+    "name": "image_build_of_a_single_platform_image",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/platform_digests": [],
+      "/change/index_evidence_ref": null,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649",
+      "/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_with_no_tag_no_build_commit_and_no_attestation",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/image/tag_resolution": null,
+      "/change/build_commit": null,
+      "/change/attestation": null,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:eaeeeac1ce876b815f5df59a7de24ce2ab49ca010cdc6e0c453f933bda416e24",
+      "/coverage/subjects_in_scope/source_digest": "sha256:eaeeeac1ce876b815f5df59a7de24ce2ab49ca010cdc6e0c453f933bda416e24",
+      "/events/0/evaluation/status_reason": "not_reported_by_tool"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_given_no_reports",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/reports": [],
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:d891077e086f01bc8acebca82b38dd19126929db1dc2febec6f0b63726e4b5dc",
+      "/coverage/subjects_in_scope/source_digest": "sha256:d891077e086f01bc8acebca82b38dd19126929db1dc2febec6f0b63726e4b5dc"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_of_a_run_the_server_opened_names_no_environment",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/run/origin": "server_issued",
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/run/origin": "server_issued",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/run/origin": "server_issued",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/run/origin": "server_issued",
+      "/events/2/provenance/facts_source": "server"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_of_a_local_run_with_no_evaluator",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/events/0/evaluation/status": "not_evaluated",
+      "/events/0/evaluation/status_reason": "evaluator_unavailable",
+      "/events/0/evaluation/policy_reason": null,
+      "/events/0/evaluation/observations": null,
+      "/events/1/evaluation/status": "not_evaluated",
+      "/events/1/evaluation/status_reason": "evaluator_unavailable",
+      "/events/1/evaluation/policy_reason": null,
+      "/events/1/evaluation/observations": null,
+      "/events/2/evaluation/status": "not_evaluated",
+      "/events/2/evaluation/status_reason": "evaluator_unavailable",
+      "/events/2/evaluation/policy_reason": null,
+      "/events/2/evaluation/observations": null,
+      "/stages/plan/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "artifact_unit",
+          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 3,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:1b22729e0e3cd477c920707c3a3df0195acfef31f4338c19ac249a13087bc740"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 3,
+          "error": 0
+        },
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/stages/plan/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/plan/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "artifact_unit",
+          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 3,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:fbc902a49d431fad2e78859ec3d3a86350c3be95e8d45ec7b83ca06a5c3ac5bb"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 3,
+          "error": 0
+        },
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_of_a_local_run_whose_commit_check_errored",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/events/0/evaluation/status": "error",
+      "/events/0/evaluation/status_reason": "evaluator_crash",
+      "/events/0/evaluation/policy_reason": null,
+      "/events/0/evaluation/observations": null,
+      "/stages/plan/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "artifact_unit",
+          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 3,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:1b22729e0e3cd477c920707c3a3df0195acfef31f4338c19ac249a13087bc740"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        },
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/stages/plan/verdict": {
+        "value": "fail",
+        "exit_code": 4,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/plan/assurance_status": {
+        "value": "incomplete",
+        "reason": "required_policy_evaluation_failed",
+        "detail": "1 of 3 evaluations ended in an evaluator error"
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "artifact_unit",
+          "source_digest": "sha256:8b2106b8717dee859a5f24ca66412d7eeb5bf4225ee0218bf6d93b4af683de0e",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 3,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:fbc902a49d431fad2e78859ec3d3a86350c3be95e8d45ec7b83ca06a5c3ac5bb"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.BUILT_FROM_RUN_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        },
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "fail",
+        "exit_code": 4,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "required_policy_evaluation_failed",
+        "detail": "plan: 1 of 3 evaluations ended in an evaluator error"
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_of_a_local_run_whose_build_names_no_commit",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/build_commit": null,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847",
+      "/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847",
+      "/events/0/evaluation/status_reason": "not_reported_by_tool"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_deploy_to_a_stateful_set_that_owns_its_pods",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "stateful_set",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "kind": "stateful_set",
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "current_revision": "api-6d5c4b3a2",
+          "update_revision": "api-6d5c4b3a2",
+          "strategy": "rolling_update",
+          "partition": 0
+        },
+        "read_at": {
+          "value": "2026-11-02T09:05:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "pod_state": "live",
+            "revision": "api-6d5c4b3a2",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "api-6d5c4b3a2",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": null
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:90dbecb92cb50e87429b9e4ab2e7b453f09997abc8ea598877c35592211d44cf"
+    },
+    "remove": [
+      "/evidence_refs/10"
+    ]
+  },
+  {
+    "name": "image_deploy_with_a_terminating_pod_on_the_previous_image",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "read_at": {
+          "value": "2026-11-02T09:05:00Z",
+          "source": "runner_clock",
+          "trust": "asserted",
+          "time_window": null
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "compared": true,
+            "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "pod_state": "terminating",
+            "revision": "5c4b3a291",
+            "pods": [
+              "api-5c4b3a291-zzzzz"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:f6c258e73b62cc1b6db93782b5e778cc81704f02ed41473ba9e30e72c94949e5"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_deploy_of_a_run_the_server_opened_with_its_accepted_build",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/run/origin": "server_issued",
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ]
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/run/origin": "server_issued",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/run/origin": "server_issued",
+      "/events/2/provenance/run/origin": "server_issued"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_deploy_whose_workload_no_reader_reads",
+    "vector": "local_run_image_deploy.json",
+    "set": {
+      "/expected_stages": [
+        "pre_deploy",
+        "post_deploy"
+      ],
+      "/change/drift_check": null,
+      "/out_of_scope": [
+        {
+          "stage": "post_verify",
+          "reason": "not_supported",
+          "declared_in": null
+        }
+      ],
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 2,
+          "origin": "locally_derived",
+          "required_assertion_digest": "sha256:374c6c50129fdcca4de74fe79d8091c5d6c898a82ceb9d0f67d42567302313f0"
+        },
+        "assertions_evaluated": 2,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 2,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
+    },
+    "remove": [
+      "/stages/post_verify",
+      "/events/2"
+    ]
   }
 ]

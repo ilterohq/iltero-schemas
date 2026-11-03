@@ -45,7 +45,7 @@ REWORDED = {
     "does not match plan.complete and plan.applyable": "does not match change.plan.complete and change.plan.applyable",
     "not the digest of the change's units": "not the digest of the change type, unit, environment and plan",
     "lists an approval of another change": (
-        "lists approval apr_0001 of another change: another change type, unit, environment or plan"
+        "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
     ),
     "a project can leave out only the pre-deploy approval gate and the post-verify stage": (
         "a project can leave out only the pre-deploy and post-verify stages"
@@ -90,6 +90,22 @@ def _read(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _with_activity(value: Any) -> Any:
+    """``value`` with every event's evaluation naming the activity it belongs to."""
+    if isinstance(value, list):
+        return [_with_activity(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    return {
+        key: (
+            {"activity": ACTIVITY, **_with_activity(item)}
+            if key == "evaluation" and isinstance(item, dict) and "status" in item
+            else _with_activity(item)
+        )
+        for key, item in value.items()
+    }
+
+
 def _checked_content(value: Any) -> Any:
     """``value`` with every event's ``plan_digest`` named ``checked_content``, in the checked content's shape."""
     if isinstance(value, list):
@@ -132,7 +148,7 @@ def _moved_record(document: dict[str, Any]) -> dict[str, Any]:
     """A baseline record in the change-type envelope, with the change digest the new rule gives and every value bound
     to it, and each stage's events file digested from its events."""
     digests = STARTER_DIGESTS["digests"] | _new_change_digest(document)
-    moved: dict[str, Any] = _replaced(_checked_content(document), digests)
+    moved: dict[str, Any] = _replaced(_with_activity(_checked_content(document)), digests)
     for ref in moved["evidence_refs"]:
         ref["size_bytes"] = STARTER_DIGESTS["sizes"].get(ref["digest"], ref["size_bytes"])
     moved["change"] = {
@@ -174,7 +190,8 @@ def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
     path = BASELINE / "records" / case["vector"]
     digests = STARTER_DIGESTS["digests"] | (_new_change_digest(_read(path)) if path.exists() else {})
     moved["set"] = {
-        _moved_pointer(pointer): _replaced(_checked_content(value), digests) for pointer, value in case["set"].items()
+        _moved_pointer(pointer): _replaced(_with_activity(_checked_content(value)), digests)
+        for pointer, value in case["set"].items()
     }
     if isinstance(units := moved["set"].get(UNITS), list):
         # A unit a case lists by name alone now names the units it depends on: none.

@@ -1,0 +1,47 @@
+{
+  "ast_version": 1,
+  "id": "ILT.IMAGE.TESTS_RAN",
+  "version": "1.0.0",
+  "type": "process",
+  "change_type": "image_release",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "tests",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.counts.tests",
+              "op": "greater_than",
+              "ref": "item.counts.skipped"
+            }
+          },
+          {
+            "any": [
+              {
+                "predicate": {
+                  "path": "item.image_digest",
+                  "op": "equal",
+                  "ref": "artifact.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.image_digest",
+                  "op": "in",
+                  "ref": "artifact.platform_digests"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

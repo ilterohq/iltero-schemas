@@ -9,7 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.deployment import AppliedChange, Apply, check_one_tool, check_tool
+from iltero_schemas.models.deployment import AppliedChange, Apply, Deployment, check_one_tool, check_tool
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
@@ -28,7 +28,7 @@ def _apply(**fields: Any) -> dict[str, Any]:
 
 def test_the_post_deploy_vector_describes_the_apply() -> None:
     context = AssuranceContext.model_validate(POST_DEPLOY)
-    assert context.deployment is not None and context.plan is not None
+    assert isinstance(context.deployment, Deployment) and context.plan is not None
     assert context.deployment.plan.digest == context.plan.digest
     apply = context.deployment.apply
     assert apply.source.tool_version == "1.14.0" and apply.changes[0].required == ["update"]
@@ -388,6 +388,7 @@ def test_the_apply_log_and_the_state_name_the_same_tool() -> None:
 
 def test_a_deployment_is_of_the_tool_that_wrote_the_plan() -> None:
     deployment = AssuranceContext.model_validate(POST_DEPLOY).deployment
+    assert isinstance(deployment, Deployment)
     check_tool("terraform", deployment)
     check_tool("another", None)  # type: ignore[arg-type]  # a tool no document can name
     with pytest.raises(ValueError, match="written by the tool that wrote the plan"):

@@ -15,20 +15,57 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Ten starter assertions, among them the one that holds the plan applied to
-  the plan that was evaluated, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`, which holds
-  that no deployed resource drifted after the apply. These two are built in
-  (`PLAN_BINDING` and `NO_DRIFT_AFTER_APPLY` in `iltero_schemas.assertions`):
-  a runner evaluates the first at every post-deploy stage and the second at
-  every post-verify stage, whatever a project's own assertions are.
-  `ILT.CHANGE.PRODUCTION_APPROVED` is about any change (`change_type: null`);
-  the others are about `iac_change`.
+- Fifteen starter assertions, among them the one that holds the plan
+  applied to the plan that was evaluated, `ILT.IAC.NO_DRIFT_AFTER_APPLY`,
+  which holds that no deployed resource drifted after the apply, and
+  `ILT.IMAGE.BUILT_FROM_RUN_COMMIT`, which holds that the commit the build
+  tool's provenance names is the commit the server verified for the run,
+  and is unknown when the build names none,
+  `ILT.DEPLOYMENT.IMAGE_BINDING`, which holds that the image the pipeline
+  reports it deployed is the image the deploy checked, and
+  `ILT.IMAGE.RUNNING_DIGEST_MATCHES`, which holds that, once the
+  workload's rollout has finished, every compared container of every live
+  pod runs that image or one of its platform images.
+  These five are
+  built in (`PLAN_BINDING`, `NO_DRIFT_AFTER_APPLY`, `BUILT_FROM_RUN_COMMIT`,
+  `IMAGE_BINDING` and `RUNNING_DIGEST_MATCHES` in `iltero_schemas.assertions`):
+  a runner evaluates the first at every infrastructure post-deploy stage, the
+  second at every infrastructure post-verify stage, the third at every build's
+  plan stage, the fourth at every image deploy's post-deploy stage and the
+  fifth at every image deploy's post-verify stage, whatever a project's own
+  assertions are.
+  Their ids are reserved (`BUILT_INS`, each a `BuiltIn` with its version,
+  document digest and compiled module digest): an evaluation that names one
+  names the shipped version and document, comes from this package or the
+  server's bundle and never from a scanner, and ran the shipped module.
+  Each activity names its binding check (`binding_check`) and every
+  built-in assertion it always evaluates (`always_evaluated`): once the
+  assertion's stage has reported, a record evaluates it exactly once, at that
+  stage only, and never as not applicable. An infrastructure record's
+  `post_deploy` stage evaluates `ILT.DEPLOYMENT.PLAN_BINDING` and its
+  `post_verify` stage `ILT.IAC.NO_DRIFT_AFTER_APPLY`; a build's `plan` stage
+  evaluates `ILT.IMAGE.BUILT_FROM_RUN_COMMIT`, which never passes or fails
+  when the build names no commit, where it is unknown with
+  `not_reported_by_tool`, or on a run the tool opened, where it is unknown
+  with `server_facts_unavailable`, since only the server verifies the
+  commit (an event that was not evaluated, or that ended in error, is
+  accepted); an image deploy's `post_deploy` stage evaluates
+  `ILT.DEPLOYMENT.IMAGE_BINDING` and its `post_verify` stage
+  `ILT.IMAGE.RUNNING_DIGEST_MATCHES`.
+  `ILT.IMAGE.TESTS_RAN` holds that the pipeline gave a test report for the
+  built image in which at least one test ran rather than being skipped, and
+  `ILT.IMAGE.SCAN_RAN` that a vulnerability scan ran whose report itself
+  names the built image or one of its platform images. `ILT.CHANGE.PRODUCTION_APPROVED` is about any change
+  (`change_type: null`); the five image assertions are about
+  `image_release`, and the others about `iac_change`.
 - Every `TechnicalAssertion` says which change type it is about
-  (`spec.change_type`: `iac_change`, or `null` for an assertion about any
-  change); an assertion that leaves it out is refused. Each change type
-  allows its own stage and target pairs (`COMBINATIONS`); an assertion about
-  any change, and a hand-written policy, may use only the pairs every change
-  type allows (`SHARED_COMBINATIONS`). At the post-verify stage an
+  (`spec.change_type`: `iac_change`, `image_release`, or `null` for an
+  assertion about any change); an assertion that leaves it out is refused.
+  Each change type allows its own stage and target pairs (`COMBINATIONS`); an
+  assertion about any change, and a hand-written policy, may use any pair
+  some change type allows (`VALID_COMBINATIONS`), and an assertion about
+  any change reads only the parts every input at that stage and target
+  carries (`roots_for`). At the post-verify stage an
   assertion targets only the deployment. The change type is part of the
   abstract syntax tree and of the source digest.
 - An optional `metadata.remediation` on a `TechnicalAssertion`: one line, at
@@ -43,7 +80,13 @@ keep, so any two tools agree on what a record means.
   combining grapheme joiner, the Arabic letter mark, the Mongolian vowel
   separator and the Hangul fillers.
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
-  each stage.
+  each activity, stage and target (`profile_for`). Every input, and every
+  event, names the activity it belongs to (`evaluation.activity`). An event
+  is checked on its own against its activity: its stage and subject kind
+  must have a profile, and its checked content must be of the activity's
+  kind (`CHECKED_CONTENT_KIND_OF`).
+- Every count is an integer from 0 to 2^53 − 1 (`INT_MAX`), the largest
+  integer the evaluator reads exactly.
 - A JSON document a tool writes has one form, so one set of facts has one
   digest: every optional field is written, as `null` when it has no value,
   as its model dumps it. A context part outside its stage's profile is `null`. A field
@@ -60,7 +103,11 @@ keep, so any two tools agree on what a record means.
   not say. `change.digest` is required and is the change digest of its unit's
   plan in the input's environment. A resource's `type` and `name`, its provider source and a related
   resource's `type` are never `null`. An earlier evaluation names the content it
-  checked (`checked_content`) exactly when its stage reads a plan.
+  checked (`checked_content`) exactly when its stage reads checked content:
+  a plan, a built artifact or a deployed image: its kind, or `null`, is one
+  some activity's input carries at that stage (`reads_checked_content`). At
+  `post_verify`, where an image deploy's input carries the image and an
+  infrastructure input nothing, it is the image or `null`, never a plan.
 - A plan resource in the evaluation input is a neutral core (`id`,
   `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`,
   `related`), and what only its IaC tool says about it is under `tool_data`,
@@ -88,10 +135,10 @@ keep, so any two tools agree on what a record means.
   then, and fails when only one side has it. Evaluation vectors cover both,
   and how a `null` value evaluates.
 - The Change Assurance Record (`CAR` v1) and its events (`AssuranceEvent`
-  v1): the record of one attempted infrastructure change, whatever its
-  outcome. It holds each stage's coverage and verdict, the rules that tie the
-  stages together, what a deployment did, the resources' cloud identities, and
-  which stages are in scope. It says what was checked and how; on its own, it
+  v1): the record of one attempted change, whatever its outcome. It holds
+  each stage's coverage and verdict, the rules that tie the stages together,
+  what a deployment did, the resources' cloud identities, and which stages
+  are in scope. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
   standard, and its `compliance_determination` is always `null`.
 - A record's `trust_level` is one of three levels (`self_attested`,
@@ -138,7 +185,15 @@ keep, so any two tools agree on what a record means.
   stays in the coverage. Record vectors cover it and pin the order.
 - The integrity checks: a record's values that a reader can recompute,
   including its `change.digest`, the pre-deploy stage's source digest and
-  each approval of a change, must be what they recompute to. Change digest
+  each approval of a change, must be what they recompute to. They also
+  recompute the status each built-in check must have from the record's own
+  change, and report an event a policy answered (`pass`, `fail`, `unknown`
+  or `not_applicable`) that says otherwise; an event not evaluated, or that ended in error, decides
+  nothing. In an infrastructure record, `ILT.DEPLOYMENT.PLAN_BINDING` must
+  pass exactly when the applied plan has the evaluated plan's digest,
+  artifact digest and its source, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`
+  exactly when the drift check found no difference; each fails otherwise.
+  Change digest
   problems come first, so a change digest that does not recompute is refused
   first. A reader that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other
   value is ignored) reads the record and gets every problem from
@@ -177,12 +232,12 @@ keep, so any two tools agree on what a record means.
 - Hand-written policy sources and scanner binding sets. An evaluator
   binding's `input_kind` says what the scanner must have been reading, and a
   record's scanner report lists its `input_kinds`. Binding sets, events and
-  records name a scanner from one list: `checkov`, `trivy` and `prowler`.
+  records name a scanner from one list: `checkov` and `trivy`.
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
   `iltero_schemas.models.providers.aws`, and the CI systems an executor may
-  name in `iltero_schemas.models.event.CI_SYSTEMS`.
+  name in `iltero_schemas.models.ci.CI_SYSTEMS`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including a plan's digest
   by its IaC tool's rule (`plan_digest(tool, plan)`); `PLAN_DIGEST_VERSIONS`
   gives each rule's version. A plan, or a deployment's applied plan, whose
@@ -217,8 +272,9 @@ keep, so any two tools agree on what a record means.
 - The signed bundle's descriptor, at most 64 MiB of canonical JSON
   (`MAX_DESCRIPTOR_BYTES`).
 - A stage counts its subjects by their kind: resources by enumerating the
-  plan, a change or a deployment as its one unit (`counted_from: change_unit`, by
-  the record's change digest, or `deployment_unit`). Every stage records the
+  plan, a change, a deployment or a built artifact as its one unit
+  (`counted_from: change_unit`, by the record's change digest,
+  `deployment_unit` or `artifact_unit`). Every stage records the
   mode its gate ran in (`enforcement_mode`: `enforcing` or `advisory`, always
   enforcing after the deployment).
 - A stage that replaced an input it could not read, such as another unit's
@@ -244,13 +300,19 @@ keep, so any two tools agree on what a record means.
   records of one run can be checked against it.
 - Change types and activities (`iltero_schemas.change_types`). A change type
   is the kind of thing a change changes; an activity is one kind of work a
-  single record describes. The one change type, `iac_change`, a change made
-  with an IaC tool, has one activity of the same name. A record's `change` is
-  the body of its activity (`change.activity`), holding the change digest,
-  the `plan`, and once they are known the `deployment`, the `identity` and
-  the `drift_check`. The activity declares the stages a record passes
-  through, which of them a project, an environment's policy or the tool may
-  leave out, and the documents each stage owes.
+  single record describes. `iac_change`, a change made with an IaC tool, has
+  one activity of the same name; `image_release`, a container image built
+  once and released to environments, has the activities `image_build` and
+  `image_deploy`. `iltero_schemas.models.change_type` names each
+  (`IAC_CHANGE_TYPE`, `IAC_CHANGE_ACTIVITY`, `IMAGE_RELEASE_TYPE`,
+  `IMAGE_BUILD_ACTIVITY`, `IMAGE_DEPLOY_ACTIVITY`) and
+  gives each activity's change type (`CHANGE_TYPE_OF`). A record's `change` is the body of its activity
+  (`change.activity`). An `iac_change` body holds the change digest, the
+  `plan`, and once they are known the `deployment`, the `identity` and the
+  `drift_check`. The activity declares the type of run that records it, the
+  stages a record passes through, which of them a project, an environment's
+  policy or the tool may leave out, and the documents each stage owes,
+  always or only when the change names one, with the field that names it.
 - The evaluation input's environment says whether Iltero Platform's policy
   treats it as production (`organization_scope.environment.production`), and
   the starter assertions guard on that, not on the environment's name. A run
@@ -258,8 +320,9 @@ keep, so any two tools agree on what a record means.
   assertion that guards on production is `unknown`, never skipped.
 - Resource selectors on an assertion's target. A resource target names one
   IaC tool's types (`{tool, provider, resource_types}`), whose values are
-  that tool's own attributes. A change or deployment target may name a
-  provider's tool-independent kinds (`{provider, kinds}`), and the compiler
+  that tool's own attributes. A change or deployment target of an
+  assertion about an `iac_change` may name a provider's tool-independent
+  kinds (`{provider, kinds}`), and the compiler
   writes its scope guard from them: a condition that decides whether the
   assertion applies. Each tool's table gives its types their kinds
   (`iltero_schemas.kinds`, Terraform's for AWS IAM, KMS, network, S3
@@ -278,9 +341,9 @@ keep, so any two tools agree on what a record means.
   approvals lists the ones its evaluations read, whatever their source, each
   once and of the record's own change or run.
 - The unknown marker: where a fact only Iltero Platform holds (approvals,
-  exceptions, evaluations) is missing, the evaluation input holds a marker,
+  exceptions, evaluations, the verified source of a build) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. An
-  evaluation at a stage that reads Iltero Platform facts records where they came
+  evaluation whose input reads Iltero Platform facts records where they came
   from (`facts_source`).
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
@@ -328,14 +391,179 @@ keep, so any two tools agree on what a record means.
   stage because the environment's policy does not require it
   (`out_of_scope[].reason: environment_policy`). The record does not name
   the policy. A project's configuration can leave out the post-verify stage
-  as well as the pre-deploy approval gate. A record calls a stage
-  unsupported only when its plan's IaC tool cannot run it; Terraform, which
-  has a drift reader, runs every stage.
+  as well as the pre-deploy approval gate. A record of any activity calls a
+  stage unsupported only when its activity says the record cannot run it
+  (`not_supported`, given the record): for an infrastructure record, when
+  its IaC tool cannot; Terraform, which has a drift reader, runs every
+  stage. `iltero_schemas.change_types.not_supported_by(tool)` gives the
+  stages an IaC tool cannot run.
   The sample records expect all four stages.
 - An identity document says where its state was read from
   (`sources.read_from`): the state file the apply left, or a refresh-only
   plan, which names no applied plan. A record's identities are always read
   from the state file.
-- A verification report's `runtime_verification` is one of six results,
-  each a state and its reason, or `not_determined` when the record's
+- A record of a container image build (`change.activity: image_build`). It
+  names the image by its repository and digest, the digest of each
+  platform's image when the build pushed an index (the manifest that lists
+  one image per platform), the commit the build tool's provenance names
+  (`build_commit`), the build's attestation file, kept but not verified,
+  and the test and scan reports the build was given (`reports`: each
+  report's file, its format, `junit`, `trivy_json` or `grype_json`, and the
+  image it is about, which is the image or one of its platform images; a
+  JUnit report names no image, so only the pipeline ties it to one). A tag
+  the pipeline gave is kept for reading only, with the build tool's
+  metadata file that tied it to the digest and the time the pipeline read
+  that file (`read_from`, `read_from_evidence_ref`, `read_at`); no registry
+  is asked. The build commit is read only from the Docker Buildx metadata
+  file (`docker buildx build --metadata-file`), from the provenance summary
+  BuildKit writes there when the build context is a Git repository URL
+  (`invocation.configSource.digest.sha1`), never from an image label. A
+  build from a local directory names no commit there, so its
+  `build_commit` is `null`. The file is the pipeline's and unsigned, so the
+  commit is `not_verified`; the record keeps the file as the pipeline gave
+  it, and it is the same file the tag is read from. The metadata file the
+  tag or the commit is read from is JSON and kept unredacted, exactly as
+  given.
+  `iltero_schemas.models.buildx.build_metadata_of` reads the image digest,
+  the image names and the commit from the kept file, strictly and at most
+  1 MiB, so every reader reads the same values, and
+  `iltero_schemas.change_types.check_build_metadata` compares them with the
+  record: the image's digest, the image's repository with its tag (each
+  image name put in its one spelling first by
+  `iltero_schemas.models.image.in_one_spelling`), and exactly its build
+  commit. A metadata file whose `containerimage.descriptor` names another
+  digest than `containerimage.digest` is refused. Building with
+  `--provenance=mode=min` is recommended: the commit is the same as in
+  `mode=max`, which also writes the build's arguments, and a build argument
+  can hold a secret value. The
+  tool that writes a record runs it, and so can any reader given the file
+  from the pipeline's store. Iltero stores none of a build's evidence files
+  and never reads the pipeline's store: the pipeline keeps them in the
+  run's artifact store, and the record keeps each file's digest. The one
+  file that passes through Iltero Platform is the raw image index, which
+  the plan stage owes (`image_index`, the one document an image build's
+  `named_documents` lists) and which Iltero Platform checks with
+  `platform_digests_of`, refusing an index over 4 MiB, and then discards.
+  On a run Iltero Platform opened, the commit check compares the commit the
+  record names, read by the tool from the pipeline's metadata file and
+  `not_verified`, with the commit Iltero Platform verified; Iltero Platform
+  does not check that commit against the file. The repository the commit is of is not compared, a build
+  with additional named contexts may use more than that commit, and a
+  record that names no tag and no commit may keep no metadata file. The
+  commit the run's checkout was at stays in the record's source and says
+  nothing of the image. A repository is written in one fully qualified,
+  lower-case spelling with its registry host (`docker.io/library/nginx`,
+  never `nginx`), a port only when it is not the default 443, and Docker
+  Hub always as `docker.io` with no port. The raw index, the attestation,
+  the metadata file and each report are different files of the record, the
+  index, the attestation, the metadata file a commit is read from and each
+  report each of a file type their role allows, a report the type of its
+  format. Each report's entry names the digest of the file as the pipeline
+  gave it, a different one for each report, and a report nothing redacted
+  is stored exactly as given. A report an evaluation reads is matched on
+  that digest, so redacting the stored copy never breaks the match.
+  `platform_digests_of` reads the platform digests from the kept index
+  bytes, so every reader computes the same list; it reads plain UTF-8 JSON
+  only, and skips a manifest only when it is marked as an attestation and
+  has no real platform. A build has only a plan stage, belongs to no environment, even
+  in a run the server opened, and deploys nothing, so it has no change
+  digest and nothing to approve. Its evaluations are about the built
+  artifact, and their input carries the image with its build commit, or
+  the unknown marker when the build named none, the test and scan reports
+  the build was given, each saying whether the report itself names the
+  image or only the pipeline does (`image_digest_source`: `report` or
+  `pipeline`), and the commit the server verified for the build job, with
+  the CI system and its instance, the repository by id and name, and the
+  CI run and attempt it was verified for, since a CI system's ids are unique
+  only within one instance of it. A build's input names no environment. A
+  build's evaluations say their facts came from the server exactly when the
+  server opened the run, and from nowhere otherwise, never from a local
+  file. Record, context and evaluation vectors cover it. The values it adds:
+
+  | Where | Added value |
+  | --- | --- |
+  | Change type (`spec.change_type`) | `image_release` |
+  | Activity (`change.activity`, `evaluation.activity`) | `image_build` |
+  | Run type of an activity | `build` |
+  | Document a stage owes | `image_index` |
+  | Assertion target kind | `artifact` |
+  | Evaluation input parts | `artifact`, `tests`, `scans`, `verified_source` |
+  | Checked content kind | `container_image` |
+  | How a stage counts its subjects (`counted_from`) | `artifact_unit` |
+
+- A record of the deployment of a built container image to one environment
+  (`change.activity: image_deploy`). The image was checked when it was
+  built, so the record starts at its `pre_deploy` stage, where the change is
+  approved, and its change digest names the image, by its repository and
+  digest, in the record's unit and environment. The record keeps the build
+  the server accepted for the environment (`build`: its run, its record's
+  digest and its platform digests), as the server served it, and never a
+  build a pipeline chose; a record of a run the tool opened names none. The
+  Iltero CLI talks to no cluster and no deploy tool: after the deployment
+  the pipeline reports the image it deployed (`deployment`), and at
+  `post_verify` what one reading of the workload found (`drift_check`: the
+  workload, in the shape of its platform, here a Kubernetes Deployment,
+  StatefulSet or DaemonSet with its cluster, namespace, name and uid; the
+  state of its rollout, in the shape of its kind, with the resource
+  version the cluster gave the workload object, the counts its status
+  reported, whether the rollout had finished, by the test
+  `kubectl rollout status` applies, and the live pods it calls for; every
+  container of its pod template, with its role (app, init or sidecar), the
+  image reference it names and whether the reading compares it
+  (`template_containers`); what every container of every pod the workload controls
+  ran, grouped by container, role, image reference, digest, pod state and
+  revision (`containers_read`), with the unknown marker where a container's
+  status names no registry digest; the number of live pods read; the
+  resource version of the pod list; and the files the reading was taken
+  from: the workload object read before and after the pods were listed,
+  the pod list and, for a Deployment, its ReplicaSets, each a different
+  JSON file in the evidence register, redacted under the record's
+  redaction policy and kept no earlier than the reading), each read from files the pipeline wrote
+  and dated by its runner's clock. A reading lists the pods whose
+  controller owner reference leads to the workload, and compares every
+  container, of the pod template or of a pod, whose image reference names
+  the deployed repository in its one spelling, and every container of a
+  pod whose template container is compared. A container only the pods
+  have, under another repository, is recorded with its digest but not
+  compared. Once the rollout has finished, every live pod lists every
+  template container in its role and all live pods share one revision, a
+  stateful set's update revision. A partitioned or on-delete rollout, and
+  a stateful set whose status names no update revision, never finish, and
+  neither does a daemon set with a pod on a node it no longer selects.
+  `ILT.IMAGE.RUNNING_DIGEST_MATCHES` fails when the template compares no
+  container, and terminating and finished pods never decide it.
+  A container may report the index digest or a platform
+  image's digest, depending on its runtime, so either counts. Only the
+  `post_verify` stage may be left out, by the project, the environment's
+  policy, or as not supported for a workload no reader reads. An
+  evaluation input reads its `change`, `deployment` and `drift_check` in
+  the shapes of its activity, and its `post_verify` input refuses a
+  reading of the workload taken before the deployment. At `pre_deploy`, an
+  assertion about any
+  change reads what both the infrastructure and the image deploy input
+  carry, which leaves out `plan`. The integrity checks recompute the status
+  each of its two built-in checks must have from the record's own image,
+  deployment, reading and build, and report an event that says otherwise.
+  A record refuses a built-in assertion of another activity. Record,
+  context, evaluation and change digest vectors cover it. The values it
+  adds:
+
+  | Where | Added value |
+  | --- | --- |
+  | Activity (`change.activity`, `evaluation.activity`) | `image_deploy` |
+  | Stage and target pairs of `image_release` (`COMBINATIONS`) | `pre_deploy` and `change`; `post_deploy` and `deployment`; `post_verify` and `deployment` |
+  | Evaluation input profiles | `image_pre_deploy_change`, `image_post_deploy`, `image_post_verify` |
+  | Workload platform (`drift_check.workload.platform`) | `kubernetes` |
+  | Workload kind (`drift_check.workload.kind`) | `deployment`, `stateful_set`, `daemon_set` |
+  | Rollout strategy (`drift_check.rollout.strategy`) | `rolling_update`; `recreate` for a Deployment; `on_delete` for a StatefulSet or DaemonSet |
+  | Container role in the pod template (`template_containers[].role`) | `app`, `init`, `sidecar` |
+  | Container role in a pod (`containers_read[].role`) | `app`, `init`, `sidecar`, `ephemeral` |
+  | Pod state (`containers_read[].pod_state`) | `live`, `terminating`, `finished` |
+  | Who reports a deployment (`deployment.reported_by`) | `pipeline` |
+  | Built-in assertions | `ILT.DEPLOYMENT.IMAGE_BINDING`, `ILT.IMAGE.RUNNING_DIGEST_MATCHES` |
+
+- A verification report's `runtime_verification` is one of seven results,
+  each a state and its reason, among them `not_assessed` with
+  `not_in_activity` for a record whose activity has no stage after
+  deployment, such as an image build, or `not_determined` when the record's
   integrity is not established.

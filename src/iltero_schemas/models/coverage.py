@@ -140,9 +140,9 @@ MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
 
 class SubjectsInScope(StrictModel):
     value: Count
-    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
-    # one deployment of the unit (after it).
-    counted_from: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
+    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), the
+    # one deployment of the unit (after it), or the one artifact a build of the unit produced.
+    counted_from: Literal["plan_resource_enumeration", "change_unit", "deployment_unit", "artifact_unit"]
     source_digest: Digest
     removed_by_plan: Count
     excluded: Annotated[list[Excluded], Field(max_length=MAX_RESOURCES)]
@@ -154,7 +154,7 @@ class SubjectsInScope(StrictModel):
             0,
             [],
         ):
-            raise ValueError("a change's or a deployment's scope is that one subject, with nothing removed or excluded")
+            raise ValueError("a scope counted from a unit is that one subject, with nothing removed or excluded")
         return self
 
 
@@ -297,9 +297,11 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
 
 def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     coverages = [outcome.coverage for _, outcome in stages]
-    # The population is the plan's resources: exactly one stage enumerates them, and it comes first.
-    enumerating = [c for c in coverages if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
-    if len(enumerating) != 1 or enumerating[0] is not coverages[0]:
+    # The population is what the first stage counts: the plan's resources, which no later stage enumerates, the one
+    # artifact a build produced, or the one change a deployment of a built image makes.
+    first = coverages[0].subjects_in_scope.counted_from
+    later = [c for c in coverages[1:] if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
+    if first not in ("plan_resource_enumeration", "artifact_unit", "change_unit") or later:
         raise ValueError(
             "a record's resources in scope are its plan stage's: one stage counts them, and it comes first"
         )

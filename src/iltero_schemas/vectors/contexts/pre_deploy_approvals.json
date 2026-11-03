@@ -2,6 +2,7 @@
   "apiVersion": "iltero.io/assurance-context/v1",
   "evaluation": {
     "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+    "activity": "iac_change",
     "stage": "pre_deploy",
     "timestamp": "2026-09-22T13:06:02.114Z",
     "assertion": {
@@ -476,5 +477,9 @@
   "resource": null,
   "deployment": null,
   "drift_check": null,
-  "assurance": null
+  "assurance": null,
+  "artifact": null,
+  "tests": null,
+  "scans": null,
+  "verified_source": null
 }

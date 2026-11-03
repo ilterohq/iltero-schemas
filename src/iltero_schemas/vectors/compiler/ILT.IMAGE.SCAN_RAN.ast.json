@@ -1,0 +1,54 @@
+{
+  "ast_version": 1,
+  "id": "ILT.IMAGE.SCAN_RAN",
+  "version": "1.0.0",
+  "type": "process",
+  "change_type": "image_release",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "when": null,
+  "assert": {
+    "exists": {
+      "in": "scans",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "path": "item.kind",
+              "op": "equal",
+              "literal": "image_vulnerability"
+            }
+          },
+          {
+            "predicate": {
+              "path": "item.image_digest_source",
+              "op": "equal",
+              "literal": "report"
+            }
+          },
+          {
+            "any": [
+              {
+                "predicate": {
+                  "path": "item.image_digest",
+                  "op": "equal",
+                  "ref": "artifact.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "path": "item.image_digest",
+                  "op": "in",
+                  "ref": "artifact.platform_digests"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

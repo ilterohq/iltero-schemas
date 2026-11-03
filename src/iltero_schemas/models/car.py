@@ -2,7 +2,8 @@
 
 A Change Assurance Record (CAR) is a framework-neutral record of the
 evidence, the evaluations, the approvals, the deployment and the verification
-after deployment for one infrastructure change. It keeps where each piece
+after deployment for one change, or of the checks on one build of an artifact
+that a later change deploys. It keeps where each piece
 came from. A CAR records technical and process assurance facts. It does not,
 by itself, establish certification or compliance with a regulatory
 framework, so ``compliance_determination`` is always null.
@@ -38,9 +39,11 @@ from typing import Annotated, Final, Literal
 from pydantic import Field, ValidationInfo, model_validator
 
 from iltero_schemas.change_types.iac import IacChange
+from iltero_schemas.change_types.image import ImageBuild
+from iltero_schemas.change_types.image_deploy import ImageDeploy
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.context import ReferenceTime, Source
+from iltero_schemas.models.context import Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
 from iltero_schemas.models.fields import (
@@ -57,6 +60,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
+from iltero_schemas.models.reference_time import ReferenceTime
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
@@ -343,7 +347,7 @@ class CAR(StrictModel):
     governance: Governance
     subject: RecordSubject
     # The change the record is about: the body of its activity, told apart by ``activity``.
-    change: IacChange
+    change: Annotated[IacChange | ImageBuild | ImageDeploy, Field(discriminator="activity")]
     # The project's units file; null for a project that declares none.
     units_file: UnitsFile | None
     stages: dict[StageValue, StageRecord]

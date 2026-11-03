@@ -13,10 +13,11 @@ it and are refused if present.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal, get_args
+from typing import Annotated, Any, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
+from iltero_schemas.assertions.built_in import BUILT_INS
 from iltero_schemas.canonical.encoding import CanonicalizationError, canonical_bytes
 from iltero_schemas.compiler.limits import (
     OBSERVATIONS_MAX_BYTES,
@@ -30,9 +31,12 @@ from iltero_schemas.models.assertion import (
     ID_PATTERN,
     VERSION_MAX_LENGTH,
     VERSION_PATTERN,
+    TargetKind,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.change_type import CHECKED_CONTENT_KIND_OF, IMAGE_BUILD_ACTIVITY, ActivityName
 from iltero_schemas.models.checked_content import CheckedContent
+from iltero_schemas.models.ci import CiSystem
 from iltero_schemas.models.context import Resolution
 from iltero_schemas.models.fields import (
     Commit,
@@ -46,7 +50,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.subjects import check_subject
-from iltero_schemas.profiles import reads_server_facts
+from iltero_schemas.profiles import profile_for, reads_server_facts
 
 # Why a status is what it is; the runner sets it, a policy never does.
 STATUS_REASONS: dict[str, frozenset[str]] = {
@@ -170,8 +174,10 @@ class EventSubject(StrictModel):
 
 
 class Evaluation(StrictModel):
-    """The verdict: the status, the runner's reason for it, and what the policy itself said."""
+    """The verdict: the activity and stage it belongs to, the status, the runner's reason for it, and what the policy
+    itself said."""
 
+    activity: ActivityName
     stage: StageValue
     status: Status
     status_reason: Identifier | None
@@ -283,9 +289,6 @@ class Compiler(StrictModel):
 
 # Where an evaluation ran: on a person's machine (``local``), in a job of a CI system the tool could not
 # name (``ci``), or in a job of a named CI system.
-# The CI systems an executor may name; a new CI system adds its name here.
-CiSystem = Literal["github_actions"]
-CI_SYSTEMS: tuple[str, ...] = get_args(CiSystem)
 ExecutorProvider = Literal["local", "ci"] | CiSystem
 
 
@@ -297,6 +300,8 @@ class Executor(StrictModel):
     ci_run_id: Identifier | None
 
 
+# Where a built-in assertion may come from: this package, or the server's bundle that ships it.
+BUILT_IN_SOURCES = frozenset({"contract_starter", "server_bundle"})
 # Where the facts document an evaluation read came from: the server, a file given to the tool, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
 FactsSource = Literal["server", "local_file", "none"]
@@ -322,7 +327,7 @@ class Provenance(StrictModel):
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    # Present exactly for an evaluation at a stage whose input may carry server facts (``profiles.reads_server_facts``).
+    # Present exactly for an evaluation whose input may carry server facts (``profiles.reads_server_facts``).
     facts_source: FactsSource | None
 
 
@@ -334,6 +339,23 @@ class AssuranceEvent(StrictModel):
     evaluation: Evaluation
     provenance: Provenance
     observed_at: Timestamp
+
+    def _check_built_in(self) -> None:
+        """A built-in assertion is evaluated as shipped: its document and version, and the module compiled from it."""
+        shipped = BUILT_INS.get(self.assertion.id)
+        if shipped is None:
+            return
+        provenance = self.provenance
+        if (self.assertion.version, self.assertion.digest) != (shipped.version, shipped.digest):
+            raise ValueError(f"{self.assertion.id} is a built-in assertion: it names the document this package ships")
+        if provenance.assertion_source not in BUILT_IN_SOURCES or provenance.binding is not None:
+            raise ValueError(
+                f"{self.assertion.id} is evaluated from this package or the server's bundle, never a scanner"
+            )
+        if provenance.compiled_digest not in (None, shipped.compiled_digest) or (
+            provenance.compiled_digest is None and provenance.evaluator is not None
+        ):
+            raise ValueError(f"{self.assertion.id} runs the module compiled from the document this package ships")
 
     @model_validator(mode="after")
     def _consistent(self) -> AssuranceEvent:
@@ -348,8 +370,17 @@ class AssuranceEvent(StrictModel):
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
-        if (self.provenance.facts_source is not None) != reads_server_facts(self.evaluation.stage):
-            raise ValueError("facts_source is present exactly when the evaluation's stage reads server facts")
+        self._check_built_in()
+        activity, stage = self.evaluation.activity, self.evaluation.stage
+        profile_for(activity, stage, TargetKind(subject.kind))
+        if self.provenance.checked_content.kind != CHECKED_CONTENT_KIND_OF[activity]:
+            raise ValueError(f"an {activity} evaluation names the {CHECKED_CONTENT_KIND_OF[activity]} it checked")
+        if activity == IMAGE_BUILD_ACTIVITY and self.provenance.facts_source == "local_file":
+            raise ValueError("a build's facts come only from the server: its verified commit is the server's to give")
+        if (self.provenance.facts_source is not None) != reads_server_facts(
+            self.evaluation.activity, self.evaluation.stage
+        ):
+            raise ValueError("facts_source is present exactly when the evaluation's input reads server facts")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
                 f"an evaluation with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"

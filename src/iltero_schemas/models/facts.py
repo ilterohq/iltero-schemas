@@ -8,9 +8,10 @@ that looks for an approval in an empty list fails, as if the change had been
 refused; the same assertion over a marker yields ``unknown`` with the
 marker's reason, which says what is true — the answer was not available.
 
-A fact the IaC tool did not report, such as whether an older tool's plan is
-complete, holds a marker of its own (``NotReported``): a null there would read
-as a known value.
+A fact a tool did not report, such as whether an older IaC tool's plan is
+complete, or the registry digest of an image a container runs when the
+container's status names none, holds a marker of its own (``NotReported``): a
+null there would read as a known value.
 """
 
 from __future__ import annotations
@@ -38,7 +39,7 @@ class ServerFactsUnavailable(StrictModel):
 
 
 class NotReported(StrictModel):
-    """What stands where the IaC tool did not report a fact: the evaluator reads it as ``unknown``, with this reason."""
+    """What stands where a tool did not report a fact: the evaluator reads it as ``unknown``, with this reason."""
 
     model_config = ConfigDict(serialize_by_alias=True)
 

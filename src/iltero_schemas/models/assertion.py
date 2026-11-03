@@ -24,7 +24,7 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
-from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, ChangeTypeName
+from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, IMAGE_RELEASE_TYPE, ChangeTypeName
 from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
 
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
@@ -81,6 +81,7 @@ class TargetKind(StrEnum):
     CHANGE = "change"
     DEPLOYMENT = "deployment"
     ASSURANCE = "assurance"
+    ARTIFACT = "artifact"
 
 
 class AssertionType(StrEnum):
@@ -95,6 +96,7 @@ ASSERTION_TYPE_FOR_TARGET: dict[TargetKind, AssertionType] = {
     TargetKind.CHANGE: AssertionType.PROCESS,
     TargetKind.DEPLOYMENT: AssertionType.PROCESS,
     TargetKind.ASSURANCE: AssertionType.PROCESS,
+    TargetKind.ARTIFACT: AssertionType.PROCESS,
 }
 
 Combination = tuple[AssertionType, Stage, TargetKind]
@@ -112,11 +114,19 @@ COMBINATIONS: Mapping[ChangeTypeName, frozenset[Combination]] = MappingProxyType
                 (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.ASSURANCE),
             }
         ),
+        IMAGE_RELEASE_TYPE: frozenset(
+            {
+                (AssertionType.PROCESS, Stage.PLAN, TargetKind.ARTIFACT),
+                (AssertionType.PROCESS, Stage.PRE_DEPLOY, TargetKind.CHANGE),
+                (AssertionType.PROCESS, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
+                (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
+            }
+        ),
     }
 )
-# The combinations every change type allows, which an assertion about any change may declare.
-SHARED_COMBINATIONS: frozenset[Combination] = frozenset.intersection(*COMBINATIONS.values())
-# Every combination some change type allows; anything else is rejected.
+
+# Every combination some change type allows; anything else is rejected. An assertion about any change may declare any
+# of them, and reads only the parts every change type evaluated at its stage and target provides (``profiles``).
 VALID_COMBINATIONS: frozenset[Combination] = frozenset().union(*COMBINATIONS.values())
 
 
@@ -228,19 +238,19 @@ class ResourceTarget(_Strict):
 
 
 class ProcessTarget(_Strict):
-    """A process assertion's target: the change, the deployment or the assurance history.
+    """A process assertion's target: the change, the deployment, the assurance history or the built artifact.
 
     A change or deployment target may name ``resources``, by kinds so it holds for every tool: it is then in scope
     only when the change touches a resource one of its selectors picks.
     """
 
-    kind: Literal["change", "deployment", "assurance"]
+    kind: Literal["change", "deployment", "assurance", "artifact"]
     resources: Annotated[list[KindSelector], Field(min_length=1, max_length=SELECTORS_MAX)] | None = None
 
     @model_validator(mode="after")
     def _resources(self) -> ProcessTarget:
-        if self.resources is not None and self.kind == "assurance":
-            raise ValueError("an assurance target names no resources: it has no change to scope")
+        if self.resources is not None and self.kind in ("assurance", "artifact"):
+            raise ValueError(f"an {self.kind} target names no resources: it has no change to scope")
         return self
 
 
@@ -255,7 +265,7 @@ def check_target(stage: Stage, target: ResourceTarget | ProcessTarget, change_ty
     """Raise ``ValueError`` unless ``target`` is valid at ``stage`` for ``change_type``, or for every change type when
     it is None, and its selectors have a change to scope."""
     kind = TargetKind(target.kind)
-    valid = SHARED_COMBINATIONS if change_type is None else COMBINATIONS[change_type]
+    valid = VALID_COMBINATIONS if change_type is None else COMBINATIONS[change_type]
     if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in valid:
         about = "any change" if change_type is None else f"a change of type {change_type!r}"
         raise ValueError(
@@ -263,18 +273,22 @@ def check_target(stage: Stage, target: ResourceTarget | ProcessTarget, change_ty
         )
     if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
         raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
+    if isinstance(target, ProcessTarget) and target.resources is not None and change_type != IAC_CHANGE_TYPE:
+        raise ValueError(f"a {target.kind} target names resources only in an assertion about an iac_change")
 
 
 # What an author is told when an assertion does not say which change type it is about.
-CHANGE_TYPE_MISSING = "change_type is missing: give iac_change, or null for an assertion about any change"
+CHANGE_TYPE_MISSING = (
+    "change_type is missing: give iac_change or image_release, or null for an assertion about any change"
+)
 
 
 class Spec(_Strict):
     """What is checked, when, and about what."""
 
     type: AssertionType | None = None
-    # The change type the assertion is about, or null for an assertion about any change, which may declare only the
-    # stages and targets every change type allows.
+    # The change type the assertion is about, or null for an assertion about any change, which may declare any stage
+    # and target some change type allows (``VALID_COMBINATIONS``).
     change_type: ChangeTypeName | None
     stage: Stage
     target: Target

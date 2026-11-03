@@ -15,6 +15,7 @@ from iltero_schemas.models.image import (
     ImageReference,
     ImageRepository,
     ImageTag,
+    in_one_spelling,
     platform_digests_of,
     repository_of,
 )
@@ -214,3 +215,26 @@ def test_an_attestation_is_a_sigstore_bundle_named_as_its_version_names_it() -> 
 def test_an_index_larger_than_any_build_pushes_is_refused_unread() -> None:
     with pytest.raises(ValueError, match=f"an image index is at most {MAX_INDEX_BYTES} bytes"):
         platform_digests_of(b" " * (MAX_INDEX_BYTES + 1))
+
+
+@pytest.mark.parametrize(
+    ("given", "spelling"),
+    [
+        ("ghcr.io/acme/api", "ghcr.io/acme/api"),
+        ("nginx", "docker.io/library/nginx"),
+        ("acme/api", "docker.io/acme/api"),
+        ("docker.io/nginx", "docker.io/library/nginx"),
+        ("index.docker.io/library/nginx", "docker.io/library/nginx"),
+        ("registry-1.docker.io/acme/api", "docker.io/acme/api"),
+        ("ghcr.io:443/acme/api", "ghcr.io/acme/api"),
+        ("registry.internal:5000/acme/api", "registry.internal:5000/acme/api"),
+        ("127.0.0.1:5000/acme/hello", "127.0.0.1:5000/acme/hello"),
+    ],
+)
+def test_a_repository_as_a_tool_was_given_it_is_written_in_its_one_spelling(given: str, spelling: str) -> None:
+    assert in_one_spelling(given) == spelling
+
+
+def test_a_name_that_is_no_repository_in_any_spelling_is_refused() -> None:
+    with pytest.raises(ValueError, match="is lower case"):
+        in_one_spelling("Acme/API")

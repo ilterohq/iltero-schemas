@@ -47,6 +47,10 @@ def test_an_image_label_is_never_read_as_the_builds_commit() -> None:
         ({**GIT, "containerimage.digest": None}, "names the digest of the image it pushed"),
         ({**GIT, "containerimage.digest": "sha256:abc"}, "names the digest of the image it pushed"),
         (
+            {**GIT, "containerimage.descriptor": {**GIT["containerimage.descriptor"], "digest": "sha256:" + "4" * 64}},
+            "containerimage.descriptor names the digest it names in containerimage.digest",
+        ),
+        (
             {**GIT, "buildx.build.provenance": {"invocation": {"configSource": {"digest": {"sha1": "main"}}}}},
             "names the Git context's commit as a commit",
         ),

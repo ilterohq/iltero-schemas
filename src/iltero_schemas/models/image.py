@@ -108,6 +108,25 @@ def _reference(value: str) -> str:
     return value
 
 
+def in_one_spelling(repository: str) -> str:
+    """``repository`` written the way a tool may have been given it, such as ``acme/api`` or ``nginx``, in its one
+    spelling: Docker Hub's host and ``library`` namespace added where left out, its other host names written
+    ``docker.io``, and the default port left out. Raises ``ValueError`` when the result is still not a repository."""
+    first, slash, rest = repository.partition("/")
+    if not slash:
+        first, rest = DOCKER_HUB, f"library/{repository}"
+    elif "." not in first and ":" not in first and first != "localhost":
+        first, rest = DOCKER_HUB, repository
+    host, colon, port = first.partition(":")
+    if colon and port == str(DEFAULT_PORT):
+        first = host
+    if first in _DOCKER_HUB_ALIASES:
+        first = DOCKER_HUB
+    if first == DOCKER_HUB and "/" not in rest:
+        rest = f"library/{rest}"
+    return _repository(f"{first}/{rest}")
+
+
 # An image as a workload names it: its repository in its one spelling, then, optionally, a tag, a digest, or both
 # (``ghcr.io/acme/api:1.4.2@sha256:…``).
 ImageReference = Annotated[str, Field(min_length=1, max_length=REFERENCE_MAX_LENGTH), AfterValidator(_reference)]

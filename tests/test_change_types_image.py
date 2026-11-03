@@ -171,8 +171,11 @@ def test_the_build_tool_metadata_file_kept_is_the_builds() -> None:
     check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit))
     with pytest.raises(ValueError, match="names the image's digest"):
         check_build_metadata(build, metadata("sha256:" + "4" * 64, build.build_commit.commit))
-    with pytest.raises(ValueError, match="names the image's tag"):
-        check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit, "ghcr.io/acme/api:2.0"))
+    for names in ("ghcr.io/acme/api:2.0", "other.io/x/y:1.4.2", "ghcr.io/acme/api", "acme/api:1.4.2"):
+        with pytest.raises(ValueError, match="names the image's repository with its tag"):
+            check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit, names))
+    for names in ("ghcr.io:443/acme/api:1.4.2", "other.io/x/y:1.4.2,ghcr.io/acme/api:1.4.2"):
+        check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit, names))
     with pytest.raises(ValueError, match="the build commit is the one the build tool's metadata file names"):
         check_build_metadata(build, metadata(build.image.digest, "d" * 40))
 
@@ -182,3 +185,9 @@ def test_a_record_names_no_build_commit_only_when_its_metadata_file_names_none()
     check_build_metadata(build, metadata(build.image.digest, None))
     with pytest.raises(ValueError, match="the build commit is the one the build tool's metadata file names"):
         check_build_metadata(build, metadata(build.image.digest, "d" * 40))
+
+
+def test_a_docker_hub_image_given_by_its_short_name_is_the_records_repository() -> None:
+    build = build_with(image={**BUILD["change"]["image"], "repository": "docker.io/acme/api"}, reports=[])
+    assert build.build_commit is not None
+    check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit, "acme/api:1.4.2"))

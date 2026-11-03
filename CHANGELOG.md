@@ -420,7 +420,14 @@ keep, so any two tools agree on what a record means.
   the image names and the commit from the kept file, strictly and at most
   1 MiB, so every reader reads the same values, and
   `iltero_schemas.change_types.check_build_metadata` compares them with the
-  record: the image's digest, its tag and exactly its build commit. The
+  record: the image's digest, the image's repository with its tag (each
+  image name put in its one spelling first by
+  `iltero_schemas.models.image.in_one_spelling`), and exactly its build
+  commit. A metadata file whose `containerimage.descriptor` names another
+  digest than `containerimage.digest` is refused. Building with
+  `--provenance=mode=min` is recommended: the commit is the same as in
+  `mode=max`, which also writes the build's arguments, and a build argument
+  can hold a secret value. The
   tool that writes a record runs it, and so can any reader given the file
   from the pipeline's store. Iltero stores none of a build's evidence files
   and never reads the pipeline's store: the pipeline keeps them in the

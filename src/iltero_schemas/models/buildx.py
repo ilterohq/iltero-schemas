@@ -24,6 +24,7 @@ from iltero_schemas.models.strict_json import strict_json
 
 # The keys Buildx writes in its metadata file.
 _IMAGE_DIGEST = "containerimage.digest"
+_DESCRIPTOR = "containerimage.descriptor"
 _IMAGE_NAMES = "image.name"
 _PROVENANCE = "buildx.build.provenance"
 # Larger than any metadata file Buildx writes, which a reader refuses before parsing it.
@@ -64,6 +65,9 @@ def build_metadata_of(metadata: bytes) -> BuildMetadata:
     image_digest = document.get(_IMAGE_DIGEST)
     if not isinstance(image_digest, str) or not _DIGEST.fullmatch(image_digest):
         raise ValueError(f"a Buildx metadata file names the digest of the image it pushed, in {_IMAGE_DIGEST}")
+    descriptor = document.get(_DESCRIPTOR)
+    if descriptor is not None and _at(descriptor, "digest") != image_digest:
+        raise ValueError(f"a Buildx metadata file's {_DESCRIPTOR} names the digest it names in {_IMAGE_DIGEST}")
     names = document.get(_IMAGE_NAMES, "")
     if not isinstance(names, str):
         raise ValueError(f"a Buildx metadata file names the image's names in {_IMAGE_NAMES}, separated by commas")

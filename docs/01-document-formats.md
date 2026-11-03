@@ -872,7 +872,9 @@ returns a `BuildMetadata`: `image_digest`; `image_names`, the value of `image.na
 `platform_digests_of` reads an index: UTF-8 with no byte order mark, each key once, and no `NaN` or other constant. It
 raises `ValueError` for a file over 1,048,576 bytes (`MAX_METADATA_BYTES`), checked before the file is parsed: "a
 Buildx metadata file is at most 1048576 bytes"; and for a file that is not a JSON object, that names no image digest
-in `containerimage.digest`, whose `image.name` is not text, or whose commit is not a commit. It is a pure function, so
+in `containerimage.digest`, whose `containerimage.descriptor` names another digest ("a Buildx metadata file's
+containerimage.descriptor names the digest it names in containerimage.digest"), whose `image.name` is not text, or
+whose commit is not a commit. It is a pure function, so
 every reader computes the same result.
 
 **How the record and the file are compared.** The record model does not read the file, so it cannot compare the two.
@@ -884,8 +886,17 @@ the file:
 | Rule | Refused with |
 | --- | --- |
 | Names the image's `digest` in `containerimage.digest`. | "the build tool's metadata file names the image's digest" |
-| Names the record's tag, when there is one: one of its `image_names` ends in `:<tag>`. | "the build tool's metadata file names the image's tag" |
+| Names the image's `repository` with the record's tag, when there is one: one of its `image_names`, read without any `@digest` suffix and with its repository put in its one spelling, is the image's `repository` followed by `:<tag>`. | "the build tool's metadata file names the image's repository with its tag" |
 | Names exactly the record's `build_commit.commit`, or no commit when `build_commit` is `null`. | "the build commit is the one the build tool's metadata file names, and only that" |
+
+A name is put in its one spelling by `iltero_schemas.models.image.in_one_spelling(repository)`, the way a tool may
+have been given it: Docker Hub's host and `library` namespace are added where left out (`nginx` is
+`docker.io/library/nginx`, `acme/api` is `docker.io/acme/api`), Docker Hub's other host names are written `docker.io`,
+and the default port 443 is left out. A name with no tag, or one that is still not a repository, matches nothing.
+
+**Which provenance mode to use.** Build with `--provenance=mode=min`. The commit is the same in `mode=min` and
+`mode=max`: the `buildx/` conformance vectors read alike in both. `mode=max` also writes the build's arguments
+(`invocation.parameters.args`) into the metadata file, and a build argument can hold a secret value.
 
 **How strong it is.**
 

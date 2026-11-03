@@ -39,6 +39,8 @@ from iltero_schemas.models.image import (
     ImageRepository,
     ImageTag,
     check_platform_digests,
+    in_one_spelling,
+    repository_of,
 )
 from iltero_schemas.models.image_evidence import MAX_REPORTS, REPORT_MEDIA_TYPES_OF, ImageDigestSource, ReportFormat
 from iltero_schemas.models.reference_time import ReferenceTime
@@ -239,16 +241,33 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
         raise ValueError(f"{BUILT_FROM_RUN_COMMIT_ID} is unknown with reason {reason}, never pass or fail, {why}")
 
 
+def _repository_and_tag(name: str) -> tuple[str, str] | None:
+    """The repository, in its one spelling, and the tag an image name the build tool was given names; None for a
+    name with no tag, or one that is no repository."""
+    reference = name.partition("@")[0]
+    repository = repository_of(reference)
+    if repository == reference:
+        return None
+    try:
+        return in_one_spelling(repository), reference[len(repository) + 1 :]
+    except ValueError:
+        return None
+
+
 def check_build_metadata(build: ImageBuild, metadata: bytes) -> None:
-    """Raise ``ValueError`` unless the Buildx metadata file ``metadata`` the record names is the build's: it names
-    the image's digest, the tag the record gives, and the record's build commit, or no commit when the record names
-    none. The tool that writes the record runs it, and so does any reader given the file from the pipeline's store."""
+    """Raise ``ValueError`` unless the Buildx metadata file ``metadata`` the record names is the build's.
+
+    It names the image's digest, the image's repository with the tag the record gives, and the record's build
+    commit, or no commit when the record names none. The tool that writes the record runs it, and so does any reader
+    given the file from the pipeline's store.
+    """
     named = build_metadata_of(metadata)
     if named.image_digest != build.image.digest:
         raise ValueError("the build tool's metadata file names the image's digest")
     tag = build.image.tag_resolution.tag if build.image.tag_resolution else None
-    if tag is not None and not any(name.rpartition(":")[2] == tag for name in named.image_names):
-        raise ValueError("the build tool's metadata file names the image's tag")
+    names = {_repository_and_tag(name) for name in named.image_names}
+    if tag is not None and (build.image.repository, tag) not in names:
+        raise ValueError("the build tool's metadata file names the image's repository with its tag")
     if named.commit != (build.build_commit.commit if build.build_commit else None):
         raise ValueError("the build commit is the one the build tool's metadata file names, and only that")
 

@@ -1,28 +1,28 @@
 {
+  "assert": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "resource.after.storage_encrypted"
+    }
+  },
   "ast_version": 1,
-  "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
-  "version": "1.0.0",
-  "type": "state",
   "change_type": "iac_change",
+  "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
   "stage": "plan",
   "target": {
     "kind": "resource",
     "resources": [
       {
-        "tool": "terraform",
         "provider": "aws",
         "resource_types": [
           "aws_db_instance"
-        ]
+        ],
+        "tool": "terraform"
       }
     ]
   },
-  "when": null,
-  "assert": {
-    "predicate": {
-      "path": "resource.after.storage_encrypted",
-      "op": "equal",
-      "literal": true
-    }
-  }
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

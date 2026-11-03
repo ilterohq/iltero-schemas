@@ -798,9 +798,9 @@ can be moved, so the record commits to the digest and keeps a tag for reading on
 The record keeps what the pipeline reported. A tag is tied to the digest by the build tool's metadata file, the platform
 digests are read from the raw index the pipeline gave, the build's commit is read from the build tool's metadata file
 (see [The build's commit](#the-builds-commit)), and an attestation, a signed statement about how the image was built, is
-kept as a file that the record does not verify. In a run Iltero Platform opened, Iltero Platform checks its signature
-(see [The build's attestation](#the-builds-attestation)). A build belongs to no environment and deploys nothing, so it
-has no change digest and nothing to approve. The commit the run's checkout was at stays in the record's
+named by its digest and not verified by the record. When it was sent to Iltero Platform, Iltero Platform checks its
+signature (see [The build's attestation](#the-builds-attestation)). A build belongs to no environment and deploys
+nothing, so it has no change digest and nothing to approve. The commit the run's checkout was at stays in the record's
 `subject.source`; it says nothing of the image.
 
 - **Model:** `iltero_schemas.change_types.ImageBuild`
@@ -813,7 +813,7 @@ has no change digest and nothing to approve. The commit the run's checkout was a
 | `index_evidence_ref` | identifier or null | The raw index the pipeline pushed, by its `ref_id` in `evidence_refs`. `null` exactly when `platform_digests` is empty. |
 | `reports` | list | The test and scan reports the build was given (`ReportRef`, see below): at most 128, sorted by `evidence_ref`, each once. Empty for a build given no reports. |
 | `build_commit` | object or null | The commit the build tool's provenance names (`BuildCommit`, see [The build's commit](#the-builds-commit)). `null` when it names none. |
-| `attestation` | object or null | The build's attestation file: its `evidence_ref` (a `ref_id` in `evidence_refs`) and `verification: not_verified`. `null` when the pipeline gave none. |
+| `attestation` | object or null | The build's attestation file (`AttestationRef`): its `evidence_ref` (a `ref_id` in `evidence_refs`, which holds the file's digest, not its bytes), `verification: not_verified`, and `sent_to_server`, `true` when the file was sent to Iltero Platform for checking, whatever its answer, and `false` when it was never sent, as on a run the tool opened. `null` when the pipeline gave none. |
 
 `reports` entry (`ReportRef`):
 
@@ -843,11 +843,11 @@ model does not read the file: a reader compares `platform_digests` with the func
 the raw index as its `image_index` document, and Iltero Platform checks it with `platform_digests_of` and then
 discards it.
 
-Two files of a build reach Iltero Platform: the raw index, which it checks and discards, and, in a run Iltero Platform
-opened, the attestation, which it verifies and keeps by its digest so the signature can be checked again (see
-[The build's attestation](#the-builds-attestation)). Iltero never reads the pipeline's own store. The pipeline keeps
-the files in the run's artifact store, and the record keeps each file's digest in `evidence_refs`. The build tool's
-metadata file and the test and scan reports are never sent to Iltero Platform.
+Two files of a build reach Iltero Platform: the raw index, which it checks and discards, and, when it was sent
+(`sent_to_server: true`), the attestation, which it verifies and keeps by its digest so the signature can be checked
+again (see [The build's attestation](#the-builds-attestation)). Iltero never reads the pipeline's own store. The
+pipeline keeps the files in the run's artifact store, and the record keeps each file's digest in `evidence_refs`. The
+build tool's metadata file and the test and scan reports are never sent to Iltero Platform.
 
 `image.tag_resolution` (`TagResolution`):
 
@@ -1017,7 +1017,8 @@ Key rules:
 | Every event's `facts_source` is `server` when Iltero Platform opened the run (`governance.run_opened_by: server`), and `none` when the tool opened it (`local`). The verified source comes only from the server, so in a run the tool opened it is the unknown marker. | "every evaluation of a build whose run was opened by local reads its facts from none", or "... opened by server reads its facts from server" |
 | With no build commit (`build_commit: null`), on any run, the `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` event is never `pass` or `fail`, and when it is `unknown` its `status_reason` is `not_reported_by_tool`. With a build commit, on a run the tool opened, the same holds with `server_facts_unavailable`. An event that was not evaluated (`not_evaluated`, such as with `evaluator_unavailable`) or that ended in `error` is accepted. | "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit", or "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit" |
 | On a run the tool opened, an `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event is never `pass`, `fail` or `not_applicable`, and when it is `unknown` its `status_reason` is `server_facts_unavailable`. An event that was not evaluated or that ended in `error` is accepted. | "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened: only the server checks an attestation" |
-| An `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event passes only when the record keeps an attestation (`change.attestation` is not `null`). | "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN passes only for a build whose record keeps its attestation" |
+| On a run the tool opened, a kept attestation has `sent_to_server: false`. | "a run the tool opened sent the server no attestation" |
+| An `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event passes only when the record keeps an attestation with `sent_to_server: true`. | "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN passes only for a build whose record keeps the attestation it sent the server" |
 
 The record does not compare any commit with the commit of the run's checkout (`subject.source.commit.sha`).
 
@@ -1066,7 +1067,8 @@ The record does not compare any commit with the commit of the run's checkout (`s
   },
   "attestation": {
     "evidence_ref": "plan/attestation.sigstore.json",
-    "verification": "not_verified"
+    "verification": "not_verified",
+    "sent_to_server": false
   }
 }
 ```
@@ -1097,12 +1099,14 @@ digest. Scan each platform image from its registry by its digest.
 
 A build-provenance attestation is a Sigstore bundle. Sigstore is an open-source service and file format for signing
 software. The bundle holds a signed envelope (DSSE, Dead Simple Signing Envelope) that carries an in-toto statement, a
-standard JSON statement about software artifacts. The statement names its subjects, each an artifact by its digest,
-and a predicate about them. A build's provenance is the statement whose predicate is SLSA provenance (Supply-chain
-Levels for Software Artifacts), such as the one GitHub's artifact attestations write. The record keeps the file as
-`change.attestation`, stored as the pipeline gave it, with `verification: not_verified`: the record's `verification`
-is the tool's view. Iltero Platform's answer is in the build's evaluation input, and its verdict in the
-`ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event.
+standard JSON statement about software artifacts. The statement names its subjects, each an artifact by its digest, and
+a predicate about them. A build's provenance is the statement whose predicate is SLSA provenance (Supply-chain Levels
+for Software Artifacts), such as the one GitHub's artifact attestations write. The record names the file in
+`change.attestation` by its digest, of the file as the pipeline gave it; it does not hold the file's bytes. The pipeline
+keeps the file. `sent_to_server` says whether the file was sent to Iltero Platform for checking, whatever its answer; it
+is `false` when the file was never sent, as on a run the tool opened. `verification: not_verified` is the tool's own
+view: the tool never checks the signature. Iltero Platform's answer is the build's `attestation_outcome`, in its
+evaluation input, and its verdict is in the `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event.
 
 **How a reader reads it.** `iltero_schemas.models.attestation.attestation_statement_of(bundle)` takes the bytes of the
 bundle and returns an `UnverifiedAttestationStatement`: `subject_digests`, each subject's SHA-256 digest written
@@ -1143,7 +1147,7 @@ marker. `outcome` says which answer it is:
 | --- | --- | --- |
 | `verified` | See below. | The signature holds, the certificate names the run's own CI identity, the statement names the image's own digest, and it is SLSA provenance. |
 | `refused` | `attestation_digest`, `trust_root`, `verifier`, `verified_at` (as below), and `reason`: `not_an_attestation`, `signature_invalid`, `identity_mismatch`, `subject_mismatch` or `predicate_not_provenance` | Iltero Platform refused the attestation, for that reason. `not_an_attestation` is a file `attestation_statement_of` refuses; `identity_mismatch` is a certificate naming another CI identity than the run's. |
-| `not_sent` | none | No attestation was sent with the build. |
+| `not_sent` | none | No attestation was sent with the build: the record keeps none, or keeps one with `sent_to_server: false`. |
 
 When Iltero Platform could not check the attestation at all, such as when its trust root could not be read, the part
 is the unknown marker, never `signature_invalid`.
@@ -1154,7 +1158,7 @@ from the certificate the CI system's identity was issued, never from the stateme
 | Field | Meaning |
 | --- | --- |
 | `commit`, `ci_provider`, `ci_instance`, `repository_id`, `ci_run_id`, `ci_run_attempt` | The commit and CI run the certificate names, in the shape of the verified source, without the repository's name: a repository is compared by its id only. |
-| `attestation_digest` | The digest of the attestation file Iltero Platform verified: Iltero Platform's word that it is the record's attestation file. A reader that holds the record and the input compares them with `iltero_schemas.change_types.check_attestation_outcome(car, outcome)`: "the server checked the attestation the build's record keeps", or "the server was sent an attestation exactly when the build's record keeps one". |
+| `attestation_digest` | The digest of the attestation file Iltero Platform verified: Iltero Platform's word that it is the record's attestation file. A reader that holds the record and the input compares them with `iltero_schemas.change_types.check_attestation_outcome(car, outcome)`: "the server checked the attestation the build's record keeps", or "the server was sent an attestation exactly when the build's record says it sent the one it keeps". The outcome is `not_sent` exactly when the record keeps no attestation or keeps one with `sent_to_server: false`; otherwise its `attestation_digest` is the kept file's digest. |
 | `image_digest` | The subject it matched: the image's own digest. |
 | `predicate_type` | `https://slsa.dev/provenance/v1` or `https://slsa.dev/provenance/v0.2`. |
 | `issuer` | Who issued the CI system's identity token, such as `https://token.actions.githubusercontent.com`. |

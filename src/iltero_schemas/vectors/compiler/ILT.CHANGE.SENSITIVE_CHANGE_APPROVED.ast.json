@@ -1,15 +1,90 @@
 {
+  "assert": {
+    "any": [
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "literal": "approved",
+                  "op": "equal",
+                  "path": "item.status"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "change",
+                  "op": "equal",
+                  "path": "item.subject.kind"
+                }
+              },
+              {
+                "predicate": {
+                  "op": "equal",
+                  "path": "item.subject.digest",
+                  "ref": "change.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "security",
+                  "op": "contains",
+                  "path": "item.roles"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "independent",
+                  "op": "equal",
+                  "path": "item.independence"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "literal": "approved",
+                  "op": "equal",
+                  "path": "item.status"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "run",
+                  "op": "equal",
+                  "path": "item.subject.kind"
+                }
+              },
+              {
+                "predicate": {
+                  "op": "equal",
+                  "path": "item.subject.id",
+                  "ref": "run.id"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
   "ast_version": 1,
-  "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
-  "version": "1.0.0",
-  "type": "process",
   "change_type": "iac_change",
+  "id": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
   "stage": "pre_deploy",
   "target": {
     "kind": "change",
     "resources": [
       {
-        "provider": "aws",
         "kinds": [
           "iam_access_key",
           "iam_group_membership",
@@ -27,87 +102,12 @@
           "network_acl_rule",
           "security_group",
           "security_group_rule"
-        ]
+        ],
+        "provider": "aws"
       }
     ]
   },
-  "when": null,
-  "assert": {
-    "any": [
-      {
-        "exists": {
-          "in": "approvals",
-          "where": {
-            "all": [
-              {
-                "predicate": {
-                  "path": "item.status",
-                  "op": "equal",
-                  "literal": "approved"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.subject.kind",
-                  "op": "equal",
-                  "literal": "change"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.subject.digest",
-                  "op": "equal",
-                  "ref": "change.digest"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.roles",
-                  "op": "contains",
-                  "literal": "security"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.independence",
-                  "op": "equal",
-                  "literal": "independent"
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        "exists": {
-          "in": "approvals",
-          "where": {
-            "all": [
-              {
-                "predicate": {
-                  "path": "item.status",
-                  "op": "equal",
-                  "literal": "approved"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.subject.kind",
-                  "op": "equal",
-                  "literal": "run"
-                }
-              },
-              {
-                "predicate": {
-                  "path": "item.subject.id",
-                  "op": "equal",
-                  "ref": "run.id"
-                }
-              }
-            ]
-          }
-        }
-      }
-    ]
-  }
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
 }

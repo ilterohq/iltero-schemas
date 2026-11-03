@@ -1,23 +1,4 @@
 {
-  "ast_version": 1,
-  "id": "VEC.EXISTS.NESTED",
-  "version": "1.0.0",
-  "type": "state",
-  "change_type": "iac_change",
-  "stage": "plan",
-  "target": {
-    "kind": "resource",
-    "resources": [
-      {
-        "tool": "terraform",
-        "provider": "vec",
-        "resource_types": [
-          "thing"
-        ]
-      }
-    ]
-  },
-  "when": null,
   "assert": {
     "exists": {
       "in": "resource.related",
@@ -25,9 +6,9 @@
         "all": [
           {
             "predicate": {
-              "path": "item.type",
+              "literal": "attachment",
               "op": "equal",
-              "literal": "attachment"
+              "path": "item.type"
             }
           },
           {
@@ -35,9 +16,9 @@
               "in": "item.resource.after.rules",
               "where": {
                 "predicate": {
-                  "path": "item.port",
+                  "literal": 443,
                   "op": "equal",
-                  "literal": 443
+                  "path": "item.port"
                 }
               }
             }
@@ -45,5 +26,24 @@
         ]
       }
     }
-  }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.EXISTS.NESTED",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

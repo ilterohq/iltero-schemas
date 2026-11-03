@@ -87,10 +87,16 @@ class ImageRef(StrictModel):
 
 
 class AttestationRef(StrictModel):
-    """The build's attestation file, kept as the pipeline gave it; its signature is not checked."""
+    """The build's attestation file, named by its digest as the pipeline gave it.
+
+    The record keeps the file's digest, not its bytes: the pipeline keeps the file. ``verification`` is the tool's own
+    view, which never checks the signature; the server's answer is the build's ``attestation_outcome``.
+    """
 
     evidence_ref: Identifier
     verification: Literal["not_verified"]
+    # Whether the file was sent to the server for checking, whatever its answer: false on a run the tool opened.
+    sent_to_server: bool
 
 
 class BuildCommit(StrictModel):
@@ -165,6 +171,11 @@ def _body(car: CAR) -> ImageBuild:
     return car.change
 
 
+def _sent_to_server(build: ImageBuild) -> bool:
+    """Whether the record keeps an attestation it sent the server."""
+    return build.attestation is not None and build.attestation.sent_to_server
+
+
 def _checked_content(car: CAR) -> CheckedImage:
     image = _body(car).image
     return checked_image(image.repository, image.digest)
@@ -234,19 +245,18 @@ def _check_reports(build: ImageBuild, refs: Mapping[str, EvidenceRef]) -> None:
 
 def _check_facts_source(car: CAR, build: ImageBuild) -> None:
     """A build's verified commit and attestation come only from the server: its evaluations say the server gave their
-    facts exactly when the server opened the run, and that none were given otherwise. On a run the tool opened, the
-    signed provenance check is unknown for want of the server's facts. The commit check never passes or fails
-    without a build commit to compare, or on a run the tool opened: when it was evaluated, it is unknown for want of
-    the build commit, or of the server's facts."""
+    facts exactly when the server opened the run, and that none were given otherwise. On a run the tool opened, no
+    attestation was sent to the server, and the signed provenance check is unknown for want of the server's facts; on
+    any run, it passes only for an attestation the record keeps and sent the server. The commit check never passes or
+    fails without a build commit to compare, or on a run the tool opened: when it was evaluated, it is unknown for
+    want of the build commit, or of the server's facts."""
     opened_by = car.governance.run_opened_by
     owed = "server" if opened_by == "server" else "none"
     if any(event.provenance.facts_source != owed for event in car.events):
         raise ValueError(f"every evaluation of a build whose run was opened by {opened_by} reads its facts from {owed}")
+    if owed == "none" and _sent_to_server(build):
+        raise ValueError("a run the tool opened sent the server no attestation")
     provenance = [event for event in car.events if event.assertion.id == SIGNED_PROVENANCE_MATCHES_RUN_ID]
-    if build.attestation is None and any(event.evaluation.status == "pass" for event in provenance):
-        raise ValueError(
-            f"{SIGNED_PROVENANCE_MATCHES_RUN_ID} passes only for a build whose record keeps its attestation"
-        )
     if owed == "none" and any(
         event.evaluation.status in ("pass", "fail", "not_applicable")
         or (event.evaluation.status == "unknown" and event.evaluation.status_reason != "server_facts_unavailable")
@@ -255,6 +265,11 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
         raise ValueError(
             f"{SIGNED_PROVENANCE_MATCHES_RUN_ID} is unknown with reason server_facts_unavailable, never pass, fail or "
             "not_applicable, on a run the tool opened: only the server checks an attestation"
+        )
+    if not _sent_to_server(build) and any(event.evaluation.status == "pass" for event in provenance):
+        raise ValueError(
+            f"{SIGNED_PROVENANCE_MATCHES_RUN_ID} passes only for a build whose record keeps the attestation it sent "
+            "the server"
         )
     if build.build_commit is None:
         reason, why = "not_reported_by_tool", "when the build names no commit"
@@ -331,12 +346,14 @@ def check_attestation_outcome(car: CAR, outcome: AttestationOutcome) -> None:
     """Raise ``ValueError`` unless ``outcome``, the server's answer about a build's attestation in the build's
     evaluation input, is about the attestation the build's record keeps.
 
-    No attestation was sent exactly when the record keeps none; otherwise the server checked that file, by its
-    digest. A reader that holds the record and the evaluation input runs it.
+    No attestation was sent exactly when the record keeps none, or keeps one it says it did not send; otherwise the
+    server checked that file, by its digest. A reader that holds the record and the evaluation input runs it.
     """
     build = _body(car)
-    if (build.attestation is None) != isinstance(outcome, AttestationNotSent):
-        raise ValueError("the server was sent an attestation exactly when the build's record keeps one")
+    if _sent_to_server(build) == isinstance(outcome, AttestationNotSent):
+        raise ValueError(
+            "the server was sent an attestation exactly when the build's record says it sent the one it keeps"
+        )
     if build.attestation is not None and not isinstance(outcome, AttestationNotSent):
         (kept,) = [ref for ref in car.evidence_refs if ref.ref_id == build.attestation.evidence_ref]
         if outcome.attestation_digest != kept.digest:

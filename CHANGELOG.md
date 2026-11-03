@@ -415,8 +415,8 @@ keep, so any two tools agree on what a record means.
   names the image by its repository and digest, the digest of each
   platform's image when the build pushed an index (the manifest that lists
   one image per platform), the commit the build tool's provenance names
-  (`build_commit`), the build's attestation file, kept but not verified,
-  and the test and scan reports the build was given (`reports`: each
+  (`build_commit`), the build's attestation file, by its digest and not
+  verified, and the test and scan reports the build was given (`reports`: each
   report's file, its format, `junit`, `trivy_json` or `grype_json`, and the
   image it is about, which is the image or one of its platform images; a
   JUnit report names no image, so only the pipeline ties it to one). A tag
@@ -444,15 +444,15 @@ keep, so any two tools agree on what a record means.
   digest than `containerimage.digest` is refused. Building with
   `--provenance=mode=min` is recommended: the commit is the same as in
   `mode=max`, which also writes the build's arguments, and a build argument
-  can hold a secret value. The
-  tool that writes a record runs it, and so can any reader given the file
-  from the pipeline's store. Iltero stores none of a build's evidence files
-  and never reads the pipeline's store: the pipeline keeps them in the
-  run's artifact store, and the record keeps each file's digest. The one
-  file that passes through Iltero Platform is the raw image index, which
-  the plan stage owes (`image_index`, the one document an image build's
-  `named_documents` lists) and which Iltero Platform checks with
-  `platform_digests_of`, refusing an index over 4 MiB, and then discards.
+  can hold a secret value. The tool that writes a record runs it, and so can
+  any reader given the file from the pipeline's store. Iltero stores none of
+  a build's evidence files except the attestation, when it was sent
+  (`sent_to_server: true`), and never reads the pipeline's store: the
+  pipeline keeps them in the run's artifact store, and the record keeps each
+  file's digest. The raw image index, which the plan stage owes
+  (`image_index`, the one document an image build's `named_documents`
+  lists), passes through Iltero Platform, which checks it with
+  `platform_digests_of`, refusing an index over 4 MiB, and then discards it.
   On a run Iltero Platform opened, the commit check compares the commit the
   record names, read by the tool from the pipeline's metadata file and
   `not_verified`, with the commit Iltero Platform verified; Iltero Platform
@@ -582,15 +582,19 @@ keep, so any two tools agree on what a record means.
   its signature, and checks that it names the image's own digest. A build's
   input carries `attestation_outcome`: whether Iltero Platform verified the
   attestation, with what its signing certificate names, refused it, or was
-  sent none, with what it checked the attestation against.
-  `check_attestation_outcome` checks that answer is about the attestation
-  the record keeps, which the record keeps as the pipeline gave it. The
-  starter assertion `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` holds that a
-  verified attestation names the built image and the run's repository,
-  commit and run; it fails when no attestation was sent, passes only for a
-  record that keeps one, and on a run the tool opened is always `unknown`
-  (`server_facts_unavailable`). Vectors are in `vectors/attestations/` and
-  `vectors/evaluation/`.
+  sent none, with what it checked the attestation against. The record keeps
+  the digest of the attestation file as the pipeline gave it, not its bytes,
+  and says whether the file was sent to Iltero Platform for checking
+  (`sent_to_server`), which on a run the tool opened it never is.
+  `check_attestation_outcome` checks that the answer is about the
+  attestation the record keeps, and that it is `not_sent` exactly when the
+  record keeps none or one it did not send. The starter assertion
+  `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` holds that a verified
+  attestation names the built image and the run's repository, commit and
+  run; it fails when no attestation was sent, passes only for a record that
+  keeps the attestation it sent, and on a run the tool opened is always
+  `unknown` (`server_facts_unavailable`). Vectors are in
+  `vectors/attestations/` and `vectors/evaluation/`.
 - A verification report's `runtime_verification` is one of seven results,
   each a state and its reason, among them `not_assessed` with
   `not_in_activity` for a record whose activity has no stage after

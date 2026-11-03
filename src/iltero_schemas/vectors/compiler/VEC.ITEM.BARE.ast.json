@@ -1,33 +1,33 @@
 {
-  "ast_version": 1,
-  "id": "VEC.ITEM.BARE",
-  "version": "1.0.0",
-  "type": "state",
-  "change_type": "iac_change",
-  "stage": "plan",
-  "target": {
-    "kind": "resource",
-    "resources": [
-      {
-        "tool": "terraform",
-        "provider": "vec",
-        "resource_types": [
-          "thing"
-        ]
-      }
-    ]
-  },
-  "when": null,
   "assert": {
     "exists": {
       "in": "resource.after.tags",
       "where": {
         "predicate": {
-          "path": "item",
+          "literal": "owner",
           "op": "equal",
-          "literal": "owner"
+          "path": "item"
         }
       }
     }
-  }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.ITEM.BARE",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

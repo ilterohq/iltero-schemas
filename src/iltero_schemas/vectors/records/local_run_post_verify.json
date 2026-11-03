@@ -1329,13 +1329,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:708c45197bb9e7cd4fc8e7c8ed0872a92d08972e2732f1f084294e7d7c692cd5",
+      "digest": "sha256:617e0db03867637e079dd14b7b82d22084ea6d3b41ef3025fb1c32aae94741aa",
       "media_type": "application/json",
       "path": "units/root/post_deploy/assertions/ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 780,
+      "size_bytes": 803,
       "source": null,
       "storage_uri": null
     },
@@ -1346,13 +1346,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:4712ef8e47548f4f47a87f03f124ec1d8b5e59cc198fd2fa2a6df0408b9f564d",
+      "digest": "sha256:c76e7e2a41594f848e148c2f05331a7514da7c12b39ed45f02345d56e721473e",
       "media_type": "application/json",
       "path": "units/root/post_deploy/assertions/compiled.json",
       "redaction_policy": null,
       "ref_id": "post_deploy/compiled.json",
       "retention_until": null,
-      "size_bytes": 1162,
+      "size_bytes": 1323,
       "source": null,
       "storage_uri": null
     },
@@ -1739,7 +1739,7 @@
       "approvals": null,
       "assertions": {
         "count": 1,
-        "digest": "sha256:4712ef8e47548f4f47a87f03f124ec1d8b5e59cc198fd2fa2a6df0408b9f564d",
+        "digest": "sha256:c76e7e2a41594f848e148c2f05331a7514da7c12b39ed45f02345d56e721473e",
         "index": "units/root/post_deploy/assertions/compiled.json"
       },
       "assurance_status": {

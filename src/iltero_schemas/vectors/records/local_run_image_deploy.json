@@ -188,7 +188,7 @@
       },
       "assertions": {
         "index": "units/api/pre_deploy/assertions/compiled.json",
-        "digest": "sha256:7ab0d2b779a3ae316fc4878f2de3fa44064a44809d469775df60f3302eb2b1d5",
+        "digest": "sha256:5f012cd114d062ff90616a02cc1c5d2e2f5127aaed8dca90f28cb03290440d14",
         "count": 1
       },
       "scanners": null,
@@ -294,7 +294,7 @@
       },
       "assertions": {
         "index": "units/api/post_deploy/assertions/compiled.json",
-        "digest": "sha256:e33ace8d7c282ba8daaa248a2a7f896ac38b05dc81944764041e10009af1b0d4",
+        "digest": "sha256:2dbd91e6d7bdde68a540cc8f77cbafecba19be3b6dba9215b76c8b1ee4976f6c",
         "count": 1
       },
       "scanners": null,
@@ -400,7 +400,7 @@
       },
       "assertions": {
         "index": "units/api/post_verify/assertions/compiled.json",
-        "digest": "sha256:2ce126982a0566cc3b5cfe0eb51efec153b1d17b59429fdb19c960cedd25a2a3",
+        "digest": "sha256:a56b365f706df142046164839e83d9ecbc418b18d8dc9c8ecd0162d8889f67b4",
         "count": 1
       },
       "scanners": null,
@@ -887,10 +887,27 @@
   "out_of_scope": [],
   "evidence_refs": [
     {
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:e77084225036994a2dfe82d329eda7d6ed56384fe73885c8ad0927f484098dd9",
+      "size_bytes": 621,
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
       "digest": "sha256:0dec0315945e2e887b12eb9c9a8b599aed13e1d7a3970fe273bb762f01bc8a5f",
-      "size_bytes": 11428,
+      "size_bytes": 11474,
       "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
@@ -907,7 +924,7 @@
       "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
       "media_type": "application/yaml",
       "digest": "sha256:961b8eac348c19b6e5d8c188603a8ccdbc90a12da3b5f265894d1ca824fe4974",
-      "size_bytes": 590,
+      "size_bytes": 613,
       "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
@@ -923,8 +940,8 @@
     {
       "ref_id": "post_deploy/assertions/compiled.json",
       "media_type": "application/json",
-      "digest": "sha256:e33ace8d7c282ba8daaa248a2a7f896ac38b05dc81944764041e10009af1b0d4",
-      "size_bytes": 247,
+      "digest": "sha256:2dbd91e6d7bdde68a540cc8f77cbafecba19be3b6dba9215b76c8b1ee4976f6c",
+      "size_bytes": 1366,
       "path": "units/api/post_deploy/assertions/compiled.json",
       "storage_uri": null,
       "retention_until": null,
@@ -972,10 +989,27 @@
       "redaction_policy": null
     },
     {
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:87639a130dc7b38ad544b29e0cf8a4a5098d99f6a5e50b3cead2a1f513fdc8f2",
+      "size_bytes": 2518,
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
       "digest": "sha256:cb5af3c072100717a3af760021d41b805117c20aa3f20ad04b528f6e0aee2322",
-      "size_bytes": 12477,
+      "size_bytes": 12505,
       "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
@@ -992,7 +1026,7 @@
       "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
       "media_type": "application/yaml",
       "digest": "sha256:f7d0c2356b40fcf6a44371ec5df406469b076202965474c9a7ae5e2a6001196d",
-      "size_bytes": 1484,
+      "size_bytes": 1498,
       "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
@@ -1008,8 +1042,8 @@
     {
       "ref_id": "post_verify/assertions/compiled.json",
       "media_type": "application/json",
-      "digest": "sha256:2ce126982a0566cc3b5cfe0eb51efec153b1d17b59429fdb19c960cedd25a2a3",
-      "size_bytes": 251,
+      "digest": "sha256:a56b365f706df142046164839e83d9ecbc418b18d8dc9c8ecd0162d8889f67b4",
+      "size_bytes": 1399,
       "path": "units/api/post_verify/assertions/compiled.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1153,6 +1187,23 @@
       }
     },
     {
+      "ref_id": "pre_deploy/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:c7051fa13e53978c26a1f62932d76b76e67ee23b9e757362b65d9a8d0f8f7628",
+      "size_bytes": 2275,
+      "path": "units/api/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "pre_deploy/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
       "digest": "sha256:d9cb7b34f1957517535b3648c66a683a8138b28cb996c7bd001d623296941d55",
@@ -1189,8 +1240,8 @@
     {
       "ref_id": "pre_deploy/assertions/compiled.json",
       "media_type": "application/json",
-      "digest": "sha256:7ab0d2b779a3ae316fc4878f2de3fa44064a44809d469775df60f3302eb2b1d5",
-      "size_bytes": 249,
+      "digest": "sha256:5f012cd114d062ff90616a02cc1c5d2e2f5127aaed8dca90f28cb03290440d14",
+      "size_bytes": 1192,
       "path": "units/api/pre_deploy/assertions/compiled.json",
       "storage_uri": null,
       "retention_until": null,

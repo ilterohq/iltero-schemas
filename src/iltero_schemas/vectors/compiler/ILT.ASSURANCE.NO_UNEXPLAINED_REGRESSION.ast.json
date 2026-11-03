@@ -1,32 +1,4 @@
 {
-  "ast_version": 1,
-  "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
-  "version": "1.0.0",
-  "type": "process",
-  "change_type": "iac_change",
-  "stage": "runtime",
-  "target": {
-    "kind": "assurance",
-    "resources": []
-  },
-  "when": {
-    "all": [
-      {
-        "predicate": {
-          "path": "assurance.previous.status",
-          "op": "equal",
-          "literal": "pass"
-        }
-      },
-      {
-        "predicate": {
-          "path": "assurance.current.status",
-          "op": "equal",
-          "literal": "fail"
-        }
-      }
-    ]
-  },
   "assert": {
     "any": [
       {
@@ -40,11 +12,39 @@
           "in": "assurance.since_previous.exceptions",
           "where": {
             "predicate": {
-              "path": "item.status",
+              "literal": "approved",
               "op": "equal",
-              "literal": "approved"
+              "path": "item.status"
             }
           }
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+  "stage": "runtime",
+  "target": {
+    "kind": "assurance",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "pass",
+          "op": "equal",
+          "path": "assurance.previous.status"
+        }
+      },
+      {
+        "predicate": {
+          "literal": "fail",
+          "op": "equal",
+          "path": "assurance.current.status"
         }
       }
     ]

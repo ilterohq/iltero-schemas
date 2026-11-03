@@ -3752,7 +3752,7 @@
     "name": "image_index_of_another_image",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/13/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      "/evidence_refs/16/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
     },
     "remove": [],
     "message": "the raw index's digest is the image's digest"
@@ -3951,7 +3951,7 @@
     "name": "image_index_of_another_file_type",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/13/media_type": "application/json"
+      "/evidence_refs/16/media_type": "application/json"
     },
     "remove": [],
     "message": "the raw index is a file of type application/vnd.docker.distribution.manifest.list.v2+json or application/vnd.oci.image.index.v1+json"
@@ -4019,7 +4019,7 @@
     "name": "image_report_without_the_digest_of_the_file_the_pipeline_gave",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/15/source": null
+      "/evidence_refs/18/source": null
     },
     "remove": [],
     "message": "a report names the digest of the file as the pipeline gave it, in its source"
@@ -4059,7 +4059,7 @@
     "name": "image_attestation_redacted",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/7/redaction_policy": {
+      "/evidence_refs/10/redaction_policy": {
         "id": "iltero.redaction",
         "version": "1",
         "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
@@ -4072,10 +4072,21 @@
     "name": "image_attestation_without_its_source",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/7/source": null
+      "/evidence_refs/10/source": null
     },
     "remove": [],
     "message": "the attestation names the digest of the file as the pipeline gave it, in its source"
+  },
+  {
+    "name": "image_attestation_sent_to_the_server_on_a_run_the_tool_opened",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/attestation/sent_to_server": true,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0",
+      "/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0"
+    },
+    "remove": [],
+    "message": "a run the tool opened sent the server no attestation"
   },
   {
     "name": "image_build_without_its_match_check",
@@ -4148,7 +4159,7 @@
     "name": "image_report_with_a_source_that_is_not_a_digest",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/15/source": {
+      "/evidence_refs/18/source": {
         "digest": "not-a-digest",
         "name": "junit.xml"
       }
@@ -4160,7 +4171,7 @@
     "name": "image_report_stored_unredacted_but_not_as_given",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/15/source": {
+      "/evidence_refs/18/source": {
         "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
         "name": "junit.xml"
       }
@@ -4172,7 +4183,7 @@
     "name": "image_report_of_another_file_type",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/15/media_type": "application/vnd.iltero.rego"
+      "/evidence_refs/18/media_type": "application/vnd.iltero.rego"
     },
     "remove": [],
     "message": "a junit report is a file of type application/xml or text/xml"
@@ -4222,7 +4233,7 @@
     "name": "image_build_commit_from_a_redacted_metadata_file",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/8/redaction_policy": {
+      "/evidence_refs/11/redaction_policy": {
         "id": "iltero.redaction",
         "version": "1",
         "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
@@ -4271,7 +4282,7 @@
     "name": "image_junit_report_kept_as_json",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/15/media_type": "application/json"
+      "/evidence_refs/18/media_type": "application/json"
     },
     "remove": [],
     "message": "a junit report is a file of type application/xml or text/xml"
@@ -4624,7 +4635,7 @@
     "name": "image_drift_check_with_a_pod_list_kept_before_it_was_read",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/11/collected_at": "2026-11-02T09:04:00Z"
+      "/evidence_refs/13/collected_at": "2026-11-02T09:04:00Z"
     },
     "remove": [],
     "message": "the pod list read was kept no earlier than it was read"
@@ -4726,7 +4737,7 @@
     "name": "image_drift_check_taken_from_a_workload_file_of_another_file_type",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/13/media_type": "application/yaml"
+      "/evidence_refs/15/media_type": "application/yaml"
     },
     "remove": [],
     "message": "the workload read before the pods were listed is a file of type application/json"
@@ -4735,7 +4746,7 @@
     "name": "image_drift_check_taken_from_a_workload_file_not_redacted",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/13/redaction_policy": null
+      "/evidence_refs/15/redaction_policy": null
     },
     "remove": [],
     "message": "the workload read before the pods were listed names the redaction policy that ran over it"
@@ -4744,7 +4755,7 @@
     "name": "image_drift_check_taken_from_a_pod_list_redacted_under_another_policy",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/11/redaction_policy/version": "2"
+      "/evidence_refs/13/redaction_policy/version": "2"
     },
     "remove": [],
     "message": "every stage and every redacted evidence file name the same redaction policy"
@@ -4753,7 +4764,7 @@
     "name": "image_drift_check_with_a_workload_file_kept_before_it_was_read",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/13/collected_at": "2026-11-02T09:04:00Z"
+      "/evidence_refs/15/collected_at": "2026-11-02T09:04:00Z"
     },
     "remove": [],
     "message": "the workload read before the pods were listed was kept no earlier than it was read"
@@ -4781,7 +4792,7 @@
     "name": "image_drift_check_taken_from_a_pod_list_of_another_file_type",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/11/media_type": "application/yaml"
+      "/evidence_refs/13/media_type": "application/yaml"
     },
     "remove": [],
     "message": "the pod list read is a file of type application/json"
@@ -4790,7 +4801,7 @@
     "name": "image_drift_check_taken_from_a_pod_list_without_the_digest_it_was_read_with",
     "vector": "local_run_image_deploy.json",
     "set": {
-      "/evidence_refs/11/source": null
+      "/evidence_refs/13/source": null
     },
     "remove": [],
     "message": "the pod list read names the digest of the file as the pipeline gave it, in its source"

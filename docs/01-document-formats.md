@@ -185,7 +185,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, `outcomes_from` (`apply_log`, or `apply_log_and_state` when the log lost messages and the state settled what it could), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
-| `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). In an `image_deploy` input, what one reading of the workload found (see [The `image_deploy` body](#the-image_deploy-body)); its `change_digest` is `change.digest`: "drift_check.change_digest is change.digest", and it compares every container, of the pod template or of a pod, whose image is from `change.image.repository`: "a reading compares every container whose image is from the deployed repository". |
+| `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). In an `image_deploy` input, what one reading of the workload found (see [The `image_deploy` body](#the-image_deploy-body)); its `change_digest` is `change.digest`: "drift_check.change_digest is change.digest", and it compares every container, of the pod template or of a pod, whose image is from `change.image.repository`: "a reading compares every container whose image is from the deployed repository". At `post_verify`, the reading is taken no earlier than the deployment; a reading at the deployment's own instant is accepted. Otherwise: "drift_check.read_at must be no earlier than deployment.deployed_at". |
 | `assurance` | object | Facts after deployment. |
 | `artifact` | object | The image a build produced: its `repository`, its `digest`, the digest of each platform's image (`platform_digests`) and `build_commit`: the commit the build tool's provenance names, or the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the build named none (see [The build's commit](#the-builds-commit)), with the rules of the [`image_build` body](#the-image_build-body). |
 | `tests` | list | Each test report the build was given, at most 64 (see below). |
@@ -669,7 +669,15 @@ Key rules:
 - The model runs the integrity checks: it recomputes every value a reader can recompute and refuses a record whose
   value differs. They cover the change digest and the digests bound to it (the pre-deploy stage's
   `coverage.subjects_in_scope.source_digest`, each approval of a change and `change.drift_check.change_digest`), status
-  counts from events, each stage's verdict and status, the plan stage's plan-flag gaps and the combined top level.
+  counts from events, each stage's verdict and status, the plan stage's plan-flag gaps, the status each built-in check
+  must have, and the combined top level. In an `iac_change` record, `ILT.DEPLOYMENT.PLAN_BINDING` must be `pass`
+  exactly when `change.deployment.plan` has the evaluated plan's `digest`, `artifact_digest` and
+  `artifact_digest_source`, and `fail` otherwise; `ILT.IAC.NO_DRIFT_AFTER_APPLY` must be `pass` exactly when
+  `change.drift_check.differences_count` is 0, and `fail` otherwise. An event of either check whose status is one a
+  policy answers with (`pass`, `fail`, `unknown` or `not_applicable`, `iltero_schemas.models.event.POLICY_STATUSES`)
+  and not the recomputed one is an integrity failure at `events.<index>.evaluation.status`: "is not fail, what the
+  record's change gives". An event that is `not_evaluated` or `error` decides nothing and is not compared. The
+  `image_deploy` checks are recomputed the same way (see [The `image_deploy` body](#the-image_deploy-body)).
   The change digest problems come first, so a forged `change.digest` is refused as `change.digest is not the digest
   of the change type, unit, environment and plan`. A reader that reports integrity failures itself sets
   `SKIP_INTEGRITY_CHECKS` (`iltero_schemas.models.car`) to `True` in the validation context (any other value is
@@ -1264,9 +1272,9 @@ not the digest of the change type, unit, environment and image" and "change.drif
 change.digest". They also recompute the status each built-in check must have from the record's own image,
 deployment, reading and build, with the rules of the two assertions below: `ILT.DEPLOYMENT.IMAGE_BINDING` passes or
 fails, and `ILT.IMAGE.RUNNING_DIGEST_MATCHES` passes, fails or is `unknown` as its row in the table below says. An
-event of either assertion whose status is `pass`, `fail` or `unknown` and not
-the recomputed one is an integrity failure at `events.<index>.evaluation.status`: "is not fail, what the record's
-change gives". An event that is `not_applicable`, `not_evaluated` or `error` is not compared.
+event of either assertion whose status is `pass`, `fail`, `unknown` or `not_applicable` and not the recomputed one is
+an integrity failure at `events.<index>.evaluation.status`: "is not fail, what the record's change gives". An event
+that is `not_evaluated` or `error` is not compared.
 
 ```json
 {

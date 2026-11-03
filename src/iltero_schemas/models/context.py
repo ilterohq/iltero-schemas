@@ -72,6 +72,7 @@ from iltero_schemas.models.fields import (
     Timestamp,
     Uuid,
     check_artifact_digest,
+    parse_timestamp,
 )
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.image import ImageArtifact
@@ -385,6 +386,10 @@ class AssuranceContext(StrictModel):
             check_against_deployment(self.drift_check, self.deployment)
         if isinstance(self.change, ImageChange):
             self._check_image_change(self.change, local)
+        if isinstance(self.drift_check, ImageDriftCheck) and isinstance(self.deployment, ImageDeployment):
+            read, deployed = self.drift_check.read_at.value, self.deployment.deployed_at.value
+            if parse_timestamp(read) < parse_timestamp(deployed):
+                raise ValueError("drift_check.read_at must be no earlier than deployment.deployed_at")
         if self.evaluation.activity == IMAGE_BUILD_ACTIVITY and self.organization_scope.environment is not None:
             raise ValueError("a build's input names no environment: a build belongs to none")
         return self

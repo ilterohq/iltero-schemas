@@ -224,3 +224,14 @@ def test_an_accepted_build_names_its_platform_digests_once_each_in_order() -> No
     AcceptedBuild.model_validate(build)
     with pytest.raises(ValidationError, match="named once each, in order"):
         AcceptedBuild.model_validate({**build, "platform_digests": ["sha256:" + "3" * 64, "sha256:" + "2" * 64]})
+
+
+def test_a_deploy_inputs_reading_is_taken_no_earlier_than_the_deployment() -> None:
+    before = {
+        **CONTEXT["drift_check"],
+        "read_at": {**CONTEXT["drift_check"]["read_at"], "value": "2026-11-02T09:01:00Z"},
+    }
+    with pytest.raises(ValidationError, match="drift_check.read_at must be no earlier than deployment.deployed_at"):
+        AssuranceContext.model_validate({**CONTEXT, "drift_check": before})
+    at_deployment = {**CONTEXT["drift_check"]["read_at"], "value": CONTEXT["deployment"]["deployed_at"]["value"]}
+    AssuranceContext.model_validate({**CONTEXT, "drift_check": {**CONTEXT["drift_check"], "read_at": at_deployment}})

@@ -1276,6 +1276,77 @@
     ]
   },
   {
+    "name": "deployment_of_another_plan_whose_plan_binding_check_still_passed",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/change/deployment/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/change/identity/sources/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:f6140e456e4f97dd9afd8281246eafd20685e3b28ee00ba69ebd227767a9e969"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "drifted_resource_whose_drift_check_still_passed",
+    "vector": "local_run_verified.json",
+    "set": {
+      "/change/drift_check/differences": [
+        {
+          "address": "local_file.manifest",
+          "difference": "changed"
+        }
+      ],
+      "/change/drift_check/differences_count": 1,
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4209bd3fe60e5fbae04888c749434127184c651916b7201cc3f0042bda87e6d2"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.4.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "deployment_of_the_evaluated_plan_without_its_saved_file_whose_plan_binding_check_still_passed",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/change/plan/artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "/change/plan/artifact_digest_source": "saved_plan",
+      "/change/plan/artifact_file_name": "tfplan"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "deployment_of_the_evaluated_plan_whose_plan_binding_check_failed",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/events/3/evaluation/status": "fail"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.post_deploy.coverage",
+        "does not count the statuses of the stage's events"
+      ],
+      [
+        "events.3.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
     "name": "image_deploy_with_a_forged_change_digest",
     "vector": "local_run_image_deploy.json",
     "set": {

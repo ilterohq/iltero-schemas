@@ -185,7 +185,15 @@ keep, so any two tools agree on what a record means.
   stays in the coverage. Record vectors cover it and pin the order.
 - The integrity checks: a record's values that a reader can recompute,
   including its `change.digest`, the pre-deploy stage's source digest and
-  each approval of a change, must be what they recompute to. Change digest
+  each approval of a change, must be what they recompute to. They also
+  recompute the status each built-in check must have from the record's own
+  change, and report an event a policy answered (`pass`, `fail`, `unknown`
+  or `not_applicable`) that says otherwise; an event not evaluated, or that ended in error, decides
+  nothing. In an infrastructure record, `ILT.DEPLOYMENT.PLAN_BINDING` must
+  pass exactly when the applied plan has the evaluated plan's digest,
+  artifact digest and its source, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`
+  exactly when the drift check found no difference; each fails otherwise.
+  Change digest
   problems come first, so a change digest that does not recompute is refused
   first. A reader that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other
   value is ignored) reads the record and gets every problem from
@@ -529,7 +537,9 @@ keep, so any two tools agree on what a record means.
   `post_verify` stage may be left out, by the project, the environment's
   policy, or as not supported for a workload no reader reads. An
   evaluation input reads its `change`, `deployment` and `drift_check` in
-  the shapes of its activity. At `pre_deploy`, an assertion about any
+  the shapes of its activity, and its `post_verify` input refuses a
+  reading of the workload taken before the deployment. At `pre_deploy`, an
+  assertion about any
   change reads what both the infrastructure and the image deploy input
   carry, which leaves out `plan`. The integrity checks recompute the status
   each of its two built-in checks must have from the record's own image,

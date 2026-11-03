@@ -19,6 +19,7 @@ from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.canonical.plan import check_plan_digest_version
 from iltero_schemas.change_types.activity import Activity
 from iltero_schemas.change_types.bindings import bound_to_change_digest_problems
+from iltero_schemas.change_types.owed_status import owed_status_problems
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
@@ -227,6 +228,31 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     return problems + bound_to_change_digest_problems(car, change.digest)
 
 
+def _owed_statuses(change: IacChange) -> dict[str, str]:
+    """The status each built-in check must have, recomputed from what the record holds: whether the applied plan is
+    the evaluated one, and whether the reading after the apply found no resource that differed."""
+    owed: dict[str, str] = {}
+    if change.deployment is not None:
+        applied, evaluated = change.deployment.plan, change.plan
+        same = (applied.digest, applied.artifact_digest, applied.artifact_digest_source) == (
+            evaluated.digest,
+            evaluated.artifact_digest,
+            evaluated.artifact_digest_source,
+        )
+        owed[PLAN_BINDING_ID] = "pass" if same else "fail"
+    if change.drift_check is not None:
+        owed[NO_DRIFT_AFTER_APPLY_ID] = "pass" if change.drift_check.differences_count == 0 else "fail"
+    return owed
+
+
+def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
+    """The record's own plan, deployment and reading give its plan-flag gaps and its built-in checks' results.
+
+    The plan stage lists the gaps the plan's flags call for, and each built-in check found the status they give.
+    """
+    return _plan_flag_problems(car) + owed_status_problems(car, _owed_statuses(_body(car)))
+
+
 def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
     """The plan stage lists one plan-flag gap for each plan flag that is not true, with the plan's value, in kind
     order."""
@@ -266,5 +292,5 @@ IAC_CHANGE = Activity(
     checked_content=_checked_content,
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
-    integrity_problems=_plan_flag_problems,
+    integrity_problems=_integrity_problems,
 )

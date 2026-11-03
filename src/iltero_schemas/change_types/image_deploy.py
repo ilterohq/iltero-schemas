@@ -22,6 +22,7 @@ from iltero_schemas.change_types.activity import Activity
 from iltero_schemas.change_types.bindings import bound_to_change_digest_problems
 from iltero_schemas.change_types.evidence import JSON_MEDIA_TYPE, given_digest
 from iltero_schemas.change_types.image import ImageRef
+from iltero_schemas.change_types.owed_status import owed_status_problems
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IMAGE_DEPLOY_ACTIVITY, IMAGE_RELEASE_TYPE
@@ -204,14 +205,7 @@ def _owed_statuses(deploy: ImageDeploy) -> dict[str, str]:
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
     """Each built-in check found what the record's own image, deployment and reading say it must."""
-    owed = _owed_statuses(_body(car))
-    problems: list[tuple[str, str]] = []
-    for index, event in enumerate(car.events):
-        status = owed.get(event.assertion.id)
-        decided = event.evaluation.status in ("pass", "fail", "unknown")
-        if status is not None and decided and event.evaluation.status != status:
-            problems.append((f"events.{index}.evaluation.status", f"is not {status}, what the record's change gives"))
-    return problems
+    return owed_status_problems(car, _owed_statuses(_body(car)))
 
 
 IMAGE_DEPLOY = Activity(

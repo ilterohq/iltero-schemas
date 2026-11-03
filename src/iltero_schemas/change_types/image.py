@@ -18,11 +18,11 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal, NamedTuple
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.assertions.paths import BUILT_FROM_RUN_COMMIT_ID
+from iltero_schemas.assertions.paths import BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, SIGNED_PROVENANCE_MATCHES_RUN_ID
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.change_types.activity import Activity, DocumentName
 from iltero_schemas.change_types.evidence import JSON_MEDIA_TYPE, given_digest
@@ -42,8 +42,16 @@ from iltero_schemas.models.image import (
     in_one_spelling,
     repository_of,
 )
-from iltero_schemas.models.image_evidence import MAX_REPORTS, REPORT_MEDIA_TYPES_OF, ImageDigestSource, ReportFormat
+from iltero_schemas.models.image_evidence import (
+    MAX_REPORTS,
+    REPORT_MEDIA_TYPES_OF,
+    SCAN_FORMATS,
+    ImageDigestSource,
+    ReportFormat,
+    check_scans_name_their_platform,
+)
 from iltero_schemas.models.reference_time import ReferenceTime
+from iltero_schemas.models.server_facts import AttestationNotSent, AttestationOutcome
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR, EvidenceRef
@@ -140,6 +148,8 @@ class ImageBuild(StrictModel):
             raise ValueError("reports names each report once, sorted by its evidence_ref")
         if any(report.image_digest not in {self.image.digest, *self.platform_digests} for report in self.reports):
             raise ValueError("a report is about the image or one of its platform images")
+        scanned = [report.image_digest for report in self.reports if report.format in SCAN_FORMATS]
+        check_scans_name_their_platform(self.image.digest, self.platform_digests, scanned)
         if (self.index_evidence_ref is None) != (not self.platform_digests):
             raise ValueError(
                 "an image pushed as an index names both its raw index and its platform digests; "
@@ -200,6 +210,10 @@ def _check_evidence(car: CAR, build: ImageBuild) -> None:
         ref = refs[ref_id]
         if ref.redaction_policy is not None or given_digest(ref, "the build tool's metadata file") != ref.digest:
             raise ValueError("the build tool's metadata file is kept as the pipeline gave it")
+    if build.attestation is not None:
+        ref = refs[build.attestation.evidence_ref]
+        if ref.redaction_policy is not None or given_digest(ref, "the attestation") != ref.digest:
+            raise ValueError("the attestation is kept as the pipeline gave it, so its signature can be checked again")
     _check_reports(build, refs)
 
 
@@ -219,13 +233,29 @@ def _check_reports(build: ImageBuild, refs: Mapping[str, EvidenceRef]) -> None:
 
 
 def _check_facts_source(car: CAR, build: ImageBuild) -> None:
-    """A build's verified commit comes only from the server: its evaluations say the server gave their facts exactly
-    when the server opened the run, and that none were given otherwise. The commit check never passes or fails
+    """A build's verified commit and attestation come only from the server: its evaluations say the server gave their
+    facts exactly when the server opened the run, and that none were given otherwise. On a run the tool opened, the
+    signed provenance check is unknown for want of the server's facts. The commit check never passes or fails
     without a build commit to compare, or on a run the tool opened: when it was evaluated, it is unknown for want of
     the build commit, or of the server's facts."""
-    owed = "server" if car.run.origin == "server_issued" else "none"
+    opened_by = car.governance.run_opened_by
+    owed = "server" if opened_by == "server" else "none"
     if any(event.provenance.facts_source != owed for event in car.events):
-        raise ValueError(f"every evaluation of a build whose run was {car.run.origin} reads its facts from {owed}")
+        raise ValueError(f"every evaluation of a build whose run was opened by {opened_by} reads its facts from {owed}")
+    provenance = [event for event in car.events if event.assertion.id == SIGNED_PROVENANCE_MATCHES_RUN_ID]
+    if build.attestation is None and any(event.evaluation.status == "pass" for event in provenance):
+        raise ValueError(
+            f"{SIGNED_PROVENANCE_MATCHES_RUN_ID} passes only for a build whose record keeps its attestation"
+        )
+    if owed == "none" and any(
+        event.evaluation.status in ("pass", "fail", "not_applicable")
+        or (event.evaluation.status == "unknown" and event.evaluation.status_reason != "server_facts_unavailable")
+        for event in provenance
+    ):
+        raise ValueError(
+            f"{SIGNED_PROVENANCE_MATCHES_RUN_ID} is unknown with reason server_facts_unavailable, never pass, fail or "
+            "not_applicable, on a run the tool opened: only the server checks an attestation"
+        )
     if build.build_commit is None:
         reason, why = "not_reported_by_tool", "when the build names no commit"
     elif owed == "none":
@@ -236,9 +266,11 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
         event.evaluation.status in ("pass", "fail")
         or (event.evaluation.status == "unknown" and event.evaluation.status_reason != reason)
         for event in car.events
-        if event.assertion.id == BUILT_FROM_RUN_COMMIT_ID
+        if event.assertion.id == BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID
     ):
-        raise ValueError(f"{BUILT_FROM_RUN_COMMIT_ID} is unknown with reason {reason}, never pass or fail, {why}")
+        raise ValueError(
+            f"{BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID} is unknown with reason {reason}, never pass or fail, {why}"
+        )
 
 
 def _repository_and_tag(name: str) -> tuple[str, str] | None:
@@ -270,6 +302,45 @@ def check_build_metadata(build: ImageBuild, metadata: bytes) -> None:
         raise ValueError("the build tool's metadata file names the image's repository with its tag")
     if named.commit != (build.build_commit.commit if build.build_commit else None):
         raise ValueError("the build commit is the one the build tool's metadata file names, and only that")
+
+
+class ScanCoverage(NamedTuple):
+    """Which of an image's platform images the build's scan reports name, and which none does."""
+
+    platforms_scanned: tuple[str, ...]
+    platforms_not_scanned: tuple[str, ...]
+
+
+def scan_coverage(build: ImageBuild) -> ScanCoverage:
+    """The platform images the build's scan reports name, counted as ``ILT.IMAGE.SCAN_RAN`` reads them: a scanner's
+    report that itself names the image (``image_digest_source: report``). An image pushed as a single manifest is
+    its own one platform image. Both tuples are sorted, as the build's platform digests are."""
+    platforms = build.platform_digests or [build.image.digest]
+    named = {
+        report.image_digest
+        for report in build.reports
+        if report.format in SCAN_FORMATS and report.image_digest_source == "report"
+    }
+    return ScanCoverage(
+        tuple(digest for digest in platforms if digest in named),
+        tuple(digest for digest in platforms if digest not in named),
+    )
+
+
+def check_attestation_outcome(car: CAR, outcome: AttestationOutcome) -> None:
+    """Raise ``ValueError`` unless ``outcome``, the server's answer about a build's attestation in the build's
+    evaluation input, is about the attestation the build's record keeps.
+
+    No attestation was sent exactly when the record keeps none; otherwise the server checked that file, by its
+    digest. A reader that holds the record and the evaluation input runs it.
+    """
+    build = _body(car)
+    if (build.attestation is None) != isinstance(outcome, AttestationNotSent):
+        raise ValueError("the server was sent an attestation exactly when the build's record keeps one")
+    if build.attestation is not None and not isinstance(outcome, AttestationNotSent):
+        (kept,) = [ref for ref in car.evidence_refs if ref.ref_id == build.attestation.evidence_ref]
+        if outcome.attestation_digest != kept.digest:
+            raise ValueError("the server checked the attestation the build's record keeps")
 
 
 def _named_documents(car: CAR) -> Mapping[Stage, Mapping[DocumentName, tuple[str, ...]]]:
@@ -309,8 +380,8 @@ IMAGE_BUILD = Activity(
     not_supported=lambda _car: frozenset(),
     required_documents=MappingProxyType({Stage.PLAN: ("record",)}),
     named_documents=_named_documents,
-    binding_check=(BUILT_FROM_RUN_COMMIT_ID, Stage.PLAN),
-    always_evaluated=MappingProxyType({Stage.PLAN: BUILT_FROM_RUN_COMMIT_ID}),
+    carried_out_matches_checked=(BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, Stage.PLAN),
+    always_evaluated=MappingProxyType({Stage.PLAN: BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID}),
     checked_content=_checked_content,
     check_record=_check_record,
     change_digest_problems=_no_problems,

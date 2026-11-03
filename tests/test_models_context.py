@@ -505,10 +505,11 @@ def test_a_build_input_carries_its_image_its_reports_and_the_verified_commit() -
         "tests",
         "scans",
         "verified_source",
+        "attestation_outcome",
     }
 
 
-@pytest.mark.parametrize("name", ["artifact", "tests", "scans", "verified_source"])
+@pytest.mark.parametrize("name", ["artifact", "tests", "scans", "verified_source", "attestation_outcome"])
 def test_a_build_input_missing_a_part_is_refused_by_name(name: str) -> None:
     with pytest.raises(ValidationError, match=f"plan_artifact: missing {name}"):
         AssuranceContext.model_validate({**BUILD, name: None})
@@ -521,6 +522,24 @@ def test_a_build_input_may_have_no_reports_but_says_so() -> None:
 def test_a_build_input_holds_the_marker_where_no_server_verified_the_commit() -> None:
     marker = {"__unknown": True, "reason": "server_facts_unavailable"}
     assert AssuranceContext.model_validate({**BUILD, "verified_source": marker}).verified_source is not None
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": marker}).attestation_outcome is not None
+
+
+def test_a_build_input_says_whether_an_attestation_was_verified_refused_or_not_sent() -> None:
+    checked = BUILD["attestation_outcome"]
+    refused = {
+        "outcome": "refused",
+        "attestation_digest": checked["attestation_digest"],
+        "trust_root": checked["trust_root"],
+        "verifier": checked["verifier"],
+        "verified_at": checked["verified_at"],
+        "reason": "signature_invalid",
+    }
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": refused}).attestation_outcome is not None
+    not_sent = {"outcome": "not_sent"}
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": not_sent}).attestation_outcome is not None
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**BUILD, "attestation_outcome": {**refused, "reason": "expired"}})
 
 
 def test_a_build_inputs_commit_is_the_builds_own_and_may_differ_from_the_checkout() -> None:

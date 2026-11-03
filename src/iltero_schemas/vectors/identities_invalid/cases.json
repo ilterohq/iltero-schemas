@@ -1,7 +1,7 @@
 [
   {
     "name": "what_left_the_state_listed_without_an_applied_plan",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/sources/plan": null
     },
@@ -10,7 +10,7 @@
   },
   {
     "name": "unresolved_resources_out_of_order",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/unresolved": [
         {
@@ -24,11 +24,11 @@
       ]
     },
     "remove": [],
-    "message": "bindings and unresolved are sorted by address and name each resource once"
+    "message": "resolved and unresolved are sorted by address and name each resource once"
   },
   {
     "name": "a_resource_unresolved_twice",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/unresolved": [
         {
@@ -42,11 +42,11 @@
       ]
     },
     "remove": [],
-    "message": "bindings and unresolved are sorted by address and name each resource once"
+    "message": "resolved and unresolved are sorted by address and name each resource once"
   },
   {
     "name": "an_unresolved_reason_outside_the_list",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/unresolved/0/reason": "guessed"
     },
@@ -55,13 +55,13 @@
   },
   {
     "name": "a_resolver_named_twice",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/resolvers": [
         {
           "provider": "aws",
           "version": "1.0.0",
-          "verified_resource_types": [
+          "supported_resource_types": [
             "iam_role",
             "kms_key",
             "rds_instance",
@@ -72,7 +72,7 @@
         {
           "provider": "aws",
           "version": "1.0.0",
-          "verified_resource_types": [
+          "supported_resource_types": [
             "iam_role",
             "kms_key",
             "rds_instance",
@@ -87,7 +87,7 @@
   },
   {
     "name": "a_removed_resource_listed_twice",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/removed_unresolved": [
         {
@@ -103,11 +103,11 @@
       ]
     },
     "remove": [],
-    "message": "bindings and unresolved are sorted by address and name each resource once"
+    "message": "resolved and unresolved are sorted by address and name each resource once"
   },
   {
     "name": "applied_plan_digest_version_not_the_tools",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/sources/plan/digest_version": "2"
     },
@@ -116,7 +116,7 @@
   },
   {
     "name": "identities_read_from_a_refresh_only_plan_naming_an_applied_plan",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/sources/read_from": "refresh_plan"
     },
@@ -125,7 +125,7 @@
   },
   {
     "name": "identities_read_from_an_unknown_source",
-    "vector": "identity_bindings.json",
+    "vector": "resource_identities.json",
     "set": {
       "/sources/read_from": "cloud_api"
     },

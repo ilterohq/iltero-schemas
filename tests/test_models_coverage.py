@@ -53,7 +53,7 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
         "coverage.assertions_expected.value": 1,
         "coverage.assertions_expected.required_assertion_digest": "sha256:" + "d" * 64,
         "coverage.assertions_evaluated": 1,
-        "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.PLAN_BINDING@1.0.0": 1},
+        "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1},
         "coverage.status_counts": dict.fromkeys(PLAN.coverage.status_counts, 0) | {"pass": 1},
         "coverage.evaluations": 1,
         "coverage.gaps": [{"kind": "timeout", "count": 1}],
@@ -83,7 +83,7 @@ def test_two_stages_add_up_and_keep_the_plans_resources_in_scope() -> None:
     assert coverage.assertions_expected.value == PLAN.coverage.assertions_expected.value + 1
     assert coverage.subjects_in_scope == PLAN.coverage.subjects_in_scope
     assert coverage.subjects_evaluated == PLAN.coverage.subjects_evaluated
-    assert "ILT.DEPLOYMENT.PLAN_BINDING@1.0.0" in coverage.subjects_per_assertion
+    assert "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0" in coverage.subjects_per_assertion
     assert CountGap.model_validate({"kind": "timeout", "count": 1, "stage": "post_deploy"}) in coverage.gaps
 
 
@@ -98,8 +98,8 @@ def test_the_assertion_set_of_several_stages_is_named_by_each_stages_own() -> No
 
 def test_a_set_pinned_in_part_is_derived_locally() -> None:
     pinned = _outcome(PLAN_STAGE, **{"coverage.assertions_expected.origin": "server_pinned"})
-    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "locally_derived"})
-    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "locally_derived"
+    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "project_files"})
+    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "project_files"
 
 
 @pytest.mark.parametrize(

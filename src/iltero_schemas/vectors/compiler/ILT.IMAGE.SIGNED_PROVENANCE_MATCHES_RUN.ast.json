@@ -1,0 +1,73 @@
+{
+  "ast_version": 1,
+  "id": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+  "version": "1.0.0",
+  "type": "process",
+  "change_type": "image_release",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "when": null,
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "path": "attestation_outcome.outcome",
+          "op": "equal",
+          "literal": "verified"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.image_digest",
+          "op": "equal",
+          "ref": "artifact.digest"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.ci_provider",
+          "op": "equal",
+          "ref": "verified_source.ci_provider"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.ci_instance",
+          "op": "equal",
+          "ref": "verified_source.ci_instance"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.repository_id",
+          "op": "equal",
+          "ref": "verified_source.repository_id"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.commit",
+          "op": "equal",
+          "ref": "verified_source.commit"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.ci_run_id",
+          "op": "equal",
+          "ref": "verified_source.ci_run_id"
+        }
+      },
+      {
+        "predicate": {
+          "path": "attestation_outcome.ci_run_attempt",
+          "op": "equal",
+          "ref": "verified_source.ci_run_attempt"
+        }
+      }
+    ]
+  }
+}

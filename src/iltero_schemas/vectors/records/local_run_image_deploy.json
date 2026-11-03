@@ -2,8 +2,7 @@
   "apiVersion": "iltero.io/car/v1",
   "uuid": "1c7f6e5d-4c3b-5a29-9f8e-7d6c5b4a3928",
   "run": {
-    "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-    "origin": "locally_derived"
+    "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
   },
   "unit": "api",
   "trust_level": "self_attested",
@@ -184,7 +183,7 @@
       },
       "events": {
         "path": "units/api/pre_deploy/events.json",
-        "digest": "sha256:8d7fcc87411127c466aa867ad7557c554bd2068105db6bf0f9e33cbd947fb428",
+        "digest": "sha256:dbb74698e9927e9a41540a8db3e18444dfdb28e824838152cd507a5b10bb9079",
         "count": 1
       },
       "assertions": {
@@ -204,7 +203,7 @@
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 1,
-          "origin": "locally_derived",
+          "origin": "project_files",
           "required_assertion_digest": "sha256:48e1da7ea368524993f7460b591c908458598cbbf663806b6e38d7470ba9099c"
         },
         "assertions_evaluated": 1,
@@ -290,7 +289,7 @@
       },
       "events": {
         "path": "units/api/post_deploy/events.json",
-        "digest": "sha256:3a405b2202fcd212ae2e6a3141018cd02166e6725b3fd3df7bdb1c80d3974fa4",
+        "digest": "sha256:f76693de0ec8bd4f60f3d19b41ad61c93c22b04a0ae18ec14293fbfa8cc4d469",
         "count": 1
       },
       "assertions": {
@@ -310,12 +309,12 @@
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 1,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:59a227e1fda538e2266c597f8cae8a9d533a249421d6125173915d8b2379851a"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:f1bc1a1caabc5ed8ec1b9a8c4c14d169909eccc6975da6fec3c768b4508a6ee3"
         },
         "assertions_evaluated": 1,
         "subjects_per_assertion": {
-          "ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0": 1
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,
@@ -396,7 +395,7 @@
       },
       "events": {
         "path": "units/api/post_verify/events.json",
-        "digest": "sha256:1696bf96ac352740451ef0cdc4e774e3a594a0fa226efbbdd1889cf386706450",
+        "digest": "sha256:8dd778e9423130aae9c858d50e43142b1307e93cdb49877d99ba7b0616d24d1c",
         "count": 1
       },
       "assertions": {
@@ -416,12 +415,12 @@
         "subjects_evaluated": 1,
         "assertions_expected": {
           "value": 1,
-          "origin": "locally_derived",
-          "required_assertion_digest": "sha256:bd74c9f41c0fee5150231b8f3da335f41504045bc2ca7d9f59b4f8aa9c73d58e"
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:90213e421665d317ec171f0cda0cedc956582a7cba22692ae1c38c8f20ac92fa"
         },
         "assertions_evaluated": 1,
         "subjects_per_assertion": {
-          "ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0": 1
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,
@@ -522,7 +521,6 @@
       "provenance": {
         "run": {
           "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-          "origin": "locally_derived",
           "unit": "api"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -555,7 +553,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:ecad9c1b3c6ef5bad861e3f06b40ebd37abe8690da5136913f50791a2ea1a4b8",
         "compiled_digest": "sha256:d9cb7b34f1957517535b3648c66a683a8138b28cb996c7bd001d623296941d55",
@@ -576,9 +574,9 @@
     },
     {
       "assertion": {
-        "id": "ILT.DEPLOYMENT.IMAGE_BINDING",
+        "id": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
         "version": "1.0.0",
-        "digest": "sha256:5f6b8d7b6721f9730024b24aa56d164929f9806228843235f49befcb6e2ab4fa"
+        "digest": "sha256:f53fea8021a64c888fb983ef236335bbc520b2c4264f8ef971e459cb571ff1e1"
       },
       "subject": {
         "kind": "deployment",
@@ -633,7 +631,6 @@
       "provenance": {
         "run": {
           "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-          "origin": "locally_derived",
           "unit": "api"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -666,10 +663,10 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:fd8edad429f190076f1f61304753abd189eae27435616e81db4aed605db3cdd2",
-        "compiled_digest": "sha256:b331c342435eeaa0230e8359cbcc573f27c0c7e04b89df39d775d4a88610c0d4",
+        "assertion_source_digest": "sha256:db4d93698dc4161271114729c6ff241bc976da038cc5a24730d1febe4b96265d",
+        "compiled_digest": "sha256:0dec0315945e2e887b12eb9c9a8b599aed13e1d7a3970fe273bb762f01bc8a5f",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -687,9 +684,9 @@
     },
     {
       "assertion": {
-        "id": "ILT.IMAGE.RUNNING_DIGEST_MATCHES",
+        "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
         "version": "1.0.0",
-        "digest": "sha256:809f805cfdc6fbbda6885bb29a618ea20dfd0f8b92f9f526ead1aa5155e11261"
+        "digest": "sha256:dffd82ef09ecfa5190be37282cd0a99d10d4643db4903498a7ccb312c004c2eb"
       },
       "subject": {
         "kind": "deployment",
@@ -780,7 +777,6 @@
       "provenance": {
         "run": {
           "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-          "origin": "locally_derived",
           "unit": "api"
         },
         "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -813,10 +809,10 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:8ec0be99802b834bc53c05a8bf916b0ccb8899f3abe1a4d915a389520b202a56",
-        "compiled_digest": "sha256:6b800b7180df2ab31a3b543814829189042bf172cafe98ca5eba35ea7034c243",
+        "assertion_source_digest": "sha256:daabe7c31568b33ef5206989e0495a0cb6c56d30e73bd4bce79b2334e39b0cb2",
+        "compiled_digest": "sha256:cb5af3c072100717a3af760021d41b805117c20aa3f20ad04b528f6e0aee2322",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -844,14 +840,14 @@
     "subjects_evaluated": 1,
     "assertions_expected": {
       "value": 3,
-      "origin": "locally_derived",
-      "required_assertion_digest": "sha256:0704ac5e642d4daed97a0df9a431ddee30efa97f630e44728dcf231414122e26"
+      "origin": "project_files",
+      "required_assertion_digest": "sha256:f00e30b8093933832e6db9ceddec5951bf64e177a523b9ca87d51e1de2b0f047"
     },
     "assertions_evaluated": 3,
     "subjects_per_assertion": {
       "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
-      "ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0": 1,
-      "ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0": 1
+      "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+      "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
@@ -891,11 +887,11 @@
   "out_of_scope": [],
   "evidence_refs": [
     {
-      "ref_id": "post_deploy/ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0.rego",
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
-      "digest": "sha256:b331c342435eeaa0230e8359cbcc573f27c0c7e04b89df39d775d4a88610c0d4",
+      "digest": "sha256:0dec0315945e2e887b12eb9c9a8b599aed13e1d7a3970fe273bb762f01bc8a5f",
       "size_bytes": 11428,
-      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0.rego",
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -908,11 +904,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "post_deploy/ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0.yaml",
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
       "media_type": "application/yaml",
-      "digest": "sha256:2bedd1118a5f2f5494bae10b9a714e4ef8fc2edda7d0492ffc929be18119f30c",
+      "digest": "sha256:961b8eac348c19b6e5d8c188603a8ccdbc90a12da3b5f265894d1ca824fe4974",
       "size_bytes": 590,
-      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.IMAGE_BINDING@1.0.0.yaml",
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -961,8 +957,8 @@
     {
       "ref_id": "post_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:3a405b2202fcd212ae2e6a3141018cd02166e6725b3fd3df7bdb1c80d3974fa4",
-      "size_bytes": 2632,
+      "digest": "sha256:f76693de0ec8bd4f60f3d19b41ad61c93c22b04a0ae18ec14293fbfa8cc4d469",
+      "size_bytes": 2638,
       "path": "units/api/post_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -976,11 +972,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "post_verify/ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0.rego",
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
-      "digest": "sha256:6b800b7180df2ab31a3b543814829189042bf172cafe98ca5eba35ea7034c243",
+      "digest": "sha256:cb5af3c072100717a3af760021d41b805117c20aa3f20ad04b528f6e0aee2322",
       "size_bytes": 12477,
-      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0.rego",
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -993,11 +989,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "post_verify/ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0.yaml",
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
       "media_type": "application/yaml",
-      "digest": "sha256:890549c95b3978e79ca9d43309a822c6508d153bdd3950cbe1cfb6b9cb3ae403",
+      "digest": "sha256:f7d0c2356b40fcf6a44371ec5df406469b076202965474c9a7ae5e2a6001196d",
       "size_bytes": 1484,
-      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_DIGEST_MATCHES@1.0.0.yaml",
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -1046,8 +1042,8 @@
     {
       "ref_id": "post_verify/events.json",
       "media_type": "application/json",
-      "digest": "sha256:1696bf96ac352740451ef0cdc4e774e3a594a0fa226efbbdd1889cf386706450",
-      "size_bytes": 2942,
+      "digest": "sha256:8dd778e9423130aae9c858d50e43142b1307e93cdb49877d99ba7b0616d24d1c",
+      "size_bytes": 2939,
       "path": "units/api/post_verify/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1227,8 +1223,8 @@
     {
       "ref_id": "pre_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:8d7fcc87411127c466aa867ad7557c554bd2068105db6bf0f9e33cbd947fb428",
-      "size_bytes": 2707,
+      "digest": "sha256:dbb74698e9927e9a41540a8db3e18444dfdb28e824838152cd507a5b10bb9079",
+      "size_bytes": 2690,
       "path": "units/api/pre_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,

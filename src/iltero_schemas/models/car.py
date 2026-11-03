@@ -84,7 +84,6 @@ MAX_EVIDENCE_REFS = 100_000
 
 class RecordRun(StrictModel):
     id: Uuid
-    origin: Literal["server_issued", "locally_derived"]
 
 
 class Issuer(StrictModel):
@@ -129,7 +128,7 @@ class EvidenceRef(StrictModel):
     collector: Collector
     source: dict[Identifier, Identifier] | None
     canonicalization: Identifier | None
-    # The redaction policy that redacted the file's content; null for a file no redaction touched.
+    # The redaction policy that ran over the file's content; null when no redaction policy ran over it.
     redaction_policy: RedactionPolicyRef | None
 
 
@@ -198,12 +197,12 @@ class ScannerReport(StrictModel):
     parsing_errors: Count
 
 
-class BindingSetUsed(StrictModel):
+class EvaluatorBindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
     ``origin`` is set by the tool, never by the binding set: a file cannot claim
     to be the set the contract package ships. ``digest`` is over the binding set
-    as it was read, and the stage retains it, so an event's ``binding.digest``
+    as it was read, and the stage retains it, so an event's ``evaluator_binding.digest``
     resolves to an entry a reader can see.
     """
 
@@ -217,7 +216,7 @@ class BindingSetUsed(StrictModel):
     binding_count: Count
 
     @model_validator(mode="after")
-    def _a_file_is_named(self) -> BindingSetUsed:
+    def _a_file_is_named(self) -> EvaluatorBindingSetUsed:
         if (self.file_name is None) != (self.origin == "shipped"):
             raise ValueError("a binding set read from a file names it, and the shipped set names none")
         return self
@@ -226,10 +225,10 @@ class BindingSetUsed(StrictModel):
 class Scanners(StrictModel):
     """What a stage read from the scanner reports it was given, and how much of it became a verdict."""
 
-    binding_set: BindingSetUsed
+    evaluator_binding_set: EvaluatorBindingSetUsed
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
     results_accepted: Count
-    results_binding_unverified: Count
+    results_scanner_version_not_allowed: Count
     results_without_binding: Count
 
     @model_validator(mode="after")
@@ -237,8 +236,10 @@ class Scanners(StrictModel):
         if self.results_without_binding != sum(report.results_without_binding for report in self.reports):
             raise ValueError("results_without_binding is the sum of the reports' own")
         read = sum(report.results_read for report in self.reports)
-        if self.results_accepted + self.results_binding_unverified + self.results_without_binding != read:
-            raise ValueError("every result a tool reported is accepted, binding_unverified or without a binding")
+        if self.results_accepted + self.results_scanner_version_not_allowed + self.results_without_binding != read:
+            raise ValueError(
+                "every result a tool reported is accepted, scanner_version_not_allowed or without a binding"
+            )
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
         return self

@@ -93,7 +93,7 @@ class Verifier(StrictModel):
     version: Identifier
 
 
-class VerifiedRecord(StrictModel):
+class ReportedRecord(StrictModel):
     """The record the report is about: its id, and the digest of its bytes as the verifier read them."""
 
     uuid: Uuid
@@ -104,7 +104,7 @@ class VerificationReport(StrictModel):
     """What one verifier found about one record."""
 
     api_version: Literal["iltero.io/verification-report/v1"] = Field(alias="apiVersion")
-    record: VerifiedRecord
+    record: ReportedRecord
     verifier: Verifier
     properties: Properties
 

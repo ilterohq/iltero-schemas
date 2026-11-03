@@ -36,7 +36,7 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, pac
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
-from iltero_schemas.models.identity import IdentityBindings
+from iltero_schemas.models.identity import ResourceIdentities
 from iltero_schemas.models.verification import VerificationReport
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
@@ -56,7 +56,7 @@ INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json")
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "contexts": AssuranceContext,
     "events": AssuranceEvent,
-    "identities": IdentityBindings,
+    "identities": ResourceIdentities,
     "records": CAR,
     "reports": VerificationReport,
 }
@@ -198,14 +198,23 @@ def test_document_vector_is_written_as_its_model_dumps_it(folder: str, name: str
     assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
+def test_the_image_build_report_names_the_image_build_record() -> None:
+    report = json.loads((VECTORS / "reports" / "verification_report_image_build.json").read_text(encoding="utf-8"))
+    record = json.loads((VECTORS / "records" / "local_run_image_build.json").read_text(encoding="utf-8"))
+    digests = json.loads((VECTORS / "records" / "digests.json").read_text(encoding="utf-8"))
+    assert report["record"] == {"uuid": record["uuid"], "digest": digests["local_run_image_build.json"]}
+
+
 def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in VECTORS.iterdir() if path.is_dir() and path.name != "__pycache__"}
     known = {
         "assertions",
         "assertions_invalid",
+        "attestations",
         "buildx",
         "canonical",
         "compiler",
+        "contexts_invalid",
         "evaluation",
         "identities_invalid",
         "identities_valid",
@@ -213,6 +222,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "records_integrity_failed",
         "records_invalid",
         "records_valid",
+        "scan_coverage",
         "subjects",
     }
     assert folders == known | set(DOCUMENT_MODELS)
@@ -433,9 +443,9 @@ def test_plan_binding_decides_on_the_post_deploy_vector(
         "--capabilities",
         str(capabilities),
         "--data",
-        str(COMPILER / "ILT.DEPLOYMENT.PLAN_BINDING.rego"),
+        str(COMPILER / "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"),
         "--stdin-input",
-        f"data.{package_of('ILT.DEPLOYMENT.PLAN_BINDING')}.evaluate",
+        f"data.{package_of('ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN')}.evaluate",
         stdin=json.dumps(context),
     )
     assert evaluated.returncode == 0, evaluated.stderr
@@ -472,6 +482,8 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     path.write_bytes(module.source)
     reads = _evaluate(opa, capabilities, path, module.package, context)
     assert reads["status"] == "unknown" and "deployment_log_incomplete" in json.dumps(reads)
-    binding = COMPILER / "ILT.DEPLOYMENT.PLAN_BINDING.rego"
-    ignores = _evaluate(opa, capabilities, binding, package_of("ILT.DEPLOYMENT.PLAN_BINDING"), context)
+    binding = COMPILER / "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"
+    ignores = _evaluate(
+        opa, capabilities, binding, package_of("ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"), context
+    )
     assert ignores["status"] == "pass"

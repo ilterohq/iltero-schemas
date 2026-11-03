@@ -10,10 +10,10 @@ from typing import Any, cast
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.assertions import IMAGE_BINDING_ID, RUNNING_DIGEST_MATCHES_ID
+from iltero_schemas.assertions import REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.change_types import IMAGE_DEPLOY, ImageDeploy
-from iltero_schemas.change_types.image_deploy import running_digest_status
+from iltero_schemas.change_types.image_deploy import running_image_status
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.checked_content import CheckedImage
@@ -25,7 +25,7 @@ DEPLOY: dict[str, Any] = json.loads((VECTORS / "records" / "local_run_image_depl
 READING_CASES = [
     case
     for case in json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
-    if case["assertion"] == RUNNING_DIGEST_MATCHES_ID
+    if case["assertion"] == RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID
 ]
 
 
@@ -40,10 +40,10 @@ def test_a_deploy_owes_its_record_at_every_stage_and_evaluates_its_two_builtin_a
     assert {stage: list(documents) for stage, documents in IMAGE_DEPLOY.required_documents.items()} == {
         stage: ["record"] for stage in IMAGE_DEPLOY.stages
     }
-    assert IMAGE_DEPLOY.binding_check == (IMAGE_BINDING_ID, Stage.POST_DEPLOY)
+    assert IMAGE_DEPLOY.carried_out_matches_checked == (REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY)
     assert dict(IMAGE_DEPLOY.always_evaluated) == {
-        Stage.POST_DEPLOY: IMAGE_BINDING_ID,
-        Stage.POST_VERIFY: RUNNING_DIGEST_MATCHES_ID,
+        Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
+        Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
     }
 
 
@@ -61,7 +61,9 @@ def test_a_local_deploy_names_no_build_and_its_reading_matches_the_deployed_imag
     car = CAR.model_validate(DEPLOY)
     assert isinstance(car.change, ImageDeploy) and car.change.build is None and car.complete
     statuses = {event.assertion.id: event.evaluation.status for event in car.events}
-    assert statuses[IMAGE_BINDING_ID] == statuses[RUNNING_DIGEST_MATCHES_ID] == "pass"
+    assert (
+        statuses[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] == statuses[RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID] == "pass"
+    )
 
 
 def test_a_deploy_rule_called_on_a_record_of_another_activity_says_so() -> None:
@@ -91,5 +93,5 @@ def test_the_server_recomputes_the_status_the_reading_check_gives(case: dict[str
         containers_read=[SimpleNamespace(**entry) for entry in check["containers_read"]],
     )
     platforms = change["build"]["platform_digests"] if change["build"] is not None else None
-    status = running_digest_status(change["image"]["digest"], platforms, cast(ImageDriftCheck, reading))
+    status = running_image_status(change["image"]["digest"], platforms, cast(ImageDriftCheck, reading))
     assert status == case["expected"]["status"]

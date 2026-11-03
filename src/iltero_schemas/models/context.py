@@ -77,10 +77,10 @@ from iltero_schemas.models.fields import (
 from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.image import ImageArtifact
 from iltero_schemas.models.image_deploy import ImageChange, ImageDeployment, ImageDriftCheck, check_compared
-from iltero_schemas.models.image_evidence import ScanReports, TestReports
+from iltero_schemas.models.image_evidence import ScanReports, TestReports, check_scans_name_their_platform
 from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.reference_time import ReferenceTime
-from iltero_schemas.models.server_facts import Approvals, Evaluations, Exceptions, VerifiedSource
+from iltero_schemas.models.server_facts import Approvals, AttestationOutcome, Evaluations, Exceptions, VerifiedSource
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
@@ -106,6 +106,7 @@ PARTS = (
     "tests",
     "scans",
     "verified_source",
+    "attestation_outcome",
 )
 
 
@@ -182,7 +183,7 @@ class Subject(StrictModel):
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest
     identities: Annotated[list[Identity], Field(min_length=1)]
-    # ``resolved`` once a resolver verified for its resource type bound a cloud identity; ``unresolved`` until then.
+    # ``resolved`` once a resolver that supports its resource type found its cloud identity; ``unresolved`` until then.
     resolution: Resolution
 
 
@@ -325,6 +326,8 @@ class AssuranceContext(StrictModel):
     scans: ScanReports | None = None
     # The commit the server verified for the run's job; a marker when it could not supply it.
     verified_source: VerifiedSource | ServerFactsUnavailable | None = None
+    # What the server found when it checked the build's attestation; a marker when it could not supply it.
+    attestation_outcome: AttestationOutcome | ServerFactsUnavailable | None = None
 
     @field_validator("change", "deployment", "drift_check", mode="wrap")
     @classmethod
@@ -392,6 +395,9 @@ class AssuranceContext(StrictModel):
                 raise ValueError("drift_check.read_at must be no earlier than deployment.deployed_at")
         if self.evaluation.activity == IMAGE_BUILD_ACTIVITY and self.organization_scope.environment is not None:
             raise ValueError("a build's input names no environment: a build belongs to none")
+        if self.artifact is not None and self.scans is not None:
+            scanned = [scan.image_digest for scan in self.scans]
+            check_scans_name_their_platform(self.artifact.digest, self.artifact.platform_digests, scanned)
         return self
 
 

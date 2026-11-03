@@ -1,0 +1,20 @@
+[
+  {
+    "name": "image_build_scan_of_an_index_naming_the_index",
+    "vector": "plan_artifact.json",
+    "set": {
+      "/scans/0/image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+    },
+    "remove": [],
+    "message": "a scan of an image built for several platforms names the platform it scanned"
+  },
+  {
+    "name": "image_deploy_reading_taken_before_the_deployment",
+    "vector": "image_post_verify.json",
+    "set": {
+      "/drift_check/read_at/value": "2026-11-02T09:01:00Z"
+    },
+    "remove": [],
+    "message": "drift_check.read_at must be no earlier than deployment.deployed_at"
+  }
+]

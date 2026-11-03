@@ -44,11 +44,11 @@ def test_the_post_verify_stage_is_not_supported_only_for_a_tool_whose_drift_no_p
     assert TOOLS_WITH_DRIFT_READER == {"terraform"}
 
 
-def test_every_stage_of_an_infrastructure_change_owes_its_record_and_post_deploy_its_identity_document() -> None:
+def test_every_stage_of_an_infrastructure_change_owes_its_record_and_post_deploy_its_resource_identities() -> None:
     assert dict(IAC_CHANGE.required_documents) == {
         Stage.PLAN: ("record",),
         Stage.PRE_DEPLOY: ("record",),
-        Stage.POST_DEPLOY: ("record", "identity_document"),
+        Stage.POST_DEPLOY: ("record", "resource_identities"),
         Stage.POST_VERIFY: ("record",),
     }
     assert dict(IAC_CHANGE.named_documents(CAR.model_validate(RECORD))) == {}

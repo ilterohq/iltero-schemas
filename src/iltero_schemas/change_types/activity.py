@@ -28,10 +28,10 @@ if TYPE_CHECKING:
 # The type of the run that records an activity: ``change``, a run that changes a project's unit in an environment;
 # ``build``, a run that builds an artifact, in no environment.
 RunType = Literal["change", "build"]
-# A document a stage owes: the record itself, the identity document that lists the deployed resources, or the raw
-# index of a container image built for several platforms. Every other file a record names stays in the pipeline's own
-# store; the record keeps its digest.
-DocumentName = Literal["record", "identity_document", "image_index"]
+# A document a stage owes: the record itself, the resource identities document that lists the deployed resources, or
+# the raw index of a container image built for several platforms. Every other file a record names stays in the
+# pipeline's own store; the record keeps its digest.
+DocumentName = Literal["record", "resource_identities", "image_index"]
 
 
 @dataclass(frozen=True)
@@ -52,16 +52,16 @@ class Activity:
     # a policy.
     not_supported: Callable[[CAR], frozenset[Stage]]
     # The documents a run uploads to the server for each stage, which the server counts as owed: the record, and
-    # after the deployment the identity document, the file that lists the deployed resources by their cloud ids.
+    # after the deployment the resource identities document, which lists the deployed resources by their cloud ids.
     required_documents: Mapping[Stage, tuple[DocumentName, ...]]
     # The documents a stage owes only because the record's change names them, by stage and document, each by its name
     # in the record's evidence register: for a build, its raw index.
     named_documents: Callable[[CAR], Mapping[Stage, Mapping[DocumentName, tuple[str, ...]]]]
     # The built-in assertion that ties the record's evaluations to its checked content, by its id, and the stage it is
     # evaluated at. No policy excludes it.
-    binding_check: tuple[str, Stage]
+    carried_out_matches_checked: tuple[str, Stage]
     # Every built-in assertion a record of this activity evaluates, by the stage it belongs to: once that stage has
-    # reported, it evaluated the assertion once, and found it applies. The binding check is one of them.
+    # reported, it evaluated the assertion once, and found it applies. ``carried_out_matches_checked`` is one of them.
     always_evaluated: Mapping[Stage, str]
     # The content the record's change checked, which every event of the record names.
     checked_content: Callable[[CAR], CheckedContent]

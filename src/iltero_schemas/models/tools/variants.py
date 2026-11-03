@@ -28,7 +28,7 @@ ResourceToolData = TerraformResourceData
 RelatedToolData = TerraformRelatedData
 # What only the tool that wrote the apply log says about the apply, and the checks against its changes.
 ApplyToolData = TerraformApplyData
-# What only the tool that wrote the state says in an identity document.
+# What only the tool that wrote the state says in a resource identities document.
 IdentityToolData = TerraformIdentityData
 
 
@@ -46,5 +46,5 @@ def check_tool_data(tool: IacTool, parts: Iterable[ToolKeyed], where: str) -> No
 
 
 def check_identity_against_apply(identity: IdentityToolData, apply: ApplyToolData) -> None:
-    """Raise ``ValueError`` unless the identity document's tool part agrees with the apply's."""
+    """Raise ``ValueError`` unless the resource identities document's tool part agrees with the apply's."""
     check_deposed(identity, apply)

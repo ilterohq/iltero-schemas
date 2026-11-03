@@ -1,10 +1,10 @@
-"""``IdentityBindings`` v1: each resource of a configuration tied to the cloud resource it created.
+"""``ResourceIdentities`` v1: each resource of a configuration tied to the cloud resource it created.
 
 An address names a resource in the configuration of the
 infrastructure-as-code (IaC) tool. It is not the resource in the cloud. A
-binding ties the two together, and only a resolver that has been verified
-against real output for that resource type may write one. A resource no
-verified resolver could bind is listed as unresolved, with the reason, and
+resolved identity ties the two together, and only a resolver that has been
+checked against real output for that resource type may write one. A resource
+no such resolver could resolve is listed as unresolved, with the reason, and
 never guessed.
 
 The document carries identifiers only. The state file they were read from
@@ -34,10 +34,10 @@ from iltero_schemas.models.iac import IacTool
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
 from iltero_schemas.models.tools.variants import IdentityToolData, check_tool_data
 
-API_VERSION = "iltero.io/identity-bindings/v1"
+API_VERSION = "iltero.io/resource-identities/v1"
 # More cloud providers than one unit's configuration ever uses.
 MAX_RESOLVERS = 16
-# Why a resource was not bound. A resolver checks them in this order, and says the first that holds.
+# Why a resource was not resolved. A resolver checks them in this order, and says the first that holds.
 UnresolvedReason = Literal[
     "no_resolver",
     "provider_untrusted",
@@ -61,7 +61,7 @@ class IacSide(StrictModel):
     address: Address
 
 
-class IdentityBinding(StrictModel):
+class ResolvedIdentity(StrictModel):
     """One resource of the configuration and the cloud resource it created, as its provider's resolver read them."""
 
     iac: IacSide
@@ -70,39 +70,39 @@ class IdentityBinding(StrictModel):
 
 
 class Unresolved(StrictModel):
-    """A resource that was not bound, and why."""
+    """A resource that was not resolved, and why."""
 
     address: Address
     reason: UnresolvedReason
 
 
-class RemovedBinding(IdentityBinding):
+class RemovedIdentity(ResolvedIdentity):
     """A resource that left the state, by its identity before the apply, and how it left."""
 
     removal: Removal
 
 
 class RemovedUnresolved(Unresolved):
-    """A resource that left the state and could not be bound, and how it left."""
+    """A resource that left the state and could not be resolved, and how it left."""
 
     removal: Removal
 
 
-Bindings = Annotated[list[IdentityBinding], Field(max_length=MAX_RESOURCES)]
+ResolvedIdentities = Annotated[list[ResolvedIdentity], Field(max_length=MAX_RESOURCES)]
 UnresolvedList = Annotated[list[Unresolved], Field(max_length=MAX_RESOURCES)]
 
 
-def _one_list_each(bindings: Sequence[IdentityBinding], unresolved: Sequence[Unresolved]) -> None:
+def _one_list_each(resolved: Sequence[ResolvedIdentity], unresolved: Sequence[Unresolved]) -> None:
     """Raise ``ValueError`` unless both lists are sorted by address and name each resource once between them."""
-    bound = [binding.iac.address for binding in bindings]
+    found = [entry.iac.address for entry in resolved]
     left = [entry.address for entry in unresolved]
-    if not sorted_unique(bound) or not sorted_unique(left):
-        raise ValueError("bindings and unresolved are sorted by address and name each resource once")
-    if set(bound) & set(left):
-        raise ValueError("a resource is bound or unresolved, never both")
+    if not sorted_unique(found) or not sorted_unique(left):
+        raise ValueError("resolved and unresolved are sorted by address and name each resource once")
+    if set(found) & set(left):
+        raise ValueError("a resource is resolved or unresolved, never both")
 
 
-def _one_entry_per_cloud_identity(entries: Sequence[IdentityBinding], name: str) -> None:
+def _one_entry_per_cloud_identity(entries: Sequence[ResolvedIdentity], name: str) -> None:
     """Raise ``ValueError`` when two of ``entries`` name one cloud identity: the same provider, scheme and value."""
     identities = [
         (entry.cloud.provider, entry.cloud.identifier.scheme, entry.cloud.identifier.value) for entry in entries
@@ -145,22 +145,22 @@ class IdentitySources(StrictModel):
 class IdentityRecord(StrictModel):
     """One unit's identities after an apply: what its state holds, and what left it.
 
-    Every managed resource of the state is bound or unresolved. Every object
+    Every managed resource of the state is resolved or unresolved. Every object
     that left the state in the apply is listed under ``removed`` or
     ``removed_unresolved``, by its identity before the apply, with how it was removed (``removal``):
     ``deleted`` (destroyed in the cloud) or ``forgotten`` (still in the cloud,
     no longer managed). A replacement's old object appears there while its
-    new one is bound. What only the tool that wrote the state says is under
+    new one is resolved. What only the tool that wrote the state says is under
     ``tool_data``, keyed by ``tool``.
     """
 
     sources: IdentitySources
     # One resolver per cloud provider, sorted by provider. Each says which resource types it could bind.
     resolvers: Annotated[list[Resolver], Field(max_length=MAX_RESOLVERS)]
-    bindings: Bindings
+    resolved: ResolvedIdentities
     unresolved: UnresolvedList
     # These two are null when no applied plan was read: what left the state was not checked.
-    removed: Annotated[list[RemovedBinding], Field(max_length=MAX_RESOURCES)] | None
+    removed: Annotated[list[RemovedIdentity], Field(max_length=MAX_RESOURCES)] | None
     removed_unresolved: Annotated[list[RemovedUnresolved], Field(max_length=MAX_RESOURCES)] | None
     # What only the state's tool says, keyed by ``tool`` (``models.tools.variants``).
     tool_data: IdentityToolData
@@ -171,8 +171,8 @@ class IdentityRecord(StrictModel):
         if self.sources.plan is not None:
             # The applied plan was written by the tool that wrote the state, so its digest follows that tool's rule.
             check_plan_digest_version(self.sources.state.tool, self.sources.plan.digest_version)
-        _one_list_each(self.bindings, self.unresolved)
-        _one_entry_per_cloud_identity(self.bindings, "bindings")
+        _one_list_each(self.resolved, self.unresolved)
+        _one_entry_per_cloud_identity(self.resolved, "resolved")
         checked = (
             self.removed is not None,
             self.removed_unresolved is not None,
@@ -185,20 +185,20 @@ class IdentityRecord(StrictModel):
         _one_entry_per_cloud_identity(self.removed or [], "removed")
         if not sorted_unique([resolver.provider for resolver in self.resolvers]):
             raise ValueError("the resolvers are sorted by provider, one for each")
-        verified = {
-            (resolver.provider, kind) for resolver in self.resolvers for kind in resolver.verified_resource_types
+        supported = {
+            (resolver.provider, kind) for resolver in self.resolvers for kind in resolver.supported_resource_types
         }
-        bound = [*self.bindings, *(self.removed or [])]
-        if any((entry.cloud.provider, entry.cloud.resource_type) not in verified for entry in bound):
-            raise ValueError("only a resource type verified for its provider's resolver is ever bound")
-        if any(entry.iac.tool != self.sources.state.tool for entry in bound):
-            raise ValueError("every binding names the tool that wrote the state it was read from")
+        entries = [*self.resolved, *(self.removed or [])]
+        if any((entry.cloud.provider, entry.cloud.resource_type) not in supported for entry in entries):
+            raise ValueError("only a resource type its provider's resolver supports is ever resolved")
+        if any(entry.iac.tool != self.sources.state.tool for entry in entries):
+            raise ValueError("every resolved identity names the tool that wrote the state it was read from")
         return self
 
     def check_unit(self, unit: str) -> None:
-        """Raise ``ValueError`` unless every binding belongs to ``unit``."""
-        if any(binding.iac.unit != unit for binding in [*self.bindings, *(self.removed or [])]):
-            raise ValueError("every binding belongs to the unit")
+        """Raise ``ValueError`` unless every resolved identity belongs to ``unit``."""
+        if any(entry.iac.unit != unit for entry in [*self.resolved, *(self.removed or [])]):
+            raise ValueError("every resolved identity belongs to the unit")
 
     def left_the_state(self) -> dict[str, Removal]:
         """Every address listed as having left the state, with how it left."""
@@ -215,14 +215,14 @@ class Generator(StrictModel):
     version: Identifier
 
 
-class IdentityBindings(IdentityRecord):
-    """The identity document of one unit, as ``identity extract`` writes it."""
+class ResourceIdentities(IdentityRecord):
+    """The resource identities document of one unit, as ``identity extract`` writes it."""
 
-    api_version: Literal["iltero.io/identity-bindings/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.io/resource-identities/v1"] = Field(alias="apiVersion")
     unit: Identifier
     generator: Generator
 
     @model_validator(mode="after")
-    def _of_its_unit(self) -> IdentityBindings:
+    def _of_its_unit(self) -> ResourceIdentities:
         self.check_unit(self.unit)
         return self

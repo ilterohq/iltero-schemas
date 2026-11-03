@@ -4,8 +4,10 @@ A pipeline runs its own tests and scanners; the Iltero CLI reads the reports
 they wrote and never runs them. Each report becomes a typed entry that says
 which image it is about and how that is known (``image_digest_source``):
 
-- ``report``: the report itself names the image's digest, as Trivy and
-  Grype JSON reports do;
+- ``report``: the report itself names the image's digest, as a Trivy or
+  Grype JSON report of the image scanned from its registry by digest does.
+  The tool that read the report says so. This package does not read report
+  contents, so the record alone cannot confirm it;
 - ``pipeline``: only the pipeline says the report is about the image,
   as for a JUnit report, which names no image.
 
@@ -15,9 +17,9 @@ version and the report's time are the report's own word.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping, Sequence
 from types import MappingProxyType
-from typing import Annotated, ClassVar, Literal
+from typing import Annotated, ClassVar, Literal, get_args
 
 from pydantic import Field, model_validator
 
@@ -40,8 +42,9 @@ REPORT_MEDIA_TYPES_OF: Mapping[str, frozenset[str]] = MappingProxyType(
 ImageDigestSource = Literal["report", "pipeline"]
 # What a scan looked for: known vulnerabilities in an image's packages.
 ScanKind = Literal["image_vulnerability"]
-# The scan report formats a reader exists for; each names the image's digest.
+# The scan report formats a reader exists for; each can name the image's digest.
 ScanFormat = Literal["trivy_json", "grype_json"]
+SCAN_FORMATS: frozenset[str] = frozenset(get_args(ScanFormat))
 
 
 class TestCounts(StrictModel):
@@ -107,3 +110,15 @@ class ScanReport(StrictModel):
 
 TestReports = Annotated[list[TestReport], Field(max_length=MAX_REPORTS)]
 ScanReports = Annotated[list[ScanReport], Field(max_length=MAX_REPORTS)]
+
+
+def check_scans_name_their_platform(
+    image_digest: str, platform_digests: Sequence[str], scanned: Collection[str]
+) -> None:
+    """Raise ``ValueError`` when a scan of an image built for several platforms names the image's own digest.
+
+    A scanner given an image index reads one of its platforms, so a report tied to the index would hide which one it
+    covered. ``scanned`` is the image digest each scan report names.
+    """
+    if platform_digests and image_digest in scanned:
+        raise ValueError("a scan of an image built for several platforms names the platform it scanned")

@@ -1,7 +1,7 @@
 """Terraform, the first infrastructure-as-code (IaC) tool the contract supports.
 
 A plan resource, the resources that refer to it, a deployment's apply and an
-identity document carry a neutral core that every tool can fill, plus
+resource identities document carry a neutral core that every tool can fill, plus
 ``tool_data``: what only this tool says about them, keyed by ``tool``, and the
 checks that hold it to the core. Another tool adds its own module and its
 variant of each part, and changes none here.
@@ -158,7 +158,7 @@ class TerraformApplyData(StrictModel):
 
 
 class TerraformIdentityData(StrictModel):
-    """Deposed objects in an identity document: real cloud resources that no list of bindings names."""
+    """Deposed objects in a resource identities document: real cloud resources no resolved identity names."""
 
     tool: Literal["terraform"]
     # How many deposed objects the apply destroyed; null when no applied plan was read.

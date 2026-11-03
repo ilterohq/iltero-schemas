@@ -25,14 +25,11 @@ SERVER_BUNDLE = {
 def _opened_by_the_server() -> dict[str, Any]:
     document = record(
         **{
-            "run.origin": "server_issued",
             "governance.run_opened_by": "server",
             "stages.plan.coverage.assertions_expected.origin": "server_pinned",
             "coverage.assertions_expected.origin": "server_pinned",
         }
     )
-    for event in document["events"]:
-        event["provenance"]["run"]["origin"] = "server_issued"
     return document
 
 
@@ -44,18 +41,14 @@ def test_a_record_of_a_run_the_server_opened_is_self_attested_like_any_other() -
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
-        ("governance.run_opened_by", "local", "says the server opened its run exactly when"),
-        ("run.origin", "locally_derived", "says the server opened its run exactly when"),
-        ("stages.plan.coverage.assertions_expected.origin", "locally_derived", "server_pinned exactly when"),
+        ("governance.run_opened_by", "local", "server_pinned exactly when"),
+        ("stages.plan.coverage.assertions_expected.origin", "project_files", "server_pinned exactly when"),
     ],
-    ids=["opened locally", "a local run id", "checks counted locally"],
+    ids=["opened locally", "checks counted from the project's files"],
 )
 def test_who_opened_the_run_is_said_the_same_way_everywhere(field: str, value: str, message: str) -> None:
     document = _opened_by_the_server()
     set_path(document, field, value)
-    if field == "run.origin":
-        for event in document["events"]:
-            event["provenance"]["run"]["origin"] = value
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(document, context=_READER)
 
@@ -95,7 +88,7 @@ def test_a_record_of_a_run_the_tool_opened_has_no_evaluations_from_a_server_bund
         CAR.model_validate(document, context=_READER)
 
 
-def test_a_record_of_a_run_the_tool_opened_counts_its_checks_as_locally_derived() -> None:
+def test_a_record_of_a_run_the_tool_opened_counts_its_checks_from_the_projects_files() -> None:
     document = record(**{"stages.plan.coverage.assertions_expected.origin": "server_pinned"})
     with pytest.raises(ValidationError, match="server_pinned exactly when"):
         CAR.model_validate(document, context=_READER)

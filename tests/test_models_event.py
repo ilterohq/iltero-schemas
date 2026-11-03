@@ -9,7 +9,7 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.assertions import BUILT_INS, PLAN_BINDING_ID
+from iltero_schemas.assertions import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, BUILT_INS
 from iltero_schemas.models.ci import CI_SYSTEMS
 from iltero_schemas.models.event import (
     NO_EVALUATOR_REASONS,
@@ -365,9 +365,9 @@ def test_a_builds_facts_never_come_from_a_local_file() -> None:
 
 
 def test_an_assertion_this_package_always_evaluates_is_named_only_by_its_shipped_document() -> None:
-    shipped = BUILT_INS[PLAN_BINDING_ID]
+    shipped = BUILT_INS[APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID]
     built_in = {
-        "assertion.id": PLAN_BINDING_ID,
+        "assertion.id": APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
         "assertion.digest": shipped.digest,
         "provenance.compiled_digest": shipped.compiled_digest,
     }

@@ -16,7 +16,10 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import model_validator
 
-from iltero_schemas.assertions.paths import IMAGE_BINDING_ID, RUNNING_DIGEST_MATCHES_ID
+from iltero_schemas.assertions.paths import (
+    REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
+    RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+)
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.change_types.activity import Activity
 from iltero_schemas.change_types.bindings import bound_to_change_digest_problems
@@ -146,7 +149,7 @@ def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> 
 
 def _check_record(car: CAR) -> None:
     deploy = _body(car)
-    if car.run.origin != "server_issued" and deploy.build is not None:
+    if car.governance.run_opened_by != "server" and deploy.build is not None:
         raise ValueError("a run the tool opened names no build: only the server accepts one for the environment")
     _check_tag(car, deploy)
     _check_deployment(car, deploy)
@@ -166,9 +169,9 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     return problems + bound_to_change_digest_problems(car, deploy.digest)
 
 
-def running_digest_status(image_digest: str, platform_digests: list[str] | None, check: ImageDriftCheck) -> str:
-    """The status ``RUNNING_DIGEST_MATCHES`` owes, given the deployed image's digest and the accepted build's platform
-    digests (None without an accepted build).
+def running_image_status(image_digest: str, platform_digests: list[str] | None, check: ImageDriftCheck) -> str:
+    """The status ``RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`` owes, given the deployed image's digest and the accepted
+    build's platform digests (None without an accepted build).
 
     Fail when the rollout had not finished, the live pods read are not the ones it calls for, the template compares
     no container, no live pod has a compared container, or one runs an image the change does not name; unknown when
@@ -196,10 +199,14 @@ def _owed_statuses(deploy: ImageDeploy) -> dict[str, str]:
     owed: dict[str, str] = {}
     if deploy.deployment is not None:
         deployed = (deploy.deployment.repository, deploy.deployment.digest)
-        owed[IMAGE_BINDING_ID] = "pass" if deployed == (deploy.image.repository, deploy.image.digest) else "fail"
+        owed[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] = (
+            "pass" if deployed == (deploy.image.repository, deploy.image.digest) else "fail"
+        )
     if deploy.drift_check is not None:
         platforms = deploy.build.platform_digests if deploy.build is not None else None
-        owed[RUNNING_DIGEST_MATCHES_ID] = running_digest_status(deploy.image.digest, platforms, deploy.drift_check)
+        owed[RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID] = running_image_status(
+            deploy.image.digest, platforms, deploy.drift_check
+        )
     return owed
 
 
@@ -225,8 +232,11 @@ IMAGE_DEPLOY = Activity(
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
     integrity_problems=_integrity_problems,
-    binding_check=(IMAGE_BINDING_ID, Stage.POST_DEPLOY),
+    carried_out_matches_checked=(REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
-        {Stage.POST_DEPLOY: IMAGE_BINDING_ID, Stage.POST_VERIFY: RUNNING_DIGEST_MATCHES_ID}
+        {
+            Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
+            Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+        }
     ),
 )

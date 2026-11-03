@@ -55,7 +55,7 @@
     "subjects_evaluated": 2,
     "assertions_expected": {
       "value": 5,
-      "origin": "locally_derived",
+      "origin": "project_files",
       "required_assertion_digest": "sha256:bf60fb922cf7750a6e87220c03edcede2f43eaf8658b9123d8f37b70ebc6b548"
     },
     "assertions_evaluated": 5,
@@ -124,7 +124,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "facts_source": null,
         "compiled_digest": "sha256:afcd1cc0a702cce43e5bb8dbca8009dd102e8062727d23c63295453fb7fcd252",
         "compiler": {
@@ -163,7 +163,6 @@
           "tool": "terraform"
         },
         "run": {
-          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -223,7 +222,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "facts_source": null,
         "compiled_digest": "sha256:7f067c8c0df02601f5295b39058ba0d2e169fd48dd8aaf7c89a9b0194643a194",
         "compiler": {
@@ -262,7 +261,6 @@
           "tool": "terraform"
         },
         "run": {
-          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -364,7 +362,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "facts_source": null,
         "compiled_digest": "sha256:af6e92314b510629e8144aa8eee88e36f22608149373bc470721ee4050a2b73d",
         "compiler": {
@@ -403,7 +401,6 @@
           "tool": "terraform"
         },
         "run": {
-          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -463,7 +460,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "facts_source": null,
         "compiled_digest": "sha256:63d7af7e77eb053a5bca77f3999306c5e6948e0d18f48463e7bdff2255699cd3",
         "compiler": {
@@ -502,7 +499,6 @@
           "tool": "terraform"
         },
         "run": {
-          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -566,7 +562,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "binding": null,
+        "evaluator_binding": null,
         "facts_source": null,
         "compiled_digest": "sha256:e7d5bbfb023dea497f2961f8612a8d9df77ec3460afc5b30d796a11604e13b0c",
         "compiler": {
@@ -605,7 +601,6 @@
           "tool": "terraform"
         },
         "run": {
-          "origin": "locally_derived",
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "app"
         },
@@ -1053,13 +1048,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:226932ebbd6d2b1de292ac0254d27d8ef4afbd3f0b3f9e0ea077596c2775a565",
+      "digest": "sha256:7d9b7a32f3223c43349839fb70edd4cc7f44f5947c71dedfe317cbd2310c6485",
       "media_type": "application/json",
       "path": "units/app/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11869,
+      "size_bytes": 11784,
       "source": null,
       "storage_uri": null
     }
@@ -1086,7 +1081,6 @@
   "retention_reason": "no_server_scope",
   "retention_class": null,
   "run": {
-    "origin": "locally_derived",
     "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
   "stages": {
@@ -1104,7 +1098,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:226932ebbd6d2b1de292ac0254d27d8ef4afbd3f0b3f9e0ea077596c2775a565",
+        "digest": "sha256:7d9b7a32f3223c43349839fb70edd4cc7f44f5947c71dedfe317cbd2310c6485",
         "path": "units/app/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1589,7 +1583,7 @@
       "coverage": {
         "assertions_evaluated": 5,
         "assertions_expected": {
-          "origin": "locally_derived",
+          "origin": "project_files",
           "required_assertion_digest": "sha256:32770c503845a7452e2817d6a2179538a91d89e0eb8128491caad9a310c2d1a8",
           "value": 5
         },

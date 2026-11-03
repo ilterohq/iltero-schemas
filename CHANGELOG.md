@@ -15,20 +15,20 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Fifteen starter assertions, among them the one that holds the plan
+- Sixteen starter assertions, among them the one that holds the plan
   applied to the plan that was evaluated, `ILT.IAC.NO_DRIFT_AFTER_APPLY`,
   which holds that no deployed resource drifted after the apply, and
-  `ILT.IMAGE.BUILT_FROM_RUN_COMMIT`, which holds that the commit the build
+  `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which holds that the commit the build
   tool's provenance names is the commit the server verified for the run,
   and is unknown when the build names none,
-  `ILT.DEPLOYMENT.IMAGE_BINDING`, which holds that the image the pipeline
+  `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, which holds that the image the pipeline
   reports it deployed is the image the deploy checked, and
-  `ILT.IMAGE.RUNNING_DIGEST_MATCHES`, which holds that, once the
+  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`, which holds that, once the
   workload's rollout has finished, every compared container of every live
   pod runs that image or one of its platform images.
   These five are
-  built in (`PLAN_BINDING`, `NO_DRIFT_AFTER_APPLY`, `BUILT_FROM_RUN_COMMIT`,
-  `IMAGE_BINDING` and `RUNNING_DIGEST_MATCHES` in `iltero_schemas.assertions`):
+  built in (`APPLIED_PLAN_MATCHES_EVALUATED_PLAN`, `NO_DRIFT_AFTER_APPLY`, `BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`,
+  `REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and `RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` in `iltero_schemas.assertions`):
   a runner evaluates the first at every infrastructure post-deploy stage, the
   second at every infrastructure post-verify stage, the third at every build's
   plan stage, the fourth at every image deploy's post-deploy stage and the
@@ -38,25 +38,27 @@ keep, so any two tools agree on what a record means.
   document digest and compiled module digest): an evaluation that names one
   names the shipped version and document, comes from this package or the
   server's bundle and never from a scanner, and ran the shipped module.
-  Each activity names its binding check (`binding_check`) and every
+  Each activity names the built-in check that what the pipeline carried out
+  matches what was checked (`carried_out_matches_checked`) and every
   built-in assertion it always evaluates (`always_evaluated`): once the
   assertion's stage has reported, a record evaluates it exactly once, at that
   stage only, and never as not applicable. An infrastructure record's
-  `post_deploy` stage evaluates `ILT.DEPLOYMENT.PLAN_BINDING` and its
+  `post_deploy` stage evaluates `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` and its
   `post_verify` stage `ILT.IAC.NO_DRIFT_AFTER_APPLY`; a build's `plan` stage
-  evaluates `ILT.IMAGE.BUILT_FROM_RUN_COMMIT`, which never passes or fails
+  evaluates `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which never passes or fails
   when the build names no commit, where it is unknown with
   `not_reported_by_tool`, or on a run the tool opened, where it is unknown
   with `server_facts_unavailable`, since only the server verifies the
   commit (an event that was not evaluated, or that ended in error, is
   accepted); an image deploy's `post_deploy` stage evaluates
-  `ILT.DEPLOYMENT.IMAGE_BINDING` and its `post_verify` stage
-  `ILT.IMAGE.RUNNING_DIGEST_MATCHES`.
+  `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and its `post_verify` stage
+  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`.
   `ILT.IMAGE.TESTS_RAN` holds that the pipeline gave a test report for the
   built image in which at least one test ran rather than being skipped, and
   `ILT.IMAGE.SCAN_RAN` that a vulnerability scan ran whose report itself
-  names the built image or one of its platform images. `ILT.CHANGE.PRODUCTION_APPROVED` is about any change
-  (`change_type: null`); the five image assertions are about
+  names the built image or at least one of its platform images.
+  `ILT.CHANGE.PRODUCTION_APPROVED` is about any change
+  (`change_type: null`); the six image assertions are about
   `image_release`, and the others about `iac_change`.
 - Every `TechnicalAssertion` says which change type it is about
   (`spec.change_type`: `iac_change`, `image_release`, or `null` for an
@@ -129,7 +131,7 @@ keep, so any two tools agree on what a record means.
   identity's text as written, with no Unicode normalization. No stack or
   other Iltero Platform scope is part of it. An event's subject has no key
   and no identity exactly when no subject was in scope.
-- `ILT.DEPLOYMENT.PLAN_BINDING` compares the plan digests, the saved plan
+- `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` compares the plan digests, the saved plan
   file's digests and the two `artifact_digest_source` values, so its
   observations show when neither side had the saved plan file. It passes
   then, and fails when only one side has it. Evaluation vectors cover both,
@@ -149,10 +151,10 @@ keep, so any two tools agree on what a record means.
   record's `subject.source` are those of the evaluation input. A stage's
   `redaction` is a redaction report: the policy that ran, what was redacted,
   and the paths redacted (each with a reason token), left unknown, or allowed
-  (each with the project's reason). A stage's `scanners` names the binding set
-  in force and counts each scanner result once: accepted as `pass` or `fail`,
-  matched by a binding whose version constraint the scanner does not satisfy,
-  or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
+  (each with the project's reason). A stage's `scanners` names the evaluator
+  binding set in force and counts each scanner result once: accepted as `pass`
+  or `fail`, matched by an evaluator binding whose version constraint the
+  scanner does not satisfy, or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
   names its index in the plan's resource list (`plan_index`), its address as
   written or `null`, and one of four reasons. A coverage gap is one of three
   shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
@@ -174,7 +176,7 @@ keep, so any two tools agree on what a record means.
   them, not the file. A name that holds `/`, `\`, `:` or a character that
   looks like a slash or backslash, or consists only of dots and spaces, in
   its NFKC (Unicode compatibility) form, is refused. A name is at most 255
-  UTF-8 bytes as written, with no control character. A binding set's
+  UTF-8 bytes as written, with no control character. An evaluator binding set's
   `file_name` follows the same rule. Record vectors cover each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
   incomplete or did not say it is complete, is incomplete with reason
@@ -189,7 +191,7 @@ keep, so any two tools agree on what a record means.
   recompute the status each built-in check must have from the record's own
   change, and report an event a policy answered (`pass`, `fail`, `unknown`
   or `not_applicable`) that says otherwise; an event not evaluated, or that ended in error, decides
-  nothing. In an infrastructure record, `ILT.DEPLOYMENT.PLAN_BINDING` must
+  nothing. In an infrastructure record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` must
   pass exactly when the applied plan has the evaluated plan's digest,
   artifact digest and its source, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`
   exactly when the drift check found no difference; each fails otherwise.
@@ -211,28 +213,32 @@ keep, so any two tools agree on what a record means.
   the tool built; a stage's also gives its `capabilities_digest`. An
   evaluation of an assertion from the server's bundle that ran over a
   bundle names a bundle of kind `server`.
-- A deployment's apply and the identity document are a neutral core plus
+- A deployment's apply and the resource identities document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
   `log_lines` it could not read, and the delete of each deposed object (an
-  old copy a replacement set aside) settled by the state; the identity
-  document's holds its deposed counts. The apply's `tool_data` must be the
-  variant of its log's tool, and the identity document's that of its state's
+  old copy a replacement set aside) settled by the state; the resource
+  identities document's holds its deposed counts. The apply's `tool_data` must be the
+  variant of its log's tool, and the resource identities document's that of its state's
   tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
   each address's current object once.
-- The identity document (`IdentityBindings` v1). A binding's `iac` side names
-  its `tool`, and the document lists its `resolvers`, one per cloud provider.
-  The cloud side and resolver of an identity binding each have one shape per
+- The resource identities document (`ResourceIdentities` v1), whose
+  `resolved` list ties each resource of a unit's configuration to the cloud
+  resource it created. A resolved identity's `iac` side names its `tool`, and
+  the document lists its `resolvers`, one per cloud provider.
+  The cloud side and resolver of a resolved identity each have one shape per
   cloud provider, chosen by a `provider` field; AWS is the first. Each AWS resource name (ARN) has the shape
   AWS could issue: an S3 bucket name that looks like an IP address, holds two
   dots in a row or uses a reserved prefix or suffix is refused, and so is an
   RDS identifier that is not lowercase, ends with a hyphen or holds two
-  hyphens in a row. No two of its bindings, and no two of its removed
+  hyphens in a row. No two of its resolved identities, and no two of its removed
   entries, name the same cloud identity.
-- Hand-written policy sources and scanner binding sets. An evaluator
+- Hand-written policy sources and evaluator binding sets. An evaluator
   binding's `input_kind` says what the scanner must have been reading, and a
   record's scanner report lists its `input_kinds`. Binding sets, events and
-  records name a scanner from one list: `checkov` and `trivy`.
+  records name a scanner from one list: `checkov` and `trivy`. An event read
+  from a scanner's result names the evaluator binding that let it stand for
+  the assertion (`provenance.evaluator_binding`).
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
@@ -242,20 +248,23 @@ keep, so any two tools agree on what a record means.
   by its IaC tool's rule (`plan_digest(tool, plan)`); `PLAN_DIGEST_VERSIONS`
   gives each rule's version. A plan, or a deployment's applied plan, whose
   `digest_version` is not its tool's rule version is refused
-  (`check_plan_digest_version`), and so is an identity document whose
+  (`check_plan_digest_version`), and so is a resource identities document whose
   applied plan's is not the rule version of the tool that wrote the state,
   with a vector. A tool with no rule has no plan digest. Two timestamps
   compare to the nanosecond.
 - Conformance vectors that another implementation can test itself against,
   including records of runs the tool opened (one of a project that declares
   its units, one whose plan stage read placeholders), a record of a run
-  Iltero Platform opened, an identity document with no bindings, the identity
-  documents that must be refused, and altered ones that must still be
-  accepted. The record vectors are in `vectors/records/`. The rules about
-  bindings have no vector, because a binding holds a cloud identifier this
-  repository does not publish.
-- A record says who opened its run (`run.origin` and
-  `governance.run_opened_by`: `server` or `local`), the same way everywhere.
+  Iltero Platform opened, a resource identities document with no resolved
+  identity, the resource identities documents that must be refused, altered ones that must still be accepted,
+  the assurance contexts that must be refused, and a verification report of
+  an image build. The record vectors are in `vectors/records/`. The rules
+  about resolved identities have no vector, because a resolved identity holds
+  a cloud identifier this repository does not publish.
+- A record says once who opened its run (`governance.run_opened_by`:
+  `server` or `local`), and every stage agrees: its assertions are counted
+  as `server_pinned` exactly when the server opened the run, and as
+  `project_files` otherwise.
   A record of a run the tool opened claims nothing only Iltero Platform can
   give: no Iltero Platform bundle or evaluation from one, no facts from
   Iltero Platform, and no stage reference time from it. Every event names the
@@ -398,7 +407,7 @@ keep, so any two tools agree on what a record means.
   stage. `iltero_schemas.change_types.not_supported_by(tool)` gives the
   stages an IaC tool cannot run.
   The sample records expect all four stages.
-- An identity document says where its state was read from
+- A resource identities document says where its state was read from
   (`sources.read_from`): the state file the apply left, or a refresh-only
   plan, which names no applied plan. A record's identities are always read
   from the state file.
@@ -530,7 +539,7 @@ keep, so any two tools agree on what a record means.
   stateful set's update revision. A partitioned or on-delete rollout, and
   a stateful set whose status names no update revision, never finish, and
   neither does a daemon set with a pod on a node it no longer selects.
-  `ILT.IMAGE.RUNNING_DIGEST_MATCHES` fails when the template compares no
+  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` fails when the template compares no
   container, and terminating and finished pods never decide it.
   A container may report the index digest or a platform
   image's digest, depending on its runtime, so either counts. Only the
@@ -560,8 +569,28 @@ keep, so any two tools agree on what a record means.
   | Container role in a pod (`containers_read[].role`) | `app`, `init`, `sidecar`, `ephemeral` |
   | Pod state (`containers_read[].pod_state`) | `live`, `terminating`, `finished` |
   | Who reports a deployment (`deployment.reported_by`) | `pipeline` |
-  | Built-in assertions | `ILT.DEPLOYMENT.IMAGE_BINDING`, `ILT.IMAGE.RUNNING_DIGEST_MATCHES` |
+  | Built-in assertions | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
 
+- Scan coverage. `iltero_schemas.change_types.scan_coverage(build)` says
+  which of a build's platform images its scan reports name and which none
+  does, counted as `ILT.IMAGE.SCAN_RAN` counts them, with vectors in
+  `vectors/scan_coverage/`. A scan report of an image built for several
+  platforms, in a record or an evaluation input, names the platform it
+  scanned, never the image's own digest.
+- Signed build provenance. `iltero_schemas.models.attestation` reads the
+  in-toto statement a build's Sigstore attestation carries, without checking
+  its signature, and checks that it names the image's own digest. A build's
+  input carries `attestation_outcome`: whether Iltero Platform verified the
+  attestation, with what its signing certificate names, refused it, or was
+  sent none, with what it checked the attestation against.
+  `check_attestation_outcome` checks that answer is about the attestation
+  the record keeps, which the record keeps as the pipeline gave it. The
+  starter assertion `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` holds that a
+  verified attestation names the built image and the run's repository,
+  commit and run; it fails when no attestation was sent, passes only for a
+  record that keeps one, and on a run the tool opened is always `unknown`
+  (`server_facts_unavailable`). Vectors are in `vectors/attestations/` and
+  `vectors/evaluation/`.
 - A verification report's `runtime_verification` is one of seven results,
   each a state and its reason, among them `not_assessed` with
   `not_in_activity` for a record whose activity has no stage after

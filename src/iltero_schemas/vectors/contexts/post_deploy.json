@@ -6,7 +6,7 @@
     "stage": "post_deploy",
     "timestamp": "2026-09-16T18:40:00Z",
     "assertion": {
-      "id": "ILT.DEPLOYMENT.PLAN_BINDING",
+      "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
       "version": "1.0.0"
     }
   },
@@ -160,5 +160,6 @@
   "artifact": null,
   "tests": null,
   "scans": null,
-  "verified_source": null
+  "verified_source": null,
+  "attestation_outcome": null
 }

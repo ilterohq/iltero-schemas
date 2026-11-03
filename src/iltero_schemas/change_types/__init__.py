@@ -19,8 +19,11 @@ from iltero_schemas.change_types.image import (
     ImageBuild,
     ImageRef,
     ReportRef,
+    ScanCoverage,
     TagResolution,
+    check_attestation_outcome,
     check_build_metadata,
+    scan_coverage,
 )
 from iltero_schemas.change_types.image_deploy import IMAGE_DEPLOY, ImageDeploy
 from iltero_schemas.change_types.registry import ACTIVITIES, CHANGE_TYPES
@@ -46,7 +49,10 @@ __all__ = [
     "PlanRecord",
     "ReportRef",
     "RunType",
+    "ScanCoverage",
     "TagResolution",
+    "check_attestation_outcome",
     "check_build_metadata",
     "not_supported_by",
+    "scan_coverage",
 ]

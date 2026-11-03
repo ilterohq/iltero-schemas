@@ -1,0 +1,47 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE
+  version: "1.0.0"
+  title: After its rollout finished, every live pod of the workload runs the deployed image, or one of its platform images, in every compared container
+  remediation: Finish the rollout of the deployed image, or find what replaced it in the workload.
+spec:
+  change_type: image_release
+  stage: post_verify
+  target:
+    kind: deployment
+  assert:
+    all:
+      - path: drift_check.rollout.complete
+        equal: true
+      - path: drift_check.live_pods_read
+        equal:
+          path: drift_check.rollout.expected_live_pods
+      - exists:
+          in: drift_check.template_containers
+          where:
+            path: item.compared
+            equal: true
+      - exists:
+          in: drift_check.containers_read
+          where:
+            all:
+              - path: item.pod_state
+                equal: live
+              - path: item.compared
+                equal: true
+      - not:
+          exists:
+            in: drift_check.containers_read
+            where:
+              all:
+                - path: item.pod_state
+                  equal: live
+                - path: item.compared
+                  equal: true
+                - path: item.digest
+                  not_equal:
+                    path: change.image.digest
+                - path: item.digest
+                  not_in:
+                    path: change.build.platform_digests

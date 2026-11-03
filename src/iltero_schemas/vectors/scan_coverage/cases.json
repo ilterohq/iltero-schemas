@@ -1,0 +1,108 @@
+[
+  {
+    "name": "one_of_two_platforms",
+    "vector": "local_run_image_build.json",
+    "set": {},
+    "remove": [],
+    "platforms_scanned": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+    ],
+    "platforms_not_scanned": [
+      "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9"
+    ]
+  },
+  {
+    "name": "both_platforms",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/reports": [
+        {
+          "evidence_ref": "plan/reports/junit.xml",
+          "format": "junit",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "pipeline"
+        },
+        {
+          "evidence_ref": "plan/reports/trivy.json",
+          "format": "trivy_json",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "image_digest_source": "report"
+        },
+        {
+          "evidence_ref": "plan/reports/zz-grype.json",
+          "format": "grype_json",
+          "image_digest": "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9",
+          "image_digest_source": "report"
+        }
+      ]
+    },
+    "remove": [],
+    "platforms_scanned": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+      "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9"
+    ],
+    "platforms_not_scanned": []
+  },
+  {
+    "name": "scan_tied_only_by_the_pipeline",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/reports/1/image_digest_source": "pipeline"
+    },
+    "remove": [],
+    "platforms_scanned": [],
+    "platforms_not_scanned": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+      "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9"
+    ]
+  },
+  {
+    "name": "no_scan_report",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/reports": [
+        {
+          "evidence_ref": "plan/reports/junit.xml",
+          "format": "junit",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "pipeline"
+        }
+      ]
+    },
+    "remove": [],
+    "platforms_scanned": [],
+    "platforms_not_scanned": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+      "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9"
+    ]
+  },
+  {
+    "name": "index_of_one_platform",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/platform_digests": [
+        "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+      ]
+    },
+    "remove": [],
+    "platforms_scanned": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+    ],
+    "platforms_not_scanned": []
+  },
+  {
+    "name": "single_manifest_image",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/change/platform_digests": [],
+      "/change/index_evidence_ref": null,
+      "/change/reports/0/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "platforms_scanned": [
+      "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    ],
+    "platforms_not_scanned": []
+  }
+]

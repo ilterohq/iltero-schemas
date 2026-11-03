@@ -36,7 +36,7 @@ _CHANGE = frozenset({"change", "plan", "subject"})
 # The facts only the server holds about a change before it is deployed: earlier evaluations, approvals, exceptions.
 _CHANGE_FACTS = frozenset({"evaluations", "approvals", "exceptions"})
 # The parts only the server holds. An input that may carry one reads server facts.
-SERVER_FACTS = _CHANGE_FACTS | {"verified_source"}
+SERVER_FACTS = _CHANGE_FACTS | {"verified_source", "attestation_outcome"}
 # The parts that name the content the change checked: the plan, the built image, or the deployed image's change.
 CHECKED_CONTENT_PARTS = frozenset({"plan", "artifact", "change"})
 
@@ -69,11 +69,13 @@ POST_VERIFY = Profile(
     "post_verify", ALWAYS_REQUIRED_PARTS | {"subject", "deployment", "drift_check"}, _SOURCE | {"assurance"}
 )
 RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
-# A build's input: the image it built, the test and scan reports it was given, and the commit the server verified
-# from the build job's identity.
+# A build's input: the image it built, the test and scan reports it was given, the commit the server verified from
+# the build job's identity, and what the server found when it checked the build's attestation.
 PLAN_ARTIFACT = Profile(
     "plan_artifact",
-    ALWAYS_REQUIRED_PARTS | _SOURCE | {"subject", "artifact", "tests", "scans", "verified_source"},
+    ALWAYS_REQUIRED_PARTS
+    | _SOURCE
+    | {"subject", "artifact", "tests", "scans", "verified_source", "attestation_outcome"},
     frozenset(),
 )
 

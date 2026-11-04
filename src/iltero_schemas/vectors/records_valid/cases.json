@@ -949,8 +949,8 @@
     "set": {
       "/change/platform_digests": [],
       "/change/index_evidence_ref": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649",
-      "/coverage/subjects_in_scope/source_digest": "sha256:cdaecc1f03b7e8e9d9cb6cc4440073b1c77ac3a53abb8b7533f9ceb1ead23649",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:0ee9d11d55a19aab9580ede3266a9d5bd2e59fc1733d8d9c35c2585354d339f9",
+      "/coverage/subjects_in_scope/source_digest": "sha256:0ee9d11d55a19aab9580ede3266a9d5bd2e59fc1733d8d9c35c2585354d339f9",
       "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
     },
     "remove": []
@@ -973,8 +973,8 @@
     "vector": "local_run_image_build.json",
     "set": {
       "/change/reports": [],
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:d891077e086f01bc8acebca82b38dd19126929db1dc2febec6f0b63726e4b5dc",
-      "/coverage/subjects_in_scope/source_digest": "sha256:d891077e086f01bc8acebca82b38dd19126929db1dc2febec6f0b63726e4b5dc"
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:923ec2b8eea2151738a8e98dd10c574c332abde56f768f7d1e20c39bc763de58",
+      "/coverage/subjects_in_scope/source_digest": "sha256:923ec2b8eea2151738a8e98dd10c574c332abde56f768f7d1e20c39bc763de58"
     },
     "remove": []
   },
@@ -988,6 +988,22 @@
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server"
+    },
+    "remove": []
+  },
+  {
+    "name": "image_build_of_a_run_the_server_opened_that_sent_its_attestation",
+    "vector": "local_run_image_build.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/change/attestation/sent_to_server": true,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0",
+      "/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0"
     },
     "remove": []
   },
@@ -1011,7 +1027,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -1060,7 +1076,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -1120,7 +1136,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -1169,7 +1185,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -1222,8 +1238,8 @@
     "vector": "local_run_image_build.json",
     "set": {
       "/change/build_commit": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:f9af3a70cd3729920089803ffb709318c33acffc45187e049eb0e22e2e347100",
-      "/coverage/subjects_in_scope/source_digest": "sha256:f9af3a70cd3729920089803ffb709318c33acffc45187e049eb0e22e2e347100",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:5e3560d9fbcd9a9d2bf7ec6282461d7b64c2298fa9f6a5fa1e77008584dad9ad",
+      "/coverage/subjects_in_scope/source_digest": "sha256:5e3560d9fbcd9a9d2bf7ec6282461d7b64c2298fa9f6a5fa1e77008584dad9ad",
       "/events/0/evaluation/status_reason": "not_reported_by_tool"
     },
     "remove": []
@@ -1317,7 +1333,7 @@
       "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:90dbecb92cb50e87429b9e4ab2e7b453f09997abc8ea598877c35592211d44cf"
     },
     "remove": [
-      "/evidence_refs/10"
+      "/evidence_refs/12"
     ]
   },
   {

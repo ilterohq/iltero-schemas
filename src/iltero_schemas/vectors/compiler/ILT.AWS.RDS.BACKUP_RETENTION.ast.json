@@ -1,28 +1,28 @@
 {
+  "assert": {
+    "predicate": {
+      "literal": 7,
+      "op": "greater_than_or_equal",
+      "path": "resource.after.backup_retention_period"
+    }
+  },
   "ast_version": 1,
-  "id": "ILT.AWS.RDS.BACKUP_RETENTION",
-  "version": "1.0.0",
-  "type": "state",
   "change_type": "iac_change",
+  "id": "ILT.AWS.RDS.BACKUP_RETENTION",
   "stage": "plan",
   "target": {
     "kind": "resource",
     "resources": [
       {
-        "tool": "terraform",
         "provider": "aws",
         "resource_types": [
           "aws_db_instance"
-        ]
+        ],
+        "tool": "terraform"
       }
     ]
   },
-  "when": null,
-  "assert": {
-    "predicate": {
-      "path": "resource.after.backup_retention_period",
-      "op": "greater_than_or_equal",
-      "literal": 7
-    }
-  }
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

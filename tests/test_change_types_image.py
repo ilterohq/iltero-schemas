@@ -15,6 +15,7 @@ from iltero_schemas.assertions import (
     NO_DRIFT_AFTER_APPLY_ID,
     SIGNED_PROVENANCE_MATCHES_RUN_ID,
 )
+from iltero_schemas.canonical import digest_of
 from iltero_schemas.change_types import (
     CHANGE_TYPES,
     IAC_CHANGE,
@@ -152,22 +153,64 @@ def test_a_local_build_leaves_its_signed_provenance_unknown_for_want_of_the_serv
         CAR.model_validate(_with_provenance_event("unknown", "path_missing"), context={SKIP_INTEGRITY_CHECKS: True})
 
 
-def test_signed_provenance_passes_only_for_a_build_whose_record_keeps_its_attestation() -> None:
-    record = _with_provenance_event("pass", None)
-    record["change"]["attestation"] = None
-    with pytest.raises(ValidationError, match="passes only for a build whose record keeps its attestation"):
+def _opened_by_server(record: dict[str, Any]) -> dict[str, Any]:
+    """``record`` as a record of a run the server opened, whose evaluations read the server's facts."""
+    record["governance"]["run_opened_by"] = "server"
+    for coverage in (record["coverage"], record["stages"]["plan"]["coverage"]):
+        coverage["assertions_expected"]["origin"] = "server_pinned"
+    for event in record["events"]:
+        event["provenance"]["facts_source"] = "server"
+    return record
+
+
+@pytest.mark.parametrize("attestation", [None, "not_sent"], ids=["none kept", "kept, not sent"])
+def test_signed_provenance_passes_only_for_a_build_whose_record_keeps_the_attestation_it_sent(
+    attestation: str | None,
+) -> None:
+    record = _opened_by_server(_with_provenance_event("pass", None))
+    if attestation is None:
+        record["change"]["attestation"] = None
+    with pytest.raises(ValidationError, match="passes only for a build whose record keeps the attestation it sent"):
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
+def test_signed_provenance_may_pass_for_a_build_that_sent_the_server_its_attestation() -> None:
+    record = _opened_by_server(_with_provenance_event("pass", None))
+    record["change"]["attestation"]["sent_to_server"] = True
+    for coverage in (record["coverage"], record["stages"]["plan"]["coverage"]):
+        coverage["subjects_in_scope"]["source_digest"] = digest_of(record["change"])
+    CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_a_run_the_tool_opened_sent_the_server_no_attestation() -> None:
+    record = copy.deepcopy(BUILD)
+    record["change"]["attestation"]["sent_to_server"] = True
+    with pytest.raises(ValidationError, match="a run the tool opened sent the server no attestation"):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def _sent(car: CAR) -> CAR:
+    """``car`` as if its build had sent the server the attestation it keeps."""
+    build = car.change
+    assert isinstance(build, ImageBuild) and build.attestation is not None
+    attestation = build.attestation.model_copy(update={"sent_to_server": True})
+    return car.model_copy(update={"change": build.model_copy(update={"attestation": attestation})})
+
+
 def test_the_servers_answer_is_about_the_attestation_the_record_keeps() -> None:
-    car = CAR.model_validate(BUILD)
+    kept_only = CAR.model_validate(BUILD)
+    sent = _sent(kept_only)
     verified = VerifiedAttestation.model_validate(BUILD_INPUT["attestation_outcome"])
-    kept = next(ref for ref in car.evidence_refs if ref.ref_id == "plan/attestation.sigstore.json")
-    check_attestation_outcome(car, verified.model_copy(update={"attestation_digest": kept.digest}))
+    kept = next(ref for ref in sent.evidence_refs if ref.ref_id == "plan/attestation.sigstore.json")
+    check_attestation_outcome(sent, verified.model_copy(update={"attestation_digest": kept.digest}))
+    check_attestation_outcome(kept_only, AttestationNotSent(outcome="not_sent"))
     with pytest.raises(ValueError, match="the server checked the attestation the build's record keeps"):
-        check_attestation_outcome(car, verified.model_copy(update={"attestation_digest": "sha256:" + "e" * 64}))
-    with pytest.raises(ValueError, match="sent an attestation exactly when the build's record keeps one"):
-        check_attestation_outcome(car, AttestationNotSent(outcome="not_sent"))
+        check_attestation_outcome(sent, verified.model_copy(update={"attestation_digest": "sha256:" + "e" * 64}))
+    message = "sent an attestation exactly when the build's record says it sent the one it keeps"
+    with pytest.raises(ValueError, match=message):
+        check_attestation_outcome(sent, AttestationNotSent(outcome="not_sent"))
+    with pytest.raises(ValueError, match=message):
+        check_attestation_outcome(kept_only, verified.model_copy(update={"attestation_digest": kept.digest}))
 
 
 def test_a_build_rule_called_on_a_record_of_another_activity_says_so() -> None:

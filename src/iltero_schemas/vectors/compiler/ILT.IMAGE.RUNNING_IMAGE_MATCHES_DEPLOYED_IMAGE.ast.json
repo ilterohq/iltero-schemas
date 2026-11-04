@@ -1,28 +1,17 @@
 {
-  "ast_version": 1,
-  "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
-  "version": "1.0.0",
-  "type": "process",
-  "change_type": "image_release",
-  "stage": "post_verify",
-  "target": {
-    "kind": "deployment",
-    "resources": []
-  },
-  "when": null,
   "assert": {
     "all": [
       {
         "predicate": {
-          "path": "drift_check.rollout.complete",
+          "literal": true,
           "op": "equal",
-          "literal": true
+          "path": "drift_check.rollout.complete"
         }
       },
       {
         "predicate": {
-          "path": "drift_check.live_pods_read",
           "op": "equal",
+          "path": "drift_check.live_pods_read",
           "ref": "drift_check.rollout.expected_live_pods"
         }
       },
@@ -31,9 +20,9 @@
           "in": "drift_check.template_containers",
           "where": {
             "predicate": {
-              "path": "item.compared",
+              "literal": true,
               "op": "equal",
-              "literal": true
+              "path": "item.compared"
             }
           }
         }
@@ -45,16 +34,16 @@
             "all": [
               {
                 "predicate": {
-                  "path": "item.pod_state",
+                  "literal": "live",
                   "op": "equal",
-                  "literal": "live"
+                  "path": "item.pod_state"
                 }
               },
               {
                 "predicate": {
-                  "path": "item.compared",
+                  "literal": true,
                   "op": "equal",
-                  "literal": true
+                  "path": "item.compared"
                 }
               }
             ]
@@ -69,29 +58,29 @@
               "all": [
                 {
                   "predicate": {
-                    "path": "item.pod_state",
+                    "literal": "live",
                     "op": "equal",
-                    "literal": "live"
+                    "path": "item.pod_state"
                   }
                 },
                 {
                   "predicate": {
-                    "path": "item.compared",
+                    "literal": true,
                     "op": "equal",
-                    "literal": true
+                    "path": "item.compared"
                   }
                 },
                 {
                   "predicate": {
-                    "path": "item.digest",
                     "op": "not_equal",
+                    "path": "item.digest",
                     "ref": "change.image.digest"
                   }
                 },
                 {
                   "predicate": {
-                    "path": "item.digest",
                     "op": "not_in",
+                    "path": "item.digest",
                     "ref": "change.build.platform_digests"
                   }
                 }
@@ -101,5 +90,16 @@
         }
       }
     ]
-  }
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+  "stage": "post_verify",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
 }

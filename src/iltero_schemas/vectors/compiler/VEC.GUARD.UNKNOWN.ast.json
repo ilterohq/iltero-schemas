@@ -1,34 +1,34 @@
 {
+  "assert": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "resource.after.a"
+    }
+  },
   "ast_version": 1,
-  "id": "VEC.GUARD.UNKNOWN",
-  "version": "1.0.0",
-  "type": "state",
   "change_type": "iac_change",
+  "id": "VEC.GUARD.UNKNOWN",
   "stage": "plan",
   "target": {
     "kind": "resource",
     "resources": [
       {
-        "tool": "terraform",
         "provider": "vec",
         "resource_types": [
           "thing"
-        ]
+        ],
+        "tool": "terraform"
       }
     ]
   },
+  "type": "state",
+  "version": "1.0.0",
   "when": {
     "predicate": {
-      "path": "organization_scope.environment.name",
+      "literal": "production",
       "op": "equal",
-      "literal": "production"
-    }
-  },
-  "assert": {
-    "predicate": {
-      "path": "resource.after.a",
-      "op": "equal",
-      "literal": true
+      "path": "organization_scope.environment.name"
     }
   }
 }

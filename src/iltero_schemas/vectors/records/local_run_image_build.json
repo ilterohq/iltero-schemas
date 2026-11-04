@@ -75,7 +75,8 @@
     },
     "attestation": {
       "evidence_ref": "plan/attestation.sigstore.json",
-      "verification": "not_verified"
+      "verification": "not_verified",
+      "sent_to_server": false
     }
   },
   "units_file": null,
@@ -134,7 +135,7 @@
       },
       "assertions": {
         "index": "units/api/plan/assertions/compiled.json",
-        "digest": "sha256:030b7def8139cdb0a90f4be204e89ea6a804c3c675dec7045fdd8d1ce3e0d624",
+        "digest": "sha256:5196e36994c19b096cf6caaa52a94b0c6ac9069d35041dfc3b7f1c2a8d01ab74",
         "count": 3
       },
       "scanners": null,
@@ -142,7 +143,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -494,7 +495,7 @@
     "subjects_in_scope": {
       "value": 1,
       "counted_from": "artifact_unit",
-      "source_digest": "sha256:7848406dd1415fdd642385ca12bfc4910c586b02fd8b845de60d01805d98f965",
+      "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
       "removed_by_plan": 0,
       "excluded": []
     },
@@ -546,6 +547,23 @@
   "out_of_scope": [],
   "evidence_refs": [
     {
+      "ref_id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:b12ecffffcd7c4fb36583516bf35a61fc698b5d1c571475ce7b19865949e4097",
+      "size_bytes": 398,
+      "path": "units/api/plan/assertions/ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
       "digest": "sha256:eab684cc5dd242a8feb865bf35dafddb197a8caa453c3263a0d45839b1026428",
@@ -580,6 +598,23 @@
       "redaction_policy": null
     },
     {
+      "ref_id": "ILT.IMAGE.SCAN_RAN@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:9d5e22499fb4b7ddb3eeb5973b592a42e4eab77df880432720453da823e84b17",
+      "size_bytes": 1173,
+      "path": "units/api/plan/assertions/ILT.IMAGE.SCAN_RAN@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "ILT.IMAGE.SCAN_RAN@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
       "digest": "sha256:3efe421d1df10ba0b1397af183aa67fa1fb1026f16dcbe5e116f7d2495205b85",
@@ -602,6 +637,23 @@
       "digest": "sha256:3c6a891fded02ef7d57f26f95e5b4506e1211d46b8d23981d5e81dcdf697a71f",
       "size_bytes": 817,
       "path": "units/api/plan/assertions/ILT.IMAGE.SCAN_RAN@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.TESTS_RAN@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:f59cf8c2fb99737dae818b9e5a6b6ea3ed6a8ff099484da7478881204bb256f4",
+      "size_bytes": 1006,
+      "path": "units/api/plan/assertions/ILT.IMAGE.TESTS_RAN@1.0.0.ast.json",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -650,8 +702,8 @@
     {
       "ref_id": "plan/assertions/compiled.json",
       "media_type": "application/json",
-      "digest": "sha256:030b7def8139cdb0a90f4be204e89ea6a804c3c675dec7045fdd8d1ce3e0d624",
-      "size_bytes": 693,
+      "digest": "sha256:5196e36994c19b096cf6caaa52a94b0c6ac9069d35041dfc3b7f1c2a8d01ab74",
+      "size_bytes": 3048,
       "path": "units/api/plan/assertions/compiled.json",
       "storage_uri": null,
       "retention_until": null,

@@ -1,46 +1,46 @@
 {
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "op": "equal",
+          "path": "resource.after.s128"
+        }
+      },
+      {
+        "predicate": {
+          "literal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "op": "equal",
+          "path": "resource.after.s129"
+        }
+      },
+      {
+        "predicate": {
+          "literal": 4,
+          "op": "contains",
+          "path": "resource.after.l4"
+        }
+      }
+    ]
+  },
   "ast_version": 1,
-  "id": "VEC.LITERALS.EDGE",
-  "version": "1.0.0",
-  "type": "state",
   "change_type": "iac_change",
+  "id": "VEC.LITERALS.EDGE",
   "stage": "plan",
   "target": {
     "kind": "resource",
     "resources": [
       {
-        "tool": "terraform",
         "provider": "vec",
         "resource_types": [
           "thing"
-        ]
+        ],
+        "tool": "terraform"
       }
     ]
   },
-  "when": null,
-  "assert": {
-    "all": [
-      {
-        "predicate": {
-          "path": "resource.after.s128",
-          "op": "equal",
-          "literal": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        }
-      },
-      {
-        "predicate": {
-          "path": "resource.after.s129",
-          "op": "equal",
-          "literal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-        }
-      },
-      {
-        "predicate": {
-          "path": "resource.after.l4",
-          "op": "contains",
-          "literal": 4
-        }
-      }
-    ]
-  }
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

@@ -1,27 +1,27 @@
 {
-  "ast_version": 1,
-  "id": "VEC.EXISTS.NONEMPTY",
-  "version": "1.0.0",
-  "type": "state",
-  "change_type": "iac_change",
-  "stage": "plan",
-  "target": {
-    "kind": "resource",
-    "resources": [
-      {
-        "tool": "terraform",
-        "provider": "vec",
-        "resource_types": [
-          "thing"
-        ]
-      }
-    ]
-  },
-  "when": null,
   "assert": {
     "exists": {
       "in": "resource.related",
       "where": null
     }
-  }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.EXISTS.NONEMPTY",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

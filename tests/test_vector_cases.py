@@ -189,10 +189,17 @@ def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_event
     for path in sorted((VECTORS / "records").glob("local_run*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
         for ref in record["evidence_refs"]:
-            assertion_id, _, name = ref["ref_id"].partition("@")
-            if name.endswith(".yaml") and assertion_id in shipped:
-                body = shipped[assertion_id]
-                assert (ref["digest"], ref["size_bytes"]) == (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
+            assertion_id, _, name = ref["ref_id"].rpartition("/")[2].partition("@")
+            if assertion_id not in shipped:
+                continue
+            # The document as shipped; the program and the syntax tree as the compiler vectors hold them.
+            suffix = next((s for s in (".yaml", ".rego", ".ast.json") if name.endswith(s)), None)
+            if suffix is None:
+                continue
+            compiled = VECTORS / "compiler" / f"{assertion_id}{suffix}"
+            body = shipped[assertion_id] if suffix == ".yaml" else compiled.read_bytes()
+            expected = (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
+            assert (ref["digest"], ref["size_bytes"]) == expected, ref["ref_id"]
         for name, stage in record["stages"].items():
             owed = {
                 (e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"])

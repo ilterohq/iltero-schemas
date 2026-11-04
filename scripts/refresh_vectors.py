@@ -74,7 +74,7 @@ def compiler_vectors() -> dict[str, bytes]:
             assertion = parse(path.read_text(encoding="utf-8"))
             module = compile(assertion)
             stem = path.stem
-            files[f"{stem}.ast.json"] = json.dumps(to_json(assertion), indent=2).encode() + b"\n"
+            files[f"{stem}.ast.json"] = json.dumps(to_json(assertion), indent=2, sort_keys=True).encode() + b"\n"
             files[f"{stem}.digest"] = f"{source_digest(assertion)}\n".encode()
             files[f"{stem}.rego"] = module.source
             files[f"{stem}.rego.digest"] = f"{module.digest}\n".encode()

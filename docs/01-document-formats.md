@@ -838,10 +838,11 @@ whatever its annotations say. It raises `ValueError` for bytes that are not an i
 byte order mark, bytes that are not UTF-8, `NaN` or `Infinity`, nesting deeper than the reader can follow, a key
 written twice, no `manifests` list, or a manifest not named by a `sha256` digest.
 It raises `ValueError` before parsing for an index over 4,194,304 bytes (`MAX_INDEX_BYTES`): "an image index is at
-most 4194304 bytes". It is a pure function, so every reader of the kept index computes the same list. The record
-model does not read the file: a reader compares `platform_digests` with the function's result. The plan stage owes
-the raw index as its `image_index` document, and Iltero Platform checks it with `platform_digests_of` and then
-discards it.
+most 4194304 bytes". It raises `ValueError` for an index that lists more than 64 distinct platform images
+(`MAX_PLATFORM_DIGESTS`), the most a record keeps: "an image index lists at most 64 platform images". It is a pure
+function, so every reader of the kept index computes the same list. The record model does not read the file: a reader
+compares `platform_digests` with the function's result. The plan stage owes the raw index as its `image_index`
+document, and Iltero Platform checks it with `platform_digests_of` and then discards it.
 
 Two files of a build reach Iltero Platform: the raw index, which it checks and discards, and, when it was sent
 (`sent_to_server: true`), the attestation, which it verifies and keeps by its digest so the signature can be checked

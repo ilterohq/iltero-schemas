@@ -11,6 +11,7 @@ from pydantic import TypeAdapter, ValidationError
 from iltero_schemas.models.image import (
     ATTESTATION_MEDIA_TYPES,
     MAX_INDEX_BYTES,
+    MAX_PLATFORM_DIGESTS,
     ImageArtifact,
     ImageReference,
     ImageRepository,
@@ -167,6 +168,13 @@ def test_the_platform_digests_are_read_from_the_raw_index_without_its_attestatio
 def test_a_manifest_of_a_real_platform_is_a_platform_whatever_its_annotations_say() -> None:
     disguised = {**ATTESTATION, "platform": {"os": "linux", "architecture": "amd64"}}
     assert platform_digests_of(_index({"digest": ARM}, disguised)) == [ARM, ATTESTATION["digest"]]
+
+
+def test_an_index_listing_more_platform_images_than_a_record_keeps_is_refused() -> None:
+    platforms = [{"digest": f"sha256:{number:064x}"} for number in range(MAX_PLATFORM_DIGESTS + 1)]
+    assert len(platform_digests_of(_index(*platforms[:-1], platforms[0], ATTESTATION))) == MAX_PLATFORM_DIGESTS
+    with pytest.raises(ValueError, match=f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images"):
+        platform_digests_of(_index(*platforms))
 
 
 @pytest.mark.parametrize(

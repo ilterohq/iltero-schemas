@@ -156,7 +156,7 @@ def platform_digests_of(index: bytes) -> list[str]:
     """The platform digests the raw image index ``index`` lists, in order, without its attestation manifests.
 
     Every reader of a build record computes them the same way, from the bytes the record keeps; raises ``ValueError``
-    for bytes that are not an image index.
+    for bytes that are not an image index, or that list more than ``MAX_PLATFORM_DIGESTS`` platform images.
     """
     if len(index) > MAX_INDEX_BYTES:
         raise ValueError(f"an image index is at most {MAX_INDEX_BYTES} bytes")
@@ -172,6 +172,8 @@ def platform_digests_of(index: bytes) -> list[str]:
         if not isinstance(digest, str) or not _DIGEST.fullmatch(digest):
             raise ValueError("every manifest of an image index is named by its sha256 digest")
         digests.add(digest)
+    if len(digests) > MAX_PLATFORM_DIGESTS:
+        raise ValueError(f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images")
     return sorted(digests)
 
 

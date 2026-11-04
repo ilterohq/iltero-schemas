@@ -452,7 +452,8 @@ keep, so any two tools agree on what a record means.
   file's digest. The raw image index, which the plan stage owes
   (`image_index`, the one document an image build's `named_documents`
   lists), passes through Iltero Platform, which checks it with
-  `platform_digests_of`, refusing an index over 4 MiB, and then discards it.
+  `platform_digests_of`, refusing an index over 4 MiB or one that lists more
+  than 64 platform images, and then discards it.
   On a run Iltero Platform opened, the commit check compares the commit the
   record names, read by the tool from the pipeline's metadata file and
   `not_verified`, with the commit Iltero Platform verified; Iltero Platform

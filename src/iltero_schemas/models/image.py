@@ -172,8 +172,8 @@ def platform_digests_of(index: bytes) -> list[str]:
         if not isinstance(digest, str) or not _DIGEST.fullmatch(digest):
             raise ValueError("every manifest of an image index is named by its sha256 digest")
         digests.add(digest)
-    if len(digests) > MAX_PLATFORM_DIGESTS:
-        raise ValueError(f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images")
+        if len(digests) > MAX_PLATFORM_DIGESTS:
+            raise ValueError(f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images")
     return sorted(digests)
 
 

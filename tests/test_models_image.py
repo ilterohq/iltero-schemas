@@ -175,6 +175,9 @@ def test_an_index_listing_more_platform_images_than_a_record_keeps_is_refused() 
     assert len(platform_digests_of(_index(*platforms[:-1], platforms[0], ATTESTATION))) == MAX_PLATFORM_DIGESTS
     with pytest.raises(ValueError, match=f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images"):
         platform_digests_of(_index(*platforms))
+    # The index is refused at its 65th platform image, before the rest is read.
+    with pytest.raises(ValueError, match=f"an image index lists at most {MAX_PLATFORM_DIGESTS} platform images"):
+        platform_digests_of(_index(*platforms, {"digest": "sha256:abc"}))
 
 
 @pytest.mark.parametrize(

@@ -50,7 +50,6 @@ def _error_locations(document: dict[str, Any]) -> list[str]:
 
 def test_a_minimal_document_validates_and_type_is_derived() -> None:
     model = TechnicalAssertion.model_validate(_document())
-    assert model.spec.type is None
     assert model.spec.derived_type is AssertionType.STATE
 
 
@@ -67,12 +66,10 @@ def test_a_post_verify_assertion_is_about_the_deployment(kind: TargetKind) -> No
         TechnicalAssertion.model_validate(_document(spec__stage="post_verify", spec__target=target))
 
 
-def test_explicit_type_must_match_the_derived_one() -> None:
+def test_an_assertions_type_is_derived_never_written() -> None:
     document = _document()
     document["spec"]["type"] = "state"
-    TechnicalAssertion.model_validate(document)
-    document["spec"]["type"] = "process"
-    assert _error_locations(document) == ["spec"]
+    assert _error_locations(document) == ["spec.type"]
 
 
 @pytest.mark.parametrize("stage", list(Stage))

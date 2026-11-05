@@ -4,8 +4,9 @@ was running afterwards.
 The server finds the build of the image by its digest and accepts it against
 the environment's accepted build sources; the record keeps what the server
 served (``AcceptedBuild``), never a build the pipeline named. The deployed image
-and the reading of the workload afterwards are the pipeline's word, each dated
-by its runner's clock.
+and the reading of the workload afterwards are the pipeline's word, and so is
+when each happened: neither names a time. The stage that reports each was
+observed no earlier than the pipeline reported it.
 """
 
 from __future__ import annotations
@@ -25,7 +26,6 @@ from iltero_schemas.models.image import (
     repository_of,
 )
 from iltero_schemas.models.kubernetes import KubernetesRollout, KubernetesWorkload, StatefulSetRollout
-from iltero_schemas.models.reference_time import ReferenceTime
 
 # More containers than one pod template lists.
 MAX_CONTAINERS = 256
@@ -41,12 +41,6 @@ TemplateRole = Literal["app", "init", "sidecar"]
 ContainerRole = Literal["app", "init", "sidecar", "ephemeral"]
 # A pod being deleted is terminating; one whose containers all stopped is finished; any other is live.
 PodState = Literal["live", "terminating", "finished"]
-
-
-def check_runner_clock(time: ReferenceTime, what: str) -> None:
-    """Raise ``ValueError`` unless ``time`` is the runner's clock: the pipeline's word for when it did ``what``."""
-    if time.source != "runner_clock":
-        raise ValueError(f"the pipeline {what} at the time its runner's clock gives")
 
 
 class AcceptedBuild(StrictModel):
@@ -86,17 +80,12 @@ class ImageChange(StrictModel):
 
 
 class ImageDeployment(StrictModel):
-    """The image the pipeline reports it deployed, and when, by its runner's clock."""
+    """The image the pipeline reports it deployed, on its word. The post-deploy stage was observed no earlier than the
+    pipeline reported it."""
 
     repository: ImageRepository
     digest: Digest
-    deployed_at: ReferenceTime
     reported_by: Literal["pipeline"]
-
-    @model_validator(mode="after")
-    def _runner(self) -> ImageDeployment:
-        check_runner_clock(self.deployed_at, "deployed the image")
-        return self
 
 
 # The workload a reading read, and the state of its rollout, told apart by the platform that runs it; another
@@ -178,7 +167,6 @@ class ImageDriftCheck(StrictModel):
     change_digest: Digest
     workload: Workload
     rollout: Rollout
-    read_at: ReferenceTime
     # Every container of the pod template, by name, whether or not it is compared.
     template_containers: Annotated[list[TemplateContainer], Field(min_length=1, max_length=MAX_CONTAINERS)]
     containers_read: Annotated[list[ContainerRead], Field(max_length=MAX_CONTAINERS_READ)]
@@ -215,7 +203,6 @@ class ImageDriftCheck(StrictModel):
 
     @model_validator(mode="after")
     def _read(self) -> ImageDriftCheck:
-        check_runner_clock(self.read_at, "read the workload")
         if self.rollout.kind != self.workload.kind:
             raise ValueError("rollout is the state of the workload's kind of rollout")
         if not sorted_unique([container.name for container in self.template_containers]):

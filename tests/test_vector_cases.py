@@ -18,12 +18,13 @@ from pydantic import ValidationError
 
 from iltero_schemas.assertions import ASSERTIONS
 from iltero_schemas.bundle.build import member
-from iltero_schemas.canonical.assertion_set import required_assertion_digest
+from iltero_schemas.canonical import canonical_bytes
 from iltero_schemas.change_types import ImageBuild, scan_coverage
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.identity import ResourceIdentities
 from iltero_schemas.models.stages import integrity_problems
+from iltero_schemas.models.verification import VerificationReport
 from tests.conftest import VECTORS
 
 RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
@@ -35,6 +36,7 @@ IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.jso
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 CONTEXT_INVALID_CASES = json.loads((VECTORS / "contexts_invalid" / "cases.json").read_text(encoding="utf-8"))
 SCAN_COVERAGE_CASES = json.loads((VECTORS / "scan_coverage" / "cases.json").read_text(encoding="utf-8"))
+REPORT_INVALID_CASES = json.loads((VECTORS / "reports_invalid" / "cases.json").read_text(encoding="utf-8"))
 
 
 def _read(path: Any) -> Any:
@@ -85,8 +87,10 @@ def test_invalid_record_is_rejected(case: dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize("case", RECORD_VALID_CASES, ids=[c["name"] for c in RECORD_VALID_CASES])
-def test_valid_record_case_is_accepted(case: dict[str, Any]) -> None:
-    CAR.model_validate(_patched(case, "records"))
+def test_valid_record_case_is_accepted_and_written_as_the_model_dumps_it(case: dict[str, Any]) -> None:
+    document = _patched(case, "records")
+    dumped = CAR.model_validate(document).model_dump(mode="json", by_alias=True)
+    assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
 @pytest.mark.parametrize("case", RECORD_INTEGRITY_FAILED_CASES, ids=[c["name"] for c in RECORD_INTEGRITY_FAILED_CASES])
@@ -114,6 +118,12 @@ def test_invalid_context_is_rejected(case: dict[str, Any]) -> None:
         AssuranceContext.model_validate(_patched(case, "contexts"))
 
 
+@pytest.mark.parametrize("case", REPORT_INVALID_CASES, ids=[c["name"] for c in REPORT_INVALID_CASES])
+def test_invalid_verification_report_is_rejected(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        VerificationReport.model_validate(_patched(case, "reports"))
+
+
 @pytest.mark.parametrize("case", SCAN_COVERAGE_CASES, ids=[c["name"] for c in SCAN_COVERAGE_CASES])
 def test_a_builds_scan_coverage_is_counted(case: dict[str, Any]) -> None:
     build = ImageBuild.model_validate(_patched(case, "records")["change"])
@@ -132,6 +142,7 @@ def test_a_builds_scan_coverage_is_counted(case: dict[str, Any]) -> None:
         IDENTITY_VALID_CASES,
         CONTEXT_INVALID_CASES,
         SCAN_COVERAGE_CASES,
+        REPORT_INVALID_CASES,
     ],
     ids=[
         "records invalid",
@@ -141,6 +152,7 @@ def test_a_builds_scan_coverage_is_counted(case: dict[str, Any]) -> None:
         "identities valid",
         "contexts invalid",
         "scan coverage",
+        "reports invalid",
     ],
 )
 def test_every_case_has_a_unique_name(cases: list[dict[str, Any]]) -> None:
@@ -184,7 +196,7 @@ def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_i
             assert as_named == shipped[named["id"]], named["id"]
 
 
-def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_events_owed() -> None:
+def test_a_record_vector_lists_the_shipped_assertion_files() -> None:
     shipped = {p.name.removesuffix(".yaml"): p.read_bytes() for p in ASSERTIONS.iterdir() if p.name.endswith(".yaml")}
     for path in sorted((VECTORS / "records").glob("local_run*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
@@ -200,11 +212,3 @@ def test_a_record_vector_lists_the_shipped_assertion_files_and_the_set_its_event
             body = shipped[assertion_id] if suffix == ".yaml" else compiled.read_bytes()
             expected = (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
             assert (ref["digest"], ref["size_bytes"]) == expected, ref["ref_id"]
-        for name, stage in record["stages"].items():
-            owed = {
-                (e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"])
-                for e in record["events"]
-                if e["evaluation"]["stage"] == name
-            }
-            expected = stage["coverage"]["assertions_expected"]["required_assertion_digest"]
-            assert expected == required_assertion_digest(owed), f"{path.name} {name}"

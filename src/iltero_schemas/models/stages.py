@@ -16,9 +16,12 @@ from collections import Counter
 from typing import TYPE_CHECKING
 
 from iltero_schemas.assertions.built_in import BUILT_INS
+from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.change_types.registry import ACTIVITIES
 from iltero_schemas.models.assertion import COMBINATIONS, Stage, TargetKind, stage_name
 from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.redaction import RedactedKind
+from iltero_schemas.models.register import check_register
 from iltero_schemas.profiles import reads_approvals
 
 if TYPE_CHECKING:
@@ -57,6 +60,14 @@ def scope_counted_from(activity: Activity, stage: Stage, kinds: set[TargetKind])
 
 # The stages whose gate may run in advisory mode: those before the deployment.
 ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)
+# What each stage of a record redacts before its checks read it: what the plan stage observed, the facts the
+# pre-deploy stage was given, and the deployment the later stages read.
+REDACTED_INPUT_KIND: dict[Stage, RedactedKind] = {
+    Stage.PLAN: "observation",
+    Stage.PRE_DEPLOY: "facts",
+    Stage.POST_DEPLOY: "deployment",
+    Stage.POST_VERIFY: "deployment",
+}
 _ORDER = list(Stage)
 
 
@@ -74,6 +85,8 @@ def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
         raise ValueError(f"the {stage.value} stage lists each approval once")
     if any(a.subject.kind == "run" and a.subject.id != car.run.id for a in approvals):
         raise ValueError(f"the {stage.value} stage lists only approvals of a change or of this record's run")
+    if approvals and not any(e.evaluation.stage is stage and e.provenance.facts_source == "server" for e in car.events):
+        raise ValueError(f"the {stage.value} stage lists approvals only when its results read facts from the server")
 
 
 def _check_order(car: CAR, activity: Activity) -> None:
@@ -173,6 +186,7 @@ def check_structure(car: CAR) -> None:
     _check_run_of_events(car)
     _check_always_evaluated(car, activity)
     _check_one_redaction_policy(car)
+    check_register(car)
     for stage, record in car.stages.items():
         if stage not in car.expected_stages:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
@@ -185,6 +199,9 @@ def check_structure(car: CAR) -> None:
         enumerates = scope == SCOPE_COUNTED_FROM[TargetKind.RESOURCE]
         if (counted_from is not None and scope != counted_from) or (stage is not Stage.PLAN and enumerates):
             raise ValueError(f"the {stage.value} stage counts its scope as {counted_from or 'its own'}")
+        read = REDACTED_INPUT_KIND[stage]
+        if record.redaction.input.kind != read:
+            raise ValueError(f"the {stage.value} stage's redaction report is of the {read} it read")
         if record.enforcement_mode == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
         if (record.approvals is not None) != reads_approvals(activity.name, stage):
@@ -204,6 +221,26 @@ def check_structure(car: CAR) -> None:
         if not set(record.coverage.subjects_per_assertion) <= assertions:
             raise ValueError(f"the {stage.value} stage counts subjects only for assertions it has events for")
     activity.check_record(car)
+
+
+def _owed_set_problems(car: CAR, stage: Stage, record: StageRecord) -> list[tuple[str, str]]:
+    """The owed count and digest describe the stage's assertion index and, unless it was cut short, its events.
+
+    They show that the record agrees with itself; only the project's files at the source commit, or the set the server
+    pinned, show what the stage owed.
+    """
+    where = f"stages.{stage.value}.coverage.assertions_expected"
+    expected = record.coverage.assertions_expected
+    problems = []
+    if expected.value != record.assertions.count:
+        problems.append((where, "is not the count the stage gives its assertion index"))
+    if not record.coverage.truncated.value:
+        owed = {
+            (e.assertion.id, e.assertion.version, e.assertion.digest) for e in car.events if e.evaluation.stage is stage
+        }
+        if expected.value != len(owed) or expected.required_assertion_digest != required_assertion_digest(owed):
+            problems.append((where, "does not describe the assertions of the stage's events"))
+    return problems
 
 
 def change_digest_problems(car: CAR) -> list[tuple[str, str]]:
@@ -226,6 +263,7 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
         tally = Counter(e.evaluation.status for e in car.events if e.evaluation.stage is stage)
         if any(tally[status] != number for status, number in coverage.status_counts.items()):
             problems.append((f"{where}.coverage", "does not count the statuses of the stage's events"))
+        problems.extend(_owed_set_problems(car, stage, record))
         recomputed = stage_outcome(coverage)
         if record.verdict != recomputed.verdict:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))

@@ -349,7 +349,6 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
     [
         {"kind": "plan_incomplete", "value": False},
         {"kind": "plan_not_applyable", "value": {"__unknown": True, "reason": "not_reported_by_tool"}},
-        {"kind": "identity_redacted", "plan_index": 3},
         {"kind": "deferred_changes", "count": 2},
         {"kind": "evaluator_timeout", "count": 1},
         {"kind": "accepted_by_binding", "count": 4},
@@ -357,6 +356,38 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
 )
 def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
     Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]})
+
+
+def _excluding(*excluded: dict[str, Any], gaps: list[dict[str, Any]]) -> dict[str, Any]:
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": list(excluded)}
+    return {**PLAN_STAGE["coverage"], "subjects_in_scope": scope, "gaps": gaps}
+
+
+HIDDEN = {"plan_index": 3, "id": None, "reason": "identity_redacted"}
+HIDDEN_GAP = {"kind": "identity_redacted", "plan_index": 3}
+
+
+def test_a_resource_excluded_for_its_identity_is_also_a_gap() -> None:
+    Coverage.model_validate(_excluding(HIDDEN, gaps=[HIDDEN_GAP]))
+    Coverage.model_validate(_excluding({**HIDDEN, "reason": "deposed"}, gaps=[]))
+
+
+@pytest.mark.parametrize(
+    ("excluded", "gaps"),
+    [
+        ([], [HIDDEN_GAP]),
+        ([HIDDEN], []),
+        ([HIDDEN], [{**HIDDEN_GAP, "kind": "identity_unnameable"}]),
+        ([HIDDEN], [{**HIDDEN_GAP, "plan_index": 4}]),
+        ([HIDDEN], [HIDDEN_GAP, HIDDEN_GAP]),
+    ],
+    ids=["gap-not-excluded", "excluded-no-gap", "other-reason", "other-resource", "gap-twice"],
+)
+def test_the_identity_gaps_name_the_resources_excluded_for_their_identity(
+    excluded: list[dict[str, Any]], gaps: list[dict[str, Any]]
+) -> None:
+    with pytest.raises(ValidationError, match="the identity gaps name, once each"):
+        Coverage.model_validate(_excluding(*excluded, gaps=gaps))
 
 
 @pytest.mark.parametrize(
@@ -380,16 +411,14 @@ def test_a_gap_outside_its_shapes_is_refused(gap: dict[str, Any]) -> None:
 def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_reason() -> None:
     unnameable = {"plan_index": 0, "id": "aws_s3_bucket.x\n" + "y" * 3000, "reason": "identity_unnameable"}
     hidden = {"plan_index": 1, "id": None, "reason": "identity_redacted"}
-    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": [unnameable, hidden]}
-    Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+    gaps = [{"kind": "identity_unnameable", "plan_index": 0}, {"kind": "identity_redacted", "plan_index": 1}]
+    Coverage.model_validate(_excluding(unnameable, hidden, gaps=gaps))
     with pytest.raises(ValidationError):
-        Coverage.model_validate(
-            {**PLAN_STAGE["coverage"], "subjects_in_scope": {**scope, "excluded": [{**hidden, "reason": "skipped"}]}}
-        )
+        Coverage.model_validate(_excluding({**hidden, "reason": "skipped"}, gaps=[]))
 
 
 def test_a_coverage_lists_at_most_max_gaps() -> None:
-    gaps = [{"kind": "identity_redacted", "plan_index": n} for n in range(MAX_GAPS + 1)]
+    gaps = [{"kind": "deferred_changes", "count": n} for n in range(1, MAX_GAPS + 2)]
     with pytest.raises(ValidationError, match="at most"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps})
 
@@ -406,6 +435,16 @@ def test_a_coverage_lists_at_most_max_gaps() -> None:
 def test_the_excluded_resources_are_bounded(excluded: list[dict[str, Any]]) -> None:
     scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
     with pytest.raises(ValidationError):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+
+
+@pytest.mark.parametrize(
+    "reasons", [["identity_redacted", "identity_redacted"], ["identity_redacted", "identity_unnameable"]]
+)
+def test_a_plan_resource_is_excluded_once_for_one_reason(reasons: list[str]) -> None:
+    excluded = [{"plan_index": 3, "id": None, "reason": reason} for reason in reasons]
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
+    with pytest.raises(ValidationError, match="a plan resource is excluded once, for one reason"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
 
 

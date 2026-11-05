@@ -6,7 +6,7 @@ environment, which its change digest names. The build of the image is the one
 the server found by the digest and accepted for the environment; the record
 keeps what the server served, and a run the tool opened names none. After the
 deployment the pipeline reports the image it deployed, and at post-verify what
-the workload ran when it was read, each dated by the pipeline's runner clock.
+the workload ran when it was read.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IMAGE_DEPLOY_ACTIVITY, IMAGE_RELEASE_TYPE
 from iltero_schemas.models.checked_content import CheckedImage, checked_image
-from iltero_schemas.models.fields import Digest, parse_timestamp
+from iltero_schemas.models.fields import Digest
 from iltero_schemas.models.image import check_platform_digests
 from iltero_schemas.models.image_deploy import AcceptedBuild, ImageDeployment, ImageDriftCheck, check_compared
 
@@ -87,26 +87,21 @@ def _check_tag(car: CAR, deploy: ImageDeploy) -> None:
         raise ValueError(
             "change.image.tag_resolution.read_from_evidence_ref names a file of the record's evidence register"
         )
-    if parse_timestamp(resolution.read_at.value) > parse_timestamp(car.stages[Stage.PRE_DEPLOY].observed_at):
-        raise ValueError("the tag's metadata file was read no later than the pre-deploy stage was observed")
 
 
 def _check_deployment(car: CAR, deploy: ImageDeploy) -> None:
-    """The post-deploy stage counts the one deployment, which happened after the change was approved."""
+    """The post-deploy stage counts the one deployment."""
     deployment = deploy.deployment
     stage = car.stages.get(Stage.POST_DEPLOY)
     if (deployment is None) != (stage is None):
         raise ValueError("a record describes the deployment exactly when its post-deploy stage has reported")
     if deployment is None or stage is None:
         return
-    deployed = parse_timestamp(deployment.deployed_at.value)
-    if not parse_timestamp(car.stages[Stage.PRE_DEPLOY].observed_at) <= deployed <= parse_timestamp(stage.observed_at):
-        raise ValueError("the image was deployed after the pre-deploy stage and before the post-deploy stage reported")
     _counted(stage, deployment, "its digest")
 
 
 def _check_drift_check(car: CAR, deploy: ImageDeploy) -> None:
-    """The reading of the workload is of this record's run, taken after the deployment, and counted by its stage."""
+    """The reading of the workload is of this record's run, and counted by its stage."""
     check = deploy.drift_check
     stage = car.stages.get(Stage.POST_VERIFY)
     if (check is None) != (stage is None):
@@ -116,20 +111,13 @@ def _check_drift_check(car: CAR, deploy: ImageDeploy) -> None:
     if check.run_id != car.run.id:
         raise ValueError("the drift check names the record's run")
     check_compared(check, deploy.image.repository)
-    post_deploy = car.stages.get(Stage.POST_DEPLOY)
-    read = parse_timestamp(check.read_at.value)
-    if post_deploy is not None and read < parse_timestamp(post_deploy.observed_at):
-        raise ValueError("the workload was read no earlier than the post-deploy stage was observed")
-    if parse_timestamp(stage.observed_at) < read:
-        raise ValueError("the post-verify stage was observed no earlier than the workload was read")
     _check_files_read(car, deploy, check)
     _counted(stage, check, "the drift check that read it")
 
 
 def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> None:
     """The files the reading was taken from are JSON files of the record's evidence register,
-    redacted under the record's redaction policy, kept no earlier than the reading, and named by no other part of the
-    record."""
+    redacted under the record's redaction policy, and named by no other part of the record."""
     refs = {ref.ref_id: ref for ref in car.evidence_refs}
     tag = deploy.image.tag_resolution
     for field, what, ref_id in check.files_read():
@@ -141,8 +129,6 @@ def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> 
         if ref.redaction_policy is None:
             raise ValueError(f"{what} names the redaction policy that ran over it")
         given_digest(ref, what)
-        if parse_timestamp(ref.collected_at) < parse_timestamp(check.read_at.value):
-            raise ValueError(f"{what} was kept no earlier than it was read")
         if tag is not None and ref_id == tag.read_from_evidence_ref:
             raise ValueError(f"{what} is not the tag's metadata file")
 

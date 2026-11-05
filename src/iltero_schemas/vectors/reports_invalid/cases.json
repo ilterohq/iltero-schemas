@@ -1,0 +1,29 @@
+[
+  {
+    "name": "stage_completeness_verified_on_an_unsigned_record",
+    "vector": "verification_report_image_build.json",
+    "set": {
+      "/properties/stage_completeness/state": "verified"
+    },
+    "remove": [],
+    "message": "no property of an unsigned record is verified"
+  },
+  {
+    "name": "approval_identity_with_a_reason_no_verifier_gives",
+    "vector": "verification_report_image_build.json",
+    "set": {
+      "/properties/approval_identity/reason": "checked_by_hand"
+    },
+    "remove": [],
+    "message": "approval_identity is one of the results a verifier gives that property"
+  },
+  {
+    "name": "stage_completeness_failed_while_the_run_is_in_progress",
+    "vector": "verification_report.json",
+    "set": {
+      "/properties/stage_completeness/state": "failed"
+    },
+    "remove": [],
+    "message": "stage_completeness is one of the results a verifier gives that property"
+  }
+]

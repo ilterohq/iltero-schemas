@@ -19,10 +19,6 @@
     "path": "spec",
     "message": "is not valid for target kind"
   },
-  "type_mismatch": {
-    "path": "spec",
-    "message": "does not match target kind"
-  },
   "bad_reference": {
     "path": "spec.assert.equal",
     "message": "only 'path'"

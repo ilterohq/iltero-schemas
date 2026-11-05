@@ -42,10 +42,14 @@ class RedactionPolicyRef(StrictModel):
     digest: Digest
 
 
+# What a stage redacted: what the plan stage observed, the facts the pre-deploy stage was given, or the deployment.
+RedactedKind = Literal["observation", "facts", "deployment"]
+
+
 class RedactedInput(StrictModel):
     """What was redacted, and the digest of the redacted tree."""
 
-    kind: Literal["observation", "facts", "deployment"]
+    kind: RedactedKind
     digest: Digest
 
 

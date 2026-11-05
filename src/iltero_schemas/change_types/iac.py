@@ -151,6 +151,8 @@ def _check_plan(car: CAR) -> None:
     plan_stage = car.stages[Stage.PLAN]
     if plan_stage.coverage.subjects_in_scope.source_digest != change.plan.context_digest:
         raise ValueError("the plan stage counts the resources of the plan the record names")
+    if plan_stage.redaction.input.digest != change.plan.context_digest:
+        raise ValueError("the plan stage's redaction report is of the plan the record names")
     timing = change.deployment.apply.timing if change.deployment is not None else None
     if timing is not None and parse_timestamp(plan_stage.observed_at) > parse_timestamp(timing.started_at):
         raise ValueError("the plan stage was observed no later than the apply started, by the clocks that wrote them")

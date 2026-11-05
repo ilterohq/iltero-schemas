@@ -31,7 +31,7 @@ from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.buildx import build_metadata_of
 from iltero_schemas.models.change_type import IMAGE_BUILD_ACTIVITY, IMAGE_RELEASE_TYPE
 from iltero_schemas.models.checked_content import CheckedImage, checked_image
-from iltero_schemas.models.fields import Commit, Digest, Identifier, parse_timestamp
+from iltero_schemas.models.fields import Commit, Digest, Identifier
 from iltero_schemas.models.image import (
     ATTESTATION_MEDIA_TYPES,
     INDEX_MEDIA_TYPES,
@@ -50,7 +50,6 @@ from iltero_schemas.models.image_evidence import (
     ReportFormat,
     check_scans_name_their_platform,
 )
-from iltero_schemas.models.reference_time import ReferenceTime
 from iltero_schemas.models.server_facts import AttestationNotSent, AttestationOutcome
 
 if TYPE_CHECKING:
@@ -65,16 +64,8 @@ class TagResolution(StrictModel):
 
     tag: ImageTag
     read_from: Literal["pipeline_metadata_file"]
-    # The evidence file the link was read from, by its name in the record's evidence register.
+    # The evidence file the link was read from, by its name in the record's evidence register. No registry was asked.
     read_from_evidence_ref: Identifier
-    # When the file was read, by the runner's clock: no registry was asked.
-    read_at: ReferenceTime
-
-    @model_validator(mode="after")
-    def _read_by_the_runner(self) -> TagResolution:
-        if self.read_at.source != "runner_clock":
-            raise ValueError("a tag's metadata file is read by the pipeline, at the time its runner's clock gives")
-        return self
 
 
 class ImageRef(StrictModel):
@@ -374,11 +365,7 @@ def _check_record(car: CAR) -> None:
         raise ValueError("a build belongs to no environment")
     _check_evidence(car, build)
     _check_facts_source(car, build)
-    plan_stage = car.stages[Stage.PLAN]
-    resolution = build.image.tag_resolution
-    if resolution is not None and parse_timestamp(resolution.read_at.value) > parse_timestamp(plan_stage.observed_at):
-        raise ValueError("the tag's metadata file was read no later than the plan stage was observed")
-    scope = plan_stage.coverage.subjects_in_scope
+    scope = car.stages[Stage.PLAN].coverage.subjects_in_scope
     if scope.source_digest != digest_of(build.model_dump(mode="json", by_alias=True)):
         raise ValueError("the plan stage counts the one image the build describes, by its digest")
 

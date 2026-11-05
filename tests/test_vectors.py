@@ -222,6 +222,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "records_integrity_failed",
         "records_invalid",
         "records_valid",
+        "reports_invalid",
         "scan_coverage",
         "subjects",
     }

@@ -437,8 +437,7 @@
       "subject": {
         "identities": [],
         "key": null,
-        "kind": "resource",
-        "resolution": "unresolved"
+        "kind": "resource"
       }
     },
     {
@@ -556,8 +555,7 @@
           }
         ],
         "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
-        "kind": "change",
-        "resolution": "unresolved"
+        "kind": "change"
       }
     },
     {
@@ -676,8 +674,7 @@
           }
         ],
         "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
-        "kind": "change",
-        "resolution": "unresolved"
+        "kind": "change"
       }
     },
     {
@@ -799,8 +796,7 @@
           }
         ],
         "key": "sha256:715b868fc180dcacd304ac378f1e1f69749ba9bff3f7be63f7d4ca98ff293ce9",
-        "kind": "deployment",
-        "resolution": "unresolved"
+        "kind": "deployment"
       }
     },
     {
@@ -895,8 +891,7 @@
           }
         ],
         "key": "sha256:715b868fc180dcacd304ac378f1e1f69749ba9bff3f7be63f7d4ca98ff293ce9",
-        "kind": "deployment",
-        "resolution": "unresolved"
+        "kind": "deployment"
       }
     }
   ],
@@ -1038,13 +1033,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d95dbf3e91e461edf340206e45050bf922cebfbe7369e88a27bdd2f4ba08c76c",
+      "digest": "sha256:48e8e18e7ed901165018486a2cbadfb4f702cdef2dbea749043f0e5a8b9cfc3e",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 1901,
+      "size_bytes": 1875,
       "source": null,
       "storage_uri": null
     },
@@ -1233,13 +1228,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a444c457e547b36bb8c14a8d66ef82222a58eddbd2e70d7c7c179d1ed6c1fcf7",
+      "digest": "sha256:f83ed653307f7298b03203f9af43e5fb045bb2141cbe75b13d573c23f3b5e473",
       "media_type": "application/json",
       "path": "units/root/pre_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "pre_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 5180,
+      "size_bytes": 5128,
       "source": null,
       "storage_uri": null
     },
@@ -1363,13 +1358,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:a196258ad6fb73d6b0dd03b8e2fe10d8cd9044723ea31f7cac24dd1b44f67ae0",
+      "digest": "sha256:87007268c5bf67cc782f04870e2daff30a622352a4ca04d78a552bf7b0e937af",
       "media_type": "application/json",
       "path": "units/root/post_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "post_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 2820,
+      "size_bytes": 2794,
       "source": null,
       "storage_uri": null
     },
@@ -1486,13 +1481,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:3509a0f1a7e9e67504d55357612c490925744bd5c80d029cf79878ba80b342ca",
+      "digest": "sha256:d1d1e5ccd18c8a10632725093ca4554e1d900566fe97015272266e8c348259fd",
       "media_type": "application/json",
       "path": "units/root/post_verify/events.json",
       "redaction_policy": null,
       "ref_id": "post_verify/events.json",
       "retention_until": null,
-      "size_bytes": 2250,
+      "size_bytes": 2224,
       "source": null,
       "storage_uri": null
     }
@@ -1585,7 +1580,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:d95dbf3e91e461edf340206e45050bf922cebfbe7369e88a27bdd2f4ba08c76c",
+        "digest": "sha256:48e8e18e7ed901165018486a2cbadfb4f702cdef2dbea749043f0e5a8b9cfc3e",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -1792,7 +1787,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:a196258ad6fb73d6b0dd03b8e2fe10d8cd9044723ea31f7cac24dd1b44f67ae0",
+        "digest": "sha256:87007268c5bf67cc782f04870e2daff30a622352a4ca04d78a552bf7b0e937af",
         "path": "units/root/post_deploy/events.json"
       },
       "execution": {
@@ -1898,7 +1893,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:3509a0f1a7e9e67504d55357612c490925744bd5c80d029cf79878ba80b342ca",
+        "digest": "sha256:d1d1e5ccd18c8a10632725093ca4554e1d900566fe97015272266e8c348259fd",
         "path": "units/root/post_verify/events.json"
       },
       "execution": {
@@ -2005,7 +2000,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 2,
-        "digest": "sha256:a444c457e547b36bb8c14a8d66ef82222a58eddbd2e70d7c7c179d1ed6c1fcf7",
+        "digest": "sha256:f83ed653307f7298b03203f9af43e5fb045bb2141cbe75b13d573c23f3b5e473",
         "path": "units/root/pre_deploy/events.json"
       },
       "execution": {

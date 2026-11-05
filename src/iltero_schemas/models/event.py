@@ -13,18 +13,12 @@ it and are refused if present.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.assertions.built_in import BUILT_INS
-from iltero_schemas.canonical.encoding import CanonicalizationError, canonical_bytes
-from iltero_schemas.compiler.limits import (
-    OBSERVATIONS_MAX_BYTES,
-    OBSERVATIONS_MAX_DEPTH,
-    REASON_MAX_BYTES,
-    nesting_depth,
-)
+from iltero_schemas.compiler.limits import REASON_MAX_BYTES
 from iltero_schemas.models import fields
 from iltero_schemas.models.assertion import (
     ID_MAX_LENGTH,
@@ -34,11 +28,12 @@ from iltero_schemas.models.assertion import (
     TargetKind,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
-from iltero_schemas.models.change_type import CHECKED_CONTENT_KIND_OF, IMAGE_BUILD_ACTIVITY, ActivityName
+from iltero_schemas.models.change_type import CHECKED_CONTENT_KIND_OF, ActivityName
 from iltero_schemas.models.checked_content import CheckedContent
 from iltero_schemas.models.ci import CiSystem
-from iltero_schemas.models.context import Resolution
 from iltero_schemas.models.fields import (
+    MAX_SUBJECT_IDENTITIES,
+    BoundedObject,
     Commit,
     Digest,
     Identifier,
@@ -125,38 +120,6 @@ def _reason(value: str) -> str:
 Reason = Annotated[str, AfterValidator(_reason)]
 
 
-def _clean(value: Any) -> bool:
-    """Whether no string anywhere in ``value`` holds a control character."""
-    if isinstance(value, str):
-        try:
-            plain_text(value)
-        except ValueError:
-            return False
-        return True
-    if isinstance(value, dict):
-        return all(_clean(key) and _clean(child) for key, child in value.items())
-    if isinstance(value, list):
-        return all(_clean(child) for child in value)
-    return True
-
-
-def _observations(value: dict[str, Any]) -> dict[str, Any]:
-    if nesting_depth(value) > OBSERVATIONS_MAX_DEPTH:
-        raise ValueError(f"must not nest deeper than {OBSERVATIONS_MAX_DEPTH}")
-    if not _clean(value):
-        raise ValueError("must not contain control characters")
-    try:
-        size = len(canonical_bytes(value))
-    except CanonicalizationError as exc:
-        raise ValueError(f"has no canonical form ({type(exc).__name__})") from None
-    if size > OBSERVATIONS_MAX_BYTES:
-        raise ValueError(f"must be at most {OBSERVATIONS_MAX_BYTES} bytes in canonical form")
-    return value
-
-
-Observations = Annotated[dict[str, Any], AfterValidator(_observations)]
-
-
 class AssertionRef(fields.AssertionKey):
     """The assertion, with the digest of its document as it was read."""
 
@@ -169,8 +132,7 @@ class EventSubject(StrictModel):
     kind: TargetKindValue
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest | None
-    identities: list[Identity]
-    resolution: Resolution
+    identities: Annotated[list[Identity], Field(max_length=MAX_SUBJECT_IDENTITIES)]
 
 
 class Evaluation(StrictModel):
@@ -183,7 +145,7 @@ class Evaluation(StrictModel):
     status_reason: Identifier | None
     status_detail: Detail | None
     policy_reason: Reason | None
-    observations: Observations | None
+    observations: BoundedObject | None
 
     @model_validator(mode="after")
     def _reason_fits_status(self) -> Evaluation:
@@ -301,9 +263,9 @@ class Executor(StrictModel):
 
 # Where a built-in assertion may come from: this package, or the server's bundle that ships it.
 BUILT_IN_SOURCES = frozenset({"contract_starter", "server_bundle"})
-# Where the facts document an evaluation read came from: the server, a file given to the tool, or none.
+# Where the facts document an evaluation read came from: the server, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
-FactsSource = Literal["server", "local_file", "none"]
+FactsSource = Literal["server", "none"]
 
 
 class Provenance(StrictModel):
@@ -374,8 +336,6 @@ class AssuranceEvent(StrictModel):
         profile_for(activity, stage, TargetKind(subject.kind))
         if self.provenance.checked_content.kind != CHECKED_CONTENT_KIND_OF[activity]:
             raise ValueError(f"an {activity} evaluation names the {CHECKED_CONTENT_KIND_OF[activity]} it checked")
-        if activity == IMAGE_BUILD_ACTIVITY and self.provenance.facts_source == "local_file":
-            raise ValueError("a build's facts come only from the server: its verified commit is the server's to give")
         if (self.provenance.facts_source is not None) != reads_server_facts(
             self.evaluation.activity, self.evaluation.stage
         ):

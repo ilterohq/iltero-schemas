@@ -77,7 +77,10 @@ class AssuranceStatus(StrictModel):
 
 # Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
 # an identity that was redacted or cannot be named.
-ExclusionReason = Literal["not_managed", "deposed", "identity_redacted", "identity_unnameable"]
+# The reasons that are also gaps: a resource left out for its identity is a gap in what the stage could check.
+IdentityReason = Literal["identity_redacted", "identity_unnameable"]
+ExclusionReason = Literal["not_managed", "deposed", IdentityReason]
+IDENTITY_REASONS: frozenset[str] = frozenset(get_args(IdentityReason))
 
 
 class Excluded(StrictModel):
@@ -106,7 +109,7 @@ class PlanFlagGap(_Gap):
 class PlanIndexGap(_Gap):
     """A plan resource whose identity was redacted or cannot be named, by its index in the plan's resource list."""
 
-    kind: Literal["identity_redacted", "identity_unnameable"]
+    kind: IdentityReason
     plan_index: Count
 
 
@@ -155,6 +158,9 @@ class SubjectsInScope(StrictModel):
             [],
         ):
             raise ValueError("a scope counted from a unit is that one subject, with nothing removed or excluded")
+        indexes = [entry.plan_index for entry in self.excluded]
+        if len(set(indexes)) != len(indexes):
+            raise ValueError("a plan resource is excluded once, for one reason")
         return self
 
 
@@ -221,6 +227,13 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        gaps = [(gap.kind, gap.plan_index) for gap in self.gaps if isinstance(gap, PlanIndexGap)]
+        excluded = {(e.reason, e.plan_index) for e in self.subjects_in_scope.excluded if e.reason in IDENTITY_REASONS}
+        if len(set(gaps)) != len(gaps) or set(gaps) != excluded:
+            raise ValueError(
+                "the identity gaps name, once each, the resources the scope excludes for their identity, by the same "
+                "reason"
+            )
         return self
 
 

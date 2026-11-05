@@ -11,6 +11,7 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest
+from iltero_schemas.compiler.limits import OBSERVATIONS_MAX_BYTES
 from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
 from iltero_schemas.models.deployment import Deployment
 from iltero_schemas.models.event import STATUS_REASONS
@@ -412,7 +413,9 @@ RELATED: dict[str, Any] = {
 @pytest.mark.parametrize("name", ["plan_resource.json", "pre_deploy_change.json"], ids=["resource", "change"])
 def test_the_change_digest_is_the_digest_of_its_units_plan(name: str) -> None:
     document = json.loads((VECTORS / "contexts" / name).read_text(encoding="utf-8"))
-    with pytest.raises(ValidationError, match="change.digest is the digest of its unit's plan"):
+    with pytest.raises(
+        ValidationError, match="change.digest is the digest of the change type, unit, environment and plan"
+    ):
         AssuranceContext.model_validate(_set(document, ("change", "digest"), "sha256:" + "a" * 64))
 
 
@@ -578,7 +581,9 @@ def test_a_deploy_input_reads_its_parts_in_the_deploys_shapes() -> None:
 
 def test_a_deploy_inputs_change_digest_is_of_its_image_in_its_unit_and_environment() -> None:
     scope = {**DEPLOY["organization_scope"], "environment": {"name": "staging", "production": False}}
-    with pytest.raises(ValidationError, match="change.digest is the digest of its unit's image in its environment"):
+    with pytest.raises(
+        ValidationError, match="change.digest is the digest of the change type, unit, environment and image"
+    ):
         AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
 
 
@@ -586,3 +591,24 @@ def test_a_deploy_inputs_reading_names_its_change() -> None:
     check = {**DEPLOY["drift_check"], "change_digest": "sha256:" + "7" * 64}
     with pytest.raises(ValidationError, match="drift_check.change_digest is change.digest"):
         AssuranceContext.model_validate({**DEPLOY, "drift_check": check})
+
+
+def test_an_input_that_reads_its_runners_clock_uses_the_time_of_its_evaluation() -> None:
+    later = {**VECTOR["reference_time"], "value": "2026-09-16T18:05:01Z"}
+    with pytest.raises(ValidationError, match="an input that reads its runner's clock uses the time of its evaluation"):
+        AssuranceContext.model_validate({**VECTOR, "reference_time": later})
+    same_instant = {**VECTOR["reference_time"], "value": "2026-09-16T18:05:00.000Z"}
+    AssuranceContext.model_validate({**VECTOR, "reference_time": same_instant})
+
+
+POST_VERIFY_CONTEXT: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "post_verify.json").read_text(encoding="utf-8")
+)
+
+
+def test_the_assurance_part_is_any_object_held_to_the_bounds_of_a_policys_observations() -> None:
+    AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"checked": ["drift"]}})
+    with pytest.raises(ValidationError, match="must be at most"):
+        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a" * OBSERVATIONS_MAX_BYTES}})
+    with pytest.raises(ValidationError, match="must not contain control characters"):
+        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a\u0000"}})

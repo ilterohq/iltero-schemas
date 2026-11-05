@@ -878,7 +878,7 @@
         "plan": {
           "assertions": {
             "count": 5,
-            "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+            "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
             "index": "units/root/plan/assertions/compiled.json"
           },
           "compiler": {
@@ -889,7 +889,7 @@
           },
           "events": {
             "count": 5,
-            "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
+            "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
             "path": "units/root/plan/events.json"
           },
           "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1432,7 +1432,7 @@
         "pre_deploy": {
           "assertions": {
             "count": 5,
-            "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+            "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
             "index": "units/root/plan/assertions/compiled.json"
           },
           "compiler": {
@@ -1443,8 +1443,8 @@
           },
           "events": {
             "count": 0,
-            "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
-            "path": "units/root/pre_deploy/events.json"
+            "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
+            "path": "units/root/plan/events.json"
           },
           "observed_at": "2026-09-22T13:00:13.568Z",
           "execution": {
@@ -1567,7 +1567,7 @@
             ],
             "input": {
               "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-              "kind": "observation"
+              "kind": "facts"
             },
             "unknown": [
               "resources[0].after.address",
@@ -2016,7 +2016,7 @@
       "/stages/pre_deploy": {
         "assertions": {
           "count": 5,
-          "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
           "index": "units/root/plan/assertions/compiled.json"
         },
         "compiler": {
@@ -2027,8 +2027,8 @@
         },
         "events": {
           "count": 0,
-          "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
-          "path": "units/root/pre_deploy/events.json"
+          "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
+          "path": "units/root/plan/events.json"
         },
         "observed_at": "2026-09-22T13:00:13.568Z",
         "execution": {
@@ -2151,7 +2151,7 @@
           ],
           "input": {
             "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-            "kind": "observation"
+            "kind": "facts"
           },
           "unknown": [
             "resources[0].after.address",
@@ -2702,7 +2702,7 @@
       "/stages/pre_deploy": {
         "assertions": {
           "count": 5,
-          "digest": "sha256:c9abc813f5cc460e363765a4c8ef98035752cdc9d9cff21ae6e39c1b1015f583",
+          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
           "index": "units/root/plan/assertions/compiled.json"
         },
         "compiler": {
@@ -2713,8 +2713,8 @@
         },
         "events": {
           "count": 0,
-          "digest": "sha256:aca982a8cde063c458cb561a34f340faa6230904505ce7f0c7a3f194b1da55b6",
-          "path": "units/root/pre_deploy/events.json"
+          "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
+          "path": "units/root/plan/events.json"
         },
         "observed_at": "2026-09-22T13:00:13.568Z",
         "execution": {
@@ -2837,7 +2837,7 @@
           ],
           "input": {
             "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-            "kind": "observation"
+            "kind": "facts"
           },
           "unknown": [
             "resources[0].after.address",
@@ -3752,7 +3752,8 @@
     "name": "image_index_of_another_image",
     "vector": "local_run_image_build.json",
     "set": {
-      "/evidence_refs/16/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      "/evidence_refs/16/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "/stages/plan/redaction/input/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
     },
     "remove": [],
     "message": "the raw index's digest is the image's digest"
@@ -3783,29 +3784,6 @@
     },
     "remove": [],
     "message": "Input should be 'pipeline_metadata_file'"
-  },
-  {
-    "name": "image_tag_metadata_file_read_at_the_servers_time",
-    "vector": "local_run_image_build.json",
-    "set": {
-      "/change/image/tag_resolution/read_at": {
-        "value": "2026-11-01T10:01:30Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
-      }
-    },
-    "remove": [],
-    "message": "a tag's metadata file is read by the pipeline, at the time its runner's clock gives"
-  },
-  {
-    "name": "image_tag_metadata_file_read_after_the_build_was_checked",
-    "vector": "local_run_image_build.json",
-    "set": {
-      "/change/image/tag_resolution/read_at/value": "2026-11-01T10:06:00Z"
-    },
-    "remove": [],
-    "message": "the tag's metadata file was read no later than the plan stage was observed"
   },
   {
     "name": "image_tag_metadata_file_not_in_the_evidence_register",
@@ -3957,15 +3935,6 @@
     "message": "the raw index is a file of type application/vnd.docker.distribution.manifest.list.v2+json or application/vnd.oci.image.index.v1+json"
   },
   {
-    "name": "image_build_reading_facts_from_a_local_file",
-    "vector": "local_run_image_build.json",
-    "set": {
-      "/events/0/provenance/facts_source": "local_file"
-    },
-    "remove": [],
-    "message": "a build's facts come only from the server: its verified commit is the server's to give"
-  },
-  {
     "name": "image_report_not_in_the_evidence_register",
     "vector": "local_run_image_build.json",
     "set": {
@@ -4082,8 +4051,8 @@
     "vector": "local_run_image_build.json",
     "set": {
       "/change/attestation/sent_to_server": true,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0",
-      "/coverage/subjects_in_scope/source_digest": "sha256:ea6cd2a3054a9ea709fc11605634e04fda1b1203ea558845e69a958ed81461a0"
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
+      "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f"
     },
     "remove": [],
     "message": "a run the tool opened sent the server no attestation"
@@ -4165,7 +4134,7 @@
       }
     },
     "remove": [],
-    "message": "a report names the digest of the file as the pipeline gave it, in its source"
+    "message": "String should match pattern"
   },
   {
     "name": "image_report_stored_unredacted_but_not_as_given",
@@ -4292,8 +4261,8 @@
     "vector": "local_run_image_build.json",
     "set": {
       "/change/build_commit": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847",
-      "/coverage/subjects_in_scope/source_digest": "sha256:6de5d3de4eb0cebda1d57535e14b78da011e6ca6ff1f7cb5bbe66e2845485847"
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
+      "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8"
     },
     "remove": [],
     "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
@@ -4342,38 +4311,6 @@
     "message": "an image repository starts with its registry host, such as docker.io/library/nginx"
   },
   {
-    "name": "image_deploy_reported_at_the_servers_time",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/deployment/deployed_at": {
-        "value": "2026-11-02T09:02:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
-      }
-    },
-    "remove": [],
-    "message": "the pipeline deployed the image at the time its runner's clock gives"
-  },
-  {
-    "name": "image_deploy_before_the_change_was_approved",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/deployment/deployed_at/value": "2026-11-02T08:59:00Z"
-    },
-    "remove": [],
-    "message": "the image was deployed after the pre-deploy stage and before the post-deploy stage reported"
-  },
-  {
-    "name": "image_deploy_after_its_post_deploy_stage",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/deployment/deployed_at/value": "2026-11-02T09:03:30Z"
-    },
-    "remove": [],
-    "message": "the image was deployed after the pre-deploy stage and before the post-deploy stage reported"
-  },
-  {
     "name": "image_deploy_counting_another_deployment",
     "vector": "local_run_image_deploy.json",
     "set": {
@@ -4390,24 +4327,6 @@
     },
     "remove": [],
     "message": "the drift check names the record's run"
-  },
-  {
-    "name": "image_drift_check_read_before_the_deployment_reported",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/drift_check/read_at/value": "2026-11-02T09:02:30Z"
-    },
-    "remove": [],
-    "message": "the workload was read no earlier than the post-deploy stage was observed"
-  },
-  {
-    "name": "image_drift_check_read_after_its_stage",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/drift_check/read_at/value": "2026-11-02T09:06:00Z"
-    },
-    "remove": [],
-    "message": "the post-verify stage was observed no earlier than the workload was read"
   },
   {
     "name": "image_drift_check_of_a_workload_kind_no_reader_reads",
@@ -4632,15 +4551,6 @@
     "message": "once the rollout has finished, every live pod is of its current revision"
   },
   {
-    "name": "image_drift_check_with_a_pod_list_kept_before_it_was_read",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/evidence_refs/13/collected_at": "2026-11-02T09:04:00Z"
-    },
-    "remove": [],
-    "message": "the pod list read was kept no earlier than it was read"
-  },
-  {
     "name": "image_drift_check_with_pods_out_of_order",
     "vector": "local_run_image_deploy.json",
     "set": {
@@ -4761,28 +4671,13 @@
     "message": "every stage and every redacted evidence file name the same redaction policy"
   },
   {
-    "name": "image_drift_check_with_a_workload_file_kept_before_it_was_read",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/evidence_refs/15/collected_at": "2026-11-02T09:04:00Z"
-    },
-    "remove": [],
-    "message": "the workload read before the pods were listed was kept no earlier than it was read"
-  },
-  {
     "name": "image_drift_check_taken_from_the_tags_metadata_file",
     "vector": "local_run_image_deploy.json",
     "set": {
       "/change/image/tag_resolution": {
         "tag": "1.4.2",
         "read_from": "pipeline_metadata_file",
-        "read_from_evidence_ref": "post_verify/workload-before-pods-listing.json",
-        "read_at": {
-          "value": "2026-11-02T08:58:00Z",
-          "source": "runner_clock",
-          "trust": "asserted",
-          "time_window": null
-        }
+        "read_from_evidence_ref": "post_verify/workload-before-pods-listing.json"
       }
     },
     "remove": [],
@@ -4885,36 +4780,11 @@
       "/change/image/tag_resolution": {
         "tag": "1.4.2",
         "read_from": "pipeline_metadata_file",
-        "read_from_evidence_ref": "pre_deploy/missing.json",
-        "read_at": {
-          "value": "2026-11-02T08:58:00Z",
-          "source": "runner_clock",
-          "trust": "asserted",
-          "time_window": null
-        }
+        "read_from_evidence_ref": "pre_deploy/missing.json"
       }
     },
     "remove": [],
     "message": "change.image.tag_resolution.read_from_evidence_ref names a file of the record's evidence register"
-  },
-  {
-    "name": "image_deploy_with_a_tag_resolved_after_the_approval",
-    "vector": "local_run_image_deploy.json",
-    "set": {
-      "/change/image/tag_resolution": {
-        "tag": "1.4.2",
-        "read_from": "pipeline_metadata_file",
-        "read_from_evidence_ref": "pre_deploy/redaction-policy.json",
-        "read_at": {
-          "value": "2026-11-02T09:01:00Z",
-          "source": "runner_clock",
-          "trust": "asserted",
-          "time_window": null
-        }
-      }
-    },
-    "remove": [],
-    "message": "the tag's metadata file was read no later than the pre-deploy stage was observed"
   },
   {
     "name": "image_deploy_without_its_reading_check",
@@ -4924,5 +4794,147 @@
     },
     "remove": [],
     "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
+  },
+  {
+    "name": "identity_gap_of_a_resource_the_scope_does_not_exclude",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "identity_redacted",
+          "plan_index": 19
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the identity gaps name, once each, the resources the scope excludes for their identity, by the same reason"
+  },
+  {
+    "name": "resource_excluded_for_its_identity_without_its_gap",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/subjects_in_scope/excluded": [
+        {
+          "plan_index": 19,
+          "id": null,
+          "reason": "identity_redacted"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the identity gaps name, once each, the resources the scope excludes for their identity, by the same reason"
+  },
+  {
+    "name": "plan_resource_excluded_twice",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/coverage/subjects_in_scope/excluded": [
+        {
+          "plan_index": 19,
+          "id": null,
+          "reason": "identity_redacted"
+        },
+        {
+          "plan_index": 19,
+          "id": null,
+          "reason": "identity_unnameable"
+        }
+      ],
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "identity_redacted",
+          "plan_index": 19
+        },
+        {
+          "kind": "identity_unnameable",
+          "plan_index": 19
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a plan resource is excluded once, for one reason"
+  },
+  {
+    "name": "stage_redaction_report_of_what_another_stage_reads",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/redaction/input/kind": "facts"
+    },
+    "remove": [],
+    "message": "the plan stage's redaction report is of the observation it read"
+  },
+  {
+    "name": "plan_stage_redaction_report_of_another_plan",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/redaction/input/digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e"
+    },
+    "remove": [],
+    "message": "the plan stage's redaction report is of the plan the record names"
+  },
+  {
+    "name": "approvals_listed_by_a_stage_whose_results_read_no_facts_from_the_server",
+    "vector": "local_run_deployed.json",
+    "set": {
+      "/stages/pre_deploy/approvals": [
+        {
+          "id": "apr_0001",
+          "actor": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
+          "roles": [
+            "security"
+          ],
+          "status": "approved",
+          "subject": {
+            "kind": "change",
+            "digest": "sha256:d1884afa2e39d7ab7764a8b21aa1576a6f2fcf6f76c79f4f7b0e58707d6f434a"
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-10-29T00:23:59.760Z"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the pre_deploy stage lists approvals only when its results read facts from the server"
+  },
+  {
+    "name": "stage_events_file_not_in_the_evidence_register",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/events/path": "units/root/plan/other-events.json"
+    },
+    "remove": [],
+    "message": "the plan stage's events file is an entry of the evidence register"
+  },
+  {
+    "name": "stage_assertion_index_not_in_the_evidence_register",
+    "vector": "local_run.json",
+    "set": {
+      "/stages/plan/assertions/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "the plan stage's assertion index is an entry of the evidence register"
+  },
+  {
+    "name": "event_input_not_in_the_evidence_register",
+    "vector": "local_run.json",
+    "set": {
+      "/events/0/provenance/input_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "message": "the input every event was evaluated over is an entry of the evidence register"
+  },
+  {
+    "name": "plan_observation_not_in_the_evidence_register",
+    "vector": "local_run.json",
+    "set": {},
+    "remove": [
+      "/evidence_refs/1"
+    ],
+    "message": "what the plan stage redacted is an entry of the evidence register"
   }
 ]

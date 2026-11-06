@@ -170,8 +170,7 @@
             },
             "value": "aws_db_instance.payments"
           }
-        ],
-        "resolution": "unresolved"
+        ]
       }
     },
     {
@@ -268,8 +267,7 @@
             },
             "value": "aws_db_instance.payments"
           }
-        ],
-        "resolution": "unresolved"
+        ]
       }
     },
     {
@@ -408,8 +406,7 @@
             },
             "value": "aws_db_instance.payments"
           }
-        ],
-        "resolution": "unresolved"
+        ]
       }
     },
     {
@@ -506,8 +503,7 @@
             },
             "value": "aws_db_instance.payments"
           }
-        ],
-        "resolution": "unresolved"
+        ]
       }
     },
     {
@@ -608,8 +604,7 @@
             },
             "value": "aws_s3_bucket.logs"
           }
-        ],
-        "resolution": "unresolved"
+        ]
       }
     }
   ],
@@ -636,6 +631,27 @@
         "digest": "sha256:62372246774ac5e1c1622ab1d2ba32dc509fc378eefbe369a61f4a3b4148f6f4",
         "name": "plan-create.json"
       },
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+      "media_type": "application/json",
+      "path": "units/root/plan/sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+      "redaction_policy": {
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "id": "iltero.redaction",
+        "version": "1"
+      },
+      "ref_id": "sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+      "retention_until": null,
+      "size_bytes": 52817,
+      "source": null,
       "storage_uri": null
     },
     {
@@ -1039,13 +1055,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:6306a229275cd23bb8d7fc50bb90bc8f4cc9f75c95e3576ef7b1b8a4be747850",
+      "digest": "sha256:edfda178bbb5722d72b0129027b3459496e23d54c11daa8a467a2db65a4d1407",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11659,
+      "size_bytes": 11529,
       "source": null,
       "storage_uri": null
     }
@@ -1089,7 +1105,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:6306a229275cd23bb8d7fc50bb90bc8f4cc9f75c95e3576ef7b1b8a4be747850",
+        "digest": "sha256:edfda178bbb5722d72b0129027b3459496e23d54c11daa8a467a2db65a4d1407",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",

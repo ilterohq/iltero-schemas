@@ -80,13 +80,17 @@ keep, so any two tools agree on what a record means.
   assertion's literal refuse control, zero-width and bidirectional formatting
   characters, and the characters that show as nothing: a soft hyphen, the
   combining grapheme joiner, the Arabic letter mark, the Mongolian vowel
-  separator and the Hangul fillers.
+  separator and the Hangul fillers. They also refuse every other control and
+  format character and the tag characters, which spell hidden text, listed
+  by code point so every reader refuses the same ones. Variation selectors,
+  which follow ordinary emoji, are accepted.
 - The evaluation input (`AssuranceContext` v1), with a fixed set of parts for
   each activity, stage and target (`profile_for`). Every input, and every
   event, names the activity it belongs to (`evaluation.activity`). An event
   is checked on its own against its activity: its stage and subject kind
   must have a profile, and its checked content must be of the activity's
-  kind (`CHECKED_CONTENT_KIND_OF`).
+  kind (`CHECKED_CONTENT_KIND_OF`). The `assurance` part has no fixed shape in this version:
+  any object, held to the bounds of an event's observations.
 - Every count is an integer from 0 to 2^53 − 1 (`INT_MAX`), the largest
   integer the evaluator reads exactly.
 - A JSON document a tool writes has one form, so one set of facts has one
@@ -97,13 +101,13 @@ keep, so any two tools agree on what a record means.
   always `asserted`, and a `time_window` is present exactly when a timestamp
   authority gave the time, with the time inside it. A stage's reference time
   read from its runner's clock is the same instant the stage observed
-  (`observed_at`).
-  Invalid-record vectors cover them.
+  (`observed_at`), and an input's is the same instant as its evaluation's
+  `timestamp`. Invalid-record and invalid-input vectors cover them.
 - In an `AssuranceContext`, `null` means a fact has no value, never that it is
   unknown. A plan's `complete`, `applyable` and `tool_version` hold the unknown
   marker with the reason `not_reported_by_tool` when the tool's plan does
-  not say. `change.digest` is required and is the change digest of its unit's
-  plan in the input's environment. A resource's `type` and `name`, its provider source and a related
+  not say. `change.digest` is required and is the digest of the change type, unit,
+  environment and plan. A resource's `type` and `name`, its provider source and a related
   resource's `type` are never `null`. An earlier evaluation names the content it
   checked (`checked_content`) exactly when its stage reads checked content:
   a plan, a built artifact or a deployed image: its kind, or `null`, is one
@@ -127,9 +131,13 @@ keep, so any two tools agree on what a record means.
   with a conformance vector. The local identity is a managed resource's
   address scoped by its unit (scheme `terraform_address`), the cloud identity
   of a resource only the cloud knows (at runtime), or the unit of a
-  change, a deployment or an assurance subject. The key is over the
-  identity's text as written, with no Unicode normalization. No stack or
-  other Iltero Platform scope is part of it. An event's subject has no key
+  change, a deployment or an assurance subject. Only a resource has a cloud
+  identity. The key is over the identity's text as written, with no Unicode
+  normalization. No stack or
+  other Iltero Platform scope is part of it. A subject has at most two
+  identities (`MAX_SUBJECT_IDENTITIES`): its local identity and, at runtime,
+  its cloud identity; an input's subject has at least one. An identity's
+  `scope` holds at most eight keys (`MAX_SCOPE_KEYS`). An event's subject has no key
   and no identity exactly when no subject was in scope.
 - `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` compares the plan digests, the saved plan
   file's digests and the two `artifact_digest_source` values, so its
@@ -140,7 +148,10 @@ keep, so any two tools agree on what a record means.
   v1): the record of one attempted change, whatever its outcome. It holds
   each stage's coverage and verdict, the rules that tie the stages together,
   what a deployment did, the resources' cloud identities, and which stages
-  are in scope. It says what was checked and how; on its own, it
+  are in scope, and its evidence register: each file it cites, by its
+  path and digest, with the name and digest of the file as the pipeline
+  gave it (`source`). It holds each stage's events file and assertion
+  index, every event's input, and what the plan stage redacted. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
   standard, and its `compliance_determination` is always `null`.
 - A record's `trust_level` is one of three levels (`self_attested`,
@@ -149,8 +160,9 @@ keep, so any two tools agree on what a record means.
   `local`, and its identity is never verified, whoever opened the run.
 - Each part of a record has a fixed shape. A stage's `reference_time` and the
   record's `subject.source` are those of the evaluation input. A stage's
-  `redaction` is a redaction report: the policy that ran, what was redacted,
-  and the paths redacted (each with a reason token), left unknown, or allowed
+  `redaction` is a redaction report: the policy that ran, what was redacted
+  (what that stage reads, and at an infrastructure change's plan stage the
+  plan the record names), and the paths redacted (each with a reason token), left unknown, or allowed
   (each with the project's reason). A stage's `scanners` names the evaluator
   binding set in force and counts each scanner result once: accepted as `pass`
   or `fail`, matched by an evaluator binding whose version constraint the
@@ -159,7 +171,8 @@ keep, so any two tools agree on what a record means.
   written or `null`, and one of four reasons. A coverage gap is one of three
   shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
   count of at least 1 (`COUNT_GAP_KINDS`); the record's combined coverage
-  names each gap's stage.
+  names each gap's stage. A resource excluded for its identity is also a gap
+  of that kind, once, and every identity gap names such a resource.
 - A record redacts under one policy. An evidence file's `redaction_policy`
   names it as a stage's redaction report does (`id`, `version`, `digest`),
   or is `null` for a file no redaction touched, and every stage and every
@@ -191,7 +204,11 @@ keep, so any two tools agree on what a record means.
   recompute the status each built-in check must have from the record's own
   change, and report an event a policy answered (`pass`, `fail`, `unknown`
   or `not_applicable`) that says otherwise; an event not evaluated, or that ended in error, decides
-  nothing. In an infrastructure record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` must
+  nothing. A stage's owed count is its assertion index's count, and, unless
+  the stage was cut short, its owed count and digest are those of its events'
+  assertions. These describe the stage's own events and index: what a stage
+  owed is shown only against the project's assertion files at its commit, or
+  the set Iltero Platform pinned. In an infrastructure record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` must
   pass exactly when the applied plan has the evaluated plan's digest,
   artifact digest and its source, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`
   exactly when the drift check found no difference; each fails otherwise.
@@ -348,12 +365,13 @@ keep, so any two tools agree on what a record means.
   pre-deploy input names its run (`run.id`), and the approval assertions
   accept either kind, each in its own branch. A stage whose input carries
   approvals lists the ones its evaluations read, whatever their source, each
-  once and of the record's own change or run.
+  once and of the record's own change or run, and lists any only when its
+  results read facts from Iltero Platform.
 - The unknown marker: where a fact only Iltero Platform holds (approvals,
   exceptions, evaluations, the verified source of a build) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. An
   evaluation whose input reads Iltero Platform facts records where they came
-  from (`facts_source`).
+  from (`facts_source`: `server`, or `none`).
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.
@@ -374,10 +392,13 @@ keep, so any two tools agree on what a record means.
   signer returned, so one signing gives one digest. A run and a bundle each
   hold one version of an assertion.
 - The verification report (`VerificationReport` v1): what a verifier found
-  about one record, property by property, with no overall verdict. It never
-  calls a record's integrity verified, because no record carries a signature
-  in this version. When the report cannot establish a record's integrity, it trusts
-  nothing else the record says.
+  about one record, property by property, with no overall verdict. No
+  property of an unsigned record is verified, and no record carries a
+  signature. Each property has one of a fixed list of results, each a state
+  and a reason; a report of a run still in progress gives
+  `stage_completeness` `not_assessed`. When the
+  report cannot establish a record's integrity, it trusts nothing else the
+  record says.
 - The drift check (`change.drift_check`): what two readings of a unit's
   deployed resources, taken after the apply by a refresh-only plan (a plan that reads
   the resources back and changes nothing), found. It names the run, the
@@ -421,9 +442,8 @@ keep, so any two tools agree on what a record means.
   image it is about, which is the image or one of its platform images; a
   JUnit report names no image, so only the pipeline ties it to one). A tag
   the pipeline gave is kept for reading only, with the build tool's
-  metadata file that tied it to the digest and the time the pipeline read
-  that file (`read_from`, `read_from_evidence_ref`, `read_at`); no registry
-  is asked. The build commit is read only from the Docker Buildx metadata
+  metadata file that tied it to the digest (`read_from`,
+  `read_from_evidence_ref`); no registry is asked. The build commit is read only from the Docker Buildx metadata
   file (`docker buildx build --metadata-file`), from the provenance summary
   BuildKit writes there when the build context is a Git repository URL
   (`invocation.configSource.digest.sha1`), never from an image label. A
@@ -528,8 +548,10 @@ keep, so any two tools agree on what a record means.
   from: the workload object read before and after the pods were listed,
   the pod list and, for a Deployment, its ReplicaSets, each a different
   JSON file in the evidence register, redacted under the record's
-  redaction policy and kept no earlier than the reading), each read from files the pipeline wrote
-  and dated by its runner's clock. A reading lists the pods whose
+  redaction policy), each read from files the pipeline wrote. The record
+  names no time of its own for the deployment or the reading, which are the
+  pipeline's word: the stage that reports each was observed no earlier than
+  the pipeline reported it. A reading lists the pods whose
   controller owner reference leads to the workload, and compares every
   container, of the pod template or of a pod, whose image reference names
   the deployed repository in its one spelling, and every container of a

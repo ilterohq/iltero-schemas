@@ -11,11 +11,12 @@ from __future__ import annotations
 import re
 import unicodedata
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import AfterValidator, Field
 
-from iltero_schemas.canonical.encoding import INT_MAX
+from iltero_schemas.canonical.encoding import INT_MAX, CanonicalizationError, canonical_bytes
+from iltero_schemas.compiler.limits import OBSERVATIONS_MAX_BYTES, OBSERVATIONS_MAX_DEPTH, nesting_depth
 from iltero_schemas.models.assertion import (
     CONTROL_CHARACTERS,
     ID_MAX_LENGTH,
@@ -190,12 +191,18 @@ ProjectPath = Annotated[str, Field(min_length=1, max_length=MAX_PATH_LENGTH), Af
 UnitName = Annotated[str, Field(pattern=r"^[a-z0-9_][a-z0-9_-]{0,63}$")]
 
 
+# A subject's identities: its local identity and, at runtime, its cloud identity.
+MAX_SUBJECT_IDENTITIES = 2
+# More keys than the scope an identity is unique in needs, such as its unit.
+MAX_SCOPE_KEYS = 8
+
+
 class Identity(StrictModel):
     """One external name of a subject: a scheme, its value, and the scope the value is unique in."""
 
     scheme: Identifier
     value: Address
-    scope: dict[Identifier, Identifier] | None = None
+    scope: Annotated[dict[Identifier, Identifier], Field(max_length=MAX_SCOPE_KEYS)] | None = None
 
 
 # What an evaluation found. The runner's reason for it is kept apart, per status (see ``models.event``).
@@ -209,3 +216,37 @@ class AssertionKey(StrictModel):
 
     id: AssertionId
     version: Version
+
+
+def _clean(value: Any) -> bool:
+    """Whether no string anywhere in ``value`` holds a control character."""
+    if isinstance(value, str):
+        try:
+            plain_text(value)
+        except ValueError:
+            return False
+        return True
+    if isinstance(value, dict):
+        return all(_clean(key) and _clean(child) for key, child in value.items())
+    if isinstance(value, list):
+        return all(_clean(child) for child in value)
+    return True
+
+
+def _bounded(value: dict[str, Any]) -> dict[str, Any]:
+    if nesting_depth(value) > OBSERVATIONS_MAX_DEPTH:
+        raise ValueError(f"must not nest deeper than {OBSERVATIONS_MAX_DEPTH}")
+    if not _clean(value):
+        raise ValueError("must not contain control characters")
+    try:
+        size = len(canonical_bytes(value))
+    except CanonicalizationError as exc:
+        raise ValueError(f"has no canonical form ({type(exc).__name__})") from None
+    if size > OBSERVATIONS_MAX_BYTES:
+        raise ValueError(f"must be at most {OBSERVATIONS_MAX_BYTES} bytes in canonical form")
+    return value
+
+
+# An object of no fixed shape, such as a policy's observations, held to a depth, a size and text with no control
+# characters.
+BoundedObject = Annotated[dict[str, Any], AfterValidator(_bounded)]

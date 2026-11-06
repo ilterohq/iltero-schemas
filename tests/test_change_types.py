@@ -82,3 +82,10 @@ def test_an_infrastructure_change_names_its_activity_and_plan_and_nothing_else(
 ) -> None:
     with pytest.raises(ValidationError, match=message):
         IacChange.model_validate({**copy.deepcopy(RECORD["change"]), **changes})
+
+
+def test_an_infrastructure_changes_plan_stage_redacts_the_plan_the_record_names() -> None:
+    document = copy.deepcopy(RECORD)
+    document["stages"]["plan"]["redaction"]["input"]["digest"] = document["evidence_refs"][0]["digest"]
+    with pytest.raises(ValidationError, match="the plan stage's redaction report is of the plan the record names"):
+        CAR.model_validate(document)

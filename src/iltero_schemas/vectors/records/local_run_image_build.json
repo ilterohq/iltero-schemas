@@ -39,13 +39,7 @@
       "tag_resolution": {
         "tag": "1.4.2",
         "read_from": "pipeline_metadata_file",
-        "read_from_evidence_ref": "plan/build-metadata.json",
-        "read_at": {
-          "value": "2026-11-01T10:01:30Z",
-          "source": "runner_clock",
-          "trust": "asserted",
-          "time_window": null
-        }
+        "read_from_evidence_ref": "plan/build-metadata.json"
       }
     },
     "platform_digests": [
@@ -122,7 +116,7 @@
         },
         "input": {
           "kind": "observation",
-          "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+          "digest": "sha256:1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c"
         },
         "redacted": [],
         "unknown": [],
@@ -130,7 +124,7 @@
       },
       "events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:3cff44e1296e055fa7b2b2550da57bd40b0f4c1875629d1ea01eb101b69f24ab",
+        "digest": "sha256:798190a0e3059e988fdd15fbb40318cd890c2cc2ef7400e6296281f59012ea65",
         "count": 3
       },
       "assertions": {
@@ -143,7 +137,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "artifact_unit",
-          "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
+          "source_digest": "sha256:a97c8a5deee3079c0e5079be595b6ce19d9cd83a33fdbb7b53a7aad92bddaee0",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -206,8 +200,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_build",
@@ -307,8 +300,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_build",
@@ -406,8 +398,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_build",
@@ -495,7 +486,7 @@
     "subjects_in_scope": {
       "value": 1,
       "counted_from": "artifact_unit",
-      "source_digest": "sha256:49a41c58484fbe6dae3ebe547079f9ce6af416c0e2e299cf40a0417f3d8a2a4b",
+      "source_digest": "sha256:a97c8a5deee3079c0e5079be595b6ce19d9cd83a33fdbb7b53a7aad92bddaee0",
       "removed_by_plan": 0,
       "excluded": []
     },
@@ -810,8 +801,8 @@
     {
       "ref_id": "plan/events.json",
       "media_type": "application/json",
-      "digest": "sha256:3cff44e1296e055fa7b2b2550da57bd40b0f4c1875629d1ea01eb101b69f24ab",
-      "size_bytes": 6609,
+      "digest": "sha256:798190a0e3059e988fdd15fbb40318cd890c2cc2ef7400e6296281f59012ea65",
+      "size_bytes": 6531,
       "path": "units/api/plan/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -897,6 +888,27 @@
       },
       "canonicalization": null,
       "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "media_type": "application/json",
+      "digest": "sha256:1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "size_bytes": 4096,
+      "path": "units/api/plan/sha256-1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
     }
   ],
   "integrity": {

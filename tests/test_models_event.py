@@ -200,7 +200,7 @@ def _at(stage: str, **changes: Any) -> dict[str, Any]:
 
 
 @pytest.mark.parametrize("stage", ["pre_deploy", "runtime"])
-@pytest.mark.parametrize("source", ["server", "local_file", "none"])
+@pytest.mark.parametrize("source", ["server", "none"])
 def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(stage: str, source: str) -> None:
     AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": source}))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
@@ -344,24 +344,6 @@ def test_an_event_names_the_kind_of_content_its_activity_checks() -> None:
     image = {"kind": "container_image", "repository": "docker.io/library/nginx", "digest": "sha256:" + "a" * 64}
     with pytest.raises(ValidationError, match="an iac_change evaluation names the plan it checked"):
         AssuranceEvent.model_validate(_event(**{"provenance.checked_content": image}))
-
-
-def test_a_builds_facts_never_come_from_a_local_file() -> None:
-    key = subject_key("artifact", [Identity(scheme="iltero_unit", value="root")])
-    artifact = {
-        "subject.kind": "artifact",
-        "subject.identities": [{"scheme": "iltero_unit", "value": "root", "scope": None}],
-        "subject.key": key,
-        "evaluation.activity": "image_build",
-        "provenance.checked_content": {
-            "kind": "container_image",
-            "repository": "ghcr.io/acme/api",
-            "digest": "sha256:" + "a" * 64,
-        },
-    }
-    AssuranceEvent.model_validate(_event(**artifact, **{"provenance.facts_source": "server"}))
-    with pytest.raises(ValidationError, match="a build's facts come only from the server"):
-        AssuranceEvent.model_validate(_event(**artifact, **{"provenance.facts_source": "local_file"}))
 
 
 def test_an_assertion_this_package_always_evaluates_is_named_only_by_its_shipped_document() -> None:

@@ -34,7 +34,7 @@ instead of failing on a missing key.
 
 from __future__ import annotations
 
-from typing import Annotated, Final, Literal
+from typing import Annotated, Final, Literal, get_args
 
 from pydantic import Field, ValidationInfo, model_validator
 
@@ -54,6 +54,7 @@ from iltero_schemas.models.fields import (
     Identifier,
     MemberPath,
     ProjectPath,
+    RunStage,
     Timestamp,
     Uuid,
     parse_timestamp,
@@ -79,7 +80,15 @@ SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 MAX_EVENTS = 100_000
 # More reports than a stage is ever given; one per tool is the rule the model enforces.
 MAX_SCANNER_REPORTS = 16
-MAX_EVIDENCE_REFS = 100_000
+# The files a record keeps for each event, at most: the input it was evaluated over, and the four files its assertion
+# was compiled into (its document, its syntax tree, its Rego module and its compiled policy), since every assertion a
+# stage owed has an event.
+FILES_PER_EVENT = 5
+# The files a stage keeps besides those, more than any stage writes: its events file, assertion index, redacted input,
+# redaction policy and bindings, and the files the pipeline gave it.
+FILES_PER_STAGE = 256
+# A record's stages are every stage but runtime, which no record has.
+MAX_EVIDENCE_REFS = FILES_PER_EVENT * MAX_EVENTS + len(get_args(RunStage)) * FILES_PER_STAGE
 
 
 class RecordRun(StrictModel):
@@ -114,6 +123,13 @@ class Collector(StrictModel):
     version: Identifier
 
 
+class EvidenceSource(StrictModel):
+    """The file as the pipeline gave it, before the record kept it: its name and its digest."""
+
+    name: FileName
+    digest: Digest
+
+
 class EvidenceRef(StrictModel):
     """One file the record cites, named by its digest and by where it sits inside the record's directory."""
 
@@ -126,7 +142,8 @@ class EvidenceRef(StrictModel):
     retention_until: None
     collected_at: Timestamp
     collector: Collector
-    source: dict[Identifier, Identifier] | None
+    # The file as the pipeline gave it; null for a file the tool wrote itself.
+    source: EvidenceSource | None
     canonicalization: Identifier | None
     # The redaction policy that ran over the file's content; null when no redaction policy ran over it.
     redaction_policy: RedactionPolicyRef | None

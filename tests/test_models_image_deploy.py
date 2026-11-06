@@ -20,14 +20,7 @@ from iltero_schemas.models.image_deploy import (
 from tests.conftest import VECTORS
 
 DIGEST = "sha256:" + "1" * 64
-RUNNER = {"value": "2026-11-02T09:02:00Z", "source": "runner_clock", "trust": "asserted", "time_window": None}
-SERVER = {**RUNNER, "source": "server", "trust": "attested"}
-DEPLOYMENT: dict[str, Any] = {
-    "repository": "ghcr.io/acme/api",
-    "digest": DIGEST,
-    "deployed_at": RUNNER,
-    "reported_by": "pipeline",
-}
+DEPLOYMENT: dict[str, Any] = {"repository": "ghcr.io/acme/api", "digest": DIGEST, "reported_by": "pipeline"}
 CONTEXT: dict[str, Any] = json.loads((VECTORS / "contexts" / "image_post_verify.json").read_text(encoding="utf-8"))
 CHECK: dict[str, Any] = CONTEXT["drift_check"]
 READ: list[dict[str, Any]] = CHECK["containers_read"]
@@ -40,18 +33,18 @@ def reading(**changes: Any) -> dict[str, Any]:
     return {**CHECK, **changes}
 
 
-def test_a_deployment_is_the_pipelines_word_dated_by_its_runner() -> None:
+def test_a_deployment_is_the_pipelines_word_and_names_no_time_of_its_own() -> None:
     ImageDeployment.model_validate(DEPLOYMENT)
-    with pytest.raises(ValidationError, match="the pipeline deployed the image at the time its runner's clock gives"):
-        ImageDeployment.model_validate({**DEPLOYMENT, "deployed_at": SERVER})
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        ImageDeployment.model_validate({**DEPLOYMENT, "deployed_at": "2026-11-02T09:02:00Z"})
     with pytest.raises(ValidationError, match="Input should be 'pipeline'"):
         ImageDeployment.model_validate({**DEPLOYMENT, "reported_by": "server"})
 
 
-def test_a_reading_of_the_workload_is_dated_by_the_runner() -> None:
+def test_a_reading_of_the_workload_names_no_time_of_its_own() -> None:
     assert ImageDriftCheck.model_validate(CHECK).live_pods_read == 2
-    with pytest.raises(ValidationError, match="the pipeline read the workload at the time its runner's clock gives"):
-        ImageDriftCheck.model_validate(reading(read_at=SERVER))
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        ImageDriftCheck.model_validate(reading(read_at="2026-11-02T09:05:00Z"))
 
 
 def test_a_reading_lists_every_container_of_the_pod_template_once_sorted_by_name() -> None:
@@ -224,14 +217,3 @@ def test_an_accepted_build_names_its_platform_digests_once_each_in_order() -> No
     AcceptedBuild.model_validate(build)
     with pytest.raises(ValidationError, match="named once each, in order"):
         AcceptedBuild.model_validate({**build, "platform_digests": ["sha256:" + "3" * 64, "sha256:" + "2" * 64]})
-
-
-def test_a_deploy_inputs_reading_is_taken_no_earlier_than_the_deployment() -> None:
-    before = {
-        **CONTEXT["drift_check"],
-        "read_at": {**CONTEXT["drift_check"]["read_at"], "value": "2026-11-02T09:01:00Z"},
-    }
-    with pytest.raises(ValidationError, match="drift_check.read_at must be no earlier than deployment.deployed_at"):
-        AssuranceContext.model_validate({**CONTEXT, "drift_check": before})
-    at_deployment = {**CONTEXT["drift_check"]["read_at"], "value": CONTEXT["deployment"]["deployed_at"]["value"]}
-    AssuranceContext.model_validate({**CONTEXT, "drift_check": {**CONTEXT["drift_check"], "read_at": at_deployment}})

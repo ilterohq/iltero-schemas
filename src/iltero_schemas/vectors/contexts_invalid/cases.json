@@ -9,12 +9,129 @@
     "message": "a scan of an image built for several platforms names the platform it scanned"
   },
   {
-    "name": "image_deploy_reading_taken_before_the_deployment",
-    "vector": "image_post_verify.json",
+    "name": "input_reading_its_runners_clock_at_another_time",
+    "vector": "plan_resource.json",
     "set": {
-      "/drift_check/read_at/value": "2026-11-02T09:01:00Z"
+      "/reference_time/value": "2026-09-16T18:05:01Z"
     },
     "remove": [],
-    "message": "drift_check.read_at must be no earlier than deployment.deployed_at"
+    "message": "an input that reads its runner's clock uses the time of its evaluation"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u0600",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u0600ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u06dd",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u06ddws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u070f",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u070fws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u0890",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u0890ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u08e2",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u08e2ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u206a",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\u206aws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_ufff9",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ufff9ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u110bd",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ud804\udcbdws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u110cd",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ud804\udccdws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u13430",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ud80d\udc30ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u1bca0",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ud82f\udca0ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_u1d173",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\ud834\udd73ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
+  },
+  {
+    "name": "subject_identity_with_the_format_character_ue0000",
+    "vector": "plan_resource.json",
+    "set": {
+      "/subject/identities/0/value": "a\udb40\udc00ws_db_instance.payments"
+    },
+    "remove": [],
+    "message": "must not contain control characters"
   }
 ]

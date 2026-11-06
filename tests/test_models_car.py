@@ -17,7 +17,7 @@ from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-from tests.records import RECORD, add_built_in, iac_change, set_path
+from tests.records import RECORD, add_built_in, iac_change, owe_its_events, set_path
 from tests.records import record as _record
 
 
@@ -276,7 +276,10 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     stage["stage"] = "post_deploy"
     stage["observed_at"] = "2026-09-22T14:02:00Z"
     stage["reference_time"] = {**plan_stage["reference_time"], "value": stage["observed_at"]}
-    stage["events"] = {**plan_stage["events"], "count": 0, "path": "units/root/post_deploy/events.json"}
+    # The plan stage's events file stays named: it is an entry of the record's register.
+    stage["events"] = {**plan_stage["events"], "count": 0}
+    redacted = {**plan_stage["redaction"]["input"], "kind": "deployment"}
+    stage["redaction"] = {**plan_stage["redaction"], "input": redacted}
     stage["coverage"] = {
         **plan_stage["coverage"],
         "subjects_in_scope": {
@@ -285,12 +288,13 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
             "counted_from": "deployment_unit",
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {**plan_stage["coverage"]["assertions_expected"], "value": 0},
+        "assertions_expected": dict(plan_stage["coverage"]["assertions_expected"]),
         "assertions_evaluated": 0,
         "subjects_per_assertion": {},
         "status_counts": dict.fromkeys(plan_stage["coverage"]["status_counts"], 0),
         "evaluations": 0,
     }
+    owe_its_events({"events": [], "stages": {"post_deploy": stage}}, "post_deploy")
     outcome = stage_outcome(Coverage.model_validate(stage["coverage"])).model_dump(mode="json")
     return {**stage, "verdict": outcome["verdict"], "assurance_status": outcome["assurance_status"]}
 

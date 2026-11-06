@@ -15,8 +15,7 @@
           "unit": "root"
         }
       }
-    ],
-    "resolution": "unresolved"
+    ]
   },
   "evaluation": {
     "activity": "iac_change",

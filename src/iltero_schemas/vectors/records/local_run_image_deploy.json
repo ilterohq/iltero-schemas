@@ -43,12 +43,6 @@
     "deployment": {
       "repository": "ghcr.io/acme/api",
       "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
-      "deployed_at": {
-        "value": "2026-11-02T09:02:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
-      },
       "reported_by": "pipeline"
     },
     "drift_check": {
@@ -75,12 +69,6 @@
         "available_replicas": 2,
         "paused": false,
         "strategy": "rolling_update"
-      },
-      "read_at": {
-        "value": "2026-11-02T09:05:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
       },
       "template_containers": [
         {
@@ -183,7 +171,7 @@
       },
       "events": {
         "path": "units/api/pre_deploy/events.json",
-        "digest": "sha256:dbb74698e9927e9a41540a8db3e18444dfdb28e824838152cd507a5b10bb9079",
+        "digest": "sha256:60868b589721fc7ebb5313f561ae6b52e44666a99977593fb26b9cca9a0b6a4c",
         "count": 1
       },
       "assertions": {
@@ -289,7 +277,7 @@
       },
       "events": {
         "path": "units/api/post_deploy/events.json",
-        "digest": "sha256:f76693de0ec8bd4f60f3d19b41ad61c93c22b04a0ae18ec14293fbfa8cc4d469",
+        "digest": "sha256:eb99e2b158c554b0b1dd565a68a12366b374094149ab1ff6c1a9c7693bad8d7b",
         "count": 1
       },
       "assertions": {
@@ -302,7 +290,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "deployment_unit",
-          "source_digest": "sha256:bf9181232fbfcfdc55c56911034788e2ef948718b8ff1df3aaf596dedc368f60",
+          "source_digest": "sha256:77b1db855837c5bdf84978bb5beddc92718de6e45fc160d6e37d660379c6fdb4",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -395,7 +383,7 @@
       },
       "events": {
         "path": "units/api/post_verify/events.json",
-        "digest": "sha256:8dd778e9423130aae9c858d50e43142b1307e93cdb49877d99ba7b0616d24d1c",
+        "digest": "sha256:d8a451d67a380f0986b9ae8a5054cfd55765449acd162e40b0eca80c6afc8225",
         "count": 1
       },
       "assertions": {
@@ -408,7 +396,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "deployment_unit",
-          "source_digest": "sha256:1e35b00c9e5d9a8aa69a8b98a384970b9fc76cb2c6b48c4ab843164cb93579c4",
+          "source_digest": "sha256:9f4d47ea421a730115083358cef1ce4b12b536de907130a693d1b44fa423f749",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -469,8 +457,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_deploy",
@@ -587,8 +574,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_deploy",
@@ -697,8 +683,7 @@
             "value": "api",
             "scope": null
           }
-        ],
-        "resolution": "unresolved"
+        ]
       },
       "evaluation": {
         "activity": "image_deploy",
@@ -974,8 +959,8 @@
     {
       "ref_id": "post_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:f76693de0ec8bd4f60f3d19b41ad61c93c22b04a0ae18ec14293fbfa8cc4d469",
-      "size_bytes": 2638,
+      "digest": "sha256:eb99e2b158c554b0b1dd565a68a12366b374094149ab1ff6c1a9c7693bad8d7b",
+      "size_bytes": 2612,
       "path": "units/api/post_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1076,8 +1061,8 @@
     {
       "ref_id": "post_verify/events.json",
       "media_type": "application/json",
-      "digest": "sha256:8dd778e9423130aae9c858d50e43142b1307e93cdb49877d99ba7b0616d24d1c",
-      "size_bytes": 2939,
+      "digest": "sha256:d8a451d67a380f0986b9ae8a5054cfd55765449acd162e40b0eca80c6afc8225",
+      "size_bytes": 2913,
       "path": "units/api/post_verify/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1274,8 +1259,8 @@
     {
       "ref_id": "pre_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:dbb74698e9927e9a41540a8db3e18444dfdb28e824838152cd507a5b10bb9079",
-      "size_bytes": 2690,
+      "digest": "sha256:60868b589721fc7ebb5313f561ae6b52e44666a99977593fb26b9cca9a0b6a4c",
+      "size_bytes": 2664,
       "path": "units/api/pre_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,

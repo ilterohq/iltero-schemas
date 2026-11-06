@@ -89,7 +89,7 @@ def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave() ->
     for report in car.change.reports:
         source = refs[report.evidence_ref].source
         assert source is not None
-        kept[source["digest"]] = report.image_digest_source
+        kept[source.digest] = report.image_digest_source
     read = {
         report["file_digest"]: report["image_digest_source"] for report in BUILD_INPUT["tests"] + BUILD_INPUT["scans"]
     }
@@ -100,7 +100,7 @@ def test_the_build_commit_is_the_one_its_metadata_file_names_for_its_image() -> 
     car = CAR.model_validate(BUILD)
     assert isinstance(car.change, ImageBuild) and car.change.build_commit is not None
     stored = next(ref for ref in car.evidence_refs if ref.ref_id == car.change.build_commit.evidence_ref)
-    assert stored.redaction_policy is None and stored.source is not None and stored.source["digest"] == stored.digest
+    assert stored.redaction_policy is None and stored.source is not None and stored.source.digest == stored.digest
     assert BUILD_INPUT["artifact"]["build_commit"] == car.change.build_commit.commit
 
 
@@ -248,22 +248,6 @@ def test_scan_coverage_counts_the_platforms_a_scanners_own_report_names() -> Non
     assert scan_coverage(build.model_copy(update={"reports": by_pipeline})) == ScanCoverage((), (first, second))
     single = build.model_copy(update={"platform_digests": [], "reports": []})
     assert scan_coverage(single) == ScanCoverage((), (build.image.digest,))
-
-
-def test_a_tags_metadata_file_is_read_by_the_pipeline_at_its_runners_time() -> None:
-    change = copy.deepcopy(BUILD["change"])
-    change["image"]["tag_resolution"]["read_at"] = {
-        "value": "2026-11-01T10:01:30Z",
-        "source": "timestamp_authority",
-        "trust": "attested",
-        "time_window": {
-            "not_before": "2026-11-01T10:01:00Z",
-            "not_after": "2026-11-01T10:02:00Z",
-            "nonce_digest": "sha256:" + "9" * 64,
-        },
-    }
-    with pytest.raises(ValidationError, match="at the time its runner's clock gives"):
-        ImageBuild.model_validate(change)
 
 
 def test_an_attestation_is_only_ever_kept_unverified() -> None:

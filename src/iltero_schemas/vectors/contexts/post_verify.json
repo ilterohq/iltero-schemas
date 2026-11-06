@@ -55,8 +55,7 @@
         "value": "root",
         "scope": null
       }
-    ],
-    "resolution": "unresolved"
+    ]
   },
   "deployment": {
     "plan": {

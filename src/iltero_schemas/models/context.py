@@ -61,10 +61,12 @@ from iltero_schemas.models.deployment import Deployment, check_superseded, check
 from iltero_schemas.models.drift_check import DriftCheck, check_against_deployment
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
+    MAX_SUBJECT_IDENTITIES,
     Action,
     Address,
     ArtifactDigestSource,
     AssertionKey,
+    BoundedObject,
     Commit,
     Digest,
     Identifier,
@@ -87,7 +89,6 @@ from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
-Resolution = Literal["resolved", "unresolved"]
 # The parts a profile may name, whether or not this version specifies their shape.
 PARTS = (
     "source",
@@ -182,9 +183,7 @@ class Subject(StrictModel):
     kind: TargetKindValue
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest
-    identities: Annotated[list[Identity], Field(min_length=1)]
-    # ``resolved`` once a resolver that supports its resource type found its cloud identity; ``unresolved`` until then.
-    resolution: Resolution
+    identities: Annotated[list[Identity], Field(min_length=1, max_length=MAX_SUBJECT_IDENTITIES)]
 
 
 class KindNotMapped(StrictModel):
@@ -319,7 +318,8 @@ class AssuranceContext(StrictModel):
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     drift_check: DriftCheck | ImageDriftCheck | None = None
-    assurance: dict[str, Any] | None = None
+    # Not specified by this version: any object, held to the bounds of a policy's observations.
+    assurance: BoundedObject | None = None
     # The image a build produced, and the test and scan reports the build was given.
     artifact: ImageArtifact | None = None
     tests: TestReports | None = None
@@ -346,7 +346,7 @@ class AssuranceContext(StrictModel):
         key = environment.name if environment is not None else None
         image = checked_image(change.image.repository, change.image.digest).model_dump(mode="json")
         if change.digest != change_digest(IMAGE_RELEASE_TYPE, unit_of(local), key, image):
-            raise ValueError("change.digest is the digest of its unit's image in its environment")
+            raise ValueError("change.digest is the digest of the change type, unit, environment and image")
         if isinstance(self.drift_check, ImageDriftCheck):
             if self.drift_check.change_digest != change.digest:
                 raise ValueError("drift_check.change_digest is change.digest")
@@ -364,6 +364,10 @@ class AssuranceContext(StrictModel):
             raise ValueError(f"{profile.name}: missing {', '.join(missing)}")
         if extra:
             raise ValueError(f"{profile.name}: not part of this profile: {', '.join(extra)}")
+        if self.reference_time.source == "runner_clock" and parse_timestamp(
+            self.reference_time.value
+        ) != parse_timestamp(self.evaluation.timestamp):
+            raise ValueError("an input that reads its runner's clock uses the time of its evaluation")
         if self.plan is not None and self.source is not None and self.plan.source_commit != self.source.commit.sha:
             raise ValueError("plan.source_commit must be the source commit")
         check_subject(self.subject.kind, self.subject.key, self.subject.identities, self.evaluation.stage, None)
@@ -376,7 +380,7 @@ class AssuranceContext(StrictModel):
             key = environment.name if environment is not None else None
             plan = checked_plan(self.plan.digest, self.plan.digest_version, self.plan.tool).model_dump(mode="json")
             if self.change.digest != change_digest(IAC_CHANGE_TYPE, unit_of(local), key, plan):
-                raise ValueError("change.digest is the digest of its unit's plan in its environment")
+                raise ValueError("change.digest is the digest of the change type, unit, environment and plan")
         if self.plan is not None:
             change_resources = self.change.resources if isinstance(self.change, ProposedChange) else []
             check_kinds(self.plan.tool, self.plan.resources + change_resources)
@@ -389,10 +393,6 @@ class AssuranceContext(StrictModel):
             check_against_deployment(self.drift_check, self.deployment)
         if isinstance(self.change, ImageChange):
             self._check_image_change(self.change, local)
-        if isinstance(self.drift_check, ImageDriftCheck) and isinstance(self.deployment, ImageDeployment):
-            read, deployed = self.drift_check.read_at.value, self.deployment.deployed_at.value
-            if parse_timestamp(read) < parse_timestamp(deployed):
-                raise ValueError("drift_check.read_at must be no earlier than deployment.deployed_at")
         if self.evaluation.activity == IMAGE_BUILD_ACTIVITY and self.organization_scope.environment is not None:
             raise ValueError("a build's input names no environment: a build belongs to none")
         if self.artifact is not None and self.scans is not None:

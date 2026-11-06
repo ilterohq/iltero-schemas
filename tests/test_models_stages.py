@@ -15,7 +15,7 @@ from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_or
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
-from tests.records import RECORD, add_built_in
+from tests.records import DEPLOYED, RECORD, VERIFIED, add_built_in, served
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
@@ -581,16 +581,24 @@ def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[st
 
 
 def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
-    """The record with a pre-deploy stage whose checks read ``approvals``."""
-    document = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    """The record of a run the server opened, with a pre-deploy stage whose checks read ``approvals`` from it."""
+    document = served(DEPLOYED)
     document["stages"]["pre_deploy"]["approvals"] = list(approvals)
     return document
 
 
 def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
-    of_change = _approval({"kind": "change", "digest": RECORD["change"]["digest"]})
-    of_run = _approval({"kind": "run", "id": RECORD["run"]["id"]}, "apr_0002")
+    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
+    of_run = _approval({"kind": "run", "id": DEPLOYED["run"]["id"]}, "apr_0002")
     CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
+
+
+def test_a_stage_lists_approvals_only_when_its_results_read_facts_from_the_server() -> None:
+    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
+    document = copy.deepcopy(DEPLOYED)
+    document["stages"]["pre_deploy"]["approvals"] = [of_change]
+    with pytest.raises(ValidationError, match="the pre_deploy stage lists approvals only when its results read facts"):
+        CAR.model_validate(document, context=_READER)
 
 
 @pytest.mark.parametrize(
@@ -600,7 +608,7 @@ def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> N
             [_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})],
             "only approvals of a change or of",
         ),
-        ([_approval({"kind": "run", "id": RECORD["run"]["id"]})] * 2, "lists each approval once"),
+        ([_approval({"kind": "run", "id": DEPLOYED["run"]["id"]})] * 2, "lists each approval once"),
     ],
     ids=["another run", "listed twice"],
 )
@@ -619,7 +627,7 @@ def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
 
 
 def test_a_forged_change_digest_is_reported_with_every_digest_bound_to_the_change() -> None:
-    document = _pre_deploy_reading(_approval({"kind": "change", "digest": RECORD["change"]["digest"]}))
+    document = _pre_deploy_reading(_approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]}))
     document["change"]["digest"] = "sha256:" + "e" * 64
     with pytest.raises(
         ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
@@ -677,4 +685,21 @@ def test_an_infrastructure_stage_after_the_deployment_evaluates_its_always_evalu
     if name == "post_verify":
         add_built_in(document, "post_deploy")
     with pytest.raises(ValidationError, match="is evaluated once, at the .* stage, once it has reported"):
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("source", "name", "kind"),
+    [
+        (RECORD, "plan", "facts"),
+        (DEPLOYED, "pre_deploy", "observation"),
+        (DEPLOYED, "post_deploy", "facts"),
+        (VERIFIED, "post_verify", "observation"),
+    ],
+    ids=["plan", "pre_deploy", "post_deploy", "post_verify"],
+)
+def test_a_stage_redacts_what_it_reads(source: dict[str, Any], name: str, kind: str) -> None:
+    document = copy.deepcopy(source)
+    document["stages"][name]["redaction"]["input"]["kind"] = kind
+    with pytest.raises(ValidationError, match=f"the {name} stage's redaction report is of the"):
         CAR.model_validate(document, context=_READER)

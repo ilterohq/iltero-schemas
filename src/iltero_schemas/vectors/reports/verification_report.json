@@ -26,7 +26,7 @@
       "reason": "local_assertions"
     },
     "stage_completeness": {
-      "state": "failed",
+      "state": "not_assessed",
       "reason": "stages_pending"
     },
     "plan_apply_match": {

@@ -13,15 +13,15 @@ from pydantic import ValidationError
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.compiler.limits import OBSERVATIONS_MAX_BYTES
 from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
-from iltero_schemas.models.deployment import Deployment
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
+from iltero_schemas.models.iac.deployment import Deployment
 from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import PROFILES
 from tests.conftest import POST_DEPLOY, VECTORS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
 
 
 def _without(*names: str) -> dict[str, Any]:
@@ -203,7 +203,9 @@ def test_a_plan_digest_version_other_than_its_tools_is_refused() -> None:
         AssuranceContext.model_validate(document)
 
 
-PRE_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+PRE_DEPLOY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text(encoding="utf-8")
+)
 MARKER = {"__unknown": True, "reason": "server_facts_unavailable"}
 
 
@@ -412,7 +414,7 @@ RELATED: dict[str, Any] = {
 
 @pytest.mark.parametrize("name", ["plan_resource.json", "pre_deploy_change.json"], ids=["resource", "change"])
 def test_the_change_digest_is_the_digest_of_its_units_plan(name: str) -> None:
-    document = json.loads((VECTORS / "contexts" / name).read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "contexts" / "iac" / name).read_text(encoding="utf-8"))
     with pytest.raises(
         ValidationError, match="change.digest is the digest of the change type, unit, environment and plan"
     ):
@@ -459,7 +461,7 @@ def test_a_plan_fact_the_tool_did_not_report_is_the_unknown_marker_never_null(fl
     ids=["a plan flag", "a server fact", "production"],
 )
 def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tuple[str, ...], reason: str) -> None:
-    document = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text(encoding="utf-8"))
     with pytest.raises(ValidationError, match=re.escape(".".join(path))):
         AssuranceContext.model_validate(_set(document, path, {"__unknown": True, "reason": reason}))
 
@@ -469,7 +471,9 @@ def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
     assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]
 
 
-POST_VERIFY: dict[str, Any] = json.loads((VECTORS / "contexts" / "post_verify.json").read_text(encoding="utf-8"))
+POST_VERIFY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "post_verify.json").read_text(encoding="utf-8")
+)
 
 
 def test_a_post_verify_input_carries_its_drift_check() -> None:
@@ -493,7 +497,7 @@ def test_a_post_verify_input_refuses_a_drift_check_read_before_the_apply_ended()
         AssuranceContext.model_validate(document)
 
 
-BUILD: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_artifact.json").read_text(encoding="utf-8"))
+BUILD: dict[str, Any] = json.loads((VECTORS / "contexts" / "image" / "plan_artifact.json").read_text(encoding="utf-8"))
 
 
 def test_a_build_input_carries_its_image_its_reports_and_the_verified_commit() -> None:
@@ -567,7 +571,7 @@ def test_a_build_input_names_no_environment() -> None:
         AssuranceContext.model_validate({**BUILD, "organization_scope": scope})
 
 
-DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "image_post_verify.json").read_text(encoding="utf-8"))
+DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "image" / "post_verify.json").read_text(encoding="utf-8"))
 
 
 def test_a_deploy_input_reads_its_parts_in_the_deploys_shapes() -> None:
@@ -602,7 +606,7 @@ def test_an_input_that_reads_its_runners_clock_uses_the_time_of_its_evaluation()
 
 
 POST_VERIFY_CONTEXT: dict[str, Any] = json.loads(
-    (VECTORS / "contexts" / "post_verify.json").read_text(encoding="utf-8")
+    (VECTORS / "contexts" / "iac" / "post_verify.json").read_text(encoding="utf-8")
 )
 
 

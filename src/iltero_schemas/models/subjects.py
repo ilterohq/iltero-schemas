@@ -26,7 +26,7 @@ from collections.abc import Sequence
 from iltero_schemas.canonical.encoding import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.iac import ADDRESS_SCHEMES
+from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
 from iltero_schemas.models.providers.aws import SCHEME_AWS_ARN
 from iltero_schemas.models.vocabulary import SCHEME_UNIT
 

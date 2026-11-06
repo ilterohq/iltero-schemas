@@ -87,7 +87,15 @@ REBUILT_CASES = {"approval_of_another_change", "pre_deploy_stage_of_a_forged_cha
 # such a stage names the plan stage's events file and assertion index, and redacts the facts the pre-deploy stage reads.
 ADDED_STAGE_EVENTS = "units/root/pre_deploy/events.json"
 # Terraform test modules renamed since the baseline, by their old name, and the tests removed with what they tested.
-RENAMED_MODULES = {"tests/test_models_change.py": "tests/test_models_units_file.py"}
+RENAMED_MODULES = {
+    "tests/test_models_change.py": "tests/test_models_units_file.py",
+    # The modules of one change type moved into its folder.
+    "tests/test_models_iac.py": "tests/iac/test_models_tool_names.py",
+    "tests/test_models_deployment.py": "tests/iac/test_models_deployment.py",
+    "tests/test_models_identity.py": "tests/iac/test_models_resource_identities.py",
+    "tests/test_models_tools_terraform.py": "tests/iac/test_models_tools_terraform.py",
+    "tests/test_models_tools_variants.py": "tests/iac/test_models_tools_variants.py",
+}
 RENAMED_TESTS = {
     "test_every_event_names_the_plan_the_record_evaluated": (
         "test_every_event_names_the_content_the_records_change_checked"
@@ -116,13 +124,17 @@ REMOVED_TESTS = {
 # set of them, maps to its value now; ``sizes`` gives the size of each retained file now.
 STARTER_DIGESTS: dict[str, Any] = json.loads((BASELINE / "starter_assertion_digests.json").read_text(encoding="utf-8"))
 DOCUMENT_FOLDERS = ("records", "identities")
-CASE_FOLDERS = (
-    "records_invalid",
-    "records_valid",
-    "records_integrity_failed",
-    "identities_invalid",
-    "identities_valid",
-)
+# The baseline is older than the image change types: its records and their cases are now those of the IaC change type,
+# in that type's subfolder of their folder.
+BASELINE_CHANGE_TYPE = "iac"
+# Each folder of cases, by the folder of the documents its cases name.
+BASELINE_CASE_FOLDERS = {
+    "records_invalid": "records",
+    "records_valid": "records",
+    "records_integrity_failed": "records",
+    "identities_invalid": "identities",
+    "identities_valid": "identities",
+}
 EVENTS_API_VERSION = "iltero.io/assurance-events/v1"
 UNITS = "/units_file/units"
 
@@ -245,7 +257,7 @@ def _with_plan_observation(moved: dict[str, Any], name: str) -> None:
     observed = moved["stages"]["plan"]["redaction"]["input"]["digest"]
     if any(ref["digest"] == observed for ref in moved["evidence_refs"]):
         return
-    refs = _read(VECTORS / "records" / name)["evidence_refs"]
+    refs = _read(VECTORS / "records" / _moved_vector("records", name))["evidence_refs"]
     index = next(i for i, ref in enumerate(refs) if ref["digest"] == observed)
     moved["evidence_refs"].insert(index, refs[index])
 
@@ -283,11 +295,12 @@ def _reworded(text: str) -> str:
     return text
 
 
-def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
-    """A baseline case with its pointers, values, message and problems as they are now."""
+def _moved_case(case: dict[str, Any], folder: str) -> dict[str, Any]:
+    """A baseline case of a document of ``folder``, with its vector, pointers, values, message and problems as they are
+    now."""
     moved = {**case}
-    path = BASELINE / "records" / case["vector"]
-    digests = STARTER_DIGESTS["digests"] | (_new_change_digest(_read(path)) if path.exists() else {})
+    record = _new_change_digest(_read(BASELINE / folder / case["vector"])) if folder == "records" else {}
+    digests = STARTER_DIGESTS["digests"] | record
     moved["set"] = {
         _renamed_pointer(_moved_pointer(pointer), case["vector"]): _renamed(
             _replaced(_with_activity(_checked_content(value)), digests), pointer.rsplit("/", 1)[-1]
@@ -295,15 +308,14 @@ def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
         for pointer, value in case["set"].items()
         if not pointer.endswith("/run/origin")
     }
-    shipped = VECTORS / "records" / _moved_vector(case["vector"])
-    if shipped.exists():
-        plan = _read(shipped)["stages"]["plan"]
+    if folder == "records":
+        plan = _read(VECTORS / folder / _moved_vector(folder, case["vector"]))["stages"]["plan"]
         moved["set"] = {pointer: _with_registered_stage(value, plan) for pointer, value in moved["set"].items()}
     if isinstance(units := moved["set"].get(UNITS), list):
         # A unit a case lists by name alone now names the units it depends on: none.
         moved["set"][UNITS] = [{"name": name, "depends_on": []} for name in units]
     moved["remove"] = [_renamed_pointer(_moved_pointer(pointer), case["vector"]) for pointer in case["remove"]]
-    moved["vector"] = _moved_vector(case["vector"])
+    moved["vector"] = _moved_vector(folder, case["vector"])
     if "message" in case:
         moved["message"] = _reworded(case["message"])
     if "problems" in case:
@@ -311,8 +323,19 @@ def _moved_case(case: dict[str, Any]) -> dict[str, Any]:
     return moved
 
 
-def _moved_vector(name: str) -> str:
+def _moved_vector(folder: str, name: str) -> str:
+    """Where the baseline vector ``name`` of ``folder`` is now, as a path from that folder: a record is in the IaC
+    subfolder."""
+    if folder == "records":
+        return f"{BASELINE_CHANGE_TYPE}/{name}"
     return RENAMED_VECTORS.get(name, name)
+
+
+def _shipped_cases(folder: str) -> Path:
+    """The shipped cases file of the baseline's case folder ``folder``."""
+    if BASELINE_CASE_FOLDERS[folder] == "records":
+        return VECTORS / folder / BASELINE_CHANGE_TYPE / "cases.json"
+    return VECTORS / folder / "cases.json"
 
 
 def _with_changes(folder: str, name: str) -> Any:
@@ -344,24 +367,27 @@ BASELINE_DOCUMENTS = [
     ("folder", "path"), BASELINE_DOCUMENTS, ids=[f"{folder}/{path.name}" for folder, path in BASELINE_DOCUMENTS]
 )
 def test_a_vector_differs_from_its_baseline_only_by_the_declared_changes(folder: str, path: Path) -> None:
-    assert _read(VECTORS / folder / _moved_vector(path.name)) == _with_changes(folder, path.name)
+    assert _read(VECTORS / folder / _moved_vector(folder, path.name)) == _with_changes(folder, path.name)
 
 
 @pytest.mark.parametrize("folder", DOCUMENT_FOLDERS)
 def test_no_baseline_vector_was_removed(folder: str) -> None:
-    shipped = {path.name for path in (VECTORS / folder).glob("*.json")}
-    assert {RENAMED_VECTORS.get(path.name, path.name) for path in (BASELINE / folder).glob("*.json")} <= shipped
+    baseline = sorted((BASELINE / folder).glob("*.json"))
+    assert baseline
+    assert [path.name for path in baseline if not (VECTORS / folder / _moved_vector(folder, path.name)).is_file()] == []
 
 
-@pytest.mark.parametrize("folder", CASE_FOLDERS)
+@pytest.mark.parametrize("folder", tuple(BASELINE_CASE_FOLDERS))
 def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
-    shipped = {case["name"]: case for case in _read(VECTORS / folder / "cases.json")}
+    shipped = {case["name"]: case for case in _read(_shipped_cases(folder))}
     baseline = [case for case in _read(BASELINE / folder / "cases.json") if case["name"] not in REMOVED_CASES]
     missing = [case["name"] for case in baseline if case["name"] not in shipped]
     changed = [
         case["name"]
         for case in baseline
-        if case["name"] in shipped and case["name"] not in REBUILT_CASES and shipped[case["name"]] != _moved_case(case)
+        if case["name"] in shipped
+        and case["name"] not in REBUILT_CASES
+        and shipped[case["name"]] != _moved_case(case, BASELINE_CASE_FOLDERS[folder])
     ]
     # A rebuilt case is built anew, but still refuses its record for the reason it did.
     refused_otherwise = [
@@ -370,7 +396,7 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
         if case["name"] in REBUILT_CASES
         and case["name"] in shipped
         and {key: shipped[case["name"]].get(key) for key in ("message", "problems")}
-        != {key: _moved_case(case).get(key) for key in ("message", "problems")}
+        != {key: _moved_case(case, BASELINE_CASE_FOLDERS[folder]).get(key) for key in ("message", "problems")}
     ]
     assert missing == []
     assert changed == []

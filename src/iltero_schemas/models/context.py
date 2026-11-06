@@ -44,7 +44,7 @@ from pydantic import (
 )
 
 from iltero_schemas.canonical.change import change_digest
-from iltero_schemas.canonical.plan import check_plan_digest_version
+from iltero_schemas.canonical.iac.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
@@ -57,8 +57,6 @@ from iltero_schemas.models.change_type import (
     ActivityName,
 )
 from iltero_schemas.models.checked_content import checked_image, checked_plan
-from iltero_schemas.models.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.drift_check import DriftCheck, check_against_deployment
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     MAX_SUBJECT_IDENTITIES,
@@ -76,15 +74,17 @@ from iltero_schemas.models.fields import (
     check_artifact_digest,
     parse_timestamp,
 )
-from iltero_schemas.models.iac import ADDRESS_SCHEMES, IacTool
-from iltero_schemas.models.image import ImageArtifact
-from iltero_schemas.models.image_deploy import ImageChange, ImageDeployment, ImageDriftCheck, check_compared
-from iltero_schemas.models.image_evidence import ScanReports, TestReports, check_scans_name_their_platform
+from iltero_schemas.models.iac.deployment import Deployment, check_superseded, check_tool
+from iltero_schemas.models.iac.drift_check import DriftCheck, check_against_deployment
+from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES, IacTool
+from iltero_schemas.models.iac.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
+from iltero_schemas.models.image.build_reports import ScanReports, TestReports, check_scans_name_their_platform
+from iltero_schemas.models.image.deploy import ImageChange, ImageDeployment, ImageDriftCheck, check_compared
+from iltero_schemas.models.image.naming import ImageArtifact
 from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.reference_time import ReferenceTime
 from iltero_schemas.models.server_facts import Approvals, AttestationOutcome, Evaluations, Exceptions, VerifiedSource
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
-from iltero_schemas.models.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
 API_VERSION = "iltero.io/assurance-context/v1"
@@ -199,7 +199,7 @@ class ResourceIndexEntry(StrictModel):
     """One line of the plan's table of contents: which resource, of which type and kind, planned to do what.
 
     ``provider`` is the provider's short name (``aws``). ``kind`` is the kind the plan's tool table gives the type
-    (``kinds.tables``); the unknown marker when the table has none; null exactly for a provider with no kinds.
+    (``kinds.iac.tables``); the unknown marker when the table has none; null exactly for a provider with no kinds.
     """
 
     id: Address
@@ -270,7 +270,7 @@ class RelatedResource(StrictModel):
     relation: Relation
     via: list[MaybeRedacted]
     resource: dict[str, Any] | None
-    # What only the plan's tool says about the match, keyed by ``tool`` (``models.tools.variants``).
+    # What only the plan's tool says about the match, keyed by ``tool`` (``models.iac.tools.variants``).
     tool_data: RelatedToolData
 
 
@@ -287,7 +287,7 @@ class PlanResource(StrictModel):
     before: Any
     after: Any
     related: list[RelatedResource]
-    # What only the tool that planned it says about the resource, keyed by ``tool`` (``models.tools.variants``).
+    # What only the tool that planned it says about the resource, keyed by ``tool`` (``models.iac.tools.variants``).
     tool_data: ResourceToolData
 
     @model_validator(mode="after")

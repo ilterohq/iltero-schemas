@@ -6,9 +6,9 @@ from collections.abc import Mapping
 from types import MappingProxyType
 
 from iltero_schemas.change_types.activity import Activity, ChangeType
-from iltero_schemas.change_types.iac import IAC_CHANGE
-from iltero_schemas.change_types.image import IMAGE_BUILD
-from iltero_schemas.change_types.image_deploy import IMAGE_DEPLOY
+from iltero_schemas.change_types.iac.change import IAC_CHANGE
+from iltero_schemas.change_types.image.build import IMAGE_BUILD
+from iltero_schemas.change_types.image.deploy import IMAGE_DEPLOY
 from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, IMAGE_RELEASE_TYPE, ActivityName, ChangeTypeName
 
 CHANGE_TYPES: Mapping[ChangeTypeName, ChangeType] = MappingProxyType(

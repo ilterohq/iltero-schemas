@@ -1,0 +1,20 @@
+[
+  {
+    "name": "stage_completeness_verified_on_an_unsigned_record",
+    "vector": "image/verification_report_build.json",
+    "set": {
+      "/properties/stage_completeness/state": "verified"
+    },
+    "remove": [],
+    "message": "no property of an unsigned record is verified"
+  },
+  {
+    "name": "approval_identity_with_a_reason_no_verifier_gives",
+    "vector": "image/verification_report_build.json",
+    "set": {
+      "/properties/approval_identity/reason": "checked_by_hand"
+    },
+    "remove": [],
+    "message": "approval_identity is one of the results a verifier gives that property"
+  }
+]

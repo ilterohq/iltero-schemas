@@ -38,9 +38,9 @@ from typing import Annotated, Final, Literal, get_args
 
 from pydantic import Field, ValidationInfo, model_validator
 
-from iltero_schemas.change_types.iac import IacChange
-from iltero_schemas.change_types.image import ImageBuild
-from iltero_schemas.change_types.image_deploy import ImageDeploy
+from iltero_schemas.change_types.iac.change import IacChange
+from iltero_schemas.change_types.image.build import ImageBuild
+from iltero_schemas.change_types.image.deploy import ImageDeploy
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.context import Source

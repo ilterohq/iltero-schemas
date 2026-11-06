@@ -1,0 +1,11 @@
+[
+  {
+    "name": "image_build_scan_of_an_index_naming_the_index",
+    "vector": "image/plan_artifact.json",
+    "set": {
+      "/scans/0/image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+    },
+    "remove": [],
+    "message": "a scan of an image built for several platforms names the platform it scanned"
+  }
+]

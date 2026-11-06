@@ -11,8 +11,8 @@ from iltero_schemas.change_types.activity import (
     DocumentName,
     RunType,
 )
-from iltero_schemas.change_types.iac import IAC_CHANGE, IacChange, PlanRecord, not_supported_by
-from iltero_schemas.change_types.image import (
+from iltero_schemas.change_types.iac.change import IAC_CHANGE, IacChange, PlanRecord, not_supported_by
+from iltero_schemas.change_types.image.build import (
     IMAGE_BUILD,
     AttestationRef,
     BuildCommit,
@@ -25,7 +25,7 @@ from iltero_schemas.change_types.image import (
     check_build_metadata,
     scan_coverage,
 )
-from iltero_schemas.change_types.image_deploy import IMAGE_DEPLOY, ImageDeploy
+from iltero_schemas.change_types.image.deploy import IMAGE_DEPLOY, ImageDeploy
 from iltero_schemas.change_types.registry import ACTIVITIES, CHANGE_TYPES
 from iltero_schemas.models.change_type import ActivityName, ChangeTypeName
 

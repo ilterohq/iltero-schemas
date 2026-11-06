@@ -13,7 +13,7 @@ from iltero_schemas.models.subjects import check_subject, local_identity, subjec
 from iltero_schemas.vectors import VECTORS
 from tests.conftest import ARNS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
 ADDRESS = Identity(scheme="terraform_address", value="aws_db_instance.payments", scope={"unit": "root"})
 UNIT = Identity(scheme="iltero_unit", value="root")
 ARN = Identity(scheme="aws_arn", value=ARNS["rds_instance"])

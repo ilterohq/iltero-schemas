@@ -1,6 +1,6 @@
 {
-  "description": "Each case evaluates one assertion over contexts/pre_deploy_approvals.json with the parts in set replaced. branches lists the status of each exists of the assertion's assert, in order: an independent approval of the change by its digest from the security role, and an approval of the run by Iltero's run id.",
-  "context": "pre_deploy_approvals.json",
+  "description": "Each case evaluates one assertion over contexts/iac/pre_deploy_approvals.json with the parts in set replaced. branches lists the status of each exists of the assertion's assert, in order: an independent approval of the change by its digest from the security role, and an approval of the run by Iltero's run id.",
+  "context": "iac/pre_deploy_approvals.json",
   "cases": [
     {
       "name": "production_run_approved",

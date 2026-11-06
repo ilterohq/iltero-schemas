@@ -19,11 +19,15 @@ from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import reads_approvals
 from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
 # The captured record of a run that reached its post-deploy stage, whose pre-deploy checks read facts.
-DEPLOYED: dict[str, Any] = json.loads((VECTORS / "records" / "local_run_deployed.json").read_text(encoding="utf-8"))
+DEPLOYED: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "local_run_deployed.json").read_text(encoding="utf-8")
+)
 # The captured record of a run that reached its post-verify stage.
-VERIFIED: dict[str, Any] = json.loads((VECTORS / "records" / "local_run_post_verify.json").read_text(encoding="utf-8"))
+VERIFIED: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "local_run_post_verify.json").read_text(encoding="utf-8")
+)
 
 
 def set_path(document: dict[str, Any], dotted: str, value: Any) -> None:

@@ -23,7 +23,32 @@ from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
 STARTER_ASSERTIONS = ROOT / "src" / "iltero_schemas" / "assertions"
-POST_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "post_deploy.json").read_text(encoding="utf-8"))
+# The change types a vector folder splits its documents or cases by, one subfolder each.
+CHANGE_TYPES = ("iac", "image")
+# Each folder of cases split by change type, by the folder of the documents its cases name.
+SPLIT_CASE_FOLDERS = {
+    "records_invalid": "records",
+    "records_valid": "records",
+    "records_integrity_failed": "records",
+    "contexts_invalid": "contexts",
+    "reports_invalid": "reports",
+}
+
+
+def visible(folder: Path) -> list[Path]:
+    """The entries of ``folder``, without hidden files (a name that starts with a dot), such as those macOS writes."""
+    return sorted(path for path in folder.iterdir() if not path.name.startswith("."))
+
+
+def documents(folder: str) -> list[Path]:
+    """Every document vector of ``folder``, of every change type, as the folder's digests.json lists it by its path."""
+    listing = json.loads((VECTORS / folder / "digests.json").read_text(encoding="utf-8"))
+    return sorted(VECTORS / folder / path for path in listing)
+
+
+POST_DEPLOY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "post_deploy.json").read_text(encoding="utf-8")
+)
 
 # Cloud identifiers are built from parts, so no tracked line holds one. The account is the one AWS reserves for
 # documentation.

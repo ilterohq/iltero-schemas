@@ -15,11 +15,11 @@ from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.canonical.plan import check_plan_digest_version
+from iltero_schemas.canonical.iac.plan import check_plan_digest_version
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.fields import Digest, Identifier
-from iltero_schemas.models.iac import IacTool
-from iltero_schemas.models.image import ImageRepository
+from iltero_schemas.models.iac.tool_names import IacTool
+from iltero_schemas.models.image.naming import ImageRepository
 
 
 class CheckedPlan(StrictModel):

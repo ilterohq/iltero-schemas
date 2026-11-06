@@ -34,7 +34,6 @@ from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.canonical.encoding import INT_MAX
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.attestation import ProvenancePredicateType
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.checked_content import CheckedContent
 from iltero_schemas.models.ci import CiSystem
@@ -51,6 +50,7 @@ from iltero_schemas.models.fields import (
     parse_timestamp,
     plain_text,
 )
+from iltero_schemas.models.image.attestation import ProvenancePredicateType
 from iltero_schemas.profiles import reads_checked_content
 
 # The most items of each kind one facts document carries: more than one stage needs.

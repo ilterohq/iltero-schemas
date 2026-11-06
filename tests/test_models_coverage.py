@@ -26,7 +26,7 @@ from iltero_schemas.models.coverage import (
 from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_BYTES
 from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
 PLAN_STAGE: dict[str, Any] = {key: RECORD["stages"]["plan"][key] for key in ("coverage", "verdict", "assurance_status")}
 PLAN = StageOutcome.model_validate(PLAN_STAGE)
 

@@ -168,9 +168,9 @@ def test_a_verified_run_attempt_counts_from_one() -> None:
         VerifiedSource.model_validate({**VERIFIED, "ci_run_attempt": 0})
 
 
-ATTESTATION: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_artifact.json").read_text(encoding="utf-8"))[
-    "attestation_outcome"
-]
+ATTESTATION: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "image" / "plan_artifact.json").read_text(encoding="utf-8")
+)["attestation_outcome"]
 
 
 def test_a_attestation_outcome_names_its_log_entry_exactly_when_the_log_timed_its_signature() -> None:

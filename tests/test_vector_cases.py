@@ -1,9 +1,11 @@
 """The record, identity and context cases are refused, accepted or read with their integrity problems, a build's scan
 coverage is counted, and the two-stage record's evaluations name their inputs.
 
-Each case names a document vector and changes it by JSON Pointer (RFC 6901); a
-refused case names the message the refusal carries, and a case that fails its
-integrity checks names the problems they report.
+Each case names a document vector by its path from the document folder and
+changes it by JSON Pointer (RFC 6901); a refused case names the message the
+refusal carries, and a case that fails its integrity checks names the problems
+they report. A folder of cases of documents split by change type holds each
+type's cases in its ``iac/`` or ``image/`` subfolder.
 """
 
 from __future__ import annotations
@@ -22,25 +24,30 @@ from iltero_schemas.canonical import canonical_bytes
 from iltero_schemas.change_types import ImageBuild, scan_coverage
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.identity import ResourceIdentities
+from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.stages import integrity_problems
 from iltero_schemas.models.verification import VerificationReport
-from tests.conftest import VECTORS
-
-RECORD_INVALID_CASES = json.loads((VECTORS / "records_invalid" / "cases.json").read_text(encoding="utf-8"))
-RECORD_VALID_CASES = json.loads((VECTORS / "records_valid" / "cases.json").read_text(encoding="utf-8"))
-RECORD_INTEGRITY_FAILED_CASES = json.loads(
-    (VECTORS / "records_integrity_failed" / "cases.json").read_text(encoding="utf-8")
-)
-IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
-IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
-CONTEXT_INVALID_CASES = json.loads((VECTORS / "contexts_invalid" / "cases.json").read_text(encoding="utf-8"))
-SCAN_COVERAGE_CASES = json.loads((VECTORS / "scan_coverage" / "cases.json").read_text(encoding="utf-8"))
-REPORT_INVALID_CASES = json.loads((VECTORS / "reports_invalid" / "cases.json").read_text(encoding="utf-8"))
+from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, VECTORS, documents
 
 
 def _read(path: Any) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _split_cases(folder: str) -> list[dict[str, Any]]:
+    """The cases of ``folder``, of every change type."""
+    return [case for change_type in CHANGE_TYPES for case in _read(VECTORS / folder / change_type / "cases.json")]
+
+
+RECORD_INVALID_CASES = _split_cases("records_invalid")
+RECORD_VALID_CASES = _split_cases("records_valid")
+RECORD_INTEGRITY_FAILED_CASES = _split_cases("records_integrity_failed")
+IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
+IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
+CONTEXT_INVALID_CASES = _split_cases("contexts_invalid")
+SCAN_COVERAGE_CASES = json.loads((VECTORS / "scan_coverage" / "cases.json").read_text(encoding="utf-8"))
+REPORT_INVALID_CASES = _split_cases("reports_invalid")
+RECORD_FILES = documents("records")
 
 
 def _events(value: Any) -> list[dict[str, Any]]:
@@ -78,6 +85,14 @@ def _patched(case: dict[str, Any], folder: str) -> Any:
     for pointer in case["remove"]:
         _changed(document, pointer, None, remove=True)
     return document
+
+
+@pytest.mark.parametrize("folder", sorted(SPLIT_CASE_FOLDERS))
+def test_a_case_names_a_document_of_its_own_change_type(folder: str) -> None:
+    for change_type in CHANGE_TYPES:
+        vectors = [case["vector"] for case in _read(VECTORS / folder / change_type / "cases.json")]
+        assert vectors and all(vector.startswith(f"{change_type}/") for vector in vectors)
+        assert all((VECTORS / SPLIT_CASE_FOLDERS[folder] / vector).is_file() for vector in vectors)
 
 
 @pytest.mark.parametrize("case", RECORD_INVALID_CASES, ids=[c["name"] for c in RECORD_INVALID_CASES])
@@ -180,9 +195,9 @@ def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_i
                 assertion.source_digest,
                 assertion.compiled_digest,
             )
-    events = [e for p in sorted((VECTORS / "records").glob("local_run*.json")) for e in _events(_read(p))]
-    for folder in ("records_invalid", "records_valid", "records_integrity_failed"):
-        events += [e for case in _read(VECTORS / folder / "cases.json") for e in _events(case["set"])]
+    events = [e for p in RECORD_FILES for e in _events(_read(p))]
+    for cases in (RECORD_INVALID_CASES, RECORD_VALID_CASES, RECORD_INTEGRITY_FAILED_CASES):
+        events += [e for case in cases for e in _events(case["set"])]
     for event in events:
         named = event["assertion"]
         if named["id"] in shipped:
@@ -198,7 +213,7 @@ def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_i
 
 def test_a_record_vector_lists_the_shipped_assertion_files() -> None:
     shipped = {p.name.removesuffix(".yaml"): p.read_bytes() for p in ASSERTIONS.iterdir() if p.name.endswith(".yaml")}
-    for path in sorted((VECTORS / "records").glob("local_run*.json")):
+    for path in RECORD_FILES:
         record = json.loads(path.read_text(encoding="utf-8"))
         for ref in record["evidence_refs"]:
             assertion_id, _, name = ref["ref_id"].rpartition("/")[2].partition("@")

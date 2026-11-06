@@ -111,7 +111,7 @@ Key rules:
   | `{provider, kinds}` | A `change` target, or a `deployment` target at `post_deploy`, of an assertion about an `iac_change`: up to 16. | Resources of `provider` whose kind is one of `kinds` (1 to 64), from the provider's list (`iltero_schemas.kinds.RESOURCE_KINDS`). |
 
   A kind is a tool-independent name for what a resource is, such as `rds_instance`, so one selector holds for every
-  IaC tool. Each tool's table gives its resource types their kinds: `iltero_schemas/kinds/terraform.json`, read with
+  IaC tool. Each tool's table gives its resource types their kinds: `iltero_schemas/kinds/iac/terraform.json`, read with
   `iltero_schemas.kinds.kind_of`. From a `change` or `deployment` target's selectors the compiler writes a scope
   guard (`iltero_schemas.ast.scope.scope_guard`): a condition that decides whether the assertion applies. It is
   checked ahead of `when`, and holds when some resource of the provider has one of the kinds. A resource whose type
@@ -588,7 +588,7 @@ call it `not_supported` whatever the workload, since the workload may be of a ki
 | --- | --- | --- | --- |
 | `project_config` | The project declared the stage out of scope. | `pre_deploy` or `post_verify` | The project file that says so, by its `path` and its `digest`. |
 | `environment_policy` | The environment policy of the environment Iltero Platform opened the run for does not require the stage. Iltero Platform holds the policy; the record does not name it. | `post_verify`, in a record whose `governance.run_opened_by` is `server` | `null` |
-| `not_supported` | The record's IaC tool cannot run the stage. | `post_verify`, for a tool with no drift reader (`iltero_schemas.change_types.not_supported_by(tool)` gives the stages a tool cannot run). A tool with a drift reader (`iltero_schemas.models.drift_check.TOOLS_WITH_DRIFT_READER`: `terraform`) runs every stage, so none. | `null` |
+| `not_supported` | The record's IaC tool cannot run the stage. | `post_verify`, for a tool with no drift reader (`iltero_schemas.change_types.not_supported_by(tool)` gives the stages a tool cannot run). A tool with a drift reader (`iltero_schemas.models.iac.drift_check.TOOLS_WITH_DRIFT_READER`: `terraform`) runs every stage, so none. | `null` |
 
 A record's `change.drift_check` says what two readings of the unit's deployed resources found. After the apply, the
 pipeline asks the IaC tool to read every resource its state holds back from the cloud, twice, through a
@@ -856,8 +856,8 @@ pipeline gave it, never against the entry's `digest`, which is of the stored cop
 redacted. The record does not hold the evaluation inputs, so it cannot check this match itself; a reader that holds
 them does.
 
-`iltero_schemas.models.image.platform_digests_of(index)` reads the platform digests from the bytes of a raw index:
-each manifest the index lists, by its digest, sorted and each once, without a build's attestation manifests. A
+`iltero_schemas.models.image.naming.platform_digests_of(index)` reads the platform digests from the bytes of a raw
+index: each manifest the index lists, by its digest, sorted and each once, without a build's attestation manifests. A
 manifest is skipped only when it is annotated as one (`vnd.docker.reference.type: attestation-manifest`) and its
 platform is `unknown/unknown` (`os` and `architecture` both `unknown`); a manifest with a real platform counts,
 whatever its annotations say. It raises `ValueError` for bytes that are not an image index as plain JSON in UTF-8: a
@@ -910,9 +910,9 @@ full provenance it pushes with the image, which this record does not read. For s
 An image label, such as `org.opencontainers.image.revision`, is never read as the commit: it is text the pipeline
 wrote.
 
-**How a reader reads it.** `iltero_schemas.models.buildx.build_metadata_of(metadata)` takes the bytes of the file and
-returns a `BuildMetadata`: `image_digest`; `image_names`, the value of `image.name` split on commas; and `commit`, or
-`None` when the file names no commit. It reads the file strictly (`iltero_schemas.models.strict_json`), as
+**How a reader reads it.** `iltero_schemas.models.image.buildx.build_metadata_of(metadata)` takes the bytes of the file
+and returns a `BuildMetadata`: `image_digest`; `image_names`, the value of `image.name` split on commas; and `commit`,
+or `None` when the file names no commit. It reads the file strictly (`iltero_schemas.models.strict_json`), as
 `platform_digests_of` reads an index: UTF-8 with no byte order mark, each key once, and no `NaN` or other constant. It
 raises `ValueError` for a file over 1,048,576 bytes (`MAX_METADATA_BYTES`), checked before the file is parsed: "a
 Buildx metadata file is at most 1048576 bytes"; and for a file that is not a JSON object, that names no image digest
@@ -933,8 +933,8 @@ the file:
 | Names the image's `repository` with the record's tag, when there is one: one of its `image_names`, read without any `@digest` suffix and with its repository put in its one spelling, is the image's `repository` followed by `:<tag>`. | "the build tool's metadata file names the image's repository with its tag" |
 | Names exactly the record's `build_commit.commit`, or no commit when `build_commit` is `null`. | "the build commit is the one the build tool's metadata file names, and only that" |
 
-A name is put in its one spelling by `iltero_schemas.models.image.in_one_spelling(repository)`, the way a tool may
-have been given it: Docker Hub's host and `library` namespace are added where left out (`nginx` is
+A name is put in its one spelling by `iltero_schemas.models.image.naming.in_one_spelling(repository)`, the way a tool
+may have been given it: Docker Hub's host and `library` namespace are added where left out (`nginx` is
 `docker.io/library/nginx`, `acme/api` is `docker.io/acme/api`), Docker Hub's other host names are written `docker.io`,
 and the default port 443 is left out. A name with no tag, or one that is still not a repository, matches nothing.
 
@@ -999,7 +999,7 @@ The metadata file it is read from, in part, as Buildx wrote it for a build of a 
 ```
 
 An image repository is written in one spelling, so that one image is never named two ways, in at most 255
-characters (`iltero_schemas.models.image.ImageRepository`):
+characters (`iltero_schemas.models.image.naming.ImageRepository`):
 
 | Rule | Refused with |
 | --- | --- |
@@ -1024,7 +1024,7 @@ Key rules:
 | Each report's `image_digest` is the image's `digest` or one of its `platform_digests`. | "a report is about the image or one of its platform images" |
 | When `platform_digests` is not empty, each `trivy_json` and `grype_json` report names one of them, never the image's own digest: a scanner given an image index reads one of its platforms. | "a scan of an image built for several platforms names the platform it scanned" |
 | A `junit` report's `image_digest_source` is `pipeline`. | "a JUnit report names no image, so only the pipeline ties it to one" |
-| A report's `media_type` is the type of its format (`iltero_schemas.models.image_evidence.REPORT_MEDIA_TYPES_OF`): `application/xml` or `text/xml` for `junit`, `application/json` for `trivy_json` and `grype_json`. | "a junit report is a file of type application/xml or text/xml", or the same for the other formats |
+| A report's `media_type` is the type of its format (`iltero_schemas.models.image.build_reports.REPORT_MEDIA_TYPES_OF`): `application/xml` or `text/xml` for `junit`, `application/json` for `trivy_json` and `grype_json`. | "a junit report is a file of type application/xml or text/xml", or the same for the other formats |
 | Every report's `evidence_refs` entry has a `source` (not `null`): the file as the pipeline gave it. A `source.digest` that is not a `sha256:` digest is refused by the entry's model. | "a report names the digest of the file as the pipeline gave it, in its source" |
 | A report nothing redacted (`redaction_policy: null`) is stored as given: its `source.digest` is its `digest`. | "a report, when nothing redacted it, is stored as the pipeline gave it" |
 | No two reports share a `source.digest`. | "each report is a different file as the pipeline gave it" |
@@ -1126,8 +1126,8 @@ is `false` when the file was never sent, as on a run the tool opened. `verificat
 view: the tool never checks the signature. Iltero Platform's answer is the build's `attestation_outcome`, in its
 evaluation input, and its verdict is in the `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event.
 
-**How a reader reads it.** `iltero_schemas.models.attestation.attestation_statement_of(bundle)` takes the bytes of the
-bundle and returns an `UnverifiedAttestationStatement`: `subject_digests`, each subject's SHA-256 digest written
+**How a reader reads it.** `iltero_schemas.models.image.attestation.attestation_statement_of(bundle)` takes the bytes of
+the bundle and returns an `UnverifiedAttestationStatement`: `subject_digests`, each subject's SHA-256 digest written
 `sha256:<hex>`, sorted and once each, and `predicate_type`. A subject named only by another algorithm is left out.
 `attestation_statement_of_payload(payload)` reads the same from the envelope's payload, the bytes its signature
 covers. Neither checks the signature, the signing certificate or a transparency log (a public, append-only log of
@@ -1138,7 +1138,7 @@ and raises `ValueError` for:
 | --- | --- |
 | More than 1,048,576 bytes (`MAX_ATTESTATION_BYTES`), checked before parsing. | "an attestation is at most 1048576 bytes", or "an in-toto statement is at most 1048576 bytes" for a payload |
 | Not plain JSON: a key named twice, `NaN` or another constant, a byte order mark, or bytes that are not UTF-8. | The message of `iltero_schemas.models.strict_json`, with "an attestation" or "an in-toto statement" as its subject |
-| A `mediaType` that is not a Sigstore bundle type (`iltero_schemas.models.image.ATTESTATION_MEDIA_TYPES`, listed under the key rules below). | "an attestation is a Sigstore bundle that names its media type" |
+| A `mediaType` that is not a Sigstore bundle type (`iltero_schemas.models.image.naming.ATTESTATION_MEDIA_TYPES`, listed under the key rules below). | "an attestation is a Sigstore bundle that names its media type" |
 | The signature of a file (`messageSignature`) instead of a signed statement. | "an attestation is a signed in-toto statement, not the signature of a file" |
 | No signed envelope (`dsseEnvelope`). | "an attestation carries its statement in a signed envelope (dsseEnvelope)" |
 | A plain image signature (payload type `application/vnd.dev.cosign.simplesigning.v1+json`). | "an attestation says how the image was built; a signature of the image alone says nothing" |
@@ -1241,7 +1241,7 @@ The record keeps what each party reported:
   image reference names another repository, it is not compared, so its image does not decide
   `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`.
 
-- **Model:** `iltero_schemas.change_types.ImageDeploy`, with its parts in `iltero_schemas.models.image_deploy`
+- **Model:** `iltero_schemas.change_types.ImageDeploy`, with its parts in `iltero_schemas.models.image.deploy`
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -1288,8 +1288,8 @@ These are the files the reading was taken from (`ImageDriftCheck.files_read`), e
 checks each file's place in the evidence register, as the rules below say. It does not read their contents: it does
 not check that the two workload reads agree, or that the pod owners lead to the workload.
 
-`workload` (`KubernetesWorkload`, in `iltero_schemas.models.kubernetes`, the one shape of `Workload` in this version;
-another platform adds its own):
+`workload` (`KubernetesWorkload`, in `iltero_schemas.models.image.kubernetes`, the one shape of `Workload` in this
+version; another platform adds its own):
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -1299,11 +1299,11 @@ another platform adds its own):
 | `namespace`, `name` | identifier | The workload's namespace and name in the cluster. |
 | `uid` | UUID | The workload object's own id. A workload deleted and created again under the same name has another. |
 
-`rollout` (`KubernetesRollout`, in `iltero_schemas.models.kubernetes`, the one shape of `Rollout` in this version): one
-shape per workload kind, told apart by `kind`, which is the workload's `kind`. The reading copies the counts the
-workload's status reported, each read in the same request as its pod template; a count the status left out is written
-as 0. `complete` and `expected_live_pods` are worked out from the counts, and a reading whose values differ is refused.
-Every kind carries:
+`rollout` (`KubernetesRollout`, in `iltero_schemas.models.image.kubernetes`, the one shape of `Rollout` in this
+version): one shape per workload kind, told apart by `kind`, which is the workload's `kind`. The reading copies the
+counts the workload's status reported, each read in the same request as its pod template; a count the status left out is
+written as 0. `complete` and `expected_live_pods` are worked out from the counts, and a reading whose values differ is
+refused. Every kind carries:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -1328,7 +1328,7 @@ Each kind adds its own counts and settings, all integers from 0 unless the table
 | --- | --- | --- |
 | `name` | identifier | The container's name in the pod template. |
 | `role` | string | What the container is to its pod: `app`, one of its containers; `init`, an init container that runs to completion before them; or `sidecar`, an init container that keeps running beside them. |
-| `image_reference` | string | The image the pod template names for the container, with its repository in its one fully qualified spelling (`ImageReference`, in `iltero_schemas.models.image`): the repository under the image repository rules of the [`image_build` body](#the-image_build-body), then, optionally, a `:tag`, an `@digest`, or both, such as `ghcr.io/acme/api:1.4.2@sha256:…`. The reader rewrites the pod template's reference into that spelling: a name with no registry host is on `docker.io`, and a name of one path segment is under `docker.io/library/`, so `nginx:1.25` is written `docker.io/library/nginx:1.25` and `fluent/fluent-bit:3.1.4` is written `docker.io/fluent/fluent-bit:3.1.4`; a Docker Hub alias (`index.docker.io`, `registry-1.docker.io`, `registry.hub.docker.com`) is written `docker.io`; and the default port `:443` is left out. A reference in any other spelling is refused. A bare repository, with no tag or digest, is accepted. The repository is at most 255 characters, and the whole reference at most 456 (`REFERENCE_MAX_LENGTH`). |
+| `image_reference` | string | The image the pod template names for the container, with its repository in its one fully qualified spelling (`ImageReference`, in `iltero_schemas.models.image.naming`): the repository under the image repository rules of the [`image_build` body](#the-image_build-body), then, optionally, a `:tag`, an `@digest`, or both, such as `ghcr.io/acme/api:1.4.2@sha256:…`. The reader rewrites the pod template's reference into that spelling: a name with no registry host is on `docker.io`, and a name of one path segment is under `docker.io/library/`, so `nginx:1.25` is written `docker.io/library/nginx:1.25` and `fluent/fluent-bit:3.1.4` is written `docker.io/fluent/fluent-bit:3.1.4`; a Docker Hub alias (`index.docker.io`, `registry-1.docker.io`, `registry.hub.docker.com`) is written `docker.io`; and the default port `:443` is left out. A reference in any other spelling is refused. A bare repository, with no tag or digest, is accepted. The repository is at most 255 characters, and the whole reference at most 456 (`REFERENCE_MAX_LENGTH`). |
 | `compared` | boolean | Whether the reading compares the image the container runs. A container whose `image_reference` names the deployed repository (`change.image.repository`), in its one spelling, is always compared. |
 
 `containers_read` entry (`ContainerRead`): one container as the pods listed ran it.
@@ -1511,7 +1511,7 @@ Two built-in assertions check a deploy, each about the `deployment` target:
 | Assertion | Title | Passes when |
 | --- | --- | --- |
 | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` | The image the pipeline reports it deployed is the image the deploy checked | At `post_deploy`: `deployment.repository` equals `change.image.repository`, and `deployment.digest` equals `change.image.digest`. The activity's `carried_out_matches_checked` check (`iltero_schemas.assertions.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`). |
-| `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` | After its rollout finished, every live pod of the workload runs the deployed image, or one of its platform images, in every compared container | At `post_verify` (`iltero_schemas.assertions.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`): `drift_check.rollout.complete` is `true`; `drift_check.live_pods_read` equals `drift_check.rollout.expected_live_pods`; at least one `template_containers` entry is compared; at least one `containers_read` entry is a compared container of a live pod; and every compared container of a live pod runs `change.image.digest` or one of `change.build.platform_digests`. It fails when the rollout had not finished, when the live pods read are not the number the rollout calls for, when the template compares no container, when no live pod has a compared container (so a workload scaled to zero fails, having no live pod to check), or when the change names an accepted build and a compared container of a live pod runs a digest that is neither the image's nor one of that build's platform digests. It is `unknown` when such a container's `digest` is the `not_reported_by_tool` marker, or when the change names no accepted build (`build: null`) and such a container runs a digest other than the image's, since there is no platform digest to compare it with. A failure decides before an unknown. Iltero Platform recomputes the same status from a record (`iltero_schemas.change_types.image_deploy.running_image_status`). Terminating and finished pods, and containers not compared, never decide it. |
+| `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` | After its rollout finished, every live pod of the workload runs the deployed image, or one of its platform images, in every compared container | At `post_verify` (`iltero_schemas.assertions.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`): `drift_check.rollout.complete` is `true`; `drift_check.live_pods_read` equals `drift_check.rollout.expected_live_pods`; at least one `template_containers` entry is compared; at least one `containers_read` entry is a compared container of a live pod; and every compared container of a live pod runs `change.image.digest` or one of `change.build.platform_digests`. It fails when the rollout had not finished, when the live pods read are not the number the rollout calls for, when the template compares no container, when no live pod has a compared container (so a workload scaled to zero fails, having no live pod to check), or when the change names an accepted build and a compared container of a live pod runs a digest that is neither the image's nor one of that build's platform digests. It is `unknown` when such a container's `digest` is the `not_reported_by_tool` marker, or when the change names no accepted build (`build: null`) and such a container runs a digest other than the image's, since there is no platform digest to compare it with. A failure decides before an unknown. Iltero Platform recomputes the same status from a record (`iltero_schemas.change_types.image.deploy.running_image_status`). Terminating and finished pods, and containers not compared, never decide it. |
 
 ### Checked content
 
@@ -1706,7 +1706,7 @@ verified for its type, and otherwise listed as unresolved with a reason. A resol
 identifiers for one cloud provider.
 
 - **apiVersion:** `iltero.io/resource-identities/v1`
-- **Model:** `iltero_schemas.models.identity.ResourceIdentities`
+- **Model:** `iltero_schemas.models.iac.resource_identities.ResourceIdentities`
 
 | Field | Type | Meaning |
 | --- | --- | --- |

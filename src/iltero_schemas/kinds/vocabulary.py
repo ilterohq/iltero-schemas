@@ -2,7 +2,7 @@
 
 A kind names what a resource is, whichever tool declared it: ``rds_instance``
 for an RDS database instance whether Terraform, OpenTofu or Pulumi spells its
-type. A tool's table (``kinds.tables``) maps each of its resource types to a
+type. A tool's table (``kinds.iac.tables``) maps each of its resource types to a
 kind; a selector names kinds, so one assertion holds for every tool. A kind
 with no cloud object of its own, such as an IAM role's inline policy, is a kind
 of its own. A provider with no list here has no kinds a selector can name.

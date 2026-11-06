@@ -1,7 +1,7 @@
 [
   {
     "name": "one_of_two_platforms",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {},
     "remove": [],
     "platforms_scanned": [
@@ -13,7 +13,7 @@
   },
   {
     "name": "both_platforms",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/reports": [
         {
@@ -45,7 +45,7 @@
   },
   {
     "name": "scan_tied_only_by_the_pipeline",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/reports/1/image_digest_source": "pipeline"
     },
@@ -58,7 +58,7 @@
   },
   {
     "name": "no_scan_report",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/reports": [
         {
@@ -78,7 +78,7 @@
   },
   {
     "name": "index_of_one_platform",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/platform_digests": [
         "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
@@ -92,7 +92,7 @@
   },
   {
     "name": "single_manifest_image",
-    "vector": "local_run_image_build.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/platform_digests": [],
       "/change/index_evidence_ref": null,

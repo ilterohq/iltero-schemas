@@ -23,7 +23,7 @@ from iltero_schemas.models.fields import Identity, Status
 from iltero_schemas.models.subjects import subject_key
 from tests.conftest import ARNS, VECTORS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "plan_pass.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "iac" / "plan_pass.json").read_text(encoding="utf-8"))
 
 
 def _event(**changes: Any) -> dict[str, Any]:

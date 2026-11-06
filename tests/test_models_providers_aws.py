@@ -8,7 +8,7 @@ from typing import get_args
 import pytest
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
-from iltero_schemas.models.identity import CloudSide, Resolver
+from iltero_schemas.models.iac.resource_identities import CloudSide, Resolver
 from iltero_schemas.models.providers.aws import (
     ARN_SHAPES,
     SCHEME_AWS_ARN,

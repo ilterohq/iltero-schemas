@@ -237,7 +237,7 @@ keep, so any two tools agree on what a record means.
   old copy a replacement set aside) settled by the state; the resource
   identities document's holds its deposed counts. The apply's `tool_data` must be the
   variant of its log's tool, and the resource identities document's that of its state's
-  tool (`models.tools.variants.check_tool_data`). The apply's `changes` name
+  tool (`models.iac.tools.variants.check_tool_data`). The apply's `changes` name
   each address's current object once.
 - The resource identities document (`ResourceIdentities` v1), whose
   `resolved` list ties each resource of a unit's configuration to the cloud
@@ -275,7 +275,8 @@ keep, so any two tools agree on what a record means.
   Iltero Platform opened, a resource identities document with no resolved
   identity, the resource identities documents that must be refused, altered ones that must still be accepted,
   the assurance contexts that must be refused, and a verification report of
-  an image build. The record vectors are in `vectors/records/`. The rules
+  an image build. The record vectors are in `vectors/records/iac/` and
+  `vectors/records/image/`. The rules
   about resolved identities have no vector, because a resolved identity holds
   a cloud identifier this repository does not publish.
 - A record says once who opened its run (`governance.run_opened_by`:
@@ -453,13 +454,13 @@ keep, so any two tools agree on what a record means.
   it, and it is the same file the tag is read from. The metadata file the
   tag or the commit is read from is JSON and kept unredacted, exactly as
   given.
-  `iltero_schemas.models.buildx.build_metadata_of` reads the image digest,
+  `iltero_schemas.models.image.buildx.build_metadata_of` reads the image digest,
   the image names and the commit from the kept file, strictly and at most
   1 MiB, so every reader reads the same values, and
   `iltero_schemas.change_types.check_build_metadata` compares them with the
   record: the image's digest, the image's repository with its tag (each
   image name put in its one spelling first by
-  `iltero_schemas.models.image.in_one_spelling`), and exactly its build
+  `iltero_schemas.models.image.naming.in_one_spelling`), and exactly its build
   commit. A metadata file whose `containerimage.descriptor` names another
   digest than `containerimage.digest` is refused. Building with
   `--provenance=mode=min` is recommended: the commit is the same as in
@@ -600,7 +601,7 @@ keep, so any two tools agree on what a record means.
   `vectors/scan_coverage/`. A scan report of an image built for several
   platforms, in a record or an evaluation input, names the platform it
   scanned, never the image's own digest.
-- Signed build provenance. `iltero_schemas.models.attestation` reads the
+- Signed build provenance. `iltero_schemas.models.image.attestation` reads the
   in-toto statement a build's Sigstore attestation carries, without checking
   its signature, and checks that it names the image's own digest. A build's
   input carries `attestation_outcome`: whether Iltero Platform verified the
@@ -623,3 +624,10 @@ keep, so any two tools agree on what a record means.
   `not_in_activity` for a record whose activity has no stage after
   deployment, such as an image build, or `not_determined` when the record's
   integrity is not established.
+- Files grouped by change type. Modules and conformance vectors that belong
+  to one change type live under `iac/`, for changes made with an
+  infrastructure-as-code (IaC) tool, or `image/`, for container image builds
+  and deploys, such as `iltero_schemas.models.image.deploy` and
+  `vectors/records/iac/`. Each document folder's `digests.json` and each
+  conformance case name a document by its path from that folder
+  (`image/local_run_build.json`).

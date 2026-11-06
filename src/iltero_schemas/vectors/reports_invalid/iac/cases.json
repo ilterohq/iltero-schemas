@@ -1,0 +1,11 @@
+[
+  {
+    "name": "stage_completeness_failed_while_the_run_is_in_progress",
+    "vector": "iac/verification_report.json",
+    "set": {
+      "/properties/stage_completeness/state": "failed"
+    },
+    "remove": [],
+    "message": "stage_completeness is one of the results a verifier gives that property"
+  }
+]

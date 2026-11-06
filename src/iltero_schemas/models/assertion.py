@@ -24,7 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
 from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, IMAGE_RELEASE_TYPE, ChangeTypeName
-from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
+from iltero_schemas.models.iac.tool_names import RESOURCE_TYPE_PATTERNS, IacTool
 
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
 # customer one: upper-case segments joined by dots, at least two of them.

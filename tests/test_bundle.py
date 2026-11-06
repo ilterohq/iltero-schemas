@@ -453,7 +453,7 @@ def test_opa_verifies_a_genuine_bundle_under_its_scope(opa: Path, tmp_path: Path
 def test_a_verified_bundle_evaluates_as_its_modules_do(opa: Path, tmp_path: Path) -> None:
     assert _opa_verify(opa, tmp_path, TARBALL, "--scope", BUNDLE_SIGNING_SCOPE).returncode == 0
     assertion_id = "ILT.AWS.RDS.STORAGE_ENCRYPTED"
-    context = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
+    context = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
     context["evaluation"]["assertion"]["id"] = assertion_id
     evaluated = _opa(
         opa,

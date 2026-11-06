@@ -18,7 +18,9 @@ from iltero_schemas.models.verification import (
 )
 from tests.conftest import VECTORS
 
-REPORT: dict[str, Any] = json.loads((VECTORS / "reports" / "verification_report.json").read_text(encoding="utf-8"))
+REPORT: dict[str, Any] = json.loads(
+    (VECTORS / "reports" / "iac" / "verification_report.json").read_text(encoding="utf-8")
+)
 
 
 def test_the_vector_validates_and_names_this_api_version() -> None:

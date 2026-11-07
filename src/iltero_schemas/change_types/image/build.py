@@ -389,4 +389,5 @@ IMAGE_BUILD = Activity(
     check_record=_check_record,
     change_digest_problems=_no_problems,
     integrity_problems=_no_problems,
+    reads_a_state_after_the_apply=False,
 )

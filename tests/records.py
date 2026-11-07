@@ -128,3 +128,10 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
         if event["provenance"]["facts_source"] == "none":
             event["provenance"]["facts_source"] = "server"
     return served_document
+
+
+def keep_the_apply_log(document: dict[str, Any]) -> None:
+    """Add to ``document``'s register the apply log its deployment was read from, as the deployed vector keeps it."""
+    log = document["change"]["deployment"]["apply"]["source"]["digest"]
+    kept = next(ref for ref in DEPLOYED["evidence_refs"] if ref["ref_id"] == "post_deploy/apply-log-reading")
+    document["evidence_refs"].append({**copy.deepcopy(kept), "source": {**kept["source"], "digest": log}})

@@ -1,0 +1,14 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.DEPLOYMENT.STATE
+  version: "1.0.0"
+  title: A check that reads the state after the apply
+spec:
+  change_type: iac_change
+  stage: post_deploy
+  target:
+    kind: deployment
+  assert:
+    path: deployment.apply.state.tool
+    equal: terraform

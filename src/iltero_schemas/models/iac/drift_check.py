@@ -50,6 +50,12 @@ TOOLS_WITH_DRIFT_READER: frozenset[IacTool] = frozenset({"terraform"})
 Difference = Literal["changed", "deleted"]
 
 
+# A drift check reads back the resources the state after the apply named, so it needs that state.
+NO_DRIFT_CHECK_WITHOUT_THE_STATE = (
+    "post-verify needs the identities the state after the apply gives, and the state after the apply was not read"
+)
+
+
 class DriftedResource(StrictModel):
     """One resource of the state that differed from what the apply wrote in a reading, by its address."""
 

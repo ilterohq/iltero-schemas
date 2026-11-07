@@ -3791,5 +3791,419 @@
       "/evidence_refs/1"
     ],
     "message": "what the plan stage redacted is an entry of the evidence register"
+  },
+  {
+    "name": "state_not_read_beside_a_state_digest",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/state": {
+        "__unknown": true,
+        "reason": "state_not_read",
+        "digest": "sha256:e58e870cd88b697bca87e6b99baab91924fd155b70748840b1a0df2a1c8f7fd2"
+      }
+    },
+    "remove": [],
+    "message": "Extra inputs are not permitted"
+  },
+  {
+    "name": "state_not_read_for_another_reason",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/state": {
+        "__unknown": true,
+        "reason": "deployment_log_incomplete"
+      }
+    },
+    "remove": [],
+    "message": "Input should be 'state_not_read'"
+  },
+  {
+    "name": "state_not_read_with_outcomes_held_to_the_state",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/outcomes_from": "apply_log"
+    },
+    "remove": [],
+    "message": "outcomes_from is apply_log_alone exactly when the state after the apply was not read"
+  },
+  {
+    "name": "state_not_read_with_the_state_settling_what_the_log_lost",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/outcomes_from": "apply_log_and_state"
+    },
+    "remove": [],
+    "message": "outcomes_from is apply_log_alone exactly when the state after the apply was not read"
+  },
+  {
+    "name": "state_not_read_with_a_change_held_to_the_state",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/0/outcome_from": "apply_log"
+    },
+    "remove": [],
+    "message": "with the state not read, a change is known from the log alone or not at all"
+  },
+  {
+    "name": "state_not_read_with_a_create_lost_as_the_logs_loss",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/completed": {
+        "__unknown": true,
+        "reason": "deployment_log_incomplete"
+      },
+      "/change/deployment/apply/changes/9/outcome": {
+        "__unknown": true,
+        "reason": "deployment_log_incomplete"
+      }
+    },
+    "remove": [],
+    "message": "only an update's operations may stay unknown, and then its outcome too"
+  },
+  {
+    "name": "state_not_read_with_its_identities",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/identity": {
+        "resolved": [],
+        "removed": [],
+        "removed_unresolved": [],
+        "resolvers": [
+          {
+            "provider": "aws",
+            "supported_resource_types": [
+              "iam_role",
+              "kms_key",
+              "s3_bucket",
+              "security_group"
+            ],
+            "version": "0.1.0"
+          }
+        ],
+        "sources": {
+          "plan": {
+            "digest": "sha256:f87c2b46c9ce51b817183804b5d6dce4461ddb11f63c863614ffa404967e844b",
+            "digest_version": "1"
+          },
+          "read_from": "state_file",
+          "state": {
+            "digest": "sha256:e58e870cd88b697bca87e6b99baab91924fd155b70748840b1a0df2a1c8f7fd2",
+            "tool": "terraform",
+            "tool_version": "1.14.0"
+          }
+        },
+        "tool_data": {
+          "deposed_deleted": 0,
+          "deposed_remaining": 0,
+          "tool": "terraform"
+        },
+        "unresolved": [
+          {
+            "address": "local_file.manifest",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "module.svc[\"api\"].terraform_data.instance[0]",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "module.svc[\"api\"].terraform_data.instance[1]",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "module.svc[\"worker\"].terraform_data.instance[0]",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "module.svc[\"worker\"].terraform_data.instance[1]",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "random_id.kept_outside",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "random_id.old_name",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "random_id.retired",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "random_id.suffix",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "random_password.db",
+            "reason": "no_resolver"
+          },
+          {
+            "address": "terraform_data.config",
+            "reason": "no_resolver"
+          }
+        ]
+      }
+    },
+    "remove": [],
+    "message": "a record names no identities when the state after the apply was not read"
+  },
+  {
+    "name": "state_read_with_a_change_unknown_for_want_of_it",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "none",
+      "/change/deployment/apply/changes/9/completed": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/9/outcome": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 1,
+      "/change/deployment/apply/tool_data/summary": null,
+      "/change/deployment/apply/outcomes_from": "apply_log_and_state"
+    },
+    "remove": [],
+    "message": "a change stays unknown for want of the state only when the state was not read"
+  },
+  {
+    "name": "state_read_with_outcomes_from_the_log_alone",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/change/deployment/apply/outcomes_from": "apply_log_alone"
+    },
+    "remove": [],
+    "message": "outcomes_from is apply_log_alone exactly when the state after the apply was not read"
+  },
+  {
+    "name": "state_not_read_listed_by_the_plan_stage",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/stages/plan/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the plan stage lists the state not read, which only the post-deploy stage lists"
+  },
+  {
+    "name": "state_not_read_listed_twice",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/stages/post_deploy/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        },
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a stage lists the state not read once"
+  },
+  {
+    "name": "deployment_without_its_apply_log_in_the_register",
+    "vector": "iac/local_run_deployed.json",
+    "set": {},
+    "remove": [
+      "/evidence_refs/19"
+    ],
+    "message": "the apply log the deployment was read from is an entry of the evidence register"
+  },
+  {
+    "name": "state_read_with_a_change_from_the_log_alone",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/change/deployment/apply/changes/0/outcome_from": "apply_log_alone"
+    },
+    "remove": [],
+    "message": "a change is known from the log alone only when the state after the apply was not read"
+  },
+  {
+    "name": "change_that_needs_no_operation_with_operations_unknown",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/change/deployment/apply/changes/6/action": "no-op",
+      "/change/deployment/apply/changes/6/required": [],
+      "/change/deployment/apply/changes/6/moved_from": "random_id.older",
+      "/change/deployment/apply/changes/6/completed": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/6/outcome": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/6/outcome_from": "none"
+    },
+    "remove": [],
+    "message": "a change that needs no operation completed none"
+  },
+  {
+    "name": "state_not_read_with_a_rename_settled_from_the_log_alone",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/6/action": "no-op",
+      "/change/deployment/apply/changes/6/required": [],
+      "/change/deployment/apply/changes/6/moved_from": "random_id.older",
+      "/change/deployment/apply/changes/6/completed": [],
+      "/change/deployment/apply/changes/6/outcome": "not_attempted",
+      "/change/deployment/apply/changes/6/outcome_from": "apply_log_alone"
+    },
+    "remove": [],
+    "message": "only the state after the apply shows whether a change that needs no operation was done"
+  },
+  {
+    "name": "state_not_read_with_a_summary_lost_by_a_whole_log",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": {
+        "__unknown": true,
+        "reason": "deployment_log_incomplete"
+      }
+    },
+    "remove": [],
+    "message": "only a log that lost messages leaves a change to the state or unknown"
+  },
+  {
+    "name": "state_not_read_with_a_create_never_named_by_a_log_that_lost_messages",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/0/completed": [],
+      "/change/deployment/apply/changes/0/outcome": "not_attempted"
+    },
+    "remove": [],
+    "message": "with the state not read and the log missing messages, a change the log never names is unknown"
+  },
+  {
+    "name": "state_not_read_with_a_deposed_delete_settled",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/tool_data/deposed": [
+        {
+          "address": "random_id.retired",
+          "key": "bb9fd791",
+          "outcome": "applied"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "with the state not read, every deposed object's delete is unknown"
+  },
+  {
+    "name": "state_not_read_with_an_update_unknown_for_want_of_it",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/action": "update",
+      "/change/deployment/apply/changes/9/required": [
+        "update"
+      ]
+    },
+    "remove": [],
+    "message": "a change stays unknown for want of the state only when the state would have settled it: a create, delete or replace whose end the log lost, or a change that needs no operation"
+  },
+  {
+    "name": "state_not_read_with_two_reasons_in_one_change",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/completed": {
+        "__unknown": true,
+        "reason": "deployment_log_incomplete"
+      }
+    },
+    "remove": [],
+    "message": "only an update's operations may stay unknown, and then its outcome too"
+  },
+  {
+    "name": "state_not_read_with_a_change_settled_by_the_state",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/0/outcome_from": "state"
+    },
+    "remove": [],
+    "message": "with the state not read, a change is known from the log alone or not at all"
+  },
+  {
+    "name": "post_verify_with_the_state_not_read",
+    "vector": "iac/local_run_post_verify.json",
+    "set": {
+      "/change/deployment/apply/state": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/outcomes_from": "apply_log_alone",
+      "/change/identity": null,
+      "/change/deployment/apply/changes/0/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/1/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/2/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/3/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/4/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/5/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/6/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/7/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/8/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/10/outcome_from": "apply_log_alone",
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:526318bb3d8348042d7e1264c29bd249066d0ecdb5b6d446dd7053405f0d16b2",
+      "/stages/post_deploy/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "post-verify needs the identities the state after the apply gives, and the state after the apply was not read"
+  },
+  {
+    "name": "state_not_read_with_a_replace_unknown_in_a_whole_log",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": null,
+      "/change/deployment/apply/changes/7/action": "replace",
+      "/change/deployment/apply/changes/7/required": [
+        "create",
+        "delete"
+      ],
+      "/change/deployment/apply/changes/7/completed": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/7/outcome": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/7/outcome_from": "none"
+    },
+    "remove": [],
+    "message": "only a log that lost messages leaves a change to the state or unknown"
   }
 ]

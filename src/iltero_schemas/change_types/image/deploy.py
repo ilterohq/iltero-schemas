@@ -218,6 +218,7 @@ IMAGE_DEPLOY = Activity(
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
     integrity_problems=_integrity_problems,
+    reads_a_state_after_the_apply=False,
     carried_out_matches_checked=(REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
         {

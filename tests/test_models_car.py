@@ -17,7 +17,7 @@ from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-from tests.records import RECORD, add_built_in, iac_change, owe_its_events, set_path
+from tests.records import RECORD, add_built_in, iac_change, keep_the_apply_log, owe_its_events, set_path
 from tests.records import record as _record
 
 
@@ -264,6 +264,7 @@ def _deployed(**changes: Any) -> dict[str, Any]:
     document["change"]["identity"]["sources"]["plan"]["digest"] = document["change"]["plan"]["digest"]
     document["change"]["identity"]["sources"]["state"] = dict(document["change"]["deployment"]["apply"]["state"])
     document["stages"]["post_deploy"] = _post_deploy_stage(document["stages"]["plan"])
+    keep_the_apply_log(document)
     add_built_in(document, "post_deploy")
     for dotted, value in changes.items():
         set_path(document, dotted, value)

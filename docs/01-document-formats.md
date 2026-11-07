@@ -188,7 +188,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, whether the plan is `complete` and `applyable`, and the same table of contents for every resource the plan covers. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `subject` | object | The subject's `kind`, its `key` and its `identities` (`scheme`, `value`, `scope`): one or two, its local identity and, at runtime, its cloud identity (at most `iltero_schemas.models.fields.MAX_SUBJECT_IDENTITIES`, 2). An identity's `scope` holds at most 8 keys (`MAX_SCOPE_KEYS`). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
-| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, `outcomes_from` (`apply_log`, or `apply_log_and_state` when the log lost messages and the state settled what it could), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
+| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, or the `state_not_read` marker when it was not read (see [When the state after the apply was not read](#apply-with-the-state-not-read)), `outcomes_from` (`apply_log`; `apply_log_and_state` when the log lost messages and the state settled what it could; `apply_log_alone` when the state was not read), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `apply_log_alone`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state, or the `state_not_read` marker when it was not read. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). In an `image_deploy` input, what one reading of the workload found (see [The `image_deploy` body](#the-image_deploy-body)); its `change_digest` is `change.digest`: "drift_check.change_digest is change.digest", and it compares every container, of the pod template or of a pod, whose image is from `change.image.repository`: "a reading compares every container whose image is from the deployed repository". |
@@ -339,6 +339,67 @@ served.
   be a self-approval the policy permitted; an approval of the change may not. For an approval of the run, both
   assertions read the same CI environment approval: there is no separate security sign-off behind it.
 
+### Apply with the state not read
+
+The state is the IaC tool's record of the resources it manages. When the pipeline says the tool could not read the
+state after the apply, the post-deploy stage is still recorded, from the apply log alone. That the state was not read
+is the pipeline's word; nothing corroborates it. `deployment.apply.state` is then the unknown marker
+`{"__unknown": true, "reason": "state_not_read"}` (`iltero_schemas.models.iac.markers.StateNotRead`), with no other
+key, and `deployment.apply.outcomes_from` is `apply_log_alone`.
+
+Such a deployment shows that an apply was invoked, which plan the pipeline says it applied, by its digest, and what
+the log says happened to each change. When the apply has a `timing`, it started no earlier than the plan stage was
+observed, by the clocks that wrote them; an apply whose every operation is unknown may have no `timing`. The
+deployment does not show which resources the state holds, and no outcome of the apply was held to the state. The
+record does not show why the state was not read, nor whether the apply failed.
+
+Each change says how its outcome is known (`outcome_from`):
+
+| `outcome_from` | Meaning |
+| --- | --- |
+| `apply_log` | The log's word, held to the applied plan by address, action and operation, and to which resources the state holds. |
+| `apply_log_alone` | The log's word, held to the applied plan only, since the state was not read. |
+| `state` | The log lost what happened to the change, and the state settled which operations completed. Only a `create`, `delete` or `replace`, as `applied`, `errored` or unknown. |
+| `none` | Nothing settles it. `outcome` is an unknown marker, and so is `completed` for a change that needs an operation: `deployment_log_incomplete` for an update the log lost, which the state never settles, or `state_not_read` where only the state would have settled it. |
+
+Rules:
+
+- `outcomes_from` is `apply_log_alone` exactly when `state` is the marker: "outcomes_from is apply_log_alone exactly
+  when the state after the apply was not read".
+- With the state not read, every change is `apply_log_alone`, or `none`: "with the state not read, a change is known
+  from the log alone or not at all". A change is `none`, with the `state_not_read` marker as its `outcome`, where only
+  the state would have settled it: a `create`, `delete` or `replace` whose end the log lost, with the marker as
+  `completed` too, and every change that needs no operation (a rename, an import or a `forget`), whose `completed` is
+  `[]`. A change that needs no operation is never `no_operation` or `not_attempted` without the state: "only the
+  state after the apply shows whether a change that needs no operation was done". Any other use of the marker is
+  refused: "a change stays unknown for want of the state only when the state would have settled it: a create, delete
+  or replace whose end the log lost, or a change that needs no operation".
+- With the state read, no change is `apply_log_alone`, and no change or deposed object's delete holds the
+  `state_not_read` marker: "a change stays unknown for want of the state only when the state was not read".
+- The log and the state are held to one IaC tool only when the state was read.
+- A change that needs no operation, left unknown, is not an operation that may have run: an apply whose only unknown
+  changes need no operation has a `timing` only when an operation ran.
+- For `terraform`: with the state not read, every deposed object's delete is the `state_not_read` marker: "with the
+  state not read, every deposed object's delete is unknown". A `summary` that is the `deployment_log_incomplete`
+  marker, and a change that needs an operation left `none`, need a log that lost messages (`damaged_messages` or
+  `interrupted_operations` above 0): "only a log that lost messages leaves a change to the state or unknown". The one
+  exception: with the state not read, a `delete`, or a `replace` that deletes, at an address that also holds deposed
+  objects may be `none` with the `state_not_read` marker even when the log lost no messages, since the log names every
+  delete at that address alike and only the state shows which was the current object's. When the log lost messages, a change
+  that needs an operation is never `not_attempted` from the log alone: "with the state not read and the log missing
+  messages, a change the log never names is unknown". A change that needs no operation, left
+  unknown, still allows the `summary`; an import among them is still counted in `imported`. The summary's `removed`
+  count may include the deposed deletes left unknown.
+- A `post_verify` input whose deployment's state was not read is refused: "post-verify needs the identities the state
+  after the apply gives, and the state after the apply was not read".
+
+An assertion that reads a change's outcome decides on the log's word alone. One that reads a `state_not_read` marker,
+such as `deployment.apply.state.tool`, is `unknown` with reason `state_not_read`.
+`ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` reads only the applied plan, so it still decides. A `not_equal`
+or `not_in` over `outcomes_from` also matches `apply_log_alone`: `not_equal: apply_log_and_state` holds when the state
+was not read. The same holds for each change's `outcome_from`, which has four values (`apply_log`, `apply_log_alone`,
+`state`, `none`): `not_equal: state` matches `apply_log_alone`.
+
 ## AssuranceEvent
 
 An assurance event is one verdict: the result of one assertion about one subject, with the provenance needed to say
@@ -377,7 +438,7 @@ Key rules:
   | --- | --- |
   | `pass` | none |
   | `fail` | none: a failure's reason is the policy's `policy_reason` |
-  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `not_reported_by_tool`, `reference_time_untrusted`, `deployment_log_incomplete`, `kind_unmapped` |
+  | `unknown` | `known_after_deploy`, `redacted`, `path_missing`, `not_a_list`, `unspecified`, `server_facts_unavailable`, `not_reported_by_tool`, `reference_time_untrusted`, `deployment_log_incomplete`, `state_not_read`, `kind_unmapped` |
   | `not_applicable` | `when_guard_excluded`, `no_subject_in_scope` |
   | `not_evaluated` | `scanner_not_run`, `credential_denied`, `resource_type_unsupported`, `scanner_version_not_allowed`, `timeout`, `subject_unresolved`, `evaluator_unavailable`, `identity_unverified`, `stage_not_run` |
   | `error` | `evaluator_crash`, `evaluator_timeout`, `evaluator_memory_limit`, `output_overflow`, `output_contract_violation`, `adapter_parse_failure`, `bundle_verification_failed`, `compile_failure` |
@@ -440,7 +501,7 @@ with a regulatory framework.
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `computed_from` (`status_counts` for a stage, `stage_precedence` for the record) and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (an evaluation ended in an evaluator error), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (an evaluation ended in an evaluator error), `state_not_read` (the state after the apply was not read), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order, within a stage; a record's reason is its first incomplete stage's, with an evaluator error first; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `out_of_scope` | list | Each stage of the activity the record does not expect, with a `reason` and `declared_in` (see below). |
@@ -564,7 +625,7 @@ the resource's, listed once, and every identity gap names such a resource: "the 
 resources the scope excludes for their identity, by the same reason". A plan resource is excluded at most once: "a
 plan resource is excluded once, for one reason".
 
-A stage's `coverage.gaps` lists what is missing from what the stage evaluated. Each gap has one of three shapes,
+A stage's `coverage.gaps` lists what is missing from what the stage evaluated. Each gap has one of four shapes,
 chosen by its `kind`:
 
 | `kind` | Other field | Meaning |
@@ -572,11 +633,26 @@ chosen by its `kind`:
 | `plan_incomplete`, `plan_not_applyable` | `value`: `false` or the `not_reported_by_tool` marker | A plan flag that is not `true`. The kind names the flag (`plan_incomplete` for `complete`, `plan_not_applyable` for `applyable`) and `value` carries what the plan said: `false` means the plan said so, the marker means it did not say. |
 | `identity_redacted`, `identity_unnameable` | `plan_index`: integer from 0 | A plan resource whose identity was redacted or cannot be named, by its index in the plan's resource list. |
 | `deferred_changes`, `related_copies_omitted`, `unresolved_references`, `accepted_by_binding`, or a `not_evaluated` or `error` [status reason](#assuranceevent) | `count`: integer from 1 | How many of one thing are missing: what the plan left out, evaluations that stand on a scanner's result an evaluator binding accepted rather than on a program the run ran, or evaluations with that `not_evaluated` or `error` reason. |
+| `state_not_read` | none | The state after the apply was not read, so no outcome of the apply was held to it (`StateNotReadGap`; see [When the state after the apply was not read](#apply-with-the-state-not-read)). |
 
 A gap in a stage's own `coverage` names no `stage`: the field is left out or `null`. The record's combined `coverage`
 names the stage each gap came from. The kinds a count gap may name are
 `iltero_schemas.models.coverage.COUNT_GAP_KINDS`. A coverage lists at most
 `iltero_schemas.models.coverage.MAX_GAPS` gaps.
+
+The `state_not_read` gap:
+
+- The `post_deploy` stage of an `iac_change` record lists it exactly when `change.deployment.apply.state` is the
+  `state_not_read` marker, an integrity check: "does not match change.deployment.apply.state: one state-not-read gap
+  exactly when the state after the apply was not read".
+- A stage lists it at most once: "a stage lists the state not read once". No other stage lists it: "the plan stage
+  lists the state not read, which only the post-deploy stage lists".
+- A record of an activity whose `reads_a_state_after_the_apply` is `False` (see [Change types and
+  activities](#change-types-and-activities)) refuses it: "the post_deploy stage lists the state not read, which a
+  record of image_deploy never has".
+- A stage that lists it is a coverage gap, exit code `6`, whatever its checks found, and `incomplete` with reason
+  `state_not_read` and the `detail` `the state after the apply was not read, so no outcome of the apply was held to
+  it`. Within the stage, an evaluator error's reason wins over it.
 
 Each `out_of_scope` entry names a `stage`, a `reason` and `declared_in`. The stages each reason can leave out are
 the record's activity's (see [Change types and activities](#change-types-and-activities)). An `image_build` record
@@ -627,7 +703,10 @@ Key rules:
   `digest` the stage gives ("the plan stage's events file is an entry of the evidence register", or "... assertion
   index ..."); the input every event was evaluated over, by its `provenance.input_digest` ("the input every event was
   evaluated over is an entry of the evidence register"); and what the plan stage redacted, by its
-  `redaction.input.digest` ("what the plan stage redacted is an entry of the evidence register").
+  `redaction.input.digest` ("what the plan stage redacted is an entry of the evidence register"). In an `iac_change`
+  record whose post-deploy stage has reported, the apply log the deployment was read from is an entry too, by its
+  `source.digest`, which is `change.deployment.apply.source.digest`: "the apply log the deployment was read from is an
+  entry of the evidence register".
 - A record redacts under one policy: every stage's `redaction.policy` and every `evidence_refs[].redaction_policy`
   that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. The digest tells
   apart two policies that share an `id` and `version`.
@@ -667,8 +746,8 @@ Key rules:
   `coverage.substituted_inputs`: `kind: upstream_state` and the input's `source`, the tool's address of the input (for
   a Terraform configuration, its module path and data source, with no instance key). A stage lists at most 256, sorted
   by `source` by Unicode code point; a record lists at most 256 across its stages. Its verdict still follows its
-  evaluations, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's or the plan's
-  reason wins when there is one.
+  evaluations, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's, a state not
+  read's or the plan's reason wins when there is one.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
   the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
   incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
@@ -677,8 +756,15 @@ Key rules:
   in kind order: `plan_incomplete` before `plan_not_applyable`. A plan-flag gap in any other stage is refused.
 - A plan stage with a `plan_incomplete` gap is `incomplete` with reason `plan_not_complete`, and its verdict still
   follows its evaluations. The `detail` is `the plan says it is incomplete` (`value: false`) or `the plan does not say
-  it is complete` (the marker). An evaluator error's reason wins over it; it wins over `upstream_state_unavailable`. A
-  `plan_not_applyable` gap leaves the status as it is: Terraform marks a plan that changes nothing as not applyable.
+  it is complete` (the marker). An evaluator error's reason wins over it; it wins over
+  `upstream_state_unavailable`. A `plan_not_applyable` gap leaves the status as it is: Terraform marks a plan that
+  changes nothing as not applyable.
+- A record whose state after the apply was not read has no `drift_check` and no `post_verify` stage: "post-verify
+  needs the identities the state after the apply gives, and the state after the apply was not read". Its `complete`
+  field is `true` only when `post_verify` is out of scope, and its `assurance_status` stays `incomplete`. The record's
+  `assurance_status.reason` is that of the first incomplete stage, after an evaluator error, so a plan stage's reason
+  can lead it: readers find a state not read by the post-deploy stage's `state_not_read` gap, or by
+  `change.deployment.apply.state`, not by the record's reason alone.
 - A record's `change.drift_check` names the record's run (`run_id`) and the IaC tool that applied the deployment
   (`change.deployment.apply.source.tool`). Its first reading is no earlier than the `post_deploy` stage's
   `observed_at`, nor than the end of the apply (`change.deployment.apply.timing.ended_at`, when the apply's timing
@@ -693,8 +779,11 @@ Key rules:
 - The model runs the integrity checks: it recomputes every value a reader can recompute and refuses a record whose value
   differs. They cover the change digest and the digests bound to it (the pre-deploy stage's
   `coverage.subjects_in_scope.source_digest`, each approval of a change and `change.drift_check.change_digest`), status
-  counts from events, each stage's verdict and status, the plan stage's plan-flag gaps, the status each built-in check
-  must have, and the combined top level. In an `iac_change` record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`
+  counts from events, each stage's verdict and status, the plan stage's plan-flag gaps, the post-deploy stage's
+  `state_not_read` gap (see the gap's rules above), the status each built-in check must have, and the combined top
+  level. An event's `status_reason` is `state_not_read` only in an `iac_change` record whose state was not read, at `post_deploy`;
+  otherwise it is an integrity failure at `events.<index>.evaluation.status_reason`: "names a state not read the
+  record does not". In an `iac_change` record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`
   must be `pass` exactly when `change.deployment.plan` has the evaluated plan's `digest`, `artifact_digest` and
   `artifact_digest_source`, and `fail` otherwise; `ILT.IAC.NO_DRIFT_AFTER_APPLY` must be `pass` exactly when
   `change.drift_check.differences_count` is 0, and `fail` otherwise. An event of either check whose status is one a
@@ -765,11 +854,12 @@ activity declares how its records are checked (`iltero_schemas.change_types.ACTI
 | `project_may_leave_out` | `pre_deploy`, `post_verify`. | None. | `post_verify`. |
 | `environment_policy_may_leave_out` | `post_verify`. | None. | `post_verify`. |
 | `not_supported(record)` | `post_verify` when the record's IaC tool has no drift reader; none for `terraform`. | None. | `post_verify`, whatever the record: the workload may be of a kind no reader reads, such as one a cloud's own service runs. |
-| `required_documents` | The record at every stage, and the [resource identities](#resourceidentities) document (`resource_identities`) at `post_deploy` as well. | The record at `plan`. | The record at every stage. |
+| `required_documents` | The record at every stage, and the [resource identities](#resourceidentities) document (`resource_identities`) at `post_deploy` as well. A record whose state after the apply was not read names no identities; the document stays owed at `post_deploy`. | The record at `plan`. | The record at every stage. |
 | `named_documents(record)` | None. | At `plan`, `image_index`, the raw index, only when the change's `index_evidence_ref` names one, by its `ref_id` in `evidence_refs`. The build tool's metadata file and the reports are never owed. | None. |
 | `checked_content` | The record's plan (see [Checked content](#checked-content)). | The record's image. | The record's image. |
 | `carried_out_matches_checked` | `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` at `post_deploy`. | `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` at `plan`. | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` at `post_deploy`. |
 | `always_evaluated` | `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` at `post_deploy`, `ILT.IAC.NO_DRIFT_AFTER_APPLY` at `post_verify`. | `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` at `plan`. | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` at `post_deploy`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` at `post_verify`. |
+| `reads_a_state_after_the_apply` | `True`: its records read the IaC tool's state after the apply, which can go unread (see [When the state after the apply was not read](#apply-with-the-state-not-read)). | `False`. | `False`. |
 
 `carried_out_matches_checked` is the built-in assertion that checks that what the pipeline carried out matches what was
 checked, with the stage it is evaluated at: it ties a record's evaluations to its checked content. No policy leaves it
@@ -794,7 +884,7 @@ The `change` of a record whose activity is `iac_change`: one unit's plan and, on
 | `digest` | digest | The [change digest](#the-change-digest). Approvals bind to it. |
 | `plan` | object | The plan the record is about (see below). |
 | `deployment` | object or null | What the apply did, in the shape of an [AssuranceContext](#assurancecontext)'s `deployment`. Present exactly when the `post_deploy` stage has reported. |
-| `identity` | object or null | The unit's [resource identities](#resourceidentities) after the apply. Present exactly when `deployment` is. Read from the state file the apply left (`sources.read_from: state_file`), with the deployment's applied plan as `sources.plan` and its state as `sources.state`. |
+| `identity` | object or null | The unit's [resource identities](#resourceidentities) after the apply. Present exactly when `deployment` is and its state was read: a record whose state after the apply was not read names none ("a record names no identities when the state after the apply was not read"). Read from the state file the apply left (`sources.read_from: state_file`), with the deployment's applied plan as `sources.plan` and its state as `sources.state`. |
 | `drift_check` | object or null | What two readings of the deployed resources, taken after the apply, found (see the drift check above). Present exactly when the `post_verify` stage has reported. |
 
 `plan` (`iltero_schemas.change_types.PlanRecord`):

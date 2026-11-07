@@ -19,7 +19,14 @@ from iltero_schemas.assertions.built_in import BUILT_INS
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.change_types.registry import ACTIVITIES
 from iltero_schemas.models.assertion import COMBINATIONS, Stage, TargetKind, stage_name
-from iltero_schemas.models.coverage import StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.coverage import (
+    STATE_REASON,
+    StageOutcome,
+    StateNotReadGap,
+    combine_in_order,
+    stage_outcome,
+    state_not_read_reason_problem,
+)
 from iltero_schemas.models.redaction import RedactedKind
 from iltero_schemas.models.register import check_register
 from iltero_schemas.profiles import reads_approvals
@@ -220,6 +227,12 @@ def check_structure(car: CAR) -> None:
         seen |= assertions
         if not set(record.coverage.subjects_per_assertion) <= assertions:
             raise ValueError(f"the {stage.value} stage counts subjects only for assertions it has events for")
+        if not activity.reads_a_state_after_the_apply and any(
+            isinstance(gap, StateNotReadGap) for gap in record.coverage.gaps
+        ):
+            raise ValueError(
+                f"the {stage.value} stage lists the state not read, which a record of {activity.name} never has"
+            )
     activity.check_record(car)
 
 
@@ -269,7 +282,14 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
             problems.append((f"{where}.verdict", "is not the verdict the stage's counts give"))
         if record.assurance_status != recomputed.assurance_status:
             problems.append((f"{where}.assurance_status", "is not the status the stage's counts give"))
-    problems.extend(ACTIVITIES[car.change.activity].integrity_problems(car))
+    activity = ACTIVITIES[car.change.activity]
+    if not activity.reads_a_state_after_the_apply:
+        problems.extend(
+            state_not_read_reason_problem(index)
+            for index, event in enumerate(car.events)
+            if event.evaluation.status_reason == STATE_REASON
+        )
+    problems.extend(activity.integrity_problems(car))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)
     for key in ("coverage", "verdict", "assurance_status"):

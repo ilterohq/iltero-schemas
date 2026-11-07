@@ -15,7 +15,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Count, Identifier
-from iltero_schemas.models.iac.markers import ApplyLogIncomplete
+from iltero_schemas.models.iac.markers import ApplyLogIncomplete, OutcomeUnknown, StateNotRead
 from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 
 if TYPE_CHECKING:
@@ -78,12 +78,13 @@ class DeposedDelete(StrictModel):
     (``errored``), or still there because its delete never started
     (``not_attempted``). When the log lost lines, a failed delete and one never
     started look the same, so the outcome of an object the state still holds may
-    stay unknown.
+    stay unknown. When the state was not read, every deposed object's outcome is
+    unknown (``StateNotRead``).
     """
 
     address: Address
     key: DeposedKey
-    outcome: Literal["applied", "errored", "not_attempted"] | ApplyLogIncomplete
+    outcome: Literal["applied", "errored", "not_attempted"] | OutcomeUnknown
 
 
 class TerraformApplyData(StrictModel):
@@ -112,11 +113,16 @@ class TerraformApplyData(StrictModel):
     @property
     def maybe_ran(self) -> bool:
         """Whether a deposed object's delete may have run: its outcome is unknown."""
-        return any(isinstance(entry.outcome, ApplyLogIncomplete) for entry in self.deposed)
+        return any(isinstance(entry.outcome, OutcomeUnknown) for entry in self.deposed)
+
+    @property
+    def deposed_state_not_read(self) -> bool:
+        """Whether a deposed object's delete is unknown for want of the state after the apply."""
+        return any(isinstance(entry.outcome, StateNotRead) for entry in self.deposed)
 
     @property
     def outcome_unknown(self) -> bool:
-        """Whether the log lost a fact only Terraform reports: the summary, or a deposed object's outcome."""
+        """Whether a fact only Terraform reports is unknown: the summary the log lost, or a deposed object's outcome."""
         return isinstance(self.summary, ApplyLogIncomplete) or self.maybe_ran
 
     @property
@@ -128,10 +134,33 @@ class TerraformApplyData(StrictModel):
         """Raise ``ValueError`` unless what Terraform says agrees with the apply's changes."""
         if len(apply.changes) + len(self.deposed) > MAX_RESOURCES:
             raise ValueError(f"an apply holds at most {MAX_RESOURCES} changes and deposed objects together")
-        if apply.outcomes_from == "apply_log_and_state" and not (
-            self.log_lines.damaged_messages or self.log_lines.interrupted_operations
-        ):
+        lost_messages = bool(self.log_lines.damaged_messages or self.log_lines.interrupted_operations)
+        # A change that needs no operation is unknown without the state for want of it, not for anything the log lost.
+        # Where an address also holds deposed objects, the log names each delete there alike, so without the state
+        # nothing shows which delete was the current object's, even in a log that lost nothing.
+        shared = {entry.address for entry in self.deposed} if not apply.state_read else set()
+        left_to_the_state = (
+            apply.outcomes_from == "apply_log_and_state"
+            or isinstance(self.summary, ApplyLogIncomplete)
+            or any(
+                change.outcome_from == "none"
+                and change.required
+                and not (change.address in shared and "delete" in change.required)
+                for change in apply.changes
+            )
+        )
+        if left_to_the_state and not lost_messages:
             raise ValueError("only a log that lost messages leaves a change to the state or unknown")
+        # Without the state, a log that lost messages cannot show that a change it never names was not started.
+        if lost_messages and any(
+            change.outcome_from == "apply_log_alone" and change.outcome == "not_attempted" and change.required
+            for change in apply.changes
+        ):
+            raise ValueError(
+                "with the state not read and the log missing messages, a change the log never names is unknown"
+            )
+        if not apply.state_read and any(not isinstance(entry.outcome, StateNotRead) for entry in self.deposed):
+            raise ValueError("with the state not read, every deposed object's delete is unknown")
         if isinstance(self.summary, TerraformApplySummary):
             self._check_summary(apply, self.summary)
 
@@ -142,7 +171,13 @@ class TerraformApplyData(StrictModel):
         is the only one at its address, and may be lost behind another change there. Its count of removed
         objects therefore lies between the current objects' deletes and those plus every deposed delete.
         """
-        outcomes = [change.outcome for change in apply.changes] + [entry.outcome for entry in self.deposed]
+        # A deposed object's delete the state was not there to settle may be any of the counted removals.
+        not_read = sum(isinstance(entry.outcome, StateNotRead) for entry in self.deposed)
+        outcomes = [
+            change.outcome
+            for change in apply.changes
+            if change.required or not isinstance(change.outcome, StateNotRead)
+        ] + [entry.outcome for entry in self.deposed if not isinstance(entry.outcome, StateNotRead)]
         if any(not isinstance(outcome, str) or outcome in ("errored", "not_attempted") for outcome in outcomes):
             raise ValueError("Terraform reports its counts only when every change was made")
         applied = [change for change in apply.changes if change.outcome == "applied"]
@@ -153,7 +188,10 @@ class TerraformApplyData(StrictModel):
         }
         removed = sum("delete" in change.required for change in applied)
         reported = summary.model_dump()
-        if reported.pop("removed") not in range(removed, removed + self.destroyed + 1) or reported != expected:
+        if (
+            reported.pop("removed") not in range(removed, removed + self.destroyed + not_read + 1)
+            or reported != expected
+        ):
             raise ValueError("the summary's counts are not what the changes show")
 
 

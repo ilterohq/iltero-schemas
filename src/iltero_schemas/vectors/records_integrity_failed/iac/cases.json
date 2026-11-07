@@ -849,5 +849,205 @@
         "is not the count the stage gives its assertion index"
       ]
     ]
+  },
+  {
+    "name": "state_not_read_without_its_gap",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/stages/post_deploy/coverage/gaps": [],
+      "/stages/post_deploy/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/post_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 11,
+          "counted_from": "plan_resource_enumeration",
+          "source_digest": "sha256:542655f99097af73932265f53f659c0f3799748c210c1bc8491ca64a5b3a6862",
+          "removed_by_plan": 0,
+          "excluded": [
+            {
+              "plan_index": 0,
+              "id": "data.local_file.manifest",
+              "reason": "not_managed"
+            }
+          ]
+        },
+        "subjects_evaluated": 0,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:b81a96227409a92f02d1a6c9a25926714531a7bf0792f262abce1c75111b520f"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
+          "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+          "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      }
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.post_deploy.coverage.gaps",
+        "does not match change.deployment.apply.state: one state-not-read gap exactly when the state after the apply was not read"
+      ]
+    ]
+  },
+  {
+    "name": "state_read_with_the_state_not_read_gap",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/stages/post_deploy/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ],
+      "/stages/post_deploy/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/post_deploy/assurance_status": {
+        "value": "incomplete",
+        "reason": "state_not_read",
+        "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
+      },
+      "/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/assurance_status": {
+        "value": "incomplete",
+        "reason": "state_not_read",
+        "detail": "post_deploy: the state after the apply was not read, so no outcome of the apply was held to it"
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 11,
+          "counted_from": "plan_resource_enumeration",
+          "source_digest": "sha256:542655f99097af73932265f53f659c0f3799748c210c1bc8491ca64a5b3a6862",
+          "removed_by_plan": 0,
+          "excluded": [
+            {
+              "plan_index": 0,
+              "id": "data.local_file.manifest",
+              "reason": "not_managed"
+            }
+          ]
+        },
+        "subjects_evaluated": 0,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:b81a96227409a92f02d1a6c9a25926714531a7bf0792f262abce1c75111b520f"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
+          "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+          "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [
+          {
+            "stage": "post_deploy",
+            "kind": "state_not_read"
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      }
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.post_deploy.coverage.gaps",
+        "does not match change.deployment.apply.state: one state-not-read gap exactly when the state after the apply was not read"
+      ]
+    ]
+  },
+  {
+    "name": "state_read_with_an_evaluation_unknown_for_a_state_not_read",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/events/1/evaluation/status_reason": "state_not_read"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status_reason",
+        "names a state not read the record does not"
+      ]
+    ]
+  },
+  {
+    "name": "state_not_read_given_as_a_reason_before_the_post_deploy_stage",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/events/1/evaluation/status_reason": "state_not_read"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status_reason",
+        "names a state not read the record does not"
+      ]
+    ]
   }
 ]

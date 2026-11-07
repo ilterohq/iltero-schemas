@@ -24,7 +24,7 @@ from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
 from iltero_schemas.models.checked_content import CheckedPlan, checked_plan
-from iltero_schemas.models.coverage import PlanFlagGap
+from iltero_schemas.models.coverage import STATE_REASON, PlanFlagGap, StateNotReadGap, state_not_read_reason_problem
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     ArtifactDigestSource,
@@ -37,6 +37,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.iac.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.iac.drift_check import (
+    NO_DRIFT_CHECK_WITHOUT_THE_STATE,
     TOOLS_WITH_DRIFT_READER,
     DriftCheck,
     check_against_deployment,
@@ -89,7 +90,7 @@ class IacChange(StrictModel):
     plan: PlanRecord
     # Null until the post-deploy stage has reported.
     deployment: Deployment | None
-    # Null until the post-deploy stage has read the unit's state.
+    # Null until the post-deploy stage has read the unit's state, and null when the state after the apply was not read.
     identity: IdentityRecord | None
     # Null until the post-verify stage has read the deployed resources back.
     drift_check: DriftCheck | None
@@ -102,7 +103,14 @@ class IacChange(StrictModel):
         return self
 
     def _check_identity(self) -> None:
-        """The identities are the deployment's: read after it, from its plan, naming exactly what left the state."""
+        """The identities are the deployment's: read after it, from its plan, naming exactly what left the state.
+
+        A deployment whose state after the apply was not read has none, though the post-deploy stage still owes them.
+        """
+        if self.deployment is not None and not self.deployment.apply.state_read:
+            if self.identity is not None:
+                raise ValueError("a record names no identities when the state after the apply was not read")
+            return
         if (self.identity is None) != (self.deployment is None):
             raise ValueError("a record names its identities exactly when its post-deploy stage has reported")
         if self.identity is None or self.deployment is None:
@@ -159,6 +167,10 @@ def _check_plan(car: CAR) -> None:
     for stage, record in car.stages.items():
         if stage is not Stage.PLAN and any(isinstance(gap, PlanFlagGap) for gap in record.coverage.gaps):
             raise ValueError(f"the {stage.value} stage lists a plan-flag gap, which only the plan stage lists")
+        if stage is not Stage.POST_DEPLOY and any(isinstance(gap, StateNotReadGap) for gap in record.coverage.gaps):
+            raise ValueError(
+                f"the {stage.value} stage lists the state not read, which only the post-deploy stage lists"
+            )
 
 
 def _check_deployment(car: CAR) -> None:
@@ -172,6 +184,9 @@ def _check_deployment(car: CAR) -> None:
     scope = stage.coverage.subjects_in_scope
     if scope.value != 1 or scope.source_digest != digest_of(deployment.model_dump(mode="json", by_alias=True)):
         raise ValueError("the post_deploy stage must count the one deployment the record describes, by its digest")
+    log = deployment.apply.source.digest
+    if not any(ref.source is not None and ref.source.digest == log for ref in car.evidence_refs):
+        raise ValueError("the apply log the deployment was read from is an entry of the evidence register")
 
 
 def _check_drift_check(car: CAR) -> None:
@@ -185,6 +200,8 @@ def _check_drift_check(car: CAR) -> None:
         return
     if check.run_id != car.run.id:
         raise ValueError("the drift check names the record's run")
+    if change.deployment is not None and not change.deployment.apply.state_read:
+        raise ValueError(NO_DRIFT_CHECK_WITHOUT_THE_STATE)
     if change.deployment is None or change.identity is None:
         return  # a post-verify stage without its post-deploy stage is refused with the stages' order
     check_against_deployment(check, change.deployment)
@@ -248,11 +265,12 @@ def _owed_statuses(change: IacChange) -> dict[str, str]:
 
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
-    """The record's own plan, deployment and reading give its plan-flag gaps and its built-in checks' results.
+    """The record's own plan, deployment and reading give its gaps and its built-in checks' results.
 
-    The plan stage lists the gaps the plan's flags call for, and each built-in check found the status they give.
+    The plan stage lists the gaps the plan's flags call for, the post-deploy stage the gap of a state not read, and
+    each built-in check found the status they give.
     """
-    return _plan_flag_problems(car) + owed_status_problems(car, _owed_statuses(_body(car)))
+    return _plan_flag_problems(car) + _state_problems(car) + owed_status_problems(car, _owed_statuses(_body(car)))
 
 
 def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
@@ -270,6 +288,23 @@ def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
         where, what = "stages.plan.coverage.gaps", "does not match change.plan.complete and change.plan.applyable"
         return [(where, f"{what}: one gap, in kind order, for each that is not true, with its value")]
     return []
+
+
+def _state_problems(car: CAR) -> list[tuple[str, str]]:
+    """The post-deploy stage lists the state not read exactly when the deployment's state was not read, and only an
+    evaluation of that stage is unknown for it."""
+    deployment = _body(car).deployment
+    not_read = deployment is not None and not deployment.apply.state_read
+    problems: list[tuple[str, str]] = []
+    stage = car.stages.get(Stage.POST_DEPLOY)
+    if stage is not None and any(isinstance(gap, StateNotReadGap) for gap in stage.coverage.gaps) != not_read:
+        where, what = "stages.post_deploy.coverage.gaps", "does not match change.deployment.apply.state"
+        problems.append((where, f"{what}: one state-not-read gap exactly when the state after the apply was not read"))
+    for index, event in enumerate(car.events):
+        reason = event.evaluation.status_reason
+        if reason == STATE_REASON and (not not_read or event.evaluation.stage is not Stage.POST_DEPLOY):
+            problems.append(state_not_read_reason_problem(index))
+    return problems
 
 
 IAC_CHANGE = Activity(
@@ -297,4 +332,5 @@ IAC_CHANGE = Activity(
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
     integrity_problems=_integrity_problems,
+    reads_a_state_after_the_apply=True,
 )

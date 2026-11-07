@@ -135,10 +135,21 @@ class CountGap(_Gap):
     count: Annotated[int, Field(ge=1)]
 
 
+class StateNotReadGap(_Gap):
+    """The state after the apply, which was not read: no outcome of the apply was held to it.
+
+    The pipeline said the infrastructure-as-code (IaC) tool could not read it;
+    nothing corroborates that. A stage that lists it is a coverage gap, whatever
+    its checks found.
+    """
+
+    kind: Literal["state_not_read"]
+
+
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PlanIndexGap | CountGap
-# The most gaps a coverage lists: one per resource a plan holds, and each flag or count kind once per stage.
-MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
+Gap = PlanFlagGap | PlanIndexGap | CountGap | StateNotReadGap
+# The most gaps a coverage lists: one per resource a plan holds, and each flag, count or state kind once per stage.
+MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (3 + len(COUNT_GAP_KINDS))
 
 
 class SubjectsInScope(StrictModel):
@@ -227,6 +238,9 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        state_gaps = [gap.stage for gap in self.gaps if isinstance(gap, StateNotReadGap)]
+        if len(set(state_gaps)) != len(state_gaps):
+            raise ValueError("a stage lists the state not read once")
         gaps = [(gap.kind, gap.plan_index) for gap in self.gaps if isinstance(gap, PlanIndexGap)]
         excluded = {(e.reason, e.plan_index) for e in self.subjects_in_scope.excluded if e.reason in IDENTITY_REASONS}
         if len(set(gaps)) != len(gaps) or set(gaps) != excluded:
@@ -247,10 +261,21 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
-# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's reason wins.
+# Why a stage that did not read the state after the apply is incomplete; an evaluator error's reason wins.
+STATE_REASON = "state_not_read"
+STATE_DETAIL = "the state after the apply was not read, so no outcome of the apply was held to it"
+
+
+# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's or the state's reason wins.
 PLAN_REASON = "plan_not_complete"
-# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's or the plan's reason wins.
+# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's, the state's or the plan's
+# reason wins.
 SUBSTITUTED_REASON = "upstream_state_unavailable"
+
+
+def state_not_read_reason_problem(index: int) -> tuple[str, str]:
+    """The integrity problem of event ``index`` giving a state not read as its reason where the record shows none."""
+    return (f"events.{index}.evaluation.status_reason", "names a state not read the record does not")
 
 
 def _stage_codes(coverage: Coverage) -> list[int]:
@@ -264,6 +289,7 @@ def _stage_codes(coverage: Coverage) -> list[int]:
         or coverage.assertions_evaluated < expected
         or counts["not_evaluated"]
         or coverage.truncated.value
+        or any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps)
     ):
         codes.append(6)
     if counts["error"]:
@@ -279,10 +305,11 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     """A stage's verdict and status, from its own counts by the one rule every reader can recompute.
 
     A gap in what was attempted outranks an evaluator error, which outranks an
-    undecided check, which outranks a failed one. Errors also mark the stage
-    incomplete: the record survives, the gate still fails. So do a plan that
-    does not say it is complete and inputs replaced with placeholders; neither
-    changes the verdict.
+    undecided check, which outranks a failed one. A state after the apply that
+    was not read is such a gap. Errors also mark the stage incomplete: the
+    record survives, the gate still fails. So do a state not read, a plan that
+    does not say it is complete and inputs replaced with placeholders; the last
+    two do not change the verdict.
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
@@ -291,6 +318,8 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     if errors:
         detail = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
         status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
+    elif any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps):
+        status = AssuranceStatus(value="incomplete", reason=STATE_REASON, detail=STATE_DETAIL)
     elif plan is not None:
         detail = "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
         status = AssuranceStatus(value="incomplete", reason=PLAN_REASON, detail=detail)

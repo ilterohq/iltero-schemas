@@ -1143,5 +1143,19 @@
     },
     "remove": [],
     "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
+  },
+  {
+    "name": "image_deploy_listing_the_state_not_read",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/post_deploy/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the post_deploy stage lists the state not read, which a record of image_deploy never has"
   }
 ]

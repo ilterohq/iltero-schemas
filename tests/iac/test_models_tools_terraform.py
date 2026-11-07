@@ -136,3 +136,59 @@ def test_an_apply_holds_a_bounded_number_of_changes_and_deposed_objects() -> Non
     document["tool_data"]["deposed"] = [_deposed("applied", key=f"{i:08x}") for i in range(100_000)]
     with pytest.raises(ValidationError, match="changes and deposed objects together"):
         Apply.model_validate(document)
+
+
+NOT_READ = {"__unknown": True, "reason": "state_not_read"}
+
+
+def _not_read(apply: dict[str, Any]) -> dict[str, Any]:
+    """``apply`` with its state not read, and its changes known from the log alone."""
+    changes = [{**entry, "outcome_from": "apply_log_alone"} for entry in apply["changes"]]
+    return {**apply, "state": NOT_READ, "outcomes_from": "apply_log_alone", "changes": changes}
+
+
+def test_with_the_state_not_read_every_deposed_delete_is_unknown() -> None:
+    Apply.model_validate(_not_read(_cleared(_deposed(NOT_READ))))
+    with pytest.raises(ValidationError, match="with the state not read, every deposed object's delete is unknown"):
+        Apply.model_validate(_not_read(_cleared(_deposed("applied"))))
+
+
+def test_a_deposed_delete_stays_unknown_for_want_of_the_state_only_when_it_was_not_read() -> None:
+    with pytest.raises(ValidationError, match="unknown for want of the state only when the state was not read"):
+        Apply.model_validate(_cleared(_deposed(NOT_READ), summary=None))
+
+
+@pytest.mark.parametrize("removed", [1, 2])
+def test_the_summary_may_count_a_deposed_delete_the_state_was_not_there_to_settle(removed: int) -> None:
+    summary = {"added": 1, "changed": 0, "imported": 0, "removed": removed}
+    Apply.model_validate(_not_read(_cleared(_deposed(NOT_READ), summary=summary)))
+    with pytest.raises(ValidationError, match="the summary's counts are not what the changes show"):
+        Apply.model_validate(_not_read(_cleared(_deposed(NOT_READ), summary={**summary, "removed": 3})))
+
+
+def test_a_delete_beside_deposed_objects_may_stay_unknown_without_the_state_in_a_whole_log() -> None:
+    unknown = {
+        **change("a.server", "replace", ["create", "delete"], "applied"),
+        "outcome_from": "none",
+        "completed": NOT_READ,
+        "outcome": NOT_READ,
+    }
+    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None))
+    apply["changes"] = [unknown]
+    Apply.model_validate(apply)
+    apply["tool_data"]["deposed"] = []
+    with pytest.raises(ValidationError, match="only a log that lost messages leaves a change"):
+        Apply.model_validate(apply)
+
+
+def test_a_replace_that_only_creates_beside_deposed_objects_still_needs_a_log_that_lost_messages() -> None:
+    unknown = {
+        **change("a.server", "replace", ["create"], "applied"),
+        "outcome_from": "none",
+        "completed": NOT_READ,
+        "outcome": NOT_READ,
+    }
+    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None))
+    apply["changes"] = [unknown]
+    with pytest.raises(ValidationError, match="only a log that lost messages leaves a change"):
+        Apply.model_validate(apply)

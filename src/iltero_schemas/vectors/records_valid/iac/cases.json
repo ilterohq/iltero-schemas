@@ -974,5 +974,139 @@
       "/coverage/subjects_in_scope/value": 19
     },
     "remove": []
+  },
+  {
+    "name": "state_not_read_after_an_apply_that_ran_to_its_end",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": {
+        "added": 11,
+        "changed": 0,
+        "imported": 0,
+        "removed": 0
+      },
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:ba7c3aa44b3bf27ad4d6159b11d20842be9df2fe70bcfe6e40e39960836cea46"
+    },
+    "remove": []
+  },
+  {
+    "name": "state_not_read_with_a_replace_unknown_beside_deposed_objects",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": null,
+      "/change/deployment/apply/changes/7/action": "replace",
+      "/change/deployment/apply/changes/7/required": [
+        "create",
+        "delete"
+      ],
+      "/change/deployment/apply/changes/7/completed": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/7/outcome": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/7/outcome_from": "none",
+      "/change/deployment/apply/tool_data/deposed": [
+        {
+          "address": "random_id.retired",
+          "key": "bb9fd791",
+          "outcome": {
+            "__unknown": true,
+            "reason": "state_not_read"
+          }
+        }
+      ],
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:cb3ef80f5d9599aa10818e49c949a836a80622e01e1f463fb68f50cbc8183392"
+    },
+    "remove": []
+  },
+  {
+    "name": "state_not_read_with_a_rename_left_unknown",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": {
+        "added": 10,
+        "changed": 0,
+        "imported": 0,
+        "removed": 0
+      },
+      "/change/deployment/apply/changes/6/action": "no-op",
+      "/change/deployment/apply/changes/6/required": [],
+      "/change/deployment/apply/changes/6/moved_from": "random_id.older",
+      "/change/deployment/apply/changes/6/completed": [],
+      "/change/deployment/apply/changes/6/outcome": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/change/deployment/apply/changes/6/outcome_from": "none",
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:dbacb3eff29457b87d0fc7df22158b8ff6a170a3df23b9ab6050e20820d51f38"
+    },
+    "remove": []
+  },
+  {
+    "name": "state_not_read_with_a_deposed_delete_left_unknown",
+    "vector": "iac/local_run_state_not_read.json",
+    "set": {
+      "/change/deployment/apply/changes/9/outcome_from": "apply_log_alone",
+      "/change/deployment/apply/changes/9/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/9/outcome": "applied",
+      "/change/deployment/apply/changes/10/completed": [
+        "create"
+      ],
+      "/change/deployment/apply/changes/10/outcome": "applied",
+      "/change/deployment/apply/tool_data/log_lines/damaged_messages": 0,
+      "/change/deployment/apply/tool_data/summary": {
+        "added": 11,
+        "changed": 0,
+        "imported": 0,
+        "removed": 1
+      },
+      "/change/deployment/apply/tool_data/deposed": [
+        {
+          "address": "random_id.retired",
+          "key": "bb9fd791",
+          "outcome": {
+            "__unknown": true,
+            "reason": "state_not_read"
+          }
+        }
+      ],
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:a6809d0e830d585ab0b3af6f352beb18286acb0240aa038aea9ad043e13d5cec"
+    },
+    "remove": []
   }
 ]

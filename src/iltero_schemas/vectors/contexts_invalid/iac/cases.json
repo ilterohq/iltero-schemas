@@ -124,5 +124,19 @@
     },
     "remove": [],
     "message": "must not contain control characters"
+  },
+  {
+    "name": "post_verify_input_with_the_state_not_read",
+    "vector": "iac/post_verify.json",
+    "set": {
+      "/deployment/apply/state": {
+        "__unknown": true,
+        "reason": "state_not_read"
+      },
+      "/deployment/apply/outcomes_from": "apply_log_alone",
+      "/deployment/apply/changes/0/outcome_from": "apply_log_alone"
+    },
+    "remove": [],
+    "message": "post-verify needs the identities the state after the apply gives, and the state after the apply was not read"
   }
 ]

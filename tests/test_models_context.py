@@ -17,6 +17,7 @@ from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.iac.deployment import Deployment
+from iltero_schemas.models.iac.markers import ApplyLogIncomplete, StateNotRead
 from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import PROFILES
 from tests.conftest import POST_DEPLOY, VECTORS
@@ -467,7 +468,8 @@ def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tupl
 
 
 def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
-    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, KindNotMapped)}
+    markers = (NotReported, KindNotMapped, ApplyLogIncomplete, StateNotRead)
+    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in markers}
     assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]
 
 

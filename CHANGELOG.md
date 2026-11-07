@@ -123,8 +123,9 @@ keep, so any two tools agree on what a record means.
   variant of the plan's tool. It names the kind its tool's table gives its
   type, like a change entry, and `provider` is required and is the
   provider's short name.
-- The plan, the apply log and the state name their IaC tool (`tool`) and its
-  version (`tool_version`). An apply's timing source is `apply_log`.
+- The plan, the apply log and the state, when it was read, name their IaC
+  tool (`tool`) and its version (`tool_version`). An apply's timing source
+  is `apply_log`.
 - A subject is keyed, in the evaluation input, in events and in an earlier
   evaluation, by `key`: the digest of its kind and its one local identity,
   computed by `models.subjects.subject_key` and checked in every document,
@@ -151,7 +152,8 @@ keep, so any two tools agree on what a record means.
   are in scope, and its evidence register: each file it cites, by its
   path and digest, with the name and digest of the file as the pipeline
   gave it (`source`). It holds each stage's events file and assertion
-  index, every event's input, and what the plan stage redacted. It says what was checked and how; on its own, it
+  index, every event's input, what the plan stage redacted, and, once
+  deployed, the apply log the deployment was read from. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
   standard, and its `compliance_determination` is always `null`.
 - A record's `trust_level` is one of three levels (`self_attested`,
@@ -168,9 +170,9 @@ keep, so any two tools agree on what a record means.
   or `fail`, matched by an evaluator binding whose version constraint the
   scanner does not satisfy, or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
   names its index in the plan's resource list (`plan_index`), its address as
-  written or `null`, and one of four reasons. A coverage gap is one of three
-  shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, or a
-  count of at least 1 (`COUNT_GAP_KINDS`); the record's combined coverage
+  written or `null`, and one of four reasons. A coverage gap is one of four
+  shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, a
+  count of at least 1 (`COUNT_GAP_KINDS`), or the state not read; the record's combined coverage
   names each gap's stage. A resource excluded for its identity is also a gap
   of that kind, once, and every identity gap names such a resource.
 - A record redacts under one policy. An evidence file's `redaction_policy`
@@ -234,7 +236,8 @@ keep, so any two tools agree on what a record means.
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
   `log_lines` it could not read, and the delete of each deposed object (an
-  old copy a replacement set aside) settled by the state; the resource
+  old copy a replacement set aside) settled by the state, or unknown when the
+  state was not read; the resource
   identities document's holds its deposed counts. The apply's `tool_data` must be the
   variant of its log's tool, and the resource identities document's that of its state's
   tool (`models.iac.tools.variants.check_tool_data`). The apply's `changes` name
@@ -433,6 +436,27 @@ keep, so any two tools agree on what a record means.
   (`sources.read_from`): the state file the apply left, or a refresh-only
   plan, which names no applied plan. A record's identities are always read
   from the state file.
+- An apply whose state was not read. When the pipeline says the IaC tool
+  could not read its state after the apply, the post-deploy stage is still
+  recorded, from the apply log alone. The state is then the unknown marker
+  `{"__unknown": true, "reason": "state_not_read"}` (`StateNotRead`), and
+  `outcomes_from` is `apply_log_alone`: the log's word, held to the applied
+  plan only. Each change's `outcome_from` is `apply_log_alone`, or `none`
+  when it stays unknown. A change only the state would have settled (a
+  create, delete or replace whose end the log lost, or a change that needs
+  no operation) is unknown with that marker; an update
+  the log lost stays `deployment_log_incomplete`. Such a record shows that
+  an apply was invoked, which plan the pipeline says it applied and what the
+  log says of each change. Its post-deploy stage lists the gap `state_not_read`, which makes
+  it a coverage gap (exit code 6) and incomplete with reason
+  `state_not_read`; an evaluator error's reason comes first. The record
+  names no identities, and refuses a drift check and a post-verify stage, as
+  a post-verify evaluation input does. `state_not_read` is also a reason an
+  `unknown` evaluation can give, only at that post-deploy stage. An activity
+  says whether its records read a state after an apply
+  (`reads_a_state_after_the_apply`); image builds and deploys do not, so
+  they refuse the gap and the reason. Record, context, evaluation and
+  compiler vectors cover it.
 - A record of a container image build (`change.activity: image_build`). It
   names the image by its repository and digest, the digest of each
   platform's image when the build pushed an index (the manifest that lists

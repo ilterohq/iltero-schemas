@@ -14,6 +14,8 @@ from iltero_schemas.models.coverage import (
     MAX_GAPS,
     MAX_SUBSTITUTED_INPUTS,
     PLAN_REASON,
+    STATE_DETAIL,
+    STATE_REASON,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
     CountGap,
@@ -457,3 +459,30 @@ def test_a_build_record_counts_the_one_artifact_its_plan_stage_counts() -> None:
     assert combine([("plan", built)]).coverage.subjects_in_scope.counted_from == "artifact_unit"
     with pytest.raises(ValueError, match="one stage counts them, and it comes first"):
         combine([("plan", built), ("post_deploy", PLAN)])
+
+
+STATE_GAP = {"kind": "state_not_read"}
+
+
+def test_a_stage_that_did_not_read_the_state_after_the_apply_is_a_gap_and_incomplete() -> None:
+    outcome = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [STATE_GAP]}))
+    assert outcome.verdict.exit_code == 6
+    assert (outcome.assurance_status.reason, outcome.assurance_status.detail) == (STATE_REASON, STATE_DETAIL)
+
+
+def test_an_evaluator_error_outranks_the_state_not_read_which_outranks_the_plan() -> None:
+    gaps = [{"kind": "plan_incomplete", "value": False}, STATE_GAP]
+    assert stage_outcome(_substituted(gaps=gaps)).assurance_status.reason == STATE_REASON
+    counts = {**PLAN_STAGE["coverage"]["status_counts"]}
+    moved = next(status for status, count in counts.items() if count)
+    counts[moved], counts["error"] = counts[moved] - 1, counts["error"] + 1
+    assert stage_outcome(_substituted(gaps=gaps, status_counts=counts)).assurance_status.reason == INCOMPLETE_REASON
+
+
+def test_the_state_not_read_outranks_placeholders() -> None:
+    assert stage_outcome(_substituted(gaps=[STATE_GAP])).assurance_status.reason == STATE_REASON
+
+
+def test_a_stage_lists_the_state_not_read_once() -> None:
+    with pytest.raises(ValidationError, match="lists the state not read once"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [STATE_GAP, STATE_GAP]})

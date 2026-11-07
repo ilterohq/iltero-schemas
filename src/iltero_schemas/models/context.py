@@ -75,7 +75,7 @@ from iltero_schemas.models.fields import (
     parse_timestamp,
 )
 from iltero_schemas.models.iac.deployment import Deployment, check_superseded, check_tool
-from iltero_schemas.models.iac.drift_check import DriftCheck, check_against_deployment
+from iltero_schemas.models.iac.drift_check import NO_DRIFT_CHECK_WITHOUT_THE_STATE, DriftCheck, check_against_deployment
 from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES, IacTool
 from iltero_schemas.models.iac.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
 from iltero_schemas.models.image.build_reports import ScanReports, TestReports, check_scans_name_their_platform
@@ -390,6 +390,8 @@ class AssuranceContext(StrictModel):
             check_superseded(self.plan.digest, deployment)
             check_tool(self.plan.tool, deployment)
         if isinstance(self.drift_check, DriftCheck) and isinstance(self.deployment, Deployment):
+            if not self.deployment.apply.state_read:
+                raise ValueError(NO_DRIFT_CHECK_WITHOUT_THE_STATE)
             check_against_deployment(self.drift_check, self.deployment)
         if isinstance(self.change, ImageChange):
             self._check_image_change(self.change, local)

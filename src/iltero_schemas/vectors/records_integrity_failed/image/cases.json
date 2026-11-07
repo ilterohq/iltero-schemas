@@ -321,5 +321,19 @@
         "is not unknown, what the record's change gives"
       ]
     ]
+  },
+  {
+    "name": "image_deploy_unknown_for_a_state_not_read",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/0/evaluation/status_reason": "state_not_read"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.0.evaluation.status_reason",
+        "names a state not read the record does not"
+      ]
+    ]
   }
 ]

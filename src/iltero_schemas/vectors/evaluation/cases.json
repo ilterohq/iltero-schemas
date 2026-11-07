@@ -8235,5 +8235,119 @@
       "unknown": null,
       "when": null
     }
+  },
+  {
+    "name": "applied_plan_decided_with_the_state_not_read",
+    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b",
+        "artifact_digest_source": "saved_plan"
+      },
+      "deployment": {
+        "plan": {
+          "digest": "sha256:a",
+          "artifact_digest": "sha256:b",
+          "artifact_digest_source": "saved_plan"
+        },
+        "apply": {
+          "state": {
+            "__unknown": true,
+            "reason": "state_not_read"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "state_read_after_the_apply",
+    "assertion": "VEC.DEPLOYMENT.STATE",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b",
+        "artifact_digest_source": "saved_plan"
+      },
+      "deployment": {
+        "apply": {
+          "state": {
+            "digest": "sha256:c",
+            "tool": "terraform",
+            "tool_version": "1.14.0"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "state_not_read_after_the_apply",
+    "assertion": "VEC.DEPLOYMENT.STATE",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "plan": {
+        "digest": "sha256:a",
+        "artifact_digest": "sha256:b",
+        "artifact_digest_source": "saved_plan"
+      },
+      "deployment": {
+        "apply": {
+          "state": {
+            "__unknown": true,
+            "reason": "state_not_read"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "deployment.apply.state.tool: state_not_read",
+      "unknown": {
+        "path": "deployment.apply.state.tool",
+        "reason": "state_not_read"
+      },
+      "when": null
+    }
   }
 ]

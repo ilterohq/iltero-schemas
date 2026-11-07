@@ -72,6 +72,8 @@ class Activity:
     change_digest_problems: Callable[[CAR], list[tuple[str, str]]]
     # Every other value of the body a reader can recompute that is not what it recomputes to.
     integrity_problems: Callable[[CAR], list[tuple[str, str]]]
+    # Whether a record of this activity reads a state after an apply, which can go unread (``state_not_read``).
+    reads_a_state_after_the_apply: bool
 
 
 @dataclass(frozen=True)

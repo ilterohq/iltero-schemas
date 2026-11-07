@@ -9,7 +9,14 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.iac.deployment import AppliedChange, Apply, Deployment, check_one_tool, check_tool
+from iltero_schemas.models.iac.deployment import (
+    AppliedChange,
+    Apply,
+    Deployment,
+    StateSource,
+    check_one_tool,
+    check_tool,
+)
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
@@ -380,6 +387,7 @@ def test_a_current_object_settled_by_the_state_still_cannot_be_never_attempted()
 def test_the_apply_log_and_the_state_name_the_same_tool() -> None:
     """Only one tool exists yet, so the rule is reached with a value no document can carry."""
     apply = Apply.model_validate(_apply())
+    assert isinstance(apply.state, StateSource)
     check_one_tool(apply.source, apply.state)
     other = apply.state.model_construct(**{**apply.state.model_dump(), "tool": "another"})
     with pytest.raises(ValueError, match="written by the same tool"):

@@ -3,7 +3,9 @@ was running afterwards.
 
 The server finds the build of the image by its digest and accepts it against
 the environment's accepted build sources; the record keeps what the server
-served (``AcceptedBuild``), never a build the pipeline named. The deployed image
+served (``AcceptedBuild``), never a build the pipeline named. In a run no server
+opened, an evaluation input holds the unknown marker in its place, since only
+the server can say whether it accepted a build. The deployed image
 and the reading of the workload afterwards are the pipeline's word, and so is
 when each happened: neither names a time. The stage that reports each was
 observed no earlier than the pipeline reported it.
@@ -16,7 +18,7 @@ from typing import Annotated, Literal, NamedTuple
 from pydantic import Field, model_validator
 
 from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.facts import NotReported
+from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import Count, Digest, Identifier, Uuid
 from iltero_schemas.models.image.kubernetes import KubernetesRollout, KubernetesWorkload, StatefulSetRollout
 from iltero_schemas.models.image.naming import (
@@ -69,12 +71,12 @@ class ImageChange(StrictModel):
 
     digest: Digest
     image: DeployedImageRef
-    # Null when the server accepted no build of the image, or no server opened the run.
-    build: AcceptedBuild | None
+    # Null when the server accepted no build of the image; the unknown marker when no server opened the run.
+    build: AcceptedBuild | ServerFactsUnavailable | None
 
     @model_validator(mode="after")
     def _platforms(self) -> ImageChange:
-        if self.build is not None:
+        if isinstance(self.build, AcceptedBuild):
             check_platform_digests(self.image.digest, self.build.platform_digests)
         return self
 

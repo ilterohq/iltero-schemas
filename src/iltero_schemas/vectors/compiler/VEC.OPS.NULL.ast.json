@@ -1,0 +1,39 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": null,
+          "op": "not_equal",
+          "path": "resource.after.set"
+        }
+      },
+      {
+        "predicate": {
+          "literal": null,
+          "op": "equal",
+          "path": "resource.after.cleared"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.OPS.NULL",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

@@ -171,13 +171,13 @@
       },
       "events": {
         "path": "units/api/pre_deploy/events.json",
-        "digest": "sha256:60868b589721fc7ebb5313f561ae6b52e44666a99977593fb26b9cca9a0b6a4c",
-        "count": 1
+        "digest": "sha256:b5555076f0dc39721816a8fd7131b47d9594d217287d5d640c02020daa0074cf",
+        "count": 2
       },
       "assertions": {
         "index": "units/api/pre_deploy/assertions/compiled.json",
-        "digest": "sha256:5f012cd114d062ff90616a02cc1c5d2e2f5127aaed8dca90f28cb03290440d14",
-        "count": 1
+        "digest": "sha256:e0461376b07c71726e93fee7ba71b497097e89737b27196f6977cea6982a6d93",
+        "count": 2
       },
       "scanners": null,
       "coverage": {
@@ -190,23 +190,24 @@
         },
         "subjects_evaluated": 1,
         "assertions_expected": {
-          "value": 1,
+          "value": 2,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:48e1da7ea368524993f7460b591c908458598cbbf663806b6e38d7470ba9099c"
+          "required_assertion_digest": "sha256:96d4f12cc09080967c54bfae94ea0ce5c2d66af27a27c2aea817ce1052a9779c"
         },
-        "assertions_evaluated": 1,
+        "assertions_evaluated": 2,
         "subjects_per_assertion": {
-          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1
+          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
         },
         "status_counts": {
           "pass": 0,
           "fail": 0,
-          "unknown": 1,
+          "unknown": 2,
           "not_applicable": 0,
           "not_evaluated": 0,
           "error": 0
         },
-        "evaluations": 1,
+        "evaluations": 2,
         "gaps": [],
         "truncated": {
           "value": false,
@@ -277,7 +278,7 @@
       },
       "events": {
         "path": "units/api/post_deploy/events.json",
-        "digest": "sha256:eb99e2b158c554b0b1dd565a68a12366b374094149ab1ff6c1a9c7693bad8d7b",
+        "digest": "sha256:d251471ad8a8e076d21d11a4372c44dda1768cd7570bba747764001992b14dcd",
         "count": 1
       },
       "assertions": {
@@ -383,7 +384,7 @@
       },
       "events": {
         "path": "units/api/post_verify/events.json",
-        "digest": "sha256:d8a451d67a380f0986b9ae8a5054cfd55765449acd162e40b0eca80c6afc8225",
+        "digest": "sha256:5c42cb8ec5c01697a3dfa2a3c5c519a73ed0258cf274b46c2d299a59b0b06411",
         "count": 1
       },
       "assertions": {
@@ -516,7 +517,7 @@
           "repository": "ghcr.io/acme/api",
           "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
         },
-        "input_digest": "sha256:d502911a568ffa1eb685579baec70d74a00c89a3322f7bd58b958f44a0c5ef4b",
+        "input_digest": "sha256:047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
         "evaluator": {
           "engine": "opa",
           "version": "1.20.2",
@@ -544,6 +545,103 @@
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:ecad9c1b3c6ef5bad861e3f06b40ebd37abe8690da5136913f50791a2ea1a4b8",
         "compiled_digest": "sha256:d9cb7b34f1957517535b3648c66a683a8138b28cb996c7bd001d623296941d55",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-02T09:00:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+        "version": "1.0.0",
+        "digest": "sha256:5c6bde5561f0010dc83fcbc632a80ac809063970280a8a90b3d8e45a0b2f6d13"
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_reason": "server_facts_unavailable",
+        "status_detail": null,
+        "policy_reason": "change.build: server_facts_unavailable",
+        "observations": {
+          "predicates": [
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "op": "not_equal",
+              "path": "change.build",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "change.build",
+            "reason": "server_facts_unavailable"
+          },
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "input_digest": "sha256:94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "darwin-aarch64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:3635526e5b1675346480346dd306012c2f4ae86be944737c77dbbf7f4614f1ea",
+          "content_digest": null,
+          "key_id": null
+        },
+        "evaluator_binding": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:19d92145cfd05303978bfe435511760039e3613211b07365e7dc480447793bca",
+        "compiled_digest": "sha256:45f4ba039ee013f735731fe2b355cd532b329b9cb66a846d16f764aaa207fc9a",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -625,7 +723,7 @@
           "repository": "ghcr.io/acme/api",
           "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
         },
-        "input_digest": "sha256:6c4c87b0d9f92df2e124c1e349b1caa6cef0b2ff1411ad79d7e66c224ba546b0",
+        "input_digest": "sha256:361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
         "evaluator": {
           "engine": "opa",
           "version": "1.20.2",
@@ -770,7 +868,7 @@
           "repository": "ghcr.io/acme/api",
           "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
         },
-        "input_digest": "sha256:2ace7a0d95d95ba971746140e335e2524edd0e5d2bfac5333fcc213f1e9ad818",
+        "input_digest": "sha256:317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
         "evaluator": {
           "engine": "opa",
           "version": "1.20.2",
@@ -824,25 +922,26 @@
     },
     "subjects_evaluated": 1,
     "assertions_expected": {
-      "value": 3,
+      "value": 4,
       "origin": "project_files",
-      "required_assertion_digest": "sha256:f00e30b8093933832e6db9ceddec5951bf64e177a523b9ca87d51e1de2b0f047"
+      "required_assertion_digest": "sha256:da3b0a475f90e7c41fe04bb2639109fa495b42997aff17d1fff93e8a6a628303"
     },
-    "assertions_evaluated": 3,
+    "assertions_evaluated": 4,
     "subjects_per_assertion": {
       "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+      "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
       "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
       "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
       "fail": 0,
-      "unknown": 1,
+      "unknown": 2,
       "not_applicable": 0,
       "not_evaluated": 0,
       "error": 0
     },
-    "evaluations": 3,
+    "evaluations": 4,
     "gaps": [],
     "truncated": {
       "value": false,
@@ -940,11 +1039,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "sha256-6c4c87b0d9f92df2e124c1e349b1caa6cef0b2ff1411ad79d7e66c224ba546b0",
+      "ref_id": "sha256-361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
       "media_type": "application/json",
-      "digest": "sha256:6c4c87b0d9f92df2e124c1e349b1caa6cef0b2ff1411ad79d7e66c224ba546b0",
-      "size_bytes": 1569,
-      "path": "units/api/post_deploy/contexts/sha256-6c4c87b0d9f92df2e124c1e349b1caa6cef0b2ff1411ad79d7e66c224ba546b0",
+      "digest": "sha256:361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
+      "size_bytes": 1552,
+      "path": "units/api/post_deploy/contexts/sha256-361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -959,7 +1058,7 @@
     {
       "ref_id": "post_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:eb99e2b158c554b0b1dd565a68a12366b374094149ab1ff6c1a9c7693bad8d7b",
+      "digest": "sha256:d251471ad8a8e076d21d11a4372c44dda1768cd7570bba747764001992b14dcd",
       "size_bytes": 2612,
       "path": "units/api/post_deploy/events.json",
       "storage_uri": null,
@@ -1042,11 +1141,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "sha256-2ace7a0d95d95ba971746140e335e2524edd0e5d2bfac5333fcc213f1e9ad818",
+      "ref_id": "sha256-317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
       "media_type": "application/json",
-      "digest": "sha256:2ace7a0d95d95ba971746140e335e2524edd0e5d2bfac5333fcc213f1e9ad818",
-      "size_bytes": 3377,
-      "path": "units/api/post_verify/contexts/sha256-2ace7a0d95d95ba971746140e335e2524edd0e5d2bfac5333fcc213f1e9ad818",
+      "digest": "sha256:317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
+      "size_bytes": 3391,
+      "path": "units/api/post_verify/contexts/sha256-317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -1061,7 +1160,7 @@
     {
       "ref_id": "post_verify/events.json",
       "media_type": "application/json",
-      "digest": "sha256:d8a451d67a380f0986b9ae8a5054cfd55765449acd162e40b0eca80c6afc8225",
+      "digest": "sha256:5c42cb8ec5c01697a3dfa2a3c5c519a73ed0258cf274b46c2d299a59b0b06411",
       "size_bytes": 2913,
       "path": "units/api/post_verify/events.json",
       "storage_uri": null,
@@ -1223,10 +1322,61 @@
       "redaction_policy": null
     },
     {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:89932d839d3d8ebe62772dcbabc9431276a1495dcf68d47590bf0226f56b0391",
+      "size_bytes": 375,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:45f4ba039ee013f735731fe2b355cd532b329b9cb66a846d16f764aaa207fc9a",
+      "size_bytes": 11332,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:fb854e80b772c5eab6c8491573952ea44224b20db7c1004cd7814ede45f184d4",
+      "size_bytes": 437,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
       "ref_id": "pre_deploy/assertions/compiled.json",
       "media_type": "application/json",
-      "digest": "sha256:5f012cd114d062ff90616a02cc1c5d2e2f5127aaed8dca90f28cb03290440d14",
-      "size_bytes": 1192,
+      "digest": "sha256:e0461376b07c71726e93fee7ba71b497097e89737b27196f6977cea6982a6d93",
+      "size_bytes": 2251,
       "path": "units/api/pre_deploy/assertions/compiled.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1240,11 +1390,28 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "sha256-d502911a568ffa1eb685579baec70d74a00c89a3322f7bd58b958f44a0c5ef4b",
+      "ref_id": "sha256-047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
       "media_type": "application/json",
-      "digest": "sha256:d502911a568ffa1eb685579baec70d74a00c89a3322f7bd58b958f44a0c5ef4b",
-      "size_bytes": 1510,
-      "path": "units/api/pre_deploy/contexts/sha256-d502911a568ffa1eb685579baec70d74a00c89a3322f7bd58b958f44a0c5ef4b",
+      "digest": "sha256:047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+      "size_bytes": 1580,
+      "path": "units/api/pre_deploy/contexts/sha256-047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+      "media_type": "application/json",
+      "digest": "sha256:94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+      "size_bytes": 1590,
+      "path": "units/api/pre_deploy/contexts/sha256-94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-02T09:05:30Z",
@@ -1259,8 +1426,8 @@
     {
       "ref_id": "pre_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:60868b589721fc7ebb5313f561ae6b52e44666a99977593fb26b9cca9a0b6a4c",
-      "size_bytes": 2664,
+      "digest": "sha256:b5555076f0dc39721816a8fd7131b47d9594d217287d5d640c02020daa0074cf",
+      "size_bytes": 4941,
       "path": "units/api/pre_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,

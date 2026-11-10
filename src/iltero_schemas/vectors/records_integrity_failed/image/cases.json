@@ -50,7 +50,7 @@
     "remove": [],
     "problems": [
       [
-        "events.1.evaluation.status",
+        "events.2.evaluation.status",
         "is not fail, what the record's change gives"
       ]
     ]
@@ -138,7 +138,7 @@
     "remove": [],
     "problems": [
       [
-        "events.2.evaluation.status",
+        "events.3.evaluation.status",
         "is not unknown, what the record's change gives"
       ]
     ]
@@ -226,7 +226,7 @@
     "remove": [],
     "problems": [
       [
-        "events.2.evaluation.status",
+        "events.3.evaluation.status",
         "is not fail, what the record's change gives"
       ]
     ]
@@ -317,7 +317,7 @@
     "remove": [],
     "problems": [
       [
-        "events.2.evaluation.status",
+        "events.3.evaluation.status",
         "is not unknown, what the record's change gives"
       ]
     ]
@@ -333,6 +333,95 @@
       [
         "events.0.evaluation.status_reason",
         "names a state not read the record does not"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_no_accepted_build_whose_build_check_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "/events/1/evaluation/observations/predicates/0/status": "false",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_its_accepted_build_whose_build_check_failed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ]
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_no_accepted_build_whose_build_check_is_unknown",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not fail, what the record's change gives"
       ]
     ]
   }

@@ -347,6 +347,13 @@ class AssuranceContext(StrictModel):
         image = checked_image(change.image.repository, change.image.digest).model_dump(mode="json")
         if change.digest != change_digest(IMAGE_RELEASE_TYPE, unit_of(local), key, image):
             raise ValueError("change.digest is the digest of the change type, unit, environment and image")
+        if environment is not None and isinstance(change.build, ServerFactsUnavailable) != isinstance(
+            environment.production, ServerFactsUnavailable
+        ):
+            raise ValueError(
+                "change.build holds the unknown marker exactly when the environment's production flag does: "
+                "both hold it only in a run no server opened"
+            )
         if isinstance(self.drift_check, ImageDriftCheck):
             if self.drift_check.change_digest != change.digest:
                 raise ValueError("drift_check.change_digest is change.digest")
@@ -393,10 +400,12 @@ class AssuranceContext(StrictModel):
             if not self.deployment.apply.state_read:
                 raise ValueError(NO_DRIFT_CHECK_WITHOUT_THE_STATE)
             check_against_deployment(self.drift_check, self.deployment)
-        if isinstance(self.change, ImageChange):
-            self._check_image_change(self.change, local)
         if self.evaluation.activity == IMAGE_BUILD_ACTIVITY and self.organization_scope.environment is not None:
             raise ValueError("a build's input names no environment: a build belongs to none")
+        if self.evaluation.activity == IMAGE_DEPLOY_ACTIVITY and self.organization_scope.environment is None:
+            raise ValueError("a deploy's input names its environment: a deploy is to one")
+        if isinstance(self.change, ImageChange):
+            self._check_image_change(self.change, local)
         if self.artifact is not None and self.scans is not None:
             scanned = [scan.image_digest for scan in self.scans]
             check_scans_name_their_platform(self.artifact.digest, self.artifact.platform_digests, scanned)

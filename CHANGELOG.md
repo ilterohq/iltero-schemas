@@ -15,27 +15,31 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Sixteen starter assertions, among them the one that holds the plan
+- Seventeen starter assertions, among them the one that holds the plan
   applied to the plan that was evaluated, `ILT.IAC.NO_DRIFT_AFTER_APPLY`,
   which holds that no deployed resource drifted after the apply, and
   `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which holds that the commit the build
   tool's provenance names is the commit the server verified for the run,
   and is unknown when the build names none,
+  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, which holds that Iltero
+  Platform accepted a build of the image for the environment it is deployed to,
   `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, which holds that the image the pipeline
   reports it deployed is the image the deploy checked, and
   `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`, which holds that, once the
   workload's rollout has finished, every compared container of every live
   pod runs that image or one of its platform images.
-  These five are
+  These six are
   built in (`APPLIED_PLAN_MATCHES_EVALUATED_PLAN`, `NO_DRIFT_AFTER_APPLY`, `BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`,
-  `REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and `RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` in `iltero_schemas.assertions`):
+  `BUILD_ACCEPTED_FOR_ENVIRONMENT`, `REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and `RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`
+  in `iltero_schemas.assertions`):
   a runner evaluates the first at every infrastructure post-deploy stage, the
   second at every infrastructure post-verify stage, the third at every build's
-  plan stage, the fourth at every image deploy's post-deploy stage and the
-  fifth at every image deploy's post-verify stage, whatever a project's own
-  assertions are.
+  plan stage, the fourth at every image deploy's pre-deploy stage, the fifth
+  at every image deploy's post-deploy stage and the sixth at every image
+  deploy's post-verify stage, whatever a project's own assertions are.
   Their ids are reserved (`BUILT_INS`, each a `BuiltIn` with its version,
-  document digest and compiled module digest): an evaluation that names one
+  document digest and compiled module digest, and `BUILT_IN_IDS` for the
+  ids alone): an evaluation that names one
   names the shipped version and document, comes from this package or the
   server's bundle and never from a scanner, and ran the shipped module.
   Each activity names the built-in check that what the pipeline carried out
@@ -50,7 +54,8 @@ keep, so any two tools agree on what a record means.
   `not_reported_by_tool`, or on a run the tool opened, where it is unknown
   with `server_facts_unavailable`, since only the server verifies the
   commit (an event that was not evaluated, or that ended in error, is
-  accepted); an image deploy's `post_deploy` stage evaluates
+  accepted); an image deploy's `pre_deploy` stage evaluates
+  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, its `post_deploy` stage
   `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and its `post_verify` stage
   `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`.
   `ILT.IMAGE.TESTS_RAN` holds that the pipeline gave a test report for the
@@ -58,7 +63,7 @@ keep, so any two tools agree on what a record means.
   `ILT.IMAGE.SCAN_RAN` that a vulnerability scan ran whose report itself
   names the built image or at least one of its platform images.
   `ILT.CHANGE.PRODUCTION_APPROVED` is about any change
-  (`change_type: null`); the six image assertions are about
+  (`change_type: null`); the seven image assertions are about
   `image_release`, and the others about `iac_change`.
 - Every `TechnicalAssertion` says which change type it is about
   (`spec.change_type`: `iac_change`, `image_release`, or `null` for an
@@ -551,10 +556,20 @@ keep, so any two tools agree on what a record means.
   built, so the record starts at its `pre_deploy` stage, where the change is
   approved, and its change digest names the image, by its repository and
   digest, in the record's unit and environment. The record keeps the build
-  the server accepted for the environment (`build`: its run, its record's
-  digest and its platform digests), as the server served it, and never a
-  build a pipeline chose; a record of a run the tool opened names none. The
-  Iltero CLI talks to no cluster and no deploy tool: after the deployment
+  Iltero Platform accepted for the environment (`build`: its run, its
+  record's digest and its platform digests), as Iltero Platform served it,
+  and never a build a pipeline chose; a record of a run the tool opened
+  names none. `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` checks at
+  `pre_deploy` that there is one: it passes when Iltero Platform accepted a
+  build, fails when a run Iltero Platform opened has none, and is unknown
+  with `server_facts_unavailable` in a run the tool opened, so that stage is
+  then at best indeterminate (exit code 3). It may otherwise only be not
+  evaluated (`timeout`, `evaluator_unavailable`) or end in an error, for a
+  fault of the evaluator. The evaluation input tells the two cases apart:
+  it always names its environment, and its `change.build` is the unknown
+  marker in a run the tool opened, exactly when the environment's
+  production flag is, and `null` only when Iltero Platform accepted no
+  build. The Iltero CLI talks to no cluster and no deploy tool: after the deployment
   the pipeline reports the image it deployed (`deployment`), and at
   `post_verify` what one reading of the workload found (`drift_check`: the
   workload, in the shape of its platform, here a Kubernetes Deployment,
@@ -599,8 +614,13 @@ keep, so any two tools agree on what a record means.
   assertion about any
   change reads what both the infrastructure and the image deploy input
   carry, which leaves out `plan`. The integrity checks recompute the status
-  each of its two built-in checks must have from the record's own image,
-  deployment, reading and build, and report an event that says otherwise.
+  each of its built-in checks must have from the record's own image,
+  deployment, reading and build, and report an event that says otherwise;
+  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` is recomputed only in a run
+  Iltero Platform opened. In a run the tool opened, the record's own rules
+  refuse that check unless it is unknown with `server_facts_unavailable`,
+  or did not run or ended in an error for a fault of the evaluator, even
+  when the integrity checks are skipped.
   A record refuses a built-in assertion of another activity. Record,
   context, evaluation and change digest vectors cover it. The values it
   adds:
@@ -617,7 +637,7 @@ keep, so any two tools agree on what a record means.
   | Container role in a pod (`containers_read[].role`) | `app`, `init`, `sidecar`, `ephemeral` |
   | Pod state (`containers_read[].pod_state`) | `live`, `terminating`, `finished` |
   | Who reports a deployment (`deployment.reported_by`) | `pipeline` |
-  | Built-in assertions | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
+  | Built-in assertions | `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
 
 - Scan coverage. `iltero_schemas.change_types.scan_coverage(build)` says
   which of a build's platform images its scan reports name and which none
@@ -655,3 +675,15 @@ keep, so any two tools agree on what a record means.
   `vectors/records/iac/`. Each document folder's `digests.json` and each
   conformance case name a document by its path from that folder
   (`image/local_run_build.json`).
+- Comparisons with `null`. An assertion checks whether a value is null with
+  `equal: null`, or that it is set with `not_equal: null`. Any other
+  comparison with `null` is refused ("only equal and not_equal compare with
+  null"). A value that is absent, or an unknown marker, is still unknown.
+  The conformance vector `VEC.OPS.NULL` and its evaluation cases show each
+  outcome. Existing assertions compile to the same bytes as before.
+- One spelling of no value. An assertion document or an evaluator binding
+  set writes no value only as the word `null`. YAML also reads an empty
+  value, `~`, `Null` and `NULL` as null, so the loader refuses them, and a
+  forgotten value is never read as a comparison with null.
+- An exception never covers a built-in assertion: an exception served for
+  one is refused, since what a built-in assertion records is never excused.

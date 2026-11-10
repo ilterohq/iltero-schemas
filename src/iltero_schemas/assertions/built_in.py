@@ -11,18 +11,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from iltero_schemas.assertions.paths import (
-    APPLIED_PLAN_MATCHES_EVALUATED_PLAN,
-    APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
-    BUILD_COMMIT_MATCHES_VERIFIED_COMMIT,
-    BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID,
-    NO_DRIFT_AFTER_APPLY,
-    NO_DRIFT_AFTER_APPLY_ID,
-    REPORTED_IMAGE_MATCHES_CHECKED_IMAGE,
-    REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
-    RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE,
-    RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
-)
+from iltero_schemas.assertions.paths import BUILT_IN_DOCUMENTS
 from iltero_schemas.ast import parse_document
 from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical.encoding import digest_of
@@ -48,12 +37,6 @@ def _built_in(text: str) -> BuiltIn:
 BUILT_INS: Mapping[str, BuiltIn] = MappingProxyType(
     {
         assertion_id: _built_in(document.read_text(encoding="utf-8"))
-        for assertion_id, document in (
-            (APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, APPLIED_PLAN_MATCHES_EVALUATED_PLAN),
-            (NO_DRIFT_AFTER_APPLY_ID, NO_DRIFT_AFTER_APPLY),
-            (BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, BUILD_COMMIT_MATCHES_VERIFIED_COMMIT),
-            (REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, REPORTED_IMAGE_MATCHES_CHECKED_IMAGE),
-            (RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID, RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE),
-        )
+        for assertion_id, document in BUILT_IN_DOCUMENTS.items()
     }
 )

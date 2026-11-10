@@ -1,7 +1,8 @@
 """Strict loading of one assertion document from YAML text.
 
 Only plain data is accepted: one document, string keys, no duplicate keys,
-no anchors, aliases, tags or merge keys, bounded size and nesting. Anything
+no anchors, aliases, tags or merge keys, no value written other than as
+``null`` where YAML would read null, bounded size and nesting. Anything
 else is an error that names the line and the problem — never the text
 around it, which may hold values that must not reach a log — and never a
 silently different document.
@@ -19,6 +20,10 @@ MAX_DOCUMENT_BYTES = 256 * 1024
 # recursive composer runs, so a hostile document cannot exhaust the stack.
 MAX_NESTING = 32
 _MERGE_TAG = "tag:yaml.org,2002:merge"
+_NULL_TAG = "tag:yaml.org,2002:null"
+# The one spelling of no value: YAML also reads an empty value, ``~``, ``Null`` and ``NULL`` as null, so a forgotten
+# value would otherwise read as a comparison with null.
+_NULL = "null"
 
 
 class DocumentError(ValueError):
@@ -55,6 +60,11 @@ def _describe(exc: yaml.MarkedYAMLError) -> str:
 
 
 class _Loader(yaml.SafeLoader):
+    def construct_yaml_null(self, node: yaml.ScalarNode) -> None:
+        if node.value != _NULL:
+            spellings = "an empty value, ~, Null or NULL"
+            raise DocumentError(f"line {_line(node.start_mark)}: no value is written as {_NULL}, never as {spellings}")
+
     def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict[Any, Any]:
         seen: set[str] = set()
         for key_node, _ in node.value:
@@ -68,6 +78,9 @@ class _Loader(yaml.SafeLoader):
                 raise DocumentError(f"line {line}: duplicate key {key!r}")
             seen.add(key)
         return super().construct_mapping(node, deep)
+
+
+_Loader.add_constructor(_NULL_TAG, _Loader.construct_yaml_null)
 
 
 def load_document(text: str) -> dict[str, Any]:

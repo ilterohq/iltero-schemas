@@ -1112,12 +1112,12 @@
     "name": "image_deploy_carrying_an_infrastructure_check",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/1/assertion": {
+      "/events/2/assertion": {
         "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
         "version": "1.0.0",
         "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a"
       },
-      "/events/1/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7"
+      "/events/2/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7"
     },
     "remove": [],
     "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
@@ -1139,7 +1139,7 @@
     "name": "image_deploy_without_its_reading_check",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/2/assertion/id": "ACME.IMAGE.RUNNING"
+      "/events/3/assertion/id": "ACME.IMAGE.RUNNING"
     },
     "remove": [],
     "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
@@ -1157,5 +1157,107 @@
     },
     "remove": [],
     "message": "the post_deploy stage lists the state not read, which a record of image_deploy never has"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_is_unknown_for_another_reason",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/1/evaluation/status_reason": "path_missing"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_whose_build_check_did_not_run_for_want_of_its_subject",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/not_evaluated": 1,
+      "/stages/pre_deploy/verdict/value": "fail",
+      "/stages/pre_deploy/verdict/exit_code": 6,
+      "/events/1/evaluation/status": "not_evaluated",
+      "/events/1/evaluation/status_reason": "subject_unresolved",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/not_evaluated": 1,
+      "/verdict/value": "fail",
+      "/verdict/exit_code": 6
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts"
+  },
+  {
+    "name": "image_deploy_whose_build_check_did_not_apply",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/not_applicable": 1,
+      "/events/1/evaluation/status": "not_applicable",
+      "/events/1/evaluation/status_reason": "when_guard_excluded",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/not_applicable": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT always applies to the pre_deploy stage's one subject"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_failed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_whose_build_check_errored_reading_a_scanner_report",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/error": 1,
+      "/stages/pre_deploy/verdict/value": "fail",
+      "/stages/pre_deploy/verdict/exit_code": 4,
+      "/stages/pre_deploy/assurance_status/value": "incomplete",
+      "/stages/pre_deploy/assurance_status/reason": "required_policy_evaluation_failed",
+      "/stages/pre_deploy/assurance_status/detail": "1 of 2 evaluations ended in an evaluator error",
+      "/events/1/evaluation/status": "error",
+      "/events/1/evaluation/status_reason": "adapter_parse_failure",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/error": 1,
+      "/verdict/value": "fail",
+      "/verdict/exit_code": 4,
+      "/assurance_status/value": "incomplete",
+      "/assurance_status/reason": "required_policy_evaluation_failed",
+      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is error only for a fault of the evaluator, never for want of the change or its facts"
+  },
+  {
+    "name": "image_deploy_without_its_build_check",
+    "vector": "image/local_run_deploy.json",
+    "set": {},
+    "remove": [
+      "/events/1"
+    ],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is evaluated once, at the pre_deploy stage, once it has reported"
   }
 ]

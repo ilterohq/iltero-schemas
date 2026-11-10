@@ -593,6 +593,25 @@ def test_a_deploy_inputs_change_digest_is_of_its_image_in_its_unit_and_environme
         AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
 
 
+def test_a_deploy_input_names_its_environment() -> None:
+    scope = {**DEPLOY["organization_scope"], "environment": None}
+    with pytest.raises(ValidationError, match="a deploy's input names its environment"):
+        AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
+
+
+def test_a_deploy_input_holds_the_unknown_marker_for_its_build_exactly_in_a_run_no_server_opened() -> None:
+    marker = {"__unknown": True, "reason": "server_facts_unavailable"}
+    assert DEPLOY["change"]["build"] == marker
+    scope = {**DEPLOY["organization_scope"], "environment": {"name": "production", "production": True}}
+    message = "change.build holds the unknown marker exactly when the environment's production flag does"
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate({**DEPLOY, "change": {**DEPLOY["change"], "build": None}})
+    served_none = {**DEPLOY["change"], "build": None}
+    AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope, "change": served_none})
+
+
 def test_a_deploy_inputs_reading_names_its_change() -> None:
     check = {**DEPLOY["drift_check"], "change_digest": "sha256:" + "7" * 64}
     with pytest.raises(ValidationError, match="drift_check.change_digest is change.digest"):

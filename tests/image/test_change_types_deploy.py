@@ -11,7 +11,11 @@ from typing import Any, cast
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.assertions import REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID
+from iltero_schemas.assertions import (
+    BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
+    REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
+    RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+)
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.change_types import IMAGE_DEPLOY, ImageDeploy
 from iltero_schemas.change_types.image.deploy import running_image_status
@@ -39,12 +43,13 @@ def test_a_deploy_is_a_change_run_approved_deployed_and_read_back() -> None:
     assert IMAGE_DEPLOY.not_supported(CAR.model_validate(DEPLOY)) == {Stage.POST_VERIFY}
 
 
-def test_a_deploy_owes_its_record_at_every_stage_and_evaluates_its_two_builtin_assertions() -> None:
+def test_a_deploy_owes_its_record_at_every_stage_and_evaluates_its_three_builtin_assertions() -> None:
     assert {stage: list(documents) for stage, documents in IMAGE_DEPLOY.required_documents.items()} == {
         stage: ["record"] for stage in IMAGE_DEPLOY.stages
     }
     assert IMAGE_DEPLOY.carried_out_matches_checked == (REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY)
     assert dict(IMAGE_DEPLOY.always_evaluated) == {
+        Stage.PRE_DEPLOY: BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
         Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
         Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
     }
@@ -95,6 +100,7 @@ def test_the_server_recomputes_the_status_the_reading_check_gives(case: dict[str
         template_containers=[SimpleNamespace(**entry) for entry in check["template_containers"]],
         containers_read=[SimpleNamespace(**entry) for entry in check["containers_read"]],
     )
-    platforms = change["build"]["platform_digests"] if change["build"] is not None else None
+    # Null when the server accepted no build, the unknown marker when no server opened the run: no platform images.
+    platforms = change["build"].get("platform_digests") if change["build"] is not None else None
     status = running_image_status(change["image"]["digest"], platforms, cast(ImageDriftCheck, reading))
     assert status == case["expected"]["status"]

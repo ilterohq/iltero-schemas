@@ -94,6 +94,21 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
         }
     ),
 }
+# The reasons an evaluation did not run, or ended in an error, that blame the evaluator, never the subject or its facts.
+EVALUATOR_FAULT_REASONS: dict[str, frozenset[str]] = {
+    "not_evaluated": frozenset({"timeout", "evaluator_unavailable"}),
+    "error": frozenset(
+        {
+            "evaluator_crash",
+            "evaluator_timeout",
+            "evaluator_memory_limit",
+            "output_overflow",
+            "output_contract_violation",
+            "bundle_verification_failed",
+            "compile_failure",
+        }
+    ),
+}
 # Every status, worst first: an evaluation that did not run is worse than an error, an error worse than an
 # unknown result, and an unknown result worse than a failure.
 # ``not_applicable`` claims less than ``pass``, so it ranks as worse.

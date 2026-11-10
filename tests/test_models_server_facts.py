@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
+from iltero_schemas.assertions import BUILT_IN_IDS
 from iltero_schemas.models.checked_content import CheckedPlan
 from iltero_schemas.models.server_facts import (
     MAX_ROLES,
@@ -96,6 +97,13 @@ def test_an_exception_waives_one_assertion_for_the_resources_it_names_between_tw
         ExceptionGrant.model_validate({**EXCEPTION, "expires_at": EXCEPTION["valid_from"]})
     with pytest.raises(ValidationError, match="at least 1"):
         ExceptionGrant.model_validate({**EXCEPTION, "scope": {**EXCEPTION["scope"], "resources": []}})
+
+
+@pytest.mark.parametrize("assertion_id", sorted(BUILT_IN_IDS))
+def test_an_exception_never_covers_any_built_in(assertion_id: str) -> None:
+    scope = {**EXCEPTION["scope"], "assertion": {"id": assertion_id}}
+    with pytest.raises(ValidationError, match="an exception never covers a built-in assertion"):
+        ExceptionGrant.model_validate({**EXCEPTION, "scope": scope})
 
 
 CHECKED_PLAN = {"kind": "plan", "digest": "sha256:" + "8" * 64, "digest_version": "1", "tool": "terraform"}

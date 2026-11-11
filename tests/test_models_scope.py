@@ -26,7 +26,7 @@ DOCUMENT_API_VERSIONS = frozenset(
         "iltero.io/assertion-bundle/v1",
         "iltero.io/assurance-context/v1",
         "iltero.io/car/v1",
-        "iltero.io/identity-bindings/v1",
+        "iltero.io/resource-identities/v1",
         "iltero.io/verification-report/v1",
     }
 )

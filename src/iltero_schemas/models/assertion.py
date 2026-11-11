@@ -7,10 +7,9 @@ applicability guard (``spec.when``). The condition is written in the assertion
 language, whose grammar is parsed and validated by ``iltero_schemas.ast``;
 this module validates everything around it.
 
-Every model refuses unknown keys. ``spec.type`` is derived from
+Every model refuses unknown keys. An assertion's type is derived from
 ``spec.target.kind`` (``resource`` is a *state* assertion, everything else a
-*process* assertion); an author may write it, but only the derived value is
-accepted.
+*process* assertion), never written.
 """
 
 from __future__ import annotations
@@ -24,8 +23,8 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
-from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, ChangeTypeName
-from iltero_schemas.models.iac import RESOURCE_TYPE_PATTERNS, IacTool
+from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, IMAGE_RELEASE_TYPE, ChangeTypeName
+from iltero_schemas.models.iac.tool_names import RESOURCE_TYPE_PATTERNS, IacTool
 
 # ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
 # customer one: upper-case segments joined by dots, at least two of them.
@@ -50,12 +49,15 @@ RESOURCE_TYPES_MAX = 64
 # The most kinds one selector names, and the longest kind.
 KINDS_MAX = 64
 KIND_MAX_LENGTH = 64
-# Characters no human-readable field or literal may contain: C0 and C1
-# controls, DEL, zero-width and bidirectional formatting characters, and the
-# characters that show as nothing (soft hyphen, grapheme joiner, Hangul fillers).
+# Characters no human-readable field or literal may contain: C0 and C1 controls, DEL, zero-width and bidirectional
+# formatting characters, the characters that show as nothing (soft hyphen, grapheme joiner, Hangul fillers), every
+# other control and format character, and the tag characters, which spell hidden text. Written as code points, not
+# Unicode categories, so every reader refuses the same characters whatever its Unicode version. Variation selectors,
+# which follow ordinary emoji, are allowed.
 CONTROL_CHARACTERS = re.compile(
-    r"[\x00-\x1f\x7f-\x9f\xad\u034f\u061c\u115f\u1160\u180e\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u2069"
-    r"\u3164\ufeff\uffa0]"
+    r"[\x00-\x1f\x7f-\x9f\xad\u034f\u0600-\u0605\u061c\u06dd\u070f\u0890\u0891\u08e2\u115f\u1160\u180e"
+    r"\u200b-\u200f\u2028-\u202e\u2060-\u2064\u2066-\u206f\u3164\ufeff\uffa0\ufff9-\ufffb\U000110bd\U000110cd"
+    r"\U00013430-\U0001343f\U0001bca0-\U0001bca3\U0001d173-\U0001d17a\U000e0000-\U000e007f]"
 )
 
 
@@ -81,6 +83,7 @@ class TargetKind(StrEnum):
     CHANGE = "change"
     DEPLOYMENT = "deployment"
     ASSURANCE = "assurance"
+    ARTIFACT = "artifact"
 
 
 class AssertionType(StrEnum):
@@ -95,6 +98,7 @@ ASSERTION_TYPE_FOR_TARGET: dict[TargetKind, AssertionType] = {
     TargetKind.CHANGE: AssertionType.PROCESS,
     TargetKind.DEPLOYMENT: AssertionType.PROCESS,
     TargetKind.ASSURANCE: AssertionType.PROCESS,
+    TargetKind.ARTIFACT: AssertionType.PROCESS,
 }
 
 Combination = tuple[AssertionType, Stage, TargetKind]
@@ -112,11 +116,19 @@ COMBINATIONS: Mapping[ChangeTypeName, frozenset[Combination]] = MappingProxyType
                 (AssertionType.PROCESS, Stage.RUNTIME, TargetKind.ASSURANCE),
             }
         ),
+        IMAGE_RELEASE_TYPE: frozenset(
+            {
+                (AssertionType.PROCESS, Stage.PLAN, TargetKind.ARTIFACT),
+                (AssertionType.PROCESS, Stage.PRE_DEPLOY, TargetKind.CHANGE),
+                (AssertionType.PROCESS, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
+                (AssertionType.PROCESS, Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
+            }
+        ),
     }
 )
-# The combinations every change type allows, which an assertion about any change may declare.
-SHARED_COMBINATIONS: frozenset[Combination] = frozenset.intersection(*COMBINATIONS.values())
-# Every combination some change type allows; anything else is rejected.
+
+# Every combination some change type allows; anything else is rejected. An assertion about any change may declare any
+# of them, and reads only the parts every change type evaluated at its stage and target provides (``profiles``).
 VALID_COMBINATIONS: frozenset[Combination] = frozenset().union(*COMBINATIONS.values())
 
 
@@ -228,19 +240,19 @@ class ResourceTarget(_Strict):
 
 
 class ProcessTarget(_Strict):
-    """A process assertion's target: the change, the deployment or the assurance history.
+    """A process assertion's target: the change, the deployment, the assurance history or the built artifact.
 
     A change or deployment target may name ``resources``, by kinds so it holds for every tool: it is then in scope
     only when the change touches a resource one of its selectors picks.
     """
 
-    kind: Literal["change", "deployment", "assurance"]
+    kind: Literal["change", "deployment", "assurance", "artifact"]
     resources: Annotated[list[KindSelector], Field(min_length=1, max_length=SELECTORS_MAX)] | None = None
 
     @model_validator(mode="after")
     def _resources(self) -> ProcessTarget:
-        if self.resources is not None and self.kind == "assurance":
-            raise ValueError("an assurance target names no resources: it has no change to scope")
+        if self.resources is not None and self.kind in ("assurance", "artifact"):
+            raise ValueError(f"an {self.kind} target names no resources: it has no change to scope")
         return self
 
 
@@ -255,7 +267,7 @@ def check_target(stage: Stage, target: ResourceTarget | ProcessTarget, change_ty
     """Raise ``ValueError`` unless ``target`` is valid at ``stage`` for ``change_type``, or for every change type when
     it is None, and its selectors have a change to scope."""
     kind = TargetKind(target.kind)
-    valid = SHARED_COMBINATIONS if change_type is None else COMBINATIONS[change_type]
+    valid = VALID_COMBINATIONS if change_type is None else COMBINATIONS[change_type]
     if (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) not in valid:
         about = "any change" if change_type is None else f"a change of type {change_type!r}"
         raise ValueError(
@@ -263,18 +275,21 @@ def check_target(stage: Stage, target: ResourceTarget | ProcessTarget, change_ty
         )
     if isinstance(target, ProcessTarget) and target.resources is not None and stage not in SCOPED_STAGES:
         raise ValueError(f"a {target.kind} target at {stage.value} has no change to scope")
+    if isinstance(target, ProcessTarget) and target.resources is not None and change_type != IAC_CHANGE_TYPE:
+        raise ValueError(f"a {target.kind} target names resources only in an assertion about an iac_change")
 
 
 # What an author is told when an assertion does not say which change type it is about.
-CHANGE_TYPE_MISSING = "change_type is missing: give iac_change, or null for an assertion about any change"
+CHANGE_TYPE_MISSING = (
+    "change_type is missing: give iac_change or image_release, or null for an assertion about any change"
+)
 
 
 class Spec(_Strict):
     """What is checked, when, and about what."""
 
-    type: AssertionType | None = None
-    # The change type the assertion is about, or null for an assertion about any change, which may declare only the
-    # stages and targets every change type allows.
+    # The change type the assertion is about, or null for an assertion about any change, which may declare any stage
+    # and target some change type allows (``VALID_COMBINATIONS``).
     change_type: ChangeTypeName | None
     stage: Stage
     target: Target
@@ -294,11 +309,6 @@ class Spec(_Strict):
 
     @model_validator(mode="after")
     def _combination(self) -> Spec:
-        derived = self.derived_type
-        if self.type is not None and self.type != derived:
-            raise ValueError(
-                f"type {self.type.value!r} does not match target kind {self.target.kind!r} ({derived.value})"
-            )
         check_target(self.stage, self.target, self.change_type)
         return self
 

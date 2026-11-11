@@ -5,13 +5,17 @@ and ``src/iltero_schemas/vectors/assertions``, the AST as JSON, its source
 digest, and the compiled Rego module with its digest; ``COMPILER_VERSION``
 and ``RUNTIME.digest`` (the digest of ``runtime.rego``) record what produced
 them. Canonical vectors: the canonical bytes and digest of each value in
-``src/iltero_schemas/vectors/canonical/values.json``, and of every case of the
-assertion-set and change digests, from the inputs each case names. Document
-vectors: the digest of every context under ``vectors/contexts``, every event
-under ``vectors/events``, every identity document under
-``vectors/identities``, every record under ``vectors/records`` and every
-verification report under ``vectors/reports``, each validated against its
-model first.
+``src/iltero_schemas/vectors/canonical/values.json``, of each plan in
+``canonical/iac/plan_values.json``, and of every case of the assertion-set and
+change digests, from the inputs each case names. Document vectors: the digest
+of every context under ``vectors/contexts``, every event under
+``vectors/events``, every identity document under ``vectors/identities``,
+every record under ``vectors/records`` and every verification report under
+``vectors/reports``, each validated against its model first. Each document
+folder but ``identities`` keeps its documents in the ``iac/`` or ``image/``
+subfolder of their change type; the folder's one ``digests.json`` names each
+document by its path from the folder. A ``digests.json`` this script does not
+write is reported.
 
 A changed runtime changes ``RUNTIME.digest``; review the diff of the vectors
 as carefully as the code.
@@ -23,6 +27,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections.abc import Collection
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -42,21 +47,22 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.event import AssuranceEvent
-from iltero_schemas.models.identity import IdentityBindings
+from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.verification import VerificationReport
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "iltero_schemas"
-ASSERTION_DIRS = [PACKAGE / "assertions", PACKAGE / "vectors" / "assertions"]
-COMPILER_VECTORS = PACKAGE / "vectors" / "compiler"
-CANONICAL_VECTORS = PACKAGE / "vectors" / "canonical"
-# Each folder holds one kind of document.
+VECTORS = PACKAGE / "vectors"
+ASSERTION_DIRS = [PACKAGE / "assertions", VECTORS / "assertions"]
+COMPILER_VECTORS = VECTORS / "compiler"
+CANONICAL_VECTORS = VECTORS / "canonical"
+# Each folder holds one kind of document, and one digests.json that lists them all.
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
-    PACKAGE / "vectors" / "contexts": AssuranceContext,
-    PACKAGE / "vectors" / "events": AssuranceEvent,
-    PACKAGE / "vectors" / "identities": IdentityBindings,
-    PACKAGE / "vectors" / "records": CAR,
-    PACKAGE / "vectors" / "reports": VerificationReport,
+    VECTORS / "contexts": AssuranceContext,
+    VECTORS / "events": AssuranceEvent,
+    VECTORS / "identities": ResourceIdentities,
+    VECTORS / "records": CAR,
+    VECTORS / "reports": VerificationReport,
 }
 
 
@@ -74,7 +80,7 @@ def compiler_vectors() -> dict[str, bytes]:
             assertion = parse(path.read_text(encoding="utf-8"))
             module = compile(assertion)
             stem = path.stem
-            files[f"{stem}.ast.json"] = json.dumps(to_json(assertion), indent=2).encode() + b"\n"
+            files[f"{stem}.ast.json"] = json.dumps(to_json(assertion), indent=2, sort_keys=True).encode() + b"\n"
             files[f"{stem}.digest"] = f"{source_digest(assertion)}\n".encode()
             files[f"{stem}.rego"] = module.source
             files[f"{stem}.rego.digest"] = f"{module.digest}\n".encode()
@@ -87,7 +93,7 @@ def canonical_vectors() -> dict[str, bytes]:
     for name, value in values.items():
         encoded = canonical_bytes(value)
         cases.append({"name": name, "value": value, "canonical": encoded.decode("utf-8"), "digest": digest(encoded)})
-    plans = json.loads((CANONICAL_VECTORS / "plan_values.json").read_text(encoding="utf-8"))
+    plans = json.loads((CANONICAL_VECTORS / "iac" / "plan_values.json").read_text(encoding="utf-8"))
     plan_cases = [
         {
             "name": name,
@@ -113,25 +119,43 @@ def canonical_vectors() -> dict[str, bytes]:
         case.update({"canonical": encoded.decode("utf-8"), "digest": digest(encoded)})
     return {
         "cases.json": _dump(cases),
-        "plan_digest_cases.json": _dump(document),
+        "iac/plan_digest_cases.json": _dump(document),
         "assertion_set_cases.json": _dump(sets),
         "change_digest_cases.json": _dump(changes),
     }
 
 
+def document_files(folder: Path) -> list[Path]:
+    """Every document under ``folder`` other than its digests.json files, sorted by its path from the folder; a
+    hidden file or folder (a name that starts with a dot), such as a copy an editor or macOS left there, is not a
+    vector."""
+    return sorted(
+        (
+            path
+            for path in folder.rglob("*.json")
+            if path.name != "digests.json" and not any(part.startswith(".") for part in path.relative_to(folder).parts)
+        ),
+        key=lambda path: path.relative_to(folder).as_posix(),
+    )
+
+
 def document_vectors() -> dict[Path, bytes]:
     """The digest of every document vector, each validated against its model first."""
     expected = {}
-    for directory, model in DOCUMENT_VECTORS.items():
+    for folder, model in DOCUMENT_VECTORS.items():
+        # Each document by its path from the folder, the name a case gives it.
         digests = {}
-        for path in sorted(directory.glob("*.json")):
-            if path.name == "digests.json":
-                continue
+        for path in document_files(folder):
             document = json.loads(path.read_text(encoding="utf-8"))
             model.model_validate(document)
-            digests[path.name] = digest_of(document)
-        expected[directory / "digests.json"] = json.dumps(digests, indent=2).encode("utf-8") + b"\n"
+            digests[path.relative_to(folder).as_posix()] = digest_of(document)
+        expected[folder / "digests.json"] = json.dumps(digests, indent=2).encode("utf-8") + b"\n"
     return expected
+
+
+def unwritten_digests(vectors: Path, written: Collection[Path]) -> list[Path]:
+    """Every digests.json under ``vectors`` that is not in ``written``: nothing would check it."""
+    return sorted(set(vectors.rglob("digests.json")) - set(written))
 
 
 def main(argv: list[str]) -> int:
@@ -142,16 +166,19 @@ def main(argv: list[str]) -> int:
     expected = {COMPILER_VECTORS / name: data for name, data in compiler_vectors().items()}
     expected.update({CANONICAL_VECTORS / name: data for name, data in canonical_vectors().items()})
     expected.update(document_vectors())
+    unwritten = unwritten_digests(VECTORS, expected)
+    for path in unwritten:
+        print(f"not written by this script: {path.relative_to(ROOT)}", file=sys.stderr)
     stale = [path for path, data in expected.items() if not path.exists() or path.read_bytes() != data]
     if check:
         for path in stale:
             print(f"out of date: {path.relative_to(ROOT)}", file=sys.stderr)
-        return 1 if stale else 0
+        return 1 if stale or unwritten else 0
     for path in stale:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(expected[path])
         print(f"wrote {path.relative_to(ROOT)}")
-    return 0
+    return 1 if unwritten else 0
 
 
 if __name__ == "__main__":

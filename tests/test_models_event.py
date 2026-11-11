@@ -9,8 +9,10 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.assertions import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, BUILT_INS
+from iltero_schemas.models.ci import CI_SYSTEMS
 from iltero_schemas.models.event import (
-    CI_SYSTEMS,
+    EVALUATOR_FAULT_REASONS,
     NO_EVALUATOR_REASONS,
     POLICY_STATUSES,
     STATUS_REASONS,
@@ -18,10 +20,11 @@ from iltero_schemas.models.event import (
     AssuranceEvent,
     Bundle,
 )
-from iltero_schemas.models.fields import Status
+from iltero_schemas.models.fields import Identity, Status
+from iltero_schemas.models.subjects import subject_key
 from tests.conftest import ARNS, VECTORS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "plan_pass.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "events" / "iac" / "plan_pass.json").read_text(encoding="utf-8"))
 
 
 def _event(**changes: Any) -> dict[str, Any]:
@@ -178,19 +181,38 @@ def test_an_editable_contract_install_may_have_no_digest() -> None:
     )
 
 
+# The subject kind an infrastructure change's check at each stage may be about: resources at the plan stage and at
+# runtime, the change before deployment, the deployment after it.
+_KIND_AT = {"plan": "resource", "runtime": "resource", "pre_deploy": "change"}
+
+
+def _at(stage: str, **changes: Any) -> dict[str, Any]:
+    """The vector's event moved to ``stage``, about a subject its assertions there can target."""
+    kind = _KIND_AT.get(stage, "deployment")
+    if kind == "resource":
+        return _event(**{"evaluation.stage": stage}, **changes)
+    unit = Identity(scheme="iltero_unit", value="root")
+    subject = {
+        "subject.kind": kind,
+        "subject.identities": [{"scheme": "iltero_unit", "value": "root", "scope": None}],
+        "subject.key": subject_key(kind, [unit]),
+    }
+    return _event(**{"evaluation.stage": stage}, **subject, **changes)
+
+
 @pytest.mark.parametrize("stage", ["pre_deploy", "runtime"])
-@pytest.mark.parametrize("source", ["server", "local_file", "none"])
+@pytest.mark.parametrize("source", ["server", "none"])
 def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(stage: str, source: str) -> None:
-    AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": source}))
+    AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": source}))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
-        AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": None}))
+        AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": None}))
 
 
 @pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify"])
 def test_a_check_at_a_stage_that_reads_no_server_facts_names_no_facts_source(stage: str) -> None:
-    AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage}))
+    AssuranceEvent.model_validate(_at(stage))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
-        AssuranceEvent.model_validate(_event(**{"evaluation.stage": stage, "provenance.facts_source": "server"}))
+        AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": "server"}))
 
 
 def test_facts_source_is_always_stated() -> None:
@@ -288,3 +310,63 @@ def test_a_served_bundle_with_its_content_digest_and_key_is_accepted() -> None:
             "key_id": "iltero-bundle-2026-09",
         }
     )
+
+
+def test_a_build_check_at_the_plan_stage_says_where_its_server_facts_came_from() -> None:
+    artifact = {
+        "subject.kind": "artifact",
+        "subject.identities": [{"scheme": "iltero_unit", "value": "root", "scope": None}],
+        "evaluation.activity": "image_build",
+        "provenance.checked_content": {
+            "kind": "container_image",
+            "repository": "ghcr.io/acme/api",
+            "digest": "sha256:" + "a" * 64,
+        },
+    }
+    key = subject_key("artifact", [Identity(scheme="iltero_unit", value="root")])
+    AssuranceEvent.model_validate(_event(**artifact, **{"subject.key": key, "provenance.facts_source": "none"}))
+    with pytest.raises(ValidationError, match="facts_source is present exactly when"):
+        AssuranceEvent.model_validate(_event(**artifact, **{"subject.key": key, "provenance.facts_source": None}))
+
+
+def test_an_event_names_a_known_activity() -> None:
+    with pytest.raises(ValidationError, match="Input should be 'iac_change', 'image_build' or 'image_deploy'"):
+        AssuranceEvent.model_validate(_event(**{"evaluation.activity": "database_migration"}))
+
+
+def test_an_event_alone_is_checked_against_the_stages_and_targets_of_its_activity() -> None:
+    with pytest.raises(ValidationError, match="not valid for target kind 'resource' in an image_build input"):
+        AssuranceEvent.model_validate(_event(**{"evaluation.activity": "image_build"}))
+    with pytest.raises(ValidationError, match="not valid for target kind 'resource' in an iac_change input"):
+        AssuranceEvent.model_validate(_event(**{"evaluation.stage": "pre_deploy", "provenance.facts_source": "none"}))
+
+
+def test_an_event_names_the_kind_of_content_its_activity_checks() -> None:
+    image = {"kind": "container_image", "repository": "docker.io/library/nginx", "digest": "sha256:" + "a" * 64}
+    with pytest.raises(ValidationError, match="an iac_change evaluation names the plan it checked"):
+        AssuranceEvent.model_validate(_event(**{"provenance.checked_content": image}))
+
+
+def test_an_assertion_this_package_always_evaluates_is_named_only_by_its_shipped_document() -> None:
+    shipped = BUILT_INS[APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID]
+    built_in = {
+        "assertion.id": APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
+        "assertion.digest": shipped.digest,
+        "provenance.compiled_digest": shipped.compiled_digest,
+    }
+    AssuranceEvent.model_validate(_at("post_deploy", **built_in))
+    for field, value in (("assertion.digest", "sha256:" + "5" * 64), ("assertion.version", "9.9.9")):
+        with pytest.raises(ValidationError, match="is a built-in assertion: it names the document this package ships"):
+            AssuranceEvent.model_validate(_at("post_deploy", **{**built_in, field: value}))
+    with pytest.raises(ValidationError, match="runs the module compiled from the document this package ships"):
+        AssuranceEvent.model_validate(
+            _at("post_deploy", **{**built_in, "provenance.compiled_digest": "sha256:" + "9" * 64})
+        )
+    for source in ("local", "custom_rego"):
+        with pytest.raises(ValidationError, match="from this package or the server's bundle, never a scanner"):
+            AssuranceEvent.model_validate(_at("post_deploy", **{**built_in, "provenance.assertion_source": source}))
+
+
+def test_every_evaluator_fault_reason_is_a_reason_of_its_status() -> None:
+    for status, reasons in EVALUATOR_FAULT_REASONS.items():
+        assert reasons <= STATUS_REASONS[status]

@@ -2,7 +2,8 @@
 
 A Change Assurance Record (CAR) is a framework-neutral record of the
 evidence, the evaluations, the approvals, the deployment and the verification
-after deployment for one infrastructure change. It keeps where each piece
+after deployment for one change, or of the checks on one build of an artifact
+that a later change deploys. It keeps where each piece
 came from. A CAR records technical and process assurance facts. It does not,
 by itself, establish certification or compliance with a regulatory
 framework, so ``compliance_determination`` is always null.
@@ -33,14 +34,16 @@ instead of failing on a missing key.
 
 from __future__ import annotations
 
-from typing import Annotated, Final, Literal
+from typing import Annotated, Final, Literal, get_args
 
 from pydantic import Field, ValidationInfo, model_validator
 
-from iltero_schemas.change_types.iac import IacChange
+from iltero_schemas.change_types.iac.change import IacChange
+from iltero_schemas.change_types.image.build import ImageBuild
+from iltero_schemas.change_types.image.deploy import ImageDeploy
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.context import ReferenceTime, Source
+from iltero_schemas.models.context import Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
 from iltero_schemas.models.fields import (
@@ -51,12 +54,14 @@ from iltero_schemas.models.fields import (
     Identifier,
     MemberPath,
     ProjectPath,
+    RunStage,
     Timestamp,
     Uuid,
     parse_timestamp,
 )
 from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
+from iltero_schemas.models.reference_time import ReferenceTime
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.server_facts import Approvals
 from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
@@ -75,12 +80,19 @@ SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 MAX_EVENTS = 100_000
 # More reports than a stage is ever given; one per tool is the rule the model enforces.
 MAX_SCANNER_REPORTS = 16
-MAX_EVIDENCE_REFS = 100_000
+# The files a record keeps for each event, at most: the input it was evaluated over, and the four files its assertion
+# was compiled into (its document, its syntax tree, its Rego module and its compiled policy), since every assertion a
+# stage owed has an event.
+FILES_PER_EVENT = 5
+# The files a stage keeps besides those, more than any stage writes: its events file, assertion index, redacted input,
+# redaction policy and bindings, and the files the pipeline gave it.
+FILES_PER_STAGE = 256
+# A record's stages are every stage but runtime, which no record has.
+MAX_EVIDENCE_REFS = FILES_PER_EVENT * MAX_EVENTS + len(get_args(RunStage)) * FILES_PER_STAGE
 
 
 class RecordRun(StrictModel):
     id: Uuid
-    origin: Literal["server_issued", "locally_derived"]
 
 
 class Issuer(StrictModel):
@@ -111,6 +123,13 @@ class Collector(StrictModel):
     version: Identifier
 
 
+class EvidenceSource(StrictModel):
+    """The file as the pipeline gave it, before the record kept it: its name and its digest."""
+
+    name: FileName
+    digest: Digest
+
+
 class EvidenceRef(StrictModel):
     """One file the record cites, named by its digest and by where it sits inside the record's directory."""
 
@@ -123,9 +142,10 @@ class EvidenceRef(StrictModel):
     retention_until: None
     collected_at: Timestamp
     collector: Collector
-    source: dict[Identifier, Identifier] | None
+    # The file as the pipeline gave it; null for a file the tool wrote itself.
+    source: EvidenceSource | None
     canonicalization: Identifier | None
-    # The redaction policy that redacted the file's content; null for a file no redaction touched.
+    # The redaction policy that ran over the file's content; null when no redaction policy ran over it.
     redaction_policy: RedactionPolicyRef | None
 
 
@@ -194,12 +214,12 @@ class ScannerReport(StrictModel):
     parsing_errors: Count
 
 
-class BindingSetUsed(StrictModel):
+class EvaluatorBindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
     ``origin`` is set by the tool, never by the binding set: a file cannot claim
     to be the set the contract package ships. ``digest`` is over the binding set
-    as it was read, and the stage retains it, so an event's ``binding.digest``
+    as it was read, and the stage retains it, so an event's ``evaluator_binding.digest``
     resolves to an entry a reader can see.
     """
 
@@ -213,7 +233,7 @@ class BindingSetUsed(StrictModel):
     binding_count: Count
 
     @model_validator(mode="after")
-    def _a_file_is_named(self) -> BindingSetUsed:
+    def _a_file_is_named(self) -> EvaluatorBindingSetUsed:
         if (self.file_name is None) != (self.origin == "shipped"):
             raise ValueError("a binding set read from a file names it, and the shipped set names none")
         return self
@@ -222,10 +242,10 @@ class BindingSetUsed(StrictModel):
 class Scanners(StrictModel):
     """What a stage read from the scanner reports it was given, and how much of it became a verdict."""
 
-    binding_set: BindingSetUsed
+    evaluator_binding_set: EvaluatorBindingSetUsed
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
     results_accepted: Count
-    results_binding_unverified: Count
+    results_scanner_version_not_allowed: Count
     results_without_binding: Count
 
     @model_validator(mode="after")
@@ -233,8 +253,10 @@ class Scanners(StrictModel):
         if self.results_without_binding != sum(report.results_without_binding for report in self.reports):
             raise ValueError("results_without_binding is the sum of the reports' own")
         read = sum(report.results_read for report in self.reports)
-        if self.results_accepted + self.results_binding_unverified + self.results_without_binding != read:
-            raise ValueError("every result a tool reported is accepted, binding_unverified or without a binding")
+        if self.results_accepted + self.results_scanner_version_not_allowed + self.results_without_binding != read:
+            raise ValueError(
+                "every result a tool reported is accepted, scanner_version_not_allowed or without a binding"
+            )
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
         return self
@@ -343,7 +365,7 @@ class CAR(StrictModel):
     governance: Governance
     subject: RecordSubject
     # The change the record is about: the body of its activity, told apart by ``activity``.
-    change: IacChange
+    change: Annotated[IacChange | ImageBuild | ImageDeploy, Field(discriminator="activity")]
     # The project's units file; null for a project that declares none.
     units_file: UnitsFile | None
     stages: dict[StageValue, StageRecord]

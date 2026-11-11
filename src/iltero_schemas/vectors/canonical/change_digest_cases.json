@@ -89,6 +89,34 @@
       },
       "canonical": "{\"change_type\":\"iac_change\",\"checked_content\":{\"digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"digest_version\":\"2\",\"kind\":\"plan\",\"tool\":\"terraform\"},\"environment_key\":\"production\",\"unit\":\"root\"}",
       "digest": "sha256:25c89971186ff4689ca5d5d4a7798c0dc43fb663ee5e335a4741eafa2a847b9a"
+    },
+    {
+      "name": "one_image_in_production",
+      "description": "The api unit's image, deployed to the production environment.",
+      "change_type": "image_release",
+      "unit": "api",
+      "environment_key": "production",
+      "checked_content": {
+        "kind": "container_image",
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "canonical": "{\"change_type\":\"image_release\",\"checked_content\":{\"digest\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"kind\":\"container_image\",\"repository\":\"ghcr.io/acme/api\"},\"environment_key\":\"production\",\"unit\":\"api\"}",
+      "digest": "sha256:8bc3ab757b28f127bb8297cc8b7f279d5a43a3d82a9bc0d75a4a1502161a8e9d"
+    },
+    {
+      "name": "the_same_image_in_staging",
+      "description": "The same image deployed to staging: the same checked content, another change.",
+      "change_type": "image_release",
+      "unit": "api",
+      "environment_key": "staging",
+      "checked_content": {
+        "kind": "container_image",
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "canonical": "{\"change_type\":\"image_release\",\"checked_content\":{\"digest\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"kind\":\"container_image\",\"repository\":\"ghcr.io/acme/api\"},\"environment_key\":\"staging\",\"unit\":\"api\"}",
+      "digest": "sha256:919b5bd986f35860df2d79eec2adedc45657a236ad6647275448be0d060381ed"
     }
   ]
 }

@@ -1,0 +1,428 @@
+[
+  {
+    "name": "image_deploy_with_a_forged_change_digest",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.digest",
+        "is not the digest of the change type, unit, environment and image"
+      ],
+      [
+        "change.drift_check.change_digest",
+        "is not change.digest"
+      ],
+      [
+        "stages.pre_deploy.coverage.subjects_in_scope.source_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "image_drift_check_of_another_change",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:aec1dbae7050f742f77e19f0694c627ab48fa9c07e89ad600f98256aeebc5ad3"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.drift_check.change_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_of_another_image_whose_match_check_still_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/deployment": {
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "reported_by": "pipeline"
+      },
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:7cc2d038fa393ddb7f9b8830c9122db5351ba5f6cf55f0c2010d953c7e6458ae"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.2.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_running_another_image_whose_reading_check_still_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:159d53315e59f117df31374b3f5cfacff6c6d02a2b16cb8dae959bdc9ed6ef90"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_whose_rollout_had_not_finished_and_whose_reading_check_still_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": false,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 1,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4e20eab48589397a76bad6f858ea98c91071a2359a8ad8bde7ec8de3d2c706bb"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_running_an_image_whose_digest_was_not_reported_and_whose_reading_check_still_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check": {
+        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "workload": {
+          "platform": "kubernetes",
+          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+          "kind": "deployment",
+          "namespace": "payments",
+          "name": "api",
+          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+        },
+        "rollout": {
+          "resource_version": "48213",
+          "generation": 4,
+          "observed_generation": 4,
+          "complete": true,
+          "expected_live_pods": 2,
+          "kind": "deployment",
+          "desired_replicas": 2,
+          "replicas": 2,
+          "updated_replicas": 2,
+          "available_replicas": 2,
+          "paused": false,
+          "strategy": "rolling_update"
+        },
+        "template_containers": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "role": "app",
+            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "compared": true,
+            "digest": {
+              "__unknown": true,
+              "reason": "not_reported_by_tool"
+            },
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          },
+          {
+            "name": "log-shipper",
+            "role": "sidecar",
+            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+            "compared": false,
+            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "pod_state": "live",
+            "revision": "7d9f8b6c5",
+            "pods": [
+              "api-7d9f8b6c5-abcde",
+              "api-7d9f8b6c5-fghij"
+            ]
+          }
+        ],
+        "live_pods_read": 2,
+        "pods_resource_version": "48217",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pods_evidence_ref": "post_verify/pods.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+      },
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:37805a6de4049c26d0da926d16fc08021c4e145602120e1bddb7b448fb705b16"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_unknown_for_a_state_not_read",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/0/evaluation/status_reason": "state_not_read"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.0.evaluation.status_reason",
+        "names a state not read the record does not"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_no_accepted_build_whose_build_check_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "/events/1/evaluation/observations/predicates/0/status": "false",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_its_accepted_build_whose_build_check_failed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ]
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_deploy_with_no_accepted_build_whose_build_check_is_unknown",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.1.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  }
+]

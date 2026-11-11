@@ -172,7 +172,7 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
     if stage is Stage.PLAN:
         target = RESOURCE
     kind = TargetKind(target["kind"])
-    roots = allowed_roots(stage, kind)
+    roots = allowed_roots("iac_change", stage, kind)
     for root in roots:
         parse_document(_document({"path": f"{root}.x", "equal": 1}, stage=stage.value, target=target))
     assert _issues(_document({"path": "nowhere.x", "equal": 1}, stage=stage.value, target=target)) == [
@@ -181,9 +181,9 @@ def test_path_root_must_be_available_at_the_stage(stage: Stage) -> None:
 
 
 def test_resource_root_exists_only_for_resource_targets() -> None:
-    assert "resource" in allowed_roots(Stage.RUNTIME, TargetKind.RESOURCE)
-    assert "resource" not in allowed_roots(Stage.RUNTIME, TargetKind.DEPLOYMENT)
-    assert "reference_time" in allowed_roots(Stage.RUNTIME, TargetKind.ASSURANCE)
+    assert "resource" in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.RESOURCE)
+    assert "resource" not in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.DEPLOYMENT)
+    assert "reference_time" in allowed_roots("iac_change", Stage.RUNTIME, TargetKind.ASSURANCE)
 
 
 @pytest.mark.parametrize(
@@ -225,11 +225,18 @@ def test_list_operators_take_a_non_empty_bounded_list_of_scalars_or_a_reference(
     parse_document(_document({"path": "resource.x", "in": {"path": "plan.allowed"}}))
 
 
-def test_scalar_operators_refuse_lists_null_and_dates() -> None:
+def test_scalar_operators_refuse_lists_and_dates() -> None:
     assert _issues(_document({"path": "resource.x", "equal": ["a"]})) == ["spec.assert.equal"]
-    assert _issues(_document({"path": "resource.x", "equal": None})) == ["spec.assert.equal"]
     assert _issues(_document({"path": "resource.x", "contains": {"a": 1}})) == ["spec.assert.contains"]
     assert _issues(parse_yaml_document("path: resource.x\nequal: 2026-01-01")) == ["spec.assert.equal"]
+
+
+def test_only_equal_and_not_equal_compare_with_null() -> None:
+    for op in ("equal", "not_equal"):
+        parse_document(_document({"path": "resource.x", op: None}))
+    for op in ("greater_than", "less_than_or_equal", "contains", "in", "not_in"):
+        assert _issues(_document({"path": "resource.x", op: None})) == [f"spec.assert.{op}"]
+    assert _issues(_document({"path": "resource.x", "in": ["a", None]})) == ["spec.assert.in[1]"]
 
 
 def parse_yaml_document(assert_yaml: str) -> dict[str, Any]:

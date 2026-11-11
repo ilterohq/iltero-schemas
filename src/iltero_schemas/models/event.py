@@ -13,28 +13,27 @@ it and are refused if present.
 
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal, get_args
+from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
-from iltero_schemas.canonical.encoding import CanonicalizationError, canonical_bytes
-from iltero_schemas.compiler.limits import (
-    OBSERVATIONS_MAX_BYTES,
-    OBSERVATIONS_MAX_DEPTH,
-    REASON_MAX_BYTES,
-    nesting_depth,
-)
+from iltero_schemas.assertions.built_in import BUILT_INS
+from iltero_schemas.compiler.limits import REASON_MAX_BYTES
 from iltero_schemas.models import fields
 from iltero_schemas.models.assertion import (
     ID_MAX_LENGTH,
     ID_PATTERN,
     VERSION_MAX_LENGTH,
     VERSION_PATTERN,
+    TargetKind,
 )
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.change_type import CHECKED_CONTENT_KIND_OF, ActivityName
 from iltero_schemas.models.checked_content import CheckedContent
-from iltero_schemas.models.context import Resolution
+from iltero_schemas.models.ci import CiSystem
 from iltero_schemas.models.fields import (
+    MAX_SUBJECT_IDENTITIES,
+    BoundedObject,
     Commit,
     Digest,
     Identifier,
@@ -46,7 +45,7 @@ from iltero_schemas.models.fields import (
 )
 from iltero_schemas.models.scanners import ScannerTool
 from iltero_schemas.models.subjects import check_subject
-from iltero_schemas.profiles import reads_server_facts
+from iltero_schemas.profiles import profile_for, reads_server_facts
 
 # Why a status is what it is; the runner sets it, a policy never does.
 STATUS_REASONS: dict[str, frozenset[str]] = {
@@ -64,6 +63,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "not_reported_by_tool",
             "reference_time_untrusted",
             "deployment_log_incomplete",
+            "state_not_read",
             "kind_unmapped",
         }
     ),
@@ -73,7 +73,7 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "scanner_not_run",
             "credential_denied",
             "resource_type_unsupported",
-            "binding_unverified",
+            "scanner_version_not_allowed",
             "timeout",
             "subject_unresolved",
             "evaluator_unavailable",
@@ -89,6 +89,21 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "output_overflow",
             "output_contract_violation",
             "adapter_parse_failure",
+            "bundle_verification_failed",
+            "compile_failure",
+        }
+    ),
+}
+# The reasons an evaluation did not run, or ended in an error, that blame the evaluator, never the subject or its facts.
+EVALUATOR_FAULT_REASONS: dict[str, frozenset[str]] = {
+    "not_evaluated": frozenset({"timeout", "evaluator_unavailable"}),
+    "error": frozenset(
+        {
+            "evaluator_crash",
+            "evaluator_timeout",
+            "evaluator_memory_limit",
+            "output_overflow",
+            "output_contract_violation",
             "bundle_verification_failed",
             "compile_failure",
         }
@@ -121,38 +136,6 @@ def _reason(value: str) -> str:
 Reason = Annotated[str, AfterValidator(_reason)]
 
 
-def _clean(value: Any) -> bool:
-    """Whether no string anywhere in ``value`` holds a control character."""
-    if isinstance(value, str):
-        try:
-            plain_text(value)
-        except ValueError:
-            return False
-        return True
-    if isinstance(value, dict):
-        return all(_clean(key) and _clean(child) for key, child in value.items())
-    if isinstance(value, list):
-        return all(_clean(child) for child in value)
-    return True
-
-
-def _observations(value: dict[str, Any]) -> dict[str, Any]:
-    if nesting_depth(value) > OBSERVATIONS_MAX_DEPTH:
-        raise ValueError(f"must not nest deeper than {OBSERVATIONS_MAX_DEPTH}")
-    if not _clean(value):
-        raise ValueError("must not contain control characters")
-    try:
-        size = len(canonical_bytes(value))
-    except CanonicalizationError as exc:
-        raise ValueError(f"has no canonical form ({type(exc).__name__})") from None
-    if size > OBSERVATIONS_MAX_BYTES:
-        raise ValueError(f"must be at most {OBSERVATIONS_MAX_BYTES} bytes in canonical form")
-    return value
-
-
-Observations = Annotated[dict[str, Any], AfterValidator(_observations)]
-
-
 class AssertionRef(fields.AssertionKey):
     """The assertion, with the digest of its document as it was read."""
 
@@ -165,19 +148,20 @@ class EventSubject(StrictModel):
     kind: TargetKindValue
     # The digest of its kind and its local identity (``models.subjects``).
     key: Digest | None
-    identities: list[Identity]
-    resolution: Resolution
+    identities: Annotated[list[Identity], Field(max_length=MAX_SUBJECT_IDENTITIES)]
 
 
 class Evaluation(StrictModel):
-    """The verdict: the status, the runner's reason for it, and what the policy itself said."""
+    """The verdict: the activity and stage it belongs to, the status, the runner's reason for it, and what the policy
+    itself said."""
 
+    activity: ActivityName
     stage: StageValue
     status: Status
     status_reason: Identifier | None
     status_detail: Detail | None
     policy_reason: Reason | None
-    observations: Observations | None
+    observations: BoundedObject | None
 
     @model_validator(mode="after")
     def _reason_fits_status(self) -> Evaluation:
@@ -194,7 +178,6 @@ class Run(StrictModel):
     """The run this event belongs to, and the unit of the stack it was evaluated in."""
 
     id: Identifier
-    origin: Literal["server_issued", "locally_derived"]
     unit: Identifier
 
 
@@ -242,7 +225,7 @@ class ScannerEvaluator(StrictModel):
 Evaluator = Annotated[OpaEvaluator | ScannerEvaluator, Field(discriminator="engine")]
 
 
-class BindingRef(StrictModel):
+class EvaluatorBindingRef(StrictModel):
     """The entry that licensed a scanner's result to stand for an assertion (see ``models.binding``)."""
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
@@ -283,9 +266,6 @@ class Compiler(StrictModel):
 
 # Where an evaluation ran: on a person's machine (``local``), in a job of a CI system the tool could not
 # name (``ci``), or in a job of a named CI system.
-# The CI systems an executor may name; a new CI system adds its name here.
-CiSystem = Literal["github_actions"]
-CI_SYSTEMS: tuple[str, ...] = get_args(CiSystem)
 ExecutorProvider = Literal["local", "ci"] | CiSystem
 
 
@@ -297,9 +277,11 @@ class Executor(StrictModel):
     ci_run_id: Identifier | None
 
 
-# Where the facts document an evaluation read came from: the server, a file given to the tool, or none.
+# Where a built-in assertion may come from: this package, or the server's bundle that ships it.
+BUILT_IN_SOURCES = frozenset({"contract_starter", "server_bundle"})
+# Where the facts document an evaluation read came from: the server, or none.
 # It names the document's origin, not whether its parts held values or unknown markers.
-FactsSource = Literal["server", "local_file", "none"]
+FactsSource = Literal["server", "none"]
 
 
 class Provenance(StrictModel):
@@ -314,7 +296,7 @@ class Provenance(StrictModel):
     # The bundle belongs to the evaluator this CLI ran; a scanner has none.
     bundle: Bundle | None
     # Present exactly when a scanner's result was read for this evaluation (see ``ScannerEvaluator``).
-    binding: BindingRef | None
+    evaluator_binding: EvaluatorBindingRef | None
     # Where the assertion came from: the server's bundle, the project's own files (``local``, hand-written Rego as
     # ``custom_rego``), or a starter assertion this package ships (``contract_starter``). The writer's claim.
     assertion_source: Literal["server_bundle", "local", "custom_rego", "contract_starter"]
@@ -322,7 +304,7 @@ class Provenance(StrictModel):
     compiled_digest: Digest | None
     compiler: Compiler | None
     executor: Executor
-    # Present exactly for an evaluation at a stage whose input may carry server facts (``profiles.reads_server_facts``).
+    # Present exactly for an evaluation whose input may carry server facts (``profiles.reads_server_facts``).
     facts_source: FactsSource | None
 
 
@@ -334,6 +316,23 @@ class AssuranceEvent(StrictModel):
     evaluation: Evaluation
     provenance: Provenance
     observed_at: Timestamp
+
+    def _check_built_in(self) -> None:
+        """A built-in assertion is evaluated as shipped: its document and version, and the module compiled from it."""
+        shipped = BUILT_INS.get(self.assertion.id)
+        if shipped is None:
+            return
+        provenance = self.provenance
+        if (self.assertion.version, self.assertion.digest) != (shipped.version, shipped.digest):
+            raise ValueError(f"{self.assertion.id} is a built-in assertion: it names the document this package ships")
+        if provenance.assertion_source not in BUILT_IN_SOURCES or provenance.evaluator_binding is not None:
+            raise ValueError(
+                f"{self.assertion.id} is evaluated from this package or the server's bundle, never a scanner"
+            )
+        if provenance.compiled_digest not in (None, shipped.compiled_digest) or (
+            provenance.compiled_digest is None and provenance.evaluator is not None
+        ):
+            raise ValueError(f"{self.assertion.id} runs the module compiled from the document this package ships")
 
     @model_validator(mode="after")
     def _consistent(self) -> AssuranceEvent:
@@ -348,8 +347,15 @@ class AssuranceEvent(StrictModel):
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
-        if (self.provenance.facts_source is not None) != reads_server_facts(self.evaluation.stage):
-            raise ValueError("facts_source is present exactly when the evaluation's stage reads server facts")
+        self._check_built_in()
+        activity, stage = self.evaluation.activity, self.evaluation.stage
+        profile_for(activity, stage, TargetKind(subject.kind))
+        if self.provenance.checked_content.kind != CHECKED_CONTENT_KIND_OF[activity]:
+            raise ValueError(f"an {activity} evaluation names the {CHECKED_CONTENT_KIND_OF[activity]} it checked")
+        if (self.provenance.facts_source is not None) != reads_server_facts(
+            self.evaluation.activity, self.evaluation.stage
+        ):
+            raise ValueError("facts_source is present exactly when the evaluation's input reads server facts")
         if self.provenance.evaluator is None and self.evaluation.status_reason not in NO_EVALUATOR_REASONS:
             raise ValueError(
                 f"an evaluation with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
@@ -361,8 +367,10 @@ class AssuranceEvent(StrictModel):
         bundle = self.provenance.bundle
         if self.provenance.assertion_source == "server_bundle" and bundle is not None and bundle.kind != "server":
             raise ValueError("an assertion from the server's bundle is evaluated over the server's bundle")
-        if (self.provenance.binding is not None) != from_scanner:
-            raise ValueError("a binding is named exactly when a scanner's result was read for this evaluation")
+        if (self.provenance.evaluator_binding is not None) != from_scanner:
+            raise ValueError(
+                "an evaluator binding is named exactly when a scanner's result was read for this evaluation"
+            )
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):
             raise ValueError("a scanner's result was not compiled here, so it names no module and no compiler")
         return self

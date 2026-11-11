@@ -1,0 +1,105 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": true,
+          "op": "equal",
+          "path": "drift_check.rollout.complete"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "ref": "drift_check.rollout.expected_live_pods"
+        }
+      },
+      {
+        "exists": {
+          "in": "drift_check.template_containers",
+          "where": {
+            "predicate": {
+              "literal": true,
+              "op": "equal",
+              "path": "item.compared"
+            }
+          }
+        }
+      },
+      {
+        "exists": {
+          "in": "drift_check.containers_read",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "literal": "live",
+                  "op": "equal",
+                  "path": "item.pod_state"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": true,
+                  "op": "equal",
+                  "path": "item.compared"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "not": {
+          "exists": {
+            "in": "drift_check.containers_read",
+            "where": {
+              "all": [
+                {
+                  "predicate": {
+                    "literal": "live",
+                    "op": "equal",
+                    "path": "item.pod_state"
+                  }
+                },
+                {
+                  "predicate": {
+                    "literal": true,
+                    "op": "equal",
+                    "path": "item.compared"
+                  }
+                },
+                {
+                  "predicate": {
+                    "op": "not_equal",
+                    "path": "item.digest",
+                    "ref": "change.image.digest"
+                  }
+                },
+                {
+                  "predicate": {
+                    "op": "not_in",
+                    "path": "item.digest",
+                    "ref": "change.build.platform_digests"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+  "stage": "post_verify",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

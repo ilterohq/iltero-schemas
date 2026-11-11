@@ -1,0 +1,15 @@
+{
+  "mediaType": "application/vnd.dev.sigstore.bundle.v0.3+json",
+  "verificationMaterial": {
+    "certificate": {
+      "rawBytes": "bm90IGEgcmVhbCBjZXJ0aWZpY2F0ZTogdGhlIHJlYWRlciBuZXZlciByZWFkcyBpdA=="
+    }
+  },
+  "messageSignature": {
+    "messageDigest": {
+      "algorithm": "SHA2_256",
+      "digest": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    },
+    "signature": "bm90IGEgcmVhbCBzaWduYXR1cmU6IHRoZSByZWFkZXIgbmV2ZXIgY2hlY2tzIGl0"
+  }
+}

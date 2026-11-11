@@ -1,21 +1,4 @@
 {
-  "ast_version": 1,
-  "id": "ILT.CHANGE.PRODUCTION_APPROVED",
-  "version": "1.0.0",
-  "type": "process",
-  "change_type": null,
-  "stage": "pre_deploy",
-  "target": {
-    "kind": "change",
-    "resources": []
-  },
-  "when": {
-    "predicate": {
-      "path": "organization_scope.environment.production",
-      "op": "equal",
-      "literal": true
-    }
-  },
   "assert": {
     "any": [
       {
@@ -25,37 +8,37 @@
             "all": [
               {
                 "predicate": {
-                  "path": "item.status",
+                  "literal": "approved",
                   "op": "equal",
-                  "literal": "approved"
+                  "path": "item.status"
                 }
               },
               {
                 "predicate": {
-                  "path": "item.subject.kind",
+                  "literal": "change",
                   "op": "equal",
-                  "literal": "change"
+                  "path": "item.subject.kind"
                 }
               },
               {
                 "predicate": {
+                  "op": "equal",
                   "path": "item.subject.digest",
-                  "op": "equal",
                   "ref": "change.digest"
                 }
               },
               {
                 "predicate": {
-                  "path": "item.roles",
+                  "literal": "security",
                   "op": "contains",
-                  "literal": "security"
+                  "path": "item.roles"
                 }
               },
               {
                 "predicate": {
-                  "path": "item.independence",
+                  "literal": "independent",
                   "op": "equal",
-                  "literal": "independent"
+                  "path": "item.independence"
                 }
               }
             ]
@@ -69,22 +52,22 @@
             "all": [
               {
                 "predicate": {
-                  "path": "item.status",
+                  "literal": "approved",
                   "op": "equal",
-                  "literal": "approved"
+                  "path": "item.status"
                 }
               },
               {
                 "predicate": {
-                  "path": "item.subject.kind",
+                  "literal": "run",
                   "op": "equal",
-                  "literal": "run"
+                  "path": "item.subject.kind"
                 }
               },
               {
                 "predicate": {
+                  "op": "equal",
                   "path": "item.subject.id",
-                  "op": "equal",
                   "ref": "run.id"
                 }
               }
@@ -93,5 +76,22 @@
         }
       }
     ]
+  },
+  "ast_version": 1,
+  "change_type": null,
+  "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "organization_scope.environment.production"
+    }
   }
 }

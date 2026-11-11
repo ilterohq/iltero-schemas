@@ -10,8 +10,8 @@ from iltero_schemas.models.event import ScannerEvaluator
 from iltero_schemas.models.scanners import SCANNER_TOOLS, ScannerTool
 
 
-def test_the_scanners_are_checkov_trivy_and_prowler() -> None:
-    assert SCANNER_TOOLS == get_args(ScannerTool) == ("checkov", "trivy", "prowler")
+def test_the_scanners_are_checkov_and_trivy() -> None:
+    assert SCANNER_TOOLS == get_args(ScannerTool) == ("checkov", "trivy")
 
 
 def test_a_binding_an_event_and_a_record_name_a_scanner_from_the_one_list() -> None:

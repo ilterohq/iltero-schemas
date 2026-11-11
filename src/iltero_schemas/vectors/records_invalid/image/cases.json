@@ -1,0 +1,1263 @@
+[
+  {
+    "name": "image_repository_without_its_registry_host",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "nginx"
+    },
+    "remove": [],
+    "message": "an image repository starts with its registry host, such as docker.io/library/nginx"
+  },
+  {
+    "name": "image_repository_without_its_host_but_with_a_namespace",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "library/nginx"
+    },
+    "remove": [],
+    "message": "an image repository starts with its registry host, such as docker.io/library/nginx"
+  },
+  {
+    "name": "image_repository_on_docker_hub_without_its_namespace",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "docker.io/nginx"
+    },
+    "remove": [],
+    "message": "an image repository on Docker Hub names its namespace, such as docker.io/library/nginx"
+  },
+  {
+    "name": "image_repository_with_docker_hubs_other_host",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "index.docker.io/library/nginx"
+    },
+    "remove": [],
+    "message": "an image repository on Docker Hub is written with the host docker.io"
+  },
+  {
+    "name": "image_repository_in_upper_case",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "ghcr.io/Acme/api"
+    },
+    "remove": [],
+    "message": "an image repository is lower case, with no tag or digest"
+  },
+  {
+    "name": "image_repository_with_a_tag",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "ghcr.io/acme/api:1.4.2"
+    },
+    "remove": [],
+    "message": "an image repository is lower case, with no tag or digest"
+  },
+  {
+    "name": "image_repository_with_a_digest",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "ghcr.io/acme/api@sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "message": "an image repository is lower case, with no tag or digest"
+  },
+  {
+    "name": "image_platform_digests_name_the_index",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/platform_digests": [
+        "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+        "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9",
+        "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+      ]
+    },
+    "remove": [],
+    "message": "platform_digests are the index's children, never the index digest itself"
+  },
+  {
+    "name": "image_platform_digests_out_of_order",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/platform_digests": [
+        "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9",
+        "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+      ]
+    },
+    "remove": [],
+    "message": "platform_digests are named once each, in order"
+  },
+  {
+    "name": "image_platform_digests_without_the_index",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/index_evidence_ref": null
+    },
+    "remove": [],
+    "message": "an image pushed as an index names both its raw index and its platform digests; an image pushed as one manifest names neither"
+  },
+  {
+    "name": "image_index_without_platform_digests",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/platform_digests": [],
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "message": "an image pushed as an index names both its raw index and its platform digests; an image pushed as one manifest names neither"
+  },
+  {
+    "name": "image_index_not_in_the_evidence_register",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/index_evidence_ref": "plan/missing.json"
+    },
+    "remove": [],
+    "message": "change.index_evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_index_of_another_image",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/16/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "/stages/plan/redaction/input/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "remove": [],
+    "message": "the raw index's digest is the image's digest"
+  },
+  {
+    "name": "image_attestation_not_in_the_evidence_register",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/attestation/evidence_ref": "plan/missing.json"
+    },
+    "remove": [],
+    "message": "change.attestation.evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_attestation_claimed_verified",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/attestation/verification": "verified"
+    },
+    "remove": [],
+    "message": "Input should be 'not_verified'"
+  },
+  {
+    "name": "image_tag_read_from_the_registry",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/tag_resolution/read_from": "registry"
+    },
+    "remove": [],
+    "message": "Input should be 'pipeline_metadata_file'"
+  },
+  {
+    "name": "image_tag_metadata_file_not_in_the_evidence_register",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/tag_resolution/read_from_evidence_ref": "plan/missing.json"
+    },
+    "remove": [],
+    "message": "change.image.tag_resolution.read_from_evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_tag_not_a_tag",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/tag_resolution/tag": "-latest"
+    },
+    "remove": [],
+    "message": "String should match pattern '^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$'"
+  },
+  {
+    "name": "image_build_in_an_environment",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/subject/environment": "production"
+    },
+    "remove": [],
+    "message": "a build belongs to no environment"
+  },
+  {
+    "name": "image_build_expecting_a_pre_deploy_stage",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/expected_stages": [
+        "plan",
+        "pre_deploy"
+      ],
+      "/complete": false
+    },
+    "remove": [],
+    "message": "the record accounts for every stage of the lifecycle: expected, or not in scope"
+  },
+  {
+    "name": "image_build_with_an_event_of_another_activity",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/activity": "iac_change",
+      "/events/0/provenance/facts_source": null
+    },
+    "remove": [],
+    "message": "stage 'plan' is not valid for target kind 'artifact' in an iac_change input"
+  },
+  {
+    "name": "image_build_with_an_event_naming_a_plan",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/provenance/checked_content": {
+        "kind": "plan",
+        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "digest_version": "1",
+        "tool": "terraform"
+      }
+    },
+    "remove": [],
+    "message": "an image_build evaluation names the container_image it checked"
+  },
+  {
+    "name": "image_build_with_an_event_of_another_image",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/provenance/checked_content": {
+        "kind": "container_image",
+        "repository": "ghcr.io/acme/api",
+        "digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+      }
+    },
+    "remove": [],
+    "message": "every event names the content the record's change checked"
+  },
+  {
+    "name": "image_build_counting_resources",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/stages/plan/coverage/subjects_in_scope/counted_from": "plan_resource_enumeration"
+    },
+    "remove": [],
+    "message": "the plan stage counts its scope as artifact_unit"
+  },
+  {
+    "name": "image_build_counting_another_image",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "message": "the plan stage counts the one image the build describes, by its digest"
+  },
+  {
+    "name": "image_build_listing_approvals",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/stages/plan/approvals": []
+    },
+    "remove": [],
+    "message": "the plan stage lists approvals exactly when its evaluations read them"
+  },
+  {
+    "name": "image_build_event_without_its_facts_source",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/provenance/facts_source": null
+    },
+    "remove": [],
+    "message": "facts_source is present exactly when the evaluation's input reads server facts"
+  },
+  {
+    "name": "image_repository_with_the_default_port",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "ghcr.io:443/acme/api"
+    },
+    "remove": [],
+    "message": "an image repository leaves out the default port 443"
+  },
+  {
+    "name": "image_repository_on_docker_hub_with_a_port",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/image/repository": "docker.io:5000/library/nginx"
+    },
+    "remove": [],
+    "message": "an image repository on Docker Hub is written with the host docker.io"
+  },
+  {
+    "name": "image_attestation_that_is_the_raw_index",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/attestation/evidence_ref": "plan/image-index.json"
+    },
+    "remove": [],
+    "message": "the raw index, the attestation, the build tool's metadata file and each report are different files"
+  },
+  {
+    "name": "image_index_of_another_file_type",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/16/media_type": "application/json"
+    },
+    "remove": [],
+    "message": "the raw index is a file of type application/vnd.docker.distribution.manifest.list.v2+json or application/vnd.oci.image.index.v1+json"
+  },
+  {
+    "name": "image_report_not_in_the_evidence_register",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports": [
+        {
+          "evidence_ref": "plan/reports/junit.xml",
+          "format": "junit",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "pipeline"
+        },
+        {
+          "evidence_ref": "plan/reports/trivy.json",
+          "format": "trivy_json",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "image_digest_source": "report"
+        },
+        {
+          "evidence_ref": "plan/reports/zz-missing.json",
+          "format": "trivy_json",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "image_digest_source": "report"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "change.reports names files of the record's evidence register"
+  },
+  {
+    "name": "image_reports_out_of_order",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports": [
+        {
+          "evidence_ref": "plan/reports/trivy.json",
+          "format": "trivy_json",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "report"
+        },
+        {
+          "evidence_ref": "plan/reports/junit.xml",
+          "format": "junit",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "pipeline"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "reports names each report once, sorted by its evidence_ref"
+  },
+  {
+    "name": "image_report_without_the_digest_of_the_file_the_pipeline_gave",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/18/source": null
+    },
+    "remove": [],
+    "message": "a report names the digest of the file as the pipeline gave it, in its source"
+  },
+  {
+    "name": "image_report_that_is_the_raw_index",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports": [
+        {
+          "evidence_ref": "plan/image-index.json",
+          "format": "junit",
+          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+          "image_digest_source": "pipeline"
+        },
+        {
+          "evidence_ref": "plan/reports/trivy.json",
+          "format": "trivy_json",
+          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "image_digest_source": "report"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the raw index, the attestation, the build tool's metadata file and each report are different files"
+  },
+  {
+    "name": "image_scan_report_of_an_index_naming_the_index",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+    },
+    "remove": [],
+    "message": "a scan of an image built for several platforms names the platform it scanned"
+  },
+  {
+    "name": "image_attestation_redacted",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/10/redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    "remove": [],
+    "message": "the attestation is kept as the pipeline gave it, so its signature can be checked again"
+  },
+  {
+    "name": "image_attestation_without_its_source",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/10/source": null
+    },
+    "remove": [],
+    "message": "the attestation names the digest of the file as the pipeline gave it, in its source"
+  },
+  {
+    "name": "image_attestation_sent_to_the_server_on_a_run_the_tool_opened",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/attestation/sent_to_server": true,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
+      "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f"
+    },
+    "remove": [],
+    "message": "a run the tool opened sent the server no attestation"
+  },
+  {
+    "name": "image_build_without_its_match_check",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/assertion/id": "ACME.IMAGE.COMMIT",
+      "/stages/plan/coverage/subjects_per_assertion": {
+        "ACME.IMAGE.COMMIT@1.0.0": 1,
+        "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+        "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+      },
+      "/coverage/subjects_per_assertion": {
+        "ACME.IMAGE.COMMIT@1.0.0": 1,
+        "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
+        "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+      }
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported"
+  },
+  {
+    "name": "image_build_naming_another_match_check",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is a built-in assertion: it names the document this package ships"
+  },
+  {
+    "name": "image_build_of_a_local_run_claiming_its_commit_was_verified",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+  },
+  {
+    "name": "image_build_of_a_local_run_whose_commit_check_failed",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/status": "fail",
+      "/events/0/evaluation/status_reason": null
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+  },
+  {
+    "name": "image_build_of_a_local_run_whose_commit_check_is_unknown_for_another_reason",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/status_reason": "path_missing"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+  },
+  {
+    "name": "image_build_whose_match_check_did_not_apply",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/status": "not_applicable",
+      "/events/0/evaluation/status_reason": "when_guard_excluded"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT always applies to the plan stage's one subject"
+  },
+  {
+    "name": "image_report_with_a_source_that_is_not_a_digest",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/18/source": {
+        "digest": "not-a-digest",
+        "name": "junit.xml"
+      }
+    },
+    "remove": [],
+    "message": "String should match pattern"
+  },
+  {
+    "name": "image_report_stored_unredacted_but_not_as_given",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/18/source": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "name": "junit.xml"
+      }
+    },
+    "remove": [],
+    "message": "a report, when nothing redacted it, is stored as the pipeline gave it"
+  },
+  {
+    "name": "image_report_of_another_file_type",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/18/media_type": "application/vnd.iltero.rego"
+    },
+    "remove": [],
+    "message": "a junit report is a file of type application/xml or text/xml"
+  },
+  {
+    "name": "image_build_of_a_local_run_claiming_facts_from_the_server",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server"
+    },
+    "remove": [],
+    "message": "every evaluation of a build whose run was opened by local reads its facts from none"
+  },
+  {
+    "name": "image_build_commit_read_from_another_file_than_the_tag",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit/evidence_ref": "plan/reports/trivy.json"
+    },
+    "remove": [],
+    "message": "the tag and the build's commit are read from one build tool's metadata file"
+  },
+  {
+    "name": "image_build_commit_file_not_in_the_evidence_register",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit/evidence_ref": "plan/missing.json",
+      "/change/image/tag_resolution": null
+    },
+    "remove": [],
+    "message": "change.build_commit.evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_build_commit_from_a_file_of_another_type",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit/evidence_ref": "plan/attestation.sigstore.json",
+      "/change/image/tag_resolution": null,
+      "/change/attestation": null
+    },
+    "remove": [],
+    "message": "the build tool's metadata file is a file of type application/json"
+  },
+  {
+    "name": "image_build_commit_from_a_redacted_metadata_file",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/11/redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    "remove": [],
+    "message": "the build tool's metadata file is kept as the pipeline gave it"
+  },
+  {
+    "name": "image_build_commit_claimed_verified",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit/verification": "verified"
+    },
+    "remove": [],
+    "message": "Input should be 'not_verified'"
+  },
+  {
+    "name": "image_build_commit_read_from_an_image_label",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit/read_from": "image_label"
+    },
+    "remove": [],
+    "message": "Input should be 'buildx_provenance'"
+  },
+  {
+    "name": "image_report_about_another_image",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports/1/image_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "remove": [],
+    "message": "a report is about the image or one of its platform images"
+  },
+  {
+    "name": "image_junit_report_tied_by_the_report_itself",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/reports/0/image_digest_source": "report"
+    },
+    "remove": [],
+    "message": "a JUnit report names no image, so only the pipeline ties it to one"
+  },
+  {
+    "name": "image_junit_report_kept_as_json",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/evidence_refs/18/media_type": "application/json"
+    },
+    "remove": [],
+    "message": "a junit report is a file of type application/xml or text/xml"
+  },
+  {
+    "name": "image_build_naming_no_commit_whose_commit_check_waited_only_for_the_server",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/change/build_commit": null,
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
+      "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_naming_a_build",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ]
+      }
+    },
+    "remove": [],
+    "message": "a run the tool opened names no build: only the server accepts one for the environment"
+  },
+  {
+    "name": "image_deploy_from_a_short_repository",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/image/repository": "nginx"
+    },
+    "remove": [],
+    "message": "an image repository starts with its registry host, such as docker.io/library/nginx"
+  },
+  {
+    "name": "image_deploy_counting_another_deployment",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "remove": [],
+    "message": "the post_deploy stage must count the one deployment by its digest"
+  },
+  {
+    "name": "image_drift_check_of_another_run",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/run_id": "8b3e4d5c-6f70-5182-9cad-2e3f4a5b6c7d"
+    },
+    "remove": [],
+    "message": "the drift check names the record's run"
+  },
+  {
+    "name": "image_drift_check_of_a_workload_kind_no_reader_reads",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/workload/kind": "deployment_config"
+    },
+    "remove": [],
+    "message": "Input should be 'deployment', 'stateful_set' or 'daemon_set'"
+  },
+  {
+    "name": "image_drift_check_with_containers_read_out_of_order",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read": [
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false,
+          "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde",
+            "api-7d9f8b6c5-fghij"
+          ]
+        },
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true,
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde",
+            "api-7d9f8b6c5-fghij"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "containers_read lists each group once, sorted"
+  },
+  {
+    "name": "image_drift_check_leaving_a_container_of_the_deployed_repository_uncompared",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/template_containers/1/image_reference": "ghcr.io/acme/api:1.4.2"
+    },
+    "remove": [],
+    "message": "a reading compares every container whose image is from the deployed repository"
+  },
+  {
+    "name": "image_drift_check_leaving_a_pods_container_of_the_deployed_repository_uncompared",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/1/image_reference": "ghcr.io/acme/api:1.4.2"
+    },
+    "remove": [],
+    "message": "a reading compares every container whose image is from the deployed repository"
+  },
+  {
+    "name": "image_drift_check_with_containers_out_of_order",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/template_containers": [
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false
+        },
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true
+        }
+      ]
+    },
+    "remove": [],
+    "message": "template_containers lists each container of the pod template once, sorted by name"
+  },
+  {
+    "name": "image_drift_check_without_its_containers",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/template_containers": []
+    },
+    "remove": [],
+    "message": "List should have at least 1 item after validation, not 0"
+  },
+  {
+    "name": "image_drift_check_with_an_image_reference_without_its_registry_host",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/template_containers/1/image_reference": "fluent/fluent-bit:3.1.4"
+    },
+    "remove": [],
+    "message": "an image repository starts with its registry host, such as docker.io/library/nginx"
+  },
+  {
+    "name": "image_drift_check_with_an_image_reference_whose_digest_is_cut_short",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/template_containers/1/image_reference": "docker.io/fluent/fluent-bit@sha256:abc"
+    },
+    "remove": [],
+    "message": "an image reference's digest is sha256: and 64 lower-case hexadecimal characters"
+  },
+  {
+    "name": "image_drift_check_listing_a_pods_container_twice",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/1/name": "api",
+      "/change/drift_check/containers_read/1/image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "/change/drift_check/containers_read/1/compared": true,
+      "/change/drift_check/containers_read/1/role": "app",
+      "/change/drift_check/containers_read/1/digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "remove": [],
+    "message": "a pod lists each of its containers once"
+  },
+  {
+    "name": "image_drift_check_with_a_pod_in_two_states",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/1/pod_state": "terminating"
+    },
+    "remove": [],
+    "message": "each pod has one state and one revision"
+  },
+  {
+    "name": "image_drift_check_with_a_live_pod_without_its_compared_container",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/0/pods": [
+        "api-7d9f8b6c5-abcde"
+      ]
+    },
+    "remove": [],
+    "message": "once the rollout has finished, every live pod lists every template container"
+  },
+  {
+    "name": "image_drift_check_with_a_pods_container_uncompared_though_its_template_compares_it",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/0/image_reference": "mirror.example.com/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "/change/drift_check/containers_read/0/compared": false
+    },
+    "remove": [],
+    "message": "a pod's container is compared when its template container is"
+  },
+  {
+    "name": "image_drift_check_with_a_pods_container_in_another_role",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/1/role": "init"
+    },
+    "remove": [],
+    "message": "once the rollout has finished, every live pod lists every template container"
+  },
+  {
+    "name": "image_drift_check_with_live_pods_of_two_revisions_after_its_rollout",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read": [
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true,
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde"
+          ]
+        },
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true,
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "pod_state": "live",
+          "revision": "8e5d4c3b2",
+          "pods": [
+            "api-7d9f8b6c5-fghij"
+          ]
+        },
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false,
+          "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde"
+          ]
+        },
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false,
+          "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+          "pod_state": "live",
+          "revision": "8e5d4c3b2",
+          "pods": [
+            "api-7d9f8b6c5-fghij"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "once the rollout has finished, every live pod is of its current revision"
+  },
+  {
+    "name": "image_drift_check_with_pods_out_of_order",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/containers_read/0/pods": [
+        "api-7d9f8b6c5-fghij",
+        "api-7d9f8b6c5-abcde"
+      ]
+    },
+    "remove": [],
+    "message": "pods names each pod once, sorted"
+  },
+  {
+    "name": "image_drift_check_miscounting_its_live_pods",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/live_pods_read": 3
+    },
+    "remove": [],
+    "message": "live_pods_read is the number of live pods containers_read lists"
+  },
+  {
+    "name": "image_drift_check_claiming_an_unfinished_rollout_finished",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/rollout/updated_replicas": 1
+    },
+    "remove": [],
+    "message": "rollout.complete is whether the rollout's counts show it finished"
+  },
+  {
+    "name": "image_drift_check_with_a_paused_rollout_claimed_finished",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/rollout/paused": true
+    },
+    "remove": [],
+    "message": "rollout.complete is whether the rollout's counts show it finished"
+  },
+  {
+    "name": "image_drift_check_miscounting_the_pods_its_rollout_calls_for",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/rollout/expected_live_pods": 3
+    },
+    "remove": [],
+    "message": "rollout.expected_live_pods is the live pods the rollout's counts call for"
+  },
+  {
+    "name": "image_drift_check_with_the_rollout_of_another_kind",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/workload/kind": "stateful_set"
+    },
+    "remove": [],
+    "message": "rollout is the state of the workload's kind of rollout"
+  },
+  {
+    "name": "image_drift_check_without_its_workload_file",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/workload_before_pods_listing_evidence_ref": "post_verify/missing.json"
+    },
+    "remove": [],
+    "message": "change.drift_check.workload_before_pods_listing_evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_drift_check_of_a_deployment_without_its_pod_owners",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/pod_owners_evidence_ref": null
+    },
+    "remove": [],
+    "message": "pod_owners_evidence_ref names a deployment's replica sets, and only a deployment's"
+  },
+  {
+    "name": "image_drift_check_taken_from_one_workload_file_read_twice",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/workload_after_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json"
+    },
+    "remove": [],
+    "message": "the files a reading was taken from are each a different file"
+  },
+  {
+    "name": "image_drift_check_taken_from_one_file_for_the_workload_and_the_pod_list",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/drift_check/pods_evidence_ref": "post_verify/workload-before-pods-listing.json"
+    },
+    "remove": [],
+    "message": "the files a reading was taken from are each a different file"
+  },
+  {
+    "name": "image_drift_check_taken_from_a_workload_file_of_another_file_type",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/evidence_refs/15/media_type": "application/yaml"
+    },
+    "remove": [],
+    "message": "the workload read before the pods were listed is a file of type application/json"
+  },
+  {
+    "name": "image_drift_check_taken_from_a_workload_file_not_redacted",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/evidence_refs/15/redaction_policy": null
+    },
+    "remove": [],
+    "message": "the workload read before the pods were listed names the redaction policy that ran over it"
+  },
+  {
+    "name": "image_drift_check_taken_from_a_pod_list_redacted_under_another_policy",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/evidence_refs/13/redaction_policy/version": "2"
+    },
+    "remove": [],
+    "message": "every stage and every redacted evidence file name the same redaction policy"
+  },
+  {
+    "name": "image_drift_check_taken_from_the_tags_metadata_file",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/image/tag_resolution": {
+        "tag": "1.4.2",
+        "read_from": "pipeline_metadata_file",
+        "read_from_evidence_ref": "post_verify/workload-before-pods-listing.json"
+      }
+    },
+    "remove": [],
+    "message": "the workload read before the pods were listed is not the tag's metadata file"
+  },
+  {
+    "name": "image_drift_check_taken_from_a_pod_list_of_another_file_type",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/evidence_refs/13/media_type": "application/yaml"
+    },
+    "remove": [],
+    "message": "the pod list read is a file of type application/json"
+  },
+  {
+    "name": "image_drift_check_taken_from_a_pod_list_without_the_digest_it_was_read_with",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/evidence_refs/13/source": null
+    },
+    "remove": [],
+    "message": "the pod list read names the digest of the file as the pipeline gave it, in its source"
+  },
+  {
+    "name": "image_deploy_starting_after_its_approval",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/expected_stages": [
+        "post_deploy",
+        "post_verify"
+      ]
+    },
+    "remove": [],
+    "message": "a record starts at its pre_deploy stage"
+  },
+  {
+    "name": "image_deploy_expecting_a_plan_stage",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/expected_stages": [
+        "plan",
+        "pre_deploy",
+        "post_deploy",
+        "post_verify"
+      ]
+    },
+    "remove": [],
+    "message": "a record starts at its pre_deploy stage"
+  },
+  {
+    "name": "image_deploy_with_an_event_of_a_build",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/0/evaluation/activity": "image_build"
+    },
+    "remove": [],
+    "message": "stage 'pre_deploy' is not valid for target kind 'change' in an image_build input"
+  },
+  {
+    "name": "image_deploy_calling_its_deployment_not_supported",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/expected_stages": [
+        "pre_deploy"
+      ],
+      "/out_of_scope": [
+        {
+          "stage": "post_deploy",
+          "reason": "not_supported",
+          "declared_in": null
+        },
+        {
+          "stage": "post_verify",
+          "reason": "not_supported",
+          "declared_in": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the post-deploy stage is supported for this record: expect it, or say who leaves it out"
+  },
+  {
+    "name": "image_deploy_carrying_an_infrastructure_check",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/2/assertion": {
+        "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+        "version": "1.0.0",
+        "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a"
+      },
+      "/events/2/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7"
+    },
+    "remove": [],
+    "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
+  },
+  {
+    "name": "image_deploy_with_a_tag_whose_metadata_file_is_not_kept",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/change/image/tag_resolution": {
+        "tag": "1.4.2",
+        "read_from": "pipeline_metadata_file",
+        "read_from_evidence_ref": "pre_deploy/missing.json"
+      }
+    },
+    "remove": [],
+    "message": "change.image.tag_resolution.read_from_evidence_ref names a file of the record's evidence register"
+  },
+  {
+    "name": "image_deploy_without_its_reading_check",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/3/assertion/id": "ACME.IMAGE.RUNNING"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
+  },
+  {
+    "name": "image_deploy_listing_the_state_not_read",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/post_deploy/coverage/gaps": [
+        {
+          "kind": "state_not_read",
+          "stage": null
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the post_deploy stage lists the state not read, which a record of image_deploy never has"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_is_unknown_for_another_reason",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/1/evaluation/status_reason": "path_missing"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_whose_build_check_did_not_run_for_want_of_its_subject",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/not_evaluated": 1,
+      "/stages/pre_deploy/verdict/value": "fail",
+      "/stages/pre_deploy/verdict/exit_code": 6,
+      "/events/1/evaluation/status": "not_evaluated",
+      "/events/1/evaluation/status_reason": "subject_unresolved",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/not_evaluated": 1,
+      "/verdict/value": "fail",
+      "/verdict/exit_code": 6
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts"
+  },
+  {
+    "name": "image_deploy_whose_build_check_did_not_apply",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/not_applicable": 1,
+      "/events/1/evaluation/status": "not_applicable",
+      "/events/1/evaluation/status_reason": "when_guard_excluded",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/not_applicable": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT always applies to the pre_deploy stage's one subject"
+  },
+  {
+    "name": "image_deploy_of_a_local_run_whose_build_check_failed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/unknown": 1
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+  },
+  {
+    "name": "image_deploy_whose_build_check_errored_reading_a_scanner_report",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/error": 1,
+      "/stages/pre_deploy/verdict/value": "fail",
+      "/stages/pre_deploy/verdict/exit_code": 4,
+      "/stages/pre_deploy/assurance_status/value": "incomplete",
+      "/stages/pre_deploy/assurance_status/reason": "required_policy_evaluation_failed",
+      "/stages/pre_deploy/assurance_status/detail": "1 of 2 evaluations ended in an evaluator error",
+      "/events/1/evaluation/status": "error",
+      "/events/1/evaluation/status_reason": "adapter_parse_failure",
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/status_counts/error": 1,
+      "/verdict/value": "fail",
+      "/verdict/exit_code": 4,
+      "/assurance_status/value": "incomplete",
+      "/assurance_status/reason": "required_policy_evaluation_failed",
+      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error"
+    },
+    "remove": [],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is error only for a fault of the evaluator, never for want of the change or its facts"
+  },
+  {
+    "name": "image_deploy_without_its_build_check",
+    "vector": "image/local_run_deploy.json",
+    "set": {},
+    "remove": [
+      "/events/1"
+    ],
+    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is evaluated once, at the pre_deploy stage, once it has reported"
+  }
+]

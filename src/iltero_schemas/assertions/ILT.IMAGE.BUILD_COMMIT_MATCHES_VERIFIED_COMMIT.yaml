@@ -1,0 +1,16 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT
+  version: "1.0.0"
+  title: The commit the build tool's provenance names is the commit the server verified for the run
+  remediation: Build the image with Buildx provenance, from the commit the run was opened for.
+spec:
+  change_type: image_release
+  stage: plan
+  target:
+    kind: artifact
+  assert:
+    path: artifact.build_commit
+    equal:
+      path: verified_source.commit

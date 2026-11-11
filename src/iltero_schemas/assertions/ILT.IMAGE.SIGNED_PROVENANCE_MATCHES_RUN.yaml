@@ -1,0 +1,37 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN
+  version: "1.0.0"
+  title: Signed build provenance names the built image and this run's repository, commit and run
+  remediation: Attest the pushed image's digest with SLSA provenance signed in the run, and give the build the attestation.
+spec:
+  change_type: image_release
+  stage: plan
+  target:
+    kind: artifact
+  assert:
+    all:
+      - path: attestation_outcome.outcome
+        equal: verified
+      - path: attestation_outcome.image_digest
+        equal:
+          path: artifact.digest
+      - path: attestation_outcome.ci_provider
+        equal:
+          path: verified_source.ci_provider
+      - path: attestation_outcome.ci_instance
+        equal:
+          path: verified_source.ci_instance
+      - path: attestation_outcome.repository_id
+        equal:
+          path: verified_source.repository_id
+      - path: attestation_outcome.commit
+        equal:
+          path: verified_source.commit
+      - path: attestation_outcome.ci_run_id
+        equal:
+          path: verified_source.ci_run_id
+      - path: attestation_outcome.ci_run_attempt
+        equal:
+          path: verified_source.ci_run_attempt

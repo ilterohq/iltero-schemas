@@ -1,0 +1,27 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.TESTS_RAN
+  version: "1.0.0"
+  title: The pipeline gave a test report for the built image, and at least one test in it ran
+  remediation: Give the build the test report of the tests that ran on the image it pushed.
+spec:
+  change_type: image_release
+  stage: plan
+  target:
+    kind: artifact
+  assert:
+    exists:
+      in: tests
+      where:
+        all:
+          - path: item.counts.tests
+            greater_than:
+              path: item.counts.skipped
+          - any:
+              - path: item.image_digest
+                equal:
+                  path: artifact.digest
+              - path: item.image_digest
+                in:
+                  path: artifact.platform_digests

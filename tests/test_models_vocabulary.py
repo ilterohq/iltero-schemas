@@ -4,17 +4,18 @@ from __future__ import annotations
 
 import json
 
-from iltero_schemas.models.iac import ADDRESS_SCHEMES
+from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
 from iltero_schemas.models.vocabulary import SCHEME_UNIT
-from tests.conftest import VECTORS
+from tests.conftest import documents
 
 # The subject kinds a unit names: the change across a unit, and the unit's deployment.
 UNIT_SUBJECTS = ("change", "deployment")
+CONTEXT_FILES = documents("contexts")
 
 
 def test_the_context_vectors_name_a_unit_in_the_named_scheme() -> None:
     schemes: list[str] = []
-    for path in sorted((VECTORS / "contexts").glob("*.json")):
+    for path in CONTEXT_FILES:
         subject = json.loads(path.read_text(encoding="utf-8")).get("subject")
         if subject is not None and subject["kind"] in UNIT_SUBJECTS:
             schemes.extend(identity["scheme"] for identity in subject["identities"])
@@ -23,7 +24,7 @@ def test_the_context_vectors_name_a_unit_in_the_named_scheme() -> None:
 
 def test_the_vectors_name_a_resource_by_its_address_in_the_named_scheme() -> None:
     schemes: list[str] = []
-    for path in sorted((VECTORS / "contexts").glob("*.json")):
+    for path in CONTEXT_FILES:
         subject = json.loads(path.read_text(encoding="utf-8")).get("subject")
         if subject is not None and subject["kind"] == "resource":
             schemes.extend(identity["scheme"] for identity in subject["identities"])

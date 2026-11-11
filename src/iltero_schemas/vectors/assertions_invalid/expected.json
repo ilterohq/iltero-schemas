@@ -19,10 +19,6 @@
     "path": "spec",
     "message": "is not valid for target kind"
   },
-  "type_mismatch": {
-    "path": "spec",
-    "message": "does not match target kind"
-  },
   "bad_reference": {
     "path": "spec.assert.equal",
     "message": "only 'path'"
@@ -31,9 +27,13 @@
     "path": "registry",
     "message": "Extra inputs are not permitted"
   },
-  "null_operand": {
-    "path": "spec.assert.equal",
-    "message": "quote dates and null"
+  "missing_operand": {
+    "path": "document",
+    "message": "no value is written as null"
+  },
+  "null_with_ordering": {
+    "path": "spec.assert.greater_than",
+    "message": "only equal and not_equal compare with null"
   },
   "empty_in_list": {
     "path": "spec.assert.in",

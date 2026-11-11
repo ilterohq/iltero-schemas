@@ -5,14 +5,14 @@ A subject's ``key`` is the digest of its kind and its one local identity:
 - a resource an IaC tool manages: its address in the tool's configuration,
   scoped by its unit and nothing else;
 - a resource only the cloud knows, read at runtime: its cloud identity;
-- a change, a deployment or a record's assurance: its unit.
+- a change, a deployment, a built artifact or a record's assurance: its unit.
 
 The key names an address in a unit, not a cloud resource. A resource replaced
 in the cloud keeps its key; a resource moved to another address gets a new
-one. Only an identity document ties a key to a cloud resource over time. A
+one. Only a resource identities document ties a key to a cloud resource over time. A
 stack, a workspace or an organization is never an input, so a project keeps
-every key when it connects to the server. A cloud identity bound later is
-added beside the local identity, never in its place.
+every key when it connects to the server. A cloud identity is read only at
+runtime, beside the local identity, never in its place.
 
 The key is over the identity's text exactly as its writer gave it: no
 Unicode normalization. An IaC tool tells two spellings of one character
@@ -26,13 +26,14 @@ from collections.abc import Sequence
 from iltero_schemas.canonical.encoding import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.iac import ADDRESS_SCHEMES
+from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
 from iltero_schemas.models.providers.aws import SCHEME_AWS_ARN
 from iltero_schemas.models.vocabulary import SCHEME_UNIT
 
 # The schemes a resource's address is written in: every IaC tool's.
 ADDRESS_IDENTITY_SCHEMES = frozenset(ADDRESS_SCHEMES.values())
-# The schemes a resource's cloud identity is written in: each cloud provider's primary identifier.
+# The schemes a resource's cloud identity is written in: each cloud provider's primary identifier. A new provider adds
+# its scheme here, so its cloud identities are held to the same rules.
 CLOUD_IDENTITY_SCHEMES = frozenset({SCHEME_AWS_ARN})
 # The stages that read resources from the cloud, where a resource no IaC tool manages may be a subject.
 CLOUD_STAGES = frozenset({Stage.RUNTIME.value})
@@ -78,13 +79,15 @@ def check_subject(kind: str, key: str, identities: Sequence[Identity], stage: st
     ``unit`` is the unit the document belongs to, when it names one: the local identity must then be of it.
     """
     identity = local_identity(kind, identities)
+    if kind != "resource" and any(other.scheme in CLOUD_IDENTITY_SCHEMES for other in identities):
+        raise ValueError(f"a {kind} subject has no cloud identity: only a resource has one")
     if identity.scheme in ADDRESS_IDENTITY_SCHEMES and (
         identity.scope is None or set(identity.scope) != {"unit"} or unit not in (None, identity.scope["unit"])
     ):
         raise ValueError("a resource's address is scoped by its own unit and nothing else")
     if identity.scheme == SCHEME_UNIT and (identity.scope is not None or unit not in (None, identity.value)):
         raise ValueError(f"a {kind} subject is its own unit, with no scope")
-    if identity.scheme in CLOUD_IDENTITY_SCHEMES and stage not in CLOUD_STAGES:
+    if stage not in CLOUD_STAGES and any(other.scheme in CLOUD_IDENTITY_SCHEMES for other in identities):
         raise ValueError(f"a resource only the cloud knows is read at runtime, never at {stage}")
     if key != subject_key(kind, identities):
         raise ValueError("a subject's key is the digest of its kind and its local identity")

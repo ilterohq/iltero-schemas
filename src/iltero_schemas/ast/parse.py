@@ -20,6 +20,7 @@ from pydantic import ValidationError
 from iltero_schemas.ast.document import DocumentError, load_document
 from iltero_schemas.ast.nodes import (
     LIST_OPERATORS,
+    NULL_OPERATORS,
     ORDERING_OPERATORS,
     All,
     AnyOf,
@@ -158,6 +159,11 @@ class _ExpressionParser:
                 self.fail(at, "a reference is a mapping with only 'path'")
                 return None
             return self.path(value["path"], f"{at}.path", in_where)
+        if value is None:
+            if op not in NULL_OPERATORS:
+                self.fail(at, "only equal and not_equal compare with null")
+                return None
+            return Literal(None)
         if op in LIST_OPERATORS:
             if not isinstance(value, list) or not value:
                 self.fail(at, "must be a non-empty list or a reference")
@@ -202,7 +208,7 @@ class _ExpressionParser:
                 self.fail(at, "must be valid Unicode text")
                 return None
             return value
-        self.fail(at, "must be a string, number or boolean (quote dates and null)")
+        self.fail(at, "must be a string, number or boolean (quote dates)")
         return None
 
     def path(self, value: Any, at: str, in_where: bool) -> Path | None:
@@ -271,7 +277,7 @@ def parse_document(document: dict[str, Any]) -> Assertion:
     except ValidationError as exc:
         raise AssertionSyntaxError(_model_issues(document, exc)) from None
     target = _target(model)
-    parser = _ExpressionParser(allowed_roots(model.spec.stage, target.kind))
+    parser = _ExpressionParser(allowed_roots(model.spec.change_type, model.spec.stage, target.kind))
     when = None if model.spec.when is None else parser.expr(model.spec.when, "spec.when", 1, False)
     assert_ = parser.expr(model.spec.assert_, "spec.assert", 1, False)
     if parser.issues or assert_ is None:

@@ -1,0 +1,73 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "verified",
+          "op": "equal",
+          "path": "attestation_outcome.outcome"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.image_digest",
+          "ref": "artifact.digest"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.ci_provider",
+          "ref": "verified_source.ci_provider"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.ci_instance",
+          "ref": "verified_source.ci_instance"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.repository_id",
+          "ref": "verified_source.repository_id"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.commit",
+          "ref": "verified_source.commit"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.ci_run_id",
+          "ref": "verified_source.ci_run_id"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "attestation_outcome.ci_run_attempt",
+          "ref": "verified_source.ci_run_attempt"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

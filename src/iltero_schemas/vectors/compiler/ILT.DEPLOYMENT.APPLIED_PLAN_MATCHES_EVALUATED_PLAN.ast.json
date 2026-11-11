@@ -1,0 +1,38 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "deployment.plan.digest",
+          "ref": "plan.digest"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "deployment.plan.artifact_digest",
+          "ref": "plan.artifact_digest"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "deployment.plan.artifact_digest_source",
+          "ref": "plan.artifact_digest_source"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+  "stage": "post_deploy",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

@@ -11,15 +11,18 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.canonical import change_digest
+from iltero_schemas.compiler.limits import OBSERVATIONS_MAX_BYTES
 from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
+from iltero_schemas.models.iac.deployment import Deployment
+from iltero_schemas.models.iac.markers import ApplyLogIncomplete, StateNotRead
 from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import PROFILES
 from tests.conftest import POST_DEPLOY, VECTORS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
 
 
 def _without(*names: str) -> dict[str, Any]:
@@ -177,7 +180,7 @@ def test_a_replan_is_a_plan_other_than_the_evaluated_one() -> None:
         AssuranceContext.model_validate(document)
     document["deployment"]["plan"]["digest"] = "sha256:" + "b" * 64
     context = AssuranceContext.model_validate(document)
-    assert context.deployment is not None and context.deployment.superseded_by is not None
+    assert isinstance(context.deployment, Deployment) and context.deployment.superseded_by is not None
 
 
 @pytest.mark.parametrize("part", ["plan", "deployment"])
@@ -201,7 +204,9 @@ def test_a_plan_digest_version_other_than_its_tools_is_refused() -> None:
         AssuranceContext.model_validate(document)
 
 
-PRE_DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+PRE_DEPLOY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text(encoding="utf-8")
+)
 MARKER = {"__unknown": True, "reason": "server_facts_unavailable"}
 
 
@@ -410,8 +415,10 @@ RELATED: dict[str, Any] = {
 
 @pytest.mark.parametrize("name", ["plan_resource.json", "pre_deploy_change.json"], ids=["resource", "change"])
 def test_the_change_digest_is_the_digest_of_its_units_plan(name: str) -> None:
-    document = json.loads((VECTORS / "contexts" / name).read_text(encoding="utf-8"))
-    with pytest.raises(ValidationError, match="change.digest is the digest of its unit's plan"):
+    document = json.loads((VECTORS / "contexts" / "iac" / name).read_text(encoding="utf-8"))
+    with pytest.raises(
+        ValidationError, match="change.digest is the digest of the change type, unit, environment and plan"
+    ):
         AssuranceContext.model_validate(_set(document, ("change", "digest"), "sha256:" + "a" * 64))
 
 
@@ -455,17 +462,20 @@ def test_a_plan_fact_the_tool_did_not_report_is_the_unknown_marker_never_null(fl
     ids=["a plan flag", "a server fact", "production"],
 )
 def test_an_unknown_marker_carries_only_the_reason_its_field_can_have(path: tuple[str, ...], reason: str) -> None:
-    document = json.loads((VECTORS / "contexts" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text(encoding="utf-8"))
     with pytest.raises(ValidationError, match=re.escape(".".join(path))):
         AssuranceContext.model_validate(_set(document, path, {"__unknown": True, "reason": reason}))
 
 
 def test_every_marker_reason_is_a_reason_an_unknown_status_can_give() -> None:
-    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in (NotReported, KindNotMapped)}
+    markers = (NotReported, KindNotMapped, ApplyLogIncomplete, StateNotRead)
+    reasons = {get_args(model.model_fields["reason"].annotation)[0] for model in markers}
     assert reasons | set(get_args(UnknownReason)) <= STATUS_REASONS["unknown"]
 
 
-POST_VERIFY: dict[str, Any] = json.loads((VECTORS / "contexts" / "post_verify.json").read_text(encoding="utf-8"))
+POST_VERIFY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "post_verify.json").read_text(encoding="utf-8")
+)
 
 
 def test_a_post_verify_input_carries_its_drift_check() -> None:
@@ -487,3 +497,143 @@ def test_a_post_verify_input_refuses_a_drift_check_read_before_the_apply_ended()
     document["drift_check"].update(first_reading_at="2026-09-16T18:38:30Z", second_reading_at="2026-09-16T18:39:30Z")
     with pytest.raises(ValidationError, match="first reading was taken no earlier than the second the apply ended in"):
         AssuranceContext.model_validate(document)
+
+
+BUILD: dict[str, Any] = json.loads((VECTORS / "contexts" / "image" / "plan_artifact.json").read_text(encoding="utf-8"))
+
+
+def test_a_build_input_carries_its_image_its_reports_and_the_verified_commit() -> None:
+    context = AssuranceContext.model_validate(BUILD)
+    assert context.evaluation.activity == "image_build" and context.subject is not None
+    assert context.subject.kind == "artifact" and context.artifact is not None
+    named = {name for name, part in BUILD.items() if part is not None}
+    assert named - {"apiVersion", "evaluation", "organization_scope", "reference_time"} == {
+        "source",
+        "subject",
+        "artifact",
+        "tests",
+        "scans",
+        "verified_source",
+        "attestation_outcome",
+    }
+
+
+@pytest.mark.parametrize("name", ["artifact", "tests", "scans", "verified_source", "attestation_outcome"])
+def test_a_build_input_missing_a_part_is_refused_by_name(name: str) -> None:
+    with pytest.raises(ValidationError, match=f"plan_artifact: missing {name}"):
+        AssuranceContext.model_validate({**BUILD, name: None})
+
+
+def test_a_build_input_may_have_no_reports_but_says_so() -> None:
+    assert AssuranceContext.model_validate({**BUILD, "tests": [], "scans": []}).tests == []
+
+
+def test_a_build_input_holds_the_marker_where_no_server_verified_the_commit() -> None:
+    marker = {"__unknown": True, "reason": "server_facts_unavailable"}
+    assert AssuranceContext.model_validate({**BUILD, "verified_source": marker}).verified_source is not None
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": marker}).attestation_outcome is not None
+
+
+def test_a_build_input_says_whether_an_attestation_was_verified_refused_or_not_sent() -> None:
+    checked = BUILD["attestation_outcome"]
+    refused = {
+        "outcome": "refused",
+        "attestation_digest": checked["attestation_digest"],
+        "trust_root": checked["trust_root"],
+        "verifier": checked["verifier"],
+        "verified_at": checked["verified_at"],
+        "reason": "signature_invalid",
+    }
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": refused}).attestation_outcome is not None
+    not_sent = {"outcome": "not_sent"}
+    assert AssuranceContext.model_validate({**BUILD, "attestation_outcome": not_sent}).attestation_outcome is not None
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**BUILD, "attestation_outcome": {**refused, "reason": "expired"}})
+
+
+def test_a_build_inputs_commit_is_the_builds_own_and_may_differ_from_the_checkout() -> None:
+    artifact = {**BUILD["artifact"], "build_commit": "d" * 40}
+    assert AssuranceContext.model_validate({**BUILD, "artifact": artifact}).artifact is not None
+    unknown = {**BUILD["artifact"], "build_commit": {"__unknown": True, "reason": "not_reported_by_tool"}}
+    AssuranceContext.model_validate({**BUILD, "artifact": unknown})
+
+
+def test_an_input_is_checked_against_the_profile_of_its_own_activity() -> None:
+    evaluation = {**BUILD["evaluation"], "activity": "iac_change"}
+    with pytest.raises(ValidationError, match="not valid for target kind 'artifact' in an iac_change input"):
+        AssuranceContext.model_validate({**BUILD, "evaluation": evaluation})
+    evaluation = {**VECTOR["evaluation"], "activity": "image_build"}
+    with pytest.raises(ValidationError, match="not valid for target kind 'resource' in an image_build input"):
+        AssuranceContext.model_validate({**VECTOR, "evaluation": evaluation})
+
+
+def test_a_build_input_names_no_environment() -> None:
+    scope = {**BUILD["organization_scope"], "environment": {"name": "production", "production": True}}
+    with pytest.raises(ValidationError, match="a build's input names no environment"):
+        AssuranceContext.model_validate({**BUILD, "organization_scope": scope})
+
+
+DEPLOY: dict[str, Any] = json.loads((VECTORS / "contexts" / "image" / "post_verify.json").read_text(encoding="utf-8"))
+
+
+def test_a_deploy_input_reads_its_parts_in_the_deploys_shapes() -> None:
+    context = AssuranceContext.model_validate(DEPLOY)
+    assert context.evaluation.activity == "image_deploy"
+    assert type(context.change).__name__ == "ImageChange" and type(context.drift_check).__name__ == "ImageDriftCheck"
+    evaluation = {**DEPLOY["evaluation"], "activity": "iac_change"}
+    with pytest.raises(ValidationError, match="change.resources"):
+        AssuranceContext.model_validate({**DEPLOY, "evaluation": evaluation})
+
+
+def test_a_deploy_inputs_change_digest_is_of_its_image_in_its_unit_and_environment() -> None:
+    scope = {**DEPLOY["organization_scope"], "environment": {"name": "staging", "production": False}}
+    with pytest.raises(
+        ValidationError, match="change.digest is the digest of the change type, unit, environment and image"
+    ):
+        AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
+
+
+def test_a_deploy_input_names_its_environment() -> None:
+    scope = {**DEPLOY["organization_scope"], "environment": None}
+    with pytest.raises(ValidationError, match="a deploy's input names its environment"):
+        AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
+
+
+def test_a_deploy_input_holds_the_unknown_marker_for_its_build_exactly_in_a_run_no_server_opened() -> None:
+    marker = {"__unknown": True, "reason": "server_facts_unavailable"}
+    assert DEPLOY["change"]["build"] == marker
+    scope = {**DEPLOY["organization_scope"], "environment": {"name": "production", "production": True}}
+    message = "change.build holds the unknown marker exactly when the environment's production flag does"
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope})
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate({**DEPLOY, "change": {**DEPLOY["change"], "build": None}})
+    served_none = {**DEPLOY["change"], "build": None}
+    AssuranceContext.model_validate({**DEPLOY, "organization_scope": scope, "change": served_none})
+
+
+def test_a_deploy_inputs_reading_names_its_change() -> None:
+    check = {**DEPLOY["drift_check"], "change_digest": "sha256:" + "7" * 64}
+    with pytest.raises(ValidationError, match="drift_check.change_digest is change.digest"):
+        AssuranceContext.model_validate({**DEPLOY, "drift_check": check})
+
+
+def test_an_input_that_reads_its_runners_clock_uses_the_time_of_its_evaluation() -> None:
+    later = {**VECTOR["reference_time"], "value": "2026-09-16T18:05:01Z"}
+    with pytest.raises(ValidationError, match="an input that reads its runner's clock uses the time of its evaluation"):
+        AssuranceContext.model_validate({**VECTOR, "reference_time": later})
+    same_instant = {**VECTOR["reference_time"], "value": "2026-09-16T18:05:00.000Z"}
+    AssuranceContext.model_validate({**VECTOR, "reference_time": same_instant})
+
+
+POST_VERIFY_CONTEXT: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "iac" / "post_verify.json").read_text(encoding="utf-8")
+)
+
+
+def test_the_assurance_part_is_any_object_held_to_the_bounds_of_a_policys_observations() -> None:
+    AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"checked": ["drift"]}})
+    with pytest.raises(ValidationError, match="must be at most"):
+        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a" * OBSERVATIONS_MAX_BYTES}})
+    with pytest.raises(ValidationError, match="must not contain control characters"):
+        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a\u0000"}})

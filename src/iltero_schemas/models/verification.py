@@ -13,6 +13,7 @@ of the record's bytes.
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -40,9 +41,9 @@ VerificationState = Literal[
 # reported_by_pipeline: the pipeline reported its post-verify stage, which only the pipeline's word supports.
 # stage_pending: the record expects the stage, and the run that would report it is still in progress.
 # stage_not_reported: the record expects the stage, and it was never reported. project_config, environment_policy
-# and not_supported: the record leaves the stage out of scope for that reason. When the record's integrity is not
-# established, the property is not_determined, as every other one is.
-RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str]] = frozenset(
+# and not_supported: the record leaves the stage out of scope for that reason. not_in_activity: the record's activity
+# has no stage after deployment, as a build has none.
+RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("client_asserted", "reported_by_pipeline"),
         ("not_assessed", "stage_pending"),
@@ -50,8 +51,68 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str]] = frozens
         ("not_assessed", "project_config"),
         ("not_assessed", "environment_policy"),
         ("not_assessed", "not_supported"),
+        ("not_assessed", "not_in_activity"),
     }
 )
+# The results a verifier gives an approval or an exception that the pre-deploy stage reads. not_in_activity: the
+# record's activity has no pre-deploy stage. server_facts_unavailable: the stage ran with no facts from the server.
+# pre_deploy_pending: the run that would report the stage is still in progress. pre_deploy_out_of_scope: the record
+# leaves the stage out of scope.
+_PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
+    {
+        ("not_assessed", "not_in_activity"),
+        ("not_performed", "server_facts_unavailable"),
+        ("not_assessed", "pre_deploy_pending"),
+        ("not_assessed", "pre_deploy_out_of_scope"),
+    }
+)
+# The results a verifier gives each property of a record whose integrity is established, each a state and its reason.
+# file_digests: the files the record cites hold the digests it names, which anyone who can edit them can recompute.
+# ci_job_held_by_server: only the server that opened the run verified its CI jobs. run_opened_locally: the tool opened
+# the run, so no CI job was verified. approvals_listed: the record lists approvals, its writer's claim.
+# no_approval_served: the server opened the run and the stage lists no approval. exceptions_not_listed: a record lists
+# no exception, so a verifier cannot assess the exceptions the server may have served. server_bundle_named: a stage
+# names the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage the
+# record expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
+# and a stage it expects was never reported. no_post_deploy_stage: no stage compared the applied plan.
+# plan_files_supplied: the plan files given to the verifier were compared. binding_undecided: they could not be.
+# deployment_coverage has no reason: no reader of one record knows of a deployment that left no record.
+PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str | None]]] = MappingProxyType(
+    {
+        "integrity": frozenset({("client_asserted", "file_digests")}),
+        "source_identity": frozenset(
+            {("not_assessed", "ci_job_held_by_server"), ("not_performed", "run_opened_locally")}
+        ),
+        "approval_identity": _PRE_DEPLOY_RESULTS
+        | {("client_asserted", "approvals_listed"), ("not_performed", "no_approval_served")},
+        "bundle_provenance": frozenset(
+            {("client_asserted", "server_bundle_named"), ("not_performed", "local_assertions")}
+        ),
+        "stage_completeness": frozenset(
+            {
+                ("client_asserted", "expected_stages"),
+                ("not_assessed", "stages_pending"),
+                ("failed", "stage_not_reported"),
+            }
+        ),
+        "plan_apply_match": frozenset(
+            {
+                ("not_assessed", "not_in_activity"),
+                ("not_performed", "no_post_deploy_stage"),
+                ("client_asserted", "plan_files_supplied"),
+                ("failed", "plan_files_supplied"),
+                ("not_determined", "binding_undecided"),
+            }
+        ),
+        "runtime_verification": RUNTIME_VERIFICATION_RESULTS,
+        "deployment_coverage": frozenset({("not_assessed", None)}),
+        "exceptions": _PRE_DEPLOY_RESULTS | {("not_assessed", "exceptions_not_listed")},
+    }
+)
+# A record whose integrity is not established: its integrity failed on the files it cites, and every other property is
+# not determined, since a record that does not hold together says nothing a verifier can take about itself.
+INTEGRITY_FAILED: tuple[VerificationState, str | None] = ("failed", "file_digests")
+NOT_DETERMINED: tuple[VerificationState, str | None] = ("not_determined", "integrity_failed")
 
 
 class PropertyResult(StrictModel):
@@ -91,7 +152,7 @@ class Verifier(StrictModel):
     version: Identifier
 
 
-class VerifiedRecord(StrictModel):
+class ReportedRecord(StrictModel):
     """The record the report is about: its id, and the digest of its bytes as the verifier read them."""
 
     uuid: Uuid
@@ -102,23 +163,25 @@ class VerificationReport(StrictModel):
     """What one verifier found about one record."""
 
     api_version: Literal["iltero.io/verification-report/v1"] = Field(alias="apiVersion")
-    record: VerifiedRecord
+    record: ReportedRecord
     verifier: Verifier
     properties: Properties
 
     @model_validator(mode="after")
-    def _integrity_needs_a_signature(self) -> VerificationReport:
-        # Anyone who can edit a record can recompute its digests. Only a signature could verify its integrity,
-        # and no record carries one in this version.
-        integrity = self.properties.integrity.state
-        if integrity == "verified":
-            raise ValueError("a record's integrity is verified only by a signature, and no record carries one")
-        # A record that does not hold together says nothing a verifier can take about itself.
-        others = {result.state for name, result in self.properties if name != "integrity"}
-        if integrity in ("failed", "not_determined") and others != {"not_determined"}:
-            raise ValueError("when a record's integrity is not established, every other property is not_determined")
-        runtime = self.properties.runtime_verification
-        established = integrity not in ("failed", "not_determined")
-        if established and (runtime.state, runtime.reason) not in RUNTIME_VERIFICATION_RESULTS:
-            raise ValueError("runtime_verification is one of the results a verifier gives the stage after deployment")
+    def _results(self) -> VerificationReport:
+        # Anyone who can edit a record can recompute its digests. Only a signature could verify a record's integrity,
+        # or any property that rests on it, and no record carries one.
+        if any(result.state == "verified" for _, result in self.properties):
+            raise ValueError("no property of an unsigned record is verified")
+        results = {name: (result.state, result.reason) for name, result in self.properties}
+        if results["integrity"] == INTEGRITY_FAILED:
+            if any(result != NOT_DETERMINED for name, result in results.items() if name != "integrity"):
+                raise ValueError(
+                    "when a record's integrity is not established, every other property is not_determined with the "
+                    "reason integrity_failed"
+                )
+            return self
+        for name, result in results.items():
+            if result not in PROPERTY_RESULTS[name]:
+                raise ValueError(f"{name} is one of the results a verifier gives that property")
         return self

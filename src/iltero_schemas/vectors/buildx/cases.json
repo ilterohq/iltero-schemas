@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "name": "git-context-max",
+      "file": "git-context-max.json",
+      "image_digest": "sha256:820f521d50675bec5e5e8a631ff6bebd90ac2cbbb242a90231d35124a20f2f5e",
+      "commit": "522bcd2faf422c60b9d20e64d7cd6d56600aec97"
+    },
+    {
+      "name": "git-context-min",
+      "file": "git-context-min.json",
+      "image_digest": "sha256:e4b3653f84a41453bb7d64680a12fddfcd00ebda7ec7323642a7773608891bdc",
+      "commit": "522bcd2faf422c60b9d20e64d7cd6d56600aec97"
+    },
+    {
+      "name": "local-context-dirty",
+      "file": "local-context-dirty.json",
+      "image_digest": "sha256:778f4723046886bcbed6acf21fde2ea9508e051d78862c7925de7d469217f727",
+      "commit": null
+    },
+    {
+      "name": "local-context-max",
+      "file": "local-context-max.json",
+      "image_digest": "sha256:8278e9f6e389dc4361116e128a4041f5cf99b59fc8223c66196b745d3683d9c3",
+      "commit": null
+    },
+    {
+      "name": "local-context-min",
+      "file": "local-context-min.json",
+      "image_digest": "sha256:7c12a3af76a11eb982375fe406c252946d20277e5f75e89e8124bcf91b3a72b0",
+      "commit": null
+    }
+  ]
+}

@@ -14,6 +14,8 @@ from iltero_schemas.models.coverage import (
     MAX_GAPS,
     MAX_SUBSTITUTED_INPUTS,
     PLAN_REASON,
+    STATE_DETAIL,
+    STATE_REASON,
     SUBSTITUTED_REASON,
     VERDICT_PRECEDENCE,
     CountGap,
@@ -26,7 +28,7 @@ from iltero_schemas.models.coverage import (
 from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_BYTES
 from tests.conftest import VECTORS
 
-RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "local_run.json").read_text(encoding="utf-8"))
+RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
 PLAN_STAGE: dict[str, Any] = {key: RECORD["stages"]["plan"][key] for key in ("coverage", "verdict", "assurance_status")}
 PLAN = StageOutcome.model_validate(PLAN_STAGE)
 
@@ -53,7 +55,7 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
         "coverage.assertions_expected.value": 1,
         "coverage.assertions_expected.required_assertion_digest": "sha256:" + "d" * 64,
         "coverage.assertions_evaluated": 1,
-        "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.PLAN_BINDING@1.0.0": 1},
+        "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1},
         "coverage.status_counts": dict.fromkeys(PLAN.coverage.status_counts, 0) | {"pass": 1},
         "coverage.evaluations": 1,
         "coverage.gaps": [{"kind": "timeout", "count": 1}],
@@ -83,7 +85,7 @@ def test_two_stages_add_up_and_keep_the_plans_resources_in_scope() -> None:
     assert coverage.assertions_expected.value == PLAN.coverage.assertions_expected.value + 1
     assert coverage.subjects_in_scope == PLAN.coverage.subjects_in_scope
     assert coverage.subjects_evaluated == PLAN.coverage.subjects_evaluated
-    assert "ILT.DEPLOYMENT.PLAN_BINDING@1.0.0" in coverage.subjects_per_assertion
+    assert "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0" in coverage.subjects_per_assertion
     assert CountGap.model_validate({"kind": "timeout", "count": 1, "stage": "post_deploy"}) in coverage.gaps
 
 
@@ -98,8 +100,8 @@ def test_the_assertion_set_of_several_stages_is_named_by_each_stages_own() -> No
 
 def test_a_set_pinned_in_part_is_derived_locally() -> None:
     pinned = _outcome(PLAN_STAGE, **{"coverage.assertions_expected.origin": "server_pinned"})
-    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "locally_derived"})
-    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "locally_derived"
+    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "project_files"})
+    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "project_files"
 
 
 @pytest.mark.parametrize(
@@ -349,7 +351,6 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
     [
         {"kind": "plan_incomplete", "value": False},
         {"kind": "plan_not_applyable", "value": {"__unknown": True, "reason": "not_reported_by_tool"}},
-        {"kind": "identity_redacted", "plan_index": 3},
         {"kind": "deferred_changes", "count": 2},
         {"kind": "evaluator_timeout", "count": 1},
         {"kind": "accepted_by_binding", "count": 4},
@@ -357,6 +358,38 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
 )
 def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
     Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [gap]})
+
+
+def _excluding(*excluded: dict[str, Any], gaps: list[dict[str, Any]]) -> dict[str, Any]:
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": list(excluded)}
+    return {**PLAN_STAGE["coverage"], "subjects_in_scope": scope, "gaps": gaps}
+
+
+HIDDEN = {"plan_index": 3, "id": None, "reason": "identity_redacted"}
+HIDDEN_GAP = {"kind": "identity_redacted", "plan_index": 3}
+
+
+def test_a_resource_excluded_for_its_identity_is_also_a_gap() -> None:
+    Coverage.model_validate(_excluding(HIDDEN, gaps=[HIDDEN_GAP]))
+    Coverage.model_validate(_excluding({**HIDDEN, "reason": "deposed"}, gaps=[]))
+
+
+@pytest.mark.parametrize(
+    ("excluded", "gaps"),
+    [
+        ([], [HIDDEN_GAP]),
+        ([HIDDEN], []),
+        ([HIDDEN], [{**HIDDEN_GAP, "kind": "identity_unnameable"}]),
+        ([HIDDEN], [{**HIDDEN_GAP, "plan_index": 4}]),
+        ([HIDDEN], [HIDDEN_GAP, HIDDEN_GAP]),
+    ],
+    ids=["gap-not-excluded", "excluded-no-gap", "other-reason", "other-resource", "gap-twice"],
+)
+def test_the_identity_gaps_name_the_resources_excluded_for_their_identity(
+    excluded: list[dict[str, Any]], gaps: list[dict[str, Any]]
+) -> None:
+    with pytest.raises(ValidationError, match="the identity gaps name, once each"):
+        Coverage.model_validate(_excluding(*excluded, gaps=gaps))
 
 
 @pytest.mark.parametrize(
@@ -380,16 +413,14 @@ def test_a_gap_outside_its_shapes_is_refused(gap: dict[str, Any]) -> None:
 def test_an_excluded_resource_keeps_its_address_as_written_and_names_a_known_reason() -> None:
     unnameable = {"plan_index": 0, "id": "aws_s3_bucket.x\n" + "y" * 3000, "reason": "identity_unnameable"}
     hidden = {"plan_index": 1, "id": None, "reason": "identity_redacted"}
-    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": [unnameable, hidden]}
-    Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+    gaps = [{"kind": "identity_unnameable", "plan_index": 0}, {"kind": "identity_redacted", "plan_index": 1}]
+    Coverage.model_validate(_excluding(unnameable, hidden, gaps=gaps))
     with pytest.raises(ValidationError):
-        Coverage.model_validate(
-            {**PLAN_STAGE["coverage"], "subjects_in_scope": {**scope, "excluded": [{**hidden, "reason": "skipped"}]}}
-        )
+        Coverage.model_validate(_excluding({**hidden, "reason": "skipped"}, gaps=[]))
 
 
 def test_a_coverage_lists_at_most_max_gaps() -> None:
-    gaps = [{"kind": "identity_redacted", "plan_index": n} for n in range(MAX_GAPS + 1)]
+    gaps = [{"kind": "deferred_changes", "count": n} for n in range(1, MAX_GAPS + 2)]
     with pytest.raises(ValidationError, match="at most"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps})
 
@@ -407,3 +438,51 @@ def test_the_excluded_resources_are_bounded(excluded: list[dict[str, Any]]) -> N
     scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
     with pytest.raises(ValidationError):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+
+
+@pytest.mark.parametrize(
+    "reasons", [["identity_redacted", "identity_redacted"], ["identity_redacted", "identity_unnameable"]]
+)
+def test_a_plan_resource_is_excluded_once_for_one_reason(reasons: list[str]) -> None:
+    excluded = [{"plan_index": 3, "id": None, "reason": reason} for reason in reasons]
+    scope = {**PLAN_STAGE["coverage"]["subjects_in_scope"], "excluded": excluded}
+    with pytest.raises(ValidationError, match="a plan resource is excluded once, for one reason"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
+
+
+def test_a_build_record_counts_the_one_artifact_its_plan_stage_counts() -> None:
+    artifact = {"value": 1, "counted_from": "artifact_unit", "source_digest": "sha256:" + "7" * 64}
+    built = _outcome(
+        DEPLOYED_STAGE,
+        **{"coverage.subjects_in_scope": {**artifact, "removed_by_plan": 0, "excluded": []}},
+    )
+    assert combine([("plan", built)]).coverage.subjects_in_scope.counted_from == "artifact_unit"
+    with pytest.raises(ValueError, match="one stage counts them, and it comes first"):
+        combine([("plan", built), ("post_deploy", PLAN)])
+
+
+STATE_GAP = {"kind": "state_not_read"}
+
+
+def test_a_stage_that_did_not_read_the_state_after_the_apply_is_a_gap_and_incomplete() -> None:
+    outcome = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [STATE_GAP]}))
+    assert outcome.verdict.exit_code == 6
+    assert (outcome.assurance_status.reason, outcome.assurance_status.detail) == (STATE_REASON, STATE_DETAIL)
+
+
+def test_an_evaluator_error_outranks_the_state_not_read_which_outranks_the_plan() -> None:
+    gaps = [{"kind": "plan_incomplete", "value": False}, STATE_GAP]
+    assert stage_outcome(_substituted(gaps=gaps)).assurance_status.reason == STATE_REASON
+    counts = {**PLAN_STAGE["coverage"]["status_counts"]}
+    moved = next(status for status, count in counts.items() if count)
+    counts[moved], counts["error"] = counts[moved] - 1, counts["error"] + 1
+    assert stage_outcome(_substituted(gaps=gaps, status_counts=counts)).assurance_status.reason == INCOMPLETE_REASON
+
+
+def test_the_state_not_read_outranks_placeholders() -> None:
+    assert stage_outcome(_substituted(gaps=[STATE_GAP])).assurance_status.reason == STATE_REASON
+
+
+def test_a_stage_lists_the_state_not_read_once() -> None:
+    with pytest.raises(ValidationError, match="lists the state not read once"):
+        Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [STATE_GAP, STATE_GAP]})

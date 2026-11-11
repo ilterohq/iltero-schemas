@@ -1,0 +1,31 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "deployment.repository",
+          "ref": "change.image.repository"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "deployment.digest",
+          "ref": "change.image.digest"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
+  "stage": "post_deploy",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

@@ -1,0 +1,47 @@
+{
+  "assert": {
+    "exists": {
+      "in": "tests",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "op": "greater_than",
+              "path": "item.counts.tests",
+              "ref": "item.counts.skipped"
+            }
+          },
+          {
+            "any": [
+              {
+                "predicate": {
+                  "op": "equal",
+                  "path": "item.image_digest",
+                  "ref": "artifact.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "op": "in",
+                  "path": "item.image_digest",
+                  "ref": "artifact.platform_digests"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.TESTS_RAN",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

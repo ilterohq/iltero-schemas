@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "op": "equal",
+      "path": "artifact.build_commit",
+      "ref": "verified_source.commit"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+  "stage": "plan",
+  "target": {
+    "kind": "artifact",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

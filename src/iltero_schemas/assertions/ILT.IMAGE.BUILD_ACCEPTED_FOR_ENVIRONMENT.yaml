@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT
+  version: "1.0.0"
+  title: The server accepted a build of the image for the environment
+  remediation: Deploy an image built by a run the server recorded, from a source the environment accepts.
+spec:
+  change_type: image_release
+  stage: pre_deploy
+  target:
+    kind: change
+  assert:
+    path: change.build
+    not_equal: null

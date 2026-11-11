@@ -1,23 +1,4 @@
 {
-  "ast_version": 1,
-  "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
-  "version": "1.0.0",
-  "type": "state",
-  "change_type": "iac_change",
-  "stage": "plan",
-  "target": {
-    "kind": "resource",
-    "resources": [
-      {
-        "tool": "terraform",
-        "provider": "aws",
-        "resource_types": [
-          "aws_s3_bucket"
-        ]
-      }
-    ]
-  },
-  "when": null,
   "assert": {
     "exists": {
       "in": "resource.related",
@@ -25,48 +6,67 @@
         "all": [
           {
             "predicate": {
-              "path": "item.relation",
+              "literal": "configures",
               "op": "equal",
-              "literal": "configures"
+              "path": "item.relation"
             }
           },
           {
             "predicate": {
-              "path": "item.type",
+              "literal": "aws_s3_bucket_public_access_block",
               "op": "equal",
-              "literal": "aws_s3_bucket_public_access_block"
+              "path": "item.type"
             }
           },
           {
             "predicate": {
-              "path": "item.resource.after.block_public_acls",
+              "literal": true,
               "op": "equal",
-              "literal": true
+              "path": "item.resource.after.block_public_acls"
             }
           },
           {
             "predicate": {
-              "path": "item.resource.after.ignore_public_acls",
+              "literal": true,
               "op": "equal",
-              "literal": true
+              "path": "item.resource.after.ignore_public_acls"
             }
           },
           {
             "predicate": {
-              "path": "item.resource.after.block_public_policy",
+              "literal": true,
               "op": "equal",
-              "literal": true
+              "path": "item.resource.after.block_public_policy"
             }
           },
           {
             "predicate": {
-              "path": "item.resource.after.restrict_public_buckets",
+              "literal": true,
               "op": "equal",
-              "literal": true
+              "path": "item.resource.after.restrict_public_buckets"
             }
           }
         ]
       }
     }
-  }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "aws",
+        "resource_types": [
+          "aws_s3_bucket"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

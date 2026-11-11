@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 
-def rfc3339_ms(moment: datetime) -> str:
+def rfc3339_milliseconds(moment: datetime) -> str:
     """``moment`` in UTC with three fractional digits; a naive value is refused."""
     if moment.tzinfo is None:
         raise ValueError("a timestamp needs a time zone")
@@ -18,6 +18,6 @@ def rfc3339_ms(moment: datetime) -> str:
     return utc.strftime("%Y-%m-%dT%H:%M:%S") + f".{utc.microsecond // 1000:03d}Z"
 
 
-def now_rfc3339_ms() -> str:
+def now_rfc3339_milliseconds() -> str:
     """The current time, written the one way."""
-    return rfc3339_ms(datetime.now(UTC))
+    return rfc3339_milliseconds(datetime.now(UTC))

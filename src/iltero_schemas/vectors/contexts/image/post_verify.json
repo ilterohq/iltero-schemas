@@ -1,0 +1,144 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "eval_post_verify_1",
+    "activity": "image_deploy",
+    "stage": "post_verify",
+    "timestamp": "2026-11-02T09:05:30Z",
+    "assertion": {
+      "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+      "version": "1.0.0"
+    }
+  },
+  "organization_scope": {
+    "organization": null,
+    "workspace": null,
+    "environment": {
+      "name": "production",
+      "production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    }
+  },
+  "reference_time": {
+    "value": "2026-11-02T09:05:30Z",
+    "source": "runner_clock",
+    "trust": "asserted",
+    "time_window": null
+  },
+  "source": null,
+  "change": {
+    "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+    "image": {
+      "repository": "ghcr.io/acme/api",
+      "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+    },
+    "build": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    }
+  },
+  "plan": null,
+  "subject": {
+    "kind": "deployment",
+    "key": "sha256:f54bb2aa620b5aad18833990bd7af7857befc65e9630878935f6cc5573a2f00d",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "api",
+        "scope": null
+      }
+    ]
+  },
+  "resource": null,
+  "deployment": {
+    "repository": "ghcr.io/acme/api",
+    "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+    "reported_by": "pipeline"
+  },
+  "evaluations": null,
+  "approvals": null,
+  "exceptions": null,
+  "run": null,
+  "drift_check": {
+    "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+    "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+    "workload": {
+      "platform": "kubernetes",
+      "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+      "kind": "deployment",
+      "namespace": "payments",
+      "name": "api",
+      "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+    },
+    "rollout": {
+      "resource_version": "48213",
+      "generation": 4,
+      "observed_generation": 4,
+      "complete": true,
+      "expected_live_pods": 2,
+      "kind": "deployment",
+      "desired_replicas": 2,
+      "replicas": 2,
+      "updated_replicas": 2,
+      "available_replicas": 2,
+      "paused": false,
+      "strategy": "rolling_update"
+    },
+    "template_containers": [
+      {
+        "name": "api",
+        "role": "app",
+        "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+        "compared": true
+      },
+      {
+        "name": "log-shipper",
+        "role": "sidecar",
+        "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+        "compared": false
+      }
+    ],
+    "containers_read": [
+      {
+        "name": "api",
+        "role": "app",
+        "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+        "compared": true,
+        "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+        "pod_state": "live",
+        "revision": "7d9f8b6c5",
+        "pods": [
+          "api-7d9f8b6c5-abcde",
+          "api-7d9f8b6c5-fghij"
+        ]
+      },
+      {
+        "name": "log-shipper",
+        "role": "sidecar",
+        "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+        "compared": false,
+        "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+        "pod_state": "live",
+        "revision": "7d9f8b6c5",
+        "pods": [
+          "api-7d9f8b6c5-abcde",
+          "api-7d9f8b6c5-fghij"
+        ]
+      }
+    ],
+    "live_pods_read": 2,
+    "pods_resource_version": "48217",
+    "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+    "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+    "pods_evidence_ref": "post_verify/pods.json",
+    "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+  },
+  "assurance": null,
+  "artifact": null,
+  "tests": null,
+  "scans": null,
+  "verified_source": null,
+  "attestation_outcome": null
+}

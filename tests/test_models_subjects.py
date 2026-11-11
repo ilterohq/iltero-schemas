@@ -13,7 +13,7 @@ from iltero_schemas.models.subjects import check_subject, local_identity, subjec
 from iltero_schemas.vectors import VECTORS
 from tests.conftest import ARNS
 
-VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "plan_resource.json").read_text(encoding="utf-8"))
+VECTOR: dict[str, Any] = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
 ADDRESS = Identity(scheme="terraform_address", value="aws_db_instance.payments", scope={"unit": "root"})
 UNIT = Identity(scheme="iltero_unit", value="root")
 ARN = Identity(scheme="aws_arn", value=ARNS["rds_instance"])
@@ -108,3 +108,16 @@ def test_a_resource_subject_is_named_by_the_address_of_the_resource_the_input_ca
     document["subject"].update(identities=[other.model_dump(mode="json")], key=subject_key("resource", [other]))
     with pytest.raises(ValidationError, match="named by the address of the resource the input carries"):
         AssuranceContext.model_validate(document)
+
+
+@pytest.mark.parametrize("kind", ["change", "deployment", "artifact"])
+def test_only_a_resource_has_a_cloud_identity(kind: str) -> None:
+    with pytest.raises(ValueError, match=f"a {kind} subject has no cloud identity: only a resource has one"):
+        check_subject(kind, subject_key(kind, [UNIT]), [UNIT, ARN], "runtime", None)
+    check_subject("resource", subject_key("resource", [ADDRESS, ARN]), [ADDRESS, ARN], "runtime", None)
+
+
+@pytest.mark.parametrize("stage", ["plan", "pre_deploy", "post_deploy", "post_verify"])
+def test_a_cloud_identity_is_read_only_at_runtime_even_beside_an_address(stage: str) -> None:
+    with pytest.raises(ValueError, match=f"a resource only the cloud knows is read at runtime, never at {stage}"):
+        check_subject("resource", subject_key("resource", [ADDRESS]), [ADDRESS, ARN], stage, None)

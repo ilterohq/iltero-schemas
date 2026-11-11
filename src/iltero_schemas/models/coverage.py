@@ -77,7 +77,10 @@ class AssuranceStatus(StrictModel):
 
 # Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
 # an identity that was redacted or cannot be named.
-ExclusionReason = Literal["not_managed", "deposed", "identity_redacted", "identity_unnameable"]
+# The reasons that are also gaps: a resource left out for its identity is a gap in what the stage could check.
+IdentityReason = Literal["identity_redacted", "identity_unnameable"]
+ExclusionReason = Literal["not_managed", "deposed", IdentityReason]
+IDENTITY_REASONS: frozenset[str] = frozenset(get_args(IdentityReason))
 
 
 class Excluded(StrictModel):
@@ -106,7 +109,7 @@ class PlanFlagGap(_Gap):
 class PlanIndexGap(_Gap):
     """A plan resource whose identity was redacted or cannot be named, by its index in the plan's resource list."""
 
-    kind: Literal["identity_redacted", "identity_unnameable"]
+    kind: IdentityReason
     plan_index: Count
 
 
@@ -132,17 +135,28 @@ class CountGap(_Gap):
     count: Annotated[int, Field(ge=1)]
 
 
+class StateNotReadGap(_Gap):
+    """The state after the apply, which was not read: no outcome of the apply was held to it.
+
+    The pipeline said the infrastructure-as-code (IaC) tool could not read it;
+    nothing corroborates that. A stage that lists it is a coverage gap, whatever
+    its checks found.
+    """
+
+    kind: Literal["state_not_read"]
+
+
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PlanIndexGap | CountGap
-# The most gaps a coverage lists: one per resource a plan holds, and each flag or count kind once per stage.
-MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (2 + len(COUNT_GAP_KINDS))
+Gap = PlanFlagGap | PlanIndexGap | CountGap | StateNotReadGap
+# The most gaps a coverage lists: one per resource a plan holds, and each flag, count or state kind once per stage.
+MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (3 + len(COUNT_GAP_KINDS))
 
 
 class SubjectsInScope(StrictModel):
     value: Count
-    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), or the
-    # one deployment of the unit (after it).
-    counted_from: Literal["plan_resource_enumeration", "change_unit", "deployment_unit"]
+    # How the subjects were counted: each resource the plan names, the unit's one change (at pre-deploy), the
+    # one deployment of the unit (after it), or the one artifact a build of the unit produced.
+    counted_from: Literal["plan_resource_enumeration", "change_unit", "deployment_unit", "artifact_unit"]
     source_digest: Digest
     removed_by_plan: Count
     excluded: Annotated[list[Excluded], Field(max_length=MAX_RESOURCES)]
@@ -154,20 +168,23 @@ class SubjectsInScope(StrictModel):
             0,
             [],
         ):
-            raise ValueError("a change's or a deployment's scope is that one subject, with nothing removed or excluded")
+            raise ValueError("a scope counted from a unit is that one subject, with nothing removed or excluded")
+        indexes = [entry.plan_index for entry in self.excluded]
+        if len(set(indexes)) != len(indexes):
+            raise ValueError("a plan resource is excluded once, for one reason")
         return self
 
 
 class AssertionsExpected(StrictModel):
     """The assertions a stage owed, whether or not each was evaluated, and the digest of that set.
 
-    ``locally_derived``: the set as the project's files gave it.
+    ``project_files``: the set as the project's files gave it.
     ``server_pinned``: the assertions the server set for this stage of the run. The record's top level combines the
     stage digests by stage name.
     """
 
     value: Count
-    origin: Literal["server_pinned", "locally_derived"]
+    origin: Literal["server_pinned", "project_files"]
     required_assertion_digest: Digest
 
 
@@ -221,6 +238,16 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        state_gaps = [gap.stage for gap in self.gaps if isinstance(gap, StateNotReadGap)]
+        if len(set(state_gaps)) != len(state_gaps):
+            raise ValueError("a stage lists the state not read once")
+        gaps = [(gap.kind, gap.plan_index) for gap in self.gaps if isinstance(gap, PlanIndexGap)]
+        excluded = {(e.reason, e.plan_index) for e in self.subjects_in_scope.excluded if e.reason in IDENTITY_REASONS}
+        if len(set(gaps)) != len(gaps) or set(gaps) != excluded:
+            raise ValueError(
+                "the identity gaps name, once each, the resources the scope excludes for their identity, by the same "
+                "reason"
+            )
         return self
 
 
@@ -234,10 +261,21 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
-# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's reason wins.
+# Why a stage that did not read the state after the apply is incomplete; an evaluator error's reason wins.
+STATE_REASON = "state_not_read"
+STATE_DETAIL = "the state after the apply was not read, so no outcome of the apply was held to it"
+
+
+# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's or the state's reason wins.
 PLAN_REASON = "plan_not_complete"
-# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's or the plan's reason wins.
+# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's, the state's or the plan's
+# reason wins.
 SUBSTITUTED_REASON = "upstream_state_unavailable"
+
+
+def state_not_read_reason_problem(index: int) -> tuple[str, str]:
+    """The integrity problem of event ``index`` giving a state not read as its reason where the record shows none."""
+    return (f"events.{index}.evaluation.status_reason", "names a state not read the record does not")
 
 
 def _stage_codes(coverage: Coverage) -> list[int]:
@@ -251,6 +289,7 @@ def _stage_codes(coverage: Coverage) -> list[int]:
         or coverage.assertions_evaluated < expected
         or counts["not_evaluated"]
         or coverage.truncated.value
+        or any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps)
     ):
         codes.append(6)
     if counts["error"]:
@@ -266,10 +305,11 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     """A stage's verdict and status, from its own counts by the one rule every reader can recompute.
 
     A gap in what was attempted outranks an evaluator error, which outranks an
-    undecided check, which outranks a failed one. Errors also mark the stage
-    incomplete: the record survives, the gate still fails. So do a plan that
-    does not say it is complete and inputs replaced with placeholders; neither
-    changes the verdict.
+    undecided check, which outranks a failed one. A state after the apply that
+    was not read is such a gap. Errors also mark the stage incomplete: the
+    record survives, the gate still fails. So do a state not read, a plan that
+    does not say it is complete and inputs replaced with placeholders; the last
+    two do not change the verdict.
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
@@ -278,6 +318,8 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     if errors:
         detail = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
         status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
+    elif any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps):
+        status = AssuranceStatus(value="incomplete", reason=STATE_REASON, detail=STATE_DETAIL)
     elif plan is not None:
         detail = "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
         status = AssuranceStatus(value="incomplete", reason=PLAN_REASON, detail=detail)
@@ -297,9 +339,11 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
 
 def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     coverages = [outcome.coverage for _, outcome in stages]
-    # The population is the plan's resources: exactly one stage enumerates them, and it comes first.
-    enumerating = [c for c in coverages if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
-    if len(enumerating) != 1 or enumerating[0] is not coverages[0]:
+    # The population is what the first stage counts: the plan's resources, which no later stage enumerates, the one
+    # artifact a build produced, or the one change a deployment of a built image makes.
+    first = coverages[0].subjects_in_scope.counted_from
+    later = [c for c in coverages[1:] if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
+    if first not in ("plan_resource_enumeration", "artifact_unit", "change_unit") or later:
         raise ValueError(
             "a record's resources in scope are its plan stage's: one stage counts them, and it comes first"
         )
@@ -322,7 +366,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         assertions_expected=AssertionsExpected(
             value=sum(c.assertions_expected.value for c in coverages),
             # A set a server pinned in part is a set derived locally.
-            origin="locally_derived" if "locally_derived" in origins else "server_pinned",
+            origin="project_files" if "project_files" in origins else "server_pinned",
             required_assertion_digest=digest_of(
                 [
                     {"stage": name, "digest": o.coverage.assertions_expected.required_assertion_digest}
@@ -361,7 +405,7 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
     - The checks, the assertions and the statuses are summed; an assertion is
       counted by one stage only.
     - The assertion set is named by the digest over each stage's, in order, and
-      is ``locally_derived`` when any stage's is.
+      is ``project_files`` when any stage's is.
     - The gaps and the substituted inputs are kept, each naming its stage; the
       record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,

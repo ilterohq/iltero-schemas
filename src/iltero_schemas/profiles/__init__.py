@@ -5,8 +5,19 @@ from iltero_schemas.profiles.stage import (
     PROFILES,
     Profile,
     profile_for,
-    reads_plan,
+    reads_approvals,
+    reads_checked_content,
     reads_server_facts,
+    roots_for,
 )
 
-__all__ = ["ALWAYS_REQUIRED_PARTS", "PROFILES", "Profile", "profile_for", "reads_plan", "reads_server_facts"]
+__all__ = [
+    "ALWAYS_REQUIRED_PARTS",
+    "PROFILES",
+    "Profile",
+    "profile_for",
+    "reads_approvals",
+    "reads_checked_content",
+    "reads_server_facts",
+    "roots_for",
+]

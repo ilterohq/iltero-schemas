@@ -1,28 +1,28 @@
 {
+  "assert": {
+    "predicate": {
+      "literal": false,
+      "op": "equal",
+      "path": "resource.after.publicly_accessible"
+    }
+  },
   "ast_version": 1,
-  "id": "ILT.AWS.RDS.NOT_PUBLIC",
-  "version": "1.0.0",
-  "type": "state",
   "change_type": "iac_change",
+  "id": "ILT.AWS.RDS.NOT_PUBLIC",
   "stage": "plan",
   "target": {
     "kind": "resource",
     "resources": [
       {
-        "tool": "terraform",
         "provider": "aws",
         "resource_types": [
           "aws_db_instance"
-        ]
+        ],
+        "tool": "terraform"
       }
     ]
   },
-  "when": null,
-  "assert": {
-    "predicate": {
-      "path": "resource.after.publicly_accessible",
-      "op": "equal",
-      "literal": false
-    }
-  }
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
 }

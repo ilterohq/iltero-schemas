@@ -8,14 +8,14 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.change_types import IAC_CHANGE
+from iltero_schemas.change_types import IAC_CHANGE, IMAGE_BUILD
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
 from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
-from tests.records import RECORD
+from tests.records import DEPLOYED, RECORD, VERIFIED, add_built_in, served
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
@@ -403,7 +403,7 @@ def test_a_stage_left_out_says_why_in_a_way_that_holds(entry: dict[str, Any], me
         ),
         (
             {"stage": "pre_deploy", "reason": "not_supported", "declared_in": None},
-            "the pre-deploy stage is supported for terraform",
+            "the pre-deploy stage is supported for this record",
         ),
     ],
     ids=["a project leaving out post-deploy", "a policy leaving out pre-deploy", "a tool that runs pre-deploy"],
@@ -425,11 +425,7 @@ POLICY_LEAVES_OUT_POST_VERIFY = {
 
 
 def test_the_environment_policy_of_a_run_the_server_opened_can_leave_out_post_verify() -> None:
-    scoped = _record(
-        **POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server", "run.origin": "server_issued"}
-    )
-    for event in scoped["events"]:
-        event["provenance"]["run"]["origin"] = "server_issued"
+    scoped = _record(**POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server"})
     for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
         coverage["assertions_expected"]["origin"] = "server_pinned"
     (left_out,) = CAR.model_validate(scoped, context=_READER).out_of_scope
@@ -444,7 +440,7 @@ def test_a_local_run_has_no_environment_policy_to_leave_a_stage_out() -> None:
 def test_a_terraform_record_cannot_call_its_post_verify_stage_unsupported() -> None:
     unsupported = [{"stage": "post_verify", "reason": "not_supported", "declared_in": None}]
     scoped = _record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=unsupported)
-    with pytest.raises(ValidationError, match="the post-verify stage is supported for terraform"):
+    with pytest.raises(ValidationError, match="the post-verify stage is supported for this record"):
         CAR.model_validate(scoped, context=_READER)
 
 
@@ -465,7 +461,7 @@ def test_a_record_always_expects_its_post_deploy_stage() -> None:
     [
         ("project_config", CONFIG, "a project can leave out only the pre-deploy and post-verify stages"),
         ("environment_policy", None, "an environment's policy can leave out only the post-verify stage"),
-        ("not_supported", None, "the post-deploy stage is supported for terraform"),
+        ("not_supported", None, "the post-deploy stage is supported for this record"),
     ],
     ids=["by the project", "by an environment's policy", "as not supported"],
 )
@@ -478,8 +474,8 @@ def test_no_reason_leaves_out_the_post_deploy_stage(reason: str, declared_in: An
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("origin", "server_issued"), ("unit", "network")],
-    ids=["another run", "another way of opening it", "another unit"],
+    [("id", "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"), ("unit", "network")],
+    ids=["another run", "another unit"],
 )
 def test_every_event_names_the_records_run(field: str, value: str) -> None:
     document = _record()
@@ -522,7 +518,7 @@ def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
 
 
 def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
-    document = _record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")})
+    document = add_built_in(_record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")}), "post_deploy")
     with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
         CAR.model_validate(document, context=_READER)
 
@@ -541,7 +537,17 @@ def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
 def test_a_stage_counts_by_the_kind_of_subject_its_checks_are_about(
     stage: Stage, kinds: set[TargetKind], basis: str | None
 ) -> None:
-    assert scope_counted_from(stage, kinds) == basis
+    assert scope_counted_from(IAC_CHANGE, stage, kinds) == basis
+
+
+@pytest.mark.parametrize("kinds", [set(), {TargetKind.ARTIFACT}])
+def test_a_builds_plan_stage_counts_the_artifact_it_built(kinds: set[TargetKind]) -> None:
+    assert scope_counted_from(IMAGE_BUILD, Stage.PLAN, kinds) == "artifact_unit"
+
+
+def test_a_builds_plan_stage_counts_no_resources() -> None:
+    with pytest.raises(ValueError, match="subjects its assertions can target"):
+        scope_counted_from(IMAGE_BUILD, Stage.PLAN, {TargetKind.RESOURCE})
 
 
 @pytest.mark.parametrize(
@@ -557,7 +563,7 @@ def test_a_stages_checks_are_about_one_kind_of_subject_it_can_target(
     stage: Stage, kinds: set[TargetKind], message: str
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        scope_counted_from(stage, kinds)
+        scope_counted_from(IAC_CHANGE, stage, kinds)
 
 
 def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[str, Any]:
@@ -575,16 +581,24 @@ def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[st
 
 
 def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
-    """The record with a pre-deploy stage whose checks read ``approvals``."""
-    document = _record(PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], complete=False)
+    """The record of a run the server opened, with a pre-deploy stage whose checks read ``approvals`` from it."""
+    document = served(DEPLOYED)
     document["stages"]["pre_deploy"]["approvals"] = list(approvals)
     return document
 
 
 def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
-    of_change = _approval({"kind": "change", "digest": RECORD["change"]["digest"]})
-    of_run = _approval({"kind": "run", "id": RECORD["run"]["id"]}, "apr_0002")
+    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
+    of_run = _approval({"kind": "run", "id": DEPLOYED["run"]["id"]}, "apr_0002")
     CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
+
+
+def test_a_stage_lists_approvals_only_when_its_results_read_facts_from_the_server() -> None:
+    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
+    document = copy.deepcopy(DEPLOYED)
+    document["stages"]["pre_deploy"]["approvals"] = [of_change]
+    with pytest.raises(ValidationError, match="the pre_deploy stage lists approvals only when its results read facts"):
+        CAR.model_validate(document, context=_READER)
 
 
 @pytest.mark.parametrize(
@@ -594,7 +608,7 @@ def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> N
             [_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})],
             "only approvals of a change or of",
         ),
-        ([_approval({"kind": "run", "id": RECORD["run"]["id"]})] * 2, "lists each approval once"),
+        ([_approval({"kind": "run", "id": DEPLOYED["run"]["id"]})] * 2, "lists each approval once"),
     ],
     ids=["another run", "listed twice"],
 )
@@ -605,7 +619,7 @@ def test_a_stage_lists_no_approval_of_another_run_and_each_once(approvals: list[
 
 def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
     document = _pre_deploy_reading(_approval({"kind": "change", "digest": "sha256:" + "e" * 64}))
-    what = "lists approval apr_0001 of another change: another change type, unit, environment or plan"
+    what = "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
     with pytest.raises(ValidationError, match=f"stages.pre_deploy.approvals {what}"):
         CAR.model_validate(document)
     car = CAR.model_validate(document, context=_READER)
@@ -613,7 +627,7 @@ def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
 
 
 def test_a_forged_change_digest_is_reported_with_every_digest_bound_to_the_change() -> None:
-    document = _pre_deploy_reading(_approval({"kind": "change", "digest": RECORD["change"]["digest"]}))
+    document = _pre_deploy_reading(_approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]}))
     document["change"]["digest"] = "sha256:" + "e" * 64
     with pytest.raises(
         ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
@@ -662,3 +676,30 @@ def test_a_file_no_redaction_touched_names_no_policy() -> None:
     for ref in document["evidence_refs"]:
         ref["redaction_policy"] = None
     CAR.model_validate(document)
+
+
+@pytest.mark.parametrize("name", ["post_deploy", "post_verify"])
+def test_an_infrastructure_stage_after_the_deployment_evaluates_its_always_evaluated_check(name: str) -> None:
+    stages = {"post_deploy": _stage("post_deploy"), "post_verify": _stage("post_verify")}
+    document = _record(stages)
+    if name == "post_verify":
+        add_built_in(document, "post_deploy")
+    with pytest.raises(ValidationError, match="is evaluated once, at the .* stage, once it has reported"):
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("source", "name", "kind"),
+    [
+        (RECORD, "plan", "facts"),
+        (DEPLOYED, "pre_deploy", "observation"),
+        (DEPLOYED, "post_deploy", "facts"),
+        (VERIFIED, "post_verify", "observation"),
+    ],
+    ids=["plan", "pre_deploy", "post_deploy", "post_verify"],
+)
+def test_a_stage_redacts_what_it_reads(source: dict[str, Any], name: str, kind: str) -> None:
+    document = copy.deepcopy(source)
+    document["stages"][name]["redaction"]["input"]["kind"] = kind
+    with pytest.raises(ValidationError, match=f"the {name} stage's redaction report is of the"):
+        CAR.model_validate(document, context=_READER)

@@ -8,7 +8,7 @@ from typing import get_args
 import pytest
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
-from iltero_schemas.models.identity import CloudSide, Resolver
+from iltero_schemas.models.iac.resource_identities import CloudSide, Resolver
 from iltero_schemas.models.providers.aws import (
     ARN_SHAPES,
     SCHEME_AWS_ARN,
@@ -136,7 +136,7 @@ def test_the_naming_rules_cannot_be_changed() -> None:
         ARN_SHAPES["s3_bucket"] = ("s3", False, re.compile(".*"))  # type: ignore[index]
 
 
-def test_the_identity_document_writes_the_arn_scheme_as_named() -> None:
+def test_the_resource_identities_writes_the_arn_scheme_as_named() -> None:
     assert get_args(ArnIdentifier.model_fields["scheme"].annotation) == (SCHEME_AWS_ARN,)
 
 

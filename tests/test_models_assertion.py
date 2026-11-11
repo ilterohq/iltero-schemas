@@ -10,7 +10,6 @@ from iltero_schemas.models.assertion import (
     ASSERTION_TYPE_FOR_TARGET,
     COMBINATIONS,
     REMEDIATION_MAX_LENGTH,
-    SHARED_COMBINATIONS,
     VALID_COMBINATIONS,
     AssertionType,
     Stage,
@@ -51,7 +50,6 @@ def _error_locations(document: dict[str, Any]) -> list[str]:
 
 def test_a_minimal_document_validates_and_type_is_derived() -> None:
     model = TechnicalAssertion.model_validate(_document())
-    assert model.spec.type is None
     assert model.spec.derived_type is AssertionType.STATE
 
 
@@ -68,12 +66,10 @@ def test_a_post_verify_assertion_is_about_the_deployment(kind: TargetKind) -> No
         TechnicalAssertion.model_validate(_document(spec__stage="post_verify", spec__target=target))
 
 
-def test_explicit_type_must_match_the_derived_one() -> None:
+def test_an_assertions_type_is_derived_never_written() -> None:
     document = _document()
     document["spec"]["type"] = "state"
-    TechnicalAssertion.model_validate(document)
-    document["spec"]["type"] = "process"
-    assert _error_locations(document) == ["spec"]
+    assert _error_locations(document) == ["spec.type"]
 
 
 @pytest.mark.parametrize("stage", list(Stage))
@@ -83,7 +79,7 @@ def test_only_listed_stage_and_target_combinations_are_accepted(stage: Stage, ki
     if kind is TargetKind.RESOURCE:
         target["resources"] = [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}]
     document = _document(spec__stage=stage.value, spec__target=target)
-    allowed = (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) in VALID_COMBINATIONS
+    allowed = (ASSERTION_TYPE_FOR_TARGET[kind], stage, kind) in COMBINATIONS["iac_change"]
     if allowed:
         TechnicalAssertion.model_validate(document)
     else:
@@ -290,18 +286,56 @@ def test_a_provider_short_name_may_hold_a_hyphen() -> None:
 def test_an_assertion_says_which_change_type_it_is_about() -> None:
     document = _document()
     del document["spec"]["change_type"]
-    with pytest.raises(ValidationError, match="change_type is missing: give iac_change, or null for an assertion"):
+    with pytest.raises(
+        ValidationError, match="change_type is missing: give iac_change or image_release, or null for an assertion"
+    ):
         TechnicalAssertion.model_validate(document)
-    with pytest.raises(ValidationError, match="Input should be 'iac_change'"):
-        TechnicalAssertion.model_validate(_document(spec__change_type="image_release"))
+    with pytest.raises(ValidationError, match="Input should be 'iac_change' or 'image_release'"):
+        TechnicalAssertion.model_validate(_document(spec__change_type="database_migration"))
 
 
 def test_an_assertion_about_any_change_is_checked_against_what_every_change_type_allows() -> None:
-    assert SHARED_COMBINATIONS == COMBINATIONS["iac_change"] == VALID_COMBINATIONS
+    assert COMBINATIONS["iac_change"] | COMBINATIONS["image_release"] == VALID_COMBINATIONS
     assert TechnicalAssertion.model_validate(_document(spec__change_type=None)).spec.change_type is None
+
+
+@pytest.mark.parametrize("stage", list(Stage))
+@pytest.mark.parametrize("kind", list(TargetKind))
+def test_an_image_release_assertion_targets_the_artifact_then_the_change_and_its_deployment(
+    stage: Stage, kind: TargetKind
+) -> None:
+    target: dict[str, Any] = {"kind": kind.value}
+    if kind is TargetKind.RESOURCE:
+        target["resources"] = [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}]
+    document = _document(spec__change_type="image_release", spec__stage=stage.value, spec__target=target)
+    allowed = {
+        (Stage.PLAN, TargetKind.ARTIFACT),
+        (Stage.PRE_DEPLOY, TargetKind.CHANGE),
+        (Stage.POST_DEPLOY, TargetKind.DEPLOYMENT),
+        (Stage.POST_VERIFY, TargetKind.DEPLOYMENT),
+    }
+    if (stage, kind) in allowed:
+        assert TechnicalAssertion.model_validate(document).spec.derived_type is AssertionType.PROCESS
+    else:
+        assert _error_locations(document) == ["spec"]
+
+
+def test_an_artifact_target_names_no_resources() -> None:
+    target = {"kind": "artifact", "resources": [{"provider": "aws", "kinds": ["rds_instance"]}]}
+    document = _document(spec__change_type="image_release", spec__stage="plan", spec__target=target)
+    with pytest.raises(ValidationError, match="an artifact target names no resources"):
+        TechnicalAssertion.model_validate(document)
 
 
 def test_the_change_type_is_part_of_the_assertions_source_digest() -> None:
     about_any_change = parse_document(_document(spec__change_type=None))
     assert about_any_change.change_type is None
     assert source_digest(about_any_change) != source_digest(parse_document(_document()))
+
+
+@pytest.mark.parametrize("change_type", ["image_release", None])
+def test_only_an_infrastructure_assertion_scopes_its_target_by_resources(change_type: str | None) -> None:
+    target = {"kind": "change", "resources": [{"provider": "aws", "kinds": ["rds_instance"]}]}
+    document = _document(spec__change_type=change_type, spec__stage="pre_deploy", spec__target=target)
+    with pytest.raises(ValidationError, match="names resources only in an assertion about an iac_change"):
+        TechnicalAssertion.model_validate(document)

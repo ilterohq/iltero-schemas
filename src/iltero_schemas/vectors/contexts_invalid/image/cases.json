@@ -1,0 +1,83 @@
+[
+  {
+    "name": "image_build_scan_of_an_index_naming_the_index",
+    "vector": "image/plan_artifact.json",
+    "set": {
+      "/scans/0/image_digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+    },
+    "remove": [],
+    "message": "a scan of an image built for several platforms names the platform it scanned"
+  },
+  {
+    "name": "image_deploy_input_naming_no_environment",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment": null
+    },
+    "remove": [],
+    "message": "a deploy's input names its environment: a deploy is to one"
+  },
+  {
+    "name": "image_deploy_input_with_a_null_build_in_a_run_no_server_opened",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/change/build": null
+    },
+    "remove": [],
+    "message": "change.build holds the unknown marker exactly when the environment's production flag does: both hold it only in a run no server opened"
+  },
+  {
+    "name": "image_deploy_input_with_the_marker_for_its_build_in_a_run_the_server_opened",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/reference_time/source": "server",
+      "/reference_time/trust": "attested",
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": []
+    },
+    "remove": [],
+    "message": "change.build holds the unknown marker exactly when the environment's production flag does: both hold it only in a run no server opened"
+  },
+  {
+    "name": "image_deploy_input_with_an_exception_covering_a_built_in",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/reference_time/source": "server",
+      "/reference_time/trust": "attested",
+      "/change/build": null,
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [
+        {
+          "id": "exc_0001",
+          "status": "approved",
+          "scope": {
+            "assertion": {
+              "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT"
+            },
+            "environment": "production",
+            "resources": [
+              {
+                "scheme": "iltero_unit",
+                "value": "api",
+                "scope": null
+              }
+            ]
+          },
+          "valid_from": "2026-11-01T00:00:00.000Z",
+          "expires_at": "2026-12-01T00:00:00.000Z",
+          "approved_by": {
+            "provider": "iltero",
+            "id": "reviewer_1"
+          },
+          "reason": "waive the accepted build check"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "an exception never covers a built-in assertion: what it records is never waived"
+  }
+]

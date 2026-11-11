@@ -1,0 +1,1468 @@
+{
+  "apiVersion": "iltero.io/car/v1",
+  "uuid": "1c7f6e5d-4c3b-5a29-9f8e-7d6c5b4a3928",
+  "run": {
+    "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+  },
+  "unit": "api",
+  "trust_level": "self_attested",
+  "compliance_determination": null,
+  "issuer": {
+    "type": "local",
+    "identity_verified": false
+  },
+  "governance": {
+    "run_opened_by": "local"
+  },
+  "subject": {
+    "kind": "change",
+    "environment": "production",
+    "unit": "api",
+    "source": {
+      "vcs": "git",
+      "commit": {
+        "sha": "c84e7a1000000000000000000000000000000000"
+      },
+      "repository": null,
+      "ref": {
+        "type": "branch",
+        "name": "main"
+      },
+      "pull_request": null
+    }
+  },
+  "change": {
+    "activity": "image_deploy",
+    "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+    "image": {
+      "repository": "ghcr.io/acme/api",
+      "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "tag_resolution": null
+    },
+    "build": null,
+    "deployment": {
+      "repository": "ghcr.io/acme/api",
+      "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+      "reported_by": "pipeline"
+    },
+    "drift_check": {
+      "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+      "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+      "workload": {
+        "platform": "kubernetes",
+        "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
+        "kind": "deployment",
+        "namespace": "payments",
+        "name": "api",
+        "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
+      },
+      "rollout": {
+        "resource_version": "48213",
+        "generation": 4,
+        "observed_generation": 4,
+        "complete": true,
+        "expected_live_pods": 2,
+        "kind": "deployment",
+        "desired_replicas": 2,
+        "replicas": 2,
+        "updated_replicas": 2,
+        "available_replicas": 2,
+        "paused": false,
+        "strategy": "rolling_update"
+      },
+      "template_containers": [
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true
+        },
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false
+        }
+      ],
+      "containers_read": [
+        {
+          "name": "api",
+          "role": "app",
+          "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "compared": true,
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde",
+            "api-7d9f8b6c5-fghij"
+          ]
+        },
+        {
+          "name": "log-shipper",
+          "role": "sidecar",
+          "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
+          "compared": false,
+          "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+          "pod_state": "live",
+          "revision": "7d9f8b6c5",
+          "pods": [
+            "api-7d9f8b6c5-abcde",
+            "api-7d9f8b6c5-fghij"
+          ]
+        }
+      ],
+      "live_pods_read": 2,
+      "pods_resource_version": "48217",
+      "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
+      "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+      "pods_evidence_ref": "post_verify/pods.json",
+      "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+    }
+  },
+  "units_file": null,
+  "stages": {
+    "pre_deploy": {
+      "stage": "pre_deploy",
+      "observed_at": "2026-11-02T09:00:00Z",
+      "reference_time": {
+        "value": "2026-11-02T09:00:00Z",
+        "source": "runner_clock",
+        "trust": "asserted",
+        "time_window": null
+      },
+      "execution": {
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1"
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:dfb665eb8e129304709bb5f38ea28e5758545f7f96636413ea1dd3406267f4f9",
+          "content_digest": null,
+          "key_id": null,
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44"
+        },
+        "reason": null,
+        "detail": null
+      },
+      "enforcement_mode": "enforcing",
+      "approvals": [],
+      "compiler": {
+        "version": "1.0.0",
+        "contract_version": "0.1.0",
+        "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+        "install": "wheel"
+      },
+      "redaction": {
+        "policy": {
+          "id": "iltero.redaction",
+          "version": "1",
+          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+        },
+        "input": {
+          "kind": "facts",
+          "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2"
+        },
+        "redacted": [],
+        "unknown": [],
+        "allowed": []
+      },
+      "events": {
+        "path": "units/api/pre_deploy/events.json",
+        "digest": "sha256:b5555076f0dc39721816a8fd7131b47d9594d217287d5d640c02020daa0074cf",
+        "count": 2
+      },
+      "assertions": {
+        "index": "units/api/pre_deploy/assertions/compiled.json",
+        "digest": "sha256:e0461376b07c71726e93fee7ba71b497097e89737b27196f6977cea6982a6d93",
+        "count": 2
+      },
+      "scanners": null,
+      "coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 2,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:96d4f12cc09080967c54bfae94ea0ce5c2d66af27a27c2aea817ce1052a9779c"
+        },
+        "assertions_evaluated": 2,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 2,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 2,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
+    },
+    "post_deploy": {
+      "stage": "post_deploy",
+      "observed_at": "2026-11-02T09:03:00Z",
+      "reference_time": {
+        "value": "2026-11-02T09:03:00Z",
+        "source": "runner_clock",
+        "trust": "asserted",
+        "time_window": null
+      },
+      "execution": {
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1"
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:dfb665eb8e129304709bb5f38ea28e5758545f7f96636413ea1dd3406267f4f9",
+          "content_digest": null,
+          "key_id": null,
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44"
+        },
+        "reason": null,
+        "detail": null
+      },
+      "enforcement_mode": "enforcing",
+      "approvals": null,
+      "compiler": {
+        "version": "1.0.0",
+        "contract_version": "0.1.0",
+        "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+        "install": "wheel"
+      },
+      "redaction": {
+        "policy": {
+          "id": "iltero.redaction",
+          "version": "1",
+          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+        },
+        "input": {
+          "kind": "deployment",
+          "digest": "sha256:bf9181232fbfcfdc55c56911034788e2ef948718b8ff1df3aaf596dedc368f60"
+        },
+        "redacted": [],
+        "unknown": [],
+        "allowed": []
+      },
+      "events": {
+        "path": "units/api/post_deploy/events.json",
+        "digest": "sha256:d251471ad8a8e076d21d11a4372c44dda1768cd7570bba747764001992b14dcd",
+        "count": 1
+      },
+      "assertions": {
+        "index": "units/api/post_deploy/assertions/compiled.json",
+        "digest": "sha256:2dbd91e6d7bdde68a540cc8f77cbafecba19be3b6dba9215b76c8b1ee4976f6c",
+        "count": 1
+      },
+      "scanners": null,
+      "coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "deployment_unit",
+          "source_digest": "sha256:77b1db855837c5bdf84978bb5beddc92718de6e45fc160d6e37d660379c6fdb4",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 1,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:f1bc1a1caabc5ed8ec1b9a8c4c14d169909eccc6975da6fec3c768b4508a6ee3"
+        },
+        "assertions_evaluated": 1,
+        "subjects_per_assertion": {
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 1,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
+    },
+    "post_verify": {
+      "stage": "post_verify",
+      "observed_at": "2026-11-02T09:05:30Z",
+      "reference_time": {
+        "value": "2026-11-02T09:05:30Z",
+        "source": "runner_clock",
+        "trust": "asserted",
+        "time_window": null
+      },
+      "execution": {
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1"
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:dfb665eb8e129304709bb5f38ea28e5758545f7f96636413ea1dd3406267f4f9",
+          "content_digest": null,
+          "key_id": null,
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44"
+        },
+        "reason": null,
+        "detail": null
+      },
+      "enforcement_mode": "enforcing",
+      "approvals": null,
+      "compiler": {
+        "version": "1.0.0",
+        "contract_version": "0.1.0",
+        "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+        "install": "wheel"
+      },
+      "redaction": {
+        "policy": {
+          "id": "iltero.redaction",
+          "version": "1",
+          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+        },
+        "input": {
+          "kind": "deployment",
+          "digest": "sha256:1e35b00c9e5d9a8aa69a8b98a384970b9fc76cb2c6b48c4ab843164cb93579c4"
+        },
+        "redacted": [],
+        "unknown": [],
+        "allowed": []
+      },
+      "events": {
+        "path": "units/api/post_verify/events.json",
+        "digest": "sha256:5c42cb8ec5c01697a3dfa2a3c5c519a73ed0258cf274b46c2d299a59b0b06411",
+        "count": 1
+      },
+      "assertions": {
+        "index": "units/api/post_verify/assertions/compiled.json",
+        "digest": "sha256:a56b365f706df142046164839e83d9ecbc418b18d8dc9c8ecd0162d8889f67b4",
+        "count": 1
+      },
+      "scanners": null,
+      "coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "deployment_unit",
+          "source_digest": "sha256:9f4d47ea421a730115083358cef1ce4b12b536de907130a693d1b44fa423f749",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 1,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:90213e421665d317ec171f0cda0cedc956582a7cba22692ae1c38c8f20ac92fa"
+        },
+        "assertions_evaluated": 1,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 1,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      }
+    }
+  },
+  "events": [
+    {
+      "assertion": {
+        "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+        "version": "1.0.0",
+        "digest": "sha256:1ab521cbc5266f3d2963de225a792f4c71299ed51051cf637dfb01133bb05684"
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_reason": "server_facts_unavailable",
+        "status_detail": null,
+        "policy_reason": "organization_scope.environment.production: server_facts_unavailable",
+        "observations": {
+          "predicates": [
+            {
+              "actual": null,
+              "clause": "when",
+              "expected": true,
+              "index": 0,
+              "op": "equal",
+              "path": "organization_scope.environment.production",
+              "status": "unknown"
+            },
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 1,
+              "matched": null,
+              "op": "exists",
+              "path": "approvals",
+              "status": "unknown"
+            },
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 2,
+              "matched": null,
+              "op": "exists",
+              "path": "approvals",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "organization_scope.environment.production",
+            "reason": "server_facts_unavailable"
+          },
+          "when": "unknown"
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "input_digest": "sha256:047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "darwin-aarch64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:3635526e5b1675346480346dd306012c2f4ae86be944737c77dbbf7f4614f1ea",
+          "content_digest": null,
+          "key_id": null
+        },
+        "evaluator_binding": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:ecad9c1b3c6ef5bad861e3f06b40ebd37abe8690da5136913f50791a2ea1a4b8",
+        "compiled_digest": "sha256:d9cb7b34f1957517535b3648c66a683a8138b28cb996c7bd001d623296941d55",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-02T09:00:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+        "version": "1.0.0",
+        "digest": "sha256:5c6bde5561f0010dc83fcbc632a80ac809063970280a8a90b3d8e45a0b2f6d13"
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "status": "unknown",
+        "status_reason": "server_facts_unavailable",
+        "status_detail": null,
+        "policy_reason": "change.build: server_facts_unavailable",
+        "observations": {
+          "predicates": [
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "op": "not_equal",
+              "path": "change.build",
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "change.build",
+            "reason": "server_facts_unavailable"
+          },
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "input_digest": "sha256:94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "darwin-aarch64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:3635526e5b1675346480346dd306012c2f4ae86be944737c77dbbf7f4614f1ea",
+          "content_digest": null,
+          "key_id": null
+        },
+        "evaluator_binding": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:19d92145cfd05303978bfe435511760039e3613211b07365e7dc480447793bca",
+        "compiled_digest": "sha256:45f4ba039ee013f735731fe2b355cd532b329b9cb66a846d16f764aaa207fc9a",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-02T09:00:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
+        "version": "1.0.0",
+        "digest": "sha256:f53fea8021a64c888fb983ef236335bbc520b2c4264f8ef971e459cb571ff1e1"
+      },
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:f54bb2aa620b5aad18833990bd7af7857befc65e9630878935f6cc5573a2f00d",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_deploy",
+        "stage": "post_deploy",
+        "status": "pass",
+        "status_reason": null,
+        "status_detail": null,
+        "policy_reason": "assert: true",
+        "observations": {
+          "predicates": [
+            {
+              "actual": "ghcr.io/acme/api",
+              "clause": "assert",
+              "expected": {
+                "ref": "change.image.repository"
+              },
+              "index": 0,
+              "op": "equal",
+              "path": "deployment.repository",
+              "resolved": "ghcr.io/acme/api",
+              "status": "true"
+            },
+            {
+              "actual": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+              "clause": "assert",
+              "expected": {
+                "ref": "change.image.digest"
+              },
+              "index": 1,
+              "op": "equal",
+              "path": "deployment.digest",
+              "resolved": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+              "status": "true"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "input_digest": "sha256:361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "darwin-aarch64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:3635526e5b1675346480346dd306012c2f4ae86be944737c77dbbf7f4614f1ea",
+          "content_digest": null,
+          "key_id": null
+        },
+        "evaluator_binding": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:db4d93698dc4161271114729c6ff241bc976da038cc5a24730d1febe4b96265d",
+        "compiled_digest": "sha256:0dec0315945e2e887b12eb9c9a8b599aed13e1d7a3970fe273bb762f01bc8a5f",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": null
+      },
+      "observed_at": "2026-11-02T09:03:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+        "version": "1.0.0",
+        "digest": "sha256:dffd82ef09ecfa5190be37282cd0a99d10d4643db4903498a7ccb312c004c2eb"
+      },
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:f54bb2aa620b5aad18833990bd7af7857befc65e9630878935f6cc5573a2f00d",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_deploy",
+        "stage": "post_verify",
+        "status": "pass",
+        "status_reason": null,
+        "status_detail": null,
+        "policy_reason": "assert: true",
+        "observations": {
+          "predicates": [
+            {
+              "actual": true,
+              "clause": "assert",
+              "expected": true,
+              "index": 0,
+              "op": "equal",
+              "path": "drift_check.rollout.complete",
+              "status": "true"
+            },
+            {
+              "actual": 2,
+              "clause": "assert",
+              "expected": {
+                "ref": "drift_check.rollout.expected_live_pods"
+              },
+              "index": 1,
+              "op": "equal",
+              "path": "drift_check.live_pods_read",
+              "resolved": 2,
+              "status": "true"
+            },
+            {
+              "actual": {
+                "count": 2,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 2,
+              "matched": 1,
+              "op": "exists",
+              "path": "drift_check.template_containers",
+              "status": "true"
+            },
+            {
+              "actual": {
+                "count": 2,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 3,
+              "matched": 1,
+              "op": "exists",
+              "path": "drift_check.containers_read",
+              "status": "true"
+            },
+            {
+              "actual": {
+                "count": 2,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 4,
+              "matched": 0,
+              "op": "exists",
+              "path": "drift_check.containers_read",
+              "status": "false"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "input_digest": "sha256:317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "darwin-aarch64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:3635526e5b1675346480346dd306012c2f4ae86be944737c77dbbf7f4614f1ea",
+          "content_digest": null,
+          "key_id": null
+        },
+        "evaluator_binding": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:daabe7c31568b33ef5206989e0495a0cb6c56d30e73bd4bce79b2334e39b0cb2",
+        "compiled_digest": "sha256:cb5af3c072100717a3af760021d41b805117c20aa3f20ad04b528f6e0aee2322",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
+          "install": "wheel"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": null
+      },
+      "observed_at": "2026-11-02T09:05:30Z"
+    }
+  ],
+  "coverage": {
+    "subjects_in_scope": {
+      "value": 1,
+      "counted_from": "change_unit",
+      "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+      "removed_by_plan": 0,
+      "excluded": []
+    },
+    "subjects_evaluated": 1,
+    "assertions_expected": {
+      "value": 4,
+      "origin": "project_files",
+      "required_assertion_digest": "sha256:da3b0a475f90e7c41fe04bb2639109fa495b42997aff17d1fff93e8a6a628303"
+    },
+    "assertions_evaluated": 4,
+    "subjects_per_assertion": {
+      "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
+      "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+      "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+      "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+    },
+    "status_counts": {
+      "pass": 2,
+      "fail": 0,
+      "unknown": 2,
+      "not_applicable": 0,
+      "not_evaluated": 0,
+      "error": 0
+    },
+    "evaluations": 4,
+    "gaps": [],
+    "truncated": {
+      "value": false,
+      "limit": null,
+      "reason": null
+    },
+    "sampled": false,
+    "substituted_inputs": []
+  },
+  "verdict": {
+    "value": "indeterminate",
+    "exit_code": 3,
+    "computed_from": "stage_precedence",
+    "stage": "pre_deploy"
+  },
+  "assurance_status": {
+    "value": "complete",
+    "reason": null,
+    "detail": null
+  },
+  "complete": true,
+  "expected_stages": [
+    "pre_deploy",
+    "post_deploy",
+    "post_verify"
+  ],
+  "out_of_scope": [],
+  "evidence_refs": [
+    {
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:e77084225036994a2dfe82d329eda7d6ed56384fe73885c8ad0927f484098dd9",
+      "size_bytes": 621,
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:0dec0315945e2e887b12eb9c9a8b599aed13e1d7a3970fe273bb762f01bc8a5f",
+      "size_bytes": 11474,
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_deploy/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:961b8eac348c19b6e5d8c188603a8ccdbc90a12da3b5f265894d1ca824fe4974",
+      "size_bytes": 613,
+      "path": "units/api/post_deploy/assertions/ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_deploy/assertions/compiled.json",
+      "media_type": "application/json",
+      "digest": "sha256:2dbd91e6d7bdde68a540cc8f77cbafecba19be3b6dba9215b76c8b1ee4976f6c",
+      "size_bytes": 1366,
+      "path": "units/api/post_deploy/assertions/compiled.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
+      "media_type": "application/json",
+      "digest": "sha256:361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
+      "size_bytes": 1552,
+      "path": "units/api/post_deploy/contexts/sha256-361fd47199abe21fb195c3d562b19cc236e46070beb29b701ba59e0ec3a0e00b",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_deploy/events.json",
+      "media_type": "application/json",
+      "digest": "sha256:d251471ad8a8e076d21d11a4372c44dda1768cd7570bba747764001992b14dcd",
+      "size_bytes": 2612,
+      "path": "units/api/post_deploy/events.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:87639a130dc7b38ad544b29e0cf8a4a5098d99f6a5e50b3cead2a1f513fdc8f2",
+      "size_bytes": 2518,
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:cb5af3c072100717a3af760021d41b805117c20aa3f20ad04b528f6e0aee2322",
+      "size_bytes": 12505,
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:f7d0c2356b40fcf6a44371ec5df406469b076202965474c9a7ae5e2a6001196d",
+      "size_bytes": 1498,
+      "path": "units/api/post_verify/assertions/ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/assertions/compiled.json",
+      "media_type": "application/json",
+      "digest": "sha256:a56b365f706df142046164839e83d9ecbc418b18d8dc9c8ecd0162d8889f67b4",
+      "size_bytes": 1399,
+      "path": "units/api/post_verify/assertions/compiled.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
+      "media_type": "application/json",
+      "digest": "sha256:317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
+      "size_bytes": 3391,
+      "path": "units/api/post_verify/contexts/sha256-317c736c7d6d64e8da34ab7fd39ae0254e64d669c2821480206d68c8f815a16c",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/events.json",
+      "media_type": "application/json",
+      "digest": "sha256:5c42cb8ec5c01697a3dfa2a3c5c519a73ed0258cf274b46c2d299a59b0b06411",
+      "size_bytes": 2913,
+      "path": "units/api/post_verify/events.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "post_verify/pod-owners.json",
+      "media_type": "application/json",
+      "digest": "sha256:3a7debf336de331dcfa6c268c045e6cf162d9058c78c563230e19cc5b2190665",
+      "size_bytes": 242,
+      "path": "units/api/post_verify/pod-owners.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:3a7debf336de331dcfa6c268c045e6cf162d9058c78c563230e19cc5b2190665",
+        "name": "pod-owners.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    {
+      "ref_id": "post_verify/pods.json",
+      "media_type": "application/json",
+      "digest": "sha256:1698b863833d4e24485d637d1a8367f35777f433f40e6f0fc6fb31f1a68a9430",
+      "size_bytes": 317,
+      "path": "units/api/post_verify/pods.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:219367997ce168abbdbf5a2bbcf1b1e8edf1243b8deb3407e51ab24af23e80f0",
+        "name": "pods.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    {
+      "ref_id": "post_verify/workload-after-pods-listing.json",
+      "media_type": "application/json",
+      "digest": "sha256:4f4f60f41de6bc328ea8bcb1a862fca097aa4b898e6195774aad7dc04d500d94",
+      "size_bytes": 259,
+      "path": "units/api/post_verify/workload-after-pods-listing.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:4f4f60f41de6bc328ea8bcb1a862fca097aa4b898e6195774aad7dc04d500d94",
+        "name": "workload-after-pods-listing.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    {
+      "ref_id": "post_verify/workload-before-pods-listing.json",
+      "media_type": "application/json",
+      "digest": "sha256:46d8fdd82d611f1bc7b4cde287c866b5097f070ae0dddaac5fb1c0519d78ff2e",
+      "size_bytes": 258,
+      "path": "units/api/post_verify/workload-before-pods-listing.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:46d8fdd82d611f1bc7b4cde287c866b5097f070ae0dddaac5fb1c0519d78ff2e",
+        "name": "workload-before-pods-listing.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
+      }
+    },
+    {
+      "ref_id": "pre_deploy/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:c7051fa13e53978c26a1f62932d76b76e67ee23b9e757362b65d9a8d0f8f7628",
+      "size_bytes": 2275,
+      "path": "units/api/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:d9cb7b34f1957517535b3648c66a683a8138b28cb996c7bd001d623296941d55",
+      "size_bytes": 12221,
+      "path": "units/api/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:65172ac987bed3f78e321697f736170ffe0bf067eab2bbe15e50f959bfc2338c",
+      "size_bytes": 1231,
+      "path": "units/api/pre_deploy/assertions/ILT.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:89932d839d3d8ebe62772dcbabc9431276a1495dcf68d47590bf0226f56b0391",
+      "size_bytes": 375,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:45f4ba039ee013f735731fe2b355cd532b329b9cb66a846d16f764aaa207fc9a",
+      "size_bytes": 11332,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:fb854e80b772c5eab6c8491573952ea44224b20db7c1004cd7814ede45f184d4",
+      "size_bytes": 437,
+      "path": "units/api/pre_deploy/assertions/ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/assertions/compiled.json",
+      "media_type": "application/json",
+      "digest": "sha256:e0461376b07c71726e93fee7ba71b497097e89737b27196f6977cea6982a6d93",
+      "size_bytes": 2251,
+      "path": "units/api/pre_deploy/assertions/compiled.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+      "media_type": "application/json",
+      "digest": "sha256:047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+      "size_bytes": 1580,
+      "path": "units/api/pre_deploy/contexts/sha256-047d5ad6bf3fa4fd955d43675a34f0eb57f98841f1be48346125049dec1bf0f8",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+      "media_type": "application/json",
+      "digest": "sha256:94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+      "size_bytes": 1590,
+      "path": "units/api/pre_deploy/contexts/sha256-94b16e9b8fa2e3327f80c56bb12752f7ddec92e883fecf2a410754ab40a51992",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/events.json",
+      "media_type": "application/json",
+      "digest": "sha256:b5555076f0dc39721816a8fd7131b47d9594d217287d5d640c02020daa0074cf",
+      "size_bytes": 4941,
+      "path": "units/api/pre_deploy/events.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:05:30Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "pre_deploy/redaction-policy.json",
+      "media_type": "application/json",
+      "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+      "size_bytes": 1972,
+      "path": "units/api/pre_deploy/redaction-policy.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-02T09:00:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    }
+  ],
+  "integrity": {
+    "scheme": "file_digests",
+    "signature": null
+  },
+  "expires_at": null,
+  "retention_class": null,
+  "retention_reason": "no_server_scope"
+}

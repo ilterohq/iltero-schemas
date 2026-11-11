@@ -1,0 +1,117 @@
+{
+  "cases": [
+    {
+      "name": "provenance_v1",
+      "file": "provenance_v1.sigstore.json",
+      "subject_digests": [
+        "sha256:6e71808a3bf4bf44c542c7b36d9238aa5dd0aa326142728cb9cea1329863d8cb",
+        "sha256:74e10716813f65cf00bbc5e24a03473682755d2ba436b114f8baadbb8066ef55",
+        "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+      ],
+      "predicate_type": "https://slsa.dev/provenance/v1"
+    },
+    {
+      "name": "provenance_v0_2",
+      "file": "provenance_v0_2.sigstore.json",
+      "subject_digests": [
+        "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+      ],
+      "predicate_type": "https://slsa.dev/provenance/v0.2"
+    },
+    {
+      "name": "sbom",
+      "file": "sbom.sigstore.json",
+      "message": "an attestation of a build is its SLSA provenance"
+    },
+    {
+      "name": "message_signature",
+      "file": "message_signature.sigstore.json",
+      "message": "an attestation is a signed in-toto statement, not the signature of a file"
+    },
+    {
+      "name": "image_signature",
+      "file": "image_signature.sigstore.json",
+      "message": "an attestation says how the image was built; a signature of the image alone says nothing"
+    },
+    {
+      "name": "two_signatures",
+      "file": "two_signatures.sigstore.json",
+      "message": "an attestation's envelope carries exactly one signature"
+    },
+    {
+      "name": "upper_case_digest",
+      "file": "upper_case_digest.sigstore.json",
+      "message": "a subject's sha256 digest is 64 lower-case hexadecimal characters"
+    },
+    {
+      "name": "no_sha256_subject",
+      "file": "no_sha256_subject.sigstore.json",
+      "message": "an in-toto statement names at least one subject by its sha256 digest"
+    },
+    {
+      "name": "unpadded_payload",
+      "file": "unpadded_payload.sigstore.json",
+      "message": "an attestation's envelope payload is base64 text"
+    },
+    {
+      "name": "not_a_bundle",
+      "file": "not_a_bundle.json",
+      "message": "an attestation is a Sigstore bundle that names its media type"
+    },
+    {
+      "name": "media_type_not_text",
+      "file": "media_type_not_text.sigstore.json",
+      "message": "an attestation is a Sigstore bundle that names its media type"
+    },
+    {
+      "name": "no_envelope",
+      "file": "no_envelope.sigstore.json",
+      "message": "an attestation carries its statement in a signed envelope (dsseEnvelope)"
+    },
+    {
+      "name": "other_payload_type",
+      "file": "other_payload_type.sigstore.json",
+      "message": "an attestation's envelope carries an in-toto statement (application/vnd.in-toto+json)"
+    },
+    {
+      "name": "statement_v2",
+      "file": "statement_v2.sigstore.json",
+      "message": "an attestation carries an in-toto statement of type https://in-toto.io/Statement/v0.1 or https://in-toto.io/Statement/v1"
+    },
+    {
+      "name": "statement_type_not_text",
+      "file": "statement_type_not_text.sigstore.json",
+      "message": "an attestation carries an in-toto statement of type https://in-toto.io/Statement/v0.1 or https://in-toto.io/Statement/v1"
+    },
+    {
+      "name": "predicate_type_not_text",
+      "file": "predicate_type_not_text.sigstore.json",
+      "message": "an attestation of a build is its SLSA provenance"
+    },
+    {
+      "name": "no_subjects",
+      "file": "no_subjects.sigstore.json",
+      "message": "an in-toto statement names 1 to 1024 subjects"
+    },
+    {
+      "name": "subject_not_an_object",
+      "file": "subject_not_an_object.sigstore.json",
+      "message": "each subject of an in-toto statement names its digests"
+    },
+    {
+      "name": "subject_without_digests",
+      "file": "subject_without_digests.sigstore.json",
+      "message": "each subject of an in-toto statement names its digests"
+    },
+    {
+      "name": "sha256_not_text",
+      "file": "sha256_not_text.sigstore.json",
+      "message": "a subject's sha256 digest is 64 lower-case hexadecimal characters"
+    },
+    {
+      "name": "sha256_null",
+      "file": "sha256_null.sigstore.json",
+      "message": "a subject's sha256 digest is 64 lower-case hexadecimal characters"
+    }
+  ]
+}

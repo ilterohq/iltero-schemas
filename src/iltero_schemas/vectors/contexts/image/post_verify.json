@@ -34,7 +34,10 @@
       "repository": "ghcr.io/acme/api",
       "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
     },
-    "build": null
+    "build": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    }
   },
   "plan": null,
   "subject": {

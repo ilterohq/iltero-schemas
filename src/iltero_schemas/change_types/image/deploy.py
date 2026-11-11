@@ -4,7 +4,9 @@ A record of it starts at the pre-deploy stage, where the change is approved:
 the image, by its repository and digest, in the record's unit and
 environment, which its change digest names. The build of the image is the one
 the server found by the digest and accepted for the environment; the record
-keeps what the server served, and a run the tool opened names none. After the
+keeps what the server served, and a run the tool opened names none. The
+pre-deploy stage checks that there is one: it fails without it in a run the
+server opened, and is unknown in a run the tool opened. After the
 deployment the pipeline reports the image it deployed, and at post-verify what
 the workload ran when it was read.
 """
@@ -17,6 +19,7 @@ from typing import TYPE_CHECKING, Literal
 from pydantic import model_validator
 
 from iltero_schemas.assertions.paths import (
+    BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
     REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
     RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
 )
@@ -30,6 +33,7 @@ from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IMAGE_DEPLOY_ACTIVITY, IMAGE_RELEASE_TYPE
 from iltero_schemas.models.checked_content import CheckedImage, checked_image
+from iltero_schemas.models.event import EVALUATOR_FAULT_REASONS
 from iltero_schemas.models.fields import Digest
 from iltero_schemas.models.image.deploy import AcceptedBuild, ImageDeployment, ImageDriftCheck, check_compared
 from iltero_schemas.models.image.naming import check_platform_digests
@@ -133,10 +137,36 @@ def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> 
             raise ValueError(f"{what} is not the tag's metadata file")
 
 
+def _opened_by_server(car: CAR) -> bool:
+    return car.governance.run_opened_by == "server"
+
+
+def _check_accepted_build_check(car: CAR) -> None:
+    """The accepted build check did not run, or ended in an error, only for a fault of the evaluator, since it always
+    has the change; on a run the tool opened it is unknown for want of the server's facts."""
+    opened_by_tool = not _opened_by_server(car)
+    for event in car.events:
+        if event.assertion.id != BUILD_ACCEPTED_FOR_ENVIRONMENT_ID:
+            continue
+        status, reason = event.evaluation.status, event.evaluation.status_reason
+        if status in EVALUATOR_FAULT_REASONS:
+            if reason not in EVALUATOR_FAULT_REASONS[status]:
+                raise ValueError(
+                    f"{BUILD_ACCEPTED_FOR_ENVIRONMENT_ID} is {status} only for a fault of the evaluator, "
+                    "never for want of the change or its facts"
+                )
+        elif opened_by_tool and (status, reason) != ("unknown", "server_facts_unavailable"):
+            raise ValueError(
+                f"{BUILD_ACCEPTED_FOR_ENVIRONMENT_ID} is unknown with reason server_facts_unavailable on a run the "
+                "tool opened: only the server accepts a build for the environment"
+            )
+
+
 def _check_record(car: CAR) -> None:
     deploy = _body(car)
-    if car.governance.run_opened_by != "server" and deploy.build is not None:
+    if not _opened_by_server(car) and deploy.build is not None:
         raise ValueError("a run the tool opened names no build: only the server accepts one for the environment")
+    _check_accepted_build_check(car)
     _check_tag(car, deploy)
     _check_deployment(car, deploy)
     _check_drift_check(car, deploy)
@@ -179,10 +209,13 @@ def running_image_status(image_digest: str, platform_digests: list[str] | None, 
     return "pass"
 
 
-def _owed_statuses(deploy: ImageDeploy) -> dict[str, str]:
-    """The status each built-in check must have, recomputed from what the record holds: whether the deployed image
-    is the checked one, and whether the workload's live pods run it."""
+def _owed_statuses(car: CAR, deploy: ImageDeploy) -> dict[str, str]:
+    """The status each built-in check must have, recomputed from what the record holds: in a run the server opened,
+    whether it accepted a build of the image (a run the tool opened is held to unknown by its structure); whether the
+    deployed image is the checked one; and whether the workload's live pods run it."""
     owed: dict[str, str] = {}
+    if _opened_by_server(car):
+        owed[BUILD_ACCEPTED_FOR_ENVIRONMENT_ID] = "pass" if deploy.build is not None else "fail"
     if deploy.deployment is not None:
         deployed = (deploy.deployment.repository, deploy.deployment.digest)
         owed[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] = (
@@ -198,7 +231,7 @@ def _owed_statuses(deploy: ImageDeploy) -> dict[str, str]:
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
     """Each built-in check found what the record's own image, deployment and reading say it must."""
-    return owed_status_problems(car, _owed_statuses(_body(car)))
+    return owed_status_problems(car, _owed_statuses(car, _body(car)))
 
 
 IMAGE_DEPLOY = Activity(
@@ -222,6 +255,7 @@ IMAGE_DEPLOY = Activity(
     carried_out_matches_checked=(REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
         {
+            Stage.PRE_DEPLOY: BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
             Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
             Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
         }

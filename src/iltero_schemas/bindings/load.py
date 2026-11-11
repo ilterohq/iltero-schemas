@@ -1,7 +1,8 @@
 """Read an evaluator binding set from YAML text, under the same guards as an assertion.
 
 A set is plain data: one document, string keys, no duplicate keys, no
-anchors, aliases or tags, bounded size and nesting. What comes back is the
+anchors, aliases or tags, no value written other than as ``null``, bounded
+size and nesting. What comes back is the
 validated model, so every rule in ``models.binding`` has held before a
 caller can use an entry.
 """

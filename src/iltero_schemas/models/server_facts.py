@@ -32,6 +32,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
+from iltero_schemas.assertions.paths import BUILT_IN_IDS
 from iltero_schemas.canonical.encoding import INT_MAX
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
@@ -125,6 +126,12 @@ class ExceptionScope(StrictModel):
     assertion: AssertionName
     environment: Identifier
     resources: Annotated[list[Identity], Field(min_length=1, max_length=MAX_EXCEPTION_RESOURCES)]
+
+    @model_validator(mode="after")
+    def _not_a_built_in(self) -> ExceptionScope:
+        if self.assertion.id in BUILT_IN_IDS:
+            raise ValueError("an exception never covers a built-in assertion: what it records is never waived")
+        return self
 
 
 class ExceptionGrant(StrictModel):

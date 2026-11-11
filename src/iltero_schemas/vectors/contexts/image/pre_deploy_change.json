@@ -1,0 +1,89 @@
+{
+  "apiVersion": "iltero.io/assurance-context/v1",
+  "evaluation": {
+    "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+    "activity": "image_deploy",
+    "stage": "pre_deploy",
+    "timestamp": "2026-11-02T09:00:00Z",
+    "assertion": {
+      "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+      "version": "1.0.0"
+    }
+  },
+  "organization_scope": {
+    "organization": null,
+    "workspace": null,
+    "environment": {
+      "name": "production",
+      "production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    }
+  },
+  "reference_time": {
+    "value": "2026-11-02T09:00:00Z",
+    "source": "runner_clock",
+    "trust": "asserted",
+    "time_window": null
+  },
+  "source": {
+    "vcs": "git",
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "repository": null,
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    },
+    "pull_request": null
+  },
+  "change": {
+    "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+    "image": {
+      "repository": "ghcr.io/acme/api",
+      "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+    },
+    "build": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    }
+  },
+  "plan": null,
+  "subject": {
+    "kind": "change",
+    "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "api",
+        "scope": null
+      }
+    ]
+  },
+  "resource": null,
+  "deployment": null,
+  "evaluations": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "approvals": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "exceptions": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "run": {
+    "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+  },
+  "drift_check": null,
+  "assurance": null,
+  "artifact": null,
+  "tests": null,
+  "scans": null,
+  "verified_source": null,
+  "attestation_outcome": null
+}

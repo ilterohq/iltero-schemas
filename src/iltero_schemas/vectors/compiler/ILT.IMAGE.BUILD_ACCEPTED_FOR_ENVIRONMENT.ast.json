@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": null,
+      "op": "not_equal",
+      "path": "change.build"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "image_release",
+  "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

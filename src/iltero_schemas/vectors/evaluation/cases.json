@@ -2244,6 +2244,263 @@
     }
   },
   {
+    "name": "null_comparisons_pass",
+    "assertion": "VEC.OPS.NULL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "set": {
+            "a": 1
+          },
+          "cleared": null
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "type": "object"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "resource.after.set",
+          "status": "true"
+        },
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.cleared",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "null_comparisons_fail_on_a_null_that_should_be_set",
+    "assertion": "VEC.OPS.NULL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "set": null,
+          "cleared": null
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: resource.after.set not_equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "resource.after.set",
+          "status": "false"
+        },
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.cleared",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "null_comparisons_fail_on_a_value_that_should_be_null",
+    "assertion": "VEC.OPS.NULL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "set": [],
+          "cleared": false
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 1 is false: resource.after.cleared equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": [],
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "resource.after.set",
+          "status": "true"
+        },
+        {
+          "actual": false,
+          "clause": "assert",
+          "expected": null,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.cleared",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "null_comparisons_unknown_on_an_absent_value",
+    "assertion": "VEC.OPS.NULL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "cleared": null
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.set: path_missing",
+      "unknown": {
+        "path": "resource.after.set",
+        "reason": "path_missing"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "resource.after.set",
+          "status": "unknown"
+        },
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.cleared",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "null_comparisons_unknown_on_a_marker",
+    "assertion": "VEC.OPS.NULL",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "set": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "cleared": null
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.set: server_facts_unavailable",
+      "unknown": {
+        "path": "resource.after.set",
+        "reason": "server_facts_unavailable"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "resource.after.set",
+          "status": "unknown"
+        },
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.cleared",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
     "name": "exists_match",
     "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
@@ -7822,6 +8079,460 @@
           "status": "false"
         }
       ]
+    }
+  },
+  {
+    "name": "workload_runs_another_image_in_a_run_no_server_opened",
+    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "input": {
+      "subject": {
+        "kind": "deployment",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "change": {
+        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "build": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "drift_check": {
+        "rollout": {
+          "complete": true,
+          "expected_live_pods": 2
+        },
+        "live_pods_read": 2,
+        "template_containers": [
+          {
+            "name": "api",
+            "compared": true
+          },
+          {
+            "name": "log-shipper",
+            "compared": false
+          }
+        ],
+        "containers_read": [
+          {
+            "name": "api",
+            "compared": true,
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+            "pod_state": "live",
+            "pods": [
+              "api-1",
+              "api-2"
+            ]
+          }
+        ]
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "change.build.platform_digests: server_facts_unavailable",
+      "unknown": {
+        "path": "change.build.platform_digests",
+        "reason": "server_facts_unavailable"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "assert",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "drift_check.rollout.complete",
+          "status": "true"
+        },
+        {
+          "actual": 2,
+          "clause": "assert",
+          "expected": {
+            "ref": "drift_check.rollout.expected_live_pods"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "drift_check.live_pods_read",
+          "resolved": 2,
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 2,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 2,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.template_containers",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 3,
+          "matched": 1,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "true"
+        },
+        {
+          "actual": {
+            "count": 1,
+            "type": "array"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 4,
+          "matched": 0,
+          "op": "exists",
+          "path": "drift_check.containers_read",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  {
+    "name": "accepted_build_pass",
+    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "timestamp": "2026-11-02T09:00:00Z",
+        "assertion": {
+          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": null,
+        "workspace": null,
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-11-02T09:00:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "repository": null,
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [
+            "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "plan": null,
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "resource": null,
+      "deployment": null,
+      "evaluations": [],
+      "approvals": [],
+      "exceptions": [],
+      "run": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+      },
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": {
+            "type": "object"
+          },
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "change.build",
+          "status": "true"
+        }
+      ],
+      "subject": {
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "accepted_build_fail_when_the_server_accepted_none",
+    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "timestamp": "2026-11-02T09:00:00Z",
+        "assertion": {
+          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": null,
+        "workspace": null,
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-11-02T09:00:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "repository": null,
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "build": null
+      },
+      "plan": null,
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "resource": null,
+      "deployment": null,
+      "evaluations": [],
+      "approvals": [],
+      "exceptions": [],
+      "run": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+      },
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "change.build",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "accepted_build_unknown_in_a_run_no_server_opened",
+    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "timestamp": "2026-11-02T09:00:00Z",
+        "assertion": {
+          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": null,
+        "workspace": null,
+        "environment": {
+          "name": "production",
+          "production": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        }
+      },
+      "reference_time": {
+        "value": "2026-11-02T09:00:00Z",
+        "source": "runner_clock",
+        "trust": "asserted",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "repository": null,
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "build": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "plan": null,
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "resource": null,
+      "deployment": null,
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+      },
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "change.build: server_facts_unavailable",
+      "unknown": {
+        "path": "change.build",
+        "reason": "server_facts_unavailable"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": null,
+          "index": 0,
+          "op": "not_equal",
+          "path": "change.build",
+          "status": "unknown"
+        }
+      ],
+      "subject": {
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "kind": "change"
+      }
     }
   },
   {

@@ -213,6 +213,12 @@ def test_a_set_is_read_under_the_document_guards() -> None:
         load_binding_set("bindings: &a []\nmore: *a\n")
 
 
+def test_a_set_writes_no_value_only_as_null() -> None:
+    text = STARTER_SET.read_text(encoding="utf-8").replace("input_kind: terraform_plan", "input_kind: ~", 1)
+    with pytest.raises(DocumentError, match="no value is written as null"):
+        load_binding_set(text)
+
+
 def test_the_starter_set_is_the_file_on_disk() -> None:
     """The shipped bytes are what the model accepted, not a copy built in code."""
     document = yaml.safe_load(STARTER_SET.read_text(encoding="utf-8"))

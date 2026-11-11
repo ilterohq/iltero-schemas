@@ -34,6 +34,18 @@ def test_anything_but_plain_data_is_refused(text: str, message: str) -> None:
         load_document(text)
 
 
+def test_no_value_is_written_only_as_null() -> None:
+    assert load_document("a: null\nb: [null]\n") == {"a": None, "b": [None]}
+
+
+@pytest.mark.parametrize(
+    "text", ["a:\n", "a: ~\n", "a: Null\n", "a: NULL\n", "a: [~]\n", "a: {b: }\n", "a: {b}\n", "~: 1\n"]
+)
+def test_any_other_spelling_of_no_value_is_refused_so_a_missing_value_is_never_read_as_null(text: str) -> None:
+    with pytest.raises(DocumentError, match="line 1: no value is written as null, never as an empty value"):
+        load_document(text)
+
+
 def test_nested_mappings_are_checked_too() -> None:
     with pytest.raises(DocumentError, match="line 4: duplicate key 'k'"):
         load_document("a:\n  b:\n    k: 1\n    k: 2\n")

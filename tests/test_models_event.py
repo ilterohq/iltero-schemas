@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from iltero_schemas.assertions import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, BUILT_INS
 from iltero_schemas.models.ci import CI_SYSTEMS
 from iltero_schemas.models.event import (
+    EVALUATOR_FAULT_REASONS,
     NO_EVALUATOR_REASONS,
     POLICY_STATUSES,
     STATUS_REASONS,
@@ -364,3 +365,8 @@ def test_an_assertion_this_package_always_evaluates_is_named_only_by_its_shipped
     for source in ("local", "custom_rego"):
         with pytest.raises(ValidationError, match="from this package or the server's bundle, never a scanner"):
             AssuranceEvent.model_validate(_at("post_deploy", **{**built_in, "provenance.assertion_source": source}))
+
+
+def test_every_evaluator_fault_reason_is_a_reason_of_its_status() -> None:
+    for status, reasons in EVALUATOR_FAULT_REASONS.items():
+        assert reasons <= STATUS_REASONS[status]

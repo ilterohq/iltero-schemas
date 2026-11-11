@@ -40,6 +40,8 @@ ORDERING_OPERATORS = frozenset(
     {Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL}
 )
 LIST_OPERATORS = frozenset({Operator.IN, Operator.NOT_IN})
+# The operators that may compare with null: whether a value is null, or is not.
+NULL_OPERATORS = frozenset({Operator.EQUAL, Operator.NOT_EQUAL})
 
 
 @dataclass(frozen=True)
@@ -58,9 +60,10 @@ class Path:
 
 @dataclass(frozen=True)
 class Literal:
-    """A constant operand: one scalar, or a list of scalars for ``in`` / ``not_in``."""
+    """A constant operand: one scalar, null for ``equal`` / ``not_equal``, or a list of scalars for ``in`` /
+    ``not_in``."""
 
-    value: Scalar | tuple[Scalar, ...]
+    value: Scalar | tuple[Scalar, ...] | None
 
 
 @dataclass(frozen=True)

@@ -6,7 +6,7 @@ import copy
 import json
 from typing import Any
 
-from iltero_schemas.assertions import BUILT_INS
+from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
 from iltero_schemas.models.assertion import Stage
@@ -16,7 +16,7 @@ from iltero_schemas.models.coverage import Coverage, stage_outcome
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import REDACTED_INPUT_KIND
 from iltero_schemas.models.subjects import subject_key
-from iltero_schemas.profiles import reads_approvals
+from iltero_schemas.profiles import reads_part
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
@@ -66,7 +66,7 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     redacting what that stage reads."""
     copied = copy.deepcopy(RECORD["stages"]["plan"])
     copied["stage"] = name
-    copied["approvals"] = [] if reads_approvals(IAC_CHANGE_ACTIVITY, Stage(name)) else None
+    copied["approvals"] = [] if reads_part(IAC_CHANGE_ACTIVITY, Stage(name), "approvals") else None
     # The plan stage's events file and assertion index stay named: they are entries of the record's register.
     copied["events"] = {**copied["events"], "count": 0}
     copied["redaction"]["input"]["kind"] = REDACTED_INPUT_KIND[Stage(name)]
@@ -135,3 +135,17 @@ def keep_the_apply_log(document: dict[str, Any]) -> None:
     log = document["change"]["deployment"]["apply"]["source"]["digest"]
     kept = next(ref for ref in DEPLOYED["evidence_refs"] if ref["ref_id"] == "post_deploy/apply-log-reading")
     document["evidence_refs"].append({**copy.deepcopy(kept), "source": {**kept["source"], "digest": log}})
+
+
+def with_commit_review_check(source: dict[str, Any], status: str, reason: str | None) -> dict[str, Any]:
+    """``source`` with its first pre-deploy check now the commit review, with ``status`` and ``reason``."""
+    document = copy.deepcopy(source)
+    index = next(i for i, e in enumerate(document["events"]) if e["evaluation"]["stage"] == "pre_deploy")
+    old = document["events"][index]["assertion"]["id"]
+    document["events"][index]["assertion"]["id"] = COMMITS_REVIEWED_ID
+    document["events"][index]["evaluation"].update(status=status, status_reason=reason)
+    counted = document["stages"]["pre_deploy"]["coverage"]["subjects_per_assertion"]
+    key = next(k for k in counted if k.startswith(f"{old}@"))
+    version = document["events"][index]["assertion"]["version"]
+    counted[f"{COMMITS_REVIEWED_ID}@{version}"] = counted.pop(key)
+    return document

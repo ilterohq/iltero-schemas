@@ -102,6 +102,7 @@
       },
       "enforcement_mode": "enforcing",
       "approvals": null,
+      "commit_review": null,
       "compiler": {
         "version": "1.0.0",
         "contract_version": "0.1.0",

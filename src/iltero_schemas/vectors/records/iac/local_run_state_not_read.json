@@ -1208,6 +1208,7 @@
   "stages": {
     "plan": {
       "approvals": null,
+      "commit_review": null,
       "assertions": {
         "count": 1,
         "digest": "sha256:420f54294846abcc24e74656298eceac6ecf068ed79ef2315526c6a1c3098c2c",
@@ -1421,6 +1422,7 @@
     },
     "post_deploy": {
       "approvals": null,
+      "commit_review": null,
       "assertions": {
         "count": 1,
         "digest": "sha256:c76e7e2a41594f848e148c2f05331a7514da7c12b39ed45f02345d56e721473e",
@@ -1532,6 +1534,7 @@
     },
     "pre_deploy": {
       "approvals": [],
+      "commit_review": null,
       "assertions": {
         "count": 2,
         "digest": "sha256:6778d95bfd82e36a32b4f342347caf8c9e27619af69768214739e88767bd222a",

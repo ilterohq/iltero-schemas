@@ -1108,5 +1108,85 @@
       "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:a6809d0e830d585ab0b3af6f352beb18286acb0240aa038aea9ad043e13d5cec"
     },
     "remove": []
+  },
+  {
+    "name": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "iac_record_of_a_run_the_server_opened_keeping_a_commit_review_counted_since_an_earlier_reading",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "counted_since": {
+          "commit": "3e9d40b000000000000000000000000000000000",
+          "earlier_reading": {
+            "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+            "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+            "decided_at": "2026-09-10T12:00:00Z"
+          }
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": []
   }
 ]

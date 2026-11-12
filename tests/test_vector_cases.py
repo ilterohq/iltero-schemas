@@ -87,6 +87,24 @@ def _patched(case: dict[str, Any], folder: str) -> Any:
     return document
 
 
+CHANGING_CASES = [
+    *RECORD_INVALID_CASES,
+    *RECORD_VALID_CASES,
+    *RECORD_INTEGRITY_FAILED_CASES,
+    *IDENTITY_INVALID_CASES,
+    *IDENTITY_VALID_CASES,
+    *CONTEXT_INVALID_CASES,
+    *REPORT_INVALID_CASES,
+]
+
+
+def test_a_case_changes_no_value_beside_a_part_of_it_so_their_order_does_not_matter() -> None:
+    for case in CHANGING_CASES:
+        pointers = [*case.get("set", {}), *case.get("remove", [])]
+        nested = [(a, b) for a in pointers for b in pointers if b.startswith(a + "/")]
+        assert not nested, f"{case['name']} changes {nested[0][0]} and a part of it, {nested[0][1]}"
+
+
 @pytest.mark.parametrize("folder", sorted(SPLIT_CASE_FOLDERS))
 def test_a_case_names_a_document_of_its_own_change_type(folder: str) -> None:
     for change_type in CHANGE_TYPES:
@@ -184,6 +202,10 @@ def test_every_expected_message_is_one_line_so_any_error_layout_contains_it(case
     assert [case["name"] for case in cases if "\n" in case["message"]] == []
 
 
+# The cases refused because an event names another document than the shipped assertion's.
+NAMING_ANOTHER_DOCUMENT = {"image_build_naming_another_match_check"}
+
+
 def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
     shipped = {}
     for path in ASSERTIONS.iterdir():
@@ -195,9 +217,15 @@ def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_i
                 assertion.source_digest,
                 assertion.compiled_digest,
             )
+    # Every record as its case changes it, so an event a case changes to another assertion is checked too.
     events = [e for p in RECORD_FILES for e in _events(_read(p))]
     for cases in (RECORD_INVALID_CASES, RECORD_VALID_CASES, RECORD_INTEGRITY_FAILED_CASES):
-        events += [e for case in cases for e in _events(case["set"])]
+        events += [
+            e
+            for case in cases
+            if case["name"] not in NAMING_ANOTHER_DOCUMENT
+            for e in _events(_patched(case, "records"))
+        ]
     for event in events:
         named = event["assertion"]
         if named["id"] in shipped:

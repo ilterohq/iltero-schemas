@@ -1,0 +1,15 @@
+apiVersion: iltero.io/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.CHANGE.COMMITS_REVIEWED
+  version: "1.0.0"
+  title: Every commit the change ships since its review starting point was merged through a pull request with a qualifying approval
+  remediation: Merge every commit through a pull request approved on its final head, before the merge, by a person who can write to the repository and wrote none of it; run the change from, or build the image from, the commit Iltero verified; have an administrator set a review starting point when none fits.
+spec:
+  change_type: null
+  stage: pre_deploy
+  target:
+    kind: change
+  assert:
+    path: commit_review.outcome
+    equal: reviewed

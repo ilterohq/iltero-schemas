@@ -33,6 +33,7 @@ CHANGED: list[tuple[str, str, Any]] = [
     ("records", "/change/drift_check", None),
     ("records", "/expected_stages", ["plan", "pre_deploy", "post_deploy", "post_verify"]),
     ("records", "/out_of_scope", []),
+    ("records", "/stages/plan/commit_review", None),
     (
         "records",
         "/units_file/units",
@@ -264,14 +265,15 @@ def _with_plan_observation(moved: dict[str, Any], name: str) -> None:
 
 def _with_registered_stage(value: Any, plan: dict[str, Any]) -> Any:
     """A stage a baseline case set, naming the plan stage's events file and assertion index as the shipped record
-    registers them; a stage the case added also redacts the facts the pre-deploy stage reads."""
+    registers them and keeping no commit review; a stage the case added also redacts the facts the pre-deploy stage
+    reads."""
     if not isinstance(value, dict):
         return value
     path = value.get("events", {}).get("path")
     if path not in (ADDED_STAGE_EVENTS, plan["events"]["path"]):
         return {key: _with_registered_stage(item, plan) for key, item in value.items()}
     events = {**value["events"], "path": plan["events"]["path"], "digest": plan["events"]["digest"]}
-    registered = {**value, "events": events, "assertions": plan["assertions"]}
+    registered = {**value, "events": events, "assertions": plan["assertions"], "commit_review": None}
     if path == ADDED_STAGE_EVENTS:
         registered["redaction"] = {**value["redaction"], "input": {**value["redaction"]["input"], "kind": "facts"}}
     return registered

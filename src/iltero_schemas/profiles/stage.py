@@ -33,9 +33,12 @@ from iltero_schemas.models.change_type import (
 ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "organization_scope", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
-# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals, exceptions.
-_CHANGE_FACTS = frozenset({"evaluations", "approvals", "exceptions"})
-# The parts only the server holds. An input that may carry one reads server facts.
+# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals, exceptions,
+# and whether its commits were reviewed.
+_CHANGE_FACTS = frozenset({"evaluations", "approvals", "exceptions", "commit_review"})
+# The parts only the server holds. An input that may carry one reads server facts. A value the server supplies inside
+# another part (the environment's production flag, an image deploy's accepted build) is not one: it holds the unknown
+# marker in a run the tool opened, and follows who opened the run.
 SERVER_FACTS = _CHANGE_FACTS | {"verified_source", "attestation_outcome"}
 # The parts that name the content the change checked: the plan, the built image, or the deployed image's change.
 CHECKED_CONTENT_PARTS = frozenset({"plan", "artifact", "change"})
@@ -126,11 +129,9 @@ def reads_server_facts(activity: ActivityName, stage: Stage) -> bool:
     )
 
 
-def reads_approvals(activity: ActivityName, stage: Stage) -> bool:
-    """Whether an input of ``activity`` at ``stage`` carries approvals."""
-    return any(
-        "approvals" in profile.roots for (of, at, _kind), profile in PROFILES.items() if (of, at) == (activity, stage)
-    )
+def reads_part(activity: ActivityName, stage: Stage, part: str) -> bool:
+    """Whether an input of ``activity`` at ``stage`` carries ``part``, such as approvals."""
+    return any(part in profile.roots for (of, at, _kind), profile in PROFILES.items() if (of, at) == (activity, stage))
 
 
 def reads_checked_content(stage: Stage) -> frozenset[str | None]:

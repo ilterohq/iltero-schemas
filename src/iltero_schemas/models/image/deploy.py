@@ -3,7 +3,8 @@ was running afterwards.
 
 The server finds the build of the image by its digest and accepts it against
 the environment's accepted build sources; the record keeps what the server
-served (``AcceptedBuild``), never a build the pipeline named. In a run no server
+served (``AcceptedBuild``: the build's run, record, platform images and the
+commit its source was verified from), never a build the pipeline named. In a run no server
 opened, an evaluation input holds the unknown marker in its place, since only
 the server can say whether it accepted a build. The deployed image
 and the reading of the workload afterwards are the pipeline's word, and so is
@@ -19,7 +20,8 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
-from iltero_schemas.models.fields import Count, Digest, Identifier, Uuid
+from iltero_schemas.models.fields import Commit, Count, Digest, Identifier, Uuid
+from iltero_schemas.models.git import GitRepository
 from iltero_schemas.models.image.kubernetes import KubernetesRollout, KubernetesWorkload, StatefulSetRollout
 from iltero_schemas.models.image.naming import (
     MAX_PLATFORM_DIGESTS,
@@ -46,11 +48,22 @@ PodState = Literal["live", "terminating", "finished"]
 
 
 class AcceptedBuild(StrictModel):
-    """The build of the image the server accepted for the environment: its run, its record and its platform digests."""
+    """The build of the image the server accepted for the environment: its run, its record, its platform digests, and
+    the commit and repository its source was verified from.
+
+    ``verified_commit`` is the ``verified_source.commit`` the server served in the build's evaluation input, and
+    ``repository`` the git host's identity of the repository that verified source names; the server maps the CI
+    system's repository to the git host's.
+    ``build_commit`` is the commit the image's build metadata names, null when it names none. Accepting a build does
+    not require the two commits to agree, so a review of the verified commit speaks for the image only when they do.
+    """
 
     run_id: Uuid
     record_digest: Digest
     platform_digests: Annotated[list[Digest], Field(max_length=MAX_PLATFORM_DIGESTS)]
+    verified_commit: Commit
+    build_commit: Commit | None
+    repository: GitRepository
 
     @model_validator(mode="after")
     def _in_order(self) -> AcceptedBuild:

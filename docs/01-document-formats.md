@@ -56,7 +56,7 @@ A stage is a point in a change's life at which assertions are checked:
 | Stage | What is checked |
 | --- | --- |
 | `plan` | The change to deploy, once it is produced and before anyone approves it. For an IaC (infrastructure-as-code) change, the IaC tool's plan. For a container image build, the image the build pushed, before any deployment uses it. |
-| `pre_deploy` | The change, at the gate before it is deployed: approvals, exceptions and earlier evaluations. |
+| `pre_deploy` | The change, at the gate before it is deployed: approvals, exceptions, earlier evaluations and whether its commits were reviewed. |
 | `post_deploy` | What the deployment did. |
 | `post_verify` | What runs after the deployment: the deployed resources, read back, or the workload that runs a deployed image. |
 | `runtime` | Resources as they run, outside any change. No record has a `runtime` stage. |
@@ -208,6 +208,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `scans` | list | Each scan report the build was given, at most 64 (see below). |
 | `verified_source` | object or marker | The commit Iltero Platform verified from the identity the continuous integration (CI) system gave the job that opened the run, not the commit the tool reads from its checkout, with what that identity named (see the Verified source item below). A fact only Iltero Platform holds. |
 | `attestation_outcome` | object or marker | What Iltero Platform found when it checked the signature of the build's attestation: verified, refused or not sent (see [The build's attestation](#the-builds-attestation)). A fact only Iltero Platform holds. |
+| `commit_review` | object or marker | Whether every commit the change ships since its review starting point was reviewed (see [Commit review](#commit-review)). A fact only Iltero Platform holds. |
 
 Key rules:
 
@@ -219,12 +220,12 @@ Key rules:
   | Activity | Stage | Required | Optional |
   | --- | --- | --- | --- |
   | `iac_change` | `plan` | `source`, `change`, `plan`, `subject` | none |
-  | `iac_change` | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions`, `run` | none |
+  | `iac_change` | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions`, `commit_review`, `run` | none |
   | `iac_change` | `post_deploy` | `source`, `change`, `plan`, `subject`, `deployment` | none |
   | `iac_change` | `post_verify` | `subject`, `deployment`, `drift_check` | `source`, `assurance` |
   | `iac_change` | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
   | `image_build` | `plan` | `source`, `subject`, `artifact`, `tests`, `scans`, `verified_source`, `attestation_outcome` | none |
-  | `image_deploy` | `pre_deploy` | `source`, `change`, `subject`, `evaluations`, `approvals`, `exceptions`, `run` | none |
+  | `image_deploy` | `pre_deploy` | `source`, `change`, `subject`, `evaluations`, `approvals`, `exceptions`, `commit_review`, `run` | none |
   | `image_deploy` | `post_deploy` | `source`, `change`, `subject`, `deployment` | none |
   | `image_deploy` | `post_verify` | `change`, `subject`, `deployment`, `drift_check` | `source` |
 
@@ -351,6 +352,151 @@ served.
   be a self-approval the policy permitted; an approval of the change may not. For an approval of the run, both
   assertions read the same CI environment approval: there is no separate security sign-off behind it.
 
+### Commit review
+
+`commit_review` says whether every commit a change ships since its review starting point was reviewed. At the
+change's `pre_deploy` stage, Iltero Platform reads the repository's history at its git host, the service that keeps
+the repository and its pull requests, and serves the outcome. It is a fact only Iltero Platform holds, carried by the
+`pre_deploy` input of an `iac_change` and of an `image_deploy`.
+
+- **Model:** `iltero_schemas.models.commit_review.CommitReview`, one shape per `outcome`. The input checks it against
+  its other parts with `iltero_schemas.models.commit_review.check_commit_review`.
+
+The terms it uses:
+
+- **The commits checked** are the first-parent line from `head_commit` back to, not including, the first commit on it
+  that `counted_since.commit` has in its history: the commits that merges and direct pushes put on the branch, found
+  by following each commit's first parent. A merge commit's content is checked against the reviewed final head of its
+  pull request, which covers the commits the merge brings in, so those are not checked one by one. That includes the
+  merge that brought the starting point in. The check covers only the files the pull request changed from its merge
+  base, the commit where its final head and the branch before the merge last shared history, so a merge that changes
+  any other file is not reviewed.
+- **Reviewed.** A commit is reviewed when the merge of a pull request put it on that line (its merge commit, squash
+  commit or rebased commits; a pull request that only contains the commit does not count), and before the merge an
+  approval qualified for the pull request's final head.
+- **A qualifying approval** is the reviewer's latest decision when the git host is read and was not dismissed: a
+  re-approval or a request for changes after the merge replaces an earlier approval. The reviewer is a person who can
+  write to the repository when the git host is read and is neither the pull request's author nor an author or
+  committer of any of its commits.
+- **A person** is a user account at the git host, machine users included. Apps, organizations, deleted accounts and
+  unknown users are not.
+- **The review starting point** is a commit an administrator recorded: the commits before it are not checked. A head
+  commit that is the commit the count starts after has no commits to check. A head commit in the starting point's
+  history, older than it, is `head_commit_before_review_starting_point`.
+- **Where the count starts** (`counted_since`). Iltero Platform chooses where the count starts: after the review
+  starting point, or after the head commit of an earlier reading. That is the newest reading of the same repository,
+  decided after the same starting point was set, whose outcome was `reviewed` and whose head commit is on this head's
+  first-parent line. Those earlier readings form a chain that ends at the starting point. Each link was judged once, as
+  the git host stood when it was read: a later reading does not judge again the commits an earlier one covered, so a
+  decision made at the git host after a reading does not change what that reading judged. Iltero Platform keeps every
+  reading of a chain as long as any record rests on it. More than 100 commits since the newest reviewed reading is
+  still `too_many_commits`.
+
+**Limit:** who pushed to a pull request's branch is not checked. The reading keeps the repository's branch rules as
+the git host reports them, including whether the most recent push needs another person's approval.
+
+Every outcome has these fields:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `outcome` | string | One of the eight outcomes below. |
+| `host_reading_id`, `host_reading_digest` | UUID, digest | The reading of the git host the outcome was decided from, and a digest of what the decision rests on. The reading keeps when the host was read. With no review starting point the host is not called, and the reading is Iltero Platform's record of that. |
+| `decided_at` | timestamp | When Iltero decided the outcome from that reading. |
+| `repository` | object | The repository, as its git host names it (see [Git repository](#git-repository)). |
+| `head_commit` | commit | The commit the change is from, where the line starts. |
+
+`head_commit` and `repository` are what Iltero Platform verified, never what the input names. For an `iac_change`,
+they are the commit and repository it verified from the identity the CI system gave the job that opened the run. For
+an `image_deploy`, they are the accepted build's `verified_commit` and `repository` (see
+[The `image_deploy` body](#the-image_deploy-body)).
+
+| `outcome` | Meaning | Further fields |
+| --- | --- | --- |
+| `reviewed` | Every commit on the line was reviewed. | `review_starting_point`, `counted_since`, `commits_counted` |
+| `not_reviewed` | Some commits on the line were not reviewed. | `review_starting_point`, `counted_since`, `commits_counted`, `commits_not_reviewed`, `commits_not_reviewed_list_complete` |
+| `too_many_commits` | The line holds more commits than Iltero Platform checks. | `review_starting_point`, `counted_since`, `commits_counted` |
+| `no_review_starting_point` | No administrator recorded a review starting point for the repository. | none |
+| `review_starting_point_not_in_history` | The review starting point is not in the head commit's history, so there is no line to check. | `review_starting_point` |
+| `head_commit_before_review_starting_point` | The head commit is in the review starting point's history, older than it, so the review never covered it. | `review_starting_point` |
+| `source_commit_not_verified_commit` | The input's source commit is not the commit Iltero Platform verified for the job that opened the run, so a review of the verified commit says nothing about the change. `head_commit` is the verified commit. Only for an `iac_change`. | none |
+| `build_commit_not_verified_commit` | The image's build names no commit, or another commit than the one Iltero verified for its build, so a review of the verified commit says nothing about the image. Only for an `image_deploy`. | none |
+
+`source_commit_not_verified_commit` and `build_commit_not_verified_commit` come before every other outcome: when one
+holds, nothing else is decided.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `review_starting_point` | object | The commit an administrator recorded (`commit`), who set it (`set_by`: `provider` and `id`, as an approval's `actor`), when (`set_at`, a timestamp) and why (`reason`, text of 1 to 1024 characters). |
+| `counted_since` | object | The commit the count starts after, not counted (`commit`), and the earlier reading whose head commit it is (`earlier_reading`): that reading's own `host_reading_id` (UUID) and `host_reading_digest` (digest), and when its outcome was decided (`decided_at`, a timestamp). `earlier_reading` is `null` for a count since the review starting point. |
+| `commits_counted` | integer | The commits on the line since `counted_since.commit`, from 0. At most 100 (`MAX_COMMITS_CHECKED`) for `reviewed` and `not_reviewed`. For `too_many_commits`, more than 100, and the line holds at least this many. |
+| `commits_not_reviewed` | list | Each commit not reviewed (`commit`) and why (`reason`): 1 to 50 entries (`MAX_COMMITS_NOT_REVIEWED`), the first found walking back from the head commit, each listed once, sorted. |
+| `commits_not_reviewed_list_complete` | boolean | Whether the list holds every commit not reviewed. Iltero Platform stops listing after 50. |
+
+Each commit not reviewed has one reason, Iltero Platform's word, backed by the reading: the first of these that holds,
+in this order (`NotReviewedReason`).
+
+| `reason` | Meaning |
+| --- | --- |
+| `no_pull_request` | No pull request could have put the commit on the line. |
+| `pull_request_not_merged` | The pull request was not merged. |
+| `pull_request_not_read_in_full` | The git host would not list all of the pull request's commits, approvals or changed files. |
+| `merged_commits_not_one_line` | The commits the merge put on the line are not one first-parent line. |
+| `no_qualifying_approval` | No approval qualified for the pull request's final head. |
+| `approved_after_merge` | The qualifying approval came after the merge. |
+| `changed_after_approval` | A file the merge changed, from the first parent of the earliest commit it put on the branch to its merge commit, is one the pull request did not change (its final head holds it as at the merge base), or has another mode or content than in the approved final head. |
+
+Of several pull requests that could have put a commit on the line, one that reviewed it is enough. Otherwise the
+commit takes the reason of the one that met the most conditions, the one with the lowest id on a tie.
+
+Iltero Platform serves the unknown marker `{"__unknown": true, "reason": "server_facts_unavailable"}` in place of the
+part when it could not read the git host or has no adapter for it, when no server opened the run, and when an image
+deploy has no accepted build.
+
+Rules:
+
+| Rule | Refused with |
+| --- | --- |
+| `commits_not_reviewed` lists each commit once, sorted. | "commit_review lists each commit not reviewed once, sorted" |
+| The list is incomplete only when it holds 50 entries, the most it may, and more commits were counted. | "commit_review's list of commits not reviewed is incomplete only when it holds 50, the most it may, of more commits counted" |
+| The list holds no more commits than `commits_counted`. | "commit_review lists no more commits not reviewed than it counted" |
+| The list never names `counted_since.commit`, which is the review starting point when the count starts there. | "commit_review never lists the commit it counts since as not reviewed" |
+| With no earlier reading, `counted_since.commit` is the review starting point. | "commit_review counts since the review starting point when it names no earlier reading" |
+| With an earlier reading, `counted_since.commit` is not the review starting point. | "commit_review counts since an earlier reading only of a commit after the review starting point" |
+| The earlier reading is not the outcome's own: its `host_reading_id` is not the outcome's `host_reading_id`. | "commit_review counts since an earlier reading, not its own" |
+| The earlier reading's `decided_at` is later than the review starting point's `set_at`. | "commit_review counts since a reading decided after its review starting point was set" |
+| The earlier reading's `decided_at` is earlier than the outcome's `decided_at`. | "commit_review counts since a reading decided before its own outcome" |
+| The count is 0 exactly when `head_commit` is `counted_since.commit`. | "commit_review counts no commits exactly when the head commit is the one it counts since" |
+| `reviewed` and `not_reviewed` count at most 100 commits. | "commit_review checks at most 100 commits; more is too_many_commits" |
+| `too_many_commits` counts more than 100. | "commit_review is too_many_commits only for more than 100 commits" |
+| The review starting point's `set_at` is no later than `decided_at`. | "commit_review's review starting point was set no later than the outcome was decided" |
+| For `review_starting_point_not_in_history`, the starting point is not `head_commit`. | "a review starting point that is the head commit is in its history" |
+| For `head_commit_before_review_starting_point`, the starting point is not `head_commit`. | "a head commit that is the review starting point is not before it" |
+| `iac_change`: the part is the unknown marker when `organization_scope.environment` is `null` or its `production` is the marker. | "commit_review holds the unknown marker when the input names no environment or its production flag is the marker: only a server that opened the run reviews its commits" |
+| `iac_change`: the outcome is never `build_commit_not_verified_commit`. | "an infrastructure change's commit_review is not about an image's build" |
+| `iac_change`: `head_commit` is `source.commit.sha`, except for `source_commit_not_verified_commit`, where it is not. | "commit_review.head_commit is source.commit.sha, unless the outcome is source_commit_not_verified_commit, which names the verified commit" |
+| `image_deploy`: the outcome is never `source_commit_not_verified_commit`. | "an image deploy's commit_review is not about an infrastructure change's source commit" |
+| `image_deploy`: the part is the unknown marker unless `change.build` is an accepted build. | "commit_review holds the unknown marker when the deploy has no accepted build" |
+| `image_deploy`: `head_commit` and `repository` are `change.build.verified_commit` and `change.build.repository`. | "commit_review.head_commit and repository are the accepted build's verified_commit and repository" |
+| `image_deploy`: the outcome is `build_commit_not_verified_commit` exactly when `change.build.build_commit` is not `change.build.verified_commit`, `null` included. | "commit_review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit" |
+
+The starter assertion `ILT.CHANGE.COMMITS_REVIEWED` reads the part. It is about any change (`change_type: null`), at
+`pre_deploy`, about the `change` target:
+
+| Assertion | Title | Passes when |
+| --- | --- | --- |
+| `ILT.CHANGE.COMMITS_REVIEWED` | Every commit the change ships since its review starting point was merged through a pull request with a qualifying approval | `commit_review.outcome` is `reviewed`. It fails for every other outcome, and is `unknown` with `server_facts_unavailable` when the part is the unknown marker. In a run the tool opened it never passes, so a `pre_deploy` stage that evaluates it is at best indeterminate (exit code `3`); see the record rule for such a run in [Change Assurance Record (CAR)](#change-assurance-record-car). Not built in: a project adds it, and an exception may name it. Its remediation: "Merge every commit through a pull request approved on its final head, before the merge, by a person who can write to the repository and wrote none of it; run the change from, or build the image from, the commit Iltero verified; have an administrator set a review starting point when none fits." |
+
+#### Git repository
+
+A repository as its git host names it (`iltero_schemas.models.git.GitRepository`). A git host's ids are unique only
+within one instance of it, so the id is read with the host and instance.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `host` | string | The git host: `github` (`iltero_schemas.models.git.GIT_HOSTS`). Any other is refused. |
+| `instance` | identifier | The instance of the git host, by its host name, such as `github.com`. |
+| `repository_id` | identifier | The repository's id at the git host, which does not change when the repository is renamed. |
+
 ### Apply with the state not read
 
 The state is the IaC tool's record of the resources it manages. When the pipeline says the tool could not read the
@@ -439,7 +585,7 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and the CI system's run id (`ci_run_id`). |
-| `facts_source` | For an evaluation whose input may carry Iltero Platform facts (approvals, exceptions, earlier evaluations, the verified source, the verified attestation: an `iac_change` input at `pre_deploy` or `runtime`, an `image_build` input at `plan`, and an `image_deploy` input at `pre_deploy`), where they came from: `server` or `none`. `null` for every other input (`iltero_schemas.profiles.reads_server_facts`). An `image_deploy` input's accepted build (`change.build`) also comes from Iltero Platform, but `reads_server_facts` does not count it: `change` is not one of the parts it lists (`SERVER_FACTS`). So the `pre_deploy` input names its `facts_source` for its approvals, exceptions and earlier evaluations, and the `post_deploy` and `post_verify` inputs, which carry `change.build` too, name none. |
+| `facts_source` | For an evaluation whose input may carry Iltero Platform facts (approvals, exceptions, earlier evaluations, the commit review, the verified source, the verified attestation: an `iac_change` input at `pre_deploy` or `runtime`, an `image_build` input at `plan`, and an `image_deploy` input at `pre_deploy`), where they came from: `server` or `none`. `null` for every other input (`iltero_schemas.profiles.reads_server_facts`). It names where the facts document came from: the parts only Iltero Platform holds (`SERVER_FACTS`: `evaluations`, `approvals`, `exceptions`, `commit_review`, `verified_source`, `attestation_outcome`). A value Iltero Platform supplies inside another part is not counted: the environment's production flag (`organization_scope.environment.production`) in every input, and the accepted build (`change.build`) in an `image_deploy` input. In a run the tool opened, such a value holds the unknown marker (`server_facts_unavailable`), so it follows `governance.run_opened_by`. The `post_deploy` and `post_verify` inputs of an `image_deploy` name no `facts_source`. |
 
 Key rules:
 
@@ -544,12 +690,42 @@ Each `stages` entry says what one stage did:
 | `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`, `tarball_digest`, `content_digest` and `key_id`, with the rules of an event's `bundle`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. The bundle is the writer's claim: nothing compares it with a descriptor. A `local_bundle` has no descriptor. The stage's compiled index (`assertions`) and `coverage.assertions_expected.required_assertion_digest` describe what it held; both are the writer's claims, and nothing compares them with the tarball. |
 | `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
 | `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (the `pre_deploy` stage of an `iac_change` or an `image_deploy`), `null` at every other. A stage lists approvals only when one of its events read its facts from Iltero Platform (`provenance.facts_source: server`): "the pre_deploy stage lists approvals only when its results read facts from the server". |
+| `commit_review` | object or null | What the stage keeps of the [commit review](#commit-review) its evaluations read from Iltero Platform (`iltero_schemas.models.commit_review.CommitReviewReading`, see below). `null` at every other stage, and when the input held the unknown marker. A stage keeps one only where its input carries one, the `pre_deploy` stage of an `iac_change` or an `image_deploy` ("the post_deploy stage keeps a commit review only where its input carries one"), and only when one of its events read its facts from Iltero Platform ("the pre_deploy stage keeps a commit review only when its results read facts from the server"). |
 | `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
 | `redaction` | object | The stage's redaction report (see below). |
 | `events` | object | The file of the stage's events: its `path`, `digest` and `count`, which equals the stage's `coverage.evaluations`. |
 | `assertions` | object | The index of the assertions the stage compiled: its path (`index`), `digest` and `count`. |
 | `scanners` | object or null | What the stage read from the scanner reports it was given (see below). `null` for a stage given no scanner report. |
 | `coverage`, `verdict`, `assurance_status` | object | The stage's own, in the shape of the record's. |
+
+A stage's `commit_review` keeps:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `outcome` | string | The commit review's `outcome`, one of the eight. |
+| `repository` | object | The repository reviewed (see [Git repository](#git-repository)). |
+| `host_reading_id`, `host_reading_digest` | UUID, digest | The reading the outcome was decided from, and a digest of what the decision rests on. |
+| `review_starting_point` | object or null | The review starting point, `null` exactly when the outcome names none: `no_review_starting_point`, `source_commit_not_verified_commit` and `build_commit_not_verified_commit` (`OUTCOMES_WITHOUT_A_STARTING_POINT`). |
+| `counted_since`, `commits_counted` | object or null, integer or null | Where the count started and how many it counted, as in the commit review. Both are present exactly when the outcome counts commits: `reviewed`, `not_reviewed` and `too_many_commits` (`COUNTED_OUTCOMES`). |
+
+Every stage, whatever its facts' source, evaluates `ILT.CHANGE.COMMITS_REVIEWED` at most once: "the pre_deploy stage
+evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one reading" (with the stage).
+
+Rules, for a stage whose results read facts from Iltero Platform:
+
+| Rule | Refused with |
+| --- | --- |
+| `review_starting_point` is `null` exactly when the outcome names none. | "commit_review keeps a review starting point exactly when its outcome, reviewed, names one" (with the outcome) |
+| `counted_since` and `commits_counted` are present exactly when the outcome counts commits. | "commit_review keeps where it counted since and how many exactly when its outcome, reviewed, counts commits" (with the outcome) |
+| `counted_since` follows the commit review's rules for it against the kept review starting point and `host_reading_id`: its commit is the review starting point exactly when it names no earlier reading, the earlier reading is never the kept reading itself, and it was decided after the starting point was set. | The commit review's message for that rule |
+| `commits_counted` is at most 100 for `reviewed` and `not_reviewed`, and more than 100 for `too_many_commits`. | The commit review's message for that rule |
+| The count is 0 exactly when the head commit is `counted_since.commit`. The head commit is the record's `subject.source.commit.sha`, or for an `image_deploy` its `change.build.verified_commit`. | "the pre_deploy stage's commit review counts no commits exactly when the head commit is the one it counts since" |
+| When an `ILT.CHANGE.COMMITS_REVIEWED` event of the stage is `pass` or `fail`, the stage keeps the commit review it was decided from. | "the pre_deploy stage keeps the commit review its ILT.CHANGE.COMMITS_REVIEWED check decided from" |
+| The kept outcome is `reviewed` exactly when that event is `pass`. | "the pre_deploy stage's commit review is reviewed exactly when its ILT.CHANGE.COMMITS_REVIEWED check passed" |
+| When the event is `unknown` with `server_facts_unavailable`, as for an image deploy with no accepted build, the stage keeps none. | "the pre_deploy stage keeps no commit review when its ILT.CHANGE.COMMITS_REVIEWED check could not read one" |
+| A record of an `iac_change` keeps no `build_commit_not_verified_commit`, and one of an `image_deploy` no `source_commit_not_verified_commit`. | "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit" (with the activity and outcome) |
+| `image_deploy`: the record has an accepted build, and the review is of its `repository`. | "the pre_deploy stage's commit review is of the accepted build's repository" |
+| `image_deploy`: the outcome is `build_commit_not_verified_commit` exactly when `change.build.build_commit` is not `change.build.verified_commit`, `null` included. | "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit" |
 
 A stage's `scanners` says what it read from scanner reports and how much of it became a verdict:
 
@@ -817,6 +993,14 @@ Key rules:
   run (`run_type: change`), `subject.environment` names the environment the run was opened for. A build run belongs
   to no environment, whoever opened it. Either way the record is the writer's own: only Iltero Platform can confirm a
   run it opened, by its `run.id`.
+- In a record of a run the tool opened, an `ILT.CHANGE.COMMITS_REVIEWED` event is never `pass`, `fail` or
+  `not_applicable`, and when it is `unknown` its `status_reason` is `server_facts_unavailable`. An event that was not
+  evaluated or that ended in `error` is accepted. Otherwise the record is refused: "ILT.CHANGE.COMMITS_REVIEWED is
+  unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened: only a
+  server that opened the run reviews its commits".
+- In a record of a run Iltero Platform opened, an `ILT.CHANGE.COMMITS_REVIEWED` event that is `pass` or `fail` read
+  its facts from Iltero Platform (`provenance.facts_source: server`): "ILT.CHANGE.COMMITS_REVIEWED passes or fails only
+  on facts read from the server".
 - Every event's `provenance.checked_content` is the record's [checked content](#checked-content): "every event names
   the content the record's change checked". Every event's `evaluation.activity` is the record's `change.activity`:
   "every event names the record's activity".
@@ -1141,7 +1325,7 @@ Key rules:
 | The raw index's `evidence_refs` digest is the image's `digest`. | "the raw index's digest is the image's digest" |
 | The `plan` stage counts the one image (`counted_from: artifact_unit`), with the digest of the record's `change` as its `source_digest`. | "the plan stage counts the one image the build describes, by its digest" |
 | The `plan` stage evaluates `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, the activity's `carried_out_matches_checked`, exactly once (see `always_evaluated` above). | "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported" |
-| Every event's `facts_source` is `server` when Iltero Platform opened the run (`governance.run_opened_by: server`), and `none` when the tool opened it (`local`). The verified source comes only from the server, so in a run the tool opened it is the unknown marker. | "every evaluation of a build whose run was opened by local reads its facts from none", or "... opened by server reads its facts from server" |
+| Every event's `facts_source` is `server` when Iltero Platform opened the run (`governance.run_opened_by: server`), and `none` when the tool opened it (`local`). The verified source comes only from Iltero Platform, so in a run the tool opened it is the unknown marker. | "every evaluation of a build whose run was opened by local reads its facts from none", or "... opened by server reads its facts from server" |
 | With no build commit (`build_commit: null`), on any run, the `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` event is never `pass` or `fail`, and when it is `unknown` its `status_reason` is `not_reported_by_tool`. With a build commit, on a run the tool opened, the same holds with `server_facts_unavailable`. An event that was not evaluated (`not_evaluated`, such as with `evaluator_unavailable`) or that ended in `error` is accepted. | "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit", or "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit" |
 | On a run the tool opened, an `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` event is never `pass`, `fail` or `not_applicable`, and when it is `unknown` its `status_reason` is `server_facts_unavailable`. An event that was not evaluated or that ended in `error` is accepted. | "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened: only the server checks an attestation" |
 | On a run the tool opened, a kept attestation has `sent_to_server: false`. | "a run the tool opened sent the server no attestation" |
@@ -1318,8 +1502,8 @@ and environment.
 
 The record keeps what each party reported:
 
-- **The build.** The server finds the build of the image by its digest and accepts it against the environment's
-  accepted build sources. The record copies the build as the server served it (`build`), and never names a build a
+- **The build.** Iltero Platform finds the build of the image by its digest and accepts it against the environment's
+  accepted build sources. The record copies the build as Iltero Platform served it (`build`), and never names a build a
   pipeline chose. A record of a run the tool opened names none. At `pre_deploy`, `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`
   checks that there is one (see the built-in assertions below).
 - **The deployment.** The Iltero CLI talks to no cluster and no deploy tool. The pipeline declares the repository
@@ -1363,6 +1547,9 @@ The record keeps what each party reported:
 | `run_id` | UUID | The run that built the image. |
 | `record_digest` | digest | The digest of that build's record. |
 | `platform_digests` | list | The digest of each platform's image the build's index lists: at most 64, sorted, each once, and never the image's own digest. |
+| `verified_commit` | commit | The commit Iltero Platform verified for the build: the `verified_source.commit` it served in the build's evaluation input. |
+| `build_commit` | commit or null | The commit the image's build metadata names, `null` when it names none. Accepting a build does not require it to be `verified_commit`, so a review of the verified commit speaks for the image only when the two agree (see [Commit review](#commit-review)). |
+| `repository` | object | The repository the build's verified source names, as its git host names it (see [Git repository](#git-repository)). Iltero Platform maps the CI system's repository to the git host's. |
 
 `deployment` (`ImageDeployment`):
 

@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.subjects import subject_key
-from tests.records import record, set_path, stage
+from tests.records import DEPLOYED, record, served, set_path, stage, with_commit_review_check
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
 SERVER_BUNDLE = {
@@ -111,4 +111,35 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     document["out_of_scope"] = []
     document["complete"] = False
     with pytest.raises(ValidationError, match="has no facts from the server"):
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("status", "reason"),
+    [("pass", None), ("fail", None), ("not_applicable", "when_guard_excluded"), ("unknown", "path_missing")],
+)
+def test_a_run_the_tool_opened_never_decides_its_commit_review(status: str, reason: str | None) -> None:
+    with pytest.raises(ValidationError, match="never pass, fail or not_applicable, on a run the tool opened"):
+        CAR.model_validate(with_commit_review_check(DEPLOYED, status, reason), context=_READER)
+
+
+@pytest.mark.parametrize(
+    ("status", "reason"),
+    [
+        ("unknown", "server_facts_unavailable"),
+        ("not_evaluated", "evaluator_unavailable"),
+        ("error", "adapter_parse_failure"),
+    ],
+)
+def test_a_run_the_tool_opened_may_leave_its_commit_review_undecided(status: str, reason: str) -> None:
+    CAR.model_validate(with_commit_review_check(DEPLOYED, status, reason), context=_READER)
+
+
+@pytest.mark.parametrize("status", ["pass", "fail"])
+def test_a_commit_review_check_passes_or_fails_only_on_facts_read_from_the_server(status: str) -> None:
+    document = served(with_commit_review_check(DEPLOYED, status, None))
+    for event in document["events"]:
+        if event["evaluation"]["stage"] == "pre_deploy":
+            event["provenance"]["facts_source"] = "none"
+    with pytest.raises(ValidationError, match="passes or fails only on facts read from the server"):
         CAR.model_validate(document, context=_READER)

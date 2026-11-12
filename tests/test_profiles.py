@@ -13,8 +13,8 @@ from iltero_schemas.profiles import (
     ALWAYS_REQUIRED_PARTS,
     PROFILES,
     profile_for,
-    reads_approvals,
     reads_checked_content,
+    reads_part,
     reads_server_facts,
     roots_for,
 )
@@ -22,7 +22,17 @@ from iltero_schemas.profiles import (
 # The documented table: which parts each stage of an infrastructure change provides, beyond the three every stage has.
 DOCUMENTED = {
     Stage.PLAN: {"source", "change", "plan", "subject"},
-    Stage.PRE_DEPLOY: {"source", "change", "plan", "subject", "evaluations", "approvals", "exceptions", "run"},
+    Stage.PRE_DEPLOY: {
+        "source",
+        "change",
+        "plan",
+        "subject",
+        "evaluations",
+        "approvals",
+        "exceptions",
+        "commit_review",
+        "run",
+    },
     Stage.POST_DEPLOY: {"source", "change", "plan", "subject", "deployment"},
     Stage.POST_VERIFY: {"source", "subject", "deployment", "drift_check", "assurance"},
     Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},
@@ -96,8 +106,8 @@ def test_only_a_build_reads_server_facts_at_the_plan_stage() -> None:
 
 
 def test_a_build_reads_no_approvals() -> None:
-    assert not reads_approvals("image_build", Stage.PLAN)
-    assert reads_approvals("iac_change", Stage.PRE_DEPLOY)
+    assert not reads_part("image_build", Stage.PLAN, "approvals")
+    assert reads_part("iac_change", Stage.PRE_DEPLOY, "approvals")
 
 
 @pytest.mark.parametrize(

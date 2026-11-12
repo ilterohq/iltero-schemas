@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import copy
+import json
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.assertions import COMMITS_REVIEWED_ID
 from iltero_schemas.change_types import IAC_CHANGE, IMAGE_BUILD
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
@@ -15,7 +17,8 @@ from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_or
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
-from tests.records import DEPLOYED, RECORD, VERIFIED, add_built_in, served
+from tests.conftest import VECTORS
+from tests.records import DEPLOYED, RECORD, VERIFIED, add_built_in, served, with_commit_review_check
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
@@ -702,4 +705,149 @@ def test_a_stage_redacts_what_it_reads(source: dict[str, Any], name: str, kind: 
     document = copy.deepcopy(source)
     document["stages"][name]["redaction"]["input"]["kind"] = kind
     with pytest.raises(ValidationError, match=f"the {name} stage's redaction report is of the"):
+        CAR.model_validate(document, context=_READER)
+
+
+READING: dict[str, Any] = {
+    "outcome": "not_reviewed",
+    "repository": {"host": "github", "instance": "github.com", "repository_id": "712400318"},
+    "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+    "host_reading_digest": "sha256:" + "6" * 64,
+    "review_starting_point": {
+        "commit": "0b5f2d9000000000000000000000000000000000",
+        "set_by": {"provider": "iltero", "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"},
+        "set_at": "2026-09-01T08:00:00Z",
+        "reason": "Branch protection required reviews from this commit on.",
+    },
+    "counted_since": {"commit": "0b5f2d9000000000000000000000000000000000", "earlier_reading": None},
+    "commits_counted": 3,
+}
+REVIEWED = {**READING, "outcome": "reviewed"}
+NO_STARTING_POINT = {
+    **READING,
+    "outcome": "no_review_starting_point",
+    "review_starting_point": None,
+    "counted_since": None,
+    "commits_counted": None,
+}
+
+
+def test_the_pre_deploy_stage_keeps_the_commit_review_it_read_from_the_server() -> None:
+    document = served(DEPLOYED)
+    document["stages"]["pre_deploy"]["commit_review"] = READING
+    car = CAR.model_validate(document, context=_READER)
+    assert car.stages[Stage.PRE_DEPLOY].commit_review is not None
+    document["stages"]["pre_deploy"]["commit_review"] = NO_STARTING_POINT
+    CAR.model_validate(document, context=_READER)
+
+
+def test_a_stage_keeps_a_commit_review_only_when_its_results_read_facts_from_the_server() -> None:
+    document = copy.deepcopy(DEPLOYED)
+    document["stages"]["pre_deploy"]["commit_review"] = READING
+    with pytest.raises(ValidationError, match="keeps a commit review only when its results read facts from the server"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_stage_keeps_a_commit_review_only_where_its_input_carries_one() -> None:
+    document = served(DEPLOYED)
+    document["stages"]["post_deploy"]["commit_review"] = READING
+    with pytest.raises(ValidationError, match="the post_deploy stage keeps a commit review only where its input"):
+        CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(("status", "kept"), [("pass", REVIEWED), ("fail", READING), ("fail", NO_STARTING_POINT)])
+def test_a_stage_keeps_the_commit_review_its_check_decided_from(status: str, kept: dict[str, Any]) -> None:
+    document = served(with_commit_review_check(DEPLOYED, status, None))
+    with pytest.raises(ValidationError, match="the pre_deploy stage keeps the commit review its .* check decided from"):
+        CAR.model_validate(document, context=_READER)
+    document["stages"]["pre_deploy"]["commit_review"] = kept
+    CAR.model_validate(document, context=_READER)
+
+
+@pytest.mark.parametrize(("status", "kept"), [("pass", READING), ("pass", NO_STARTING_POINT), ("fail", REVIEWED)])
+def test_a_stages_commit_review_is_reviewed_exactly_when_its_check_passed(status: str, kept: dict[str, Any]) -> None:
+    document = served(with_commit_review_check(DEPLOYED, status, None))
+    document["stages"]["pre_deploy"]["commit_review"] = kept
+    with pytest.raises(ValidationError, match="commit review is reviewed exactly when its .* check passed"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_stage_keeps_no_commit_review_when_its_check_could_not_read_one() -> None:
+    document = served(with_commit_review_check(DEPLOYED, "unknown", "server_facts_unavailable"))
+    CAR.model_validate(document, context=_READER)
+    document["stages"]["pre_deploy"]["commit_review"] = READING
+    with pytest.raises(ValidationError, match="keeps no commit review when its .* check could not read one"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_stage_evaluates_its_commit_review_check_at_most_once() -> None:
+    document = served(with_commit_review_check(DEPLOYED, "pass", None))
+    document["stages"]["pre_deploy"]["commit_review"] = REVIEWED
+    check = next(e for e in document["events"] if e["assertion"]["id"] == COMMITS_REVIEWED_ID)
+    again = copy.deepcopy(check)
+    again["evaluation"].update(status="unknown", status_reason="server_facts_unavailable")
+    document["events"].append(again)
+    with pytest.raises(ValidationError, match="evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_stages_commit_review_counts_no_commits_exactly_when_the_head_commit_is_the_one_it_counts_since() -> None:
+    document = served(DEPLOYED)
+    head = document["subject"]["source"]["commit"]["sha"]
+    at_head = {**READING, "review_starting_point": {**READING["review_starting_point"], "commit": head}}
+    for kept in (
+        {**READING, "commits_counted": 0},
+        {**at_head, "counted_since": {"commit": head, "earlier_reading": None}},
+    ):
+        document["stages"]["pre_deploy"]["commit_review"] = kept
+        with pytest.raises(
+            ValidationError, match="counts no commits exactly when the head commit is the one it counts"
+        ):
+            CAR.model_validate(document, context=_READER)
+
+
+def test_an_infrastructure_change_keeps_no_commit_review_about_an_images_build() -> None:
+    document = served(DEPLOYED)
+    document["stages"]["pre_deploy"]["commit_review"] = {
+        **NO_STARTING_POINT,
+        "outcome": "build_commit_not_verified_commit",
+    }
+    with pytest.raises(ValidationError, match="a record of iac_change keeps no commit review that is build_commit_not"):
+        CAR.model_validate(document, context=_READER)
+    document["stages"]["pre_deploy"]["commit_review"] = {
+        **NO_STARTING_POINT,
+        "outcome": "source_commit_not_verified_commit",
+    }
+    CAR.model_validate(document, context=_READER)
+
+
+def _image_deploy_whose_commit_review_check_passed() -> dict[str, Any]:
+    """The accepted image deploy record whose commit review check passed, from its records_valid case."""
+    cases = json.loads((VECTORS / "records_valid" / "image" / "cases.json").read_text(encoding="utf-8"))
+    case = next(
+        c for c in cases if c["name"] == "image_deploy_of_a_run_the_server_opened_whose_commit_review_check_passed"
+    )
+    document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
+    for pointer, value in case["set"].items():
+        *parents, last = pointer.split("/")[1:]
+        node: Any = document
+        for key in parents:
+            node = node[int(key)] if isinstance(node, list) else node[key]
+        node[int(last) if isinstance(node, list) else last] = copy.deepcopy(value)
+    return document
+
+
+@pytest.mark.parametrize("build_commit", ["1" * 40, None])
+def test_an_image_deploys_commit_review_says_when_the_build_named_another_commit(build_commit: str | None) -> None:
+    document = _image_deploy_whose_commit_review_check_passed()
+    CAR.model_validate(document)
+    document["change"]["build"]["build_commit"] = build_commit
+    with pytest.raises(ValidationError, match="is build_commit_not_verified_commit exactly when the accepted build's"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_an_image_deploys_commit_review_is_of_its_accepted_builds_repository() -> None:
+    document = _image_deploy_whose_commit_review_check_passed()
+    document["stages"]["pre_deploy"]["commit_review"]["repository"]["repository_id"] = "712400319"
+    with pytest.raises(ValidationError, match="commit review is of the accepted build's repository"):
         CAR.model_validate(document, context=_READER)

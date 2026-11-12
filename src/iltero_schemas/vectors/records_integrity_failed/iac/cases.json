@@ -590,7 +590,8 @@
           "reason": null,
           "detail": null
         },
-        "approvals": []
+        "approvals": [],
+        "commit_review": null
       },
       "/verdict": {
         "value": "fail",

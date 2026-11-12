@@ -280,7 +280,8 @@ class Executor(StrictModel):
 # Where a built-in assertion may come from: this package, or the server's bundle that ships it.
 BUILT_IN_SOURCES = frozenset({"contract_starter", "server_bundle"})
 # Where the facts document an evaluation read came from: the server, or none.
-# It names the document's origin, not whether its parts held values or unknown markers.
+# It names the document's origin, not whether its parts held values or unknown markers. A value the server supplies
+# inside a part not in ``profiles.SERVER_FACTS`` follows who opened the run instead.
 FactsSource = Literal["server", "none"]
 
 

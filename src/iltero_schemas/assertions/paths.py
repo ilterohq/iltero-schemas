@@ -13,8 +13,8 @@ accepted a build of the image for the environment;
 ``REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`` at its post-deploy stage, which checks that the
 deployed image is the one the deploy checked; and ``RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`` at
 its post-verify stage, which checks that the workload runs that image.
-``SIGNED_PROVENANCE_MATCHES_RUN_ID`` names a starter a project adds, which a build
-record's rules also name.
+``SIGNED_PROVENANCE_MATCHES_RUN_ID`` and ``COMMITS_REVIEWED_ID`` name starters a project
+adds, which record rules also name: a build record's, and every record of a run the tool opened.
 """
 
 from __future__ import annotations
@@ -38,6 +38,7 @@ REPORTED_IMAGE_MATCHES_CHECKED_IMAGE: Traversable = ASSERTIONS / f"{REPORTED_IMA
 RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID = "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE"
 RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE: Traversable = ASSERTIONS / f"{RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID}.yaml"
 SIGNED_PROVENANCE_MATCHES_RUN_ID = "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN"
+COMMITS_REVIEWED_ID = "ILT.CHANGE.COMMITS_REVIEWED"
 # Each built-in assertion's document, by its id.
 BUILT_IN_DOCUMENTS: Mapping[str, Traversable] = MappingProxyType(
     {

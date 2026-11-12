@@ -15,11 +15,11 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Seventeen starter assertions, among them the one that holds the plan
+- Eighteen starter assertions, among them the one that holds the plan
   applied to the plan that was evaluated, `ILT.IAC.NO_DRIFT_AFTER_APPLY`,
   which holds that no deployed resource drifted after the apply, and
   `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which holds that the commit the build
-  tool's provenance names is the commit the server verified for the run,
+  tool's provenance names is the commit Iltero Platform verified for the run,
   and is unknown when the build names none,
   `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, which holds that Iltero
   Platform accepted a build of the image for the environment it is deployed to,
@@ -40,8 +40,8 @@ keep, so any two tools agree on what a record means.
   Their ids are reserved (`BUILT_INS`, each a `BuiltIn` with its version,
   document digest and compiled module digest, and `BUILT_IN_IDS` for the
   ids alone): an evaluation that names one
-  names the shipped version and document, comes from this package or the
-  server's bundle and never from a scanner, and ran the shipped module.
+  names the shipped version and document, comes from this package or
+  Iltero Platform's bundle and never from a scanner, and ran the shipped module.
   Each activity names the built-in check that what the pipeline carried out
   matches what was checked (`carried_out_matches_checked`) and every
   built-in assertion it always evaluates (`always_evaluated`): once the
@@ -52,7 +52,7 @@ keep, so any two tools agree on what a record means.
   evaluates `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which never passes or fails
   when the build names no commit, where it is unknown with
   `not_reported_by_tool`, or on a run the tool opened, where it is unknown
-  with `server_facts_unavailable`, since only the server verifies the
+  with `server_facts_unavailable`, since only Iltero Platform verifies the
   commit (an event that was not evaluated, or that ended in error, is
   accepted); an image deploy's `pre_deploy` stage evaluates
   `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, its `post_deploy` stage
@@ -62,8 +62,8 @@ keep, so any two tools agree on what a record means.
   built image in which at least one test ran rather than being skipped, and
   `ILT.IMAGE.SCAN_RAN` that a vulnerability scan ran whose report itself
   names the built image or at least one of its platform images.
-  `ILT.CHANGE.PRODUCTION_APPROVED` is about any change
-  (`change_type: null`); the seven image assertions are about
+  `ILT.CHANGE.PRODUCTION_APPROVED` and `ILT.CHANGE.COMMITS_REVIEWED` are
+  about any change (`change_type: null`); the seven image assertions are about
   `image_release`, and the others about `iac_change`.
 - Every `TechnicalAssertion` says which change type it is about
   (`spec.change_type`: `iac_change`, `image_release`, or `null` for an
@@ -232,10 +232,10 @@ keep, so any two tools agree on what a record means.
   content its own change checked. An
   event's executor provider is `local`, `ci` or a CI system's name, such as
   `github_actions`. An event's and a record stage's `bundle` give its
-  `kind`, its `tarball_digest` and, for a bundle the server served, the
+  `kind`, its `tarball_digest` and, for a bundle Iltero Platform served, the
   descriptor's `content_digest` and `key_id`, which are `null` for a bundle
   the tool built; a stage's also gives its `capabilities_digest`. An
-  evaluation of an assertion from the server's bundle that ran over a
+  evaluation of an assertion from Iltero Platform's bundle that ran over a
   bundle names a bundle of kind `server`.
 - A deployment's apply and the resource identities document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
@@ -289,7 +289,7 @@ keep, so any two tools agree on what a record means.
   a cloud identifier this repository does not publish.
 - A record says once who opened its run (`governance.run_opened_by`:
   `server` or `local`), and every stage agrees: its assertions are counted
-  as `server_pinned` exactly when the server opened the run, and as
+  as `server_pinned` exactly when Iltero Platform opened the run, and as
   `project_files` otherwise.
   A record of a run the tool opened claims nothing only Iltero Platform can
   give: no Iltero Platform bundle or evaluation from one, no facts from
@@ -526,18 +526,18 @@ keep, so any two tools agree on what a record means.
   bytes, so every reader computes the same list; it reads plain UTF-8 JSON
   only, and skips a manifest only when it is marked as an attestation and
   has no real platform. A build has only a plan stage, belongs to no environment, even
-  in a run the server opened, and deploys nothing, so it has no change
+  in a run Iltero Platform opened, and deploys nothing, so it has no change
   digest and nothing to approve. Its evaluations are about the built
   artifact, and their input carries the image with its build commit, or
   the unknown marker when the build named none, the test and scan reports
   the build was given, each saying whether the report itself names the
   image or only the pipeline does (`image_digest_source`: `report` or
-  `pipeline`), and the commit the server verified for the build job, with
+  `pipeline`), and the commit Iltero Platform verified for the build job, with
   the CI system and its instance, the repository by id and name, and the
   CI run and attempt it was verified for, since a CI system's ids are unique
   only within one instance of it. A build's input names no environment. A
-  build's evaluations say their facts came from the server exactly when the
-  server opened the run, and from nowhere otherwise, never from a local
+  build's evaluations say their facts came from Iltero Platform exactly when
+  Iltero Platform opened the run, and from nowhere otherwise, never from a local
   file. Record, context and evaluation vectors cover it. The values it adds:
 
   | Where | Added value |
@@ -557,7 +557,11 @@ keep, so any two tools agree on what a record means.
   approved, and its change digest names the image, by its repository and
   digest, in the record's unit and environment. The record keeps the build
   Iltero Platform accepted for the environment (`build`: its run, its
-  record's digest and its platform digests), as Iltero Platform served it,
+  record's digest, its platform digests, the commit Iltero Platform verified
+  for it (`verified_commit`), the commit its build metadata names
+  (`build_commit`, `null` when it names none) and the repository its verified
+  source names, as its git host names it (`repository`: `host`, `instance`
+  and `repository_id`)), as Iltero Platform served it,
   and never a build a pipeline chose; a record of a run the tool opened
   names none. `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` checks at
   `pre_deploy` that there is one: it passes when Iltero Platform accepted a
@@ -639,6 +643,60 @@ keep, so any two tools agree on what a record means.
   | Who reports a deployment (`deployment.reported_by`) | `pipeline` |
   | Built-in assertions | `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
 
+- Commit review. The `pre_deploy` input of an infrastructure change and of an
+  image deploy carries `commit_review`, a fact only Iltero Platform holds:
+  whether every commit the change ships since its review starting point, a
+  commit an administrator recorded, was merged through a pull request with a
+  qualifying approval (`iltero_schemas.models.commit_review.CommitReview`).
+  Its outcome is `reviewed`, `not_reviewed` (with up to 50 commits not
+  reviewed, each with one reason, and whether that list is complete),
+  `too_many_commits` (more than the 100 Iltero Platform checks),
+  `no_review_starting_point`, `review_starting_point_not_in_history`,
+  `head_commit_before_review_starting_point`, or one that comes before every
+  other: for an infrastructure change, `source_commit_not_verified_commit`,
+  when the input's source commit is not the one Iltero Platform verified, and
+  for an image deploy, `build_commit_not_verified_commit`, when the image's
+  build names no commit or another than the one Iltero verified. It names the
+  reading of the git host it was decided from, a digest of what the decision
+  rests on, the repository and the head commit Iltero Platform verified: an
+  infrastructure change's `source.commit.sha` (the verified commit for
+  `source_commit_not_verified_commit`), or the accepted build's
+  `verified_commit` and `repository`. A counted outcome (`reviewed`,
+  `not_reviewed`, `too_many_commits`) says where its count starts
+  (`counted_since`), which Iltero Platform chooses: after the review starting
+  point, or after the head commit of the newest earlier `reviewed` reading of
+  the same repository, decided after the same starting point was set, whose
+  head commit is on this head's first-parent line (`earlier_reading`: that
+  reading's own `host_reading_id`, `host_reading_digest` and `decided_at`,
+  `null` for the starting point); and how many commits it counted
+  (`commits_counted`). A later reading does not judge again the commits an
+  earlier one covered. An approval
+  qualifies only as the reviewer's latest decision when the git host is read.
+  `check_commit_review` holds it to the rest of the input, and
+  it is the unknown marker in a run no server opened, for an infrastructure
+  change that names no environment, and for an image deploy with no accepted
+  build. The starter assertion `ILT.CHANGE.COMMITS_REVIEWED`
+  passes only for `reviewed`, fails for every other outcome and is `unknown`
+  for the marker; it is not built in. A stage record keeps what its
+  evaluations read of the review (`commit_review`: the outcome, the
+  repository, the reading, the review starting point, and where the count
+  started and how many it counted), only at a `pre_deploy` stage whose
+  results read facts from Iltero Platform. A stage evaluates
+  `ILT.CHANGE.COMMITS_REVIEWED` at most once. There it
+  keeps the review when the check passed or failed, `reviewed` exactly when
+  it passed, and none when the check could not read it; an image deploy's is
+  of its accepted build's repository and is `build_commit_not_verified_commit`
+  exactly when that build's commit is not the verified one. The kept review
+  holds the same limits on `commits_counted` as the input, and counts no
+  commits exactly when the head commit (the record's source commit, or an
+  image deploy's verified commit) is the one it counts since. A record of a
+  run the tool opened refuses an `ILT.CHANGE.COMMITS_REVIEWED` event that is
+  `pass`, `fail` or `not_applicable`, or `unknown` for another reason than
+  `server_facts_unavailable`; a record of a run Iltero Platform opened
+  refuses one that passed or failed without facts from Iltero Platform. A git
+  repository is named by its host (`github`), the host's instance and its id
+  there (`iltero_schemas.models.git.GitRepository`). Context, evaluation and
+  record vectors cover it.
 - Scan coverage. `iltero_schemas.change_types.scan_coverage(build)` says
   which of a build's platform images its scan reports name and which none
   does, counted as `ILT.IMAGE.SCAN_RAN` counts them, with vectors in

@@ -12,7 +12,7 @@
     "name": "subject_identity_with_the_format_character_u0600",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u0600ws_db_instance.payments"
+      "/subject/identities/0/value": "a؀ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -21,7 +21,7 @@
     "name": "subject_identity_with_the_format_character_u06dd",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u06ddws_db_instance.payments"
+      "/subject/identities/0/value": "a۝ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -30,7 +30,7 @@
     "name": "subject_identity_with_the_format_character_u070f",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u070fws_db_instance.payments"
+      "/subject/identities/0/value": "a܏ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -39,7 +39,7 @@
     "name": "subject_identity_with_the_format_character_u0890",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u0890ws_db_instance.payments"
+      "/subject/identities/0/value": "a࢐ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -48,7 +48,7 @@
     "name": "subject_identity_with_the_format_character_u08e2",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u08e2ws_db_instance.payments"
+      "/subject/identities/0/value": "a࣢ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -57,7 +57,7 @@
     "name": "subject_identity_with_the_format_character_u206a",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\u206aws_db_instance.payments"
+      "/subject/identities/0/value": "a⁪ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -66,7 +66,7 @@
     "name": "subject_identity_with_the_format_character_ufff9",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ufff9ws_db_instance.payments"
+      "/subject/identities/0/value": "a￹ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -75,7 +75,7 @@
     "name": "subject_identity_with_the_format_character_u110bd",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ud804\udcbdws_db_instance.payments"
+      "/subject/identities/0/value": "a𑂽ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -84,7 +84,7 @@
     "name": "subject_identity_with_the_format_character_u110cd",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ud804\udccdws_db_instance.payments"
+      "/subject/identities/0/value": "a𑃍ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -93,7 +93,7 @@
     "name": "subject_identity_with_the_format_character_u13430",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ud80d\udc30ws_db_instance.payments"
+      "/subject/identities/0/value": "a𓐰ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -102,7 +102,7 @@
     "name": "subject_identity_with_the_format_character_u1bca0",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ud82f\udca0ws_db_instance.payments"
+      "/subject/identities/0/value": "a𛲠ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -111,7 +111,7 @@
     "name": "subject_identity_with_the_format_character_u1d173",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\ud834\udd73ws_db_instance.payments"
+      "/subject/identities/0/value": "a𝅳ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -120,7 +120,7 @@
     "name": "subject_identity_with_the_format_character_ue0000",
     "vector": "iac/plan_resource.json",
     "set": {
-      "/subject/identities/0/value": "a\udb40\udc00ws_db_instance.payments"
+      "/subject/identities/0/value": "a󠀀ws_db_instance.payments"
     },
     "remove": [],
     "message": "must not contain control characters"
@@ -138,5 +138,846 @@
     },
     "remove": [],
     "message": "post-verify needs the identities the state after the apply gives, and the state after the apply was not read"
+  },
+  {
+    "name": "commit_review_listing_commits_out_of_order",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_not_reviewed": [
+        {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "reason": "no_qualifying_approval"
+        },
+        {
+          "commit": "7a3c11e000000000000000000000000000000000",
+          "reason": "no_pull_request"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "commit_review lists each commit not reviewed once, sorted"
+  },
+  {
+    "name": "commit_review_listing_a_commit_twice",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_not_reviewed/1": {
+        "commit": "7a3c11e000000000000000000000000000000000",
+        "reason": "no_pull_request"
+      }
+    },
+    "remove": [],
+    "message": "commit_review lists each commit not reviewed once, sorted"
+  },
+  {
+    "name": "commit_review_incomplete_with_fewer_than_the_most_listed",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_not_reviewed_list_complete": false
+    },
+    "remove": [],
+    "message": "list of commits not reviewed is incomplete only when it holds 50"
+  },
+  {
+    "name": "commit_review_incomplete_with_every_counted_commit_listed",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_counted": 50,
+      "/commit_review/commits_not_reviewed": [
+        {
+          "commit": "0000000000000000000000000000000000000001",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000002",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000003",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000004",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000005",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000006",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000007",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000008",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000009",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000010",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000011",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000012",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000013",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000014",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000015",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000016",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000017",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000018",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000019",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000020",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000021",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000022",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000023",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000024",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000025",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000026",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000027",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000028",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000029",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000030",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000031",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000032",
+          "reason": "no_pull_request"
+        }
+      ],
+      "/commit_review/commits_not_reviewed_list_complete": false
+    },
+    "remove": [],
+    "message": "incomplete only when it holds 50, the most it may, of more commits counted"
+  },
+  {
+    "name": "commit_review_listing_more_than_it_counted",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_counted": 1
+    },
+    "remove": [],
+    "message": "commit_review lists no more commits not reviewed than it counted"
+  },
+  {
+    "name": "commit_review_listing_the_review_starting_point",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_not_reviewed/0/commit": "0b5f2d9000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "commit_review never lists the commit it counts since as not reviewed"
+  },
+  {
+    "name": "commit_review_counting_commits_at_the_starting_point",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "reviewed",
+        "review_starting_point": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 3,
+        "counted_since": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "earlier_reading": null
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts no commits exactly when the head commit is the one it counts since"
+  },
+  {
+    "name": "commit_review_counting_since_another_commit_naming_no_earlier_reading",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "3e9d40b000000000000000000000000000000000",
+        "earlier_reading": null
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts since the review starting point when it names no earlier reading"
+  },
+  {
+    "name": "commit_review_counting_since_an_earlier_reading_of_the_starting_point",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "0b5f2d9000000000000000000000000000000000",
+        "earlier_reading": {
+          "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+          "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "decided_at": "2026-09-10T12:00:00Z"
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts since an earlier reading only of a commit after the review starting point"
+  },
+  {
+    "name": "commit_review_counting_since_its_own_reading",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "3e9d40b000000000000000000000000000000000",
+        "earlier_reading": {
+          "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+          "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "decided_at": "2026-09-10T12:00:00Z"
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts since an earlier reading, not its own"
+  },
+  {
+    "name": "commit_review_counting_since_a_reading_decided_before_the_starting_point_was_set",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "3e9d40b000000000000000000000000000000000",
+        "earlier_reading": {
+          "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+          "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "decided_at": "2026-08-31T23:59:59Z"
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts since a reading decided after its review starting point was set"
+  },
+  {
+    "name": "commit_review_counting_since_a_reading_decided_with_it",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "3e9d40b000000000000000000000000000000000",
+        "earlier_reading": {
+          "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+          "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "decided_at": "2026-09-16T18:29:30Z"
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review counts since a reading decided before its own outcome"
+  },
+  {
+    "name": "commit_review_listing_the_commit_it_counts_since",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/counted_since": {
+        "commit": "3e9d40b000000000000000000000000000000000",
+        "earlier_reading": {
+          "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+          "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "decided_at": "2026-09-10T12:00:00Z"
+        }
+      },
+      "/commit_review/commits_not_reviewed/0/commit": "3e9d40b000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "commit_review never lists the commit it counts since as not reviewed"
+  },
+  {
+    "name": "commit_review_checking_more_than_the_limit",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_counted": 101
+    },
+    "remove": [],
+    "message": "commit_review checks at most 100 commits; more is too_many_commits"
+  },
+  {
+    "name": "commit_review_too_many_commits_within_the_limit",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "too_many_commits",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 100,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        }
+      }
+    },
+    "remove": [],
+    "message": "commit_review is too_many_commits only for more than 100 commits"
+  },
+  {
+    "name": "commit_review_starting_point_set_after_the_decision",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/review_starting_point/set_at": "2026-09-16T18:29:31Z"
+    },
+    "remove": [],
+    "message": "commit_review's review starting point was set no later than the outcome was decided"
+  },
+  {
+    "name": "commit_review_starting_point_not_in_history_that_is_the_head",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "review_starting_point_not_in_history",
+        "review_starting_point": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        }
+      }
+    },
+    "remove": [],
+    "message": "a review starting point that is the head commit is in its history"
+  },
+  {
+    "name": "commit_review_of_another_commit_than_the_source",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/head_commit": "1111111111111111111111111111111111111111"
+    },
+    "remove": [],
+    "message": "commit_review.head_commit is source.commit.sha, unless the outcome is source_commit_not_verified_commit, which names the verified commit"
+  },
+  {
+    "name": "commit_review_source_commit_not_verified_commit_naming_the_source_commit",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "source_commit_not_verified_commit"
+      }
+    },
+    "remove": [],
+    "message": "commit_review.head_commit is source.commit.sha, unless the outcome is source_commit_not_verified_commit, which names the verified commit"
+  },
+  {
+    "name": "commit_review_head_commit_before_the_starting_point_that_is_it",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "head_commit_before_review_starting_point",
+        "review_starting_point": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        }
+      }
+    },
+    "remove": [],
+    "message": "a head commit that is the review starting point is not before it"
+  },
+  {
+    "name": "commit_review_served_in_a_run_no_server_opened",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
+    "remove": [],
+    "message": "commit_review holds the unknown marker when the input names no environment or its production flag is the marker"
+  },
+  {
+    "name": "commit_review_served_for_a_change_with_no_environment",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment": null,
+      "/change/digest": "sha256:9b42675bc694b0f41e1b6363c04a4b71e6169dc1ae6486009d1efd76823756bf"
+    },
+    "remove": [],
+    "message": "commit_review holds the unknown marker when the input names no environment or its production flag is the marker"
+  },
+  {
+    "name": "commit_review_about_an_image_for_an_infrastructure_change",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "build_commit_not_verified_commit"
+      }
+    },
+    "remove": [],
+    "message": "an infrastructure change's commit_review is not about an image's build"
+  },
+  {
+    "name": "commit_review_with_an_unknown_outcome",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/outcome": "covered"
+    },
+    "remove": [],
+    "message": "does not match any of the expected tags"
+  },
+  {
+    "name": "commit_review_with_an_unknown_reason",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_not_reviewed/0/reason": "no_approval_that_counts"
+    },
+    "remove": [],
+    "message": "Input should be 'no_pull_request'"
+  },
+  {
+    "name": "commit_review_listing_more_than_the_most",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/commits_counted": 60,
+      "/commit_review/commits_not_reviewed": [
+        {
+          "commit": "0000000000000000000000000000000000000001",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000002",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000003",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000004",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000005",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000006",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000007",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000008",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000009",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000000f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000010",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000011",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000012",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000013",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000014",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000015",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000016",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000017",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000018",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000019",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000001f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000020",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000021",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000022",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000023",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000024",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000025",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000026",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000027",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000028",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000029",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002a",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002b",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002c",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002d",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002e",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "000000000000000000000000000000000000002f",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000030",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000031",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000032",
+          "reason": "no_pull_request"
+        },
+        {
+          "commit": "0000000000000000000000000000000000000033",
+          "reason": "no_pull_request"
+        }
+      ],
+      "/commit_review/commits_not_reviewed_list_complete": false
+    },
+    "remove": [],
+    "message": "List should have at most 50 items"
+  },
+  {
+    "name": "commit_review_reviewed_with_commits_not_reviewed",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/outcome": "reviewed"
+    },
+    "remove": [],
+    "message": "Extra inputs are not permitted"
+  },
+  {
+    "name": "commit_review_of_an_unknown_git_host",
+    "vector": "iac/pre_deploy_change.json",
+    "set": {
+      "/commit_review/repository/host": "gitlab"
+    },
+    "remove": [],
+    "message": "Input should be 'github'"
+  },
+  {
+    "name": "commit_review_at_another_stage",
+    "vector": "iac/post_deploy.json",
+    "set": {
+      "/commit_review": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
+    "remove": [],
+    "message": "post_deploy: not part of this profile: commit_review"
   }
 ]

@@ -5795,7 +5795,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "deployment": {
@@ -5856,7 +5863,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "deployment": {
@@ -5917,7 +5931,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "deployment": {
@@ -5978,7 +5999,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6100,7 +6128,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6230,7 +6265,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6360,7 +6402,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6482,7 +6531,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6614,7 +6670,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6736,7 +6799,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6857,7 +6927,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -6988,7 +7065,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -7124,7 +7208,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -7249,7 +7340,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -7382,7 +7480,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -7513,7 +7618,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -7645,7 +7757,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "drift_check": {
@@ -8264,7 +8383,14 @@
           "platform_digests": [
             "sha256:2222222222222222222222222222222222222222222222222222222222222222",
             "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-          ]
+          ],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "c84e7a1000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
         }
       },
       "plan": null,
@@ -9059,6 +9185,2291 @@
         "reason": "state_not_read"
       },
       "when": null
+    }
+  },
+  {
+    "name": "commits_reviewed_pass",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "reviewed",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 3,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_pass_at_the_starting_point",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "reviewed",
+        "review_starting_point": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 0,
+        "counted_since": {
+          "commit": "c84e7a1000000000000000000000000000000000",
+          "earlier_reading": null
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_pass_since_an_earlier_reviewed_reading",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "reviewed",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 2,
+        "counted_since": {
+          "commit": "3e9d40b000000000000000000000000000000000",
+          "earlier_reading": {
+            "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
+            "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+            "decided_at": "2026-09-10T12:00:00Z"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_two_reasons",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "outcome": "not_reviewed",
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 3,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_not_reviewed": [
+          {
+            "commit": "7a3c11e000000000000000000000000000000000",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "c84e7a1000000000000000000000000000000000",
+            "reason": "no_qualifying_approval"
+          }
+        ],
+        "commits_not_reviewed_list_complete": true
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "not_reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_list_incomplete",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "outcome": "not_reviewed",
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 80,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_not_reviewed": [
+          {
+            "commit": "0000000000000000000000000000000000000001",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000002",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000003",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000004",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000005",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000006",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000007",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000008",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000009",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000a",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000b",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000c",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000d",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000e",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000000f",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000010",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000011",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000012",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000013",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000014",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000015",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000016",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000017",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000018",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000019",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001a",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001b",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001c",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001d",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001e",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000001f",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000020",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000021",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000022",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000023",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000024",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000025",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000026",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000027",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000028",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000029",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002a",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002b",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002c",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002d",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002e",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "000000000000000000000000000000000000002f",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000030",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000031",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "0000000000000000000000000000000000000032",
+            "reason": "no_pull_request"
+          }
+        ],
+        "commits_not_reviewed_list_complete": false
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "not_reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_too_many_commits",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "too_many_commits",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 140,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "too_many_commits",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_no_review_starting_point",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "no_review_starting_point"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "no_review_starting_point",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_starting_point_not_in_history",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "review_starting_point_not_in_history",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "review_starting_point_not_in_history",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_head_commit_before_review_starting_point",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "head_commit_before_review_starting_point",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "head_commit_before_review_starting_point",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_source_commit_not_verified_commit",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "5e6f7a8000000000000000000000000000000000",
+        "outcome": "source_commit_not_verified_commit"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "source_commit_not_verified_commit",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_unknown_marker",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "eval_003",
+        "activity": "iac_change",
+        "stage": "pre_deploy",
+        "timestamp": "2026-09-16T18:30:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": {
+          "id": "acme"
+        },
+        "workspace": {
+          "id": "production"
+        },
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-09-16T18:30:00Z",
+        "source": "server",
+        "trust": "attested",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "repository": {
+          "name": "acme/platform-infra"
+        },
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ],
+        "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+      },
+      "plan": {
+        "tool": "terraform",
+        "format_version": "1.2",
+        "tool_version": "1.14.0",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "artifact_digest": null,
+        "artifact_digest_source": "not_provided",
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "complete": true,
+        "applyable": true,
+        "resources": [
+          {
+            "id": "aws_db_instance.payments",
+            "provider": "aws",
+            "type": "aws_db_instance",
+            "action": "update",
+            "module": null,
+            "kind": "rds_instance"
+          },
+          {
+            "id": "aws_iam_policy.deployer",
+            "provider": "aws",
+            "type": "aws_iam_policy",
+            "action": "update",
+            "module": null,
+            "kind": "iam_policy"
+          }
+        ]
+      },
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "evaluations": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "exceptions": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "run": {
+        "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+      },
+      "resource": null,
+      "deployment": null,
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "commit_review.outcome: server_facts_unavailable",
+      "unknown": {
+        "path": "commit_review.outcome",
+        "reason": "server_facts_unavailable"
+      },
+      "when": null,
+      "predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "unknown"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "commits_reviewed_fail_build_commit_not_verified_commit",
+    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "input": {
+      "apiVersion": "iltero.io/assurance-context/v1",
+      "evaluation": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
+        "activity": "image_deploy",
+        "stage": "pre_deploy",
+        "timestamp": "2026-11-02T09:00:00Z",
+        "assertion": {
+          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "version": "1.0.0"
+        }
+      },
+      "organization_scope": {
+        "organization": null,
+        "workspace": null,
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "reference_time": {
+        "value": "2026-11-02T09:00:00Z",
+        "source": "runner_clock",
+        "trust": "asserted",
+        "time_window": null
+      },
+      "source": {
+        "vcs": "git",
+        "commit": {
+          "sha": "c84e7a1000000000000000000000000000000000"
+        },
+        "repository": null,
+        "ref": {
+          "type": "branch",
+          "name": "main"
+        },
+        "pull_request": null
+      },
+      "change": {
+        "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+        "image": {
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb"
+        },
+        "build": {
+          "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "platform_digests": [],
+          "verified_commit": "c84e7a1000000000000000000000000000000000",
+          "build_commit": "9d0e1f2000000000000000000000000000000000",
+          "repository": {
+            "host": "github",
+            "instance": "github.com",
+            "repository_id": "712400318"
+          }
+        }
+      },
+      "plan": null,
+      "subject": {
+        "kind": "change",
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "resource": null,
+      "deployment": null,
+      "evaluations": [],
+      "approvals": [],
+      "exceptions": [],
+      "run": {
+        "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
+      },
+      "drift_check": null,
+      "assurance": null,
+      "artifact": null,
+      "tests": null,
+      "scans": null,
+      "verified_source": null,
+      "attestation_outcome": null,
+      "commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "build_commit_not_verified_commit"
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": "build_commit_not_verified_commit",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
+        "kind": "change"
+      }
     }
   }
 ]

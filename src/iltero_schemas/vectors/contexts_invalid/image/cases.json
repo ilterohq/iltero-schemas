@@ -79,5 +79,230 @@
     },
     "remove": [],
     "message": "an exception never covers a built-in assertion: what it records is never waived"
+  },
+  {
+    "name": "commit_review_of_a_deploy_with_no_accepted_build",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/commit_review": {
+        "outcome": "not_reviewed",
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "commits_counted": 3,
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_not_reviewed": [
+          {
+            "commit": "7a3c11e000000000000000000000000000000000",
+            "reason": "no_pull_request"
+          },
+          {
+            "commit": "c84e7a1000000000000000000000000000000000",
+            "reason": "no_qualifying_approval"
+          }
+        ],
+        "commits_not_reviewed_list_complete": true
+      }
+    },
+    "remove": [],
+    "message": "commit_review holds the unknown marker when the deploy has no accepted build"
+  },
+  {
+    "name": "commit_review_of_another_commit_than_the_accepted_build",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [],
+        "verified_commit": "1111111111111111111111111111111111111111",
+        "build_commit": "1111111111111111111111111111111111111111",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [],
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "no_review_starting_point"
+      }
+    },
+    "remove": [],
+    "message": "commit_review.head_commit and repository are the accepted build's verified_commit and repository"
+  },
+  {
+    "name": "commit_review_of_another_repository_than_the_accepted_build",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [],
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "1"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "no_review_starting_point"
+      }
+    },
+    "remove": [],
+    "message": "commit_review.head_commit and repository are the accepted build's verified_commit and repository"
+  },
+  {
+    "name": "commit_review_of_a_build_commit_not_the_verified_commit_called_otherwise",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": null,
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [],
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "no_review_starting_point"
+      }
+    },
+    "remove": [],
+    "message": "commit_review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
+  },
+  {
+    "name": "commit_review_of_a_build_commit_that_is_the_verified_commit_called_otherwise",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [],
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "build_commit_not_verified_commit"
+      }
+    },
+    "remove": [],
+    "message": "commit_review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
+  },
+  {
+    "name": "commit_review_of_an_image_deploy_about_a_source_commit",
+    "vector": "image/pre_deploy_change.json",
+    "set": {
+      "/organization_scope/environment/production": true,
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/evaluations": [],
+      "/approvals": [],
+      "/exceptions": [],
+      "/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
+        "outcome": "source_commit_not_verified_commit"
+      }
+    },
+    "remove": [],
+    "message": "an image deploy's commit_review is not about an infrastructure change's source commit"
   }
 ]

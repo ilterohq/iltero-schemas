@@ -1,5 +1,6 @@
 """The facts only the server holds, as an evaluation input carries them: approvals, exceptions, earlier evaluations,
-the verified source and the verified attestation.
+the verified source and the verified attestation. The sixth, whether a change's commits were reviewed, is in
+``models.commit_review``.
 
 Each is normalised whatever produced it, so an assertion compares neutral
 fields only.
@@ -23,7 +24,7 @@ fields only.
   the signing certificate names, or why it refused the attestation, or that
   none was sent.
 
-All five are the server's claims, as served.
+All six are the server's claims, as served.
 """
 
 from __future__ import annotations

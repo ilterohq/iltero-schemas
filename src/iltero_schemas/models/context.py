@@ -57,6 +57,7 @@ from iltero_schemas.models.change_type import (
     ActivityName,
 )
 from iltero_schemas.models.checked_content import checked_image, checked_plan
+from iltero_schemas.models.commit_review import CommitReview, check_commit_review
 from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     MAX_SUBJECT_IDENTITIES,
@@ -108,6 +109,7 @@ PARTS = (
     "scans",
     "verified_source",
     "attestation_outcome",
+    "commit_review",
 )
 
 
@@ -328,6 +330,8 @@ class AssuranceContext(StrictModel):
     verified_source: VerifiedSource | ServerFactsUnavailable | None = None
     # What the server found when it checked the build's attestation; a marker when it could not supply it.
     attestation_outcome: AttestationOutcome | ServerFactsUnavailable | None = None
+    # Whether the change's commits were reviewed (``models.commit_review``); a marker when it could not say.
+    commit_review: CommitReview | ServerFactsUnavailable | None = None
 
     @field_validator("change", "deployment", "drift_check", mode="wrap")
     @classmethod
@@ -406,6 +410,15 @@ class AssuranceContext(StrictModel):
             raise ValueError("a deploy's input names its environment: a deploy is to one")
         if isinstance(self.change, ImageChange):
             self._check_image_change(self.change, local)
+        if self.commit_review is not None:
+            environment = self.organization_scope.environment
+            check_commit_review(
+                self.commit_review,
+                self.evaluation.activity,
+                self.source.commit.sha if self.source is not None else None,
+                environment.production if environment is not None else None,
+                self.change.build if isinstance(self.change, ImageChange) else None,
+            )
         if self.artifact is not None and self.scans is not None:
             scanned = [scan.image_digest for scan in self.scans]
             check_scans_name_their_platform(self.artifact.digest, self.artifact.platform_digests, scanned)

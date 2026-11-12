@@ -43,6 +43,7 @@ from iltero_schemas.change_types.image.build import ImageBuild
 from iltero_schemas.change_types.image.deploy import ImageDeploy
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.commit_review import CommitReviewReading
 from iltero_schemas.models.context import Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
@@ -275,6 +276,9 @@ class StageRecord(StrictModel):
     # The approvals the stage's evaluations read, whatever their source, each of this record's change or run; null at a
     # stage whose input carries no approvals.
     approvals: Approvals | None
+    # The commit review the stage's evaluations read from the server; null at every other stage, and when the input
+    # held the unknown marker.
+    commit_review: CommitReviewReading | None
     compiler: Compiler
     redaction: RedactionReport
     events: EventsFile

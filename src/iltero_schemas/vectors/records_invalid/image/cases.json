@@ -644,7 +644,14 @@
         "platform_digests": [
           "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-        ]
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
       }
     },
     "remove": [],
@@ -1117,7 +1124,8 @@
         "version": "1.0.0",
         "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a"
       },
-      "/events/2/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7"
+      "/events/2/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7",
+      "/events/2/provenance/assertion_source_digest": "sha256:cab2dce831c7081e4634b3bc65dc72d36af9e7b6402e773cd040b387aff32d2f"
     },
     "remove": [],
     "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
@@ -1259,5 +1267,1011 @@
       "/events/1"
     ],
     "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is evaluated once, at the pre_deploy stage, once it has reported"
+  },
+  {
+    "name": "image_record_of_a_local_run_whose_commit_review_check_passed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/0/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+      },
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+  },
+  {
+    "name": "image_record_of_a_local_run_whose_commit_review_check_failed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/events/0/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+      },
+      "/events/0/evaluation/status": "fail",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+  },
+  {
+    "name": "image_record_of_a_local_run_keeping_a_commit_review",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "the pre_deploy stage keeps a commit review only when its results read facts from the server"
+  },
+  {
+    "name": "image_record_keeping_a_commit_review_after_the_deployment",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/stages/post_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "the post_deploy stage keeps a commit review only where its input carries one"
+  },
+  {
+    "name": "image_deploy_record_dropping_the_commit_review_its_check_passed_from",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": null,
+      "/events/0/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations": {
+        "predicates": [
+          {
+            "actual": "reviewed",
+            "clause": "assert",
+            "expected": "reviewed",
+            "index": 0,
+            "op": "equal",
+            "path": "commit_review.outcome",
+            "status": "true"
+          }
+        ],
+        "unknown": null,
+        "when": null
+      },
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/pre_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+        },
+        "assertions_evaluated": 4,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 4,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "the pre_deploy stage keeps the commit review its ILT.CHANGE.COMMITS_REVIEWED check decided from"
+  },
+  {
+    "name": "image_deploy_record_whose_commit_review_check_passed_on_commits_not_reviewed",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      },
+      "/events/0/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations": {
+        "predicates": [
+          {
+            "actual": "reviewed",
+            "clause": "assert",
+            "expected": "reviewed",
+            "index": 0,
+            "op": "equal",
+            "path": "commit_review.outcome",
+            "status": "true"
+          }
+        ],
+        "unknown": null,
+        "when": null
+      },
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/pre_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+        },
+        "assertions_evaluated": 4,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 4,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.CHANGE.COMMITS_REVIEWED check passed"
+  },
+  {
+    "name": "image_deploy_record_keeping_a_reviewed_commit_review_without_its_starting_point",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": null,
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "commit_review keeps a review starting point exactly when its outcome, reviewed, names one"
+  },
+  {
+    "name": "image_deploy_record_keeping_a_commit_review_its_check_could_not_read",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      },
+      "/events/0/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/0/evaluation/status": "unknown",
+      "/events/0/evaluation/status_reason": "server_facts_unavailable",
+      "/events/0/evaluation/policy_reason": "commit_review.outcome: server_facts_unavailable",
+      "/events/0/evaluation/observations": {
+        "predicates": [
+          {
+            "actual": null,
+            "clause": "assert",
+            "expected": "reviewed",
+            "index": 0,
+            "op": "equal",
+            "path": "commit_review.outcome",
+            "status": "unknown"
+          }
+        ],
+        "unknown": {
+          "path": "commit_review.outcome",
+          "reason": "server_facts_unavailable"
+        },
+        "when": null
+      },
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/pre_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+        },
+        "assertions_evaluated": 4,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "indeterminate",
+        "exit_code": 3,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "the pre_deploy stage keeps no commit review when its ILT.CHANGE.COMMITS_REVIEWED check could not read one"
+  },
+  {
+    "name": "image_deploy_record_whose_commit_review_check_passed_without_facts_from_the_server",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "none",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "none",
+      "/stages/pre_deploy/commit_review": null,
+      "/events/0/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations": {
+        "predicates": [
+          {
+            "actual": "reviewed",
+            "clause": "assert",
+            "expected": "reviewed",
+            "index": 0,
+            "op": "equal",
+            "path": "commit_review.outcome",
+            "status": "true"
+          }
+        ],
+        "unknown": null,
+        "when": null
+      },
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/pre_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+        },
+        "assertions_evaluated": 4,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 4,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "ILT.CHANGE.COMMITS_REVIEWED passes or fails only on facts read from the server"
+  },
+  {
+    "name": "image_deploy_record_keeping_a_commit_review_of_another_repository",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400319"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "the pre_deploy stage's commit review is of the accepted build's repository"
+  },
+  {
+    "name": "image_deploy_record_keeping_a_commit_review_of_an_infrastructure_change_source_commit",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": null,
+        "outcome": "source_commit_not_verified_commit",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": null,
+        "commits_counted": null
+      }
+    },
+    "remove": [],
+    "message": "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit"
+  },
+  {
+    "name": "image_deploy_record_keeping_a_reviewed_commit_review_of_a_build_naming_another_commit",
+    "vector": "image/local_run_deploy.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/change/build": {
+        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "platform_digests": [
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "1111111111111111111111111111111111111111",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        }
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      },
+      "/events/0/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations": {
+        "predicates": [
+          {
+            "actual": "reviewed",
+            "clause": "assert",
+            "expected": "reviewed",
+            "index": 0,
+            "op": "equal",
+            "path": "commit_review.outcome",
+            "status": "true"
+          }
+        ],
+        "unknown": null,
+        "when": null
+      },
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/pre_deploy/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+        },
+        "assertions_evaluated": 4,
+        "subjects_per_assertion": {
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 4,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "pass",
+        "exit_code": 0,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
   }
 ]

@@ -221,6 +221,52 @@ def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
         AssuranceContext.model_validate({**PRE_DEPLOY, part: {"__redacted": True}})
 
 
+def test_the_commit_review_is_served_or_the_unknown_marker() -> None:
+    assert PRE_DEPLOY["commit_review"]["outcome"] == "not_reviewed"
+    AssuranceContext.model_validate({**PRE_DEPLOY, "commit_review": MARKER})
+    with pytest.raises(ValidationError, match="pre_deploy_change: missing commit_review"):
+        AssuranceContext.model_validate({**PRE_DEPLOY, "commit_review": None})
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**PRE_DEPLOY, "commit_review": {**MARKER, "reason": "redacted"}})
+
+
+def test_an_infrastructure_changes_commit_review_starts_at_its_source_commit() -> None:
+    review = {**PRE_DEPLOY["commit_review"], "head_commit": "1" * 40}
+    with pytest.raises(ValidationError, match="commit_review.head_commit is source.commit.sha"):
+        AssuranceContext.model_validate({**PRE_DEPLOY, "commit_review": review})
+
+
+def test_only_a_server_that_opened_the_run_reviews_its_commits() -> None:
+    environment = {"name": "production", "production": MARKER}
+    scope = {**PRE_DEPLOY["organization_scope"], "environment": environment}
+    with pytest.raises(ValidationError, match="commit_review holds the unknown marker when the input names no environ"):
+        AssuranceContext.model_validate({**PRE_DEPLOY, "organization_scope": scope})
+    AssuranceContext.model_validate({**PRE_DEPLOY, "organization_scope": scope, "commit_review": MARKER})
+
+
+def test_a_change_with_no_environment_has_its_commits_reviewed_by_no_server() -> None:
+    document = copy.deepcopy(PRE_DEPLOY)
+    document["organization_scope"]["environment"] = None
+    plan = PRE_DEPLOY["plan"]
+    checked = {"kind": "plan", "digest": plan["digest"], "digest_version": plan["digest_version"], "tool": plan["tool"]}
+    document["change"]["digest"] = change_digest("iac_change", "root", None, checked)
+    with pytest.raises(ValidationError, match="when the input names no environment or its production flag is the"):
+        AssuranceContext.model_validate(document)
+    AssuranceContext.model_validate({**document, "commit_review": MARKER})
+
+
+def test_an_infrastructure_changes_commit_review_is_not_about_an_image() -> None:
+    review = {key: PRE_DEPLOY["commit_review"][key] for key in ("host_reading_id", "host_reading_digest", "decided_at")}
+    review |= {
+        "repository": PRE_DEPLOY["commit_review"]["repository"],
+        "head_commit": PRE_DEPLOY["source"]["commit"]["sha"],
+    }
+    with pytest.raises(ValidationError, match="not about an image's build"):
+        AssuranceContext.model_validate(
+            {**PRE_DEPLOY, "commit_review": {**review, "outcome": "build_commit_not_verified_commit"}}
+        )
+
+
 @pytest.mark.parametrize("production", [True, False, {"__unknown": True, "reason": "server_facts_unavailable"}])
 def test_the_environment_says_whether_it_is_production_or_that_nobody_knows(production: object) -> None:
     environment = {"name": "production", "production": production}
@@ -637,3 +683,66 @@ def test_the_assurance_part_is_any_object_held_to_the_bounds_of_a_policys_observ
         AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a" * OBSERVATIONS_MAX_BYTES}})
     with pytest.raises(ValidationError, match="must not contain control characters"):
         AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a\u0000"}})
+
+
+IMAGE_PRE_DEPLOY: dict[str, Any] = json.loads(
+    (VECTORS / "contexts" / "image" / "pre_deploy_change.json").read_text(encoding="utf-8")
+)
+REPOSITORY = {"host": "github", "instance": "github.com", "repository_id": "712400318"}
+ACCEPTED_BUILD: dict[str, Any] = {
+    "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+    "record_digest": "sha256:" + "5" * 64,
+    "platform_digests": [],
+    "verified_commit": "c84e7a1000000000000000000000000000000000",
+    "build_commit": "c84e7a1000000000000000000000000000000000",
+    "repository": REPOSITORY,
+}
+
+
+def _image_review(build: dict[str, Any], review: dict[str, Any]) -> dict[str, Any]:
+    """The image pre-deploy vector as Iltero Platform serves it: an accepted build and a commit review."""
+    scope = {**IMAGE_PRE_DEPLOY["organization_scope"], "environment": {"name": "production", "production": True}}
+    served: dict[str, Any] = {part: [] for part in ("evaluations", "approvals", "exceptions")}
+    change = {**IMAGE_PRE_DEPLOY["change"], "build": build}
+    return {**IMAGE_PRE_DEPLOY, **served, "organization_scope": scope, "change": change, "commit_review": review}
+
+
+def _no_starting_point(head: str, repository: dict[str, str]) -> dict[str, Any]:
+    reading = {
+        key: PRE_DEPLOY["commit_review"][key] for key in ("host_reading_id", "host_reading_digest", "decided_at")
+    }
+    return {**reading, "repository": repository, "head_commit": head, "outcome": "no_review_starting_point"}
+
+
+def test_an_image_deploys_commit_review_is_served_only_with_an_accepted_build() -> None:
+    review = _no_starting_point(ACCEPTED_BUILD["verified_commit"], REPOSITORY)
+    assert IMAGE_PRE_DEPLOY["commit_review"] == MARKER
+    with pytest.raises(ValidationError, match="holds the unknown marker when the deploy has no accepted build"):
+        AssuranceContext.model_validate({**IMAGE_PRE_DEPLOY, "commit_review": review})
+    AssuranceContext.model_validate(_image_review(ACCEPTED_BUILD, review))
+
+
+def test_an_image_deploys_commit_review_starts_at_the_accepted_builds_verified_commit_and_repository() -> None:
+    message = "commit_review.head_commit and repository are the accepted build's verified_commit and repository"
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate(_image_review(ACCEPTED_BUILD, _no_starting_point("1" * 40, REPOSITORY)))
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate(
+            _image_review(
+                ACCEPTED_BUILD,
+                _no_starting_point(ACCEPTED_BUILD["verified_commit"], {**REPOSITORY, "repository_id": "1"}),
+            )
+        )
+
+
+@pytest.mark.parametrize("build_commit", [None, "9d0e1f2000000000000000000000000000000000"])
+def test_a_build_commit_that_is_not_the_verified_commit_is_said_so(build_commit: str | None) -> None:
+    elsewhere = {**ACCEPTED_BUILD, "build_commit": build_commit}
+    review = _no_starting_point(ACCEPTED_BUILD["verified_commit"], REPOSITORY)
+    message = "commit_review is build_commit_not_verified_commit exactly when"
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate(_image_review(elsewhere, review))
+    said = {**review, "outcome": "build_commit_not_verified_commit"}
+    AssuranceContext.model_validate(_image_review(elsewhere, said))
+    with pytest.raises(ValidationError, match=message):
+        AssuranceContext.model_validate(_image_review(ACCEPTED_BUILD, said))

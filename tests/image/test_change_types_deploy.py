@@ -86,6 +86,9 @@ def test_an_accepted_builds_platform_digests_never_name_the_deployed_image() -> 
         "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
         "record_digest": "sha256:" + "5" * 64,
         "platform_digests": [image],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": "c84e7a1000000000000000000000000000000000",
+        "repository": {"host": "github", "instance": "github.com", "repository_id": "712400318"},
     }
     with pytest.raises(ValidationError, match="never the index digest itself"):
         ImageDeploy.model_validate(change)

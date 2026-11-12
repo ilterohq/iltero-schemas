@@ -5,8 +5,8 @@ from iltero_schemas.profiles.stage import (
     PROFILES,
     Profile,
     profile_for,
-    reads_approvals,
     reads_checked_content,
+    reads_part,
     reads_server_facts,
     roots_for,
 )
@@ -16,7 +16,7 @@ __all__ = [
     "PROFILES",
     "Profile",
     "profile_for",
-    "reads_approvals",
+    "reads_part",
     "reads_checked_content",
     "reads_server_facts",
     "roots_for",

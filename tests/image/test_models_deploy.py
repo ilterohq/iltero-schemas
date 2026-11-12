@@ -213,7 +213,14 @@ def test_a_deploy_inputs_reading_compares_every_container_of_the_deployed_reposi
 
 
 def test_an_accepted_build_names_its_platform_digests_once_each_in_order() -> None:
-    build = {"run_id": CHECK["run_id"], "record_digest": DIGEST, "platform_digests": ["sha256:" + "3" * 64]}
+    build = {
+        "run_id": CHECK["run_id"],
+        "record_digest": DIGEST,
+        "platform_digests": ["sha256:" + "3" * 64],
+        "verified_commit": "c84e7a1000000000000000000000000000000000",
+        "build_commit": None,
+        "repository": {"host": "github", "instance": "github.com", "repository_id": "712400318"},
+    }
     AcceptedBuild.model_validate(build)
     with pytest.raises(ValidationError, match="named once each, in order"):
         AcceptedBuild.model_validate({**build, "platform_digests": ["sha256:" + "3" * 64, "sha256:" + "2" * 64]})

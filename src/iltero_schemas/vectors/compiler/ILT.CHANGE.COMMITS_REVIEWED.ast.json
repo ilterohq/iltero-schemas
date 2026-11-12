@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": "reviewed",
+      "op": "equal",
+      "path": "commit_review.outcome"
+    }
+  },
+  "ast_version": 1,
+  "change_type": null,
+  "id": "ILT.CHANGE.COMMITS_REVIEWED",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

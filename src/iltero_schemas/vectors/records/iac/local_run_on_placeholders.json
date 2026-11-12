@@ -1644,7 +1644,8 @@
         "reason": "upstream_state_unavailable",
         "detail": "upstream inputs replaced with placeholders: 1"
       },
-      "approvals": null
+      "approvals": null,
+      "commit_review": null
     }
   },
   "subject": {

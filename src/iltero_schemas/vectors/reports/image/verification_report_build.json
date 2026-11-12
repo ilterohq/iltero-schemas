@@ -2,7 +2,7 @@
   "apiVersion": "iltero.io/verification-report/v1",
   "record": {
     "uuid": "0b6e5d4c-3b2a-5918-8f7e-6d5c4b3a2918",
-    "digest": "sha256:bd49c9bc9d258b06d5338140caaa8112e84a52a24db21d9195b88477400fa9ba"
+    "digest": "sha256:72c274122b2ae06f6a52fc8eac322b4c7aa6bdb22b3aa8bd1e64573e3b627c39"
   },
   "verifier": {
     "name": "iltero",

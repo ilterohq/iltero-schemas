@@ -1427,7 +1427,8 @@
             "reason": null,
             "detail": null
           },
-          "approvals": null
+          "approvals": null,
+          "commit_review": null
         },
         "pre_deploy": {
           "assertions": {
@@ -1975,7 +1976,8 @@
             "reason": null,
             "detail": null
           },
-          "approvals": []
+          "approvals": [],
+          "commit_review": null
         }
       }
     },
@@ -2554,7 +2556,8 @@
           "reason": null,
           "detail": null
         },
-        "approvals": []
+        "approvals": [],
+        "commit_review": null
       }
     },
     "remove": [],
@@ -3258,7 +3261,8 @@
             "policy_version": null,
             "timestamp": "2026-09-22T13:05:30.000Z"
           }
-        ]
+        ],
+        "commit_review": null
       }
     },
     "remove": [],
@@ -4205,5 +4209,321 @@
     },
     "remove": [],
     "message": "only a log that lost messages leaves a change to the state or unknown"
+  },
+  {
+    "name": "iac_record_of_a_local_run_whose_commit_review_check_passed",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/events/1/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+      },
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
+      "/events/1/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/1/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+  },
+  {
+    "name": "iac_record_of_a_local_run_whose_commit_review_check_failed",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/events/1/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+      },
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
+      "/events/1/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/1/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+  },
+  {
+    "name": "iac_record_of_a_local_run_keeping_a_commit_review",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/stages/pre_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "the pre_deploy stage keeps a commit review only when its results read facts from the server"
+  },
+  {
+    "name": "iac_record_keeping_a_commit_review_after_the_deployment",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/stages/post_deploy/commit_review": {
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "outcome": "reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "the post_deploy stage keeps a commit review only where its input carries one"
+  },
+  {
+    "name": "iac_record_keeping_a_commit_review_about_an_images_build",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "build_commit_not_verified_commit",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": null,
+        "counted_since": null,
+        "commits_counted": null
+      }
+    },
+    "remove": [],
+    "message": "a record of iac_change keeps no commit review that is build_commit_not_verified_commit"
+  },
+  {
+    "name": "iac_record_keeping_a_commit_review_without_where_it_counted_since",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "counted_since": null,
+        "commits_counted": 3
+      }
+    },
+    "remove": [],
+    "message": "commit_review keeps where it counted since and how many exactly when its outcome, not_reviewed, counts commits"
+  },
+  {
+    "name": "iac_record_keeping_a_commit_review_that_counts_no_commits_before_its_head",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 0
+      }
+    },
+    "remove": [],
+    "message": "the pre_deploy stage's commit review counts no commits exactly when the head commit is the one it counts since"
+  },
+  {
+    "name": "iac_record_evaluating_its_commit_review_check_twice_in_a_stage",
+    "vector": "iac/local_run_deployed.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/facts_source": "server",
+      "/stages/pre_deploy/commit_review": {
+        "outcome": "not_reviewed",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
+        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "review_starting_point": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "set_by": {
+            "provider": "iltero",
+            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+          },
+          "set_at": "2026-09-01T08:00:00Z",
+          "reason": "Branch protection required reviews from this commit on."
+        },
+        "counted_since": {
+          "commit": "0b5f2d9000000000000000000000000000000000",
+          "earlier_reading": null
+        },
+        "commits_counted": 3
+      },
+      "/events/2/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/2/provenance/assertion_source": "contract_starter",
+      "/events/2/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/2/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 2
+      },
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:08382ff0834079643901dd3b19cb422ec1cf5db11ab41c489d4f58fc774da6bf",
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 11,
+          "counted_from": "plan_resource_enumeration",
+          "source_digest": "sha256:542655f99097af73932265f53f659c0f3799748c210c1bc8491ca64a5b3a6862",
+          "removed_by_plan": 0,
+          "excluded": [
+            {
+              "plan_index": 0,
+              "id": "data.local_file.manifest",
+              "reason": "not_managed"
+            }
+          ]
+        },
+        "subjects_evaluated": 0,
+        "assertions_expected": {
+          "value": 4,
+          "origin": "server_pinned",
+          "required_assertion_digest": "sha256:af49146878a0783141af598e2363f13e7d2a387eb281a51491aeed2f5091540f"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
+          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 2,
+          "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
+      },
+      "/verdict": {
+        "value": "fail",
+        "exit_code": 6,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/assurance_status": {
+        "value": "complete",
+        "reason": null,
+        "detail": null
+      },
+      "/events/1/assertion": {
+        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "version": "1.0.0",
+        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+      },
+      "/events/1/provenance/assertion_source": "contract_starter",
+      "/events/1/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
+      "/events/1/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+    },
+    "remove": [],
+    "message": "the pre_deploy stage evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one reading"
   }
 ]

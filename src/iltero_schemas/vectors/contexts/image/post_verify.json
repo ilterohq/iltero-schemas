@@ -140,5 +140,6 @@
   "tests": null,
   "scans": null,
   "verified_source": null,
-  "attestation_outcome": null
+  "attestation_outcome": null,
+  "commit_review": null
 }

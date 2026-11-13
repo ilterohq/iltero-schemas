@@ -131,8 +131,14 @@ def test_the_precedence_names_every_exit_code_once() -> None:
 @pytest.mark.parametrize(
     ("verdict", "message"),
     [
-        ({"value": "pass", "exit_code": 1, "computed_from": "status_counts", "stage": None}, "not a verdict of pass"),
-        ({"value": "fail", "exit_code": 3, "computed_from": "status_counts", "stage": None}, "not a verdict of fail"),
+        (
+            {"value": "pass", "exit_code": 1, "computed_from": "status_counts", "stage": None},
+            "not the code of the verdict pass",
+        ),
+        (
+            {"value": "fail", "exit_code": 3, "computed_from": "status_counts", "stage": None},
+            "not the code of the verdict fail",
+        ),
         (
             {"value": "pass", "exit_code": 0, "computed_from": "status_counts", "stage": "plan"},
             "names its stage exactly",
@@ -486,3 +492,9 @@ def test_the_state_not_read_outranks_placeholders() -> None:
 def test_a_stage_lists_the_state_not_read_once() -> None:
     with pytest.raises(ValidationError, match="lists the state not read once"):
         Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [STATE_GAP, STATE_GAP]})
+
+
+def test_a_count_gap_names_a_kind_a_count_can_describe() -> None:
+    with pytest.raises(ValidationError, match="kind must be a gap a count can describe: accepted_by_binding") as e:
+        CountGap.model_validate({"kind": "made_up_kind", "count": 1})
+    assert "made_up_kind" not in str(e.value)

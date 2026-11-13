@@ -47,7 +47,7 @@ def test_any_other_spelling_of_no_value_is_refused_so_a_missing_value_is_never_r
 
 
 def test_nested_mappings_are_checked_too() -> None:
-    with pytest.raises(DocumentError, match="line 4: duplicate key 'k'"):
+    with pytest.raises(DocumentError, match="line 4: duplicate key"):
         load_document("a:\n  b:\n    k: 1\n    k: 2\n")
 
 
@@ -67,3 +67,15 @@ def test_a_syntax_error_names_the_line_but_never_echoes_the_text() -> None:
 def test_oversized_documents_are_refused() -> None:
     with pytest.raises(DocumentError, match="larger than"):
         load_document("a: " + "x" * MAX_DOCUMENT_BYTES)
+
+
+def test_a_yaml_error_never_quotes_the_document() -> None:
+    with pytest.raises(DocumentError, match="line 1: not valid YAML") as refused:
+        load_document("a: !QUOTEDHANDLE!x 1\n")
+    assert "QUOTEDHANDLE" not in str(refused.value)
+
+
+def test_a_value_the_loader_cannot_construct_is_refused_as_not_valid_yaml() -> None:
+    with pytest.raises(DocumentError, match="not valid YAML") as refused:
+        load_document("a: 2026-13-45\n")
+    assert refused.value.__cause__ is None

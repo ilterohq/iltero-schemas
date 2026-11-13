@@ -61,8 +61,8 @@ def _specifier(value: str) -> str:
     """A PEP 440 version specifier, as ``packaging`` reads it, kept as written."""
     try:
         SpecifierSet(value)
-    except InvalidSpecifier as exc:
-        raise ValueError(f"is not a version specifier: {exc}") from None
+    except InvalidSpecifier:
+        raise ValueError("is not a version specifier") from None
     return value
 
 
@@ -91,7 +91,7 @@ def _unique(values: list[object], message: str) -> None:
     seen: set[object] = set()
     for value in values:
         if value in seen:
-            raise ValueError(f"{message}: {value!r}")
+            raise ValueError(message)
         seen.add(value)
 
 
@@ -150,7 +150,7 @@ class EvaluatorBindingSet(StrictModel):
 
     @model_validator(mode="after")
     def _entries_are_unambiguous(self) -> EvaluatorBindingSet:
-        _unique([entry.id for entry in self.bindings], "two entries share the id")
+        _unique([entry.id for entry in self.bindings], "two entries share an id")
         _unique(
             [(entry.stage.value, entry.tool, entry.rule_id) for entry in self.bindings],
             "two entries bind the same rule of the same tool at the same stage",

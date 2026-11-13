@@ -195,6 +195,7 @@
             "imported": 0,
             "removed": 0
           },
+          "errors_reported": 0,
           "tool": "terraform"
         }
       },
@@ -1540,7 +1541,7 @@
           "counted_from": "deployment_unit",
           "excluded": [],
           "removed_by_plan": 0,
-          "source_digest": "sha256:b5890f4760006ded6f8590c4e5dde38da7c391bc3ae941cbd1dfbe491fd571b7",
+          "source_digest": "sha256:2a18eddb7bb54cd10f1f9972fd7c2400365cf5b5a407fda92836c14879ab43e4",
           "value": 1
         },
         "subjects_per_assertion": {
@@ -1579,7 +1580,7 @@
       "redaction": {
         "allowed": [],
         "input": {
-          "digest": "sha256:b5890f4760006ded6f8590c4e5dde38da7c391bc3ae941cbd1dfbe491fd571b7",
+          "digest": "sha256:2a18eddb7bb54cd10f1f9972fd7c2400365cf5b5a407fda92836c14879ab43e4",
           "kind": "deployment"
         },
         "policy": {
@@ -1606,8 +1607,14 @@
       }
     },
     "pre_deploy": {
-      "approvals": [],
-      "commit_review": null,
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "commit_review": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
       "assertions": {
         "count": 2,
         "digest": "sha256:6778d95bfd82e36a32b4f342347caf8c9e27619af69768214739e88767bd222a",
@@ -1687,7 +1694,7 @@
       "redaction": {
         "allowed": [],
         "input": {
-          "digest": "sha256:273bcd5ee9de432418c57628dc4d0c18a1137ed44f021f4e3046dba28191999a",
+          "digest": "sha256:6a1e0073208028b813cf06500da4bca8f63c0721e7356dcc8ff558f1abf73922",
           "kind": "facts"
         },
         "policy": {

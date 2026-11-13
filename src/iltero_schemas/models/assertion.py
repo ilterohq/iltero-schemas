@@ -138,12 +138,15 @@ _ID = re.compile(ID_PATTERN)
 def assert_assertion_id(value: str) -> str:
     """Return ``value`` when it has the shape of an assertion id; raise ``ValueError`` otherwise."""
     if not _ID.fullmatch(value) or len(value) > ID_MAX_LENGTH:
-        raise ValueError(f"not an assertion id: {value!r}")
+        raise ValueError(
+            f"an assertion id is upper-case segments joined by dots, at least two, at most {ID_MAX_LENGTH} characters"
+        )
     return value
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    # A refusal names the field and the rule, never the value it refused.
+    model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
 
 
 def _title(value: str) -> str:
@@ -167,7 +170,7 @@ class Metadata(_Strict):
     @model_validator(mode="after")
     def _check(self) -> Metadata:
         if self.id.split(".")[0] in _WINDOWS_DEVICE_NAMES:
-            raise ValueError(f"id must not start with {self.id.split('.')[0]!r}, a name Windows reserves for a device")
+            raise ValueError("id must not start with a name Windows reserves for a device")
         _title(self.title)
         if self.remediation is not None:
             _title(self.remediation)
@@ -195,7 +198,8 @@ class KindSelector(_Strict):
     def _kinds(self) -> KindSelector:
         known = RESOURCE_KINDS.get(self.provider)
         if known is None:
-            raise ValueError(f"provider {self.provider!r} has no resource kinds a selector can name")
+            named = ", ".join(sorted(RESOURCE_KINDS))
+            raise ValueError(f"provider must be one whose resource kinds a selector can name: {named}")
         if not set(self.kinds) <= known:
             raise ValueError(f"kinds must be {self.provider} resource kinds: {', '.join(sorted(known))}")
         if len(set(self.kinds)) != len(self.kinds):

@@ -157,8 +157,13 @@ keep, so any two tools agree on what a record means.
   are in scope, and its evidence register: each file it cites, by its
   path and digest, with the name and digest of the file as the pipeline
   gave it (`source`). It holds each stage's events file and assertion
-  index, every event's input, what the plan stage redacted, and, once
-  deployed, the apply log the deployment was read from. It says what was checked and how; on its own, it
+  index, each stage's copy of its scanner bindings, what it read from each
+  scanner report and each report as it kept it, redacted from the file the
+  pipeline gave, each an entry of its own (one scanner's report given to
+  two stages and the observations read from it may be kept as the same
+  entries; two scanners' reports never share them), every event's input, what
+  the plan stage redacted, as an entry that names the redaction policy, and,
+  once deployed, the apply log the deployment was read from. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
   standard, and its `compliance_determination` is always `null`.
 - A record's `trust_level` is one of three levels (`self_attested`,
@@ -169,7 +174,9 @@ keep, so any two tools agree on what a record means.
   record's `subject.source` are those of the evaluation input. A stage's
   `redaction` is a redaction report: the policy that ran, what was redacted
   (what that stage reads, and at an infrastructure change's plan stage the
-  plan the record names), and the paths redacted (each with a reason token), left unknown, or allowed
+  plan the record names; at `post_deploy` the deployment and at
+  `post_verify` the drift check, each the part the stage counts, which those
+  stages keep as it is, so they list no path), and the paths redacted (each with a reason token), left unknown, or allowed
   (each with the project's reason). A stage's `scanners` names the evaluator
   binding set in force and counts each scanner result once: accepted as `pass`
   or `fail`, matched by an evaluator binding whose version constraint the
@@ -240,13 +247,25 @@ keep, so any two tools agree on what a record means.
 - A deployment's apply and the resource identities document are a neutral core plus
   `tool_data`, keyed by `tool`, with that tool's validation in its own module.
   For Terraform, the apply's `tool_data` holds the `summary` counts, the
+  number of error diagnostics the log holds (`errors_reported`), the
   `log_lines` it could not read, and the delete of each deposed object (an
   old copy a replacement set aside) settled by the state, or unknown when the
   state was not read; the resource
-  identities document's holds its deposed counts. The apply's `tool_data` must be the
+  identities document's holds its deposed counts. The `summary` is `null`
+  exactly when the log reports an error; a log that holds neither its counts
+  nor an error was cut short, so its `summary` is the
+  `deployment_log_incomplete` marker and it counts as a log that lost
+  messages. The apply's `tool_data` must be the
   variant of its log's tool, and the resource identities document's that of its state's
   tool (`models.iac.tools.variants.check_tool_data`). The apply's `changes` name
-  each address's current object once.
+  each address's current object once. When the applied plan is the
+  evaluated one, the apply names, at each address, at least the deposed
+  objects the plan stage excluded as `deposed` there, and, at any address, one
+  more for each of its `deposed` exclusions whose address was redacted. Any
+  more are allowed only against the plan stage's exclusions for identity at
+  their address, or its
+  exclusions as `deposed` or for identity whose address was redacted, at
+  any address, matched by count.
 - The resource identities document (`ResourceIdentities` v1), whose
   `resolved` list ties each resource of a unit's configuration to the cloud
   resource it created. A resolved identity's `iac` side names its `tool`, and
@@ -282,8 +301,9 @@ keep, so any two tools agree on what a record means.
   its units, one whose plan stage read placeholders), a record of a run
   Iltero Platform opened, a resource identities document with no resolved
   identity, the resource identities documents that must be refused, altered ones that must still be accepted,
-  the assurance contexts that must be refused, and a verification report of
-  an image build. The record vectors are in `vectors/records/iac/` and
+  the assurance contexts that must be refused, a verification report of
+  an image build, and one of an infrastructure change whose commit review
+  failed because a commit it ships was not reviewed. The record vectors are in `vectors/records/iac/` and
   `vectors/records/image/`. The rules
   about resolved identities have no vector, because a resolved identity holds
   a cloud identifier this repository does not publish.
@@ -317,8 +337,10 @@ keep, so any two tools agree on what a record means.
   256, by the tool's address of the input, sorted). Its verdict still
   follows its evaluations, and it is incomplete with reason
   `upstream_state_unavailable`, so a pass on placeholders reads as
-  incomplete; an evaluator error's reason wins, in the stage and in the
-  record. A record of a run Iltero Platform opened has none.
+  incomplete; an evaluator error's, a state not read's or the plan's reason
+  wins over it. One order (`INCOMPLETE_REASON_PRECEDENCE`) serves both: a
+  stage takes the first reason that holds, and a record the stage reason
+  that comes first, from the earliest stage incomplete for it. A record of a run Iltero Platform opened has none.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change, with vectors.
   The change digest (`change_digest`) is taken over the change type, the
@@ -454,7 +476,10 @@ keep, so any two tools agree on what a record means.
   an apply was invoked, which plan the pipeline says it applied and what the
   log says of each change. Its post-deploy stage lists the gap `state_not_read`, which makes
   it a coverage gap (exit code 6) and incomplete with reason
-  `state_not_read`; an evaluator error's reason comes first. The record
+  `state_not_read`; an evaluator error's reason comes first. When the log
+  lost messages, whether or not the state was read, no change that needs an
+  operation, and no deposed object's delete, is `not_attempted`: it is
+  unknown. The record
   names no identities, and refuses a drift check and a post-verify stage, as
   a post-verify evaluation input does. `state_not_read` is also a reason an
   `unknown` evaluation can give, only at that post-deploy stage. An activity
@@ -664,7 +689,7 @@ keep, so any two tools agree on what a record means.
   `verified_commit` and `repository`. A counted outcome (`reviewed`,
   `not_reviewed`, `too_many_commits`) says where its count starts
   (`counted_since`), which Iltero Platform chooses: after the review starting
-  point, or after the head commit of the newest earlier `reviewed` reading of
+  point, or after the head commit of an earlier `reviewed` reading of
   the same repository, decided after the same starting point was set, whose
   head commit is on this head's first-parent line (`earlier_reading`: that
   reading's own `host_reading_id`, `host_reading_digest` and `decided_at`,
@@ -677,19 +702,20 @@ keep, so any two tools agree on what a record means.
   change that names no environment, and for an image deploy with no accepted
   build. The starter assertion `ILT.CHANGE.COMMITS_REVIEWED`
   passes only for `reviewed`, fails for every other outcome and is `unknown`
-  for the marker; it is not built in. A stage record keeps what its
-  evaluations read of the review (`commit_review`: the outcome, the
-  repository, the reading, the review starting point, and where the count
-  started and how many it counted), only at a `pre_deploy` stage whose
-  results read facts from Iltero Platform. A stage evaluates
-  `ILT.CHANGE.COMMITS_REVIEWED` at most once. There it
-  keeps the review when the check passed or failed, `reviewed` exactly when
-  it passed, and none when the check could not read it; an image deploy's is
-  of its accepted build's repository and is `build_commit_not_verified_commit`
-  exactly when that build's commit is not the verified one. The kept review
-  holds the same limits on `commits_counted` as the input, and counts no
-  commits exactly when the head commit (the record's source commit, or an
-  image deploy's verified commit) is the one it counts since. A record of a
+  for the marker; it is not built in. A `pre_deploy` stage record keeps the
+  commit review its evaluations read, whole, or the unknown marker in its
+  place (`commit_review`), and its approvals the same way (`approvals`;
+  `StageRecord.listed_approvals` gives the list). Both are the marker when
+  the stage's results read no facts from Iltero Platform. The commit review
+  is also the marker when `ILT.CHANGE.COMMITS_REVIEWED` could not read one,
+  and is kept when that check passed or failed, `reviewed` exactly when it
+  passed. A stage
+  evaluates the check at most once. The kept review was decided no later
+  than the stage observed the change, and names the record's source commit
+  (unless it is `source_commit_not_verified_commit`), or an image deploy's
+  accepted build's verified commit and repository. A verification report
+  gives it a tenth property, `commit_review`, whose result follows the kept
+  outcome (`COMMIT_REVIEW_RESULTS`). A record of a
   run the tool opened refuses an `ILT.CHANGE.COMMITS_REVIEWED` event that is
   `pass`, `fail` or `not_applicable`, or `unknown` for another reason than
   `server_facts_unavailable`; a record of a run Iltero Platform opened
@@ -745,3 +771,8 @@ keep, so any two tools agree on what a record means.
   forgotten value is never read as a comparison with null.
 - An exception never covers a built-in assertion: an exception served for
   one is refused, since what a built-in assertion records is never excused.
+- Refusals that never repeat the input. A refusal message says which rule
+  was broken and never repeats the value it refused; a caller that reads
+  `ValidationError.errors()` passes `include_input=False`. The
+  `assertions_invalid/` vectors expect these messages, such as
+  `duplicate key`.

@@ -229,12 +229,12 @@ def _with_source(index: int, source: str) -> BundleDescriptor:
 
 
 def test_a_bundle_the_compiler_cannot_reproduce_is_refused() -> None:
-    with pytest.raises(BundleError, match="compiled by compiler"):
+    with pytest.raises(BundleError, match="compiled by another compiler version"):
         check_descriptor(_changed(compiler_version=COMPILER_VERSION + "0"), _keys())
 
 
 def test_a_bundle_made_for_another_allowlist_is_refused() -> None:
-    with pytest.raises(BundleError, match="built under allowlist"):
+    with pytest.raises(BundleError, match="built under another allowlist"):
         check_descriptor(_changed(capabilities_digest="sha256:" + "0" * 64), _keys())
 
 

@@ -17,7 +17,17 @@ from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
-from tests.records import RECORD, add_built_in, iac_change, keep_the_apply_log, owe_its_events, set_path
+from tests.records import (
+    RECORD,
+    SCANNERS,
+    add_built_in,
+    count_by_digest,
+    iac_change,
+    keep_the_apply_log,
+    keep_the_scanner_files,
+    owe_its_events,
+    set_path,
+)
 from tests.records import record as _record
 
 
@@ -147,41 +157,14 @@ def test_the_evidence_register_names_each_file_once() -> None:
         CAR.model_validate(document)
 
 
-SCANNERS: dict[str, Any] = {
-    "evaluator_binding_set": {
-        "id": "ILT.BINDINGS.STARTER",
-        "version": "1.0.0",
-        "origin": "shipped",
-        "file_name": None,
-        "digest": "sha256:" + "b" * 64,
-        "copy_path": "units/root/plan/bindings.json",
-        "binding_count": 2,
-    },
-    "reports": [
-        {
-            "tool": "checkov",
-            "tool_version": "3.3.8",
-            "input_kinds": ["terraform_plan"],
-            "report_digest": "sha256:" + "a" * 64,
-            "observations": "units/root/artifacts/sha256-" + "c" * 64,
-            "results_read": 73,
-            "results_without_binding": 71,
-            "parsing_errors": 0,
-        }
-    ],
-    "results_accepted": 2,
-    "results_scanner_version_not_allowed": 0,
-    "results_without_binding": 71,
-}
-
-
 def test_a_stage_given_no_scanner_report_says_so() -> None:
     assert CAR.model_validate(RECORD).stages[Stage.PLAN].scanners is None
 
 
 def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
-    car = CAR.model_validate(_record(**{"stages.plan.scanners": copy.deepcopy(SCANNERS)}))
-    scanners = car.stages[Stage.PLAN].scanners
+    document = _record(**{"stages.plan.scanners": copy.deepcopy(SCANNERS)})
+    keep_the_scanner_files(document)
+    scanners = CAR.model_validate(document).stages[Stage.PLAN].scanners
     assert scanners is not None
     (report,) = scanners.reports
     assert report.tool == "checkov" and report.results_read == 73
@@ -240,8 +223,9 @@ def test_a_binding_set_read_from_a_file_names_it() -> None:
         "origin": "file",
         "file_name": "bindings.yaml",
     }
-    car = CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
-    assert car.stages[Stage.PLAN].scanners is not None
+    document = _record(**{"stages.plan.scanners": scanners})
+    keep_the_scanner_files(document)
+    assert CAR.model_validate(document).stages[Stage.PLAN].scanners is not None
 
 
 def test_a_results_file_outside_the_record_is_refused() -> None:
@@ -279,8 +263,9 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     stage["reference_time"] = {**plan_stage["reference_time"], "value": stage["observed_at"]}
     # The plan stage's events file stays named: it is an entry of the record's register.
     stage["events"] = {**plan_stage["events"], "count": 0}
+    # The record keeps the deployment as it is: the stage redacts nothing.
     redacted = {**plan_stage["redaction"]["input"], "kind": "deployment"}
-    stage["redaction"] = {**plan_stage["redaction"], "input": redacted}
+    stage["redaction"] = {**plan_stage["redaction"], "input": redacted, "redacted": [], "unknown": [], "allowed": []}
     stage["coverage"] = {
         **plan_stage["coverage"],
         "subjects_in_scope": {
@@ -303,8 +288,7 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
 def _combined(document: dict[str, Any]) -> dict[str, Any]:
     """The record with its post-deploy scope naming its deployment, and its top level set from its stages."""
     if "post_deploy" in document["stages"] and document["change"]["deployment"] is not None:
-        scope = document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]
-        scope["source_digest"] = digest_of(document["change"]["deployment"])
+        count_by_digest(document["stages"]["post_deploy"], digest_of(document["change"]["deployment"]))
     outcomes = {name: StageRecord.model_validate(stage).outcome for name, stage in document["stages"].items()}
     return {**document, **combine_in_order(document["expected_stages"], outcomes).model_dump(mode="json")}
 
@@ -357,7 +341,8 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
 def _with_changes(*changes: dict[str, Any], **identity: Any) -> dict[str, Any]:
     document = _deployed()
     apply = document["change"]["deployment"]["apply"]
-    apply["changes"], apply["tool_data"]["summary"] = list(changes), None
+    apply["changes"] = list(changes)
+    apply["tool_data"].update(summary=None, errors_reported=1)
     document["change"]["identity"].update(identity)
     return _combined(document)
 
@@ -422,9 +407,7 @@ def test_a_plan_stage_observed_after_the_apply_started_is_refused() -> None:
 def test_the_post_deploy_stage_counts_the_deployment_the_record_describes() -> None:
     document = _deployed()
     assert iac_change(CAR.model_validate(document)).deployment is not None
-    document["stages"]["post_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = document["change"]["plan"][
-        "digest"
-    ]
+    count_by_digest(document["stages"]["post_deploy"], document["change"]["plan"]["digest"])
     with pytest.raises(ValidationError, match="must count the one deployment the record describes"):
         CAR.model_validate(document)
 
@@ -524,8 +507,14 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
     ]
     for counted, valid in ((1, True), (0, False), (2, False)):
         document = _deployed()
-        document["change"]["deployment"]["apply"]["tool_data"].update(summary=None, deposed=deposed)
+        document["change"]["deployment"]["apply"]["tool_data"].update(summary=None, errors_reported=1, deposed=deposed)
         document["change"]["identity"]["tool_data"]["deposed_deleted"] = counted
+        scope = document["stages"]["plan"]["coverage"]["subjects_in_scope"]
+        last = max((entry["plan_index"] for entry in scope["excluded"]), default=-1)
+        scope["excluded"] = [
+            *scope["excluded"],
+            *({"plan_index": last + i, "id": "aws_db_instance.db", "reason": "deposed"} for i in (1, 2)),
+        ]
         document = _combined(document)
         if valid:
             assert iac_change(CAR.model_validate(document)).identity is not None

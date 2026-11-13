@@ -299,14 +299,14 @@ UNMAPPED = {"__unknown": True, "reason": "kind_unmapped"}
 @pytest.mark.parametrize(
     ("entry", "message"),
     [
-        ({"provider": "aws", "type": "aws_kms_key", "kind": None}, "other than the one the terraform table gives"),
+        ({"provider": "aws", "type": "aws_kms_key", "kind": None}, "names the kind the terraform table gives"),
         (
             {"provider": "aws", "type": "aws_kms_key", "kind": "iam_role"},
-            "other than the one the terraform table gives",
+            "names the kind the terraform table gives",
         ),
-        ({"provider": "aws", "type": "aws_kms_key", "kind": UNMAPPED}, "other than the one the terraform table gives"),
-        ({"provider": "aws", "type": "aws_new_thing", "kind": "kms_key"}, "other than the one the terraform table"),
-        ({"provider": "google", "type": "google_kms_key", "kind": "kms_key"}, "other than the one the terraform table"),
+        ({"provider": "aws", "type": "aws_kms_key", "kind": UNMAPPED}, "names the kind the terraform table gives"),
+        ({"provider": "aws", "type": "aws_new_thing", "kind": "kms_key"}, "names the kind the terraform table"),
+        ({"provider": "google", "type": "google_kms_key", "kind": "kms_key"}, "names the kind the terraform table"),
         ({"provider": "hashicorp/aws", "type": "aws_kms_key", "kind": "kms_key"}, "String should match pattern"),
     ],
     ids=[
@@ -360,7 +360,7 @@ def test_a_related_resource_says_how_it_matched_under_tool_data() -> None:
 def test_a_plan_resource_names_the_kind_its_tools_table_gives_its_type() -> None:
     document = copy.deepcopy(VECTOR)
     document["resource"]["kind"] = "kms_key"
-    with pytest.raises(ValidationError, match="other than the one the terraform table gives"):
+    with pytest.raises(ValidationError, match="names the kind the terraform table gives"):
         AssuranceContext.model_validate(document)
 
 

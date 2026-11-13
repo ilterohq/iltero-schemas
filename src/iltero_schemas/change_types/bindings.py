@@ -18,7 +18,7 @@ def bound_to_change_digest_problems(car: CAR, digest: str) -> list[tuple[str, st
     if pre_deploy is not None and pre_deploy.coverage.subjects_in_scope.source_digest != digest:
         problems.append(("stages.pre_deploy.coverage.subjects_in_scope.source_digest", "is not change.digest"))
     for stage, record in car.stages.items():
-        for approval in record.approvals or []:
+        for approval in record.listed_approvals:
             if approval.subject.kind == "change" and approval.subject.digest != digest:
                 what = (
                     f"lists approval {approval.id} of another change: "

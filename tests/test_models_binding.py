@@ -115,7 +115,7 @@ def test_an_entry_digest_changes_with_the_entry() -> None:
 
 
 def test_two_entries_may_not_share_an_id() -> None:
-    with pytest.raises(ValidationError, match="two entries share the id"):
+    with pytest.raises(ValidationError, match="two entries share an id"):
         EvaluatorBindingSet.model_validate(_set(ENTRY, {**ENTRY, "rule_id": "CKV_AWS_17"}))
 
 

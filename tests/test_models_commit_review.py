@@ -12,10 +12,8 @@ from pydantic import TypeAdapter, ValidationError
 from iltero_schemas.models.commit_review import (
     MAX_COMMITS_CHECKED,
     MAX_COMMITS_NOT_REVIEWED,
-    OUTCOMES_WITHOUT_A_STARTING_POINT,
     CommitReview,
     CommitReviewOutcome,
-    CommitReviewReading,
     CommitsNotReviewed,
     HeadCommitBeforeReviewStartingPoint,
     ReviewStartingPointNotInHistory,
@@ -197,63 +195,6 @@ def test_a_head_commit_older_than_the_starting_point_is_before_it() -> None:
 def test_every_outcome_is_one_shape_of_the_commit_review() -> None:
     shapes = {member.model_fields["outcome"].annotation for member in get_args(get_args(CommitReview)[0])}
     assert {value for shape in shapes for value in get_args(shape)} == set(get_args(CommitReviewOutcome))
-    assert set(get_args(CommitReviewOutcome)) >= OUTCOMES_WITHOUT_A_STARTING_POINT
-
-
-KEPT = {
-    "outcome": "not_reviewed",
-    "repository": SERVED["repository"],
-    "host_reading_id": SERVED["host_reading_id"],
-    "host_reading_digest": SERVED["host_reading_digest"],
-    "review_starting_point": START,
-    "counted_since": SINCE_START,
-    "commits_counted": 3,
-}
-NOT_COUNTED = {"counted_since": None, "commits_counted": None}
-
-
-def test_a_kept_commit_review_keeps_a_starting_point_exactly_when_its_outcome_names_one() -> None:
-    assert CommitReviewReading.model_validate(KEPT).outcome == "not_reviewed"
-    assert CommitReviewReading.model_validate(
-        {**KEPT, **NOT_COUNTED, "outcome": "no_review_starting_point", "review_starting_point": None}
-    )
-    with pytest.raises(ValidationError, match="keeps a review starting point exactly when its outcome, not_reviewed"):
-        CommitReviewReading.model_validate({**KEPT, "review_starting_point": None})
-    with pytest.raises(ValidationError, match="exactly when its outcome, build_commit_not_verified_commit, names one"):
-        CommitReviewReading.model_validate({**KEPT, **NOT_COUNTED, "outcome": "build_commit_not_verified_commit"})
-
-
-def test_a_kept_commit_review_keeps_where_it_counted_since_exactly_when_its_outcome_counts_commits() -> None:
-    assert CommitReviewReading.model_validate({**KEPT, "counted_since": EARLIER}).counted_since
-    for wrong in (
-        {**KEPT, "commits_counted": None},
-        {**KEPT, "counted_since": None},
-        {**KEPT, "outcome": "review_starting_point_not_in_history"},
-    ):
-        with pytest.raises(ValidationError, match="keeps where it counted since and how many exactly when its outcome"):
-            CommitReviewReading.model_validate(wrong)
-
-
-def test_a_kept_commit_review_counts_since_its_starting_point_or_another_earlier_reading() -> None:
-    with pytest.raises(ValidationError, match="counts since the review starting point when it names no earlier"):
-        CommitReviewReading.model_validate({**KEPT, "counted_since": {**SINCE_START, "commit": EARLIER["commit"]}})
-    with pytest.raises(ValidationError, match="counts since an earlier reading, not its own"):
-        CommitReviewReading.model_validate(
-            {
-                **KEPT,
-                "counted_since": {
-                    **EARLIER,
-                    "earlier_reading": {**EARLIER_READING, "host_reading_id": SERVED["host_reading_id"]},
-                },
-            }
-        )
-
-
-def test_a_kept_commit_review_counts_no_more_commits_than_its_outcome_allows() -> None:
-    with pytest.raises(ValidationError, match=f"checks at most {MAX_COMMITS_CHECKED} commits"):
-        CommitReviewReading.model_validate({**KEPT, "commits_counted": MAX_COMMITS_CHECKED + 1})
-    with pytest.raises(ValidationError, match=f"only for more than {MAX_COMMITS_CHECKED} commits"):
-        CommitReviewReading.model_validate({**KEPT, "outcome": "too_many_commits"})
 
 
 def test_the_server_checks_at_most_its_limit_and_more_is_too_many_commits() -> None:

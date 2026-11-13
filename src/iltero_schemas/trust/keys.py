@@ -106,7 +106,7 @@ def _unique_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     names = [name for name, _ in pairs]
     repeated = sorted({name for name in names if names.count(name) > 1})
     if repeated:
-        raise TrustFileError(f"a field appears twice in one object: {', '.join(repeated)}")
+        raise TrustFileError("a field appears twice in one object")
     return dict(pairs)
 
 
@@ -197,8 +197,8 @@ def parse_bundle_keys(raw: bytes, *, development: bool) -> Mapping[str, BundleKe
     """
     try:
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_fields)
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise TrustFileError(f"not a JSON document: {exc}") from None
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise TrustFileError("not a JSON document") from None
     if not isinstance(document, dict) or set(document) != {"apiVersion", "keys"}:
         raise TrustFileError("must have exactly the fields apiVersion and keys")
     if document["apiVersion"] != API_VERSION:

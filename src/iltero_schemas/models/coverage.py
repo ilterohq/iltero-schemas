@@ -60,7 +60,7 @@ class Verdict(StrictModel):
     @model_validator(mode="after")
     def _one_meaning(self) -> Verdict:
         if self.value != VERDICT_WORDS.get(self.exit_code, "fail"):
-            raise ValueError(f"exit code {self.exit_code} is not a verdict of {self.value}")
+            raise ValueError(f"exit_code is not the code of the verdict {self.value}")
         if (self.stage is None) != (self.computed_from == "status_counts"):
             raise ValueError("a verdict names its stage exactly when it was taken from a stage")
         return self
@@ -124,7 +124,7 @@ COUNT_GAP_KINDS: frozenset[str] = (
 
 def _count_gap_kind(value: str) -> str:
     if value not in COUNT_GAP_KINDS:
-        raise ValueError(f"{value!r} is not a gap a count can describe")
+        raise ValueError(f"kind must be a gap a count can describe: {', '.join(sorted(COUNT_GAP_KINDS))}")
     return value
 
 
@@ -261,16 +261,18 @@ class StageOutcome(StrictModel):
 
 # Why a stage whose checks ended in an evaluator error is incomplete.
 INCOMPLETE_REASON = "required_policy_evaluation_failed"
-# Why a stage that did not read the state after the apply is incomplete; an evaluator error's reason wins.
+# Why a stage that did not read the state after the apply is incomplete.
 STATE_REASON = "state_not_read"
 STATE_DETAIL = "the state after the apply was not read, so no outcome of the apply was held to it"
 
 
-# Why a stage whose plan does not say it is complete is incomplete; an evaluator error's or the state's reason wins.
+# Why a stage whose plan does not say it is complete is incomplete.
 PLAN_REASON = "plan_not_complete"
-# Why a stage that read placeholders for upstream state is incomplete; an evaluator error's, the state's or the plan's
-# reason wins.
+# Why a stage that read placeholders for upstream state is incomplete.
 SUBSTITUTED_REASON = "upstream_state_unavailable"
+# The reasons a stage or a record is incomplete, the winning one first: a stage takes the first that holds, and a
+# record the reason of the stage whose reason comes first here, the earliest such stage on a tie.
+INCOMPLETE_REASON_PRECEDENCE: tuple[str, ...] = (INCOMPLETE_REASON, STATE_REASON, PLAN_REASON, SUBSTITUTED_REASON)
 
 
 def state_not_read_reason_problem(index: int) -> tuple[str, str]:
@@ -309,25 +311,31 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     was not read is such a gap. Errors also mark the stage incomplete: the
     record survives, the gate still fails. So do a state not read, a plan that
     does not say it is complete and inputs replaced with placeholders; the last
-    two do not change the verdict.
+    two do not change the verdict. The reason is the first that holds, in the
+    order of ``INCOMPLETE_REASON_PRECEDENCE``.
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
     errors = coverage.status_counts["error"]
     plan = next((gap for gap in coverage.gaps if isinstance(gap, PlanFlagGap) and gap.kind == "plan_incomplete"), None)
     substituted = len(coverage.substituted_inputs)
+    # Each reason that holds for the stage, with its detail.
+    holding: dict[str, str] = {}
     if errors:
-        detail = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
-        status = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail=detail)
-    elif any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps):
-        status = AssuranceStatus(value="incomplete", reason=STATE_REASON, detail=STATE_DETAIL)
-    elif plan is not None:
-        detail = "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
-        status = AssuranceStatus(value="incomplete", reason=PLAN_REASON, detail=detail)
-    elif substituted:
-        detail = f"upstream inputs replaced with placeholders: {substituted}"
-        status = AssuranceStatus(value="incomplete", reason=SUBSTITUTED_REASON, detail=detail)
-    else:
-        status = AssuranceStatus(value="complete", reason=None, detail=None)
+        holding[INCOMPLETE_REASON] = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
+    if any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps):
+        holding[STATE_REASON] = STATE_DETAIL
+    if plan is not None:
+        holding[PLAN_REASON] = (
+            "the plan says it is incomplete" if plan.value is False else "the plan does not say it is complete"
+        )
+    if substituted:
+        holding[SUBSTITUTED_REASON] = f"upstream inputs replaced with placeholders: {substituted}"
+    reason = next((reason for reason in INCOMPLETE_REASON_PRECEDENCE if reason in holding), None)
+    status = (
+        AssuranceStatus(value="complete", reason=None, detail=None)
+        if reason is None
+        else AssuranceStatus(value="incomplete", reason=reason, detail=holding[reason])
+    )
     verdict = Verdict(
         value=VERDICT_WORDS.get(code, "fail"),
         exit_code=code,
@@ -391,6 +399,17 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
     )
 
 
+def _reason_rank(pair: tuple[str, AssuranceStatus]) -> int:
+    """Where a stage's incomplete reason comes in ``INCOMPLETE_REASON_PRECEDENCE``. A reason outside it, which only an
+    edited record can hold and its integrity checks report, comes last."""
+    reason = pair[1].reason
+    return (
+        INCOMPLETE_REASON_PRECEDENCE.index(reason)
+        if reason in INCOMPLETE_REASON_PRECEDENCE
+        else len(INCOMPLETE_REASON_PRECEDENCE)
+    )
+
+
 def combine_in_order(expected: Sequence[str], stages: Mapping[str, StageOutcome]) -> StageOutcome:
     """``combine`` over the stages present, in the order the record expects them."""
     return combine([(stage, stages[stage]) for stage in expected if stage in stages])
@@ -410,8 +429,8 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
       record is truncated or sampled when any stage is.
     - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,
       naming that stage; the record is incomplete when any stage is, with the
-      reason of the first stage incomplete for an evaluator error, or else of
-      the first incomplete stage.
+      reason that comes first in ``INCOMPLETE_REASON_PRECEDENCE``, of the
+      earliest stage incomplete for it.
     """
     if not stages:
         raise ValueError("a record has at least one stage")
@@ -420,8 +439,7 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
         key=lambda pair: VERDICT_PRECEDENCE.index(pair[1].exit_code),
     )
     incompletes = [(n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"]
-    errors = [pair for pair in incompletes if pair[1].reason == INCOMPLETE_REASON]
-    incomplete = (errors or incompletes)[0] if incompletes else None
+    incomplete = min(incompletes, key=_reason_rank) if incompletes else None
     status = stages[0][1].assurance_status
     if incomplete is not None:
         stage, found = incomplete

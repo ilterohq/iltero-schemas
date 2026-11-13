@@ -26,7 +26,8 @@
     "vector": "image/local_run_deploy.json",
     "set": {
       "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:aec1dbae7050f742f77e19f0694c627ab48fa9c07e89ad600f98256aeebc5ad3"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:aec1dbae7050f742f77e19f0694c627ab48fa9c07e89ad600f98256aeebc5ad3",
+      "/stages/post_verify/redaction/input/digest": "sha256:aec1dbae7050f742f77e19f0694c627ab48fa9c07e89ad600f98256aeebc5ad3"
     },
     "remove": [],
     "problems": [
@@ -45,7 +46,8 @@
         "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "reported_by": "pipeline"
       },
-      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:7cc2d038fa393ddb7f9b8830c9122db5351ba5f6cf55f0c2010d953c7e6458ae"
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:7cc2d038fa393ddb7f9b8830c9122db5351ba5f6cf55f0c2010d953c7e6458ae",
+      "/stages/post_deploy/redaction/input/digest": "sha256:7cc2d038fa393ddb7f9b8830c9122db5351ba5f6cf55f0c2010d953c7e6458ae"
     },
     "remove": [],
     "problems": [
@@ -133,7 +135,8 @@
         "pods_evidence_ref": "post_verify/pods.json",
         "pod_owners_evidence_ref": "post_verify/pod-owners.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:159d53315e59f117df31374b3f5cfacff6c6d02a2b16cb8dae959bdc9ed6ef90"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:159d53315e59f117df31374b3f5cfacff6c6d02a2b16cb8dae959bdc9ed6ef90",
+      "/stages/post_verify/redaction/input/digest": "sha256:159d53315e59f117df31374b3f5cfacff6c6d02a2b16cb8dae959bdc9ed6ef90"
     },
     "remove": [],
     "problems": [
@@ -221,7 +224,8 @@
         "pods_evidence_ref": "post_verify/pods.json",
         "pod_owners_evidence_ref": "post_verify/pod-owners.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4e20eab48589397a76bad6f858ea98c91071a2359a8ad8bde7ec8de3d2c706bb"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4e20eab48589397a76bad6f858ea98c91071a2359a8ad8bde7ec8de3d2c706bb",
+      "/stages/post_verify/redaction/input/digest": "sha256:4e20eab48589397a76bad6f858ea98c91071a2359a8ad8bde7ec8de3d2c706bb"
     },
     "remove": [],
     "problems": [
@@ -312,7 +316,8 @@
         "pods_evidence_ref": "post_verify/pods.json",
         "pod_owners_evidence_ref": "post_verify/pod-owners.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:37805a6de4049c26d0da926d16fc08021c4e145602120e1bddb7b448fb705b16"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:37805a6de4049c26d0da926d16fc08021c4e145602120e1bddb7b448fb705b16",
+      "/stages/post_verify/redaction/input/digest": "sha256:37805a6de4049c26d0da926d16fc08021c4e145602120e1bddb7b448fb705b16"
     },
     "remove": [],
     "problems": [

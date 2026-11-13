@@ -14,11 +14,13 @@ from iltero_schemas.models.car import CAR
 from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY
 from iltero_schemas.models.coverage import Coverage, stage_outcome
 from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.stages import REDACTED_INPUT_KIND
+from iltero_schemas.models.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
 from iltero_schemas.models.subjects import subject_key
 from iltero_schemas.profiles import reads_part
 from tests.conftest import VECTORS
 
+# The unknown marker a stage keeps for a part its input carries when no facts were read from the server.
+UNKNOWN: dict[str, Any] = {"__unknown": True, "reason": "server_facts_unavailable"}
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
 # The captured record of a run that reached its post-deploy stage, whose pre-deploy checks read facts.
 DEPLOYED: dict[str, Any] = json.loads(
@@ -37,6 +39,12 @@ def set_path(document: dict[str, Any], dotted: str, value: Any) -> None:
     for key in path:
         node = node[int(key)] if isinstance(node, list) else node[key]
     node[last] = value
+
+
+def count_by_digest(stage: dict[str, Any], digest: str) -> None:
+    """Make ``stage`` count its one subject by ``digest``, the digest its redaction report is of too."""
+    stage["coverage"]["subjects_in_scope"]["source_digest"] = digest
+    stage["redaction"]["input"]["digest"] = digest
 
 
 def owe_its_events(document: dict[str, Any], name: str) -> None:
@@ -63,13 +71,16 @@ def record(**changes: Any) -> dict[str, Any]:
 
 def stage(name: str, **changes: Any) -> dict[str, Any]:
     """The plan stage copied under another name, counting its one subject (its change or deployment) and no check, and
-    redacting what that stage reads."""
+    redacting what that stage reads, or nothing where the record keeps that part as it is."""
     copied = copy.deepcopy(RECORD["stages"]["plan"])
     copied["stage"] = name
-    copied["approvals"] = [] if reads_part(IAC_CHANGE_ACTIVITY, Stage(name), "approvals") else None
+    for part in ("approvals", "commit_review"):
+        copied[part] = dict(UNKNOWN) if reads_part(IAC_CHANGE_ACTIVITY, Stage(name), part) else None
     # The plan stage's events file and assertion index stay named: they are entries of the record's register.
     copied["events"] = {**copied["events"], "count": 0}
     copied["redaction"]["input"]["kind"] = REDACTED_INPUT_KIND[Stage(name)]
+    if Stage(name) in STAGES_THAT_REDACT_NOTHING:
+        copied["redaction"].update(redacted=[], unknown=[], allowed=[])
     coverage = copied["coverage"]
     counted_from = "change_unit" if name == "pre_deploy" else "deployment_unit"
     coverage["subjects_in_scope"].update(value=1, counted_from=counted_from, removed_by_plan=0, excluded=[])
@@ -149,3 +160,68 @@ def with_commit_review_check(source: dict[str, Any], status: str, reason: str | 
     version = document["events"][index]["assertion"]["version"]
     counted[f"{COMMITS_REVIEWED_ID}@{version}"] = counted.pop(key)
     return document
+
+
+# A plan stage's scanners block: one Checkov report read under the shipped bindings.
+SCANNERS: dict[str, Any] = {
+    "evaluator_binding_set": {
+        "id": "ILT.BINDINGS.STARTER",
+        "version": "1.0.0",
+        "origin": "shipped",
+        "file_name": None,
+        "digest": "sha256:" + "b" * 64,
+        "copy_path": "units/root/plan/bindings.json",
+        "binding_count": 2,
+    },
+    "reports": [
+        {
+            "tool": "checkov",
+            "tool_version": "3.3.8",
+            "input_kinds": ["terraform_plan"],
+            "report_digest": "sha256:" + "a" * 64,
+            "observations": "units/root/artifacts/sha256-" + "c" * 64,
+            "results_read": 73,
+            "results_without_binding": 71,
+            "parsing_errors": 0,
+        }
+    ],
+    "results_accepted": 2,
+    "results_scanner_version_not_allowed": 0,
+    "results_without_binding": 71,
+}
+
+
+def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> None:
+    """Add to ``document``'s register the files its ``stage``'s scanners name: the copy of its bindings, and each
+    report as the stage kept it, redacted, with the observations the stage read from it."""
+    template = next(ref for ref in document["evidence_refs"] if ref["source"] is not None)
+    scanners = document["stages"][stage]["scanners"]
+    bindings = scanners["evaluator_binding_set"]
+    policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": "sha256:" + "e" * 64}
+    files: list[tuple[str, str, Any, Any]] = [(bindings["copy_path"], bindings["digest"], None, None)]
+    for report in scanners["reports"]:
+        kept = report["report_digest"]
+        files += [(f"units/root/artifacts/{kept.replace(':', '-')}", kept, policy, given)]
+        files += [(report["observations"], "sha256:" + "d" * 64, policy, None)]
+    for path, digest, redaction_policy, source in files:
+        name = path.rsplit("/", 1)[-1]
+        entry = {**copy.deepcopy(template), "ref_id": name, "path": path, "digest": digest, "source": source}
+        document["evidence_refs"].append({**entry, "redaction_policy": redaction_policy})
+
+
+def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
+    """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
+    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
+    case = next(c for c in cases if c["name"] == name)
+    document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
+    for pointer, value in case["set"].items():
+        set_pointer(document, pointer, copy.deepcopy(value))
+    return document
+
+
+def set_pointer(document: Any, pointer: str, value: Any) -> None:
+    """Set the value at a JSON Pointer (RFC 6901) whose parent exists."""
+    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
+    for token in parents:
+        document = document[int(token)] if isinstance(document, list) else document[token]
+    document[int(last) if isinstance(document, list) else last] = value

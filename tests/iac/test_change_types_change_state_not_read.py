@@ -16,7 +16,7 @@ from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.coverage import STATE_REASON, Coverage, combine_in_order, stage_outcome
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import VECTORS
-from tests.records import DEPLOYED, VERIFIED, iac_change
+from tests.records import DEPLOYED, VERIFIED, count_by_digest, iac_change
 
 NOT_READ = {"__unknown": True, "reason": "state_not_read"}
 STATE_GAP = {"kind": "state_not_read"}
@@ -41,7 +41,7 @@ def _not_read(source: dict[str, Any] = DEPLOYED) -> dict[str, Any]:
     document["change"]["identity"] = None
     stage = document["stages"]["post_deploy"]
     stage["coverage"]["gaps"] = [STATE_GAP]
-    stage["coverage"]["subjects_in_scope"]["source_digest"] = digest_of(document["change"]["deployment"])
+    count_by_digest(stage, digest_of(document["change"]["deployment"]))
     _restaged(document, "post_deploy")
     return document
 

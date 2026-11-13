@@ -43,14 +43,14 @@ PLAN_EXCLUDED_TOP_LEVEL_KEYS: Mapping[IacTool, frozenset[str]] = MappingProxyTyp
 def check_plan_digest_version(tool: IacTool, version: str) -> None:
     """Raise ``ValueError`` unless ``version`` is the version of ``tool``'s rule."""
     if version != PLAN_DIGEST_VERSIONS.get(tool):
-        raise ValueError(f"digest_version {version!r} is not the version of the {tool} plan digest rule")
+        raise ValueError(f"digest_version is not the version of the {tool} plan digest rule")
 
 
 def canonical_plan_bytes(tool: IacTool, plan: dict[str, Any]) -> bytes:
     """``tool``'s plan without its rendering metadata, as RFC 8785 bytes; ``ValueError`` for a tool with no rule."""
     excluded = PLAN_EXCLUDED_TOP_LEVEL_KEYS.get(tool)
     if excluded is None:
-        raise ValueError(f"no plan digest rule for {tool!r}")
+        raise ValueError("no plan digest rule for this tool")
     return canonical_bytes({key: value for key, value in plan.items() if key not in excluded})
 
 

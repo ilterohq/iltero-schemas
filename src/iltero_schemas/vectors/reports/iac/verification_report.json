@@ -44,6 +44,10 @@
     "exceptions": {
       "state": "not_assessed",
       "reason": "pre_deploy_out_of_scope"
+    },
+    "commit_review": {
+      "state": "not_assessed",
+      "reason": "pre_deploy_out_of_scope"
     }
   }
 }

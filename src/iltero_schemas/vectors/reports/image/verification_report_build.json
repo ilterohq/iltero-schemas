@@ -44,6 +44,10 @@
     "exceptions": {
       "state": "not_assessed",
       "reason": "not_in_activity"
+    },
+    "commit_review": {
+      "state": "not_assessed",
+      "reason": "not_in_activity"
     }
   }
 }

@@ -1,4 +1,4 @@
-"""The verification report: nine properties, each with a result a verifier gives it, and no overall verdict."""
+"""The verification report: ten properties, each with a result a verifier gives it, and no overall verdict."""
 
 from __future__ import annotations
 
@@ -9,17 +9,30 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.canonical import digest_of
+from iltero_schemas.models.assertion import Stage
+from iltero_schemas.models.car import CAR
+from iltero_schemas.models.commit_review import CommitReviewOutcome
+from iltero_schemas.models.facts import ServerFactsUnavailable
 from iltero_schemas.models.verification import (
     API_VERSION,
+    COMMIT_REVIEW_RESULTS,
     PROPERTY_RESULTS,
     Properties,
     VerificationReport,
     VerificationState,
 )
 from tests.conftest import VECTORS
+from tests.records import valid_case_record
 
 REPORT: dict[str, Any] = json.loads(
     (VECTORS / "reports" / "iac" / "verification_report.json").read_text(encoding="utf-8")
+)
+
+# The record of a run the server opened whose pre-deploy stage kept a commit review with a commit not reviewed.
+NOT_REVIEWED_CASE = "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+NOT_REVIEWED_REPORT: dict[str, Any] = json.loads(
+    (VECTORS / "reports" / "iac" / "verification_report_commit_not_reviewed.json").read_text(encoding="utf-8")
 )
 
 
@@ -27,7 +40,7 @@ def test_the_vector_validates_and_names_this_api_version() -> None:
     assert VerificationReport.model_validate(REPORT).api_version == API_VERSION
 
 
-def test_a_report_names_the_nine_properties_and_no_overall_verdict() -> None:
+def test_a_report_names_the_ten_properties_and_no_overall_verdict() -> None:
     assert list(Properties.model_fields) == [
         "integrity",
         "source_identity",
@@ -38,6 +51,7 @@ def test_a_report_names_the_nine_properties_and_no_overall_verdict() -> None:
         "runtime_verification",
         "deployment_coverage",
         "exceptions",
+        "commit_review",
     ]
     assert set(VerificationReport.model_fields) == {"api_version", "record", "verifier", "properties"}
 
@@ -190,6 +204,28 @@ def test_a_record_that_lists_no_exception_has_its_exceptions_not_assessed() -> N
         VerificationReport.model_validate(document)
 
 
+def test_the_commit_review_takes_one_result_per_outcome_named_by_that_outcome() -> None:
+    assert set(COMMIT_REVIEW_RESULTS) == set(get_args(CommitReviewOutcome))
+    assert all(reason == outcome for outcome, (_state, reason) in COMMIT_REVIEW_RESULTS.items())
+    assert COMMIT_REVIEW_RESULTS["reviewed"] == ("client_asserted", "reviewed")
+    assert {state for state, _reason in COMMIT_REVIEW_RESULTS.values()} == {
+        "client_asserted",
+        "failed",
+        "not_determined",
+        "not_performed",
+    }
+
+
 def test_the_results_a_verifier_gives_cannot_be_changed() -> None:
     with pytest.raises(TypeError):
         PROPERTY_RESULTS["integrity"] = frozenset()  # type: ignore[index]
+
+
+def test_the_commit_review_report_names_its_record_and_gives_the_result_of_the_kept_outcome() -> None:
+    document = valid_case_record("iac", NOT_REVIEWED_CASE)
+    report = VerificationReport.model_validate(NOT_REVIEWED_REPORT)
+    assert (report.record.uuid, report.record.digest) == (document["uuid"], digest_of(document))
+    review = CAR.model_validate(document).stages[Stage.PRE_DEPLOY].commit_review
+    assert review is not None and not isinstance(review, ServerFactsUnavailable)
+    result = report.properties.commit_review
+    assert (result.state, result.reason) == COMMIT_REVIEW_RESULTS[review.outcome] == ("failed", "not_reviewed")

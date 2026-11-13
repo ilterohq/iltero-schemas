@@ -284,6 +284,14 @@ class Apply(StrictModel):
         )
         if (self.timing is None and ran) or (self.timing is not None and not ran and not maybe):
             raise ValueError("the apply has a time exactly when an operation ran")
+        # A log that lost messages cannot show that a change it never names was not started, whether or not the state
+        # was read: the state never shows that a change was not attempted.
+        if self.tool_data.lost_messages and any(
+            change.required and change.outcome == "not_attempted" for change in changes
+        ):
+            raise ValueError(
+                "a log that lost messages never shows that a change with operations was not attempted: it is unknown"
+            )
         self.tool_data.check(self)
         return self
 

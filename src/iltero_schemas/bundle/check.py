@@ -100,15 +100,15 @@ def read_tarball(data: bytes) -> dict[str, bytes]:
                     raise BundleError(f"the tarball holds more than {MAX_MEMBERS} files")
                 name = entry.name
                 if entry.type not in _PLAIN_FILE or entry.issparse() or not name or "/" in name or name in (".", ".."):
-                    raise BundleError(f"the tarball holds something other than a plain top-level file: {name!r}")
+                    raise BundleError("the tarball holds something other than a plain top-level file")
                 if name in files:
-                    raise BundleError(f"the tarball holds {name!r} twice")
+                    raise BundleError("the tarball holds a file name twice")
                 extracted = archive.extractfile(entry)
                 if extracted is None:
-                    raise BundleError(f"the tarball's {name!r} cannot be read")
+                    raise BundleError("a file in the tarball cannot be read")
                 files[name] = extracted.read()
-    except tarfile.TarError as exc:
-        raise BundleError(f"the tarball cannot be read: {exc}") from None
+    except tarfile.TarError:
+        raise BundleError("the tarball cannot be read") from None
     return files
 
 
@@ -154,14 +154,11 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
     """
     key = keys.get(descriptor.key_id)
     if key is None or not key.can_verify:
-        raise BundleError(f"key {descriptor.key_id!r} is not trusted to verify bundles")
+        raise BundleError("the descriptor's key_id names a key not trusted to verify bundles")
     if descriptor.compiler_version != COMPILER_VERSION:
-        raise BundleError(
-            f"the bundle was compiled by compiler {descriptor.compiler_version}; this package's is {COMPILER_VERSION}"
-        )
+        raise BundleError(f"the bundle was compiled by another compiler version; this package's is {COMPILER_VERSION}")
     if descriptor.capabilities_digest != CAPABILITIES_DIGEST:
-        built_under, ours = descriptor.capabilities_digest, CAPABILITIES_DIGEST
-        raise BundleError(f"the bundle was built under allowlist {built_under}; this package's is {ours}")
+        raise BundleError(f"the bundle was built under another allowlist; this package's is {CAPABILITIES_DIGEST}")
     try:
         rebuilt = unsigned_bundle(
             [a.source for a in descriptor.assertions], minimum_cli_version=descriptor.minimum_cli_version
@@ -181,5 +178,5 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
             raise BundleError(f"{name} is not what this package builds from the bundle's sources")
     signed, _ = _signature(files)
     if signed != signing_input(rebuilt, key_id=descriptor.key_id):
-        raise BundleError(f"the signature does not cover exactly this bundle's files under key {descriptor.key_id!r}")
+        raise BundleError("the signature does not cover exactly this bundle's files under the descriptor's key_id")
     return UnverifiedBundle(key, MappingProxyType(files))

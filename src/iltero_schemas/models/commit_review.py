@@ -14,15 +14,17 @@ before the merge last shared history), so a merge that changes any other file
 is not reviewed.
 
 The count starts after ``counted_since.commit``, which the server chooses: the
-review starting point, or the head commit of the newest earlier reading of the
-same repository, decided after the same starting point was set, whose outcome
-was ``reviewed`` and whose head commit is on this head's first-parent line.
-Those earlier readings form a chain that ends at the starting point. Each link
+review starting point, or the head commit of an earlier reading of the same
+repository, decided after the same starting point was set, whose outcome was
+``reviewed`` and whose head commit is on this head's first-parent line. Which
+such reading it counts from, if any, is the server's choice: counting from an
+older one, or from the starting point, only checks more commits. Those earlier
+readings form a chain that ends at the starting point. Each link
 was judged once, as the host stood when it was read: a later reading does not
 judge again the commits an earlier one covered, so a decision made at the git
 host after a reading does not change what that reading judged. The server
 keeps every reading of a chain as long as any record that rests on it. More
-than ``MAX_COMMITS_CHECKED`` commits since the newest reviewed reading is still
+than ``MAX_COMMITS_CHECKED`` commits since the reading counted from is still
 ``too_many_commits``.
 
 - A commit is **reviewed** when the merge of a pull request put it on that line
@@ -134,12 +136,6 @@ CommitReviewOutcome = Literal[
     "source_commit_not_verified_commit",
     "build_commit_not_verified_commit",
 ]
-# The outcomes that count the commits on the line.
-COUNTED_OUTCOMES: frozenset[str] = frozenset({"reviewed", "not_reviewed", "too_many_commits"})
-# The outcomes decided from no review starting point.
-OUTCOMES_WITHOUT_A_STARTING_POINT: frozenset[str] = frozenset(
-    {"no_review_starting_point", "source_commit_not_verified_commit", "build_commit_not_verified_commit"}
-)
 
 
 class EarlierReading(StrictModel):
@@ -185,38 +181,6 @@ def check_commits_counted(outcome: str, commits_counted: int) -> None:
             raise ValueError(f"commit_review is too_many_commits only for more than {MAX_COMMITS_CHECKED} commits")
     elif commits_counted > MAX_COMMITS_CHECKED:
         raise ValueError(f"commit_review checks at most {MAX_COMMITS_CHECKED} commits; more is too_many_commits")
-
-
-class CommitReviewReading(StrictModel):
-    """What a stage record keeps of the commit review its evaluations read: the outcome, the repository reviewed, the
-    reading it was decided from, the review starting point, null exactly when the outcome names none, and where the
-    count started and how many it counted, null exactly when the outcome counts none."""
-
-    outcome: CommitReviewOutcome
-    repository: GitRepository
-    host_reading_id: Uuid
-    host_reading_digest: Digest
-    review_starting_point: ReviewStartingPoint | None
-    counted_since: CountedSince | None
-    commits_counted: Count | None
-
-    @model_validator(mode="after")
-    def _fields_of_its_outcome(self) -> CommitReviewReading:
-        if (self.review_starting_point is None) != (self.outcome in OUTCOMES_WITHOUT_A_STARTING_POINT):
-            raise ValueError(
-                f"commit_review keeps a review starting point exactly when its outcome, {self.outcome}, names one"
-            )
-        counted = self.outcome in COUNTED_OUTCOMES
-        if (self.counted_since is None, self.commits_counted is None) != (not counted, not counted):
-            raise ValueError(
-                f"commit_review keeps where it counted since and how many exactly when its outcome, {self.outcome}, "
-                "counts commits"
-            )
-        if self.counted_since is not None and self.review_starting_point is not None:
-            check_counted_since(self.counted_since, self.review_starting_point, self.host_reading_id)
-        if self.commits_counted is not None:
-            check_commits_counted(self.outcome, self.commits_counted)
-        return self
 
 
 class _Reading(StrictModel):

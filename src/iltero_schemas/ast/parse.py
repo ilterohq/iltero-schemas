@@ -221,7 +221,7 @@ class _ExpressionParser:
             return None
         for segment in segments:
             if len(segment) > MAX_SEGMENT_LENGTH or not _SEGMENT.match(segment):
-                self.fail(at, f"segment {segment!r} is not a name")
+                self.fail(at, "each path segment is a name: a letter or _, then letters, digits, _ or -")
                 return None
         root = segments[0]
         if root == ITEM_ROOT:
@@ -229,7 +229,7 @@ class _ExpressionParser:
                 self.fail(at, "'item' is only valid inside exists.where")
                 return None
         elif root not in self.roots:
-            self.fail(at, f"{root!r} is not available at this stage (one of: {', '.join(sorted(self.roots))})")
+            self.fail(at, f"the path's root is not available at this stage (one of: {', '.join(sorted(self.roots))})")
             return None
         return Path(tuple(segments))
 

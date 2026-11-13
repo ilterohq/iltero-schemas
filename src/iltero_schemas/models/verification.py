@@ -1,7 +1,7 @@
 """``VerificationReport`` v1: what a verifier found about one record, one property at a time.
 
 A verifier, such as ``iltero car verify``, reads a Change Assurance Record
-and the files it cites. It reports on nine properties, one at a time. Each
+and the files it cites. It reports on ten properties, one at a time. Each
 property gets a state and, where it helps, the reason for it.
 There is no overall "verified". A reader looks at each property it needs.
 
@@ -54,10 +54,12 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str | None]] = 
         ("not_assessed", "not_in_activity"),
     }
 )
-# The results a verifier gives an approval or an exception that the pre-deploy stage reads. not_in_activity: the
-# record's activity has no pre-deploy stage. server_facts_unavailable: the stage ran with no facts from the server.
-# pre_deploy_pending: the run that would report the stage is still in progress. pre_deploy_out_of_scope: the record
-# leaves the stage out of scope.
+# The results a verifier gives an approval, an exception or the commit review that the pre-deploy stage reads.
+# not_in_activity: the record's activity has no pre-deploy stage. server_facts_unavailable: the stage ran, and the
+# record keeps no fact from the server for the property: the unknown marker stands in its place, or the tool opened
+# the run.
+# pre_deploy_pending: the run that would report the stage is still in progress.
+# pre_deploy_out_of_scope: the record leaves the stage out of scope.
 _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("not_assessed", "not_in_activity"),
@@ -66,14 +68,29 @@ _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset
         ("not_assessed", "pre_deploy_out_of_scope"),
     }
 )
+# The result a verifier gives the commit review for the outcome the pre-deploy stage kept, by that outcome; the reason
+# is the outcome. reviewed is the record's claim. The outcomes that show a commit the change ships was not reviewed
+# fail. too_many_commits was not decided, and no_review_starting_point checked no commit.
+COMMIT_REVIEW_RESULTS: MappingProxyType[str, tuple[VerificationState, str]] = MappingProxyType(
+    {
+        "reviewed": ("client_asserted", "reviewed"),
+        "not_reviewed": ("failed", "not_reviewed"),
+        "review_starting_point_not_in_history": ("failed", "review_starting_point_not_in_history"),
+        "head_commit_before_review_starting_point": ("failed", "head_commit_before_review_starting_point"),
+        "source_commit_not_verified_commit": ("failed", "source_commit_not_verified_commit"),
+        "build_commit_not_verified_commit": ("failed", "build_commit_not_verified_commit"),
+        "too_many_commits": ("not_determined", "too_many_commits"),
+        "no_review_starting_point": ("not_performed", "no_review_starting_point"),
+    }
+)
 # The results a verifier gives each property of a record whose integrity is established, each a state and its reason.
 # file_digests: the files the record cites hold the digests it names, which anyone who can edit them can recompute.
 # ci_job_held_by_server: only the server that opened the run verified its CI jobs. run_opened_locally: the tool opened
 # the run, so no CI job was verified. approvals_listed: the record lists approvals, its writer's claim.
-# no_approval_served: the server opened the run and the stage lists no approval. exceptions_not_listed: a record lists
-# no exception, so a verifier cannot assess the exceptions the server may have served. server_bundle_named: a stage
-# names the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage the
-# record expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
+# no_approval_served: the server opened the run and the stage keeps an empty list of approvals. exceptions_not_listed: a
+# record lists no exception, so a verifier cannot assess the exceptions the server may have served. server_bundle_named:
+# a stage names the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage
+# the record expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
 # and a stage it expects was never reported. no_post_deploy_stage: no stage compared the applied plan.
 # plan_files_supplied: the plan files given to the verifier were compared. binding_undecided: they could not be.
 # deployment_coverage has no reason: no reader of one record knows of a deployment that left no record.
@@ -107,6 +124,7 @@ PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str |
         "runtime_verification": RUNTIME_VERIFICATION_RESULTS,
         "deployment_coverage": frozenset({("not_assessed", None)}),
         "exceptions": _PRE_DEPLOY_RESULTS | {("not_assessed", "exceptions_not_listed")},
+        "commit_review": _PRE_DEPLOY_RESULTS | frozenset(COMMIT_REVIEW_RESULTS.values()),
     }
 )
 # A record whose integrity is not established: its integrity failed on the files it cites, and every other property is
@@ -123,7 +141,7 @@ class PropertyResult(StrictModel):
 
 
 class Properties(StrictModel):
-    """The nine properties a verifier reports on. Each says what ``verified`` would mean."""
+    """The ten properties a verifier reports on. Each says what ``verified`` would mean."""
 
     # The record's structure is valid, and the evidence it cites has not changed.
     integrity: PropertyResult
@@ -143,6 +161,8 @@ class Properties(StrictModel):
     deployment_coverage: PropertyResult
     # Every exception used was approved and valid at the time of deployment.
     exceptions: PropertyResult
+    # Every commit the change ships was reviewed.
+    commit_review: PropertyResult
 
 
 class Verifier(StrictModel):

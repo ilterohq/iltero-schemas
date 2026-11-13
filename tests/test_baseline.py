@@ -20,6 +20,7 @@ import pytest
 
 from iltero_schemas.canonical import canonical_bytes, change_digest, digest
 from tests.conftest import ROOT, VECTORS
+from tests.records import UNKNOWN
 
 BASELINE = ROOT / "tests" / "baseline"
 # The record's fields moved into its change, the body of the record's activity, which names that activity.
@@ -98,6 +99,9 @@ RENAMED_MODULES = {
     "tests/test_models_tools_variants.py": "tests/iac/test_models_tools_variants.py",
 }
 RENAMED_TESTS = {
+    "test_only_a_stage_whose_input_carries_approvals_lists_them": (
+        "test_only_a_stage_whose_input_carries_approvals_keeps_them_or_the_unknown_marker"
+    ),
     "test_every_event_names_the_plan_the_record_evaluated": (
         "test_every_event_names_the_content_the_records_change_checked"
     ),
@@ -266,7 +270,8 @@ def _with_plan_observation(moved: dict[str, Any], name: str) -> None:
 def _with_registered_stage(value: Any, plan: dict[str, Any]) -> Any:
     """A stage a baseline case set, naming the plan stage's events file and assertion index as the shipped record
     registers them and keeping no commit review; a stage the case added also redacts the facts the pre-deploy stage
-    reads."""
+    reads, and a pre-deploy stage that read no facts from the server keeps the unknown marker for its approvals and
+    its commit review."""
     if not isinstance(value, dict):
         return value
     path = value.get("events", {}).get("path")
@@ -276,6 +281,8 @@ def _with_registered_stage(value: Any, plan: dict[str, Any]) -> Any:
     registered = {**value, "events": events, "assertions": plan["assertions"], "commit_review": None}
     if path == ADDED_STAGE_EVENTS:
         registered["redaction"] = {**value["redaction"], "input": {**value["redaction"]["input"], "kind": "facts"}}
+    if registered.get("stage") == "pre_deploy" and registered.get("approvals") == []:
+        registered.update(approvals=dict(UNKNOWN), commit_review=dict(UNKNOWN))
     return registered
 
 

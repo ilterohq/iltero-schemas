@@ -25,7 +25,7 @@ def test_every_iac_tool_has_a_plan_digest_rule() -> None:
 
 
 def test_a_tool_with_no_plan_digest_rule_is_refused() -> None:
-    with pytest.raises(ValueError, match="no plan digest rule for 'pulumi'"):
+    with pytest.raises(ValueError, match="no plan digest rule for this tool"):
         plan_digest("pulumi", {})  # type: ignore[arg-type]
 
 

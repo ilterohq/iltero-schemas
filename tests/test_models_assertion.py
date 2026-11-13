@@ -15,6 +15,7 @@ from iltero_schemas.models.assertion import (
     Stage,
     TargetKind,
     TechnicalAssertion,
+    assert_assertion_id,
 )
 
 
@@ -339,3 +340,19 @@ def test_only_an_infrastructure_assertion_scopes_its_target_by_resources(change_
     document = _document(spec__change_type=change_type, spec__stage="pre_deploy", spec__target=target)
     with pytest.raises(ValidationError, match="names resources only in an assertion about an iac_change"):
         TechnicalAssertion.model_validate(document)
+
+
+def test_a_kind_selector_for_a_provider_with_no_kinds_names_the_providers_that_have_them() -> None:
+    selector = {"provider": "acme", "kinds": ["thing"]}
+    document = _document(spec__stage="pre_deploy", spec__target={"kind": "change", "resources": [selector]})
+    with pytest.raises(ValidationError, match="resource kinds a selector can name: aws") as e:
+        TechnicalAssertion.model_validate(document)
+    assert "acme" not in str(e.value)
+
+
+def test_an_assertion_id_is_upper_case_segments_joined_by_dots() -> None:
+    assert assert_assertion_id("ACME.AWS.RDS.ENCRYPTED") == "ACME.AWS.RDS.ENCRYPTED"
+    for value in ("acme.rds", "ACME", "ACME." + "X" * 200):
+        with pytest.raises(ValueError, match="upper-case segments joined by dots") as refused:
+            assert_assertion_id(value)
+        assert value not in str(refused.value)

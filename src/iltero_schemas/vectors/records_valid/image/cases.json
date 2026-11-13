@@ -380,7 +380,8 @@
         "pods_evidence_ref": "post_verify/pods.json",
         "pod_owners_evidence_ref": null
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:a698a924ad349030e4eebe9982e054011b723b9fd899f4102b9c56da59a1de24"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:a698a924ad349030e4eebe9982e054011b723b9fd899f4102b9c56da59a1de24",
+      "/stages/post_verify/redaction/input/digest": "sha256:a698a924ad349030e4eebe9982e054011b723b9fd899f4102b9c56da59a1de24"
     },
     "remove": [
       "/evidence_refs/12"
@@ -476,7 +477,8 @@
         "pods_evidence_ref": "post_verify/pods.json",
         "pod_owners_evidence_ref": "post_verify/pod-owners.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e9338cab1ea994441271a57c5cef3d27973efceeecb9a711e33b9dd8d27689f7"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e9338cab1ea994441271a57c5cef3d27973efceeecb9a711e33b9dd8d27689f7",
+      "/stages/post_verify/redaction/input/digest": "sha256:e9338cab1ea994441271a57c5cef3d27973efceeecb9a711e33b9dd8d27689f7"
     },
     "remove": []
   },
@@ -522,7 +524,7 @@
     "remove": []
   },
   {
-    "name": "image_deploy_of_a_run_the_server_opened_keeping_its_commit_review",
+    "name": "image_deploy_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check",
     "vector": "image/local_run_deploy.json",
     "set": {
       "/governance/run_opened_by": "server",
@@ -562,6 +564,13 @@
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
         "review_starting_point": {
           "commit": "0b5f2d9000000000000000000000000000000000",
           "set_by": {
@@ -571,17 +580,12 @@
           "set_at": "2026-09-01T08:00:00Z",
           "reason": "Branch protection required reviews from this commit on."
         },
-        "outcome": "reviewed",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
         "counted_since": {
           "commit": "0b5f2d9000000000000000000000000000000000",
           "earlier_reading": null
         },
-        "commits_counted": 3
+        "commits_counted": 3,
+        "outcome": "reviewed"
       }
     },
     "remove": []
@@ -758,6 +762,13 @@
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "decided_at": "2026-09-16T18:29:30Z",
+        "repository": {
+          "host": "github",
+          "instance": "github.com",
+          "repository_id": "712400318"
+        },
+        "head_commit": "c84e7a1000000000000000000000000000000000",
         "review_starting_point": {
           "commit": "0b5f2d9000000000000000000000000000000000",
           "set_by": {
@@ -767,17 +778,12 @@
           "set_at": "2026-09-01T08:00:00Z",
           "reason": "Branch protection required reviews from this commit on."
         },
-        "outcome": "reviewed",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
         "counted_since": {
           "commit": "0b5f2d9000000000000000000000000000000000",
           "earlier_reading": null
         },
-        "commits_counted": 3
+        "commits_counted": 3,
+        "outcome": "reviewed"
       },
       "/events/0/assertion": {
         "id": "ILT.CHANGE.COMMITS_REVIEWED",

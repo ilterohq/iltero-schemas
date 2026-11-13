@@ -14,6 +14,7 @@ from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
 LOG_INCOMPLETE = {"__unknown": True, "reason": "deployment_log_incomplete"}
+REPORTS_AN_ERROR = "an apply log that reports an error holds no counts: its summary is null"
 
 
 def _deposed(outcome: Any, key: str = "bb9fd791", address: str = "a.server") -> dict[str, Any]:
@@ -103,7 +104,7 @@ def test_each_deposed_object_is_named_once_in_order(deposed: list[dict[str, Any]
 
 
 def test_a_deposed_delete_that_ran_gives_the_apply_a_time() -> None:
-    document = _cleared(summary=None)
+    document = _cleared(summary=None, errors_reported=1)
     document["changes"] = []
     assert Apply.model_validate(document).timing is not None
     with pytest.raises(ValidationError, match="a time exactly when an operation ran"):
@@ -111,7 +112,7 @@ def test_a_deposed_delete_that_ran_gives_the_apply_a_time() -> None:
 
 
 def test_a_deposed_object_of_unknown_outcome_needs_a_log_that_lost_messages() -> None:
-    document = _cleared(_deposed(LOG_INCOMPLETE), summary=None)
+    document = _cleared(_deposed(LOG_INCOMPLETE), summary=None, errors_reported=1)
     document["changes"] = []
     with pytest.raises(ValidationError, match="outcomes_from says"):
         Apply.model_validate(document)
@@ -132,7 +133,7 @@ def test_terraforms_counts_wait_for_every_deposed_delete(outcome: Any) -> None:
 
 
 def test_an_apply_holds_a_bounded_number_of_changes_and_deposed_objects() -> None:
-    document = _cleared(summary=None)
+    document = _cleared(summary=None, errors_reported=1)
     document["tool_data"]["deposed"] = [_deposed("applied", key=f"{i:08x}") for i in range(100_000)]
     with pytest.raises(ValidationError, match="changes and deposed objects together"):
         Apply.model_validate(document)
@@ -155,7 +156,7 @@ def test_with_the_state_not_read_every_deposed_delete_is_unknown() -> None:
 
 def test_a_deposed_delete_stays_unknown_for_want_of_the_state_only_when_it_was_not_read() -> None:
     with pytest.raises(ValidationError, match="unknown for want of the state only when the state was not read"):
-        Apply.model_validate(_cleared(_deposed(NOT_READ), summary=None))
+        Apply.model_validate(_cleared(_deposed(NOT_READ), summary=None, errors_reported=1))
 
 
 @pytest.mark.parametrize("removed", [1, 2])
@@ -173,7 +174,7 @@ def test_a_delete_beside_deposed_objects_may_stay_unknown_without_the_state_in_a
         "completed": NOT_READ,
         "outcome": NOT_READ,
     }
-    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None))
+    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None, errors_reported=1))
     apply["changes"] = [unknown]
     Apply.model_validate(apply)
     apply["tool_data"]["deposed"] = []
@@ -188,7 +189,45 @@ def test_a_replace_that_only_creates_beside_deposed_objects_still_needs_a_log_th
         "completed": NOT_READ,
         "outcome": NOT_READ,
     }
-    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None))
+    apply = _not_read(_cleared(_deposed(NOT_READ), summary=None, errors_reported=1))
     apply["changes"] = [unknown]
     with pytest.raises(ValidationError, match="only a log that lost messages leaves a change"):
+        Apply.model_validate(apply)
+
+
+@pytest.mark.parametrize("lost", ["damaged_messages", "interrupted_operations"])
+def test_a_log_that_lost_messages_never_shows_a_deposed_objects_delete_was_not_attempted(lost: str) -> None:
+    log_lines = {**APPLY["tool_data"]["log_lines"], lost: 1}
+    replace = change("a.server", "replace", ["create", "delete"], "errored", completed=["create"])
+    apply = _cleared(_deposed("not_attempted"), summary=None, errors_reported=1)
+    apply["changes"] = [replace]
+    Apply.model_validate(apply)
+    apply["tool_data"]["log_lines"] = log_lines
+    with pytest.raises(ValidationError, match="never shows that a deposed object's delete was not attempted"):
+        Apply.model_validate(apply)
+
+
+def test_an_apply_log_with_neither_its_counts_nor_an_error_was_cut_so_its_summary_is_not_null() -> None:
+    with pytest.raises(ValidationError, match="holds neither its counts nor an error was cut: its summary is unknown"):
+        Apply.model_validate(_cleared(summary=None, errors_reported=0))
+
+
+def test_an_apply_log_that_reports_an_error_holds_no_counts() -> None:
+    with pytest.raises(ValidationError, match=REPORTS_AN_ERROR):
+        Apply.model_validate(_cleared(errors_reported=1))
+
+
+def test_an_apply_log_that_reports_an_error_was_not_cut_so_its_summary_is_null_not_lost() -> None:
+    document = _cleared(summary=LOG_INCOMPLETE, errors_reported=1)
+    document["outcomes_from"] = "apply_log_and_state"
+    with pytest.raises(ValidationError, match=REPORTS_AN_ERROR):
+        Apply.model_validate(document)
+
+
+def test_a_cut_log_never_shows_a_deposed_objects_delete_was_not_attempted() -> None:
+    """A log that holds neither its counts nor an error lost its end, though every line it holds was read."""
+    replace = change("a.server", "replace", ["create", "delete"], "errored", completed=["create"])
+    apply = _cleared(_deposed("not_attempted"), summary=LOG_INCOMPLETE, errors_reported=0)
+    apply.update(changes=[replace], outcomes_from="apply_log_and_state")
+    with pytest.raises(ValidationError, match="never shows that a deposed object's delete was not attempted"):
         Apply.model_validate(apply)

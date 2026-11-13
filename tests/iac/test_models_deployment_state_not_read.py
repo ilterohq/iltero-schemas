@@ -16,7 +16,7 @@ APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
 NOT_READ = {"__unknown": True, "reason": "state_not_read"}
 LOG_INCOMPLETE = {"__unknown": True, "reason": "deployment_log_incomplete"}
 DAMAGED = {**APPLY["tool_data"]["log_lines"], "damaged_messages": 1}
-TOOL_FIELDS = ("summary", "log_lines", "deposed")
+TOOL_FIELDS = ("summary", "errors_reported", "log_lines", "deposed")
 
 
 def _alone(*changes: dict[str, Any], **fields: Any) -> dict[str, Any]:
@@ -94,7 +94,9 @@ def test_with_the_state_not_read_no_change_is_held_to_the_state() -> None:
 def test_a_change_only_the_state_would_settle_stays_unknown_when_the_log_lost_it(
     action: str, required: list[str]
 ) -> None:
-    apply = Apply.model_validate(_alone(_not_settled("a.x", action, required), log_lines=DAMAGED, summary=None))
+    apply = Apply.model_validate(
+        _alone(_not_settled("a.x", action, required), log_lines=DAMAGED, summary=None, errors_reported=1)
+    )
     assert apply.changes[0].outcome_from == "none" and isinstance(apply.changes[0].outcome, StateNotRead)
     with pytest.raises(ValueError, match="known only when the state after the apply was read"):
         _ = apply.changes[0].left_the_state
@@ -107,7 +109,7 @@ def test_an_update_the_log_lost_is_unknown_as_the_logs_loss() -> None:
         "completed": LOG_INCOMPLETE,
         "outcome": LOG_INCOMPLETE,
     }
-    Apply.model_validate(_alone(lost, log_lines=DAMAGED, summary=None))
+    Apply.model_validate(_alone(lost, log_lines=DAMAGED, summary=None, errors_reported=1))
     with pytest.raises(ValidationError, match="the state would have settled it"):
         AppliedChange.model_validate({**lost, "completed": NOT_READ, "outcome": NOT_READ})
 
@@ -115,7 +117,7 @@ def test_an_update_the_log_lost_is_unknown_as_the_logs_loss() -> None:
 @pytest.mark.parametrize("action", ["no-op", "forget"])
 def test_a_change_that_needs_no_operation_is_unknown_when_the_state_was_not_read(action: str) -> None:
     unknown = {**_not_settled("a.x", action, []), "moved_from": "a.old" if action == "no-op" else None}
-    Apply.model_validate(_alone(unknown, summary=None, timing=None))
+    Apply.model_validate(_alone(unknown, summary=None, errors_reported=1, timing=None))
     done = {
         **change("a.x", action, [], "no_operation", moved_from=unknown["moved_from"]),
         "outcome_from": "apply_log_alone",
@@ -128,11 +130,11 @@ def test_a_change_that_needs_no_operation_is_unknown_when_the_state_was_not_read
 
 def test_a_change_the_log_lost_needs_a_log_that_lost_messages() -> None:
     with pytest.raises(ValidationError, match="only a log that lost messages leaves a change"):
-        Apply.model_validate(_alone(_not_settled("a.x", "create", ["create"]), summary=None))
+        Apply.model_validate(_alone(_not_settled("a.x", "create", ["create"]), summary=None, errors_reported=1))
 
 
 def test_a_change_stays_unknown_for_want_of_the_state_only_when_it_was_not_read() -> None:
-    apply = _alone(_not_settled("a.x", "create", ["create"]), log_lines=DAMAGED, summary=None)
+    apply = _alone(_not_settled("a.x", "create", ["create"]), log_lines=DAMAGED, summary=None, errors_reported=1)
     apply.update(state=APPLY["state"], outcomes_from="apply_log_and_state")
     with pytest.raises(ValidationError, match="unknown for want of the state only when the state was not read"):
         Apply.model_validate(apply)
@@ -150,9 +152,13 @@ CREATED = {**change("a.created", "create", ["create"], "applied"), "outcome_from
 SUMMARY = {"added": 1, "changed": 0, "imported": 0, "removed": 0}
 
 
-@pytest.mark.parametrize("summary", [SUMMARY, None], ids=["with its summary", "stopped before it"])
-def test_an_apply_that_ran_to_its_end_records_a_change_that_needs_no_operation_as_unknown(summary: Any) -> None:
-    Apply.model_validate(_alone(CREATED, RENAMED, summary=summary))
+@pytest.mark.parametrize(
+    ("summary", "errors_reported"), [(SUMMARY, 0), (None, 1)], ids=["with its summary", "stopped before it"]
+)
+def test_an_apply_that_ran_to_its_end_records_a_change_that_needs_no_operation_as_unknown(
+    summary: Any, errors_reported: int
+) -> None:
+    Apply.model_validate(_alone(CREATED, RENAMED, summary=summary, errors_reported=errors_reported))
 
 
 def test_a_change_that_needs_no_operation_is_never_settled_from_the_log_alone() -> None:
@@ -161,22 +167,22 @@ def test_a_change_that_needs_no_operation_is_never_settled_from_the_log_alone() 
         AppliedChange.model_validate(kept)
 
 
-def test_a_summary_the_log_lost_needs_a_log_that_lost_messages() -> None:
-    with pytest.raises(ValidationError, match="only a log that lost messages leaves a change"):
-        Apply.model_validate(_alone(CREATED, summary=LOG_INCOMPLETE))
+def test_a_log_cut_before_its_end_lost_its_summary_even_with_every_line_read() -> None:
+    apply = Apply.model_validate(_alone(CREATED, summary=LOG_INCOMPLETE))
+    assert apply.tool_data.lost_messages and apply.tool_data.outcome_unknown
 
 
 def test_an_apply_whose_only_unknown_change_needs_no_operation_has_no_time() -> None:
     with pytest.raises(ValidationError, match="has a time exactly when an operation ran"):
-        Apply.model_validate(_alone(RENAMED, summary=None))
-    Apply.model_validate(_alone(RENAMED, summary=None, timing=None))
+        Apply.model_validate(_alone(RENAMED, summary=None, errors_reported=1))
+    Apply.model_validate(_alone(RENAMED, summary=None, errors_reported=1, timing=None))
 
 
 def test_a_log_that_lost_messages_cannot_show_a_change_was_never_started_without_the_state() -> None:
     never = {**change("a.x", "delete", ["delete"], "not_attempted"), "outcome_from": "apply_log_alone"}
-    with pytest.raises(ValidationError, match="a change the log never names is unknown"):
-        Apply.model_validate(_alone(never, log_lines=DAMAGED, summary=None, timing=None))
-    Apply.model_validate(_alone(never, summary=None, timing=None))
+    with pytest.raises(ValidationError, match="a log that lost messages never shows that a change with operations"):
+        Apply.model_validate(_alone(never, log_lines=DAMAGED, summary=None, errors_reported=1, timing=None))
+    Apply.model_validate(_alone(never, summary=None, errors_reported=1, timing=None))
 
 
 @pytest.mark.parametrize(

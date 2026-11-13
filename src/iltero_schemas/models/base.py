@@ -16,7 +16,8 @@ from iltero_schemas.models.assertion import Stage, TargetKind
 
 
 class StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+    # A refusal names the field and the rule, never the value it refused.
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True, hide_input_in_errors=True)
 
 
 # The one coercion: an enum is read from its string value.

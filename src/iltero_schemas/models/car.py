@@ -43,10 +43,11 @@ from iltero_schemas.change_types.image.build import ImageBuild
 from iltero_schemas.change_types.image.deploy import ImageDeploy
 from iltero_schemas.models.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
 from iltero_schemas.models.base import StageValue, StrictModel
-from iltero_schemas.models.commit_review import CommitReviewReading
+from iltero_schemas.models.commit_review import CommitReview
 from iltero_schemas.models.context import Source
 from iltero_schemas.models.coverage import AssuranceStatus, Coverage, StageOutcome, Verdict, combine_in_order
 from iltero_schemas.models.event import AssuranceEvent, Bundle, Compiler
+from iltero_schemas.models.facts import ServerFactsUnavailable
 from iltero_schemas.models.fields import (
     Count,
     Digest,
@@ -64,7 +65,7 @@ from iltero_schemas.models.provenance import check_provenance
 from iltero_schemas.models.redaction import RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.reference_time import ReferenceTime
 from iltero_schemas.models.scanners import ScannerTool
-from iltero_schemas.models.server_facts import Approvals
+from iltero_schemas.models.server_facts import Approval, Approvals
 from iltero_schemas.models.stages import change_digest_problems, check_structure, integrity_problems
 from iltero_schemas.models.units_file import UnitsFile
 
@@ -206,7 +207,8 @@ class ScannerReport(StrictModel):
     # and one that reads a plan answer different questions about the same resource,
     # so a reader must be able to tell which produced an accepted verdict.
     input_kinds: list[Identifier]
-    # The digest of the report as the stage kept it, which is the ``input_digest`` of any verdict it stands behind.
+    # The digest of the report as the stage kept it, redacted and canonical, which is the ``input_digest`` of any
+    # verdict it stands behind; the report as the pipeline gave it is that register entry's source.
     report_digest: Digest
     observations: MemberPath
     results_read: Count
@@ -219,9 +221,11 @@ class EvaluatorBindingSetUsed(StrictModel):
     """The one set of bindings in force, so a reader can say which licences applied.
 
     ``origin`` is set by the tool, never by the binding set: a file cannot claim
-    to be the set the contract package ships. ``digest`` is over the binding set
-    as it was read, and the stage retains it, so an event's ``evaluator_binding.digest``
-    resolves to an entry a reader can see.
+    to be the set the contract package ships. ``digest`` is over the binding set's
+    canonical JSON as it was parsed, not the file's bytes. The stage keeps that
+    canonical copy at ``copy_path``, an entry of the evidence register under the
+    same digest, so an event's ``evaluator_binding.digest`` resolves to an entry a
+    reader can see.
     """
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
@@ -273,12 +277,12 @@ class StageRecord(StrictModel):
     # The mode the stage's gate ran in. Under advisory, a failed or undecided verdict (exit 1 or 3) did not stop the
     # pipeline; every other non-zero exit did. A stage after the deployment is always enforcing.
     enforcement_mode: EnforcementMode
-    # The approvals the stage's evaluations read, whatever their source, each of this record's change or run; null at a
-    # stage whose input carries no approvals.
-    approvals: Approvals | None
-    # The commit review the stage's evaluations read from the server; null at every other stage, and when the input
-    # held the unknown marker.
-    commit_review: CommitReviewReading | None
+    # The approvals the stage's evaluations read, whatever their source, each of this record's change or run, or the
+    # unknown marker the input held in their place; null at a stage whose input carries no approvals.
+    approvals: Approvals | ServerFactsUnavailable | None
+    # The commit review the stage's evaluations read from the server, or the unknown marker the input held in its
+    # place; null at a stage whose input carries no commit review.
+    commit_review: CommitReview | ServerFactsUnavailable | None
     compiler: Compiler
     redaction: RedactionReport
     events: EventsFile
@@ -300,6 +304,11 @@ class StageRecord(StrictModel):
     @property
     def outcome(self) -> StageOutcome:
         return StageOutcome(coverage=self.coverage, verdict=self.verdict, assurance_status=self.assurance_status)
+
+    @property
+    def listed_approvals(self) -> list[Approval]:
+        """The approvals the stage lists: none when it keeps the unknown marker or its input carries no approvals."""
+        return self.approvals if isinstance(self.approvals, list) else []
 
 
 class Integrity(StrictModel):

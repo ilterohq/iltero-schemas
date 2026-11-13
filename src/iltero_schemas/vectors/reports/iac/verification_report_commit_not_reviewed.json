@@ -1,0 +1,53 @@
+{
+  "apiVersion": "iltero.io/verification-report/v1",
+  "record": {
+    "uuid": "935c0eaf-dad5-597c-b2e8-37afafd9577a",
+    "digest": "sha256:44febf0678ffda3efdb67e9c346fc1e4e120841b3bf6750faabf9db3baffb154"
+  },
+  "verifier": {
+    "name": "iltero",
+    "version": "0.1.0"
+  },
+  "properties": {
+    "integrity": {
+      "state": "client_asserted",
+      "reason": "file_digests"
+    },
+    "source_identity": {
+      "state": "not_assessed",
+      "reason": "ci_job_held_by_server"
+    },
+    "approval_identity": {
+      "state": "not_performed",
+      "reason": "server_facts_unavailable"
+    },
+    "bundle_provenance": {
+      "state": "not_performed",
+      "reason": "local_assertions"
+    },
+    "stage_completeness": {
+      "state": "not_assessed",
+      "reason": "stages_pending"
+    },
+    "plan_apply_match": {
+      "state": "client_asserted",
+      "reason": "plan_files_supplied"
+    },
+    "runtime_verification": {
+      "state": "not_assessed",
+      "reason": "stage_pending"
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "reason": null
+    },
+    "exceptions": {
+      "state": "not_assessed",
+      "reason": "exceptions_not_listed"
+    },
+    "commit_review": {
+      "state": "failed",
+      "reason": "not_reviewed"
+    }
+  }
+}

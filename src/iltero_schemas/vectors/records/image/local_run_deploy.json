@@ -148,8 +148,14 @@
         "detail": null
       },
       "enforcement_mode": "enforcing",
-      "approvals": [],
-      "commit_review": null,
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "commit_review": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
       "compiler": {
         "version": "1.0.0",
         "contract_version": "0.1.0",
@@ -164,7 +170,7 @@
         },
         "input": {
           "kind": "facts",
-          "digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2"
+          "digest": "sha256:6a1e0073208028b813cf06500da4bca8f63c0721e7356dcc8ff558f1abf73922"
         },
         "redacted": [],
         "unknown": [],
@@ -272,7 +278,7 @@
         },
         "input": {
           "kind": "deployment",
-          "digest": "sha256:bf9181232fbfcfdc55c56911034788e2ef948718b8ff1df3aaf596dedc368f60"
+          "digest": "sha256:77b1db855837c5bdf84978bb5beddc92718de6e45fc160d6e37d660379c6fdb4"
         },
         "redacted": [],
         "unknown": [],
@@ -378,8 +384,8 @@
           "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b"
         },
         "input": {
-          "kind": "deployment",
-          "digest": "sha256:1e35b00c9e5d9a8aa69a8b98a384970b9fc76cb2c6b48c4ab843164cb93579c4"
+          "kind": "drift_check",
+          "digest": "sha256:9f4d47ea421a730115083358cef1ce4b12b536de907130a693d1b44fa423f749"
         },
         "redacted": [],
         "unknown": [],

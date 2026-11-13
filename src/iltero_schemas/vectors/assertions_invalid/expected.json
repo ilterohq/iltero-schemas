@@ -41,7 +41,7 @@
   },
   "duplicate_key": {
     "path": "document",
-    "message": "duplicate key 'stage'"
+    "message": "duplicate key"
   },
   "lone_surrogate": {
     "path": "spec.assert.equal",

@@ -58,13 +58,13 @@ def _entries(record: str) -> list[tuple[str, str]]:
     entries = []
     try:
         rows = list(csv.reader(record.splitlines()))
-    except csv.Error as exc:
-        raise ContractIntegrityError(f"RECORD cannot be read: {exc}") from None
+    except csv.Error:
+        raise ContractIntegrityError("RECORD cannot be read") from None
     for row in rows:
         if not row:
             continue
         if len(row) < 2:
-            raise ContractIntegrityError(f"RECORD has a row without a hash: {row!r}")
+            raise ContractIntegrityError("RECORD has a row without a hash")
         path, file_hash = row[0], row[1]
         if not _counts(path) or not file_hash:
             continue
@@ -88,7 +88,7 @@ def _check(record: str, read: Callable[[str], bytes], present: Iterable[str]) ->
     for path, file_hash in entries:
         algorithm, _, expected = file_hash.partition("=")
         if algorithm != "sha256":
-            raise ContractIntegrityError(f"{path}: RECORD names {algorithm!r}, not sha256")
+            raise ContractIntegrityError(f"{path}: RECORD names a hash other than sha256")
         try:
             data = read(path)
         except (OSError, KeyError):

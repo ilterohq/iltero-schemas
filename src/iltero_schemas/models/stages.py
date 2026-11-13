@@ -30,6 +30,8 @@ from iltero_schemas.models.coverage import (
     stage_outcome,
     state_not_read_reason_problem,
 )
+from iltero_schemas.models.facts import ServerFactsUnavailable
+from iltero_schemas.models.fields import parse_timestamp
 from iltero_schemas.models.redaction import RedactedKind
 from iltero_schemas.models.register import check_register
 from iltero_schemas.profiles import reads_part
@@ -71,13 +73,16 @@ def scope_counted_from(activity: Activity, stage: Stage, kinds: set[TargetKind])
 # The stages whose gate may run in advisory mode: those before the deployment.
 ADVISORY_STAGES = (Stage.PLAN, Stage.PRE_DEPLOY)
 # What each stage of a record redacts before its checks read it: what the plan stage observed, the facts the
-# pre-deploy stage was given, and the deployment the later stages read.
+# pre-deploy stage was given, the deployment the post-deploy stage read, and the drift check the post-verify stage read.
 REDACTED_INPUT_KIND: dict[Stage, RedactedKind] = {
     Stage.PLAN: "observation",
     Stage.PRE_DEPLOY: "facts",
     Stage.POST_DEPLOY: "deployment",
-    Stage.POST_VERIFY: "deployment",
+    Stage.POST_VERIFY: "drift_check",
 }
+# The stages whose part the record keeps as it is, unredacted, so the stage's redaction report is of that part and
+# lists no path: none redacted, left unknown or allowed through.
+STAGES_THAT_REDACT_NOTHING = (Stage.POST_DEPLOY, Stage.POST_VERIFY)
 _ORDER = list(Stage)
 
 
@@ -85,18 +90,29 @@ def _assertions_of(car: CAR, stage: Stage) -> set[str]:
     return {f"{e.assertion.id}@{e.assertion.version}" for e in car.events if e.evaluation.stage is stage}
 
 
-def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
-    """A stage lists the approvals its evaluations read, once each, each of a change or of this record's run.
+def _results_read_server_facts(car: CAR, stage: Stage) -> bool:
+    """Whether any of a stage's results read facts from the server."""
+    return any(e.evaluation.stage is stage and e.provenance.facts_source == "server" for e in car.events)
 
-    Which change is an integrity check (``change_digest_problems``).
+
+def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
+    """A stage keeps the approvals its evaluations read, or the unknown marker the input held in their place: the
+    marker when its results read no facts from the server. It lists each approval once, each of a change or of this
+    record's run.
+
+    Which change is an integrity check (``change_digest_problems``). Whether a stage whose results read facts from
+    the server kept the list or the marker its input held is decided by replaying that input.
     """
-    approvals = record.approvals or []
+    if isinstance(record.approvals, list) and not _results_read_server_facts(car, stage):
+        raise ValueError(
+            f"the {stage.value} stage keeps the unknown marker for its approvals when its results read no facts from "
+            "the server"
+        )
+    approvals = record.listed_approvals
     if len({approval.id for approval in approvals}) != len(approvals):
         raise ValueError(f"the {stage.value} stage lists each approval once")
     if any(a.subject.kind == "run" and a.subject.id != car.run.id for a in approvals):
         raise ValueError(f"the {stage.value} stage lists only approvals of a change or of this record's run")
-    if approvals and not any(e.evaluation.stage is stage and e.provenance.facts_source == "server" for e in car.events):
-        raise ValueError(f"the {stage.value} stage lists approvals only when its results read facts from the server")
 
 
 # The commit review outcome a record of each change type never keeps: the other type's commit that is not verified.
@@ -107,60 +123,75 @@ _NOT_AN_OUTCOME_OF: dict[str, str] = {
 
 
 def _check_commit_review(car: CAR, activity: Activity, stage: Stage, record: StageRecord) -> None:
-    """A stage evaluates its check of the commits at most once. It keeps the commit review only where its input
-    carries one, and only when its results read facts from the server. Then it keeps it whenever that check passed or
-    failed, with the outcome that check read, and never when the check could not read it. Its outcome is one of the
-    record's change type, and an image deploy's review is of its accepted build's repository, and says the build
-    named another commit exactly when it did. It counts no commits exactly when the head commit, the record's source
-    commit or an image deploy's verified commit, is the one it counts since."""
-    from_server = any(e.evaluation.stage is stage and e.provenance.facts_source == "server" for e in car.events)
+    """A stage whose input carries a commit review keeps it, or the unknown marker the input held in its place: the
+    marker when its results read no facts from the server, or when its check of the commits could not read one, and
+    the review when that check passed or failed. It evaluates that check at most once, and the review is reviewed
+    exactly when the check passed.
+
+    A kept review is one of the record's change type, decided no later than the stage observed it, and of what the
+    server verified: for an infrastructure change, its head commit is the record's source commit unless the outcome
+    says it is not; for an image deploy, its head commit and repository are the accepted build's verified commit and
+    repository, and it says the build named another commit exactly when it did. Whether a stage whose results read
+    facts from the server kept the review or the marker its input held is decided by replaying that input.
+    """
+    review = record.commit_review
+    if (review is not None) != reads_part(activity.name, stage, "commit_review"):
+        raise ValueError(
+            f"the {stage.value} stage keeps a commit review, or the unknown marker, exactly where its input carries one"
+        )
+    if review is None:
+        return
     checks = [e.evaluation for e in car.events if e.evaluation.stage is stage and e.assertion.id == COMMITS_REVIEWED_ID]
     if len(checks) > 1:
         raise ValueError(
             f"the {stage.value} stage evaluates {COMMITS_REVIEWED_ID} at most once, so it keeps one reading"
         )
-    review = record.commit_review
-    if review is None:
-        if from_server and any(check.status in ("pass", "fail") for check in checks):
-            raise ValueError(
-                f"the {stage.value} stage keeps the commit review its {COMMITS_REVIEWED_ID} check decided from"
-            )
-        return
-    if not reads_part(activity.name, stage, "commit_review"):
-        raise ValueError(f"the {stage.value} stage keeps a commit review only where its input carries one")
-    if not from_server:
+    marker = isinstance(review, ServerFactsUnavailable)
+    from_server = _results_read_server_facts(car, stage)
+    if not marker and not from_server:
         raise ValueError(
-            f"the {stage.value} stage keeps a commit review only when its results read facts from the server"
+            f"the {stage.value} stage keeps the unknown marker for its commit review when its results read no facts "
+            "from the server"
         )
-    if any(
-        (check.status == "pass") != (review.outcome == "reviewed")
-        for check in checks
-        if check.status in ("pass", "fail")
+    # A check that passed or failed without facts from the server is refused by the record's provenance rules.
+    if marker and from_server and any(check.status in ("pass", "fail") for check in checks):
+        raise ValueError(
+            f"the {stage.value} stage keeps the commit review its {COMMITS_REVIEWED_ID} check decided from"
+        )
+    if not marker and any(
+        check.status == "unknown" and check.status_reason == "server_facts_unavailable" for check in checks
     ):
+        raise ValueError(
+            f"the {stage.value} stage keeps the unknown marker when its {COMMITS_REVIEWED_ID} check could not read a "
+            "commit review"
+        )
+    if isinstance(review, ServerFactsUnavailable):  # as ``marker``, written so the type checker narrows ``review``
+        return
+    decided = [check.status for check in checks if check.status in ("pass", "fail")]
+    if any((status == "pass") != (review.outcome == "reviewed") for status in decided):
         raise ValueError(
             f"the {stage.value} stage's commit review is reviewed exactly when its {COMMITS_REVIEWED_ID} check passed"
         )
-    if any(check.status == "unknown" and check.status_reason == "server_facts_unavailable" for check in checks):
-        raise ValueError(
-            f"the {stage.value} stage keeps no commit review when its {COMMITS_REVIEWED_ID} check could not read one"
-        )
     if review.outcome == _NOT_AN_OUTCOME_OF[car.change.activity]:
         raise ValueError(f"a record of {car.change.activity} keeps no commit review that is {review.outcome}")
-    head = car.subject.source.commit.sha
+    if parse_timestamp(review.decided_at) > parse_timestamp(record.observed_at):
+        raise ValueError(f"the {stage.value} stage's commit review was decided no later than the stage observed it")
     if isinstance(car.change, ImageDeploy):
         build = car.change.build
-        if build is None or review.repository != build.repository:
-            raise ValueError(f"the {stage.value} stage's commit review is of the accepted build's repository")
+        if build is None or (review.head_commit, review.repository) != (build.verified_commit, build.repository):
+            raise ValueError(
+                f"the {stage.value} stage's commit review is of the accepted build's verified commit and repository"
+            )
         if (review.outcome == "build_commit_not_verified_commit") != (build.build_commit != build.verified_commit):
             raise ValueError(
                 f"the {stage.value} stage's commit review is build_commit_not_verified_commit exactly when the "
                 "accepted build's build_commit is not its verified_commit"
             )
-        head = build.verified_commit
-    if review.counted_since is not None and (head == review.counted_since.commit) != (review.commits_counted == 0):
+        return
+    if (review.outcome == "source_commit_not_verified_commit") != (review.head_commit != car.subject.source.commit.sha):
         raise ValueError(
-            f"the {stage.value} stage's commit review counts no commits exactly when the head commit is the one it "
-            "counts since"
+            f"the {stage.value} stage's commit review is of the record's source commit, unless it is "
+            "source_commit_not_verified_commit, which names the verified commit"
         )
 
 
@@ -252,6 +283,14 @@ def _check_one_redaction_policy(car: CAR) -> None:
         raise ValueError("every stage and every redacted evidence file name the same redaction policy")
 
 
+def _check_redacts_nothing(stage: Stage, record: StageRecord) -> None:
+    """The stage's redaction report is of the part it counts, and lists no path: the record keeps that part as it is."""
+    if record.redaction.input.digest != record.coverage.subjects_in_scope.source_digest:
+        raise ValueError(f"the {stage.value} stage's redaction report is of the part it counts")
+    if record.redaction.redacted or record.redaction.unknown or record.redaction.allowed:
+        raise ValueError(f"the {stage.value} stage redacts nothing: the part it counts is kept as it is")
+
+
 def check_structure(car: CAR) -> None:
     """Raise ``ValueError`` unless the stages hold together, whatever values they carry."""
     activity = ACTIVITIES[car.change.activity]
@@ -276,11 +315,15 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage counts its scope as {counted_from or 'its own'}")
         read = REDACTED_INPUT_KIND[stage]
         if record.redaction.input.kind != read:
-            raise ValueError(f"the {stage.value} stage's redaction report is of the {read} it read")
+            raise ValueError(f"the {stage.value} stage's redaction report is of the {read.replace('_', ' ')} it read")
+        if stage in STAGES_THAT_REDACT_NOTHING:
+            _check_redacts_nothing(stage, record)
         if record.enforcement_mode == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
         if (record.approvals is not None) != reads_part(activity.name, stage, "approvals"):
-            raise ValueError(f"the {stage.value} stage lists approvals exactly when its evaluations read them")
+            raise ValueError(
+                f"the {stage.value} stage keeps approvals, or the unknown marker, exactly where its input carries them"
+            )
         _check_approvals(car, stage, record)
         _check_commit_review(car, activity, stage, record)
     stages_of_events = [event.evaluation.stage for event in car.events]

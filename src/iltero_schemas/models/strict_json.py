@@ -25,5 +25,5 @@ def strict_json(data: bytes, what: str) -> Any:
         raise ValueError(f"{what} is a JSON document in UTF-8, with no byte order mark")
     try:
         return json.loads(data.decode("utf-8"), object_pairs_hook=unique_keys, parse_constant=no_constant)
-    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError) as error:
-        raise ValueError(f"{what} is a JSON document in UTF-8, nested no deeper than a reader can follow") from error
+    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError):
+        raise ValueError(f"{what} is a JSON document in UTF-8, nested no deeper than a reader can follow") from None

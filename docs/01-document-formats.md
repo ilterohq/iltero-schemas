@@ -198,7 +198,7 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `plan` | object | The IaC `tool` and `tool_version`, the plan `format_version`, the plan's digests, `source_commit`, whether the plan is `complete` and `applyable`, and the same table of contents for every resource the plan covers. `tool_version`, `complete` and `applyable` hold the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the tool's plan does not say; `null` is refused. |
 | `subject` | object | The subject's `kind`, its `key` and its `identities` (`scheme`, `value`, `scope`): one or two, its local identity and, at runtime, its cloud identity (at most `iltero_schemas.models.fields.MAX_SUBJECT_IDENTITIES`, 2). An identity's `scope` holds at most 8 keys (`MAX_SCOPE_KEYS`). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
-| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, or the `state_not_read` marker when it was not read (see [When the state after the apply was not read](#apply-with-the-state-not-read)), `outcomes_from` (`apply_log`; `apply_log_and_state` when the log lost messages and the state settled what it could; `apply_log_alone` when the state was not read), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `apply_log_alone`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state, or the `state_not_read` marker when it was not read. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
+| `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, or the `state_not_read` marker when it was not read (see [When the state after the apply was not read](#apply-with-the-state-not-read)), `outcomes_from` (`apply_log`; `apply_log_and_state` when the log lost messages and the state settled what it could; `apply_log_alone` when the state was not read), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `apply_log_alone`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, `errors_reported`, the number of error diagnostics the log holds (see [When the state after the apply was not read](#apply-with-the-state-not-read) for the rules on both), the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state, or the `state_not_read` marker when it was not read. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
 | `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). In an `image_deploy` input, what one reading of the workload found (see [The `image_deploy` body](#the-image_deploy-body)); its `change_digest` is `change.digest`: "drift_check.change_digest is change.digest", and it compares every container, of the pod template or of a pod, whose image is from `change.image.repository`: "a reading compares every container whose image is from the deployed repository". |
@@ -384,13 +384,14 @@ The terms it uses:
   commit that is the commit the count starts after has no commits to check. A head commit in the starting point's
   history, older than it, is `head_commit_before_review_starting_point`.
 - **Where the count starts** (`counted_since`). Iltero Platform chooses where the count starts: after the review
-  starting point, or after the head commit of an earlier reading. That is the newest reading of the same repository,
-  decided after the same starting point was set, whose outcome was `reviewed` and whose head commit is on this head's
-  first-parent line. Those earlier readings form a chain that ends at the starting point. Each link was judged once, as
-  the git host stood when it was read: a later reading does not judge again the commits an earlier one covered, so a
-  decision made at the git host after a reading does not change what that reading judged. Iltero Platform keeps every
-  reading of a chain as long as any record rests on it. More than 100 commits since the newest reviewed reading is
-  still `too_many_commits`.
+  starting point, or after the head commit of an earlier reading of the same repository, decided after the same
+  starting point was set, whose outcome was `reviewed` and whose head commit is on this head's first-parent line.
+  Which such reading it counts from, if any, is its choice: counting from an older one, or from the starting point,
+  only checks more commits. Those earlier readings form a chain that ends at the starting point. Each link was judged
+  once, as the git host stood when it was read: a later reading does not judge again the commits an earlier one
+  covered, so a decision made at the git host after a reading does not change what that reading judged. Iltero
+  Platform keeps every reading of a chain as long as any record rests on it. More than 100 commits since the reading
+  counted from is still `too_many_commits`.
 
 **Limit:** who pushed to a pull request's branch is not checked. The reading keeps the repository's branch rules as
 the git host reports them, including whether the most recent push needs another person's approval.
@@ -484,7 +485,7 @@ The starter assertion `ILT.CHANGE.COMMITS_REVIEWED` reads the part. It is about 
 
 | Assertion | Title | Passes when |
 | --- | --- | --- |
-| `ILT.CHANGE.COMMITS_REVIEWED` | Every commit the change ships since its review starting point was merged through a pull request with a qualifying approval | `commit_review.outcome` is `reviewed`. It fails for every other outcome, and is `unknown` with `server_facts_unavailable` when the part is the unknown marker. In a run the tool opened it never passes, so a `pre_deploy` stage that evaluates it is at best indeterminate (exit code `3`); see the record rule for such a run in [Change Assurance Record (CAR)](#change-assurance-record-car). Not built in: a project adds it, and an exception may name it. Its remediation: "Merge every commit through a pull request approved on its final head, before the merge, by a person who can write to the repository and wrote none of it; run the change from, or build the image from, the commit Iltero verified; have an administrator set a review starting point when none fits." |
+| `ILT.CHANGE.COMMITS_REVIEWED` | Every commit the change ships since its review starting point was merged through a pull request with a qualifying approval | `commit_review.outcome` is `reviewed`. It fails for every other outcome, and is `unknown` with `server_facts_unavailable` when the part is the unknown marker. In a run the tool opened it is never `pass`, `fail` or `not_applicable`, and when it is `unknown` its reason is `server_facts_unavailable`, so a `pre_deploy` stage that evaluates it is at best indeterminate (exit code `3`); see the record rule for such a run in [Change Assurance Record (CAR)](#change-assurance-record-car). Not built in: a project adds it, and an exception may name it. Its remediation: "Merge every commit through a pull request approved on its final head, before the merge, by a person who can write to the repository and wrote none of it; run the change from, or build the image from, the commit Iltero verified; have an administrator set a review starting point when none fits." |
 
 #### Git repository
 
@@ -535,19 +536,31 @@ Rules:
 - With the state read, no change is `apply_log_alone`, and no change or deposed object's delete holds the
   `state_not_read` marker: "a change stays unknown for want of the state only when the state was not read".
 - The log and the state are held to one IaC tool only when the state was read.
+- When the log lost messages, whether or not the state was read, no change that needs an operation is
+  `not_attempted`; a change that needs no operation is not affected. The log cannot show that a change it never names was
+  not started, and the state never shows that a change was not attempted. "a log that lost messages never shows that
+  a change with operations was not attempted: it is unknown". For `terraform`, the log lost messages when
+  `damaged_messages` or `interrupted_operations` is above 0, or when its `summary` is the `deployment_log_incomplete`
+  marker, and no deposed object's delete is then `not_attempted` either: "a log that lost messages never shows that a
+  deposed object's delete was not attempted: it is unknown".
+- For `terraform`: Terraform 1.14 ends an apply log with its counts when the apply ran to its end, and with its errors
+  when it stopped. `errors_reported` counts the error diagnostics the log holds, each counted whether or not the
+  record keeps it; a warning is not counted, and a damaged line is counted in `damaged_messages` instead. The `summary`
+  is `null` exactly when `errors_reported` is above 0: "an apply log that reports an error holds no counts: its
+  summary is null". A log that holds neither its counts nor an error was cut short: its `summary` is the
+  `deployment_log_incomplete` marker, "an apply log that holds neither its counts nor an error was cut: its summary is
+  unknown", and the log counts as having lost messages, so no change with operations and no deposed object's delete
+  is `not_attempted`.
 - A change that needs no operation, left unknown, is not an operation that may have run: an apply whose only unknown
   changes need no operation has a `timing` only when an operation ran.
 - For `terraform`: with the state not read, every deposed object's delete is the `state_not_read` marker: "with the
-  state not read, every deposed object's delete is unknown". A `summary` that is the `deployment_log_incomplete`
-  marker, and a change that needs an operation left `none`, need a log that lost messages (`damaged_messages` or
-  `interrupted_operations` above 0): "only a log that lost messages leaves a change to the state or unknown". The one
+  state not read, every deposed object's delete is unknown". A change that needs an operation left `none` needs a
+  log that lost messages: "only a log that lost messages leaves a change to the state or unknown". The one
   exception: with the state not read, a `delete`, or a `replace` that deletes, at an address that also holds deposed
   objects may be `none` with the `state_not_read` marker even when the log lost no messages, since the log names every
-  delete at that address alike and only the state shows which was the current object's. When the log lost messages, a change
-  that needs an operation is never `not_attempted` from the log alone: "with the state not read and the log missing
-  messages, a change the log never names is unknown". A change that needs no operation, left
-  unknown, still allows the `summary`; an import among them is still counted in `imported`. The summary's `removed`
-  count may include the deposed deletes left unknown.
+  delete at that address alike and only the state shows which was the current object's. A change that needs no
+  operation, left unknown, still allows the `summary`; an import among them is still counted in `imported`. The
+  summary's `removed` count may include the deposed deletes left unknown.
 - A `post_verify` input whose deployment's state was not read is refused: "post-verify needs the identities the state
   after the apply gives, and the state after the apply was not read".
 
@@ -660,7 +673,7 @@ with a regulatory framework.
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
 | `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions expected and evaluated, counts per status, the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
 | `verdict` | object | `value` (`pass`, `fail` or `indeterminate`), `exit_code`, `computed_from` (`status_counts` for a stage, `stage_precedence` for the record) and the deciding `stage`. |
-| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (an evaluation ended in an evaluator error), `state_not_read` (the state after the apply was not read), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order, within a stage; a record's reason is its first incomplete stage's, with an evaluator error first; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
+| `assurance_status` | object | `complete` or `incomplete`, with a `reason`: `required_policy_evaluation_failed` (an evaluation ended in an evaluator error), `state_not_read` (the state after the apply was not read), `plan_not_complete` (the plan said it is incomplete, or did not say it is complete) or `upstream_state_unavailable` (the stage read placeholders for an input). The `reason` is the leading cause, in that order (`iltero_schemas.models.coverage.INCOMPLETE_REASON_PRECEDENCE`), within a stage; a record's reason is the stage reason that comes first in that order, taken from the earliest stage incomplete for it; every cause stays in the stage's `coverage`: its gaps, substituted inputs and error count. A record that is `complete` (every expected stage reported) can still be `incomplete` here. |
 | `complete` | boolean | Whether every expected stage has reported. |
 | `expected_stages` | list | The stages the record expects. |
 | `out_of_scope` | list | Each stage of the activity the record does not expect, with a `reason` and `declared_in` (see below). |
@@ -689,8 +702,8 @@ Each `stages` entry says what one stage did:
 | `reference_time` | object | The shape and rules of an [AssuranceContext](#assurancecontext)'s `reference_time`. Read from the runner's clock (`source: runner_clock`), its `value` is the same instant as `observed_at`. |
 | `execution` | object | What ran the evaluations: the `evaluator` (`engine: opa`, `version`, binary `digest`) and the `bundle` (`kind`, `tarball_digest`, `content_digest` and `key_id`, with the rules of an event's `bundle`, and the `capabilities_digest` its programs were built under), or, when nothing ran, both `null` and a `reason` (identifier) with an optional `detail`. `reason` is `null` when something ran. The bundle is the writer's claim: nothing compares it with a descriptor. A `local_bundle` has no descriptor. The stage's compiled index (`assertions`) and `coverage.assertions_expected.required_assertion_digest` describe what it held; both are the writer's claims, and nothing compares them with the tarball. |
 | `enforcement_mode` | string | The mode the stage's gate ran in: `enforcing` or `advisory` (see the key rules). |
-| `approvals` | list or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run. A list exactly at a stage whose input carries approvals (the `pre_deploy` stage of an `iac_change` or an `image_deploy`), `null` at every other. A stage lists approvals only when one of its events read its facts from Iltero Platform (`provenance.facts_source: server`): "the pre_deploy stage lists approvals only when its results read facts from the server". |
-| `commit_review` | object or null | What the stage keeps of the [commit review](#commit-review) its evaluations read from Iltero Platform (`iltero_schemas.models.commit_review.CommitReviewReading`, see below). `null` at every other stage, and when the input held the unknown marker. A stage keeps one only where its input carries one, the `pre_deploy` stage of an `iac_change` or an `image_deploy` ("the post_deploy stage keeps a commit review only where its input carries one"), and only when one of its events read its facts from Iltero Platform ("the pre_deploy stage keeps a commit review only when its results read facts from the server"). |
+| `approvals` | list, marker or null | The approvals the stage's evaluations read, in the shape of the [approval item](#assurancecontext), whatever their source, at most 256, each listed once and of the record's change or run, or the unknown marker `{"__unknown": true, "reason": "server_facts_unavailable"}` the input held in their place. Present exactly at a stage whose input carries approvals (the `pre_deploy` stage of an `iac_change` or an `image_deploy`), `null` at every other: "the post_deploy stage keeps approvals, or the unknown marker, exactly where its input carries them". A stage none of whose events read its facts from Iltero Platform (`provenance.facts_source: server`) keeps the marker: "the pre_deploy stage keeps the unknown marker for its approvals when its results read no facts from the server". One whose events did keeps the list or the marker its input held. `StageRecord.listed_approvals` gives the list, empty for the marker or `null`. |
+| `commit_review` | object, marker or null | The [commit review](#commit-review) the stage's evaluations read, as the input carried it (`iltero_schemas.models.commit_review.CommitReview`, one shape per outcome), or the unknown marker `{"__unknown": true, "reason": "server_facts_unavailable"}` the input held in its place (see below). `null` at every other stage. |
 | `compiler` | object | The compiler, in the shape of an event's `compiler`: `version`, `contract_version`, `contract_digest` and `install`. |
 | `redaction` | object | The stage's redaction report (see below). |
 | `events` | object | The file of the stage's events: its `path`, `digest` and `count`, which equals the stage's `coverage.evaluations`. |
@@ -698,34 +711,29 @@ Each `stages` entry says what one stage did:
 | `scanners` | object or null | What the stage read from the scanner reports it was given (see below). `null` for a stage given no scanner report. |
 | `coverage`, `verdict`, `assurance_status` | object | The stage's own, in the shape of the record's. |
 
-A stage's `commit_review` keeps:
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `outcome` | string | The commit review's `outcome`, one of the eight. |
-| `repository` | object | The repository reviewed (see [Git repository](#git-repository)). |
-| `host_reading_id`, `host_reading_digest` | UUID, digest | The reading the outcome was decided from, and a digest of what the decision rests on. |
-| `review_starting_point` | object or null | The review starting point, `null` exactly when the outcome names none: `no_review_starting_point`, `source_commit_not_verified_commit` and `build_commit_not_verified_commit` (`OUTCOMES_WITHOUT_A_STARTING_POINT`). |
-| `counted_since`, `commits_counted` | object or null, integer or null | Where the count started and how many it counted, as in the commit review. Both are present exactly when the outcome counts commits: `reviewed`, `not_reviewed` and `too_many_commits` (`COUNTED_OUTCOMES`). |
-
-Every stage, whatever its facts' source, evaluates `ILT.CHANGE.COMMITS_REVIEWED` at most once: "the pre_deploy stage
-evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one reading" (with the stage).
-
-Rules, for a stage whose results read facts from Iltero Platform:
+A stage keeps a commit review, or the unknown marker, exactly where its input carries one, the `pre_deploy` stage of
+an `iac_change` or an `image_deploy`. It keeps the marker when none of its events read its facts from Iltero
+Platform, and when its `ILT.CHANGE.COMMITS_REVIEWED` check could not read a commit review. It keeps the review when
+that check passed or failed. Whether a stage whose events read facts from Iltero Platform kept the review or the
+marker its input held is decided by replaying that input. The rules are in
+`iltero_schemas.models.stages`:
 
 | Rule | Refused with |
 | --- | --- |
-| `review_starting_point` is `null` exactly when the outcome names none. | "commit_review keeps a review starting point exactly when its outcome, reviewed, names one" (with the outcome) |
-| `counted_since` and `commits_counted` are present exactly when the outcome counts commits. | "commit_review keeps where it counted since and how many exactly when its outcome, reviewed, counts commits" (with the outcome) |
-| `counted_since` follows the commit review's rules for it against the kept review starting point and `host_reading_id`: its commit is the review starting point exactly when it names no earlier reading, the earlier reading is never the kept reading itself, and it was decided after the starting point was set. | The commit review's message for that rule |
-| `commits_counted` is at most 100 for `reviewed` and `not_reviewed`, and more than 100 for `too_many_commits`. | The commit review's message for that rule |
-| The count is 0 exactly when the head commit is `counted_since.commit`. The head commit is the record's `subject.source.commit.sha`, or for an `image_deploy` its `change.build.verified_commit`. | "the pre_deploy stage's commit review counts no commits exactly when the head commit is the one it counts since" |
-| When an `ILT.CHANGE.COMMITS_REVIEWED` event of the stage is `pass` or `fail`, the stage keeps the commit review it was decided from. | "the pre_deploy stage keeps the commit review its ILT.CHANGE.COMMITS_REVIEWED check decided from" |
+| The stage keeps a commit review or the marker exactly where its input carries one. | "the post_deploy stage keeps a commit review, or the unknown marker, exactly where its input carries one" (with the stage) |
+| The stage evaluates `ILT.CHANGE.COMMITS_REVIEWED` at most once. | "the pre_deploy stage evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one reading" |
+| A stage whose events read no facts from Iltero Platform keeps the marker. | "the pre_deploy stage keeps the unknown marker for its commit review when its results read no facts from the server" |
+| When an `ILT.CHANGE.COMMITS_REVIEWED` event of the stage is `pass` or `fail`, the stage keeps the commit review it was decided from, not the marker. | "the pre_deploy stage keeps the commit review its ILT.CHANGE.COMMITS_REVIEWED check decided from" |
+| When that event is `unknown` with `server_facts_unavailable`, as for an image deploy with no accepted build, the stage keeps the marker. | "the pre_deploy stage keeps the unknown marker when its ILT.CHANGE.COMMITS_REVIEWED check could not read a commit review" |
 | The kept outcome is `reviewed` exactly when that event is `pass`. | "the pre_deploy stage's commit review is reviewed exactly when its ILT.CHANGE.COMMITS_REVIEWED check passed" |
-| When the event is `unknown` with `server_facts_unavailable`, as for an image deploy with no accepted build, the stage keeps none. | "the pre_deploy stage keeps no commit review when its ILT.CHANGE.COMMITS_REVIEWED check could not read one" |
 | A record of an `iac_change` keeps no `build_commit_not_verified_commit`, and one of an `image_deploy` no `source_commit_not_verified_commit`. | "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit" (with the activity and outcome) |
-| `image_deploy`: the record has an accepted build, and the review is of its `repository`. | "the pre_deploy stage's commit review is of the accepted build's repository" |
+| The review was decided no later than the stage's `observed_at`. | "the pre_deploy stage's commit review was decided no later than the stage observed it" |
+| `iac_change`: `head_commit` is the record's `subject.source.commit.sha`, except for `source_commit_not_verified_commit`, where it is not. | "the pre_deploy stage's commit review is of the record's source commit, unless it is source_commit_not_verified_commit, which names the verified commit" |
+| `image_deploy`: the record has an accepted build, and the review's `head_commit` and `repository` are its `verified_commit` and `repository`. | "the pre_deploy stage's commit review is of the accepted build's verified commit and repository" |
 | `image_deploy`: the outcome is `build_commit_not_verified_commit` exactly when `change.build.build_commit` is not `change.build.verified_commit`, `null` included. | "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit" |
+
+A kept review is a `CommitReview`, so the [commit review](#commit-review)'s rules on its own fields hold for it too,
+such as where it counts since and how many it counts.
 
 A stage's `scanners` says what it read from scanner reports and how much of it became a verdict:
 
@@ -749,7 +757,7 @@ reports' `results_read`: every result a scanner reported is counted once.
 | `origin` | string | `shipped` for the set this package ships, `file` for one read from a file. The writer sets it, not the binding set; in a self-attested record it is the writer's claim. |
 | `file_name` | string or null | The name of the file the set was read from, without its directories. It follows the same rule as the plan's `artifact_file_name`. Present exactly when `origin` is `file`. |
 | `digest` | digest | The digest of the binding set's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. An event's `evaluator_binding.digest` names an entry of the set, which a reader checks against the copy. |
-| `copy_path` | string | Where the stage kept its copy of the binding set, in the record's directory. |
+| `copy_path` | string | Where the stage kept its copy of the binding set's canonical JSON, in the record's directory. The copy is an entry of the evidence register by this path and `digest`. |
 | `binding_count` | integer | How many entries the set holds, for every scanner and stage, not only those this stage could use, from 0. |
 
 Each `reports` entry:
@@ -759,8 +767,8 @@ Each `reports` entry:
 | `tool` | string | `checkov` or `trivy`. |
 | `tool_version` | identifier | The version the scanner reported. |
 | `input_kinds` | list | What the scanner was reading, in its own words, such as `terraform_plan` (identifiers). |
-| `report_digest` | digest | The digest of the report as the stage kept it, the same value as that file's `evidence_refs` digest. Events answered from the report name it as their `input_digest`. |
-| `observations` | string | Where the stage kept what it read from the report, in the record's directory. |
+| `report_digest` | digest | The digest of the report as the stage kept it, redacted and canonical, the digest of an entry of the evidence register. That entry's `source` is the report as the pipeline gave it. Events answered from the report name it as their `input_digest`. |
+| `observations` | string | Where the stage kept what it read from the report, in the record's directory, the path of an entry of the evidence register. |
 | `results_read` | integer | Results the stage read from the report, from 0. |
 | `results_without_binding` | integer | This report's results that became no evaluation, from 0. |
 | `parsing_errors` | integer | Inputs the scanner itself reported it could not parse, from 0. A value above 0 means the scanner did not cover everything it was given; 0 does not show that everything was parsed, because a scanner may not report parse errors at all. |
@@ -771,10 +779,17 @@ path. It holds no value.
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `policy` | object | The redaction policy that ran: `id`, `version` (identifiers) and `digest`. |
-| `input` | object | What was redacted: `kind` and the `digest` of the redacted tree. The `kind` is what the stage reads: `observation` at `plan`, `facts` at `pre_deploy`, `deployment` at `post_deploy` and `post_verify` (`iltero_schemas.models.stages.REDACTED_INPUT_KIND`): "the pre_deploy stage's redaction report is of the facts it read". |
+| `input` | object | What was redacted: `kind` and the `digest` of the redacted tree. The `kind` is what the stage reads: `observation` at `plan`, `facts` at `pre_deploy`, `deployment` at `post_deploy`, `drift_check` at `post_verify` (`iltero_schemas.models.stages.REDACTED_INPUT_KIND`): "the pre_deploy stage's redaction report is of the facts it read". |
 | `redacted` | list | Each path the policy hid: `path`, and `reason`, a token of a lowercase letter followed by up to 63 lowercase letters, digits or `_`. |
 | `unknown` | list | The paths left unknown. |
 | `allowed` | list | Each path the project allowed through: `path`, and `reason`, the project configuration's own words: one line of plain text, at most 1024 characters. |
+
+At `post_deploy` and `post_verify` the record keeps the part the stage counts as it is, so the redaction report is of
+that part and redacts nothing (`iltero_schemas.models.stages.STAGES_THAT_REDACT_NOTHING`). Its `input.digest` is the
+stage's `coverage.subjects_in_scope.source_digest`, the digest of the record's `change.deployment` at `post_deploy` and
+of its `change.drift_check` at `post_verify`: "the post_deploy stage's redaction report is of the part it counts".
+Its `redacted`, `unknown` and `allowed` lists are empty: "the post_verify stage redacts nothing: the part it counts is
+kept as it is".
 
 A path is a path in the redacted tree. Map keys are part of it, so it is kept as written: any characters, at most
 64 KiB of UTF-8 (`iltero_schemas.models.fields.RAW_TEXT_MAX_BYTES`). A reader escapes it to show it, control,
@@ -798,7 +813,8 @@ Each `evidence_refs` entry names one file in the record's directory:
 
 A redacted file can be a tool's output, such as the plan kept after redaction, or a file the record wrote, such as an
 evaluation context. An entry's `digest` is of the file's bytes; a stage's `redaction.input.digest` is of the redacted
-tree the report describes, so the two differ.
+tree the report describes. The two are equal when the file holds that tree's canonical JSON, as the plan stage's
+redacted plan does, which the evidence register finds by that digest.
 
 A stage's `coverage.subjects_in_scope.excluded` lists the plan resources left out of the subjects in scope, at most
 100,000:
@@ -888,14 +904,28 @@ Key rules:
   record's directory is plain names joined by `/`, at most 6 deep and 1024 characters, each name using only letters,
   digits, `.`, `_`, `@` and `-`, and never `.` or `..`. No two `evidence_refs` entries share a `path` or a `ref_id`.
 - These files that a record's stages and events name are entries of its evidence register
-  (`iltero_schemas.models.register.check_register`): each stage's events file and assertion index, by the `path` and
-  `digest` the stage gives ("the plan stage's events file is an entry of the evidence register", or "... assertion
-  index ..."); the input every event was evaluated over, by its `provenance.input_digest` ("the input every event was
-  evaluated over is an entry of the evidence register"); and what the plan stage redacted, by its
-  `redaction.input.digest` ("what the plan stage redacted is an entry of the evidence register"). In an `iac_change`
-  record whose post-deploy stage has reported, the apply log the deployment was read from is an entry too, by its
-  `source.digest`, which is `change.deployment.apply.source.digest`: "the apply log the deployment was read from is an
-  entry of the evidence register".
+  (`iltero_schemas.models.register.check_register`):
+
+  | File | Matched by | Refused with |
+  | --- | --- | --- |
+  | Each stage's events file | Its `path` and `digest` | "the plan stage's events file is an entry of the evidence register" |
+  | Each stage's assertion index | Its `index` and `digest` | "the plan stage's assertion index is an entry of the evidence register" |
+  | Each stage's copy of its scanner bindings | `scanners.evaluator_binding_set.copy_path` and `digest` | "the plan stage's copy of its scanner bindings is an entry of the evidence register" |
+  | What a stage read from each scanner report | The report's `observations` path | "the observations the plan stage read from its checkov report are an entry of the evidence register" |
+  | Each scanner report as the stage kept it | The report's `report_digest`, on an entry that names a `source` and a `redaction_policy` | "the checkov report the plan stage kept is an entry of the evidence register, redacted from the file the pipeline gave" |
+  | The input every event was evaluated over | Its `provenance.input_digest` | "the input every event was evaluated over is an entry of the evidence register" |
+  | What the plan stage redacted | Its `redaction.input.digest`, on an entry that names a `redaction_policy` | "what the plan stage redacted is an entry of the evidence register that names the redaction policy" |
+
+  Each scanner file a stage keeps (its bindings copy, its observations, and the entry of each kept report) is an entry
+  of its own: never another scanner file, nor any stage's events file or assertion index. "each scanner file a stage
+  keeps is an entry of its own, not a file the record names for another part". One scanner's report given to two
+  stages (the same `tool`, `tool_version` and `report_digest`) and the observations read from it may be kept as the
+  same entries, which this rule counts once. Reports from two different scanners never share entries, even when their
+  bytes are the same.
+
+  In an `iac_change` record whose post-deploy stage has reported, the apply log the deployment was read from is an
+  entry too, by its `source.digest`, which is `change.deployment.apply.source.digest`: "the apply log the deployment
+  was read from is an entry of the evidence register".
 - A record redacts under one policy: every stage's `redaction.policy` and every `evidence_refs[].redaction_policy`
   that is not `null` name the same `id`, `version` and `digest`, whatever the validation context. The digest tells
   apart two policies that share an `id` and `version`.
@@ -938,9 +968,9 @@ Key rules:
   evaluations, and it is `incomplete` with reason `upstream_state_unavailable`; an evaluator error's, a state not
   read's or the plan's reason wins when there is one.
 - A `pass` or exit code `0` on a stage that lists `substituted_inputs` is a verdict on the placeholder plan, not on
-  the change: a gate reads `assurance_status` with the verdict. The record's reason is the first stage's that is
-  incomplete for an evaluator error, or else the first incomplete stage's; readers find placeholder use by
-  `coverage.substituted_inputs`, not by the reason.
+  the change: a gate reads `assurance_status` with the verdict. Any other reason of any stage leads the record's
+  reason over `upstream_state_unavailable`, so readers find placeholder use by `coverage.substituted_inputs`, not by
+  the reason.
 - The plan stage lists one plan-flag gap for each plan flag that is not `true`, with the plan's flag as its `value`,
   in kind order: `plan_incomplete` before `plan_not_applyable`. A plan-flag gap in any other stage is refused.
 - A plan stage with a `plan_incomplete` gap is `incomplete` with reason `plan_not_complete`, and its verdict still
@@ -951,9 +981,9 @@ Key rules:
 - A record whose state after the apply was not read has no `drift_check` and no `post_verify` stage: "post-verify
   needs the identities the state after the apply gives, and the state after the apply was not read". Its `complete`
   field is `true` only when `post_verify` is out of scope, and its `assurance_status` stays `incomplete`. The record's
-  `assurance_status.reason` is that of the first incomplete stage, after an evaluator error, so a plan stage's reason
-  can lead it: readers find a state not read by the post-deploy stage's `state_not_read` gap, or by
-  `change.deployment.apply.state`, not by the record's reason alone.
+  `assurance_status.reason` is `state_not_read` unless a stage is incomplete for an evaluator error
+  (`required_policy_evaluation_failed`), which leads it. Readers find a state not read by the post-deploy stage's
+  `state_not_read` gap, or by `change.deployment.apply.state`, not by the record's reason alone.
 - A record's `change.drift_check` names the record's run (`run_id`) and the IaC tool that applied the deployment
   (`change.deployment.apply.source.tool`). Its first reading is no earlier than the `post_deploy` stage's
   `observed_at`, nor than the end of the apply (`change.deployment.apply.timing.ended_at`, when the apply's timing
@@ -1099,6 +1129,19 @@ A file name that holds `/`, `\`, `:` or a character that looks like a slash or b
 included), or that consists only of dots and spaces, is refused: "must be a file name without its directories". The
 name is at most 255 UTF-8 bytes as written, with no control character; only the separator and dots-and-spaces checks
 use its NFKC (Unicode compatibility) form.
+
+#### Deposed objects (Terraform)
+
+A deposed object is an old copy of a resource that a replacement set aside, which the plan lists for deletion. When
+the applied plan is the evaluated plan (`deployment.plan.digest` is `plan.digest`), the apply's deposed objects
+(`deployment.apply.tool_data.deposed`) are held to what the plan stage excluded
+(`coverage.subjects_in_scope.excluded`). The plan names no deposed object's key, so objects at one address are matched
+by their count only.
+
+| Rule | Refused with |
+| --- | --- |
+| At each address, the apply names at least as many deposed objects as the plan stage excluded there as `deposed`. The deposed objects it names beyond those, over all addresses together, number at least the plan stage's `deposed` exclusions whose address was redacted (`id: null`). | "the apply names every deposed object the plan stage left out as deposed" |
+| Any more at an address are allowed only up to the plan stage's exclusions for identity (`identity_redacted` or `identity_unnameable`) at that address. The rest, over all addresses together, are allowed only up to the number of its exclusions whose address was redacted (`id: null`) and whose reason is `deposed`, `identity_redacted` or `identity_unnameable`; a `not_managed` exclusion never counts. | "the apply names no deposed object beyond those the plan stage left out as deposed or for its identity" |
 
 ### The `image_build` body
 
@@ -1682,8 +1725,8 @@ Key rules:
 | An `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` event that was not evaluated, or that ended in `error`, gives a fault of the evaluator as its reason: `timeout` or `evaluator_unavailable` for `not_evaluated`; `evaluator_crash`, `evaluator_timeout`, `evaluator_memory_limit`, `output_overflow`, `output_contract_violation`, `bundle_verification_failed` or `compile_failure` for `error`, never `adapter_parse_failure` (`iltero_schemas.models.event.EVALUATOR_FAULT_REASONS`). | "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts", or the same with `error` |
 | On a run the tool opened, any other `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` event is `unknown` with `server_facts_unavailable`. | "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment" |
 
-The `post_verify` stage's redaction report (`redaction`) describes one input, the deployment input (`input.kind:
-deployment`); it does not list what redaction hid in the files the reading was taken from. For each of those files the
+The `post_verify` stage's redaction report (`redaction`) describes one input, the drift check (`input.kind:
+drift_check`); it does not list what redaction hid in the files the reading was taken from. For each of those files the
 record keeps the redaction policy that ran (`redaction_policy`) and the digest of the file as read (`source.digest`),
 not a list of what was hidden.
 
@@ -1931,7 +1974,7 @@ never part of the record.
 | `apiVersion` | string | `iltero.io/verification-report/v1`. |
 | `record` | object | The record's `uuid`, and the `digest` of its bytes as the verifier read them. |
 | `verifier` | object | `name: iltero` and the verifier's `version`. |
-| `properties` | object | Nine properties, each with a `state` and a `reason`: a short name for why the property has its state, or `null`. |
+| `properties` | object | Ten properties, each with a `state` and a `reason`: a short name for why the property has its state, or `null`. |
 
 | Property | What `verified` would mean |
 | --- | --- |
@@ -1944,6 +1987,7 @@ never part of the record.
 | `runtime_verification` | A verification after the deployment ran. |
 | `deployment_coverage` | No deployment visible to the verifier is missing a record. |
 | `exceptions` | Every exception used was approved and valid at deployment time. |
+| `commit_review` | Every commit the change ships was reviewed. |
 
 | State | Meaning |
 | --- | --- |
@@ -1965,7 +2009,9 @@ Key rules:
   the reason integrity_failed".
 - Otherwise each property has one of the results a verifier gives it
   (`iltero_schemas.models.verification.PROPERTY_RESULTS`), each a state and a reason, and any other is refused:
-  "`<property>` is one of the results a verifier gives that property".
+  "`<property>` is one of the results a verifier gives that property". For a commit review the pre-deploy stage kept,
+  a verifier gives `commit_review` the result `iltero_schemas.models.verification.COMMIT_REVIEW_RESULTS` names for its
+  outcome, with the outcome as the reason.
 
   | Property | State | Reason | Meaning |
   | --- | --- | --- | --- |
@@ -1973,11 +2019,13 @@ Key rules:
   | `source_identity` | `not_assessed` | `ci_job_held_by_server` | Iltero Platform, which opened the run, verifies its CI jobs; the record does not carry them. |
   | `source_identity` | `not_performed` | `run_opened_locally` | The tool opened the run, so no CI job was verified. |
   | `approval_identity` | `client_asserted` | `approvals_listed` | The pre-deploy stage lists approvals: its writer's claim. |
-  | `approval_identity` | `not_performed` | `no_approval_served` | Iltero Platform opened the run, and the pre-deploy stage lists no approval. |
-  | `approval_identity`, `exceptions` | `not_assessed` | `not_in_activity` | The record's activity has no pre-deploy stage, as an image build has none. |
-  | `approval_identity`, `exceptions` | `not_performed` | `server_facts_unavailable` | The pre-deploy stage ran with no facts from Iltero Platform. |
-  | `approval_identity`, `exceptions` | `not_assessed` | `pre_deploy_pending` | The record expects the pre-deploy stage, and the run that would report it is still in progress. |
-  | `approval_identity`, `exceptions` | `not_assessed` | `pre_deploy_out_of_scope` | The record leaves the pre-deploy stage out of scope. |
+  | `approval_identity` | `not_performed` | `no_approval_served` | Iltero Platform opened the run, and the pre-deploy stage keeps an empty list of approvals. |
+  | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `not_in_activity` | The record's activity has no pre-deploy stage, as an image build has none. |
+  | `approval_identity` | `not_performed` | `server_facts_unavailable` | The pre-deploy stage ran and keeps the unknown marker in place of its approvals, or lists none in a run the tool opened. |
+  | `commit_review` | `not_performed` | `server_facts_unavailable` | The pre-deploy stage ran and keeps the unknown marker in place of its commit review, or keeps no commit review. |
+  | `exceptions` | `not_performed` | `server_facts_unavailable` | The pre-deploy stage ran in a run the tool opened, so no exception came from Iltero Platform. |
+  | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `pre_deploy_pending` | The record expects the pre-deploy stage, and the run that would report it is still in progress. |
+  | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `pre_deploy_out_of_scope` | The record leaves the pre-deploy stage out of scope. |
   | `exceptions` | `not_assessed` | `exceptions_not_listed` | A record lists no exception, so the exceptions Iltero Platform may have served are not assessed. |
   | `bundle_provenance` | `client_asserted` | `server_bundle_named` | A stage names an assertion bundle Iltero Platform served. |
   | `bundle_provenance` | `not_performed` | `local_assertions` | The checks were the project's own. |
@@ -1995,6 +2043,10 @@ Key rules:
   | `runtime_verification` | `not_assessed` | `project_config`, `environment_policy` or `not_supported` | The record leaves the stage out of scope for that reason. |
   | `runtime_verification` | `not_assessed` | `not_in_activity` | The record's activity has no stage after deployment, as an image build has none. |
   | `deployment_coverage` | `not_assessed` | `null` | No reader of one record knows of a deployment that left no record. |
+  | `commit_review` | `client_asserted` | `reviewed` | The pre-deploy stage kept a commit review whose outcome is `reviewed`: its writer's claim. |
+  | `commit_review` | `failed` | `not_reviewed`, `review_starting_point_not_in_history`, `head_commit_before_review_starting_point`, `source_commit_not_verified_commit` or `build_commit_not_verified_commit` | The kept outcome, which shows that a commit the change ships was not reviewed. |
+  | `commit_review` | `not_determined` | `too_many_commits` | The kept outcome: more commits than Iltero Platform checks, so it was not decided. |
+  | `commit_review` | `not_performed` | `no_review_starting_point` | The kept outcome: no review starting point, so no commit was checked. |
 
 - The report has no overall verdict, and no report establishes certification or compliance with a regulatory
   framework.
@@ -2158,9 +2210,9 @@ Key rules:
   same files. A descriptor whose `tarball_digest` is not the SHA-256 of its decoded `tarball` is refused.
 - `assertion_set_digest` names everything in the bundle.
 - `check_descriptor` refuses a descriptor whose `compiler_version` is not `iltero_schemas.compiler.COMPILER_VERSION`:
-  `the bundle was compiled by compiler <version>; this package's is <version>`.
+  `the bundle was compiled by another compiler version; this package's is <version>`.
 - `check_descriptor` refuses a descriptor whose `capabilities_digest` is not `iltero_schemas.opa.CAPABILITIES_DIGEST`:
-  `the bundle was built under allowlist <digest>; this package's is <digest>`. The content digest covers the
+  `the bundle was built under another allowlist; this package's is <digest>`. The content digest covers the
   allowlist, so the same assertions built under another allowlist have another `content_digest`.
 - The signing key must be in the trusted keys and must not be revoked.
 - A descriptor is at most 64 MiB as canonical JSON (`iltero_schemas.models.bundle.MAX_DESCRIPTOR_BYTES`); a larger

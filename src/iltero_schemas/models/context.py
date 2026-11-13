@@ -224,7 +224,7 @@ def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResour
         else:
             valid = entry.kind == named
         if not valid:
-            raise ValueError(f"{entry.id} names a kind other than the one the {tool} table gives its type")
+            raise ValueError(f"every entry names the kind the {tool} table gives its type")
 
 
 class ProposedChange(StrictModel):

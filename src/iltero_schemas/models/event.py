@@ -168,9 +168,11 @@ class Evaluation(StrictModel):
         allowed = STATUS_REASONS[self.status]
         if self.status_reason is None:
             if self.status not in ("pass", "fail"):
-                raise ValueError(f"status {self.status!r} needs a status_reason")
+                raise ValueError("a status other than pass or fail needs a status_reason")
+        elif not allowed:
+            raise ValueError(f"a status of {self.status} has no status_reason")
         elif self.status_reason not in allowed:
-            raise ValueError(f"{self.status_reason!r} is not a reason for status {self.status!r}")
+            raise ValueError(f"status_reason must be a reason for status {self.status}: {', '.join(sorted(allowed))}")
         return self
 
 

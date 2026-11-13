@@ -23,7 +23,7 @@ APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
 TIMING: dict[str, Any] = APPLY["timing"]
 
 
-TOOL_FIELDS = ("summary", "log_lines", "deposed")
+TOOL_FIELDS = ("summary", "errors_reported", "log_lines", "deposed")
 
 
 def _apply(**fields: Any) -> dict[str, Any]:
@@ -53,7 +53,7 @@ def test_every_kind_of_change_has_its_place() -> None:
         change("a.swapped", "replace", ["create"], "applied"),
         change("a.updated", "update", ["update"], "applied", imported=True, moved_from="a.before"),
     ]
-    apply = Apply.model_validate(_apply(changes=changes, summary=None))
+    apply = Apply.model_validate(_apply(changes=changes, summary=None, errors_reported=1))
     assert [c.address for c in apply.changes] == sorted(c["address"] for c in changes)
 
 
@@ -165,12 +165,13 @@ UPDATED = change("a.x", "update", ["update"], "applied")
                 ],
                 "timing": None,
                 "summary": None,
+                "errors_reported": 1,
             },
             "renamed from one address",
         ),
         ({"changes": [UPDATED], "timing": None}, "a time exactly when an operation ran"),
         (
-            {"changes": [change("a.x", "create", ["create"], "not_attempted")], "summary": None},
+            {"changes": [change("a.x", "create", ["create"], "not_attempted")], "summary": None, "errors_reported": 1},
             "a time exactly when an operation ran",
         ),
         (
@@ -363,15 +364,17 @@ def test_only_a_log_that_lost_messages_leaves_anything_unknown(fields: dict[str,
 
 def test_a_change_of_unknown_outcome_may_have_run_or_not() -> None:
     fields = {"log_lines": DAMAGED, "outcomes_from": "apply_log_and_state", "changes": [_unknown_update()]}
-    assert Apply.model_validate(_apply(**fields, summary=None)).timing is not None
-    assert Apply.model_validate(_apply(**fields, summary=None, timing=None)).timing is None
+    assert Apply.model_validate(_apply(**fields, summary=None, errors_reported=1)).timing is not None
+    assert Apply.model_validate(_apply(**fields, summary=None, errors_reported=1, timing=None)).timing is None
 
 
 def test_an_operation_that_started_and_never_ended_is_a_lost_message() -> None:
     """A job stopped mid-apply ends the log at a line break: no damaged line, but an operation never ended."""
     interrupted = {**APPLY["tool_data"]["log_lines"], "interrupted_operations": 1}
     fields = {"log_lines": interrupted, "outcomes_from": "apply_log_and_state"}
-    assert Apply.model_validate(_apply(**fields, changes=[_created_by_the_state()], summary=None, timing=None)).changes
+    assert Apply.model_validate(
+        _apply(**fields, changes=[_created_by_the_state()], summary=None, errors_reported=1, timing=None)
+    ).changes
 
 
 def test_the_unknown_marker_is_written_under_its_marker_name() -> None:
@@ -413,3 +416,47 @@ def test_an_applied_plan_digest_version_other_than_its_tools_is_refused() -> Non
     document["deployment"]["plan"]["digest_version"] = "2"
     with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
         AssuranceContext.model_validate(document)
+
+
+INTERRUPTED = {**APPLY["tool_data"]["log_lines"], "interrupted_operations": 1}
+
+
+@pytest.mark.parametrize("log_lines", [DAMAGED, INTERRUPTED], ids=["damaged_line", "interrupted_operation"])
+@pytest.mark.parametrize(
+    ("action", "required"),
+    [("create", ["create"]), ("update", ["update"]), ("delete", ["delete"]), ("replace", ["create", "delete"])],
+)
+def test_a_log_that_lost_messages_never_shows_a_change_with_operations_was_not_attempted(
+    log_lines: dict[str, Any], action: str, required: list[str]
+) -> None:
+    """With the state read too: the state never shows that a change was not attempted."""
+    never = change("a.x", action, required, "not_attempted")
+    fields = {"changes": [never], "outcomes_from": "apply_log", "summary": None, "errors_reported": 1, "timing": None}
+    Apply.model_validate(_apply(**fields))
+    with pytest.raises(ValidationError, match="a log that lost messages never shows that a change with operations"):
+        Apply.model_validate(_apply(**fields, log_lines=log_lines))
+
+
+def test_a_cut_log_never_shows_a_change_with_operations_was_not_attempted() -> None:
+    """A log that holds neither its counts nor an error lost its end, though every line it holds was read."""
+    never = change("a.x", "create", ["create"], "not_attempted")
+    fields = {"changes": [never], "outcomes_from": "apply_log_and_state", "timing": None}
+    with pytest.raises(ValidationError, match="a log that lost messages never shows that a change with operations"):
+        Apply.model_validate(_apply(**fields, summary=LOG_INCOMPLETE, errors_reported=0))
+
+
+def test_a_log_closed_by_terraform_after_an_interrupt_shows_a_change_never_started() -> None:
+    """Interrupted, Terraform waits for the running operations, reports an error and ends its log: nothing is lost."""
+    changes = [
+        change("a.x", "update", ["update"], "errored"),
+        change("a.y", "create", ["create"], "not_attempted"),
+    ]
+    apply = Apply.model_validate(_apply(changes=changes, outcomes_from="apply_log", summary=None, errors_reported=1))
+    assert not apply.tool_data.lost_messages
+    assert [c.outcome for c in apply.changes] == ["errored", "not_attempted"]
+
+
+def test_a_log_that_lost_messages_may_show_a_change_that_needs_no_operation_was_not_made() -> None:
+    kept = change("a.x", "forget", [], "not_attempted")
+    fields = {"changes": [kept], "outcomes_from": "apply_log", "summary": None, "errors_reported": 1, "timing": None}
+    assert Apply.model_validate(_apply(**fields, log_lines=DAMAGED)).changes[0].outcome == "not_attempted"

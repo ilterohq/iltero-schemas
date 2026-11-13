@@ -76,9 +76,9 @@ class DeposedDelete(StrictModel):
     at that address, and does not say which delete finished. So the state
     settles it: gone (``applied``), still there after its delete started
     (``errored``), or still there because its delete never started
-    (``not_attempted``). When the log lost lines, a failed delete and one never
-    started look the same, so the outcome of an object the state still holds may
-    stay unknown. When the state was not read, every deposed object's outcome is
+    (``not_attempted``). When the log lost messages, a failed delete and one never
+    started look the same, so the outcome of an object the state still holds is
+    unknown, never ``not_attempted``. When the state was not read, every deposed object's outcome is
     unknown (``StateNotRead``).
     """
 
@@ -91,9 +91,13 @@ class TerraformApplyData(StrictModel):
     """What only Terraform says about an apply: its counts, its log's unreadable lines, and its deposed objects."""
 
     tool: Literal["terraform"]
-    # Null when Terraform stopped before reporting one: the apply did not run to its end. ApplyLogIncomplete when the
-    # log lost messages and has none: it may have been one of them.
+    # Terraform ends an apply's log with its counts when the apply ran to its end, and with its errors when it stopped,
+    # so a log with neither was cut short (as Terraform 1.14 writes it). Null: Terraform reported an error, so it wrote
+    # no counts. ApplyLogIncomplete: the log holds neither its counts nor an error.
     summary: TerraformApplySummary | ApplyLogIncomplete | None
+    # The error diagnostics the log holds, each counted whether or not the record keeps it. A warning is not counted,
+    # and a damaged line is counted in damaged_messages, not here.
+    errors_reported: Count
     log_lines: TerraformLogLines
     # Deposed objects are counted, not listed among the changes: a change names an address's current object.
     deposed: Annotated[list[DeposedDelete], Field(max_length=MAX_RESOURCES)]
@@ -126,6 +130,19 @@ class TerraformApplyData(StrictModel):
         return isinstance(self.summary, ApplyLogIncomplete) or self.maybe_ran
 
     @property
+    def deposed_addresses(self) -> list[str]:
+        """The address of each deposed object the apply names, once per object."""
+        return [entry.address for entry in self.deposed]
+
+    @property
+    def lost_messages(self) -> bool:
+        """Whether the log lost messages: a line it could not read, an operation it saw start and never end, or its
+        end, when it holds neither its counts nor an error."""
+        lines = self.log_lines
+        cut = isinstance(self.summary, ApplyLogIncomplete)
+        return bool(lines.damaged_messages or lines.interrupted_operations) or cut
+
+    @property
     def destroyed(self) -> int:
         """How many deposed objects the apply destroyed."""
         return sum(entry.outcome == "applied" for entry in self.deposed)
@@ -134,30 +151,25 @@ class TerraformApplyData(StrictModel):
         """Raise ``ValueError`` unless what Terraform says agrees with the apply's changes."""
         if len(apply.changes) + len(self.deposed) > MAX_RESOURCES:
             raise ValueError(f"an apply holds at most {MAX_RESOURCES} changes and deposed objects together")
-        lost_messages = bool(self.log_lines.damaged_messages or self.log_lines.interrupted_operations)
         # A change that needs no operation is unknown without the state for want of it, not for anything the log lost.
         # Where an address also holds deposed objects, the log names each delete there alike, so without the state
         # nothing shows which delete was the current object's, even in a log that lost nothing.
         shared = {entry.address for entry in self.deposed} if not apply.state_read else set()
-        left_to_the_state = (
-            apply.outcomes_from == "apply_log_and_state"
-            or isinstance(self.summary, ApplyLogIncomplete)
-            or any(
-                change.outcome_from == "none"
-                and change.required
-                and not (change.address in shared and "delete" in change.required)
-                for change in apply.changes
-            )
-        )
-        if left_to_the_state and not lost_messages:
-            raise ValueError("only a log that lost messages leaves a change to the state or unknown")
-        # Without the state, a log that lost messages cannot show that a change it never names was not started.
-        if lost_messages and any(
-            change.outcome_from == "apply_log_alone" and change.outcome == "not_attempted" and change.required
+        left_to_the_state = apply.outcomes_from == "apply_log_and_state" or any(
+            change.outcome_from == "none"
+            and change.required
+            and not (change.address in shared and "delete" in change.required)
             for change in apply.changes
-        ):
+        )
+        if self.summary is None and not self.errors_reported:
+            raise ValueError("an apply log that holds neither its counts nor an error was cut: its summary is unknown")
+        if self.summary is not None and self.errors_reported:
+            raise ValueError("an apply log that reports an error holds no counts: its summary is null")
+        if left_to_the_state and not self.lost_messages:
+            raise ValueError("only a log that lost messages leaves a change to the state or unknown")
+        if self.lost_messages and any(entry.outcome == "not_attempted" for entry in self.deposed):
             raise ValueError(
-                "with the state not read and the log missing messages, a change the log never names is unknown"
+                "a log that lost messages never shows that a deposed object's delete was not attempted: it is unknown"
             )
         if not apply.state_read and any(not isinstance(entry.outcome, StateNotRead) for entry in self.deposed):
             raise ValueError("with the state not read, every deposed object's delete is unknown")

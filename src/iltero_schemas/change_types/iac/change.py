@@ -9,6 +9,7 @@ read from what that apply left in the state.
 
 from __future__ import annotations
 
+from collections import Counter
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Literal
 
@@ -24,7 +25,13 @@ from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
 from iltero_schemas.models.checked_content import CheckedPlan, checked_plan
-from iltero_schemas.models.coverage import STATE_REASON, PlanFlagGap, StateNotReadGap, state_not_read_reason_problem
+from iltero_schemas.models.coverage import (
+    IDENTITY_REASONS,
+    STATE_REASON,
+    PlanFlagGap,
+    StateNotReadGap,
+    state_not_read_reason_problem,
+)
 from iltero_schemas.models.facts import NotReported
 from iltero_schemas.models.fields import (
     ArtifactDigestSource,
@@ -189,6 +196,35 @@ def _check_deployment(car: CAR) -> None:
         raise ValueError("the apply log the deployment was read from is an entry of the evidence register")
 
 
+def _check_deposed(car: CAR) -> None:
+    """When the applied plan is the evaluated one, the apply names every deposed object the plan stage left out as
+    deposed, and no other: at its address, or at any address for one whose address was redacted. A deposed object is an
+    old copy a replacement set aside, which the plan lists for deletion. Only where the plan stage left a resource out
+    for its identity, which may be a deposed one, may the apply name more: at that address, or at any where the address
+    was redacted. The plan names no deposed object's key, so two objects at one address are told apart by their count
+    only.
+    """
+    change = _body(car)
+    plan = car.stages.get(Stage.PLAN)
+    deployment = change.deployment
+    if plan is None or deployment is None or deployment.plan.digest != change.plan.digest:
+        return
+    excluded = plan.coverage.subjects_in_scope.excluded
+    planned = Counter(entry.id for entry in excluded if entry.id is not None and entry.reason == "deposed")
+    for_identity = Counter(entry.id for entry in excluded if entry.id is not None and entry.reason in IDENTITY_REASONS)
+    redacted_deposed = sum(entry.id is None and entry.reason == "deposed" for entry in excluded)
+    redacted = sum(entry.id is None and entry.reason in ("deposed", *IDENTITY_REASONS) for entry in excluded)
+    named = Counter(deployment.apply.tool_data.deposed_addresses)
+    unplanned = sum(max(0, count - planned[address]) for address, count in named.items())
+    if any(named[address] < count for address, count in planned.items()) or unplanned < redacted_deposed:
+        raise ValueError("the apply names every deposed object the plan stage left out as deposed")
+    beyond = sum(max(0, count - planned[address] - for_identity[address]) for address, count in named.items())
+    if beyond > redacted:
+        raise ValueError(
+            "the apply names no deposed object beyond those the plan stage left out as deposed or for its identity"
+        )
+
+
 def _check_drift_check(car: CAR) -> None:
     """The drift check is of this record's run and plan's tool, read after the apply, and counted by its stage."""
     change = _body(car)
@@ -228,6 +264,7 @@ def _check_drift_check(car: CAR) -> None:
 def _check_record(car: CAR) -> None:
     _check_plan(car)
     _check_deployment(car)
+    _check_deposed(car)
     _check_drift_check(car)
     identity = _body(car).identity
     if identity is not None:

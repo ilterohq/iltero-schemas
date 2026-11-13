@@ -65,10 +65,10 @@ def test_every_listed_reason_is_accepted_for_its_status(status: str, reason: str
 @pytest.mark.parametrize(
     ("status", "reason", "message"),
     [
-        ("pass", "redacted", "not a reason for status 'pass'"),
-        ("fail", "redacted", "not a reason for status 'fail'"),
-        ("unknown", "evaluator_crash", "not a reason for status 'unknown'"),
-        ("error", "redacted", "not a reason for status 'error'"),
+        ("pass", "redacted", "a status of pass has no status_reason"),
+        ("fail", "redacted", "a status of fail has no status_reason"),
+        ("unknown", "evaluator_crash", "status_reason must be a reason for status unknown"),
+        ("error", "redacted", "status_reason must be a reason for status error"),
         ("unknown", None, "needs a status_reason"),
         ("error", None, "needs a status_reason"),
         ("done", None, "Input should be"),

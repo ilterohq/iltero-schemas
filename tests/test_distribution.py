@@ -89,7 +89,7 @@ def test_a_listed_file_that_is_missing_is_refused(tmp_path: Path) -> None:
 
 def test_a_record_that_names_another_hash_is_refused(tmp_path: Path) -> None:
     record = _record(FILES).replace("sha256=", "md5=", 1)
-    with pytest.raises(ContractIntegrityError, match="not sha256"):
+    with pytest.raises(ContractIntegrityError, match="a hash other than sha256"):
         wheel_digest(_wheel(tmp_path, FILES, record=record))
 
 

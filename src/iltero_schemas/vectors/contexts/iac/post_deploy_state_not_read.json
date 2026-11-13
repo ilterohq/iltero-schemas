@@ -139,6 +139,7 @@
           "imported": 0,
           "removed": 0
         },
+        "errors_reported": 0,
         "log_lines": {
           "other_output_lines": 0,
           "damaged_messages": 0,

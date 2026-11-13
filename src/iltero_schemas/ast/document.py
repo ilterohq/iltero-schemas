@@ -53,10 +53,10 @@ def _check_events(text: str) -> None:
 
 
 def _describe(exc: yaml.MarkedYAMLError) -> str:
-    """The line and the parser's own words; the text of the document is never echoed."""
+    """The line and what the parser was reading. The parser's account of the problem may quote the document, so it is
+    left out."""
     where = exc.problem_mark if exc.problem_mark is not None else exc.context_mark
-    parts = [part for part in (exc.context, exc.problem) if part]
-    return f"line {_line(where)}: not valid YAML: {'; '.join(parts) or 'unknown problem'}"
+    return f"line {_line(where)}: not valid YAML" + (f": {exc.context}" if exc.context else "")
 
 
 class _Loader(yaml.SafeLoader):
@@ -73,9 +73,9 @@ class _Loader(yaml.SafeLoader):
                 raise DocumentError(f"line {line}: merge keys are not allowed")
             key = self.construct_object(key_node, deep=True)
             if not isinstance(key, str):
-                raise DocumentError(f"line {line}: mapping keys must be strings (quote {key!r})")
+                raise DocumentError(f"line {line}: mapping keys must be strings")
             if key in seen:
-                raise DocumentError(f"line {line}: duplicate key {key!r}")
+                raise DocumentError(f"line {line}: duplicate key")
             seen.add(key)
         return super().construct_mapping(node, deep)
 
@@ -90,10 +90,13 @@ def load_document(text: str) -> dict[str, Any]:
     try:
         _check_events(text)
         document = yaml.load(text, Loader=_Loader)  # noqa: S506 - _Loader derives from SafeLoader
+    except DocumentError:
+        raise
     except yaml.MarkedYAMLError as exc:
-        raise DocumentError(_describe(exc)) from exc
-    except yaml.YAMLError as exc:
-        raise DocumentError("not valid YAML") from exc
+        raise DocumentError(_describe(exc)) from None
+    except (yaml.YAMLError, ValueError):
+        # A value the loader cannot construct, such as a date that does not exist, is refused like any other.
+        raise DocumentError("not valid YAML") from None
     if not isinstance(document, dict):
         raise DocumentError("the document must be a mapping")
     return document

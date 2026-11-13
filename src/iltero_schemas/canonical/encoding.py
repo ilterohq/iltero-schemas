@@ -37,10 +37,14 @@ def canonical_bytes(value: Any) -> bytes:
     """
     try:
         return rfc8785.dumps(value)
-    except rfc8785.CanonicalizationError as exc:
-        raise CanonicalizationError(str(exc)) from exc
-    except TypeError as exc:
-        raise CanonicalizationError(f"not JSON data: {exc}") from exc
+    except rfc8785.IntegerDomainError:
+        raise CanonicalizationError("an integer is outside the range JSON numbers hold exactly") from None
+    except rfc8785.FloatDomainError:
+        raise CanonicalizationError("a number is not finite") from None
+    except rfc8785.CanonicalizationError:
+        raise CanonicalizationError("the value has no canonical form") from None
+    except TypeError:
+        raise CanonicalizationError("not JSON data: null, booleans, numbers, strings, lists, objects") from None
 
 
 def digest(data: bytes) -> str:

@@ -1,0 +1,222 @@
+{
+  "Results": [
+    {
+      "Type": "terraformplan"
+    },
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.missing"
+          },
+          "ID": "AWS-0014",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "Cloudtrail should be enabled in all regions regardless of where your AWS resources are generally homed"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.noncompliant"
+          },
+          "ID": "AWS-0014",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "Cloudtrail should be enabled in all regions regardless of where your AWS resources are generally homed"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.unknown"
+          },
+          "ID": "AWS-0014",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "Cloudtrail should be enabled in all regions regardless of where your AWS resources are generally homed"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.missing"
+          },
+          "ID": "AWS-0015",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "CloudTrail should use Customer managed keys to encrypt the logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.noncompliant"
+          },
+          "ID": "AWS-0015",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "CloudTrail should use Customer managed keys to encrypt the logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.unknown"
+          },
+          "ID": "AWS-0015",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "CloudTrail should use Customer managed keys to encrypt the logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.missing"
+          },
+          "ID": "AWS-0016",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "Cloudtrail log validation should be enabled to prevent tampering of log data"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.noncompliant"
+          },
+          "ID": "AWS-0016",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "Cloudtrail log validation should be enabled to prevent tampering of log data"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.unknown"
+          },
+          "ID": "AWS-0016",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "Cloudtrail log validation should be enabled to prevent tampering of log data"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_kms_key.k"
+          },
+          "ID": "AWS-0065",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "A KMS key is not configured to auto-rotate."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0086",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0087",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public policy"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0089",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 Bucket Logging"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0090",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "S3 Data should be versioned"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0091",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access Block should Ignore Public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0093",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should restrict public bucket to limit access"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0094",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0132",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 encryption should use Customer Managed Keys"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.compliant"
+          },
+          "ID": "AWS-0162",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "CloudTrail logs should be stored in S3 and also sent to CloudWatch Logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.missing"
+          },
+          "ID": "AWS-0162",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "CloudTrail logs should be stored in S3 and also sent to CloudWatch Logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.noncompliant"
+          },
+          "ID": "AWS-0162",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "CloudTrail logs should be stored in S3 and also sent to CloudWatch Logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_cloudtrail.unknown"
+          },
+          "ID": "AWS-0162",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "CloudTrail logs should be stored in S3 and also sent to CloudWatch Logs"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.logs"
+          },
+          "ID": "AWS-0163",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "You should enable bucket access logging on the CloudTrail S3 bucket."
+        }
+      ],
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

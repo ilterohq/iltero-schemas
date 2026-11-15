@@ -1,0 +1,16 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:d8198108ac1d48a64f4516b0e04f95306a6c32444055372c708f1ac8c0306a4a",
+  "report_digest": "sha256:5821307077aec53440dc64af8780980d31605a594131e07db25a76b262cc86e9",
+  "results": [],
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "trivy",
+  "tool_parsing_errors": null,
+  "tool_version": "0.72.0",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

@@ -1,0 +1,1368 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "ingress/[0]/from_port",
+            "ingress/[0]/to_port",
+            "ingress/[0]/cidr_blocks",
+            "ingress/[0]/ipv6_cidr_blocks"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_5",
+        "check_name": "Ensure that Security Groups are attached to another resource",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_12",
+        "check_name": "Ensure the default security group of every VPC restricts all traffic",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "egress/to_port",
+            "ingress/protocol",
+            "egress/cidr_blocks",
+            "ingress/self",
+            "ingress/to_port",
+            "egress/protocol",
+            "egress/from_port",
+            "ingress/from_port"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc.v",
+        "resource_address": "aws_vpc.v",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_11",
+        "check_name": "Ensure VPC flow logging is enabled in all VPCs",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "networking"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc.v",
+        "resource_address": "aws_vpc.v",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_19",
+        "check_name": "Ensure that all EIP addresses allocated to a VPC are attached to EC2 instances",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "domain",
+            "vpc",
+            "instance_id",
+            "instance"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_eip.e",
+        "resource_address": "aws_eip.e",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.all_world",
+        "resource_address": "aws_security_group.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.bare",
+        "resource_address": "aws_security_group.bare",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.compliant",
+        "resource_address": "aws_security_group.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.rdp_world",
+        "resource_address": "aws_security_group.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world",
+        "resource_address": "aws_security_group.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.ssh_world_v6",
+        "resource_address": "aws_security_group.ssh_world_v6",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_382",
+        "check_name": "Ensure no security groups allow egress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group.unknown_cidr",
+        "resource_address": "aws_security_group.unknown_cidr",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_private",
+        "resource_address": "aws_security_group_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_private",
+        "resource_address": "aws_security_group_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_private",
+        "resource_address": "aws_security_group_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_private",
+        "resource_address": "aws_security_group_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_private",
+        "resource_address": "aws_security_group_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_world",
+        "resource_address": "aws_security_group_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_world",
+        "resource_address": "aws_security_group_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_world",
+        "resource_address": "aws_security_group_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_world",
+        "resource_address": "aws_security_group_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_blocks",
+            "ipv6_cidr_blocks"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_security_group_rule.ssh_world",
+        "resource_address": "aws_security_group_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.all_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.all_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.all_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.all_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.all_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.all_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_24",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_260",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_23",
+        "check_name": "Ensure every security group and rule has a description",
+        "check_result": {
+          "evaluated_keys": [
+            "description"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_277",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port -1",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_25",
+        "check_name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 3389",
+        "check_result": {
+          "evaluated_keys": [
+            "from_port",
+            "to_port",
+            "cidr_ipv4",
+            "cidr_ipv6"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "resource_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

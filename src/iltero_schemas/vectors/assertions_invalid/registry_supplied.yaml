@@ -1,7 +1,7 @@
-apiVersion: iltero.io/v1
+apiVersion: iltero.com/v1
 kind: TechnicalAssertion
 metadata:
-  id: VEC.INVALID.CASE
+  id: VEC.IAC.RESOURCE.AWS.TEST.INVALID_CASE
   version: "1.0.0"
   title: An invalid document
 registry:

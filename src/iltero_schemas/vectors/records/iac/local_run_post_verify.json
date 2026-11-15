@@ -1,5 +1,13 @@
 {
-  "apiVersion": "iltero.io/car/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "ChangeAssuranceRecord",
+  "metadata": {
+    "uuid": "935c0eaf-dad5-597c-b2e8-37afafd9577a",
+    "issuer": {
+      "identity_verified": false,
+      "type": "local"
+    }
+  },
   "assurance_status": {
     "detail": null,
     "reason": null,
@@ -323,7 +331,7 @@
     "assertions_evaluated": 4,
     "assertions_expected": {
       "origin": "project_files",
-      "required_assertion_digest": "sha256:ddeb5528755402147c1e5fc7524ff04e74e70d1b94815149965e472b36f8e7c1",
+      "required_assertion_digest": "sha256:014e51d95b4b30f428a1af6c4d6d08a3440b21c949e6b036c97eb63e1b74c2a3",
       "value": 5
     },
     "evaluations": 5,
@@ -352,11 +360,11 @@
       "value": 11
     },
     "subjects_per_assertion": {
-      "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
-      "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
-      "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
-      "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1,
-      "ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0": 1
+      "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
+      "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+      "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+      "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1,
+      "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0": 1
     },
     "substituted_inputs": [],
     "truncated": {
@@ -369,7 +377,7 @@
     {
       "assertion": {
         "digest": "sha256:82cb75e06837831de128cb51ace1eabaf9ffdd8cc56f5c57e51979e81448a316",
-        "id": "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+        "id": "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -444,7 +452,7 @@
     {
       "assertion": {
         "digest": "sha256:1b32edfb71d5f7ff45c0984a1870636a401581ebccd411500c0c00cbf229169d",
-        "id": "ACME.CHANGE.PRODUCTION_APPROVED",
+        "id": "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -562,7 +570,7 @@
     {
       "assertion": {
         "digest": "sha256:c807cc5a622efa70b5342f65d5a78bad0685b331e4dc9bbe0f5200a53d650f82",
-        "id": "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED",
+        "id": "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -680,8 +688,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a",
-        "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+        "digest": "sha256:aeb5e36fb2af03939b2c1ad4bd3c7122ae30cf2918d08a686c8ac71f1e1204b8",
+        "id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -737,7 +745,7 @@
       "observed_at": "2026-10-29T02:28:13.300Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:cab2dce831c7081e4634b3bc65dc72d36af9e7b6402e773cd040b387aff32d2f",
+        "assertion_source_digest": "sha256:d3a7802bf6a7b97e55e8da557e949a5224c12cbfc98428a50f4c1d6f4185993f",
         "evaluator_binding": null,
         "bundle": {
           "content_digest": null,
@@ -751,7 +759,7 @@
           "kind": "plan",
           "tool": "terraform"
         },
-        "compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7",
+        "compiled_digest": "sha256:fea3ec6c560381f77d3466b696bdb3e62124f550fd27de31410c86dd1b2491c0",
         "compiler": {
           "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
           "contract_version": "0.1.0",
@@ -802,8 +810,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:e2b5a4d31b9a5b3c3a026091ffc9878a6937cd93beb85023ff34782a2e5e2b42",
-        "id": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+        "digest": "sha256:8e4cf850250c03da12f756281409f8626d30a413d83a39da8a7d9eb690a6eeb4",
+        "id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -832,7 +840,7 @@
       "observed_at": "2026-10-29T02:35:00.000Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:279ac350ea5d3ec14afc151238440e4b605dfae0dc1a4755844da244cd9ef087",
+        "assertion_source_digest": "sha256:97768370928fa9cabfb96e08ad2e3d53f9fe9fb4db1a37be8f9d64224682326a",
         "evaluator_binding": null,
         "bundle": {
           "content_digest": null,
@@ -846,7 +854,7 @@
           "kind": "plan",
           "tool": "terraform"
         },
-        "compiled_digest": "sha256:742d3cb0f75504195f9c31c467b00a427dba42672681b650587a21dba713fef1",
+        "compiled_digest": "sha256:f02125d07d79897aba035723a7d8469cb11a956ddfa8a609d23ee9652b667f2e",
         "compiler": {
           "contract_digest": "sha256:36bf94b0deebe74b7ca98f3470f88446f01785ed2ef09f2c986bb8c0373f533e",
           "contract_version": "0.1.0",
@@ -968,9 +976,9 @@
       },
       "digest": "sha256:16eae2017e388d7839853298c7d4bea9d52c5ee3a51450f9118e9b258387a729",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "path": "units/root/plan/assertions/ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "ref_id": "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 994,
       "source": null,
@@ -985,9 +993,9 @@
       },
       "digest": "sha256:baa70443e17a4ee870600997417780313c88ca6451d3298ed4ae7ee3670c7350",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "path": "units/root/plan/assertions/ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "ref_id": "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 11961,
       "source": null,
@@ -1002,9 +1010,9 @@
       },
       "digest": "sha256:4ba1a9d6452606ed7c1ffb8a4d0b93a2d8e8a0b9f53663d05ea98ef0bad6aef7",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "path": "units/root/plan/assertions/ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "ref_id": "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 1627,
       "source": null,
@@ -1028,19 +1036,19 @@
       "storage_uri": null
     },
     {
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "collected_at": "2026-10-29T02:28:00.000Z",
       "collector": {
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:48e8e18e7ed901165018486a2cbadfb4f702cdef2dbea749043f0e5a8b9cfc3e",
+      "digest": "sha256:dcc1518a7873de38d5b49440c826e35b71bb8e59cf72a1a79c47205ff46a5bfc",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 1875,
+      "size_bytes": 1897,
       "source": null,
       "storage_uri": null
     },
@@ -1112,9 +1120,9 @@
       },
       "digest": "sha256:28c0a3037fb000b57879ece06ac2bf21ff4e9f16b5258992686ebae506f456ca",
       "media_type": "application/yaml",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "path": "units/root/pre_deploy/assertions/ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.yaml",
+      "ref_id": "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 1232,
       "source": null,
@@ -1129,9 +1137,9 @@
       },
       "digest": "sha256:949c27b21ff8d01f7c653a2b59b1156110f79b6e2d445cc05b57d54a8e52bb90",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "path": "units/root/pre_deploy/assertions/ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.rego",
+      "ref_id": "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 12223,
       "source": null,
@@ -1146,9 +1154,9 @@
       },
       "digest": "sha256:138671cc96d53a6046a60c77a6ce29612c5cd9ed444f62a52a8d0dfc9919ae73",
       "media_type": "application/json",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "path": "units/root/pre_deploy/assertions/ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0.ast.json",
+      "ref_id": "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 2276,
       "source": null,
@@ -1163,9 +1171,9 @@
       },
       "digest": "sha256:5f74602eeff5f37af3601cbe587b939f6f89930bf28d0ad5e6af9576204936e1",
       "media_type": "application/yaml",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
+      "path": "units/root/pre_deploy/assertions/ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
+      "ref_id": "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 1667,
       "source": null,
@@ -1180,9 +1188,9 @@
       },
       "digest": "sha256:67e908965c96b4c597e5409640ece38bc135818937f81039e9493e435bc9fbec",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
+      "path": "units/root/pre_deploy/assertions/ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
+      "ref_id": "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.rego",
       "retention_until": null,
       "size_bytes": 12709,
       "source": null,
@@ -1197,9 +1205,9 @@
       },
       "digest": "sha256:783f46bd844431afa9aafaa176e4f691ea5f1495802f505029dce4c6c34b557e",
       "media_type": "application/json",
-      "path": "units/root/pre_deploy/assertions/ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
+      "path": "units/root/pre_deploy/assertions/ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
+      "ref_id": "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0.ast.json",
       "retention_until": null,
       "size_bytes": 2692,
       "source": null,
@@ -1223,19 +1231,19 @@
       "storage_uri": null
     },
     {
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "collected_at": "2026-10-29T02:28:05.000Z",
       "collector": {
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:f83ed653307f7298b03203f9af43e5fb045bb2141cbe75b13d573c23f3b5e473",
+      "digest": "sha256:b2f734d820dad64f88adbd1bf589a8970e353fc654113a1f306e850573355005",
       "media_type": "application/json",
       "path": "units/root/pre_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "pre_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 5128,
+      "size_bytes": 5166,
       "source": null,
       "storage_uri": null
     },
@@ -1291,13 +1299,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:5ad837c18e35d6f541c4f306d9bcfabee7f51d809e09c91e2a17c593c7726641",
+      "digest": "sha256:741d762691dbc18a45454f1e7faef58855c9c3e0e9627304cd92028ebb67ac90",
       "media_type": "application/yaml",
-      "path": "units/root/post_deploy/assertions/ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.yaml",
+      "path": "units/root/post_deploy/assertions/ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.yaml",
+      "ref_id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 659,
+      "size_bytes": 672,
       "source": null,
       "storage_uri": null
     },
@@ -1308,13 +1316,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7",
+      "digest": "sha256:fea3ec6c560381f77d3466b696bdb3e62124f550fd27de31410c86dd1b2491c0",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/post_deploy/assertions/ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.rego",
+      "path": "units/root/post_deploy/assertions/ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.rego",
+      "ref_id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11586,
+      "size_bytes": 12920,
       "source": null,
       "storage_uri": null
     },
@@ -1325,13 +1333,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:617e0db03867637e079dd14b7b82d22084ea6d3b41ef3025fb1c32aae94741aa",
+      "digest": "sha256:ae831be1a7676912aa6dd519efd4654ac3c421ef6ad942dd4bc65595642c3dab",
       "media_type": "application/json",
-      "path": "units/root/post_deploy/assertions/ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
+      "path": "units/root/post_deploy/assertions/ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
+      "ref_id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 803,
+      "size_bytes": 815,
       "source": null,
       "storage_uri": null
     },
@@ -1353,19 +1361,19 @@
       "storage_uri": null
     },
     {
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "collected_at": "2026-10-29T02:28:13.300Z",
       "collector": {
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:87007268c5bf67cc782f04870e2daff30a622352a4ca04d78a552bf7b0e937af",
+      "digest": "sha256:b49eccff840ff8160bbfbe25d1e91bd385bbdeb211130f75544a67daa817d9d6",
       "media_type": "application/json",
       "path": "units/root/post_deploy/events.json",
       "redaction_policy": null,
       "ref_id": "post_deploy/events.json",
       "retention_until": null,
-      "size_bytes": 2794,
+      "size_bytes": 2815,
       "source": null,
       "storage_uri": null
     },
@@ -1399,9 +1407,9 @@
       },
       "digest": "sha256:e211b91e67dd94f6248e09af741afe606e57196164e7cf666d2123737415f674",
       "media_type": "application/json",
-      "path": "units/root/post_verify/identity-bindings.json",
+      "path": "units/root/post_verify/resource-identities.json",
       "redaction_policy": null,
-      "ref_id": "post_verify/identity-bindings.json",
+      "ref_id": "post_verify/resource-identities.json",
       "retention_until": null,
       "size_bytes": 1312,
       "source": null,
@@ -1414,13 +1422,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:5baa331d4562d2554d921b49647115d401d5920ce8dc4b8d85c4c7008ba5b1c2",
+      "digest": "sha256:c1adc5a64be294bb4e55eec92930521ed9f02358f41a8deb94b5223ddcf75743",
       "media_type": "application/yaml",
-      "path": "units/root/post_verify/assertions/ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.yaml",
+      "path": "units/root/post_verify/assertions/ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.yaml",
+      "ref_id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 460,
+      "size_bytes": 478,
       "source": null,
       "storage_uri": null
     },
@@ -1431,13 +1439,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:742d3cb0f75504195f9c31c467b00a427dba42672681b650587a21dba713fef1",
+      "digest": "sha256:f02125d07d79897aba035723a7d8469cb11a956ddfa8a609d23ee9652b667f2e",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/post_verify/assertions/ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.rego",
+      "path": "units/root/post_verify/assertions/ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.rego",
+      "ref_id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11318,
+      "size_bytes": 12662,
       "source": null,
       "storage_uri": null
     },
@@ -1448,13 +1456,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:4bd772195a50f003bddc47d6db5d01d780d84380441615e19296b562933ec82f",
+      "digest": "sha256:f305049707bd0a5aff172b59003c466b17f119899d507f4add4aa143266d7232",
       "media_type": "application/json",
-      "path": "units/root/post_verify/assertions/ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.ast.json",
+      "path": "units/root/post_verify/assertions/ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0.ast.json",
+      "ref_id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 375,
+      "size_bytes": 392,
       "source": null,
       "storage_uri": null
     },
@@ -1476,19 +1484,19 @@
       "storage_uri": null
     },
     {
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "collected_at": "2026-10-29T02:35:00.000Z",
       "collector": {
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d1d1e5ccd18c8a10632725093ca4554e1d900566fe97015272266e8c348259fd",
+      "digest": "sha256:afc6b73d1e85d2409f21ac885edd33a319544007059b16920a25945006d6db36",
       "media_type": "application/json",
       "path": "units/root/post_verify/events.json",
       "redaction_policy": null,
       "ref_id": "post_verify/events.json",
       "retention_until": null,
-      "size_bytes": 2224,
+      "size_bytes": 2250,
       "source": null,
       "storage_uri": null
     }
@@ -1506,10 +1514,6 @@
   "integrity": {
     "scheme": "file_digests",
     "signature": null
-  },
-  "issuer": {
-    "identity_verified": false,
-    "type": "local"
   },
   "out_of_scope": [],
   "retention_class": null,
@@ -1541,7 +1545,7 @@
         "assertions_evaluated": 0,
         "assertions_expected": {
           "origin": "project_files",
-          "required_assertion_digest": "sha256:3fd2eb1624a6d8f8850fd2ec6353d05763b1dc6180780ed8ab54c35186fd1380",
+          "required_assertion_digest": "sha256:bf8225696b9f823c132887353a742947d1632f533816b019d6a524d793d3c09b",
           "value": 1
         },
         "evaluations": 1,
@@ -1570,7 +1574,7 @@
           "value": 11
         },
         "subjects_per_assertion": {
-          "ACME.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
+          "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
         },
         "substituted_inputs": [],
         "truncated": {
@@ -1582,7 +1586,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:48e8e18e7ed901165018486a2cbadfb4f702cdef2dbea749043f0e5a8b9cfc3e",
+        "digest": "sha256:dcc1518a7873de38d5b49440c826e35b71bb8e59cf72a1a79c47205ff46a5bfc",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -1724,6 +1728,9 @@
         "value": "2026-10-29T02:28:00.000Z"
       },
       "scanners": null,
+      "values_known_after_deployment": "block",
+      "postponed_checks": null,
+      "resource_redaction": null,
       "stage": "plan",
       "verdict": {
         "computed_from": "status_counts",
@@ -1755,7 +1762,7 @@
         "assertions_evaluated": 1,
         "assertions_expected": {
           "origin": "project_files",
-          "required_assertion_digest": "sha256:e7745e64619d42aa64bad3240dace7ff2e320b42b4887924e8fed7f042cb5e3d",
+          "required_assertion_digest": "sha256:1740b93f01484e6b84da91e4aaea1e0e565ea31ecfef444d1a7880822fc4f274",
           "value": 1
         },
         "evaluations": 1,
@@ -1778,7 +1785,7 @@
           "value": 1
         },
         "subjects_per_assertion": {
-          "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
+          "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
         },
         "substituted_inputs": [],
         "truncated": {
@@ -1790,7 +1797,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:87007268c5bf67cc782f04870e2daff30a622352a4ca04d78a552bf7b0e937af",
+        "digest": "sha256:b49eccff840ff8160bbfbe25d1e91bd385bbdeb211130f75544a67daa817d9d6",
         "path": "units/root/post_deploy/events.json"
       },
       "execution": {
@@ -1831,6 +1838,9 @@
         "value": "2026-10-29T02:28:13.300Z"
       },
       "scanners": null,
+      "values_known_after_deployment": null,
+      "postponed_checks": null,
+      "resource_redaction": null,
       "stage": "post_deploy",
       "verdict": {
         "computed_from": "status_counts",
@@ -1862,7 +1872,7 @@
         "assertions_evaluated": 1,
         "assertions_expected": {
           "origin": "project_files",
-          "required_assertion_digest": "sha256:7fadd514bec1d4b3e742c131f2646ba24bf4f7d933de0640f48b5d8ecfee390a",
+          "required_assertion_digest": "sha256:d8f2bbf5328c37434ea11992c551344c09c410d5c345116bd878bbae7bff9062",
           "value": 1
         },
         "evaluations": 1,
@@ -1885,7 +1895,7 @@
           "value": 1
         },
         "subjects_per_assertion": {
-          "ILT.IAC.NO_DRIFT_AFTER_APPLY@1.0.0": 1
+          "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0": 1
         },
         "substituted_inputs": [],
         "truncated": {
@@ -1897,7 +1907,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 1,
-        "digest": "sha256:d1d1e5ccd18c8a10632725093ca4554e1d900566fe97015272266e8c348259fd",
+        "digest": "sha256:afc6b73d1e85d2409f21ac885edd33a319544007059b16920a25945006d6db36",
         "path": "units/root/post_verify/events.json"
       },
       "execution": {
@@ -1938,6 +1948,9 @@
         "value": "2026-10-29T02:35:00.000Z"
       },
       "scanners": null,
+      "values_known_after_deployment": null,
+      "postponed_checks": null,
+      "resource_redaction": null,
       "stage": "post_verify",
       "verdict": {
         "computed_from": "status_counts",
@@ -1975,7 +1988,7 @@
         "assertions_evaluated": 2,
         "assertions_expected": {
           "origin": "project_files",
-          "required_assertion_digest": "sha256:3ede5b109da59828e44a31a758462efa7c41abc95a8500174571644da7aeaa07",
+          "required_assertion_digest": "sha256:d5afba21a55b5cdc12f6a42b78924848dce65f0ac60acd4ceb95930d6604c5c7",
           "value": 2
         },
         "evaluations": 2,
@@ -1998,8 +2011,8 @@
           "value": 1
         },
         "subjects_per_assertion": {
-          "ACME.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
-          "ACME.CHANGE.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
         },
         "substituted_inputs": [],
         "truncated": {
@@ -2011,7 +2024,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 2,
-        "digest": "sha256:f83ed653307f7298b03203f9af43e5fb045bb2141cbe75b13d573c23f3b5e473",
+        "digest": "sha256:b2f734d820dad64f88adbd1bf589a8970e353fc654113a1f306e850573355005",
         "path": "units/root/pre_deploy/events.json"
       },
       "execution": {
@@ -2052,6 +2065,9 @@
         "value": "2026-10-29T02:28:05.000Z"
       },
       "scanners": null,
+      "values_known_after_deployment": null,
+      "postponed_checks": null,
+      "resource_redaction": null,
       "stage": "pre_deploy",
       "verdict": {
         "computed_from": "status_counts",
@@ -2081,7 +2097,6 @@
   "trust_level": "self_attested",
   "unit": "root",
   "units_file": null,
-  "uuid": "935c0eaf-dad5-597c-b2e8-37afafd9577a",
   "verdict": {
     "computed_from": "stage_precedence",
     "exit_code": 6,

@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": "terraform",
+      "op": "equal",
+      "path": "deployment.apply.state.tool"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.IAC.DEPLOYMENT.TEST.DEPLOYMENT_STATE",
+  "stage": "post_deploy",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

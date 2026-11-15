@@ -1,0 +1,52 @@
+{
+  "assert": {
+    "all": [
+      {
+        "any": [
+          {
+            "predicate": {
+              "literal": 1,
+              "op": "equal",
+              "path": "resource.after.a"
+            }
+          },
+          {
+            "predicate": {
+              "literal": 1,
+              "op": "equal",
+              "path": "resource.after.b"
+            }
+          }
+        ]
+      },
+      {
+        "not": {
+          "predicate": {
+            "literal": 1,
+            "op": "equal",
+            "path": "resource.after.c"
+          }
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

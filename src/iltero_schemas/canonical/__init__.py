@@ -1,5 +1,6 @@
 """Canonical bytes and digests (``encoding``), the plan digest of each IaC tool (``iac.plan``), the digests of an
-assertion set (``assertion_set``) and of a change (``change``), and timestamps (``time``)."""
+assertion set (``assertion_set``) and of a change (``change``), the id of a record (``record``), and timestamps
+(``time``)."""
 
 from iltero_schemas.canonical.assertion_set import canonical_assertion_set_bytes, required_assertion_digest
 from iltero_schemas.canonical.change import canonical_change_bytes, change_digest
@@ -20,6 +21,7 @@ from iltero_schemas.canonical.iac.plan import (
     check_plan_digest_version,
     plan_digest,
 )
+from iltero_schemas.canonical.record import RECORD_UUID_NAMESPACE, record_uuid
 from iltero_schemas.canonical.time import now_rfc3339_milliseconds, rfc3339_milliseconds
 
 __all__ = [
@@ -28,6 +30,7 @@ __all__ = [
     "INT_MAX",
     "INT_MIN",
     "PLAN_DIGEST_VERSIONS",
+    "RECORD_UUID_NAMESPACE",
     "PLAN_EXCLUDED_TOP_LEVEL_KEYS",
     "CanonicalizationError",
     "canonical_assertion_set_bytes",
@@ -40,6 +43,7 @@ __all__ = [
     "digest_of",
     "now_rfc3339_milliseconds",
     "plan_digest",
+    "record_uuid",
     "required_assertion_digest",
     "rfc3339_milliseconds",
 ]

@@ -1,0 +1,10 @@
+{
+  "Results": [
+    {
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

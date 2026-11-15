@@ -1,0 +1,13 @@
+[
+  "aws_iam_group.g",
+  "aws_iam_group_policy.admin",
+  "aws_iam_policy.admin",
+  "aws_iam_policy.from_document",
+  "aws_iam_policy.scoped",
+  "aws_iam_policy.unknown",
+  "aws_iam_role.r",
+  "aws_iam_role_policy.admin",
+  "aws_iam_user.u",
+  "aws_iam_user_policy.admin",
+  "aws_s3_bucket.b"
+]

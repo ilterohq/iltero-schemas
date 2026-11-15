@@ -9,6 +9,8 @@ variant of each part, and changes none here.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field, model_validator
@@ -20,6 +22,18 @@ from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 
 if TYPE_CHECKING:
     from iltero_schemas.models.iac.deployment import Apply
+
+# The fields of a Terraform plan's resource change that name the resource, by what each names: its address, its
+# module's address, its type and its provider's source address.
+PLAN_NAMING_FIELDS: Mapping[str, str] = MappingProxyType(
+    {"address": "address", "module": "module_address", "type": "type", "provider": "provider_name"}
+)
+
+
+def provider_short_name(source: object) -> str | None:
+    """The name an assertion targets a provider by, such as ``aws`` for ``registry.terraform.io/hashicorp/aws``."""
+    return source.rsplit("/", 1)[-1] if isinstance(source, str) else None
+
 
 # The key Terraform gives a deposed object: an old copy of a resource that a replacement set aside.
 DEPOSED_KEY_PATTERN = r"^[0-9a-f]{8}$"

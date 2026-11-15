@@ -1,12 +1,16 @@
 {
-  "apiVersion": "iltero.io/verification-report/v1",
-  "record": {
-    "uuid": "5d2c7a1e-8b4f-4c3d-9e6a-1f0b2c3d4e5f",
-    "digest": "sha256:3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+  "apiVersion": "iltero.com/v1",
+  "kind": "VerificationReport",
+  "metadata": {
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-09-22T13:10:00.000Z"
   },
-  "verifier": {
-    "name": "iltero",
-    "version": "0.1.0"
+  "record": {
+    "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
+    "digest": "sha256:c516b0641be8745d6f846b728d370c66189d9b25ebd153ea0325b8c9a9e8f12d"
   },
   "properties": {
     "integrity": {
@@ -19,7 +23,7 @@
     },
     "approval_identity": {
       "state": "not_assessed",
-      "reason": "pre_deploy_out_of_scope"
+      "reason": "pre_deploy_pending"
     },
     "bundle_provenance": {
       "state": "not_performed",
@@ -43,11 +47,11 @@
     },
     "exceptions": {
       "state": "not_assessed",
-      "reason": "pre_deploy_out_of_scope"
+      "reason": "pre_deploy_pending"
     },
     "commit_review": {
       "state": "not_assessed",
-      "reason": "pre_deploy_out_of_scope"
+      "reason": "pre_deploy_pending"
     }
   }
 }

@@ -1,0 +1,568 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_252",
+        "check_name": "Ensure CloudTrail defines an SNS Topic",
+        "check_result": {
+          "evaluated_keys": [
+            "sns_topic_name"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_252",
+        "check_name": "Ensure CloudTrail defines an SNS Topic",
+        "check_result": {
+          "evaluated_keys": [
+            "sns_topic_name"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_36",
+        "check_name": "Ensure CloudTrail log file validation is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_log_file_validation"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_67",
+        "check_name": "Ensure CloudTrail is enabled in all Regions",
+        "check_result": {
+          "evaluated_keys": [
+            "is_multi_region_trail"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_35",
+        "check_name": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "kms_key_id"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_252",
+        "check_name": "Ensure CloudTrail defines an SNS Topic",
+        "check_result": {
+          "evaluated_keys": [
+            "sns_topic_name"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_36",
+        "check_name": "Ensure CloudTrail log file validation is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_log_file_validation"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_67",
+        "check_name": "Ensure CloudTrail is enabled in all Regions",
+        "check_result": {
+          "evaluated_keys": [
+            "is_multi_region_trail"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_35",
+        "check_name": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "kms_key_id"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_252",
+        "check_name": "Ensure CloudTrail defines an SNS Topic",
+        "check_result": {
+          "evaluated_keys": [
+            "sns_topic_name"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.unknown",
+        "resource_address": "aws_cloudtrail.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_35",
+        "check_name": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "kms_key_id"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.unknown",
+        "resource_address": "aws_cloudtrail.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_7",
+        "check_name": "Ensure rotation for customer created CMKs is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_key_rotation"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_62",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_6",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "evaluated_keys": [
+            "block_public_policy",
+            "block_public_acls",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_61",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "evaluated_keys": [
+            "lifecycle_rule",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "logging"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "evaluated_keys": [
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/*/status",
+            "replication_configuration/rules/*/status"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_64",
+        "check_name": "Ensure KMS key Policy is defined",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "versioning_configuration/status",
+            "resource_type",
+            "versioning/enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_10",
+        "check_name": "Ensure CloudTrail trails are integrated with CloudWatch Logs",
+        "check_result": {
+          "evaluated_keys": [
+            "cloud_watch_logs_group_arn",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_10",
+        "check_name": "Ensure CloudTrail trails are integrated with CloudWatch Logs",
+        "check_result": {
+          "evaluated_keys": [
+            "cloud_watch_logs_group_arn",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_10",
+        "check_name": "Ensure CloudTrail trails are integrated with CloudWatch Logs",
+        "check_result": {
+          "evaluated_keys": [
+            "cloud_watch_logs_group_arn",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_10",
+        "check_name": "Ensure CloudTrail trails are integrated with CloudWatch Logs",
+        "check_result": {
+          "evaluated_keys": [
+            "cloud_watch_logs_group_arn",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.unknown",
+        "resource_address": "aws_cloudtrail.unknown",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_36",
+        "check_name": "Ensure CloudTrail log file validation is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_log_file_validation"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_251",
+        "check_name": "Ensure CloudTrail logging is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_logging"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_67",
+        "check_name": "Ensure CloudTrail is enabled in all Regions",
+        "check_result": {
+          "evaluated_keys": [
+            "is_multi_region_trail"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_35",
+        "check_name": "Ensure CloudTrail logs are encrypted at rest using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.compliant",
+        "resource_address": "aws_cloudtrail.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_251",
+        "check_name": "Ensure CloudTrail logging is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_logging"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.missing",
+        "resource_address": "aws_cloudtrail.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_251",
+        "check_name": "Ensure CloudTrail logging is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_logging"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.noncompliant",
+        "resource_address": "aws_cloudtrail.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_251",
+        "check_name": "Ensure CloudTrail logging is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_logging"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_cloudtrail.unknown",
+        "resource_address": "aws_cloudtrail.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_227",
+        "check_name": "Ensure KMS key is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "is_enabled"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_33",
+        "check_name": "Ensure KMS key policy does not contain wildcard (*) principal",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_93",
+        "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+        "check_result": {
+          "evaluated_keys": [
+            "policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+        "check_result": {
+          "evaluated_keys": [
+            "acl",
+            "access_control_policy/grant/*/grantee/uri",
+            "resource_type",
+            "access_control_policy/grant",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_57",
+        "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+        "check_result": {
+          "evaluated_keys": [
+            "acl",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy",
+            "resource_type",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/permission"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_19",
+        "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "resource_type"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.logs",
+        "resource_address": "aws_s3_bucket.logs",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

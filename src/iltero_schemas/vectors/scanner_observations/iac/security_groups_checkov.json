@@ -1,0 +1,1461 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [
+    "plan"
+  ],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:56be10d2c4e2d7bffacdd152afa89337962556bc2e1d5247bd61bbe194c30865",
+  "report_digest": "sha256:07d6e9fde439699a1517555349769358b7f19e342d4c1009390fa434e0f0189a",
+  "results": [
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc.v",
+      "rule_id": "CKV2_AWS_11",
+      "scanner_address": "aws_vpc.v",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "egress/cidr_blocks",
+        "egress/from_port",
+        "egress/protocol",
+        "egress/to_port",
+        "ingress/from_port",
+        "ingress/protocol",
+        "ingress/self",
+        "ingress/to_port",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc.v",
+      "rule_id": "CKV2_AWS_12",
+      "scanner_address": "aws_vpc.v",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "domain",
+        "instance",
+        "instance_id",
+        "resource_type",
+        "vpc"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_eip.e",
+      "rule_id": "CKV2_AWS_19",
+      "scanner_address": "aws_eip.e",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "networking",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV2_AWS_5",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_private",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_security_group_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "description"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "rule_id": "CKV_AWS_23",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_private",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_security_group_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "rule_id": "CKV_AWS_24",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_private",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_security_group_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "rule_id": "CKV_AWS_25",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_private",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_security_group_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "rule_id": "CKV_AWS_260",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "ingress/[0]/cidr_blocks",
+        "ingress/[0]/from_port",
+        "ingress/[0]/ipv6_cidr_blocks",
+        "ingress/[0]/to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_private",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_blocks",
+        "from_port",
+        "ipv6_cidr_blocks",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group_rule.ssh_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_security_group_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_private",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "rule_id": "CKV_AWS_277",
+      "scanner_address": "aws_vpc_security_group_ingress_rule.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.all_world",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.all_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.bare",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.bare",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.compliant",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.rdp_world",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.rdp_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.ssh_world",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.ssh_world_v6",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.ssh_world_v6",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "cidr_ipv4",
+        "cidr_ipv6",
+        "from_port",
+        "to_port"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_security_group.unknown_cidr",
+      "rule_id": "CKV_AWS_382",
+      "scanner_address": "aws_security_group.unknown_cidr",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": null,
+      "rule_id": "CKV_AWS_41",
+      "scanner_address": "aws.default",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": "not_in_plan"
+    }
+  ],
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

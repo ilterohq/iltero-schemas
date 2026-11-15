@@ -1,0 +1,649 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [
+    "plan"
+  ],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:d37a513b07feba66be9eadcd5ea7f5637c24c6c848a3070177a0c469ec018809",
+  "report_digest": "sha256:39e77e7573e6537f97bb2131cd63816fa2132cc3f2980e7f97cf3acf12667f01",
+  "results": [
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "block_public_acls",
+        "block_public_policy",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV2_AWS_6",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "block_public_acls",
+        "block_public_policy",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV2_AWS_6",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "block_public_acls",
+        "block_public_policy",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV2_AWS_6",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "lifecycle_rule",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV2_AWS_61",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "lifecycle_rule",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV2_AWS_61",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "lifecycle_rule",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV2_AWS_61",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV2_AWS_62",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV2_AWS_62",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV2_AWS_62",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "policy",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV2_AWS_64",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "replication_configuration/rules/*/status",
+        "resource_type",
+        "rule/*/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_144",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "replication_configuration/rules/*/status",
+        "resource_type",
+        "rule/*/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_144",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "replication_configuration/rules/*/status",
+        "resource_type",
+        "rule/*/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_144",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": "aws_s3_bucket_server_side_encryption_configuration.aes",
+      "connected_scanner_address": "aws_s3_bucket_server_side_encryption_configuration.aes",
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_145",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": "aws_s3_bucket_server_side_encryption_configuration.kms",
+      "connected_scanner_address": "aws_s3_bucket_server_side_encryption_configuration.kms",
+      "decision": "pass",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_145",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_145",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "logging",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_18",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "logging",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_18",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "logging",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_18",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": "aws_s3_bucket_server_side_encryption_configuration.aes",
+      "connected_scanner_address": "aws_s3_bucket_server_side_encryption_configuration.aes",
+      "decision": "pass",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_19",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": "aws_s3_bucket_server_side_encryption_configuration.kms",
+      "connected_scanner_address": "aws_s3_bucket_server_side_encryption_configuration.kms",
+      "decision": "pass",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_19",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "resource_type",
+        "rule/apply_server_side_encryption_by_default/sse_algorithm",
+        "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_19",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_20",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_20",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_20",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type",
+        "versioning/enabled",
+        "versioning_configuration/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_21",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type",
+        "versioning/enabled",
+        "versioning_configuration/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_21",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "resource_type",
+        "versioning/enabled",
+        "versioning_configuration/status"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_21",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "is_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV_AWS_227",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV_AWS_33",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": null,
+      "rule_id": "CKV_AWS_41",
+      "scanner_address": "aws.default",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": "not_in_plan"
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "access_control_policy/grant/*/permission",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_57",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "access_control_policy/grant/*/permission",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_57",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "access_control_policy",
+        "access_control_policy/grant",
+        "access_control_policy/grant/*/grantee/uri",
+        "access_control_policy/grant/*/permission",
+        "acl",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_57",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enable_key_rotation"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV_AWS_7",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.aes",
+      "rule_id": "CKV_AWS_93",
+      "scanner_address": "aws_s3_bucket.aes",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.kms",
+      "rule_id": "CKV_AWS_93",
+      "scanner_address": "aws_s3_bucket.kms",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_s3_bucket.none",
+      "rule_id": "CKV_AWS_93",
+      "scanner_address": "aws_s3_bucket.none",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    }
+  ],
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

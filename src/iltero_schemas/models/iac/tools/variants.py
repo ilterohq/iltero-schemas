@@ -10,10 +10,13 @@ changes.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable, Mapping
+from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Protocol
 
 from iltero_schemas.models.iac.tool_names import IacTool
+from iltero_schemas.models.iac.tools import terraform
 from iltero_schemas.models.iac.tools.terraform import (
     TerraformApplyData,
     TerraformIdentityData,
@@ -30,6 +33,21 @@ RelatedToolData = TerraformRelatedData
 ApplyToolData = TerraformApplyData
 # What only the tool that wrote the state says in a resource identities document.
 IdentityToolData = TerraformIdentityData
+
+
+@dataclass(frozen=True)
+class PlanNaming:
+    """How one IaC tool's plan names a resource: the field it writes each naming field under (``address``,
+    ``module``, ``type``, ``provider``), and the provider's short name an assertion targets it by."""
+
+    fields: Mapping[str, str]
+    provider_short_name: Callable[[object], str | None]
+
+
+# Each tool's way of naming a resource in its plan.
+PLAN_NAMING: Mapping[IacTool, PlanNaming] = MappingProxyType(
+    {"terraform": PlanNaming(terraform.PLAN_NAMING_FIELDS, terraform.provider_short_name)}
+)
 
 
 class ToolKeyed(Protocol):

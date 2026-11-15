@@ -1,0 +1,13 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.WINDOW.INVALID_CASE
+  version: "1.0.0"
+  title: An invalid document
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target: {kind: change}
+  assert:
+    path: change.digest
+    equal: x

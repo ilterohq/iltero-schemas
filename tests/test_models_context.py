@@ -10,9 +10,10 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
+import iltero_schemas.models.context as context_module
 from iltero_schemas.canonical import change_digest
-from iltero_schemas.compiler.limits import OBSERVATIONS_MAX_BYTES
-from iltero_schemas.models.context import API_VERSION, PARTS, AssuranceContext, KindNotMapped
+from iltero_schemas.models.base import API_VERSION
+from iltero_schemas.models.context import PARTS, AssuranceContext, KindNotMapped
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported, UnknownReason
 from iltero_schemas.models.fields import Identity
@@ -38,7 +39,7 @@ def test_the_vector_validates_and_names_exactly_the_profile_parts() -> None:
     assert context.subject.key.startswith("sha256:")
     assert context.subject.identities[0].value == context.resource.id == "aws_db_instance.payments"
     named = {name for name, part in VECTOR.items() if part is not None}
-    assert named - {"apiVersion", "evaluation", "organization_scope", "reference_time"} == {
+    assert named - {"apiVersion", "kind", "evaluation", "organization_scope", "reference_time"} == {
         "source",
         "change",
         "plan",
@@ -553,7 +554,7 @@ def test_a_build_input_carries_its_image_its_reports_and_the_verified_commit() -
     assert context.evaluation.activity == "image_build" and context.subject is not None
     assert context.subject.kind == "artifact" and context.artifact is not None
     named = {name for name, part in BUILD.items() if part is not None}
-    assert named - {"apiVersion", "evaluation", "organization_scope", "reference_time"} == {
+    assert named - {"apiVersion", "kind", "evaluation", "organization_scope", "reference_time"} == {
         "source",
         "subject",
         "artifact",
@@ -677,12 +678,45 @@ POST_VERIFY_CONTEXT: dict[str, Any] = json.loads(
 )
 
 
-def test_the_assurance_part_is_any_object_held_to_the_bounds_of_a_policys_observations() -> None:
-    AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"checked": ["drift"]}})
-    with pytest.raises(ValidationError, match="must be at most"):
-        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a" * OBSERVATIONS_MAX_BYTES}})
-    with pytest.raises(ValidationError, match="must not contain control characters"):
-        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"text": "a\u0000"}})
+RECORD_UUID = "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b"
+RESULT = {"status": "pass", "stage": "runtime", "observed_at": "2026-09-21T13:00:13.568Z"}
+ASSURANCE: dict[str, Any] = {
+    "assertion": {"id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
+    "subject": {"kind": "resource", "key": "sha256:" + "5" * 64},
+    "current": {**RESULT, "status": "fail", "observed_at": "2026-09-22T13:00:13.568Z"},
+    "previous": RESULT,
+    "since_previous": {
+        "deployments": [
+            {"record": RECORD_UUID, "change_digest": "sha256:" + "6" * 64, "deployed_at": "2026-09-22T12:00:00Z"}
+        ],
+        "exceptions": [],
+    },
+}
+
+
+def test_the_assurance_part_names_the_current_result_the_one_before_and_what_happened_between() -> None:
+    assert AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": ASSURANCE}).assurance is not None
+    first = {**ASSURANCE, "previous": None, "since_previous": None}
+    AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": first})
+
+
+@pytest.mark.parametrize(("previous", "since"), [(None, ASSURANCE["since_previous"]), (RESULT, None)])
+def test_what_happened_since_the_previous_result_is_given_exactly_when_there_is_one(previous: Any, since: Any) -> None:
+    with pytest.raises(ValidationError, match="exactly when there is one"):
+        AssuranceContext.model_validate(
+            {**POST_VERIFY_CONTEXT, "assurance": {**ASSURANCE, "previous": previous, "since_previous": since}}
+        )
+
+
+def test_the_assurance_part_is_no_longer_any_object() -> None:
+    with pytest.raises(ValidationError):
+        AssuranceContext.model_validate({**POST_VERIFY_CONTEXT, "assurance": {"checked": ["drift"]}})
+
+
+def test_an_evaluation_input_is_bounded_in_size(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(context_module, "MAX_INPUT_BYTES", 100)
+    with pytest.raises(ValidationError, match="an evaluation input is at most 100 bytes"):
+        AssuranceContext.model_validate(POST_VERIFY_CONTEXT)
 
 
 IMAGE_PRE_DEPLOY: dict[str, Any] = json.loads(

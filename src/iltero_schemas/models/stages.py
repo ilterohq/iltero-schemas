@@ -18,6 +18,8 @@ from typing import TYPE_CHECKING
 from iltero_schemas.assertions.built_in import BUILT_INS
 from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
+from iltero_schemas.canonical.encoding import digest
+from iltero_schemas.canonical.record import record_uuid
 from iltero_schemas.change_types.image.deploy import ImageDeploy
 from iltero_schemas.change_types.registry import ACTIVITIES
 from iltero_schemas.models.assertion import COMBINATIONS, Stage, TargetKind, stage_name
@@ -26,14 +28,19 @@ from iltero_schemas.models.coverage import (
     STATE_REASON,
     StageOutcome,
     StateNotReadGap,
-    combine_in_order,
     stage_outcome,
     state_not_read_reason_problem,
 )
-from iltero_schemas.models.facts import ServerFactsUnavailable
+from iltero_schemas.models.event import events_file_bytes
+from iltero_schemas.models.facts import NotReadByTheStage, ServerFactsUnavailable
 from iltero_schemas.models.fields import parse_timestamp
+from iltero_schemas.models.iac.postponed_checks import check_postponed_checks, open_checks_status, open_postponed_checks
+from iltero_schemas.models.record_coverage import combine_in_order
 from iltero_schemas.models.redaction import RedactedKind
 from iltero_schemas.models.register import check_register
+from iltero_schemas.models.scanner_results import check_scanner_results
+from iltero_schemas.models.stage_counts import count_problems
+from iltero_schemas.models.verdicts import stage_required_scanners
 from iltero_schemas.profiles import reads_part
 
 if TYPE_CHECKING:
@@ -60,6 +67,9 @@ def scope_counted_from(activity: Activity, stage: Stage, kinds: set[TargetKind])
     """
     combinations = COMBINATIONS[activity.change_type]
     valid = {kind for _type, valid_stage, kind in combinations if valid_stage is stage}
+    if stage is Stage.POST_VERIFY:
+        # A postponed plan check settled here is about a resource; the stage still counts its own subject.
+        kinds = kinds - {TargetKind.RESOURCE}
     if len(kinds) > 1:
         raise ValueError(f"the {stage.value} stage's evaluations are about one kind of subject")
     if not kinds <= valid:
@@ -86,6 +96,15 @@ STAGES_THAT_REDACT_NOTHING = (Stage.POST_DEPLOY, Stage.POST_VERIFY)
 _ORDER = list(Stage)
 
 
+def _settled_at_post_verify(car: CAR) -> set[str]:
+    """The assertions a post-verify stage evaluates to settle checks the plan stage postponed."""
+    return {
+        f"{e.assertion.id}@{e.assertion.version}"
+        for e in car.events
+        if e.evaluation.stage is Stage.POST_VERIFY and TargetKind(e.subject.kind) is TargetKind.RESOURCE
+    }
+
+
 def _assertions_of(car: CAR, stage: Stage) -> set[str]:
     return {f"{e.assertion.id}@{e.assertion.version}" for e in car.events if e.evaluation.stage is stage}
 
@@ -93,6 +112,14 @@ def _assertions_of(car: CAR, stage: Stage) -> set[str]:
 def _results_read_server_facts(car: CAR, stage: Stage) -> bool:
     """Whether any of a stage's results read facts from the server."""
     return any(e.evaluation.stage is stage and e.provenance.facts_source == "server" for e in car.events)
+
+
+def _inputs_carry_server_facts(car: CAR, stage: Stage) -> bool:
+    """Whether any of a stage's evaluations ran over an input that carries the server's facts, supplied or not."""
+    return any(
+        e.evaluation.stage is stage and e.provenance.facts_source is not None and e.provenance.input_digest is not None
+        for e in car.events
+    )
 
 
 def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
@@ -103,6 +130,13 @@ def _check_approvals(car: CAR, stage: Stage, record: StageRecord) -> None:
     Which change is an integrity check (``change_digest_problems``). Whether a stage whose results read facts from
     the server kept the list or the marker its input held is decided by replaying that input.
     """
+    if record.approvals is not None and (
+        isinstance(record.approvals, NotReadByTheStage) == _inputs_carry_server_facts(car, stage)
+    ):
+        raise ValueError(
+            f"the {stage.value} stage keeps the marker that it read no approvals exactly when none of its "
+            "evaluations read an input that carries them"
+        )
     if isinstance(record.approvals, list) and not _results_read_server_facts(car, stage):
         raise ValueError(
             f"the {stage.value} stage keeps the unknown marker for its approvals when its results read no facts from "
@@ -146,8 +180,15 @@ def _check_commit_review(car: CAR, activity: Activity, stage: Stage, record: Sta
         raise ValueError(
             f"the {stage.value} stage evaluates {COMMITS_REVIEWED_ID} at most once, so it keeps one reading"
         )
-    marker = isinstance(review, ServerFactsUnavailable)
     from_server = _results_read_server_facts(car, stage)
+    if isinstance(review, NotReadByTheStage) == _inputs_carry_server_facts(car, stage):
+        raise ValueError(
+            f"the {stage.value} stage keeps the marker that it read no commit review exactly when none of its "
+            "evaluations read an input that carries it"
+        )
+    if isinstance(review, NotReadByTheStage):
+        return
+    marker = isinstance(review, ServerFactsUnavailable)
     if not marker and not from_server:
         raise ValueError(
             f"the {stage.value} stage keeps the unknown marker for its commit review when its results read no facts "
@@ -278,6 +319,7 @@ def _check_always_evaluated(car: CAR, activity: Activity) -> None:
 def _check_one_redaction_policy(car: CAR) -> None:
     """A record redacts under one policy: every stage's report and every redacted file name the same one."""
     named = [record.redaction.policy for record in car.stages.values()]
+    named += [record.resource_redaction.policy for record in car.stages.values() if record.resource_redaction]
     named += [ref.redaction_policy for ref in car.evidence_refs if ref.redaction_policy is not None]
     if any(policy != named[0] for policy in named):
         raise ValueError("every stage and every redacted evidence file name the same redaction policy")
@@ -329,12 +371,17 @@ def check_structure(car: CAR) -> None:
     stages_of_events = [event.evaluation.stage for event in car.events]
     if not set(stages_of_events) <= set(car.stages):
         raise ValueError("every event belongs to a stage the record has")
+    evaluated = Counter((e.evaluation.stage, e.assertion.id, e.subject.key, e.engine) for e in car.events)
+    if any(times > 1 for times in evaluated.values()):
+        raise ValueError("a stage evaluates an assertion once per subject and evaluator")
+    check_scanner_results(car)
+    check_postponed_checks(car)
     if stages_of_events != sorted(stages_of_events, key=_ORDER.index):
         raise ValueError("the events are grouped by stage, in the order the stages run")
     seen: set[str] = set()
     for stage, record in car.stages.items():
         assertions = _assertions_of(car, stage)
-        if seen & assertions:
+        if seen & assertions - _settled_at_post_verify(car):
             raise ValueError("an assertion is evaluated by one stage only")
         seen |= assertions
         if not set(record.coverage.subjects_per_assertion) <= assertions:
@@ -360,8 +407,12 @@ def _owed_set_problems(car: CAR, stage: Stage, record: StageRecord) -> list[tupl
     if expected.value != record.assertions.count:
         problems.append((where, "is not the count the stage gives its assertion index"))
     if not record.coverage.truncated.value:
+        # A check the plan stage postponed is owed by the plan stage, even where post-verify settles it.
+        settling = _settled_at_post_verify(car) if stage is Stage.POST_VERIFY else set()
         owed = {
-            (e.assertion.id, e.assertion.version, e.assertion.digest) for e in car.events if e.evaluation.stage is stage
+            (e.assertion.id, e.assertion.version, e.assertion.digest)
+            for e in car.events
+            if e.evaluation.stage is stage and f"{e.assertion.id}@{e.assertion.version}" not in settling
         }
         if expected.value != len(owed) or expected.required_assertion_digest != required_assertion_digest(owed):
             problems.append((where, "does not describe the assertions of the stage's events"))
@@ -382,12 +433,12 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
     for stage, record in car.stages.items():
         where = f"stages.{stage.value}"
         coverage = record.coverage
-        count = sum(1 for event in car.events if event.evaluation.stage is stage)
-        if count != coverage.evaluations or record.events.count != coverage.evaluations:
-            problems.append((f"{where}.coverage", "does not count one evaluation per event of the stage"))
-        tally = Counter(e.evaluation.status for e in car.events if e.evaluation.stage is stage)
-        if any(tally[status] != number for status, number in coverage.status_counts.items()):
-            problems.append((f"{where}.coverage", "does not count the statuses of the stage's events"))
+        events = [event for event in car.events if event.evaluation.stage is stage]
+        problems.extend(
+            count_problems(
+                where, record.events.count, coverage, events, required_scanners=stage_required_scanners(record)
+            )
+        )
         problems.extend(_owed_set_problems(car, stage, record))
         recomputed = stage_outcome(coverage)
         if record.verdict != recomputed.verdict:
@@ -404,7 +455,25 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
     problems.extend(activity.integrity_problems(car))
     outcomes: dict[str, StageOutcome] = {stage.value: record.outcome for stage, record in car.stages.items()}
     combined = combine_in_order([stage.value for stage in car.expected_stages], outcomes)
+    status = open_checks_status(open_postponed_checks(car), combined.assurance_status)
+    combined = combined.model_copy(update={"assurance_status": status})
     for key in ("coverage", "verdict", "assurance_status"):
         if getattr(combined, key) != getattr(car, key):
             problems.append((key, "is not the record's stages combined"))
+    if car.metadata.uuid != record_uuid(car.run.id, car.unit):
+        problems.append(("metadata.uuid", "is not the id of the record's run and unit"))
+    problems.extend(_events_file_problems(car))
+    return problems
+
+
+def _events_file_problems(car: CAR) -> list[tuple[str, str]]:
+    """Each stage's events file is the canonical JSON of its events: the digest and size the stage and its register
+    entry give. Listed last, after the problems of the values the events give."""
+    problems = []
+    for stage, record in car.stages.items():
+        data = events_file_bytes([event for event in car.events if event.evaluation.stage is stage])
+        if record.events.digest != digest(data):
+            problems.append((f"stages.{stage.value}.events.digest", "is not the digest of the stage's events"))
+        elif any(ref.path == record.events.path and ref.size_bytes != len(data) for ref in car.evidence_refs):
+            problems.append((f"stages.{stage.value}.events", "is kept in the register at another size than its events"))
     return problems

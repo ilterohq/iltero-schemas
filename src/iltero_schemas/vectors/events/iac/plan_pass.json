@@ -1,8 +1,8 @@
 {
   "assertion": {
-    "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "version": "1.0.0",
-    "digest": "sha256:32429286b84e512a429b8f895f51a3019e45bd7d6af23a222c5a75c6e2602f67"
+    "digest": "sha256:d59f095aadcaa1e4047978dac556a7c128d3d29d822fe9d948f72bf415ca7b6b"
   },
   "subject": {
     "kind": "resource",

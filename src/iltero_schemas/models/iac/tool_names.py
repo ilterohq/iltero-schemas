@@ -20,3 +20,5 @@ IAC_TOOLS: tuple[IacTool, ...] = get_args(IacTool)
 RESOURCE_TYPE_PATTERNS: Mapping[IacTool, str] = MappingProxyType({"terraform": r"^[a-z][a-z0-9_]*$"})
 # The scheme a subject's identity is written in when it is the resource's address in the tool's configuration.
 ADDRESS_SCHEMES: Mapping[IacTool, str] = MappingProxyType({"terraform": "terraform_address"})
+# The collector a record's register names for the plan a stage kept, redacted, of each tool.
+PLAN_COLLECTORS: Mapping[IacTool, str] = MappingProxyType({"terraform": "terraform_plan"})

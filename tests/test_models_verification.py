@@ -13,7 +13,7 @@ from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.commit_review import CommitReviewOutcome
-from iltero_schemas.models.facts import ServerFactsUnavailable
+from iltero_schemas.models.facts import NotReadByTheStage, ServerFactsUnavailable
 from iltero_schemas.models.verification import (
     API_VERSION,
     COMMIT_REVIEW_RESULTS,
@@ -53,7 +53,7 @@ def test_a_report_names_the_ten_properties_and_no_overall_verdict() -> None:
         "exceptions",
         "commit_review",
     ]
-    assert set(VerificationReport.model_fields) == {"api_version", "record", "verifier", "properties"}
+    assert set(VerificationReport.model_fields) == {"api_version", "kind", "metadata", "record", "properties"}
 
 
 def test_a_property_has_one_of_six_states() -> None:
@@ -76,7 +76,9 @@ def test_a_property_has_one_of_six_states() -> None:
         (lambda d: d["properties"]["integrity"].update(state="passed"), "Input should be"),
         (lambda d: d["properties"]["integrity"].pop("reason"), "Field required"),
         (lambda d: d["record"].update(digest="sha256:abc"), "String should match pattern"),
-        (lambda d: d["verifier"].update(name="server"), "Input should be 'iltero'"),
+        (lambda d: d["metadata"]["verifier"].update(name="server"), "Input should be 'iltero'"),
+        (lambda d: d["metadata"].pop("verified_at"), "Field required"),
+        (lambda d: d["metadata"].update(verified_at="2026-09-22 13:10"), "String should match pattern"),
         (
             lambda d: d["properties"]["integrity"].update(state="verified", reason="file_digests"),
             "no property of an unsigned record is verified",
@@ -99,6 +101,8 @@ def test_a_property_has_one_of_six_states() -> None:
         "no reason",
         "a record digest of the wrong shape",
         "another verifier",
+        "no verification time",
+        "a time not in RFC 3339",
         "integrity verified by digests",
         "integrity verified with no reason",
         "a source verified on an unsigned record",
@@ -224,8 +228,8 @@ def test_the_results_a_verifier_gives_cannot_be_changed() -> None:
 def test_the_commit_review_report_names_its_record_and_gives_the_result_of_the_kept_outcome() -> None:
     document = valid_case_record("iac", NOT_REVIEWED_CASE)
     report = VerificationReport.model_validate(NOT_REVIEWED_REPORT)
-    assert (report.record.uuid, report.record.digest) == (document["uuid"], digest_of(document))
+    assert (report.record.uuid, report.record.digest) == (document["metadata"]["uuid"], digest_of(document))
     review = CAR.model_validate(document).stages[Stage.PRE_DEPLOY].commit_review
-    assert review is not None and not isinstance(review, ServerFactsUnavailable)
+    assert review is not None and not isinstance(review, ServerFactsUnavailable | NotReadByTheStage)
     result = report.properties.commit_review
     assert (result.state, result.reason) == COMMIT_REVIEW_RESULTS[review.outcome] == ("failed", "not_reviewed")

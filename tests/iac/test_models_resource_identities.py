@@ -8,13 +8,15 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.iac.resource_identities import API_VERSION, ResourceIdentities
+from iltero_schemas.models.base import API_VERSION
+from iltero_schemas.models.iac.resource_identities import KIND, ResourceIdentities
 from tests.conftest import binding, identity_record, removed
 
 DOCUMENT: dict[str, Any] = {
     "apiVersion": API_VERSION,
+    "kind": KIND,
+    "metadata": {"generator": {"name": "iltero", "version": "0.1.0"}},
     "unit": "root",
-    "generator": {"name": "iltero", "version": "0.1.0"},
     **identity_record(
         resolved=[binding("aws_db_instance.payments"), binding("aws_s3_bucket.logs", "s3_bucket")],
         unresolved=[{"address": "aws_lambda_function.worker", "reason": "no_resolver"}],
@@ -101,8 +103,8 @@ def test_what_left_the_state_is_null_exactly_when_no_applied_plan_was_read() -> 
         (lambda d: d["resolved"][0]["cloud"]["identifier"].update(value="x" * 2049), "at most 2048"),
         (lambda d: d["resolved"][0].update(resolution="heuristic"), "Input should be 'resolved'"),
         (lambda d: d["resolvers"][0].update(version="latest build"), "String should match pattern"),
-        (lambda d: d["generator"].update(name="terraform"), "Input should be 'iltero'"),
-        (lambda d: d.pop("generator"), "Field required"),
+        (lambda d: d["metadata"]["generator"].update(name="terraform"), "Input should be 'iltero'"),
+        (lambda d: d["metadata"].pop("generator"), "Field required"),
         (
             lambda d: d["resolvers"][0].update(supported_resource_types=["s3_bucket"]),
             "only a resource type its provider's resolver supports",

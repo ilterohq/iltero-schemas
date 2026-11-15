@@ -43,7 +43,7 @@ from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of, required_assertion_digest
 from iltero_schemas.compiler import COMPILER_VERSION, PACKAGE_PREFIX, compile
 from iltero_schemas.models.assertion import VERSION_PATTERN
-from iltero_schemas.models.bundle import API_VERSION, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.models.bundle import API_VERSION, BUNDLE_KIND, KIND, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 
 MANIFEST = ".manifest"
@@ -137,6 +137,7 @@ def unsigned_bundle(sources: Sequence[str], *, minimum_cli_version: str) -> Unsi
         raise BundleError("a bundle holds each assertion id once")
     metadata = {
         "apiVersion": API_VERSION,
+        "kind": BUNDLE_KIND,
         "compiler_version": COMPILER_VERSION,
         "capabilities_digest": CAPABILITIES_DIGEST,
         "minimum_cli_version": minimum_cli_version,
@@ -238,6 +239,7 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
     return BundleDescriptor.model_validate(
         {
             "apiVersion": API_VERSION,
+            "kind": KIND,
             "content_digest": bundle.content_digest,
             "tarball_digest": digest(signed_bundle),
             "key_id": key_id,

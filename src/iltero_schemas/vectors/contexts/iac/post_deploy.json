@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "eval_002",
     "activity": "iac_change",
     "stage": "post_deploy",
     "timestamp": "2026-09-16T18:40:00Z",
     "assertion": {
-      "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+      "id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
       "version": "1.0.0"
     }
   },

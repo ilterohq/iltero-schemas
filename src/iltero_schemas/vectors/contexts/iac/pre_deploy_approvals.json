@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
     "activity": "iac_change",
     "stage": "pre_deploy",
     "timestamp": "2026-09-22T13:06:02.114Z",
     "assertion": {
-      "id": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "id": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "version": "1.0.0"
     }
   },

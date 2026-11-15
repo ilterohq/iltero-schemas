@@ -11,7 +11,15 @@ from pydantic import ValidationError
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.subjects import subject_key
-from tests.records import DEPLOYED, record, served, set_path, stage, with_commit_review_check
+from tests.records import (
+    DEPLOYED,
+    UNKNOWN,
+    record,
+    served,
+    set_path,
+    stage,
+    with_commit_review_check,
+)
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
 SERVER_BUNDLE = {
@@ -54,7 +62,9 @@ def test_who_opened_the_run_is_said_the_same_way_everywhere(field: str, value: s
 
 
 @pytest.mark.parametrize(
-    ("field", "value"), [("issuer.type", "server"), ("issuer.identity_verified", True)], ids=["server", "verified"]
+    ("field", "value"),
+    [("metadata.issuer.type", "server"), ("metadata.issuer.identity_verified", True)],
+    ids=["server", "verified"],
 )
 def test_no_record_names_the_server_as_its_issuer_or_a_verified_issuer(field: str, value: object) -> None:
     """A record carries no signature, so whoever opened its run, it can only be the tool's own unverified claim."""
@@ -110,6 +120,9 @@ def test_a_record_of_a_run_the_tool_opened_has_no_facts_from_the_server() -> Non
     document["expected_stages"] = ["plan", "pre_deploy", "post_deploy", "post_verify"]
     document["out_of_scope"] = []
     document["complete"] = False
+    # The stage keeps the marker its input held, as a stage that read the server's facts does.
+    for part in ("approvals", "commit_review"):
+        document["stages"]["pre_deploy"][part] = dict(UNKNOWN)
     with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)
 

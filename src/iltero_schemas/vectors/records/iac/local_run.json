@@ -1,5 +1,13 @@
 {
-  "apiVersion": "iltero.io/car/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "ChangeAssuranceRecord",
+  "metadata": {
+    "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
+    "issuer": {
+      "identity_verified": false,
+      "type": "local"
+    }
+  },
   "trust_level": "self_attested",
   "compliance_determination": null,
   "assurance_status": {
@@ -41,15 +49,15 @@
     "assertions_expected": {
       "value": 5,
       "origin": "project_files",
-      "required_assertion_digest": "sha256:bf60fb922cf7750a6e87220c03edcede2f43eaf8658b9123d8f37b70ebc6b548"
+      "required_assertion_digest": "sha256:38b03a6ba0f6e2df062a25439ec99befb07a04e4cec2a2cf7d4d7a80064651bd"
     },
     "assertions_evaluated": 5,
     "subjects_per_assertion": {
-      "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
-      "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
-      "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
-      "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
-      "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+      "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+      "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+      "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+      "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+      "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
@@ -72,8 +80,8 @@
   "events": [
     {
       "assertion": {
-        "digest": "sha256:26f54f9e68c0e72ec44283a59bfca637b9c884da7053c1acb2abae2acf1645fa",
-        "id": "ILT.AWS.RDS.BACKUP_RETENTION",
+        "digest": "sha256:ec6df87595883ffe18ae330382951dcb2c13d8df456106d455a2ad02c49f2b14",
+        "id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -93,7 +101,7 @@
           "unknown": null,
           "when": null
         },
-        "policy_reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+        "policy_reason": "assert: false; resource.after.backup_retention_period greater_than_or_equal is false",
         "stage": "plan",
         "status": "fail",
         "status_detail": null,
@@ -102,7 +110,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:c1d464fb46f9faaba033872050743ad0a218192b56ae5962d89381a58830aa1e",
+        "assertion_source_digest": "sha256:f8348f5fc3e49c609ec75513e6b90d059276465c22ed5ba14f39afaae3b7031c",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
@@ -111,7 +119,7 @@
         },
         "evaluator_binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:afcd1cc0a702cce43e5bb8dbca8009dd102e8062727d23c63295453fb7fcd252",
+        "compiled_digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -169,8 +177,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:6e4b40118ed07b65ba731a423acb0f52127ff0d5bf906c2ecd43797fa0cabc48",
-        "id": "ILT.AWS.RDS.NOT_PUBLIC",
+        "digest": "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e",
+        "id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -199,7 +207,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:15cdc9887022de976424ab0cc18f64d017050e7ed0032dabc319edaba11b9e67",
+        "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
@@ -208,7 +216,7 @@
         },
         "evaluator_binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:7f067c8c0df02601f5295b39058ba0d2e169fd48dd8aaf7c89a9b0194643a194",
+        "compiled_digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -266,8 +274,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:cd39043a04aa00642522b9fc6d0c7abb772f545f271f39f95ff5f4bffd97bab5",
-        "id": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+        "digest": "sha256:b1e56effe69a6d208a046913031105c3f9cecb110970c160b8addde03bd04767",
+        "id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -338,7 +346,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:7de3b5c928821a4834121fcfcf1dcc5697bc8f0f2ad7d406f791f98c123c28c8",
+        "assertion_source_digest": "sha256:2a2ef911b1530e49f3062ae77ff50f1fa314b77bb7a205474b75d9b81cfd8287",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
@@ -347,7 +355,7 @@
         },
         "evaluator_binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:af6e92314b510629e8144aa8eee88e36f22608149373bc470721ee4050a2b73d",
+        "compiled_digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -405,8 +413,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:c3feb9cf65a1c2691633c093967bf72e8492429ca35b46835defdb72bf861b6c",
-        "id": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+        "digest": "sha256:d59f095aadcaa1e4047978dac556a7c128d3d29d822fe9d948f72bf415ca7b6b",
+        "id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -435,7 +443,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:257e10c2a78e4d48f64201c152db12c131dfc83465111e000a04802bb49cae94",
+        "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
@@ -444,7 +452,7 @@
         },
         "evaluator_binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:63d7af7e77eb053a5bca77f3999306c5e6948e0d18f48463e7bdff2255699cd3",
+        "compiled_digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -502,8 +510,8 @@
     },
     {
       "assertion": {
-        "digest": "sha256:c1887b57900d1a47b7b3d93a102a26e464b02533a1fd4fd598fe57fc198ab7c3",
-        "id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+        "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+        "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
         "version": "1.0.0"
       },
       "evaluation": {
@@ -527,7 +535,7 @@
           "unknown": null,
           "when": null
         },
-        "policy_reason": "assert: false; predicate 0 is false: resource.related exists",
+        "policy_reason": "assert: false; resource.related exists is false",
         "stage": "plan",
         "status": "fail",
         "status_detail": null,
@@ -536,7 +544,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:73387764b0b66627b8a0bdbe429d1dc176f3a49ce8e70fd9e02389d1d34ed57a",
+        "assertion_source_digest": "sha256:7c96ba7d5c37ce6a22c3e0965bcbb7af5e543ea3ea3731657c32fbb3886a926d",
         "bundle": {
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
@@ -545,7 +553,7 @@
         },
         "evaluator_binding": null,
         "facts_source": null,
-        "compiled_digest": "sha256:e7d5bbfb023dea497f2961f8612a8d9df77ec3460afc5b30d796a11604e13b0c",
+        "compiled_digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
         "compiler": {
           "contract_digest": null,
           "contract_version": "0.1.0",
@@ -777,13 +785,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:703de1e1e7c9276065e091b17237222f954d64773b3bf993e3393b365e59f559",
+      "digest": "sha256:5cb05875496703b1561ca5bf08405438c3221061d24986bc20360d6b58b5a9a8",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 491,
+      "size_bytes": 505,
       "source": null,
       "storage_uri": null
     },
@@ -794,13 +802,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:afcd1cc0a702cce43e5bb8dbca8009dd102e8062727d23c63295453fb7fcd252",
+      "digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11343,
+      "size_bytes": 12679,
       "source": null,
       "storage_uri": null
     },
@@ -811,13 +819,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:79d14e59c0ea120b7cbb1091f40a59374b1c4468e0f61aaa1f33fcedd1f576c8",
+      "digest": "sha256:ff547a831f11e08a299e771dd27928112df1f4d5788e0173f1e8999bea466982",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 532,
+      "size_bytes": 545,
       "source": null,
       "storage_uri": null
     },
@@ -828,13 +836,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:feeb1ef83e7fcc86308d39aeea6523c148c3d055b55375c3b63099fcbaaa64d0",
+      "digest": "sha256:a5b85f37e880b10638391694c2e8a1b6ec4cac978b28cfb2550f1085a8f01e46",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 453,
+      "size_bytes": 467,
       "source": null,
       "storage_uri": null
     },
@@ -845,13 +853,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:7f067c8c0df02601f5295b39058ba0d2e169fd48dd8aaf7c89a9b0194643a194",
+      "digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11315,
+      "size_bytes": 12651,
       "source": null,
       "storage_uri": null
     },
@@ -862,13 +870,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:32e4c8329ba22b8c72308c2426cb5ddfe80a12242ac287510211b39dd90de5b4",
+      "digest": "sha256:c26857373bdb1fcb06aaeb71df6f72bb7eae71d6959871aeca8d44c9717a7138",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 510,
+      "size_bytes": 523,
       "source": null,
       "storage_uri": null
     },
@@ -879,113 +887,11 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:414e974f4b6670fefd19d2a1f44490ffa510dbaa8866cda6b947f992390a7f29",
+      "digest": "sha256:ce37958ef872daa0df756c1a57998c1981598482adbaba63c944bf352d62cfc2",
       "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-      "retention_until": null,
-      "size_bytes": 979,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:af6e92314b510629e8144aa8eee88e36f22608149373bc470721ee4050a2b73d",
-      "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-      "retention_until": null,
-      "size_bytes": 11710,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:424e42cb87659872089235d448cefa9c726bb143a9ca7f36f27d1a8913757b4c",
-      "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-      "retention_until": null,
-      "size_bytes": 1246,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:726d6f991bd4c5118074b78bcb76ea1f4217bc52355071bb6368930f594641ca",
-      "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-      "retention_until": null,
-      "size_bytes": 448,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:63d7af7e77eb053a5bca77f3999306c5e6948e0d18f48463e7bdff2255699cd3",
-      "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-      "retention_until": null,
-      "size_bytes": 11326,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:c6ac1ed291f243dd1fc1336345cd4e34ce72b785c55d9bfc7dccaccf3a3329c4",
-      "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-      "retention_until": null,
-      "size_bytes": 514,
-      "source": null,
-      "storage_uri": null
-    },
-    {
-      "canonicalization": null,
-      "collected_at": "2026-09-22T13:00:13.568Z",
-      "collector": {
-        "tool": "iltero",
-        "version": "0.1.0"
-      },
-      "digest": "sha256:e74e2882afd2b8672e3036b1fae3866cfed7ddc0640e27a9ea9e49ab3ca43741",
-      "media_type": "application/yaml",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-      "redaction_policy": null,
-      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "retention_until": null,
       "size_bytes": 993,
       "source": null,
@@ -998,13 +904,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:e7d5bbfb023dea497f2961f8612a8d9df77ec3460afc5b30d796a11604e13b0c",
+      "digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
       "media_type": "application/vnd.iltero.rego",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "retention_until": null,
-      "size_bytes": 11959,
+      "size_bytes": 13046,
       "source": null,
       "storage_uri": null
     },
@@ -1015,13 +921,115 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:27dc56b020961b8ea58ff27dc3636dd6c66d21be354db3d3fbd3a672c98c1eff",
+      "digest": "sha256:f5552c7e1eda4ba0f7ff8ebee9192a856cdeafe9ca3f148e16d39439d5125018",
       "media_type": "application/json",
-      "path": "units/root/plan/assertions/ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_policy": null,
-      "ref_id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "retention_until": null,
-      "size_bytes": 1626,
+      "size_bytes": 1259,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:9d84f6cd820c2c7c7e818d32825a306a253496985cf2a649034eacaaaaeaf735",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 462,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 12662,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:d89bd4f78a915620528265682d85001e2de02d1fd151e12432152522cddc24b2",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 527,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:df1f968a05bac6609d45f3815276fa8791de1aa68b066a10a20d4f7922a3dc20",
+      "media_type": "application/yaml",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
+      "retention_until": null,
+      "size_bytes": 1007,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
+      "media_type": "application/vnd.iltero.rego",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
+      "retention_until": null,
+      "size_bytes": 13295,
+      "source": null,
+      "storage_uri": null
+    },
+    {
+      "canonicalization": null,
+      "collected_at": "2026-09-22T13:00:13.568Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "digest": "sha256:96eb8a93f2f806fbb0d5e3fdfef6e4123de724c326bb8c5067fd0eca420c058e",
+      "media_type": "application/json",
+      "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "redaction_policy": null,
+      "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
+      "retention_until": null,
+      "size_bytes": 1639,
       "source": null,
       "storage_uri": null
     },
@@ -1043,19 +1051,19 @@
       "storage_uri": null
     },
     {
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "collected_at": "2026-09-22T13:00:13.568Z",
       "collector": {
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
+      "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11664,
+      "size_bytes": 11712,
       "source": null,
       "storage_uri": null
     }
@@ -1074,10 +1082,6 @@
   "integrity": {
     "scheme": "file_digests",
     "signature": null
-  },
-  "issuer": {
-    "identity_verified": false,
-    "type": "local"
   },
   "retention_reason": "no_server_scope",
   "retention_class": null,
@@ -1099,7 +1103,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:556aad93969f8ca4de8932012bd2b83add36f7f255e181922bed4bc044153a00",
+        "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1581,11 +1585,14 @@
       },
       "stage": "plan",
       "scanners": null,
+      "values_known_after_deployment": "block",
+      "postponed_checks": null,
+      "resource_redaction": null,
       "coverage": {
         "assertions_evaluated": 5,
         "assertions_expected": {
           "origin": "project_files",
-          "required_assertion_digest": "sha256:32770c503845a7452e2817d6a2179538a91d89e0eb8128491caad9a310c2d1a8",
+          "required_assertion_digest": "sha256:dabda96d009781399fb2d31ee624a427e07d62123600227083e37b25380f1edd",
           "value": 5
         },
         "evaluations": 5,
@@ -1608,11 +1615,11 @@
           "value": 20
         },
         "subjects_per_assertion": {
-          "ILT.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
-          "ILT.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
-          "ILT.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
-          "ILT.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
-          "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+          "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
         },
         "truncated": {
           "limit": null,
@@ -1654,7 +1661,6 @@
     "unit": "root"
   },
   "unit": "root",
-  "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
   "verdict": {
     "value": "indeterminate",
     "exit_code": 3,

@@ -1,0 +1,1111 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_273",
+        "check_name": "Ensure access is controlled through SSO and not AWS IAM defined users",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user.u",
+        "resource_address": "aws_iam_user.u",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_40",
+        "check_name": "Ensure IAM policies are attached only to groups or roles (Reducing access management complexity may in-turn reduce opportunity for a principal to inadvertently receive or retain excessive privileges.)",
+        "check_result": {
+          "evaluated_keys": [
+            "user"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [
+            "policy/Statement/[0]/Action"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_62",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_6",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "block_public_acls",
+            "block_public_policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_61",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "lifecycle_rule"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "logging"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "evaluated_keys": [
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "rule/*/status",
+            "replication_configuration/rules/*/status",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "versioning/enabled",
+            "versioning_configuration/status"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_group_policy.admin",
+        "resource_address": "aws_iam_group_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.admin",
+        "resource_address": "aws_iam_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.from_document",
+        "resource_address": "aws_iam_policy.from_document",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role_policy.admin",
+        "resource_address": "aws_iam_role_policy.admin",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user_policy.admin",
+        "resource_address": "aws_iam_user_policy.admin",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_288",
+        "check_name": "Ensure IAM policies does not allow data exfiltration",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_290",
+        "check_name": "Ensure IAM policies does not allow write access without constraints",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_287",
+        "check_name": "Ensure IAM policies does not allow credentials exposure",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_289",
+        "check_name": "Ensure IAM policies does not allow permissions management / resource exposure without constraints",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_355",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's resource for restrictable actions",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_286",
+        "check_name": "Ensure IAM policies does not allow privilege escalation",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_63",
+        "check_name": "Ensure no IAM policies documents allow \"*\" as a statement's actions",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.unknown",
+        "resource_address": "aws_iam_policy.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_62",
+        "check_name": "Ensure IAM policies that allow full \"*-*\" administrative privileges are not created",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "inline_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.unknown",
+        "resource_address": "aws_iam_policy.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_274",
+        "check_name": "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.r",
+        "resource_address": "aws_iam_role.r",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_393",
+        "check_name": "Ensure AWS GitHub Actions OIDC authorization policies only allow safe claims and claim order on IAM role",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.r",
+        "resource_address": "aws_iam_role.r",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_61",
+        "check_name": "Ensure AWS IAM policy does not allow assume role permission across all services",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.r",
+        "resource_address": "aws_iam_role.r",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_60",
+        "check_name": "Ensure IAM role allows only specific services or principals to assume it",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.r",
+        "resource_address": "aws_iam_role.r",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_93",
+        "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+        "check_result": {
+          "evaluated_keys": [
+            "policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_56",
+        "check_name": "Ensure AWS Managed IAMFullAccess IAM policy is not used.",
+        "check_result": {
+          "evaluated_keys": [
+            "arn",
+            "name",
+            "managed_policy_arns/*",
+            "policy_arn",
+            "managed_policy_arn"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.r",
+        "resource_address": "aws_iam_role.r",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_22",
+        "check_name": "Ensure an IAM User does not have access to the console",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_user.u",
+        "resource_address": "aws_iam_user.u",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+        "check_result": {
+          "evaluated_keys": [
+            "access_control_policy/grant",
+            "resource_type",
+            "access_control_policy",
+            "acl",
+            "access_control_policy/grant/*/grantee/uri"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_57",
+        "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+        "check_result": {
+          "evaluated_keys": [
+            "access_control_policy/grant",
+            "resource_type",
+            "access_control_policy/grant/*/permission",
+            "access_control_policy",
+            "acl",
+            "access_control_policy/grant/*/grantee/uri"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_19",
+        "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "resource_type"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.b",
+        "resource_address": "aws_s3_bucket.b",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_40",
+        "check_name": "Ensure AWS IAM policy does not allow full IAM privileges",
+        "check_result": {
+          "evaluated_keys": [
+            "inline_policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "policy/Statement[?(@/Effect == Allow)]/Action[*]",
+            "statement[?(@/effect == Allow)]/actions[*]"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_policy.scoped",
+        "resource_address": "aws_iam_policy.scoped",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

@@ -1,0 +1,7 @@
+[
+  "aws_db_instance.counted[0]",
+  "aws_db_instance.counted[1]",
+  "aws_db_instance.keyed[\"a\"]",
+  "aws_db_instance.keyed[\"b\"]",
+  "module.outer[0].aws_db_instance.deep"
+]

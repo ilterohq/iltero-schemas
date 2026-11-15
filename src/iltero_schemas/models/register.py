@@ -2,40 +2,62 @@
 
 from __future__ import annotations
 
+from pathlib import PurePosixPath
 from typing import TYPE_CHECKING
 
+from iltero_schemas.canonical.encoding import CANONICALIZATION
 from iltero_schemas.models.assertion import Stage
+from iltero_schemas.models.scanner_evaluator import ScannerEvaluator
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
+    from iltero_schemas.models.local_exceptions import LocalExceptionsUsed
 
 
 def check_register(car: CAR) -> None:
     """These files that a record's stages and events name are entries of its evidence register: each stage's events file
-    and assertion index, by path and digest; each stage's copy of the scanner bindings it used, by path and digest,
-    the observations it read from each scanner report, by path, and each report as it kept it, by digest, redacted
-    from a file the pipeline gave; every input an event was evaluated over; and what the plan stage redacted, kept as
-    an entry the redaction policy ran over. Each scanner file is an entry of its own: neither another scanner file nor
-    a stage's events file or assertion index."""
+    and assertion index, by path and digest; each stage's copy of each set of scanner bindings it used, by path and
+    digest, naming the file it was read from; the observations it read from each scanner report, by path, read from
+    the file that report was kept from, and each report as it kept it, by digest, collected as that scanner's report
+    and redacted from one file the pipeline gave; every input an event was evaluated over; and what the plan stage
+    redacted, kept as an entry the redaction policy ran over. Each scanner file is an entry of its own: neither another
+    scanner file, nor a stage's events file or assertion index, nor the input of an evaluation that stands on no
+    scanner's result."""
     kept = {(ref.path, ref.digest) for ref in car.evidence_refs}
     paths = {ref.path for ref in car.evidence_refs}
     digests = {ref.digest for ref in car.evidence_refs}
     stage_files = {path for record in car.stages.values() for path in (record.events.path, record.assertions.index)}
     scanner_files: list[str] = []
-    first_report: dict[str, tuple[tuple[str, str], str]] = {}
+    misread: list[tuple[Stage, str]] = []
+    scanner_digests: set[str] = set()
     for stage, record in car.stages.items():
         if (record.events.path, record.events.digest) not in kept:
             raise ValueError(f"the {stage.value} stage's events file is an entry of the evidence register")
+        events_entries = [ref for ref in car.evidence_refs if ref.path == record.events.path]
+        if any(ref.canonicalization != CANONICALIZATION for ref in events_entries):
+            raise ValueError(f"the {stage.value} stage's events file is kept as canonical JSON ({CANONICALIZATION})")
         if (record.assertions.index, record.assertions.digest) not in kept:
             raise ValueError(f"the {stage.value} stage's assertion index is an entry of the evidence register")
         if record.scanners is None:
             continue
-        bindings = record.scanners.evaluator_binding_set
-        if (bindings.copy_path, bindings.digest) not in kept:
-            raise ValueError(
-                f"the {stage.value} stage's copy of its scanner bindings is an entry of the evidence register"
+        for bindings in record.scanners.evaluator_binding_sets:
+            if (bindings.copy_path, bindings.digest) not in kept:
+                raise ValueError(
+                    f"the evidence register lists the copy of each binding set the {stage.value} stage applied"
+                )
+            copy_source = next(
+                ref.source
+                for ref in car.evidence_refs
+                if (ref.path, ref.digest) == (bindings.copy_path, bindings.digest)
             )
-        scanner_files.append(bindings.copy_path)
+            if (copy_source is None) != (bindings.file_name is None) or (
+                copy_source is not None and copy_source.name != bindings.file_name
+            ):
+                raise ValueError(
+                    "in the evidence register, the copy of a project's binding set names the file it was read from, "
+                    "and the copy of the shipped set names no file"
+                )
+            scanner_files.append(bindings.copy_path)
         for report in record.scanners.reports:
             if report.observations not in paths:
                 raise ValueError(
@@ -43,25 +65,43 @@ def check_register(car: CAR) -> None:
                     "evidence register"
                 )
             entries = [ref for ref in car.evidence_refs if ref.digest == report.report_digest]
-            if not any(ref.source is not None and ref.redaction_policy is not None for ref in entries):
+            kept_from = {
+                ref.source.digest
+                for ref in entries
+                if ref.source is not None and ref.redaction_policy is not None and ref.collector.tool == report.tool
+            }
+            if len(kept_from) != 1:
                 raise ValueError(
                     f"the {report.tool} report the {stage.value} stage kept is an entry of the evidence register, "
                     "redacted from the file the pipeline gave"
                 )
-            # One scanner's report given to two stages is kept as the same files; two scanners' never share them.
-            tool, kept_files = (report.tool, report.tool_version), [ref.path for ref in entries]
-            first = first_report.get(report.report_digest)
-            if first is None:
-                first_report[report.report_digest] = (tool, report.observations)
-                scanner_files += [report.observations, *kept_files]
-            elif first[0] != tool:
-                scanner_files += [report.observations, *kept_files]
-            elif first[1] != report.observations:
-                scanner_files.append(report.observations)
-    if len(set(scanner_files)) != len(scanner_files) or stage_files & set(scanner_files):
+            observations = [ref for ref in car.evidence_refs if ref.path == report.observations]
+            scanner_digests |= {report.report_digest, *(ref.digest for ref in observations)}
+            if (
+                not misread
+                and {ref.source.digest if ref.source is not None else None for ref in observations} != kept_from
+            ):
+                misread = [(stage, report.tool)]
+            scanner_files += [report.observations, *(ref.path for ref in entries)]
+        if record.scanners.local_exceptions is not None:
+            scanner_files.append(_exceptions_copy(car, stage, record.scanners.local_exceptions))
+    # The input of an evaluation that stands on no scanner's result is no scanner's file.
+    other_inputs = {e.provenance.input_digest for e in car.events if e.provenance.evaluator_binding is None}
+    if (
+        len(set(scanner_files)) != len(scanner_files)
+        or stage_files & set(scanner_files)
+        or scanner_digests & other_inputs
+    ):
         raise ValueError(
             "each scanner file a stage keeps is an entry of its own, not a file the record names for another part"
         )
+    if misread:
+        stage, scanner = misread[0]
+        raise ValueError(
+            f"the observations the {stage.value} stage read from its {scanner} report were read from the file that "
+            "report was kept from"
+        )
+    _check_exceptions_named(car)
     inputs = {e.provenance.input_digest for e in car.events} - {None}
     if not inputs <= digests:
         raise ValueError("the input every event was evaluated over is an entry of the evidence register")
@@ -72,3 +112,36 @@ def check_register(car: CAR) -> None:
         raise ValueError(
             "what the plan stage redacted is an entry of the evidence register that names the redaction policy"
         )
+
+
+def _exceptions_copy(car: CAR, stage: Stage, used: LocalExceptionsUsed) -> str:
+    """The path of the stage's byte copy of the project's exceptions file, once it is an entry of the register that
+    names the file it was copied from, unredacted and as the project wrote it."""
+    entries = [ref for ref in car.evidence_refs if (ref.path, ref.digest) == (used.copy_path, used.digest)]
+    if not entries or any(
+        ref.source is None
+        or ref.source.name != PurePosixPath(used.file_path).name
+        or ref.source.digest != used.digest
+        or ref.redaction_policy is not None
+        or ref.canonicalization is not None
+        for ref in entries
+    ):
+        raise ValueError(
+            f"the {stage.value} stage's copy of the project's exceptions file is an entry of the evidence register, "
+            "copied byte for byte from the file it names"
+        )
+    return used.copy_path
+
+
+def _check_exceptions_named(car: CAR) -> None:
+    """Each exception a suppressed scanner result names is in the exceptions file its stage applied."""
+    for event in car.events:
+        evaluator = event.provenance.evaluator
+        if not isinstance(evaluator, ScannerEvaluator) or evaluator.local_exception is None:
+            continue
+        record = car.stages.get(event.evaluation.stage)
+        used = record.scanners.local_exceptions if record is not None and record.scanners is not None else None
+        if used is None or evaluator.local_exception.file_digest != used.digest:
+            raise ValueError(
+                "a scanner result names an exception only from the project's exceptions file its stage applied"
+            )

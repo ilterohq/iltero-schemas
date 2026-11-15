@@ -7,6 +7,12 @@ applicability guard (``spec.when``). The condition is written in the assertion
 language, whose grammar is parsed and validated by ``iltero_schemas.ast``;
 this module validates everything around it.
 
+An assertion observed by scanners has no condition of its own (``assert: null``).
+Its description says exactly what is true of a resource that meets it, and an
+evaluator binding names the scanner checks that decide it. It names the stages
+whose scanner results may observe it (``spec.evidence.stages``) instead of one
+``spec.stage``, and its ``when`` guard, if any, still decides where it applies.
+
 Every model refuses unknown keys. An assertion's type is derived from
 ``spec.target.kind`` (``resource`` is a *state* assertion, everything else a
 *process* assertion), never written.
@@ -15,7 +21,7 @@ Every model refuses unknown keys. An assertion's type is derived from
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from enum import StrEnum
 from types import MappingProxyType
 from typing import Annotated, Any, Literal
@@ -23,23 +29,26 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from iltero_schemas.kinds.vocabulary import RESOURCE_KINDS
+from iltero_schemas.models.assertion_id import ASSERTION_ID_MAX_LENGTH, WINDOWS_DEVICE_NAMES, check_assertion_id
 from iltero_schemas.models.change_type import IAC_CHANGE_TYPE, IMAGE_RELEASE_TYPE, ChangeTypeName
 from iltero_schemas.models.iac.tool_names import RESOURCE_TYPE_PATTERNS, IacTool
 
-# ``ILT.<...>`` names an Iltero-maintained assertion, ``<ORG>.<...>`` a
-# customer one: upper-case segments joined by dots, at least two of them.
+# The document's kind. Its apiVersion is ``models.base.API_VERSION``, which this module cannot import: the base
+# model reads this module's stages and target kinds.
+KIND = "TechnicalAssertion"
+# Upper-case segments joined by dots, at least two: the shape every id of the contract has (assertions, binding
+# sets) and every reference to one is read by. An assertion's own id also puts its parts in fixed places
+# (``models.assertion_id``).
 ID_PATTERN = r"^[A-Z][A-Z0-9_]*(\.[A-Z][A-Z0-9_]*)+$"
-ID_MAX_LENGTH = 128
-# A name Windows reserves for a device; an id becomes a file name and the
-# part before its first dot would be taken for the device.
-_WINDOWS_DEVICE_NAMES = frozenset(
-    {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}
-)
+ID_MAX_LENGTH = ASSERTION_ID_MAX_LENGTH
 # The human version string: semantic version core, advisory only; evidence
 # cites the digest. Bounded because it becomes part of a file name.
 VERSION_PATTERN = r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
 VERSION_MAX_LENGTH = 32
 TITLE_MAX_LENGTH = 200
+# The longest description: one line (no line breaks; YAML ``>-`` folds a long one) saying exactly what a resource that
+# meets the assertion is like.
+DESCRIPTION_MAX_LENGTH = 1000
 # The longest suggested action: one instruction sentence, a little longer than a title.
 REMEDIATION_MAX_LENGTH = 300
 NAME_PATTERN = r"^[a-z][a-z0-9_]*$"
@@ -166,17 +175,23 @@ class Metadata(_Strict):
     # What a person does to make a failing subject meet the assertion. Shown to people only: the compiler
     # ignores it, so it is in neither the AST nor the source digest.
     remediation: Annotated[str, Field(max_length=REMEDIATION_MAX_LENGTH)] | None = None
+    # What is true of a subject that meets the assertion, in full. Required when the assertion has no condition of its
+    # own, since the description is then the only statement of what its scanner checks decide. Like the remediation,
+    # it is in neither the AST nor the source digest.
+    description: Annotated[str, Field(max_length=DESCRIPTION_MAX_LENGTH)] | None = None
 
     @model_validator(mode="after")
     def _check(self) -> Metadata:
-        if self.id.split(".")[0] in _WINDOWS_DEVICE_NAMES:
+        if self.id.split(".")[0] in WINDOWS_DEVICE_NAMES:
             raise ValueError("id must not start with a name Windows reserves for a device")
         _title(self.title)
-        if self.remediation is not None:
-            _title(self.remediation)
-        elif "remediation" in self.model_fields_set:
-            # The assertion's digest is taken over the document as written: one meaning, one digest.
-            raise ValueError("remediation is left out, never null")
+        for name in ("remediation", "description"):
+            value = getattr(self, name)
+            if value is not None:
+                _title(value)
+            elif name in self.model_fields_set:
+                # The assertion's digest is taken over the document as written: one meaning, one digest.
+                raise ValueError(f"{name} is left out, never null")
         return self
 
 
@@ -289,20 +304,70 @@ CHANGE_TYPE_MISSING = (
 )
 
 
+_STAGE_ORDER = list(Stage)
+
+# The stages whose scanner results Iltero reads: the only ones whose results may decide an assertion with no condition
+# of its own. Every stage some activity reads scanner reports at (``Activity.stages_that_read_scanner_reports``).
+STAGES_WITH_SCANNER_RESULTS = frozenset({Stage.PLAN})
+
+
+def check_evidence_stages(stages: Iterable[Stage]) -> None:
+    """Raise ``ValueError`` unless every stage is one whose scanner results Iltero reads."""
+    if not set(stages) <= STAGES_WITH_SCANNER_RESULTS:
+        allowed = ", ".join(stage.value for stage in _STAGE_ORDER if stage in STAGES_WITH_SCANNER_RESULTS)
+        raise ValueError(f"evidence.stages may name only {allowed}: Iltero reads scanner results at no other stage")
+
+
+class Evidence(_Strict):
+    """The stages whose scanner results may observe an assertion that has no condition of its own."""
+
+    stages: Annotated[list[Stage], Field(min_length=1, max_length=len(Stage))]
+
+    @model_validator(mode="after")
+    def _in_order(self) -> Evidence:
+        check_evidence_stages(self.stages)
+        if self.stages != sorted(set(self.stages), key=_STAGE_ORDER.index):
+            raise ValueError("stages are in lifecycle order, each stage once")
+        return self
+
+
 class Spec(_Strict):
-    """What is checked, when, and about what."""
+    """What is checked, when, and about what.
+
+    An assertion with a condition (``assert``) names the one stage it is evaluated at. One with ``assert: null`` is
+    observed by scanners: it names, in ``evidence``, the stages whose scanner results may observe it, and no
+    ``stage``. Only a resource can be observed that way.
+    """
 
     # The change type the assertion is about, or null for an assertion about any change, which may declare any stage
     # and target some change type allows (``VALID_COMBINATIONS``).
     change_type: ChangeTypeName | None
-    stage: Stage
+    # Left out exactly when ``assert`` is null.
+    stage: Stage | None = None
+    # Present exactly when ``assert`` is null.
+    evidence: Evidence | None = None
     target: Target
     when: dict[str, Any] | None = None
-    assert_: dict[str, Any] = Field(alias="assert")
+    # Always written: the condition, or null for an assertion observed by scanners.
+    assert_: dict[str, Any] | None = Field(alias="assert")
 
     @property
     def derived_type(self) -> AssertionType:
         return ASSERTION_TYPE_FOR_TARGET[TargetKind(self.target.kind)]
+
+    @property
+    def observed_by_scanners(self) -> bool:
+        """Whether the assertion has no condition of its own, so only scanner results observe it."""
+        return self.assert_ is None
+
+    @property
+    def stages(self) -> tuple[Stage, ...]:
+        """Every stage the assertion is evaluated or observed at, in lifecycle order."""
+        if self.stage is not None:
+            return (self.stage,)
+        if self.evidence is None:
+            raise ValueError("an assertion names its stage or its evidence stages")
+        return tuple(self.evidence.stages)
 
     @model_validator(mode="before")
     @classmethod
@@ -313,14 +378,35 @@ class Spec(_Strict):
 
     @model_validator(mode="after")
     def _combination(self) -> Spec:
-        check_target(self.stage, self.target, self.change_type)
+        if self.observed_by_scanners:
+            if self.stage is not None or "stage" in self.model_fields_set or self.evidence is None:
+                raise ValueError("an assertion with assert: null names evidence.stages and no stage")
+            if self.target.kind != TargetKind.RESOURCE.value:
+                raise ValueError("an assertion with assert: null is about a resource: only a resource is scanned")
+        elif self.stage is None or self.evidence is not None or "evidence" in self.model_fields_set:
+            raise ValueError("an assertion with a condition names its stage and no evidence")
+        for stage in self.stages:
+            check_target(stage, self.target, self.change_type)
         return self
 
 
 class TechnicalAssertion(_Strict):
     """The document an author writes; ``registry`` fields are never accepted from an author."""
 
-    api_version: Literal["iltero.io/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
     kind: Literal["TechnicalAssertion"]
     metadata: Metadata
     spec: Spec
+
+    @model_validator(mode="after")
+    def _id_names_what_it_checks(self) -> TechnicalAssertion:
+        target = self.spec.target
+        provider = target.resources[0].provider if isinstance(target, ResourceTarget) else None
+        check_assertion_id(self.metadata.id, self.spec.change_type, target.kind, provider)
+        return self
+
+    @model_validator(mode="after")
+    def _described_when_observed_by_scanners(self) -> TechnicalAssertion:
+        if self.spec.observed_by_scanners and self.metadata.description is None:
+            raise ValueError("an assertion with assert: null has a metadata.description saying exactly what it checks")
+        return self

@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "eval_006",
     "activity": "image_build",
     "stage": "plan",
     "timestamp": "2026-11-01T10:05:00Z",
     "assertion": {
-      "id": "ILT.IMAGE.SCAN_RAN",
+      "id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
       "version": "1.0.0"
     }
   },

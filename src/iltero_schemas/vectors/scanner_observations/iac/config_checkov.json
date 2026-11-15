@@ -1,0 +1,188 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [
+    "plan"
+  ],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:d8198108ac1d48a64f4516b0e04f95306a6c32444055372c708f1ac8c0306a4a",
+  "report_digest": "sha256:b1d5ea884b7305227486fa1c337f72581ceb174b17ca85c6aefb59464eaae119",
+  "results": [
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "is_enabled",
+        "recording_group/all_supported",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_config_configuration_recorder_status.compliant",
+      "rule_id": "CKV2_AWS_45",
+      "scanner_address": "aws_config_configuration_recorder_status.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "is_enabled",
+        "recording_group/all_supported",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_config_configuration_recorder_status.noncompliant",
+      "rule_id": "CKV2_AWS_45",
+      "scanner_address": "aws_config_configuration_recorder_status.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "recording_group/include_global_resource_types"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_config_configuration_recorder.compliant",
+      "rule_id": "CKV2_AWS_48",
+      "scanner_address": "aws_config_configuration_recorder.compliant",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "recording_group/include_global_resource_types"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_config_configuration_recorder.no_status",
+      "rule_id": "CKV2_AWS_48",
+      "scanner_address": "aws_config_configuration_recorder.no_status",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "recording_group/include_global_resource_types"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_config_configuration_recorder.noncompliant",
+      "rule_id": "CKV2_AWS_48",
+      "scanner_address": "aws_config_configuration_recorder.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "arn",
+        "managed_policy_arn",
+        "managed_policy_arns/*",
+        "name",
+        "policy_arn"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_iam_role.cfg",
+      "rule_id": "CKV2_AWS_56",
+      "scanner_address": "aws_iam_role.cfg",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": "aws_iam_role.cfg",
+      "rule_id": "CKV_AWS_274",
+      "scanner_address": "aws_iam_role.cfg",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "assume_role_policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_iam_role.cfg",
+      "rule_id": "CKV_AWS_393",
+      "scanner_address": "aws_iam_role.cfg",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [],
+      "input_kind": "plan",
+      "plan_address": null,
+      "rule_id": "CKV_AWS_41",
+      "scanner_address": "aws.default",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": "not_in_plan"
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "assume_role_policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_iam_role.cfg",
+      "rule_id": "CKV_AWS_60",
+      "scanner_address": "aws_iam_role.cfg",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "pass",
+      "evaluated_keys": [
+        "assume_role_policy"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_iam_role.cfg",
+      "rule_id": "CKV_AWS_61",
+      "scanner_address": "aws_iam_role.cfg",
+      "suppressed": false,
+      "tool_status": "PASSED",
+      "unresolved_reason": null
+    }
+  ],
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

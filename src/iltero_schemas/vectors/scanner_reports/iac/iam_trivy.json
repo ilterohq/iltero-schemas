@@ -1,0 +1,105 @@
+{
+  "Results": [
+    {
+      "Type": "terraformplan"
+    },
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0086",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0087",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public policy"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0089",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 Bucket Logging"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0090",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "S3 Data should be versioned"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0091",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access Block should Ignore Public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0093",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should restrict public bucket to limit access"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0094",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_iam_group.g"
+          },
+          "ID": "AWS-0123",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "IAM groups should have MFA enforcement activated."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.b"
+          },
+          "ID": "AWS-0132",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 encryption should use Customer Managed Keys"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_iam_user.u"
+          },
+          "ID": "AWS-0143",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "IAM policies should not be granted directly to users."
+        }
+      ],
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

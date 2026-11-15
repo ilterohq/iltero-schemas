@@ -48,7 +48,8 @@ def test_every_activity_has_one_profile_for_each_combination_at_its_stages() -> 
         for _type, stage, kind in COMBINATIONS[change_type]
         if stage in ACTIVITIES[activity].stages or stage is Stage.RUNTIME
     }
-    assert set(PROFILES) == expected
+    # No assertion declares it: a resource check the plan stage postponed is settled with it.
+    assert set(PROFILES) == expected | {("iac_change", Stage.POST_VERIFY, TargetKind.RESOURCE)}
 
 
 @pytest.mark.parametrize("key", sorted(PROFILES), ids=lambda key: "-".join(str(part) for part in key))
@@ -80,7 +81,7 @@ def test_resource_is_required_only_for_a_resource_target() -> None:
 
 def test_the_path_roots_are_the_documented_table() -> None:
     for (activity, stage, kind), profile in PROFILES.items():
-        if activity != "iac_change":
+        if activity != "iac_change" or (stage, kind) == (Stage.POST_VERIFY, TargetKind.RESOURCE):
             continue
         expected = ALWAYS_REQUIRED_PARTS | DOCUMENTED[stage] | ({"resource"} if kind is TargetKind.RESOURCE else set())
         assert allowed_roots("iac_change", stage, kind) == profile.roots == expected
@@ -116,7 +117,7 @@ def test_a_build_reads_no_approvals() -> None:
         (Stage.PLAN, {"plan", "container_image"}),
         (Stage.PRE_DEPLOY, {"plan", "container_image"}),
         (Stage.POST_DEPLOY, {"plan", "container_image"}),
-        (Stage.POST_VERIFY, {None, "container_image"}),
+        (Stage.POST_VERIFY, {None, "plan", "container_image"}),
         (Stage.RUNTIME, {None}),
     ],
 )
@@ -133,7 +134,12 @@ def test_an_invalid_combination_has_no_profile() -> None:
         profile_for("iac_change", Stage.PLAN, TargetKind.CHANGE)
 
 
-@pytest.mark.parametrize("kind", [TargetKind.RESOURCE, TargetKind.ASSURANCE])
-def test_the_post_verify_stage_has_a_profile_only_for_the_deployment(kind: TargetKind) -> None:
-    with pytest.raises(ValueError, match=f"stage 'post_verify' is not valid for target kind '{kind.value}'"):
-        profile_for("iac_change", Stage.POST_VERIFY, kind)
+def test_the_post_verify_stage_has_no_profile_for_the_assurance_history() -> None:
+    with pytest.raises(ValueError, match="stage 'post_verify' is not valid for target kind 'assurance'"):
+        profile_for("iac_change", Stage.POST_VERIFY, TargetKind.ASSURANCE)
+
+
+def test_a_postponed_check_is_settled_over_the_values_after_the_apply_and_the_plan_it_came_from() -> None:
+    profile = profile_for("iac_change", Stage.POST_VERIFY, TargetKind.RESOURCE)
+    assert profile.roots == ALWAYS_REQUIRED_PARTS | {"subject", "resource", "plan", "deployment", "source"}
+    assert "change" not in profile.roots

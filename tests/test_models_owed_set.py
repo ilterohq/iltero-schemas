@@ -41,7 +41,7 @@ def test_an_owed_digest_of_another_set_than_the_stages_events_is_an_integrity_pr
 
 def test_an_event_of_an_assertion_the_stage_did_not_owe_is_an_integrity_problem() -> None:
     document = _record()
-    document["events"][0]["assertion"]["digest"] = "sha256:" + "e" * 64
+    document["stages"]["plan"]["coverage"]["assertions_expected"]["required_assertion_digest"] = "sha256:" + "e" * 64
     assert (_EXPECTED, _EVENTS) in _problems(document)
 
 

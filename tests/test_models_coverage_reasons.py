@@ -7,12 +7,12 @@ from typing import Any
 from iltero_schemas.models.coverage import (
     INCOMPLETE_REASON,
     INCOMPLETE_REASON_PRECEDENCE,
+    OPEN_CHECKS_REASON,
     PLAN_REASON,
     STATE_REASON,
     SUBSTITUTED_REASON,
     Coverage,
     StageOutcome,
-    combine,
     stage_outcome,
 )
 from tests.test_models_coverage import DEPLOYED_STAGE, PLACEHOLDER, PLAN_STAGE, _outcome
@@ -28,7 +28,13 @@ def _incomplete(reason: str) -> StageOutcome:
 
 
 def test_a_stage_and_a_record_share_one_order_of_reasons() -> None:
-    assert INCOMPLETE_REASON_PRECEDENCE == (INCOMPLETE_REASON, STATE_REASON, PLAN_REASON, SUBSTITUTED_REASON)
+    assert INCOMPLETE_REASON_PRECEDENCE == (
+        INCOMPLETE_REASON,
+        STATE_REASON,
+        OPEN_CHECKS_REASON,
+        PLAN_REASON,
+        SUBSTITUTED_REASON,
+    )
 
 
 def test_a_stage_gives_the_first_reason_that_holds_in_that_order() -> None:
@@ -47,16 +53,5 @@ def test_a_stage_gives_the_first_reason_that_holds_in_that_order() -> None:
         stage_outcome(Coverage.model_validate({**coverage, **every, **drop})).assurance_status.reason
         for drop in dropped
     ]
-    assert tuple(reasons) == INCOMPLETE_REASON_PRECEDENCE
-
-
-def test_a_later_stages_state_not_read_leads_the_records_reason_over_the_plans() -> None:
-    plan = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [PLAN_GAP]}))
-    status = combine([("plan", plan), ("post_deploy", _incomplete(STATE_REASON))]).assurance_status
-    assert (status.reason, status.detail) == (STATE_REASON, "post_deploy: x")
-
-
-def test_a_record_takes_the_reason_that_comes_first_from_the_earliest_stage_incomplete_for_it() -> None:
-    plan = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": [PLAN_GAP]}))
-    status = combine([("plan", plan), ("post_deploy", _incomplete(PLAN_REASON))]).assurance_status
-    assert (status.reason, status.detail) == (PLAN_REASON, f"plan: {plan.assurance_status.detail}")
+    # A stage never leaves a postponed check open; only a record that stopped before post-verify does.
+    assert tuple(reasons) == tuple(reason for reason in INCOMPLETE_REASON_PRECEDENCE if reason != OPEN_CHECKS_REASON)

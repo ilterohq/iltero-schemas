@@ -12,12 +12,16 @@ import hashlib
 import json
 import os
 import platform
+import re
 import shutil
 from pathlib import Path
-from typing import Any, get_args
+from typing import Any, cast, get_args
 
 import pytest
 
+from iltero_schemas.models.assertion import PROVIDER_PATTERN
+from iltero_schemas.models.assertion_id import ILTERO_NAMESPACE, change_type_segment, provider_segment
+from iltero_schemas.models.change_type import ChangeTypeName
 from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -161,3 +165,18 @@ def variants(alias: Any) -> tuple[Any, ...]:
 def variant_providers(alias: Any) -> set[str]:
     """The ``provider`` value of every variant a provider-keyed type alias accepts."""
     return {value for variant in variants(alias) for value in get_args(variant.model_fields["provider"].annotation)}
+
+
+def positional_id(change_type: str | None, target: dict[str, Any], check: str = "CASE", namespace: str = "ACME") -> str:
+    """An id of the positional form for an assertion about ``change_type`` and ``target``, as a test builds one."""
+    kind = target["kind"]
+    if kind == "resource":
+        selectors = target.get("resources") or [{}]
+        provider = str(selectors[0].get("provider", "aws"))
+        # A provider a test gives to see it refused keeps an id of a valid one, so only the provider is refused.
+        scope = f"{provider_segment(provider if re.fullmatch(PROVIDER_PATTERN, provider) else 'aws')}.TEST"
+    else:
+        scope = "APPROVAL" if namespace == ILTERO_NAMESPACE else "TEST"
+    known = change_type is None or change_type in get_args(ChangeTypeName)
+    segment = change_type_segment(cast(ChangeTypeName | None, change_type)) if known else "IAC"
+    return f"{namespace}.{segment}.{kind.upper()}.{scope}.{check}"

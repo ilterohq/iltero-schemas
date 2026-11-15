@@ -1,3 +1,4 @@
 {
-  "iac/plan_pass.json": "sha256:b8929ffff8301999c495d4aef43fc5255d2b78538abc127533c110d497fbee5a"
+  "iac/plan_from_checkov.json": "sha256:466b95ae9ae05a11eddc96c8334eefb0485608a43bcf416d956aa35e7a4dc8e3",
+  "iac/plan_pass.json": "sha256:c095c8d5caa781439ceb77ce684e2466a6033997ef60f0f22172875cf83d649f"
 }

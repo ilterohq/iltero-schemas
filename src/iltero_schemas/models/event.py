@@ -13,21 +13,21 @@ it and are refused if present.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
-from iltero_schemas.assertions.built_in import BUILT_INS
+from iltero_schemas.assertions.built_in import BUILT_INS, SHIPPED_ASSERTIONS
+from iltero_schemas.assertions.paths import NOT_DECIDED_BY_SCANNERS
+from iltero_schemas.canonical.encoding import canonical_bytes
 from iltero_schemas.compiler.limits import REASON_MAX_BYTES
 from iltero_schemas.models import fields
 from iltero_schemas.models.assertion import (
-    ID_MAX_LENGTH,
-    ID_PATTERN,
-    VERSION_MAX_LENGTH,
-    VERSION_PATTERN,
     TargetKind,
 )
-from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.assertion_id import ILTERO_NAMESPACE
+from iltero_schemas.models.base import API_VERSION, StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.change_type import CHECKED_CONTENT_KIND_OF, ActivityName
 from iltero_schemas.models.checked_content import CheckedContent
 from iltero_schemas.models.ci import CiSystem
@@ -43,7 +43,19 @@ from iltero_schemas.models.fields import (
     check_server_bundle,
     plain_text,
 )
-from iltero_schemas.models.scanners import ScannerTool
+from iltero_schemas.models.scanner_evaluator import (
+    NO_SCANNER_REPORT,
+    SCANNER_NOT_RUN,
+    SCANNER_ONLY_REASONS,
+    SCANNER_OUTCOMES,
+    SCANNER_REPORT_INCOMPLETE,
+    SCANNER_RESULT_UNRESOLVED,
+    SCANNER_VERSION_NOT_ALLOWED,
+    SUPPRESSED_IN_SOURCE,
+    TOOL_REPORTS_ONLY_FAILURES,
+    EvaluatorBindingRef,
+    ScannerEvaluator,
+)
 from iltero_schemas.models.subjects import check_subject
 from iltero_schemas.profiles import profile_for, reads_server_facts
 
@@ -65,20 +77,25 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "deployment_log_incomplete",
             "state_not_read",
             "kind_unmapped",
+            SCANNER_RESULT_UNRESOLVED,
+            SCANNER_REPORT_INCOMPLETE,
         }
     ),
     "not_applicable": frozenset({"when_guard_excluded", "no_subject_in_scope"}),
     "not_evaluated": frozenset(
         {
-            "scanner_not_run",
+            SCANNER_NOT_RUN,
             "credential_denied",
             "resource_type_unsupported",
-            "scanner_version_not_allowed",
+            SCANNER_VERSION_NOT_ALLOWED,
             "timeout",
             "subject_unresolved",
             "evaluator_unavailable",
             "identity_unverified",
             "stage_not_run",
+            SUPPRESSED_IN_SOURCE,
+            TOOL_REPORTS_ONLY_FAILURES,
+            NO_SCANNER_REPORT,
         }
     ),
     "error": frozenset(
@@ -118,12 +135,13 @@ STATUS_SEVERITY: tuple[Status, ...] = ("not_evaluated", "error", "unknown", "fai
 # Statuses a policy answer may carry; the others come only from the runner's own observation.
 POLICY_STATUSES = frozenset({"pass", "fail", "unknown", "not_applicable"})
 # The evaluations for which no evaluator ran, so none can be named: there was none to run, or nothing to run it on.
-NO_EVALUATOR_REASONS = frozenset({"evaluator_unavailable", "no_subject_in_scope"})
+NO_EVALUATOR_REASONS = frozenset({"evaluator_unavailable", "no_subject_in_scope", NO_SCANNER_REPORT})
 # The runner's own words about a status (what went wrong, in one sentence): the same cap as a policy's reason.
 DETAIL_MAX_LENGTH = REASON_MAX_BYTES
 # An hour is already far longer than any evaluation this CLI starts; a record may not ask for more.
 MAX_TIMEOUT_SECONDS = 3600.0
-
+# The engine an event names when no evaluator ran.
+NO_ENGINE = "none"
 Detail = Annotated[str, Field(max_length=DETAIL_MAX_LENGTH), AfterValidator(plain_text)]
 
 
@@ -211,28 +229,7 @@ class OpaEvaluator(StrictModel):
     limits: EvaluationLimits
 
 
-class ScannerEvaluator(StrictModel):
-    """A scanner that ran elsewhere and whose result was accepted for an assertion by a binding.
-
-    Nothing was executed here, so there are no limits to record and usually
-    no digest: the version is the one the tool wrote into its own output.
-    """
-
-    engine: ScannerTool
-    version: Identifier
-    digest: Digest | None
-    reason: Literal["not_executed_by_cli"]
-
-
 Evaluator = Annotated[OpaEvaluator | ScannerEvaluator, Field(discriminator="engine")]
-
-
-class EvaluatorBindingRef(StrictModel):
-    """The entry that licensed a scanner's result to stand for an assertion (see ``models.binding``)."""
-
-    id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
-    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    digest: Digest
 
 
 class Bundle(StrictModel):
@@ -281,6 +278,9 @@ class Executor(StrictModel):
 
 # Where a built-in assertion may come from: this package, or the server's bundle that ships it.
 BUILT_IN_SOURCES = frozenset({"contract_starter", "server_bundle"})
+# Where an assertion this package ships is named from, and where a project's own come from.
+STARTER_SOURCE = "contract_starter"
+PROJECT_ASSERTION_SOURCES = frozenset({"local", "custom_rego"})
 # Where the facts document an evaluation read came from: the server, or none.
 # It names the document's origin, not whether its parts held values or unknown markers. A value the server supplies
 # inside a part not in ``profiles.SERVER_FACTS`` follows who opened the run instead.
@@ -298,7 +298,7 @@ class Provenance(StrictModel):
     evaluator: Evaluator | None
     # The bundle belongs to the evaluator this CLI ran; a scanner has none.
     bundle: Bundle | None
-    # Present exactly when a scanner's result was read for this evaluation (see ``ScannerEvaluator``).
+    # Present exactly when the evaluator is a scanner (see ``ScannerEvaluator``).
     evaluator_binding: EvaluatorBindingRef | None
     # Where the assertion came from: the server's bundle, the project's own files (``local``, hand-written Rego as
     # ``custom_rego``), or a starter assertion this package ships (``contract_starter``). The writer's claim.
@@ -320,6 +320,59 @@ class AssuranceEvent(StrictModel):
     provenance: Provenance
     observed_at: Timestamp
 
+    @property
+    def engine(self) -> str:
+        """The engine of the evaluator that ran (``opa``, or a scanner), or ``none`` when no evaluator ran."""
+        return self.provenance.evaluator.engine if self.provenance.evaluator is not None else NO_ENGINE
+
+    def _check_from_scanner(self) -> None:
+        """An evaluation from a scanner's results is about a resource, gives one of ``SCANNER_OUTCOMES``, and reads
+        no facts from the server. No other evaluation gives a reason only scanners give."""
+        evaluation = self.evaluation
+        if not isinstance(self.provenance.evaluator, ScannerEvaluator):
+            if evaluation.status_reason in SCANNER_ONLY_REASONS:
+                raise ValueError(f"only an evaluation from a scanner's results is {evaluation.status_reason}")
+            return
+        if TargetKind(self.subject.kind) is not TargetKind.RESOURCE:
+            raise ValueError("an evaluation from a scanner's result is about a resource")
+        if (evaluation.status, evaluation.status_reason) not in SCANNER_OUTCOMES:
+            outcomes = ", ".join(
+                f"{status}/{reason}" if reason else status for status, reason in sorted(SCANNER_OUTCOMES)
+            )
+            raise ValueError(f"an evaluation from a scanner's results is one of: {outcomes}")
+        if self.provenance.facts_source == "server":
+            raise ValueError("an evaluation from a scanner's result reads no facts from the server")
+        scanner = self.provenance.evaluator
+        if scanner.local_exception is not None and evaluation.status_reason != SUPPRESSED_IN_SOURCE:
+            raise ValueError("a scanner's evaluation names a project's exception only for a suppressed check")
+        not_run = evaluation.status_reason == SCANNER_NOT_RUN
+        if (scanner.version is None) != not_run or (self.provenance.input_digest is None) != not_run:
+            raise ValueError(
+                "a scanner's evaluation names no version and no input exactly when the scanner gave no report"
+            )
+        if not_run and (
+            scanner.result_addresses
+            or scanner.unknown_paths
+            or scanner.failed_rule_ids
+            or scanner.undecided_rule_ids != scanner.rule_ids
+        ):
+            raise ValueError("a scanner that gave no report decided none of its bound checks and read no resource")
+
+    def _check_namespace(self) -> None:
+        """No assertion has a namespace that reads like Iltero's; one from a project's own files is never one of
+        Iltero's; and one named as this package's starter is the document this package ships, at its version."""
+        source = self.provenance.assertion_source
+        namespace = self.assertion.id.split(".")[0]
+        if namespace != ILTERO_NAMESPACE and namespace.startswith(ILTERO_NAMESPACE):
+            raise ValueError(f"an assertion's namespace is {ILTERO_NAMESPACE} or one not starting {ILTERO_NAMESPACE}")
+        if source in PROJECT_ASSERTION_SOURCES and self.assertion.id.split(".")[0].startswith(ILTERO_NAMESPACE):
+            raise ValueError(f"an assertion from a project's own files has an id outside {ILTERO_NAMESPACE}")
+        shipped = SHIPPED_ASSERTIONS.get(self.assertion.id)
+        if source == STARTER_SOURCE and (
+            shipped is None or (self.assertion.version, self.assertion.digest) != (shipped.version, shipped.digest)
+        ):
+            raise ValueError("an assertion named as this package's starter is the document this package ships")
+
     def _check_built_in(self) -> None:
         """A built-in assertion is evaluated as shipped: its document and version, and the module compiled from it."""
         shipped = BUILT_INS.get(self.assertion.id)
@@ -328,10 +381,8 @@ class AssuranceEvent(StrictModel):
         provenance = self.provenance
         if (self.assertion.version, self.assertion.digest) != (shipped.version, shipped.digest):
             raise ValueError(f"{self.assertion.id} is a built-in assertion: it names the document this package ships")
-        if provenance.assertion_source not in BUILT_IN_SOURCES or provenance.evaluator_binding is not None:
-            raise ValueError(
-                f"{self.assertion.id} is evaluated from this package or the server's bundle, never a scanner"
-            )
+        if provenance.assertion_source not in BUILT_IN_SOURCES:
+            raise ValueError(f"{self.assertion.id} is evaluated from this package or the server's bundle")
         if provenance.compiled_digest not in (None, shipped.compiled_digest) or (
             provenance.compiled_digest is None and provenance.evaluator is not None
         ):
@@ -350,7 +401,11 @@ class AssuranceEvent(StrictModel):
             raise ValueError("no input was built when no subject was in scope")
         if self.evaluation.status in POLICY_STATUSES and not no_subject and self.provenance.input_digest is None:
             raise ValueError("a policy verdict names the input it was computed over")
+        if self.provenance.evaluator_binding is not None and self.assertion.id in NOT_DECIDED_BY_SCANNERS:
+            raise ValueError(f"{self.assertion.id} is never decided by a scanner's result")
+        self._check_from_scanner()
         self._check_built_in()
+        self._check_namespace()
         activity, stage = self.evaluation.activity, self.evaluation.stage
         profile_for(activity, stage, TargetKind(subject.kind))
         if self.provenance.checked_content.kind != CHECKED_CONTENT_KIND_OF[activity]:
@@ -363,7 +418,7 @@ class AssuranceEvent(StrictModel):
             raise ValueError(
                 f"an evaluation with status_reason {self.evaluation.status_reason!r} names the evaluator that ran it"
             )
-        # A scanner's result was read for this evaluation — accepted as a verdict, or found not to apply.
+        # A scanner's results decided this evaluation.
         from_scanner = isinstance(self.provenance.evaluator, ScannerEvaluator)
         if (self.provenance.bundle is not None) != isinstance(self.provenance.evaluator, OpaEvaluator):
             raise ValueError("a bundle is named exactly when this CLI ran the evaluator over one")
@@ -377,3 +432,19 @@ class AssuranceEvent(StrictModel):
         if from_scanner and (self.provenance.compiled_digest is not None or self.provenance.compiler is not None):
             raise ValueError("a scanner's result was not compiled here, so it names no module and no compiler")
         return self
+
+
+# The kind of a stage's events file: the stage's events, in the order its record lists them.
+EVENTS_FILE_KIND = "AssuranceEvents"
+
+
+def events_file_bytes(events: Sequence[AssuranceEvent]) -> bytes:
+    """The bytes of a stage's events file holding ``events``: their canonical JSON (RFC 8785), which the stage's
+    ``events.digest`` and its evidence register entry are the digest of."""
+    return canonical_bytes(
+        {
+            "apiVersion": API_VERSION,
+            "kind": EVENTS_FILE_KIND,
+            "events": [event.model_dump(mode="json", by_alias=True) for event in events],
+        }
+    )

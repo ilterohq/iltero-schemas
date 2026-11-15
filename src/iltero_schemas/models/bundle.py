@@ -30,11 +30,15 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.canonical.encoding import DIGEST_PREFIX, canonical_bytes
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.base import StrictModel
 from iltero_schemas.models.event import AssertionRef
 from iltero_schemas.models.fields import Digest, Identifier, Version
 
-API_VERSION = "iltero.io/assertion-bundle/v1"
+# The descriptor a server serves beside the tarball, and the bundle's own description inside it (the manifest's
+# ``metadata.iltero``, whose digest is the content digest).
+KIND = "AssertionBundleDescriptor"
+BUNDLE_KIND = "AssertionBundle"
 # More assertions than any one environment runs; a bundle is also served whole on every run.
 MAX_BUNDLE_ASSERTIONS = 1024
 # Every module repeats the shared runtime, which compresses well: 1024 modules fit with room to spare.
@@ -80,7 +84,8 @@ class BundleAssertion(AssertionRef):
 class BundleDescriptor(StrictModel):
     """The bundle as served: identity, signing key, versions, the assertions it holds, and the tarball."""
 
-    api_version: Literal["iltero.io/assertion-bundle/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
+    kind: Literal["AssertionBundleDescriptor"]
     content_digest: Digest
     tarball_digest: Digest
     key_id: Identifier

@@ -202,7 +202,7 @@ predicate(op, left, right) := {"status": "unknown", "unknown": unknown, "predica
 } else := {"status": "unknown", "unknown": unknown, "predicates": [obs]} if {
 	unknown := _shape_unknown(op, right)
 	obs := _observation(op, left, right, _summary(left.value), "unknown")
-} else := {"status": status, "predicates": [obs]} if {
+} else := {"status": status, "predicates": [obs], "decided": [obs]} if {
 	status := _status(compare(op, left.value, right.value))
 	obs := _observation(op, left, right, _summary(left.value), status)
 }
@@ -213,23 +213,42 @@ _first_unknown_result(results) := unknowns[0] if {
 	unknowns := [r.unknown | some r in results; r.status == "unknown"]
 }
 
-all_of(results) := {"status": "false", "predicates": _predicates(results)} if {
+# The predicates that decided a result: a false `all` is decided by its first false
+# part, a true `any` by its first true part, and any other decided result by all
+# its parts. A reason names the first of them.
+_decided(result) := object.get(result, "decided", [])
+
+_all_decided(results) := [p | some r in results; some p in _decided(r)]
+
+_first_decided(results, status) := _decided(firsts[0]) if {
+	firsts := [r | some r in results; r.status == status]
+}
+
+all_of(results) := {"status": "false", "predicates": _predicates(results), "decided": _first_decided(results, "false")} if {
 	some r in results
 	r.status == "false"
 } else := {"status": "unknown", "unknown": unknown, "predicates": _predicates(results)} if {
 	unknown := _first_unknown_result(results)
-} else := {"status": "true", "predicates": _predicates(results)}
+} else := {"status": "true", "predicates": _predicates(results), "decided": _all_decided(results)}
 
-any_of(results) := {"status": "true", "predicates": _predicates(results)} if {
+any_of(results) := {"status": "true", "predicates": _predicates(results), "decided": _first_decided(results, "true")} if {
 	some r in results
 	r.status == "true"
 } else := {"status": "unknown", "unknown": unknown, "predicates": _predicates(results)} if {
 	unknown := _first_unknown_result(results)
-} else := {"status": "false", "predicates": _predicates(results)}
+} else := {"status": "false", "predicates": _predicates(results), "decided": _all_decided(results)}
 
-not_of(result) := {"status": "false", "predicates": result.predicates} if {
+# A negation flips its result. The predicates that decided it are marked as negated
+# (twice negated is not negated), so a reason can say one held where it must not.
+_flip(value) := false if {
+	value
+} else := true
+
+_negated(predicates) := [object.union(p, {"negated": _flip(object.get(p, "negated", false))}) | some p in predicates]
+
+not_of(result) := {"status": "false", "predicates": result.predicates, "decided": _negated(_decided(result))} if {
 	result.status == "true"
-} else := {"status": "true", "predicates": result.predicates} if {
+} else := {"status": "true", "predicates": result.predicates, "decided": _negated(_decided(result))} if {
 	result.status == "false"
 } else := result
 
@@ -260,14 +279,14 @@ exists_of(collection, results) := {"status": "unknown", "unknown": unknown, "pre
 	not is_array(collection.value)
 	unknown := {"path": collection.path, "reason": "not_a_list"}
 	obs := _exists_obs(collection, "unknown", null)
-} else := {"status": "true", "predicates": [obs]} if {
+} else := {"status": "true", "predicates": [obs], "decided": [obs]} if {
 	matched := count([r | some r in results; r.status == "true"])
 	matched > 0
 	obs := _exists_obs(collection, "true", matched)
 } else := {"status": "unknown", "unknown": unknown, "predicates": [obs]} if {
 	unknown := _first_unknown_result(results)
 	obs := _exists_obs(collection, "unknown", 0)
-} else := {"status": "false", "predicates": [obs]} if {
+} else := {"status": "false", "predicates": [obs], "decided": [obs]} if {
 	obs := _exists_obs(collection, "false", 0)
 }
 
@@ -305,10 +324,15 @@ reason := "when: false" if {
 	status == "unknown"
 } else := "assert: true" if {
 	status == "pass"
-} else := sprintf("assert: false; predicate %d is false: %s %s", [first.index, first.path, first.op]) if {
-	failed := [p | some p in _observed; p.clause == "assert"; p.status == "false"]
-	first := failed[0]
-} else := "assert: false; a negated expression held"
+} else := sprintf("assert: false; %s %s is true, but must be false", [last.path, last.op]) if {
+	# Under a negation every part that held decided it; the last one usually states
+	# the condition, the ones before it narrow down what it is about.
+	decided := _decided(_check)
+	object.get(decided[0], "negated", false)
+	last := decided[count(decided) - 1]
+} else := sprintf("assert: false; %s %s is false", [first.path, first.op]) if {
+	first := _decided(_check)[0]
+} else := "assert: false"
 
 _when_status := _guard.status if {
 	_has_when

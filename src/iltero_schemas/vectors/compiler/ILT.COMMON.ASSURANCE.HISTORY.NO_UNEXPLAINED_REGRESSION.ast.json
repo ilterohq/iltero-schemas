@@ -1,0 +1,52 @@
+{
+  "assert": {
+    "any": [
+      {
+        "exists": {
+          "in": "assurance.since_previous.deployments",
+          "where": null
+        }
+      },
+      {
+        "exists": {
+          "in": "assurance.since_previous.exceptions",
+          "where": {
+            "predicate": {
+              "literal": "approved",
+              "op": "equal",
+              "path": "item.status"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": null,
+  "id": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
+  "stage": "runtime",
+  "target": {
+    "kind": "assurance",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "pass",
+          "op": "equal",
+          "path": "assurance.previous.status"
+        }
+      },
+      {
+        "predicate": {
+          "literal": "fail",
+          "op": "equal",
+          "path": "assurance.current.status"
+        }
+      }
+    ]
+  }
+}

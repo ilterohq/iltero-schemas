@@ -1,0 +1,32 @@
+{
+  "assert": null,
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "evidence": {
+    "stages": [
+      "plan"
+    ]
+  },
+  "id": "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "organization_scope.environment.production"
+    }
+  }
+}

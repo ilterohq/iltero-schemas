@@ -36,7 +36,7 @@ from pydantic import AfterValidator, Field, model_validator
 from iltero_schemas.assertions.paths import BUILT_IN_IDS
 from iltero_schemas.canonical.encoding import INT_MAX
 from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue, sorted_unique
 from iltero_schemas.models.checked_content import CheckedContent
 from iltero_schemas.models.ci import CiSystem
 from iltero_schemas.models.fields import (
@@ -53,6 +53,7 @@ from iltero_schemas.models.fields import (
     plain_text,
 )
 from iltero_schemas.models.image.attestation import ProvenancePredicateType
+from iltero_schemas.models.scanners import SCANNER_TOOLS, ScannerTool
 from iltero_schemas.profiles import reads_checked_content
 
 # The most items of each kind one facts document carries: more than one stage needs.
@@ -153,6 +154,11 @@ class ExceptionGrant(StrictModel):
         return self
 
 
+def in_force(grant: ExceptionGrant, at: str) -> bool:
+    """Whether ``grant`` holds at the time ``at``: from ``valid_from`` up to and including ``expires_at``."""
+    return parse_timestamp(grant.valid_from) <= parse_timestamp(at) <= parse_timestamp(grant.expires_at)
+
+
 class EvaluatedSubject(StrictModel):
     """What an earlier evaluation was about: its kind and its key (``models.subjects``)."""
 
@@ -160,14 +166,30 @@ class EvaluatedSubject(StrictModel):
     key: Digest
 
 
+# The engines an evaluation may name: this CLI's evaluator, a scanner whose results a binding read, or none when no
+# evaluator ran.
+Engine = Literal["opa", "none"] | ScannerTool
+ENGINES = ("opa", "none", *SCANNER_TOOLS)
+
+
 class Result(StrictModel):
-    """What an earlier evaluation found."""
+    """What an earlier stage found for one assertion about one subject: the verdict its evaluators combined into
+    (``models.verdicts``), and the engine of each evaluator that reached it (``opa``, or a scanner), sorted, each
+    once."""
 
     status: Status
+    decided_by: Annotated[list[Engine], Field(min_length=1, max_length=len(ENGINES))]
+
+    @model_validator(mode="after")
+    def _engines_once_in_order(self) -> Result:
+        if not sorted_unique(self.decided_by):
+            raise ValueError("decided_by is sorted, each engine once")
+        return self
 
 
 class EarlierEvaluation(StrictModel):
-    """The result of one evaluation of an earlier stage, as the server recorded it."""
+    """The combined result of an earlier stage's evaluations of one assertion about one subject, as the server
+    recorded it."""
 
     id: Identifier
     assertion: AssertionKey

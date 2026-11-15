@@ -20,7 +20,14 @@
       "/change/attestation": null,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
       "/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
-      "/events/0/evaluation/status_reason": "not_reported_by_tool"
+      "/events/0/evaluation/status_reason": "not_reported_by_tool",
+      "/evidence_refs/15/digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+      "/evidence_refs/15/size_bytes": 6584,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+        "count": 3
+      }
     },
     "remove": []
   },
@@ -43,7 +50,14 @@
       "/coverage/assertions_expected/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server"
+      "/events/2/provenance/facts_source": "server",
+      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+      "/evidence_refs/15/size_bytes": 6594,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "count": 3
+      }
     },
     "remove": []
   },
@@ -59,7 +73,14 @@
       "/events/2/provenance/facts_source": "server",
       "/change/attestation/sent_to_server": true,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
-      "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f"
+      "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
+      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+      "/evidence_refs/15/size_bytes": 6594,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "count": 3
+      }
     },
     "remove": []
   },
@@ -91,13 +112,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:2dd49db08b97118e6e93ed7632a5c6f661595eb93b3a5b346b4d9bacf7a990e8"
+          "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 0,
@@ -108,7 +129,13 @@
           "error": 0
         },
         "evaluations": 3,
-        "gaps": [],
+        "gaps": [
+          {
+            "stage": null,
+            "kind": "evaluator_unavailable",
+            "count": 3
+          }
+        ],
         "truncated": {
           "value": false,
           "limit": null,
@@ -140,13 +167,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:4ac7ba57d44aae99bfcbdc503762998159b0fad67c3360f90fdd40e57538623b"
+          "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 0,
@@ -157,7 +184,13 @@
           "error": 0
         },
         "evaluations": 3,
-        "gaps": [],
+        "gaps": [
+          {
+            "stage": "plan",
+            "kind": "evaluator_unavailable",
+            "count": 3
+          }
+        ],
         "truncated": {
           "value": false,
           "limit": null,
@@ -176,6 +209,13 @@
         "value": "complete",
         "reason": null,
         "detail": null
+      },
+      "/evidence_refs/15/digest": "sha256:a209f8c1bde330c84d96b657ccc7c21c0fa68d6525f23b525553879415eee4d3",
+      "/evidence_refs/15/size_bytes": 5954,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:a209f8c1bde330c84d96b657ccc7c21c0fa68d6525f23b525553879415eee4d3",
+        "count": 3
       }
     },
     "remove": []
@@ -200,13 +240,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:2dd49db08b97118e6e93ed7632a5c6f661595eb93b3a5b346b4d9bacf7a990e8"
+          "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -217,7 +257,13 @@
           "error": 1
         },
         "evaluations": 3,
-        "gaps": [],
+        "gaps": [
+          {
+            "stage": null,
+            "kind": "evaluator_crash",
+            "count": 1
+          }
+        ],
         "truncated": {
           "value": false,
           "limit": null,
@@ -249,13 +295,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:4ac7ba57d44aae99bfcbdc503762998159b0fad67c3360f90fdd40e57538623b"
+          "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -266,7 +312,13 @@
           "error": 1
         },
         "evaluations": 3,
-        "gaps": [],
+        "gaps": [
+          {
+            "stage": "plan",
+            "kind": "evaluator_crash",
+            "count": 1
+          }
+        ],
         "truncated": {
           "value": false,
           "limit": null,
@@ -285,6 +337,13 @@
         "value": "incomplete",
         "reason": "required_policy_evaluation_failed",
         "detail": "plan: 1 of 3 evaluations ended in an evaluator error"
+      },
+      "/evidence_refs/15/digest": "sha256:bc22e1b05d70d650dd35882ead182f2d7721ab47a8a284420612ece5766540f6",
+      "/evidence_refs/15/size_bytes": 6260,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:bc22e1b05d70d650dd35882ead182f2d7721ab47a8a284420612ece5766540f6",
+        "count": 3
       }
     },
     "remove": []
@@ -296,7 +355,14 @@
       "/change/build_commit": null,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
       "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
-      "/events/0/evaluation/status_reason": "not_reported_by_tool"
+      "/events/0/evaluation/status_reason": "not_reported_by_tool",
+      "/evidence_refs/15/digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+      "/evidence_refs/15/size_bytes": 6584,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+        "count": 3
+      }
     },
     "remove": []
   },
@@ -519,7 +585,10 @@
       "/events/1/provenance/facts_source": "server",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/size_bytes": 4887
     },
     "remove": []
   },
@@ -586,7 +655,10 @@
         },
         "commits_counted": 3,
         "outcome": "reviewed"
-      }
+      },
+      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/size_bytes": 4887
     },
     "remove": []
   },
@@ -618,13 +690,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:71f66f344ac20bdd364367dcb1a432e95dad7f970d49a9aa3a73682833c32bb9"
+          "required_assertion_digest": "sha256:14fc1cac49f2c4f2dc85a18192fdf6a5dc53145206469856d49f14ab44e5fcc4"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.CHANGE.PRODUCTION_APPROVED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,
@@ -674,13 +746,16 @@
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "fail",
       "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "/events/1/evaluation/policy_reason": "assert: false; change.build not_equal is false",
       "/events/1/evaluation/observations/predicates/0/status": "false",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/status_counts/fail": 1,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:68171ff8923ff1351507e8665796dafadb40de423843c7d8ad14897761a20769",
+      "/evidence_refs/25/digest": "sha256:68171ff8923ff1351507e8665796dafadb40de423843c7d8ad14897761a20769",
+      "/evidence_refs/25/size_bytes": 4909
     },
     "remove": []
   },
@@ -697,7 +772,24 @@
       "/coverage/status_counts/unknown": 1,
       "/coverage/status_counts/not_evaluated": 1,
       "/verdict/value": "fail",
-      "/verdict/exit_code": 6
+      "/verdict/exit_code": 6,
+      "/stages/pre_deploy/coverage/gaps": [
+        {
+          "stage": null,
+          "kind": "evaluator_unavailable",
+          "count": 1
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "stage": "pre_deploy",
+          "kind": "evaluator_unavailable",
+          "count": 1
+        }
+      ],
+      "/stages/pre_deploy/events/digest": "sha256:1aac21916477d0d6bf594bc5abb0927b0e578c30edfb1c2b6c957308a957aecb",
+      "/evidence_refs/25/digest": "sha256:1aac21916477d0d6bf594bc5abb0927b0e578c30edfb1c2b6c957308a957aecb",
+      "/evidence_refs/25/size_bytes": 4982
     },
     "remove": []
   },
@@ -720,7 +812,24 @@
       "/verdict/exit_code": 4,
       "/assurance_status/value": "incomplete",
       "/assurance_status/reason": "required_policy_evaluation_failed",
-      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error"
+      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error",
+      "/stages/pre_deploy/coverage/gaps": [
+        {
+          "stage": null,
+          "kind": "evaluator_crash",
+          "count": 1
+        }
+      ],
+      "/coverage/gaps": [
+        {
+          "stage": "pre_deploy",
+          "kind": "evaluator_crash",
+          "count": 1
+        }
+      ],
+      "/stages/pre_deploy/events/digest": "sha256:272bc8a6c8e8ddd56d32bb2aa96b8986241d1fd09674f26875a482c4b6a39206",
+      "/evidence_refs/25/digest": "sha256:272bc8a6c8e8ddd56d32bb2aa96b8986241d1fd09674f26875a482c4b6a39206",
+      "/evidence_refs/25/size_bytes": 4968
     },
     "remove": []
   },
@@ -786,9 +895,9 @@
         "outcome": "reviewed"
       },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -809,10 +918,10 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e09d31bcffc26c90abf6f5dd77a649abc260e4a1609ebb037e58181b812cded6",
       "/stages/pre_deploy/verdict": {
         "value": "pass",
         "exit_code": 0,
@@ -836,14 +945,14 @@
         "assertions_expected": {
           "value": 4,
           "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
+          "required_assertion_digest": "sha256:32973982d1db76646e3cafa4d623139a10fba0613a5e24cd75aaf3eb4ab89203"
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -874,8 +983,11 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": []
   }

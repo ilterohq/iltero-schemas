@@ -1,0 +1,231 @@
+{
+  "Results": [
+    {
+      "Type": "terraformplan"
+    },
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {
+            "Resource": "aws_kms_key.k"
+          },
+          "ID": "AWS-0065",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "A KMS key is not configured to auto-rotate."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0086",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0086",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0086",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0087",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public policy"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0087",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public policy"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0087",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should block public policy"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0089",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 Bucket Logging"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0089",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 Bucket Logging"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0089",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 Bucket Logging"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0090",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "S3 Data should be versioned"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0090",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "S3 Data should be versioned"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0090",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "S3 Data should be versioned"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0091",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access Block should Ignore Public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0091",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access Block should Ignore Public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0091",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access Block should Ignore Public ACL"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0093",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should restrict public bucket to limit access"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0093",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should restrict public bucket to limit access"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0093",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 Access block should restrict public bucket to limit access"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.aes"
+          },
+          "ID": "AWS-0094",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.kms"
+          },
+          "ID": "AWS-0094",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0094",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "S3 buckets should each define an aws_s3_bucket_public_access_block"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket.none"
+          },
+          "ID": "AWS-0132",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 encryption should use Customer Managed Keys"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket_server_side_encryption_configuration.aes"
+          },
+          "ID": "AWS-0132",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "S3 encryption should use Customer Managed Keys"
+        }
+      ],
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

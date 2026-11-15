@@ -60,7 +60,7 @@ def _key(public_key: str = PUBLIC_KEY, **fields: Any) -> dict[str, Any]:
 
 
 def _file(*entries: dict[str, Any]) -> bytes:
-    return json.dumps({"apiVersion": "iltero.io/bundle-keys/v1", "keys": list(entries)}).encode()
+    return json.dumps({"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": list(entries)}).encode()
 
 
 def _keys(*entries: dict[str, Any]) -> Mapping[str, BundleKey]:

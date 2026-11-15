@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.change_types.registry import ACTIVITIES
+from iltero_schemas.models.scanner_evaluator import ScannerEvaluator
 
 if TYPE_CHECKING:
     from iltero_schemas.models.car import CAR
@@ -40,6 +41,16 @@ def check_provenance(car: CAR) -> None:
             for event in car.events
         ):
             raise ValueError(f"{COMMITS_REVIEWED_ID} passes or fails only on facts read from the server")
+        if any(
+            isinstance(e.provenance.evaluator, ScannerEvaluator) and e.provenance.evaluator.local_exception is not None
+            for e in car.events
+        ):
+            raise ValueError("a record of a run the server opened names no exception from a project's own files")
+        if any(
+            record.scanners is not None and record.scanners.local_exceptions is not None
+            for record in car.stages.values()
+        ):
+            raise ValueError("a record of a run the server opened applies no exceptions file of the project's own")
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]

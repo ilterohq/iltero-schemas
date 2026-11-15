@@ -22,7 +22,9 @@ from iltero_schemas.distribution import (
 DIST_INFO = "iltero_schemas-0.2.0.dist-info"
 FILES = {
     "iltero_schemas/__init__.py": b'"""Iltero shared contract."""\n',
-    "iltero_schemas/trust/bundle-keys.json": b'{"apiVersion": "iltero.io/bundle-keys/v1", "keys": []}\n',
+    "iltero_schemas/trust/bundle-keys.json": (
+        b'{"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": []}\n'
+    ),
     f"{DIST_INFO}/METADATA": b"Metadata-Version: 2.4\nName: iltero-schemas\nVersion: 0.2.0\n",
 }
 

@@ -1,4 +1,4 @@
-apiVersion: iltero.io/v1
+apiVersion: iltero.com/v1
 kind: TechnicalAssertion
 metadata:
   id: CON.AWS.X

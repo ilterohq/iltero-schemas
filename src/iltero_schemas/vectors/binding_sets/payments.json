@@ -1,0 +1,78 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "EvaluatorBindingSet",
+  "metadata": {
+    "id": "ACME.BINDINGS.PAYMENTS",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "bindings": [
+      {
+        "assertion": {
+          "id": "ACME.IAC.RESOURCE.AWS.RDS.DELETION_PROTECTED",
+          "version": "1.0.0",
+          "digest": "sha256:b54f0d214a85e99d34a083d67a8f4d826fcc0fed9a8e483a6bc729df2b4f69c5"
+        },
+        "evaluators": [
+          {
+            "tool": "trivy",
+            "stage": "plan",
+            "rule_ids": [
+              "AWS-0177"
+            ],
+            "tool_version_constraint": ">=0.50,<1",
+            "input_kind": "plan",
+            "subject_match": "exact_address",
+            "paths_read": [
+              "deletion_protection"
+            ]
+          }
+        ]
+      },
+      {
+        "assertion": {
+          "id": "ACME.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+          "version": "1.0.0",
+          "digest": "sha256:bfef81735e6d78f0d6d614087ee1808e27ab51f10b93e5d0ef7a7e7beff09f2b"
+        },
+        "evaluators": [
+          {
+            "tool": "checkov",
+            "stage": "plan",
+            "rule_ids": [
+              "CKV_AWS_17"
+            ],
+            "tool_version_constraint": ">=4,<5",
+            "input_kind": "plan",
+            "subject_match": "exact_address",
+            "paths_read": [
+              "publicly_accessible"
+            ]
+          }
+        ]
+      },
+      {
+        "assertion": {
+          "id": "ACME.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
+          "version": "1.0.0",
+          "digest": "sha256:c600e013d2528c0b425972fd06db795814320709fe18cec25949e12b712c4a69"
+        },
+        "evaluators": [
+          {
+            "tool": "checkov",
+            "stage": "plan",
+            "rule_ids": [
+              "CKV_AWS_16"
+            ],
+            "tool_version_constraint": ">=3,<4",
+            "input_kind": "plan",
+            "subject_match": "exact_address",
+            "paths_read": [
+              "storage_encrypted"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

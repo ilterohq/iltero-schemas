@@ -56,7 +56,7 @@
           "status": "approved",
           "scope": {
             "assertion": {
-              "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT"
+              "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT"
             },
             "environment": "production",
             "resources": [

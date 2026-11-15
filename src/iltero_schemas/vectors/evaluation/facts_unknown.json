@@ -4,7 +4,7 @@
   "cases": [
     {
       "name": "production_approved_unknown_marker",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "facts": "unknown_marker",
       "expected": {
         "status": "unknown",
@@ -18,18 +18,18 @@
     },
     {
       "name": "production_approved_empty_list",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "facts": "empty_list",
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "unknown": null,
         "when": "true"
       }
     },
     {
       "name": "sensitive_change_approved_unknown_marker",
-      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
       "facts": "unknown_marker",
       "expected": {
         "status": "unknown",
@@ -43,11 +43,11 @@
     },
     {
       "name": "sensitive_change_approved_empty_list",
-      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
       "facts": "empty_list",
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "unknown": null,
         "when": "true"
       }

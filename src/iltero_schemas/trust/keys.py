@@ -41,9 +41,10 @@ from types import MappingProxyType
 from typing import Any, Literal, cast
 
 from iltero_schemas.canonical.encoding import digest
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
 
-API_VERSION = "iltero.io/bundle-keys/v1"
+TRUST_FILE_KIND = "BundleSigningKeys"
 # Local development keys carry this prefix, and only a development tool accepts them.
 DEVELOPMENT_KEY_PREFIX = "dev-"
 KeyStatus = Literal["active", "retired", "revoked"]
@@ -199,10 +200,12 @@ def parse_bundle_keys(raw: bytes, *, development: bool) -> Mapping[str, BundleKe
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_fields)
     except (UnicodeDecodeError, json.JSONDecodeError):
         raise TrustFileError("not a JSON document") from None
-    if not isinstance(document, dict) or set(document) != {"apiVersion", "keys"}:
-        raise TrustFileError("must have exactly the fields apiVersion and keys")
+    if not isinstance(document, dict) or set(document) != {"apiVersion", "kind", "keys"}:
+        raise TrustFileError("must have exactly the fields apiVersion, kind and keys")
     if document["apiVersion"] != API_VERSION:
         raise TrustFileError(f"apiVersion: must be {API_VERSION}")
+    if document["kind"] != TRUST_FILE_KIND:
+        raise TrustFileError(f"kind: must be {TRUST_FILE_KIND}")
     if not isinstance(document["keys"], list):
         raise TrustFileError("keys: must be a list")
     keys = [_key(entry, f"keys[{index}]", development=development) for index, entry in enumerate(document["keys"])]

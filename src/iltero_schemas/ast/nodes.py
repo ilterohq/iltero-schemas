@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any, TypeAlias
 
-from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind
+from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind, check_evidence_stages
 from iltero_schemas.models.change_type import ChangeTypeName
 from iltero_schemas.models.iac.tool_names import IacTool
 
@@ -117,14 +117,27 @@ class Target:
 
 @dataclass(frozen=True)
 class Assertion:
+    """An assertion's logic: with a condition (``assert_``) at one stage, or with none, observed by scanners at
+    ``stages``."""
+
     id: str
     version: str
     type: AssertionType
     change_type: ChangeTypeName | None
-    stage: Stage
+    stages: tuple[Stage, ...]
     target: Target
     when: Expr | None
-    assert_: Expr
+    assert_: Expr | None
+
+    def __post_init__(self) -> None:
+        if not self.stages or (self.assert_ is not None and len(self.stages) != 1):
+            raise ValueError("an assertion with a condition has one stage, and one observed by scanners at least one")
+        if self.assert_ is None:
+            check_evidence_stages(self.stages)
+
+    @property
+    def observed_by_scanners(self) -> bool:
+        return self.assert_ is None
 
 
 def _expr_json(expr: Expr) -> dict[str, Any]:
@@ -156,19 +169,28 @@ def _selector_json(selector: Selector) -> dict[str, Any]:
 
 
 def to_json(assertion: Assertion) -> dict[str, Any]:
-    """The one JSON form of the AST; its canonical bytes are the assertion's source digest."""
+    """The one JSON form of the AST; its canonical bytes are the assertion's source digest.
+
+    Like the document, it names an assertion's one ``stage`` when it has a condition, and its ``evidence`` stages,
+    with ``assert`` null, when scanners observe it.
+    """
     target: dict[str, Any] = {
         "kind": assertion.target.kind.value,
         "resources": [_selector_json(selector) for selector in assertion.target.selectors],
     }
+    stages: dict[str, Any] = (
+        {"evidence": {"stages": [stage.value for stage in assertion.stages]}}
+        if assertion.assert_ is None
+        else {"stage": assertion.stages[0].value}
+    )
     return {
         "ast_version": AST_VERSION,
         "id": assertion.id,
         "version": assertion.version,
         "type": assertion.type.value,
         "change_type": assertion.change_type,
-        "stage": assertion.stage.value,
+        **stages,
         "target": target,
         "when": None if assertion.when is None else _expr_json(assertion.when),
-        "assert": _expr_json(assertion.assert_),
+        "assert": None if assertion.assert_ is None else _expr_json(assertion.assert_),
     }

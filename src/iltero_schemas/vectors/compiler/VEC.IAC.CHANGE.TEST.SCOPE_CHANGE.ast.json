@@ -1,0 +1,39 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "op": "equal",
+      "path": "change.digest"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": [
+      {
+        "kinds": [
+          "kms_key"
+        ],
+        "provider": "aws"
+      },
+      {
+        "kinds": [
+          "iam_role"
+        ],
+        "provider": "aws"
+      }
+    ]
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "organization_scope.environment.production"
+    }
+  }
+}

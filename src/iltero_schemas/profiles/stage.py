@@ -71,6 +71,11 @@ POST_DEPLOY = Profile("post_deploy", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE |
 POST_VERIFY = Profile(
     "post_verify", ALWAYS_REQUIRED_PARTS | {"subject", "deployment", "drift_check"}, _SOURCE | {"assurance"}
 )
+# A check postponed until after the deployment, settled at post-verify: the resource's values after the apply, in the
+# shape of the plan's resource, and the plan it was postponed from.
+POST_VERIFY_RESOURCE = Profile(
+    "post_verify_resource", ALWAYS_REQUIRED_PARTS | {"subject", "resource", "plan", "deployment"}, _SOURCE
+)
 RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
 # A build's input: the image it built, the test and scan reports it was given, the commit the server verified from
 # the build job's identity, and what the server found when it checked the build's attestation.
@@ -114,6 +119,8 @@ PROFILES: Mapping[tuple[ActivityName, Stage, TargetKind], Profile] = MappingProx
             )
             for _type, stage, kind in COMBINATIONS[IAC_CHANGE_TYPE]
         },
+        # No assertion declares it: an assertion about a resource at plan is evaluated here for a postponed check.
+        (IAC_CHANGE_ACTIVITY, Stage.POST_VERIFY, TargetKind.RESOURCE): POST_VERIFY_RESOURCE,
         (IMAGE_BUILD_ACTIVITY, Stage.PLAN, TargetKind.ARTIFACT): PLAN_ARTIFACT,
         (IMAGE_DEPLOY_ACTIVITY, Stage.PRE_DEPLOY, TargetKind.CHANGE): IMAGE_PRE_DEPLOY,
         (IMAGE_DEPLOY_ACTIVITY, Stage.POST_DEPLOY, TargetKind.DEPLOYMENT): IMAGE_POST_DEPLOY,

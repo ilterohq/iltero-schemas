@@ -22,6 +22,7 @@ from iltero_schemas.assertions import ASSERTIONS
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import canonical_bytes
 from iltero_schemas.change_types import ImageBuild, scan_coverage
+from iltero_schemas.models.binding import EvaluatorBindingSet, check_project_set
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.context import AssuranceContext
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
@@ -42,6 +43,10 @@ def _split_cases(folder: str) -> list[dict[str, Any]]:
 RECORD_INVALID_CASES = _split_cases("records_invalid")
 RECORD_VALID_CASES = _split_cases("records_valid")
 RECORD_INTEGRITY_FAILED_CASES = _split_cases("records_integrity_failed")
+BINDING_SET_INVALID_CASES = json.loads((VECTORS / "binding_sets_invalid" / "cases.json").read_text(encoding="utf-8"))
+PROJECT_SET_INVALID_CASES = json.loads(
+    (VECTORS / "binding_sets_project_invalid" / "cases.json").read_text(encoding="utf-8")
+)
 IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
 CONTEXT_INVALID_CASES = _split_cases("contexts_invalid")
@@ -88,6 +93,8 @@ def _patched(case: dict[str, Any], folder: str) -> Any:
 
 
 CHANGING_CASES = [
+    *BINDING_SET_INVALID_CASES,
+    *PROJECT_SET_INVALID_CASES,
     *RECORD_INVALID_CASES,
     *RECORD_VALID_CASES,
     *RECORD_INTEGRITY_FAILED_CASES,
@@ -132,6 +139,19 @@ def test_a_record_that_fails_its_integrity_checks_is_read_and_its_problems_repor
         CAR.model_validate(_patched(case, "records"))
     car = CAR.model_validate(_patched(case, "records"), context={SKIP_INTEGRITY_CHECKS: True})
     assert [list(problem) for problem in integrity_problems(car)] == case["problems"]
+
+
+@pytest.mark.parametrize("case", PROJECT_SET_INVALID_CASES, ids=[c["name"] for c in PROJECT_SET_INVALID_CASES])
+def test_a_project_set_that_decides_an_iltero_assertion_is_refused(case: dict[str, Any]) -> None:
+    binding_set = EvaluatorBindingSet.model_validate(_patched(case, "binding_sets"))
+    with pytest.raises(ValueError, match=re.escape(case["message"])):
+        check_project_set(binding_set)
+
+
+@pytest.mark.parametrize("case", BINDING_SET_INVALID_CASES, ids=[c["name"] for c in BINDING_SET_INVALID_CASES])
+def test_invalid_binding_set_is_rejected(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        EvaluatorBindingSet.model_validate(_patched(case, "binding_sets"))
 
 
 @pytest.mark.parametrize("case", IDENTITY_INVALID_CASES, ids=[c["name"] for c in IDENTITY_INVALID_CASES])
@@ -203,7 +223,10 @@ def test_every_expected_message_is_one_line_so_any_error_layout_contains_it(case
 
 
 # The cases refused because an event names another document than the shipped assertion's.
-NAMING_ANOTHER_DOCUMENT = {"image_build_naming_another_match_check"}
+NAMING_ANOTHER_DOCUMENT = {
+    "image_build_naming_another_match_check",
+    "iac_record_whose_file_binding_set_establishes_a_starter_it_calls_its_own",
+}
 
 
 def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_is() -> None:
@@ -230,13 +253,11 @@ def test_every_evaluation_in_a_record_vector_names_the_shipped_assertion_as_it_i
         named = event["assertion"]
         if named["id"] in shipped:
             provenance = event["provenance"]
-            as_named = (
-                named["version"],
-                named["digest"],
-                provenance["assertion_source_digest"],
-                provenance["compiled_digest"],
-            )
-            assert as_named == shipped[named["id"]], named["id"]
+            as_named = (named["version"], named["digest"], provenance["assertion_source_digest"])
+            assert as_named == shipped[named["id"]][:3], named["id"]
+            # A scanner's result was not compiled here, so its event names no module.
+            compiled = None if provenance["evaluator_binding"] is not None else shipped[named["id"]][3]
+            assert provenance["compiled_digest"] == compiled, named["id"]
 
 
 def test_a_record_vector_lists_the_shipped_assertion_files() -> None:

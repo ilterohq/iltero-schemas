@@ -6,13 +6,17 @@ import copy
 import json
 from typing import Any
 
-from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID
+from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID, SHIPPED_ASSERTIONS
+from iltero_schemas.bindings.shipped import SHIPPED_SET, SHIPPED_SET_DIGEST
+from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes, encoding
 from iltero_schemas.canonical.assertion_set import required_assertion_digest
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
 from iltero_schemas.models.assertion import Stage
+from iltero_schemas.models.base import API_VERSION
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY
 from iltero_schemas.models.coverage import Coverage, stage_outcome
+from iltero_schemas.models.event import EVENTS_FILE_KIND
 from iltero_schemas.models.fields import Identity
 from iltero_schemas.models.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
 from iltero_schemas.models.subjects import subject_key
@@ -21,6 +25,8 @@ from tests.conftest import VECTORS
 
 # The unknown marker a stage keeps for a part its input carries when no facts were read from the server.
 UNKNOWN: dict[str, Any] = {"__unknown": True, "reason": "server_facts_unavailable"}
+# What a stage keeps in place of a part of the server's facts none of its checks read.
+NOT_READ_BY_THE_STAGE: dict[str, Any] = {"__unknown": True, "reason": "not_read_by_the_stage"}
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
 # The captured record of a run that reached its post-deploy stage, whose pre-deploy checks read facts.
 DEPLOYED: dict[str, Any] = json.loads(
@@ -74,6 +80,7 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     redacting what that stage reads, or nothing where the record keeps that part as it is."""
     copied = copy.deepcopy(RECORD["stages"]["plan"])
     copied["stage"] = name
+    copied["values_known_after_deployment"] = None
     for part in ("approvals", "commit_review"):
         copied[part] = dict(UNKNOWN) if reads_part(IAC_CHANGE_ACTIVITY, Stage(name), part) else None
     # The plan stage's events file and assertion index stay named: they are entries of the record's register.
@@ -125,6 +132,27 @@ def add_built_in(document: dict[str, Any], name: str) -> dict[str, Any]:
     document["stages"][name]["events"]["count"] += 1
     outcome = stage_outcome(Coverage.model_validate(coverage)).model_dump(mode="json")
     document["stages"][name].update(verdict=outcome["verdict"], assurance_status=outcome["assurance_status"])
+    return keep_events_files(document)
+
+
+def keep_events_files(document: dict[str, Any]) -> dict[str, Any]:
+    """``document`` with each stage naming its own events file by the digest of its events, kept in the register at
+    that digest and size: a stage a test added gets an entry of its own, beside the plan stage's."""
+    entries = document["evidence_refs"]
+    named: set[str] = set()
+    for name, kept in document["stages"].items():
+        events = [event for event in document["events"] if event["evaluation"]["stage"] == name]
+        data = canonical_bytes({"apiVersion": API_VERSION, "kind": EVENTS_FILE_KIND, "events": events})
+        old = kept["events"]["path"]
+        entry = next(ref for ref in entries if ref["path"] == old)
+        if old in named:
+            path = f"units/{document['unit']}/{name}/events.json"
+            entry = {**copy.deepcopy(entry), "path": path, "ref_id": f"{name}/events.json"}
+            entries.append(entry)
+            kept["events"]["path"] = path
+        named.add(kept["events"]["path"])
+        kept["events"]["digest"] = encoding.digest(data)
+        entry.update(digest=encoding.digest(data), size_bytes=len(data), canonicalization=CANONICALIZATION)
     return document
 
 
@@ -138,7 +166,12 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
     for event in served_document["events"]:
         if event["provenance"]["facts_source"] == "none":
             event["provenance"]["facts_source"] = "server"
-    return served_document
+    # A stage whose checks now read the server's facts holds the marker its input held, not the one for facts unread.
+    for stage in served_document["stages"].values():
+        for part in ("approvals", "commit_review"):
+            if isinstance(stage.get(part), dict) and stage[part].get("reason") == NOT_READ_BY_THE_STAGE["reason"]:
+                stage[part] = copy.deepcopy(UNKNOWN)
+    return keep_events_files(served_document)
 
 
 def keep_the_apply_log(document: dict[str, Any]) -> None:
@@ -153,7 +186,9 @@ def with_commit_review_check(source: dict[str, Any], status: str, reason: str | 
     document = copy.deepcopy(source)
     index = next(i for i, e in enumerate(document["events"]) if e["evaluation"]["stage"] == "pre_deploy")
     old = document["events"][index]["assertion"]["id"]
-    document["events"][index]["assertion"]["id"] = COMMITS_REVIEWED_ID
+    shipped = SHIPPED_ASSERTIONS[COMMITS_REVIEWED_ID]
+    document["events"][index]["assertion"].update(id=COMMITS_REVIEWED_ID, digest=shipped.digest)
+    document["events"][index]["provenance"]["assertion_source"] = "contract_starter"
     document["events"][index]["evaluation"].update(status=status, status_reason=reason)
     counted = document["stages"]["pre_deploy"]["coverage"]["subjects_per_assertion"]
     key = next(k for k in counted if k.startswith(f"{old}@"))
@@ -162,50 +197,73 @@ def with_commit_review_check(source: dict[str, Any], status: str, reason: str | 
     return document
 
 
-# A plan stage's scanners block: one Checkov report read under the shipped bindings.
+# The shipped binding set as a stage's scanners name it.
+SHIPPED_SET_USED: dict[str, Any] = {
+    "id": SHIPPED_SET.metadata.id,
+    "version": SHIPPED_SET.metadata.version,
+    "origin": "shipped",
+    "file_name": None,
+    "digest": SHIPPED_SET_DIGEST,
+    "copy_path": "units/root/plan/shipped-bindings.json",
+    "assertions_bound": len(SHIPPED_SET.spec.bindings),
+}
+
+# A plan stage's scanners block: one Checkov report read under a project's bindings and the shipped set, none of its
+# results bound.
 SCANNERS: dict[str, Any] = {
-    "evaluator_binding_set": {
-        "id": "ILT.BINDINGS.STARTER",
-        "version": "1.0.0",
-        "origin": "shipped",
-        "file_name": None,
-        "digest": "sha256:" + "b" * 64,
-        "copy_path": "units/root/plan/bindings.json",
-        "binding_count": 2,
-    },
+    "evaluator_binding_sets": [
+        {
+            "id": "ACME.BINDINGS.PAYMENTS",
+            "version": "1.0.0",
+            "origin": "file",
+            "file_name": "bindings.yaml",
+            "digest": "sha256:" + "b" * 64,
+            "copy_path": "units/root/plan/bindings.json",
+            "assertions_bound": 2,
+        },
+        SHIPPED_SET_USED,
+    ],
+    "required_scanners": [],
     "reports": [
         {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "input_kinds": ["terraform_plan"],
+            "supplied_by": "pipeline",
+            "input_kinds": ["plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,
             "results_read": 73,
-            "results_without_binding": 71,
-            "parsing_errors": 0,
+            "unreadable_results": 0,
+            "written_configuration_results": 0,
+            "tool_parsing_errors": 0,
+            "redacted_values": {},
         }
     ],
-    "results_accepted": 2,
-    "results_scanner_version_not_allowed": 0,
-    "results_without_binding": 71,
+    "local_exceptions": None,
 }
 
 
 def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> None:
-    """Add to ``document``'s register the files its ``stage``'s scanners name: the copy of its bindings, and each
-    report as the stage kept it, redacted, with the observations the stage read from it."""
+    """Add to ``document``'s register the files its ``stage``'s scanners name: the copy of each binding set, and each
+    report as the stage kept it, collected by its scanner and redacted, with the observations the stage read from the
+    same file."""
     template = next(ref for ref in document["evidence_refs"] if ref["source"] is not None)
     scanners = document["stages"][stage]["scanners"]
-    bindings = scanners["evaluator_binding_set"]
     policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": "sha256:" + "e" * 64}
-    files: list[tuple[str, str, Any, Any]] = [(bindings["copy_path"], bindings["digest"], None, None)]
+    files: list[tuple[str, str, Any, Any, str]] = []
+    for bindings in scanners["evaluator_binding_sets"]:
+        read_from = (
+            None if bindings["file_name"] is None else {"name": bindings["file_name"], "digest": "sha256:" + "f" * 64}
+        )
+        files.append((bindings["copy_path"], bindings["digest"], None, read_from, "iltero"))
     for report in scanners["reports"]:
         kept = report["report_digest"]
-        files += [(f"units/root/artifacts/{kept.replace(':', '-')}", kept, policy, given)]
-        files += [(report["observations"], "sha256:" + "d" * 64, policy, None)]
-    for path, digest, redaction_policy, source in files:
+        files += [(f"units/root/artifacts/{kept.replace(':', '-')}", kept, policy, given, report["tool"])]
+        files += [(report["observations"], "sha256:" + "d" * 64, policy, given, "iltero-observations")]
+    for path, digest, redaction_policy, source, collector in files:
         name = path.rsplit("/", 1)[-1]
         entry = {**copy.deepcopy(template), "ref_id": name, "path": path, "digest": digest, "source": source}
+        entry["collector"] = {**entry["collector"], "tool": collector}
         document["evidence_refs"].append({**entry, "redaction_policy": redaction_policy})
 
 

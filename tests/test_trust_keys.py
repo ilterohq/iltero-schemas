@@ -14,6 +14,7 @@ from iltero_schemas.trust import (
     BUNDLE_KEYS,
     DEVELOPMENT_KEY_PREFIX,
     TRUST_FILE_DIGEST,
+    TRUST_FILE_KIND,
     TrustFileError,
     parse_bundle_keys,
 )
@@ -55,7 +56,9 @@ def _with_byte(index: int, value: int) -> str:
 
 
 def _file(*entries: dict[str, Any], **top: Any) -> bytes:
-    return json.dumps({"apiVersion": API_VERSION, "keys": list(entries), **top}).encode("utf-8")
+    return json.dumps({"apiVersion": API_VERSION, "kind": TRUST_FILE_KIND, "keys": list(entries), **top}).encode(
+        "utf-8"
+    )
 
 
 def test_the_shipped_file_is_valid_and_its_digest_is_of_its_bytes() -> None:
@@ -226,26 +229,41 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
         (_file(_entry("k2"), _entry("k1", KEY_B)), "key-id order"),
         (_file(_entry("k1"), _entry("k1", KEY_B)), "no key id twice"),
         (_file(_entry("k1"), _entry("k2")), "two key ids"),
-        (_file(apiVersion="iltero.io/bundle-keys/v2"), "apiVersion"),
+        (_file(apiVersion="iltero.io/bundle-keys/v1"), "apiVersion"),
+        (_file(apiVersion=API_VERSION + "1"), "apiVersion"),
+        (_file(kind="AssertionBundleDescriptor"), "kind"),
+        (_file(kind=TRUST_FILE_KIND.lower()), "kind"),
         (_file(signature="x"), "exactly the fields"),
-        (json.dumps({"apiVersion": API_VERSION, "keys": {}}).encode(), "must be a list"),
+        (json.dumps({"apiVersion": API_VERSION, "kind": TRUST_FILE_KIND, "keys": {}}).encode(), "must be a list"),
         (b"{", "not a JSON document"),
-        (b"[]", "exactly the fields apiVersion and keys"),
+        (b"[]", "exactly the fields apiVersion, kind and keys"),
+        (json.dumps({"apiVersion": API_VERSION, "keys": []}).encode(), "exactly the fields"),
         (
             _file(_entry("k1")).replace(b'"status": "active"', b'"status": "revoked", "status": "active"'),
             "appears twice",
         ),
-        (b'{"apiVersion": "' + API_VERSION.encode() + b'", "keys": [], "keys": []}', "appears twice"),
+        (
+            b'{"apiVersion": "'
+            + API_VERSION.encode()
+            + b'", "kind": "'
+            + TRUST_FILE_KIND.encode()
+            + b'", "keys": [], "keys": []}',
+            "appears twice",
+        ),
     ],
     ids=[
         "out of order",
         "a key id twice",
         "a public key twice",
-        "another version",
+        "the old name",
+        "a longer version",
+        "another document's kind",
+        "a kind in other case",
         "an extra field",
         "not a list",
         "not JSON",
         "not an object",
+        "no kind",
         "a field twice in a key",
         "keys twice",
     ],

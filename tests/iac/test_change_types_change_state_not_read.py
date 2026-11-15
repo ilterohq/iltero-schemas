@@ -13,7 +13,8 @@ from pydantic import ValidationError
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, StageRecord
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.coverage import STATE_REASON, Coverage, combine_in_order, stage_outcome
+from iltero_schemas.models.coverage import STATE_REASON, Coverage, stage_outcome
+from iltero_schemas.models.record_coverage import combine_in_order
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import VECTORS
 from tests.records import DEPLOYED, VERIFIED, count_by_digest, iac_change

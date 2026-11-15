@@ -1,0 +1,62 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": true,
+          "op": "equal",
+          "path": "resource.after.storage_encrypted"
+        }
+      },
+      {
+        "predicate": {
+          "literal": false,
+          "op": "equal",
+          "path": "resource.after.publicly_accessible"
+        }
+      },
+      {
+        "predicate": {
+          "literal": 7,
+          "op": "greater_than_or_equal",
+          "path": "resource.after.backup_retention_period"
+        }
+      },
+      {
+        "predicate": {
+          "literal": [
+            "db.t3.micro",
+            "db.t3.small"
+          ],
+          "op": "not_in",
+          "path": "resource.after.instance_class"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ACME.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "aws",
+        "resource_types": [
+          "aws_db_instance"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "organization_scope.environment.production"
+    }
+  }
+}

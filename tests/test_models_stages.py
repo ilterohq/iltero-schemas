@@ -11,11 +11,21 @@ from pydantic import ValidationError
 from iltero_schemas.change_types import IAC_CHANGE, IMAGE_BUILD
 from iltero_schemas.models.assertion import Stage, TargetKind
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
-from iltero_schemas.models.coverage import Coverage, StageOutcome, combine_in_order, stage_outcome
+from iltero_schemas.models.coverage import Coverage, StageOutcome, stage_outcome
 from iltero_schemas.models.fields import Identity
+from iltero_schemas.models.record_coverage import combine_in_order
 from iltero_schemas.models.stages import integrity_problems, scope_counted_from
 from iltero_schemas.models.subjects import subject_key
-from tests.records import DEPLOYED, RECORD, UNKNOWN, VERIFIED, add_built_in, served
+from tests.records import (
+    DEPLOYED,
+    NOT_READ_BY_THE_STAGE,
+    RECORD,
+    UNKNOWN,
+    VERIFIED,
+    add_built_in,
+    keep_events_files,
+    served,
+)
 from tests.records import set_path as _set
 from tests.records import stage as _stage
 
@@ -49,7 +59,8 @@ def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) 
             for stage in IAC_CHANGE.stages
             if stage.value not in expected
         ]
-    return _with_top_level(document)
+    # Each stage names its own events file by its events, so a test edits only the value under test.
+    return _with_top_level(keep_events_files(document))
 
 
 def _moved_event(index: int, stage: str) -> dict[str, Any]:
@@ -65,7 +76,12 @@ def _moved_event(index: int, stage: str) -> dict[str, Any]:
     return event
 
 
-PRE_DEPLOY = {"pre_deploy": _stage("pre_deploy")}
+# A pre-deploy stage that ran no check keeps the marker that it read none of the server's facts.
+PRE_DEPLOY = {
+    "pre_deploy": _stage("pre_deploy", **{"approvals": NOT_READ_BY_THE_STAGE, "commit_review": NOT_READ_BY_THE_STAGE})
+}
+# A pre-deploy stage whose checks read an input that carries the server's facts keeps the marker that input held.
+CHECKED_PRE_DEPLOY = {"pre_deploy": _stage("pre_deploy")}
 POST_VERIFY = {"post_verify": _stage("post_verify")}
 
 
@@ -122,11 +138,11 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
         ),
         (_record(events=[*RECORD["events"][:-1], _moved_event(-1, "pre_deploy")]), "every event belongs to a stage"),
         (
-            _record(PRE_DEPLOY, events=[_moved_event(0, "pre_deploy"), *RECORD["events"][1:]]),
+            _record(CHECKED_PRE_DEPLOY, events=[_moved_event(0, "pre_deploy"), *RECORD["events"][1:]]),
             "grouped by stage, in the order the stages run",
         ),
         (
-            _record(PRE_DEPLOY, events=[*RECORD["events"], _moved_event(-1, "pre_deploy")]),
+            _record(CHECKED_PRE_DEPLOY, events=[*RECORD["events"], _moved_event(-1, "pre_deploy")]),
             "an assertion is evaluated by one stage only",
         ),
         (
@@ -134,7 +150,7 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
                 **{
                     "stages.plan.coverage.subjects_per_assertion": {
                         **RECORD["stages"]["plan"]["coverage"]["subjects_per_assertion"],
-                        "ILT.AWS.S3.NEVER_RUN@1.0.0": 1,
+                        "ILT.IAC.RESOURCE.AWS.S3.NEVER_RUN@1.0.0": 1,
                     }
                 }
             ),
@@ -168,6 +184,13 @@ def test_a_record_whose_stages_do_not_hold_together_is_refused(document: dict[st
         CAR.model_validate(document, context=_READER)  # the structure holds for every reader
 
 
+def _with_an_edited_event_reason() -> dict[str, Any]:
+    """The record with one event's reason reworded after its stage wrote its events file."""
+    document = _record()
+    document["events"][1]["evaluation"]["policy_reason"] = "assert: true; reworded"
+    return document
+
+
 def _flipped_event() -> dict[str, Any]:
     event: dict[str, Any] = copy.deepcopy(RECORD["events"][1])
     event["evaluation"].update(status="fail", policy_reason="assert: false")
@@ -181,13 +204,14 @@ INCOMPLETE = {"value": "incomplete", "reason": "evaluator_error", "detail": "1 o
 @pytest.mark.parametrize(
     ("document", "problems"),
     [
-        (_record(**{"stages.plan.events.count": 4}), ["stages.plan.coverage"]),
+        (_record(**{"stages.plan.events.count": 4}), ["stages.plan.events"]),
         (_record(events=[RECORD["events"][0], _flipped_event(), *RECORD["events"][2:]]), ["stages.plan.coverage"]),
         (_record(**{"stages.plan.verdict": PASSED}), ["stages.plan.verdict"]),
         (_record(**{"stages.plan.assurance_status": INCOMPLETE}), ["stages.plan.assurance_status"]),
         ({**_record(), "coverage": {**RECORD["coverage"], "sampled": True}}, ["coverage"]),
         ({**_record(), "verdict": {**RECORD["verdict"], "value": "fail", "exit_code": 1}}, ["verdict"]),
         ({**_record(), "assurance_status": INCOMPLETE}, ["assurance_status"]),
+        (_with_an_edited_event_reason(), ["stages.plan.events.digest"]),
     ],
     ids=[
         "a stage's events counted wrong",
@@ -197,6 +221,7 @@ INCOMPLETE = {"value": "incomplete", "reason": "evaluator_error", "detail": "1 o
         "a top-level coverage no stage reported",
         "a top-level verdict no stage reached",
         "a top-level status no stage reported",
+        "an event edited after its stage wrote its events file",
     ],
 )
 def test_an_edited_value_a_reader_can_recompute_is_listed(document: dict[str, Any], problems: list[str]) -> None:
@@ -275,7 +300,12 @@ def test_plan_flag_gaps_that_do_not_match_the_plan_flags_are_a_problem(
 
 def test_only_the_plan_stage_lists_a_plan_flag_gap() -> None:
     gap = [{"kind": "plan_incomplete", "value": False}]
-    later = {"pre_deploy": _stage("pre_deploy", **{"coverage.gaps": gap})}
+    later = {
+        "pre_deploy": _stage(
+            "pre_deploy",
+            **{"coverage.gaps": gap, "approvals": NOT_READ_BY_THE_STAGE, "commit_review": NOT_READ_BY_THE_STAGE},
+        )
+    }
     expected = ["plan", "pre_deploy", "post_deploy"]
     changes = {"change.plan.complete": False, "stages.plan.coverage.gaps": gap}
     document = _record(later, expected_stages=expected, complete=False, **changes)
@@ -503,6 +533,9 @@ def test_an_offline_record_has_no_facts_from_the_server() -> None:
     )
     CAR.model_validate(document, context=_READER)
     document["events"][-1]["provenance"]["facts_source"] = "server"
+    # The stage then keeps the marker its input held, as a stage that read the server's facts does.
+    for part in ("approvals", "commit_review"):
+        document["stages"]["pre_deploy"][part] = dict(UNKNOWN)
     with pytest.raises(ValidationError, match="has no facts from the server"):
         CAR.model_validate(document, context=_READER)
 
@@ -550,12 +583,18 @@ def test_a_builds_plan_stage_counts_no_resources() -> None:
         scope_counted_from(IMAGE_BUILD, Stage.PLAN, {TargetKind.RESOURCE})
 
 
+def test_post_verify_counts_its_deployment_beside_the_resources_of_the_checks_it_settles() -> None:
+    """A check the plan stage postponed is about a resource; post-verify still counts its one deployment."""
+    assert scope_counted_from(IAC_CHANGE, Stage.POST_VERIFY, {TargetKind.DEPLOYMENT, TargetKind.RESOURCE}) == (
+        "deployment_unit"
+    )
+
+
 @pytest.mark.parametrize(
     ("stage", "kinds", "message"),
     [
-        (Stage.POST_VERIFY, {TargetKind.DEPLOYMENT, TargetKind.RESOURCE}, "about one kind of subject"),
+        (Stage.PRE_DEPLOY, {TargetKind.CHANGE, TargetKind.RESOURCE}, "about one kind of subject"),
         (Stage.PRE_DEPLOY, {TargetKind.RESOURCE}, "subjects its assertions can target"),
-        (Stage.POST_VERIFY, {TargetKind.RESOURCE}, "subjects its assertions can target"),
         (Stage.POST_VERIFY, {TargetKind.ASSURANCE}, "subjects its assertions can target"),
     ],
 )

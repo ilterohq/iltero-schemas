@@ -1,14 +1,14 @@
 """``VerificationReport`` v1: what a verifier found about one record, one property at a time.
 
-A verifier, such as ``iltero car verify``, reads a Change Assurance Record
+A verifier, such as ``iltero record verify``, reads a Change Assurance Record
 and the files it cites. It reports on ten properties, one at a time. Each
 property gets a state and, where it helps, the reason for it.
 There is no overall "verified". A reader looks at each property it needs.
 
 The report is a document of its own, not a part of the record. The tool that
 wrote a record cannot vouch for that record, so a record carries no
-verification results. The report names the record it is about by the digest
-of the record's bytes.
+verification results. The report names the record it is about by its id and the
+digest of its canonical JSON.
 """
 
 from __future__ import annotations
@@ -18,10 +18,11 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Digest, Identifier, Uuid
+from iltero_schemas.models.fields import Digest, Identifier, Timestamp, Uuid
 
-API_VERSION = "iltero.io/verification-report/v1"
+KIND = "VerificationReport"
 # verified: the verifier checked the property and it holds. failed: it checked it and it does not hold.
 # not_determined: it looked and could not decide. not_assessed: it did not assess the property for this
 # record, for example because the step it reads is pending or out of scope. not_performed: the record shows
@@ -173,18 +174,27 @@ class Verifier(StrictModel):
 
 
 class ReportedRecord(StrictModel):
-    """The record the report is about: its id, and the digest of its bytes as the verifier read them."""
+    """The record the report is about: its id, and the digest of its canonical JSON as the verifier read it."""
 
     uuid: Uuid
     digest: Digest
 
 
+class ReportMetadata(StrictModel):
+    """The report's fixed facts: the program that wrote it, and when, by its own clock. A result such as a stage
+    still pending holds at that time."""
+
+    verifier: Verifier
+    verified_at: Timestamp
+
+
 class VerificationReport(StrictModel):
     """What one verifier found about one record."""
 
-    api_version: Literal["iltero.io/verification-report/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
+    kind: Literal["VerificationReport"]
+    metadata: ReportMetadata
     record: ReportedRecord
-    verifier: Verifier
     properties: Properties
 
     @model_validator(mode="after")

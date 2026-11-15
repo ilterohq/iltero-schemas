@@ -27,6 +27,7 @@ from typing import Annotated, Literal, TypeAlias
 from pydantic import Field, model_validator
 
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.base import StrictModel, sorted_unique
 from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac.deployment import Removal, StateSource
@@ -34,7 +35,7 @@ from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.iac.tools.variants import IdentityToolData, check_tool_data
 from iltero_schemas.models.providers.aws import AwsCloudSide, AwsResolver
 
-API_VERSION = "iltero.io/resource-identities/v1"
+KIND = "ResourceIdentities"
 # More cloud providers than one unit's configuration ever uses.
 MAX_RESOLVERS = 16
 # Why a resource was not resolved. A resolver checks them in this order, and says the first that holds.
@@ -215,12 +216,19 @@ class Generator(StrictModel):
     version: Identifier
 
 
+class IdentitiesMetadata(StrictModel):
+    """The document's fixed facts: the tool that wrote it."""
+
+    generator: Generator
+
+
 class ResourceIdentities(IdentityRecord):
     """The resource identities document of one unit, as ``identity extract`` writes it."""
 
-    api_version: Literal["iltero.io/resource-identities/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
+    kind: Literal["ResourceIdentities"]
+    metadata: IdentitiesMetadata
     unit: Identifier
-    generator: Generator
 
     @model_validator(mode="after")
     def _of_its_unit(self) -> ResourceIdentities:

@@ -8,13 +8,11 @@ stage found can never be cured by another stage's checks.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable
 from typing import Annotated, Literal, get_args
 
 from pydantic import AfterValidator, Field, model_validator
 
-from iltero_schemas.canonical import digest_of
-from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.base import StageValue, StrictModel
 from iltero_schemas.models.event import STATUS_REASONS
 from iltero_schemas.models.facts import NotReported
@@ -29,6 +27,7 @@ from iltero_schemas.models.fields import (
     Status,
     plain_text,
 )
+from iltero_schemas.models.server_facts import ENGINES, Engine
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # Exit codes from the one that wins to the one that loses, when several stages or units fold into one.
@@ -113,12 +112,24 @@ class PlanIndexGap(_Gap):
     plan_index: Count
 
 
-# What a count gap may name: what the plan left out, why evaluations did not run or ended in error, and results a
-# scanner reported rather than an evaluation this run ran.
+# The count gap a plan stage counts its checks postponed until after the deployment under
+# (``models.iac.postponed_checks``).
+CHECKED_AFTER_DEPLOYMENT = "checked_after_deployment"
+
+
+def postponed_count(gaps: Iterable[object]) -> int:
+    """How many checks a stage's coverage counts as postponed until after the deployment."""
+    return sum(gap.count for gap in gaps if isinstance(gap, CountGap) and gap.kind == CHECKED_AFTER_DEPLOYMENT)
+
+
+# What a count gap may name: what the plan left out, checks postponed until after the deployment, and why evaluations
+# did not run or ended in error.
+# The reasons an evaluation is not evaluated or in error. Each is a gap a stage lists with the number of its combined
+# verdicts the reason left undecided, recomputed from its events (``models.verdicts.undecided_reason_counts``).
+UNDECIDED_REASON_GAP_KINDS: frozenset[str] = STATUS_REASONS["not_evaluated"] | STATUS_REASONS["error"]
 COUNT_GAP_KINDS: frozenset[str] = (
-    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", "accepted_by_binding"})
-    | STATUS_REASONS["not_evaluated"]
-    | STATUS_REASONS["error"]
+    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", CHECKED_AFTER_DEPLOYMENT})
+    | UNDECIDED_REASON_GAP_KINDS
 )
 
 
@@ -146,10 +157,31 @@ class StateNotReadGap(_Gap):
     kind: Literal["state_not_read"]
 
 
+def _undecided_reason(value: str) -> str:
+    if value not in UNDECIDED_REASON_GAP_KINDS:
+        raise ValueError("reason is a reason an evaluation is not evaluated or in error")
+    return value
+
+
+class EvaluatorDidNotDecideGap(_Gap):
+    """How many times one evaluator could not decide an assertion about a subject, and why, where the subject's
+    verdict does not already say so: another evaluator decided it, or another evaluator's result or another status
+    left it undecided. The verdict stands; this gap shows that a check did not run or failed, so a reader never takes
+    a verdict for one every evaluator reached."""
+
+    kind: Literal["evaluator_did_not_decide"]
+    engine: Engine
+    reason: Annotated[str, AfterValidator(_undecided_reason)]
+    count: Annotated[int, Field(ge=1)]
+
+
 # One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PlanIndexGap | CountGap | StateNotReadGap
-# The most gaps a coverage lists: one per resource a plan holds, and each flag, count or state kind once per stage.
-MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (3 + len(COUNT_GAP_KINDS))
+Gap = PlanFlagGap | PlanIndexGap | CountGap | StateNotReadGap | EvaluatorDidNotDecideGap
+# The most gaps a coverage lists: one per resource a plan holds, each flag, count or state kind once per stage, and
+# each evaluator and reason once per stage.
+MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (
+    3 + len(COUNT_GAP_KINDS) + len(ENGINES) * len(UNDECIDED_REASON_GAP_KINDS)
+)
 
 
 class SubjectsInScope(StrictModel):
@@ -238,9 +270,16 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        if postponed_count(self.gaps) > self.status_counts["unknown"]:
+            raise ValueError(f"a stage counts no more checks as {CHECKED_AFTER_DEPLOYMENT} than it left unknown")
         state_gaps = [gap.stage for gap in self.gaps if isinstance(gap, StateNotReadGap)]
         if len(set(state_gaps)) != len(state_gaps):
             raise ValueError("a stage lists the state not read once")
+        undecided = [
+            (gap.stage, gap.engine, gap.reason) for gap in self.gaps if isinstance(gap, EvaluatorDidNotDecideGap)
+        ]
+        if len(set(undecided)) != len(undecided):
+            raise ValueError("a stage lists each evaluator and reason that did not decide once")
         gaps = [(gap.kind, gap.plan_index) for gap in self.gaps if isinstance(gap, PlanIndexGap)]
         excluded = {(e.reason, e.plan_index) for e in self.subjects_in_scope.excluded if e.reason in IDENTITY_REASONS}
         if len(set(gaps)) != len(gaps) or set(gaps) != excluded:
@@ -272,7 +311,16 @@ PLAN_REASON = "plan_not_complete"
 SUBSTITUTED_REASON = "upstream_state_unavailable"
 # The reasons a stage or a record is incomplete, the winning one first: a stage takes the first that holds, and a
 # record the reason of the stage whose reason comes first here, the earliest such stage on a tie.
-INCOMPLETE_REASON_PRECEDENCE: tuple[str, ...] = (INCOMPLETE_REASON, STATE_REASON, PLAN_REASON, SUBSTITUTED_REASON)
+# Why a record is incomplete while a check its plan stage postponed has not been settled: it stopped before post-verify
+# (``models.iac.postponed_checks``). Only a record holds it, never a stage.
+OPEN_CHECKS_REASON = "checks_postponed_until_after_the_deployment"
+INCOMPLETE_REASON_PRECEDENCE: tuple[str, ...] = (
+    INCOMPLETE_REASON,
+    STATE_REASON,
+    OPEN_CHECKS_REASON,
+    PLAN_REASON,
+    SUBSTITUTED_REASON,
+)
 
 
 def state_not_read_reason_problem(index: int) -> tuple[str, str]:
@@ -296,7 +344,8 @@ def _stage_codes(coverage: Coverage) -> list[int]:
         codes.append(6)
     if counts["error"]:
         codes.append(4)
-    if counts["unknown"]:
+    # A check postponed until after the deployment is decided later, not undecided.
+    if counts["unknown"] > postponed_count(coverage.gaps):
         codes.append(3)
     if counts["fail"]:
         codes.append(1)
@@ -309,9 +358,11 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     A gap in what was attempted outranks an evaluator error, which outranks an
     undecided check, which outranks a failed one. A state after the apply that
     was not read is such a gap. Errors also mark the stage incomplete: the
-    record survives, the gate still fails. So do a state not read, a plan that
-    does not say it is complete and inputs replaced with placeholders; the last
-    two do not change the verdict. The reason is the first that holds, in the
+    record survives, the gate still fails. An evaluator error outweighed by
+    another evaluator's verdict on the same assertion and subject marks the
+    stage incomplete too, without changing the verdict. So do a state not read,
+    a plan that does not say it is complete and inputs replaced with
+    placeholders; the last two do not change the verdict. The reason is the first that holds, in the
     order of ``INCOMPLETE_REASON_PRECEDENCE``.
     """
     code = min(_stage_codes(coverage), key=VERDICT_PRECEDENCE.index)
@@ -320,8 +371,17 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
     substituted = len(coverage.substituted_inputs)
     # Each reason that holds for the stage, with its detail.
     holding: dict[str, str] = {}
+    outweighed = sum(
+        gap.count
+        for gap in coverage.gaps
+        if isinstance(gap, EvaluatorDidNotDecideGap) and gap.reason in STATUS_REASONS["error"]
+    )
     if errors:
         holding[INCOMPLETE_REASON] = f"{errors} of {coverage.evaluations} evaluations ended in an evaluator error"
+    elif outweighed:
+        holding[INCOMPLETE_REASON] = (
+            f"evaluator errors outweighed by another evaluator's verdict on the same assertion: {outweighed}"
+        )
     if any(isinstance(gap, StateNotReadGap) for gap in coverage.gaps):
         holding[STATE_REASON] = STATE_DETAIL
     if plan is not None:
@@ -343,112 +403,3 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
         stage=None,
     )
     return StageOutcome(coverage=coverage, verdict=verdict, assurance_status=status)
-
-
-def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
-    coverages = [outcome.coverage for _, outcome in stages]
-    # The population is what the first stage counts: the plan's resources, which no later stage enumerates, the one
-    # artifact a build produced, or the one change a deployment of a built image makes.
-    first = coverages[0].subjects_in_scope.counted_from
-    later = [c for c in coverages[1:] if c.subjects_in_scope.counted_from == "plan_resource_enumeration"]
-    if first not in ("plan_resource_enumeration", "artifact_unit", "change_unit") or later:
-        raise ValueError(
-            "a record's resources in scope are its plan stage's: one stage counts them, and it comes first"
-        )
-    plan = coverages[0]
-    if any(gap.stage is not None for c in coverages for gap in c.gaps):
-        raise ValueError("a stage's gaps do not name a stage; combining names it")
-    if any(entry.stage is not None for c in coverages for entry in c.substituted_inputs):
-        raise ValueError("a stage's substituted inputs do not name a stage; combining names it")
-    if sum(len(c.substituted_inputs) for c in coverages) > MAX_SUBSTITUTED_INPUTS:
-        raise ValueError(f"a record lists at most {MAX_SUBSTITUTED_INPUTS} substituted inputs across its stages")
-    per_assertion: dict[str, int] = {}
-    for coverage in coverages:
-        if set(per_assertion) & set(coverage.subjects_per_assertion):
-            raise ValueError("an assertion is counted by one stage only")
-        per_assertion |= coverage.subjects_per_assertion
-    origins = {c.assertions_expected.origin for c in coverages}
-    return Coverage(
-        subjects_in_scope=plan.subjects_in_scope,
-        subjects_evaluated=plan.subjects_evaluated,
-        assertions_expected=AssertionsExpected(
-            value=sum(c.assertions_expected.value for c in coverages),
-            # A set a server pinned in part is a set derived locally.
-            origin="project_files" if "project_files" in origins else "server_pinned",
-            required_assertion_digest=digest_of(
-                [
-                    {"stage": name, "digest": o.coverage.assertions_expected.required_assertion_digest}
-                    for name, o in stages
-                ]
-            ),
-        ),
-        assertions_evaluated=sum(c.assertions_evaluated for c in coverages),
-        subjects_per_assertion=per_assertion,
-        status_counts={status: sum(c.status_counts[status] for c in coverages) for status in STATUSES},
-        evaluations=sum(c.evaluations for c in coverages),
-        gaps=[
-            gap.model_copy(update={"stage": Stage(name)}) for name, outcome in stages for gap in outcome.coverage.gaps
-        ],
-        truncated=next((c.truncated for c in coverages if c.truncated.value), plan.truncated),
-        sampled=any(c.sampled for c in coverages),
-        substituted_inputs=[
-            SubstitutedInput(kind=entry.kind, source=entry.source, stage=Stage(name))
-            for name, o in stages
-            for entry in o.coverage.substituted_inputs
-        ],
-    )
-
-
-def _reason_rank(pair: tuple[str, AssuranceStatus]) -> int:
-    """Where a stage's incomplete reason comes in ``INCOMPLETE_REASON_PRECEDENCE``. A reason outside it, which only an
-    edited record can hold and its integrity checks report, comes last."""
-    reason = pair[1].reason
-    return (
-        INCOMPLETE_REASON_PRECEDENCE.index(reason)
-        if reason in INCOMPLETE_REASON_PRECEDENCE
-        else len(INCOMPLETE_REASON_PRECEDENCE)
-    )
-
-
-def combine_in_order(expected: Sequence[str], stages: Mapping[str, StageOutcome]) -> StageOutcome:
-    """``combine`` over the stages present, in the order the record expects them."""
-    return combine([(stage, stages[stage]) for stage in expected if stage in stages])
-
-
-def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
-    """The record's own count and verdict: its stages, in order, combined by one rule for any number of them.
-
-    - The resources in scope, and how many were evaluated, are the plan stage's: the one stage that
-      enumerates the plan's resources, which comes first. ``checks = assertions × subjects`` holds per
-      stage, not across them: a post-deploy check is about the deployment, not a plan resource.
-    - The checks, the assertions and the statuses are summed; an assertion is
-      counted by one stage only.
-    - The assertion set is named by the digest over each stage's, in order, and
-      is ``project_files`` when any stage's is.
-    - The gaps and the substituted inputs are kept, each naming its stage; the
-      record is truncated or sampled when any stage is.
-    - The verdict is the stage verdict that wins by ``VERDICT_PRECEDENCE``,
-      naming that stage; the record is incomplete when any stage is, with the
-      reason that comes first in ``INCOMPLETE_REASON_PRECEDENCE``, of the
-      earliest stage incomplete for it.
-    """
-    if not stages:
-        raise ValueError("a record has at least one stage")
-    name, winner = min(
-        ((name, outcome.verdict) for name, outcome in stages),
-        key=lambda pair: VERDICT_PRECEDENCE.index(pair[1].exit_code),
-    )
-    incompletes = [(n, o.assurance_status) for n, o in stages if o.assurance_status.value == "incomplete"]
-    incomplete = min(incompletes, key=_reason_rank) if incompletes else None
-    status = stages[0][1].assurance_status
-    if incomplete is not None:
-        stage, found = incomplete
-        detail = f"{stage}: {found.detail}" if found.detail else stage
-        status = AssuranceStatus(value=found.value, reason=found.reason, detail=detail)
-    return StageOutcome(
-        coverage=_combined_coverage(stages),
-        verdict=Verdict.model_validate(
-            {"value": winner.value, "exit_code": winner.exit_code, "computed_from": "stage_precedence", "stage": name}
-        ),
-        assurance_status=status,
-    )

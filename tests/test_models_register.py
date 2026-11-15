@@ -83,7 +83,7 @@ def test_a_stage_keeps_its_scanner_files_in_the_evidence_register() -> None:
 @pytest.mark.parametrize(
     ("named", "message"),
     [
-        ("bindings", "the plan stage's copy of its scanner bindings is an entry of the evidence register"),
+        ("bindings", "the evidence register lists the copy of each binding set the plan stage applied"),
         ("report", "the checkov report the plan stage kept is an entry of the evidence register"),
         ("observations", "the observations the plan stage read from its checkov report are an entry of the evidence"),
     ],
@@ -93,7 +93,10 @@ def test_a_scanner_file_a_stage_names_but_does_not_register_is_refused(named: st
     scanners = document["stages"]["plan"]["scanners"]
     report = scanners["reports"][0]
     path, digest = {
-        "bindings": (scanners["evaluator_binding_set"]["copy_path"], scanners["evaluator_binding_set"]["digest"]),
+        "bindings": (
+            scanners["evaluator_binding_sets"][0]["copy_path"],
+            scanners["evaluator_binding_sets"][0]["digest"],
+        ),
         "report": (None, report["report_digest"]),
         "observations": (report["observations"], None),
     }[named]
@@ -104,8 +107,10 @@ def test_a_scanner_file_a_stage_names_but_does_not_register_is_refused(named: st
 
 def test_a_stage_names_its_scanner_bindings_copy_by_the_digest_the_register_gives() -> None:
     document = _with_scanners()
-    document["stages"]["plan"]["scanners"]["evaluator_binding_set"]["digest"] = "sha256:" + "e" * 64
-    with pytest.raises(ValidationError, match="copy of its scanner bindings is an entry of the evidence register"):
+    document["stages"]["plan"]["scanners"]["evaluator_binding_sets"][0]["digest"] = "sha256:" + "e" * 64
+    with pytest.raises(
+        ValidationError, match="the evidence register lists the copy of each binding set the plan stage applied"
+    ):
         CAR.model_validate(document)
 
 
@@ -127,38 +132,68 @@ def test_each_scanner_file_a_stage_keeps_is_an_entry_of_its_own(named: str) -> N
     plan["scanners"]["reports"][0]["observations"] = {
         "events": plan["events"]["path"],
         "assertions": plan["assertions"]["index"],
-        "bindings": plan["scanners"]["evaluator_binding_set"]["copy_path"],
+        "bindings": plan["scanners"]["evaluator_binding_sets"][0]["copy_path"],
     }[named]
     with pytest.raises(ValidationError, match="each scanner file a stage keeps is an entry of its own"):
         CAR.model_validate(document)
 
 
-def test_one_scanner_report_given_to_two_stages_is_kept_as_the_same_entries() -> None:
-    # The report and the observations read from it are kept at paths named by their digest, so both stages name them.
+def test_a_stage_that_reads_no_scanner_report_keeps_none() -> None:
     document = json.loads((VECTORS / "records" / "iac" / "local_run_deployed.json").read_text(encoding="utf-8"))
-    for stage in ("plan", "pre_deploy"):
-        scanners = copy.deepcopy(SCANNERS)
-        scanners["evaluator_binding_set"]["copy_path"] = f"units/root/{stage}/scanner-bindings.json"
-        document["stages"][stage]["scanners"] = scanners
-        keep_the_scanner_files(document, stage)
-    refs: dict[str, dict[str, Any]] = {}
-    for ref in document["evidence_refs"]:
-        refs.setdefault(ref["path"], ref)
-        if ref["path"].endswith("scanner-bindings.json"):
-            ref["ref_id"] = ref["path"].split("/")[2] + "-bindings"
-    document["evidence_refs"] = list(refs.values())
-    CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["evaluator_binding_sets"][0]["copy_path"] = "units/root/pre_deploy/scanner-bindings.json"
+    document["stages"]["pre_deploy"]["scanners"] = scanners
+    keep_the_scanner_files(document, "pre_deploy")
+    with pytest.raises(ValidationError, match="the pre_deploy stage of an iac_change record keeps no scanner report"):
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
 
 
 def test_two_scanners_reports_with_the_same_bytes_are_never_kept_as_the_same_entry() -> None:
+    """Each kept report is collected by its own scanner, so a second scanner finds no entry of its report."""
     document = _with_scanners()
     scanners = document["stages"]["plan"]["scanners"]
     first = scanners["reports"][0]
     second = {**copy.deepcopy(first), "tool": "trivy", "observations": first["observations"][:-1] + "9"}
     scanners["reports"].append(second)
-    scanners["results_accepted"] *= 2
-    scanners["results_without_binding"] *= 2
     observations = next(ref for ref in document["evidence_refs"] if ref["path"] == first["observations"])
     document["evidence_refs"].append({**copy.deepcopy(observations), "ref_id": "trivy", "path": second["observations"]})
+    with pytest.raises(
+        ValidationError, match="the trivy report the plan stage kept is an entry of the evidence register"
+    ):
+        CAR.model_validate(document)
+
+
+def test_a_scanner_report_is_kept_from_one_file_the_pipeline_gave() -> None:
+    document = _with_scanners()
+    kept = document["stages"]["plan"]["scanners"]["reports"][0]["report_digest"]
+    entry = next(ref for ref in document["evidence_refs"] if ref["digest"] == kept)
+    other = {**copy.deepcopy(entry), "ref_id": "other", "path": "units/root/artifacts/other"}
+    document["evidence_refs"].append({**other, "source": {"name": "other.json", "digest": "sha256:" + "1" * 64}})
+    with pytest.raises(ValidationError, match="kept is an entry of the evidence register, redacted from the file"):
+        CAR.model_validate(document)
+
+
+def test_a_scanner_report_is_collected_by_its_scanner() -> None:
+    document = _with_scanners()
+    kept = document["stages"]["plan"]["scanners"]["reports"][0]["report_digest"]
+    for ref in document["evidence_refs"]:
+        if ref["digest"] == kept:
+            ref["collector"]["tool"] = "terraform_plan"
+    with pytest.raises(ValidationError, match="the checkov report the plan stage kept is an entry of the evidence"):
+        CAR.model_validate(document)
+
+
+def test_the_input_of_an_evaluator_is_no_scanner_file() -> None:
+    document = _with_scanners()
+    document["events"][0]["provenance"]["input_digest"] = document["stages"]["plan"]["scanners"]["reports"][0][
+        "report_digest"
+    ]
     with pytest.raises(ValidationError, match="each scanner file a stage keeps is an entry of its own"):
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_only_the_shipped_binding_set_takes_the_starter_sets_id() -> None:
+    document = _with_scanners()
+    document["stages"]["plan"]["scanners"]["evaluator_binding_sets"][0]["id"] = "ILT.BINDINGS.STARTER"
+    with pytest.raises(ValidationError, match="only the shipped binding set is ILT.BINDINGS.STARTER"):
         CAR.model_validate(document)

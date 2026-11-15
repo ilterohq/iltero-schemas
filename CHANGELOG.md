@@ -15,17 +15,174 @@ keep, so any two tools agree on what a record means.
 - The assertion language: `TechnicalAssertion` v1 documents, a strict parser,
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
-- Eighteen starter assertions, among them the one that holds the plan
-  applied to the plan that was evaluated, `ILT.IAC.NO_DRIFT_AFTER_APPLY`,
-  which holds that no deployed resource drifted after the apply, and
-  `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which holds that the commit the build
+- One way for every document to name itself. Every contract document has
+  `apiVersion: iltero.com/v1` (`iltero_schemas.models.base.API_VERSION`) and
+  a top-level `kind` that names the document type. A reader accepts exactly
+  its own pair: a document with another `apiVersion`, including a name used
+  before this release such as `iltero.io/v1` or `iltero.io/car/v1`, with no
+  `kind`, or with the `kind` of another document is refused. A `kind` nested
+  inside a document, such as a target's or a subject's, is unchanged. The
+  kinds are:
+
+  | `kind` | Document |
+  | --- | --- |
+  | `TechnicalAssertion` | An assertion |
+  | `AssuranceContext` | An evaluation input |
+  | `AssuranceEvents` | The events file a stage keeps, which a record names by path and digest |
+  | `ChangeAssuranceRecord` | A record (`CAR`) |
+  | `VerificationReport` | A verification report |
+  | `ResourceIdentities` | A resource identities document |
+  | `EvaluatorBindingSet` | An evaluator binding set |
+  | `ScannerObservations` | What a stage read from one scanner's report |
+  | `LocalExceptions` | A project's own exceptions |
+  | `PolicySource` | A directory of hand-written policies |
+  | `AssertionBundleDescriptor` | How Iltero Platform serves a signed assertion bundle |
+  | `AssertionBundle` | The bundle's own description in its `.manifest` file |
+  | `BundleSigningKeys` | The trusted bundle keys file |
+
+  Documents take one of two shapes. A document Iltero writes as evidence keeps
+  its content at the top level, with facts about the document itself in a
+  `metadata` object where it has any: a record's `uuid` and `issuer`, a
+  verification report's `verifier` and `verified_at`, and a resource
+  identities document's `generator`. A document a person writes has `apiVersion`, `kind`,
+  `metadata` and `spec`: an evaluator binding set keeps its `id` and
+  `version` in `metadata` and its bindings in `spec.bindings`, and local
+  exceptions and a policy source name themselves by `metadata.name`, a
+  name the project chooses (1 to 63 lowercase letters, digits and inner
+  hyphens, `iltero_schemas.models.fields.PROJECT_DOCUMENT_NAME_PATTERN`), and
+  keep their entries in
+  `spec.exceptions` and `spec.policies`. A document's digest covers the whole
+  document, `metadata` included. Every conformance vector, and every digest
+  that cites one, uses these names and shapes.
+- Assertion ids that say what kind of check an assertion is. An id is now
+  segments in fixed places, joined by dots:
+  `<NAMESPACE>.<CHANGE_TYPE>.<TARGET>.<SCOPE...>.<CHECK>`
+  (`iltero_schemas.models.assertion_id`). The namespace is `ILT` for Iltero's
+  own assertions and the project's own name for its own. The change type
+  segment is `IAC` for `iac_change`, `IMAGE` for `image_release` and `COMMON`
+  when `spec.change_type` is `null`. The target segment is the target kind in
+  upper case: `RESOURCE` for a check of a resource's state, and `CHANGE`,
+  `DEPLOYMENT`, `ARTIFACT` or `ASSURANCE` for a check of a process. The scope
+  is the provider and service for a resource (`AWS.RDS`), and one area for a
+  process; Iltero's own process assertions take an area from `ASSERTION_AREAS`
+  (`APPROVAL`, `SOURCE`, `CONTENT`, `DRIFT`, `BUILD`, `CHECKS`,
+  `PROVENANCE`, `HISTORY`), and a project names its own. An id is at most 96
+  characters, and each segment at most 48. A TechnicalAssertion whose id does
+  not match its own `spec` is refused, and so is a policy source entry whose
+  id does not match its stage and target: a hand-written policy's change type
+  is read from its id. An id that refers to an assertion, in an event, a
+  record or a binding, keeps only the general shape (upper-case segments
+  joined by dots), and a binding set's id is not an assertion id. Every id
+  has the same limit of 96 characters: `ID_MAX_LENGTH` is
+  `ASSERTION_ID_MAX_LENGTH`.
+
+  How to read an id: the change type segment says what an assertion is
+  about, not which change it was evaluated in, so a `COMMON` assertion
+  appears in records of every change type and evidence is grouped by change
+  with an event's `evaluation.activity`. An area compares only within one
+  namespace, and a resource's service is the author's word. Once released,
+  an id is never renamed: a renamed check is a new assertion.
+
+  The starter assertions were renamed to this form.
+  `ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION` is now about every
+  change type (`change_type: null`). Every conformance vector uses the new
+  ids, and the vector assertions of a project's own are now
+  `ACME.IAC.RESOURCE.AWS.RDS.*`.
+
+  | Old id | New id |
+  | --- | --- |
+  | `ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION` | `ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION` |
+  | `ILT.AWS.RDS.BACKUP_RETENTION` | `ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION` |
+  | `ILT.AWS.RDS.NOT_PUBLIC` | `ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC` |
+  | `ILT.AWS.RDS.PRODUCTION_BASELINE` | `ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE` |
+  | `ILT.AWS.RDS.STORAGE_ENCRYPTED` | `ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED` |
+  | `ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED` | `ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED` |
+  | `ILT.CHANGE.COMMITS_REVIEWED` | `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` |
+  | `ILT.CHANGE.PRODUCTION_APPROVED` | `ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED` |
+  | `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` | `ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED` |
+  | `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` | `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` |
+  | `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` | `ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` |
+  | `ILT.IAC.NO_DRIFT_AFTER_APPLY` | `ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY` |
+  | `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` | `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT` |
+  | `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` | `ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT` |
+  | `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` | `ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
+  | `ILT.IMAGE.SCAN_RAN` | `ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN` |
+  | `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` | `ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN` |
+  | `ILT.IMAGE.TESTS_RAN` | `ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN` |
+
+  The other seven starters had no earlier id and are new:
+  `ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS`,
+  `ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES`,
+  `ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED`,
+  `ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES`,
+  `ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET`,
+  `ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES` and
+  `ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY`.
+- The namespace `ILT` is Iltero's alone. No assertion id has a namespace
+  that starts with `ILT` other than `ILT` itself, such as `ILTX`: "an
+  assertion id's namespace must be ILT or one not starting ILT". Every
+  assertion id is also checked for a Windows device name as its first
+  segment. Where an id is a project's own, `ILT` itself is refused too
+  (`iltero_schemas.models.assertion_id.check_project_id`, "a project's own
+  id has a namespace of its own, not ILT or one starting so"): a policy
+  source entry's assertion, a binding set read from a file, and the binding
+  set a record names as read from a file. An event whose assertion comes
+  from the project's own files (`assertion_source` `local` or
+  `custom_rego`) is refused when its id is in `ILT` or a namespace that
+  starts so: "an assertion from a project's own files has an id outside
+  ILT". An event that names a starter (`contract_starter`) names one this
+  package ships, at its shipped version and document digest
+  (`iltero_schemas.assertions.SHIPPED_ASSERTIONS`, each a
+  `ShippedAssertion`): "an assertion named as this package's starter is the
+  document this package ships".
+- A record's events files are checked against its events. Each stage's
+  `events.digest` must be the digest of the bytes `events_file_bytes` gives
+  for that stage's events, or the record has the integrity problem "is not
+  the digest of the stage's events" at `stages.<stage>.events.digest`. The
+  events file's entry in the evidence register must have the same size, or
+  the problem is "is kept in the register at another size than its events".
+  These problems are listed after every other integrity problem. The entry
+  must also say the file is canonical JSON: "the plan stage's events file is
+  kept as canonical JSON (RFC8785)".
+
+- A record's id is derived from its run and unit. `metadata.uuid` is the
+  version 5 UUID that `iltero_schemas.canonical.record_uuid(run_id, unit)`
+  gives: the text `iltero-car:<run id>:<unit>` in the namespace
+  `RECORD_UUID_NAMESPACE`. Every stage that reports on the unit writes the
+  same record under the same id. A reader recomputes it, and a record whose
+  `metadata.uuid` is another value is an integrity problem: "metadata.uuid is
+  not the id of the record's run and unit".
+- A verification report says when it was written: `metadata.verified_at`, by
+  the verifier's own clock. Its `record.digest` is the digest of the record's
+  canonical JSON, the record's document digest.
+- One form for a stage's events file.
+  `iltero_schemas.models.event.events_file_bytes(events)` gives its bytes: the
+  RFC 8785 canonical JSON of `{apiVersion, kind: AssuranceEvents, events}`,
+  with the stage's events in the order the record lists them
+  (`EVENTS_FILE_KIND` is the `kind`). The stage's `events.digest` is the
+  digest of those bytes, and its evidence register entry has
+  `canonicalization: RFC8785`.
+- The `kind` of the trusted bundle keys file is
+  `iltero_schemas.trust.TRUST_FILE_KIND`. The `kind` of a bundle's own
+  description, `iltero_schemas.models.bundle.BUNDLE_KIND`, sits beside the
+  descriptor's `KIND`.
+- A compiled program's reason for a failure names the comparison that
+  decided it: `assert: false; <path> <op> is false`, or, when a condition
+  under `not` held, `assert: false; <path> <op> is true, but must be false`.
+  A false `all` is decided by its first false part and a true `any` by its
+  first true part. `VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON` and its evaluation cases cover it.
+- Twenty-five starter assertions, among them
+  `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`, which
+  holds that the plan applied is the plan that was evaluated,
+  `ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY`, which holds that no deployed resource drifted after the apply, and
+  `ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which holds that the commit the build
   tool's provenance names is the commit Iltero Platform verified for the run,
   and is unknown when the build names none,
-  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, which holds that Iltero
+  `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT`, which holds that Iltero
   Platform accepted a build of the image for the environment it is deployed to,
-  `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, which holds that the image the pipeline
+  `ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, which holds that the image the pipeline
   reports it deployed is the image the deploy checked, and
-  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`, which holds that, once the
+  `ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`, which holds that, once the
   workload's rollout has finished, every compared container of every live
   pod runs that image or one of its platform images.
   These six are
@@ -37,9 +194,9 @@ keep, so any two tools agree on what a record means.
   plan stage, the fourth at every image deploy's pre-deploy stage, the fifth
   at every image deploy's post-deploy stage and the sixth at every image
   deploy's post-verify stage, whatever a project's own assertions are.
-  Their ids are reserved (`BUILT_INS`, each a `BuiltIn` with its version,
-  document digest and compiled module digest, and `BUILT_IN_IDS` for the
-  ids alone): an evaluation that names one
+  Their ids are reserved (`BUILT_INS`, each a `ShippedAssertion` with its
+  version, document digest and compiled module digest, and `BUILT_IN_IDS`
+  for the ids alone): an evaluation that names one
   names the shipped version and document, comes from this package or
   Iltero Platform's bundle and never from a scanner, and ran the shipped module.
   Each activity names the built-in check that what the pipeline carried out
@@ -47,22 +204,22 @@ keep, so any two tools agree on what a record means.
   built-in assertion it always evaluates (`always_evaluated`): once the
   assertion's stage has reported, a record evaluates it exactly once, at that
   stage only, and never as not applicable. An infrastructure record's
-  `post_deploy` stage evaluates `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` and its
-  `post_verify` stage `ILT.IAC.NO_DRIFT_AFTER_APPLY`; a build's `plan` stage
-  evaluates `ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which never passes or fails
+  `post_deploy` stage evaluates `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` and its
+  `post_verify` stage `ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY`; a build's `plan` stage
+  evaluates `ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT`, which never passes or fails
   when the build names no commit, where it is unknown with
   `not_reported_by_tool`, or on a run the tool opened, where it is unknown
   with `server_facts_unavailable`, since only Iltero Platform verifies the
   commit (an event that was not evaluated, or that ended in error, is
   accepted); an image deploy's `pre_deploy` stage evaluates
-  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, its `post_deploy` stage
-  `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and its `post_verify` stage
-  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`.
-  `ILT.IMAGE.TESTS_RAN` holds that the pipeline gave a test report for the
+  `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT`, its `post_deploy` stage
+  `ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE` and its `post_verify` stage
+  `ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`.
+  `ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN` holds that the pipeline gave a test report for the
   built image in which at least one test ran rather than being skipped, and
-  `ILT.IMAGE.SCAN_RAN` that a vulnerability scan ran whose report itself
+  `ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN` that a vulnerability scan ran whose report itself
   names the built image or at least one of its platform images.
-  `ILT.CHANGE.PRODUCTION_APPROVED` and `ILT.CHANGE.COMMITS_REVIEWED` are
+  `ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED` and `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` are
   about any change (`change_type: null`); the seven image assertions are about
   `image_release`, and the others about `iac_change`.
 - Every `TechnicalAssertion` says which change type it is about
@@ -145,7 +302,7 @@ keep, so any two tools agree on what a record means.
   its cloud identity; an input's subject has at least one. An identity's
   `scope` holds at most eight keys (`MAX_SCOPE_KEYS`). An event's subject has no key
   and no identity exactly when no subject was in scope.
-- `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` compares the plan digests, the saved plan
+- `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` compares the plan digests, the saved plan
   file's digests and the two `artifact_digest_source` values, so its
   observations show when neither side had the saved plan file. It passes
   then, and fails when only one side has it. Evaluation vectors cover both,
@@ -157,11 +314,9 @@ keep, so any two tools agree on what a record means.
   are in scope, and its evidence register: each file it cites, by its
   path and digest, with the name and digest of the file as the pipeline
   gave it (`source`). It holds each stage's events file and assertion
-  index, each stage's copy of its scanner bindings, what it read from each
+  index, each stage's copy of each binding set it applied, what it read from each
   scanner report and each report as it kept it, redacted from the file the
-  pipeline gave, each an entry of its own (one scanner's report given to
-  two stages and the observations read from it may be kept as the same
-  entries; two scanners' reports never share them), every event's input, what
+  pipeline gave, each an entry of its own, every event's input, what
   the plan stage redacted, as an entry that names the redaction policy, and,
   once deployed, the apply log the deployment was read from. It says what was checked and how; on its own, it
   does not show that anything is certified or complies with a regulation or
@@ -174,19 +329,18 @@ keep, so any two tools agree on what a record means.
   record's `subject.source` are those of the evaluation input. A stage's
   `redaction` is a redaction report: the policy that ran, what was redacted
   (what that stage reads, and at an infrastructure change's plan stage the
-  plan the record names; at `post_deploy` the deployment and at
-  `post_verify` the drift check, each the part the stage counts, which those
-  stages keep as it is, so they list no path), and the paths redacted (each with a reason token), left unknown, or allowed
-  (each with the project's reason). A stage's `scanners` names the evaluator
-  binding set in force and counts each scanner result once: accepted as `pass`
-  or `fail`, matched by an evaluator binding whose version constraint the
-  scanner does not satisfy, or one that became no evaluation. An excluded resource (`subjects_in_scope.excluded`)
-  names its index in the plan's resource list (`plan_index`), its address as
-  written or `null`, and one of four reasons. A coverage gap is one of four
-  shapes, chosen by its `kind`: a plan flag, a resource's `plan_index`, a
-  count of at least 1 (`COUNT_GAP_KINDS`), or the state not read; the record's combined coverage
-  names each gap's stage. A resource excluded for its identity is also a gap
-  of that kind, once, and every identity gap names such a resource.
+  plan the record names; at `post_deploy` the deployment and at `post_verify`
+  the drift check, each the part the stage counts, which those stages keep as
+  it is, so they list no path), and the paths redacted (each with a reason
+  token), left unknown, or allowed (each with the project's reason). A stage's
+  `scanners` names the evaluator binding sets it applied and the scanner
+  reports it was given. An excluded resource (`subjects_in_scope.excluded`) names its
+  index in the plan's resource list (`plan_index`), its address as written or
+  `null`, and one of four reasons. A coverage gap is one of four shapes,
+  chosen by its `kind`: a plan flag, a resource's `plan_index`, a count of at
+  least 1 (`COUNT_GAP_KINDS`), or the state not read; the record's combined
+  coverage names each gap's stage. A resource excluded for its identity is
+  also a gap of that kind, once, and every identity gap names such a resource.
 - A record redacts under one policy. An evidence file's `redaction_policy`
   names it as a stage's redaction report does (`id`, `version`, `digest`),
   or is `null` for a file no redaction touched, and every stage and every
@@ -213,26 +367,27 @@ keep, so any two tools agree on what a record means.
   status as it is. The status's `reason` is the leading cause; every cause
   stays in the coverage. Record vectors cover it and pin the order.
 - The integrity checks: a record's values that a reader can recompute,
-  including its `change.digest`, the pre-deploy stage's source digest and
-  each approval of a change, must be what they recompute to. They also
-  recompute the status each built-in check must have from the record's own
-  change, and report an event a policy answered (`pass`, `fail`, `unknown`
-  or `not_applicable`) that says otherwise; an event not evaluated, or that ended in error, decides
-  nothing. A stage's owed count is its assertion index's count, and, unless
-  the stage was cut short, its owed count and digest are those of its events'
-  assertions. These describe the stage's own events and index: what a stage
-  owed is shown only against the project's assertion files at its commit, or
-  the set Iltero Platform pinned. In an infrastructure record, `ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` must
-  pass exactly when the applied plan has the evaluated plan's digest,
-  artifact digest and its source, and `ILT.IAC.NO_DRIFT_AFTER_APPLY`
-  exactly when the drift check found no difference; each fails otherwise.
-  Change digest
-  problems come first, so a change digest that does not recompute is refused
-  first. A reader that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other
-  value is ignored) reads the record and gets every problem from
-  `integrity_problems`, to report as integrity failures. The checks show that
-  a record agrees with itself, not that it is unchanged since it was written.
-  Record vectors (`records_integrity_failed/`) cover it.
+  including its `change.digest`, the pre-deploy stage's source digest and each
+  approval of a change, must be what they recompute to. They also recompute
+  the status each built-in check must have from the record's own change, and
+  report an event a policy answered (`pass`, `fail`, `unknown` or
+  `not_applicable`) that says otherwise; an event not evaluated, or that ended
+  in error, decides nothing. A stage's owed count is its assertion index's
+  count, and, unless the stage was cut short, its owed count and digest are
+  those of its events' assertions. These describe the stage's own events and
+  index: what a stage owed is shown only against the project's assertion files
+  at its commit, or the set Iltero Platform pinned. In an infrastructure
+  record, `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`
+  must pass exactly when the applied plan has the evaluated plan's digest,
+  artifact digest and its source, and
+  `ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY` exactly when the drift check
+  found no difference; each fails otherwise. Change digest problems come
+  first, so a change digest that does not recompute is refused first. A reader
+  that sets `SKIP_INTEGRITY_CHECKS` to `True` (any other value is ignored)
+  reads the record and gets every problem from `integrity_problems`, to report
+  as integrity failures. The checks show that a record agrees with itself, not
+  that it is unchanged since it was written. Record vectors
+  (`records_integrity_failed/`) cover it.
 - An event's `provenance.checked_content` names the content its evaluation
   checked: for an IaC change, the plan, by its `digest`, the `digest_version`
   of its tool's rule and the IaC `tool`. A record holds every event's to the
@@ -277,12 +432,12 @@ keep, so any two tools agree on what a record means.
   RDS identifier that is not lowercase, ends with a hyphen or holds two
   hyphens in a row. No two of its resolved identities, and no two of its removed
   entries, name the same cloud identity.
-- Hand-written policy sources and evaluator binding sets. An evaluator
-  binding's `input_kind` says what the scanner must have been reading, and a
-  record's scanner report lists its `input_kinds`. Binding sets, events and
-  records name a scanner from one list: `checkov` and `trivy`. An event read
-  from a scanner's result names the evaluator binding that let it stand for
-  the assertion (`provenance.evaluator_binding`).
+- Hand-written policy sources and evaluator binding sets. A scanner
+  evaluator's `input_kind` says what the scanner read, and a record's scanner
+  report lists its `input_kinds`, in the contract's words. Binding sets,
+  events and records name a scanner from one list: `checkov` and `trivy`. An
+  event read from a scanner's results names the evaluator whose checks
+  decided it (`provenance.evaluator_binding`).
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
   `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
@@ -386,7 +541,7 @@ keep, so any two tools agree on what a record means.
   and RDS types). Each resource in the evaluation input names its provider's
   short name and the kind the table gives its type, or the unknown marker
   when the table lacks it, so an unnamed type makes the evaluation unknown rather
-  than out of scope. `ILT.CHANGE.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
+  than out of scope. `ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
   and network kinds, roles, policy attachments, key policies and grants
   included.
 - The facts only Iltero Platform holds, as items an assertion reads: approvals,
@@ -588,7 +743,7 @@ keep, so any two tools agree on what a record means.
   source names, as its git host names it (`repository`: `host`, `instance`
   and `repository_id`)), as Iltero Platform served it,
   and never a build a pipeline chose; a record of a run the tool opened
-  names none. `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` checks at
+  names none. `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT` checks at
   `pre_deploy` that there is one: it passes when Iltero Platform accepted a
   build, fails when a run Iltero Platform opened has none, and is unknown
   with `server_facts_unavailable` in a run the tool opened, so that stage is
@@ -631,7 +786,7 @@ keep, so any two tools agree on what a record means.
   stateful set's update revision. A partitioned or on-delete rollout, and
   a stateful set whose status names no update revision, never finish, and
   neither does a daemon set with a pod on a node it no longer selects.
-  `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` fails when the template compares no
+  `ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` fails when the template compares no
   container, and terminating and finished pods never decide it.
   A container may report the index digest or a platform
   image's digest, depending on its runtime, so either counts. Only the
@@ -645,7 +800,7 @@ keep, so any two tools agree on what a record means.
   carry, which leaves out `plan`. The integrity checks recompute the status
   each of its built-in checks must have from the record's own image,
   deployment, reading and build, and report an event that says otherwise;
-  `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT` is recomputed only in a run
+  `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT` is recomputed only in a run
   Iltero Platform opened. In a run the tool opened, the record's own rules
   refuse that check unless it is unknown with `server_facts_unavailable`,
   or did not run or ended in an error for a fault of the evaluator, even
@@ -666,7 +821,7 @@ keep, so any two tools agree on what a record means.
   | Container role in a pod (`containers_read[].role`) | `app`, `init`, `sidecar`, `ephemeral` |
   | Pod state (`containers_read[].pod_state`) | `live`, `terminating`, `finished` |
   | Who reports a deployment (`deployment.reported_by`) | `pipeline` |
-  | Built-in assertions | `ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT`, `ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
+  | Built-in assertions | `ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT`, `ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE`, `ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE` |
 
 - Commit review. The `pre_deploy` input of an infrastructure change and of an
   image deploy carries `commit_review`, a fact only Iltero Platform holds:
@@ -700,14 +855,14 @@ keep, so any two tools agree on what a record means.
   `check_commit_review` holds it to the rest of the input, and
   it is the unknown marker in a run no server opened, for an infrastructure
   change that names no environment, and for an image deploy with no accepted
-  build. The starter assertion `ILT.CHANGE.COMMITS_REVIEWED`
+  build. The starter assertion `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED`
   passes only for `reviewed`, fails for every other outcome and is `unknown`
   for the marker; it is not built in. A `pre_deploy` stage record keeps the
   commit review its evaluations read, whole, or the unknown marker in its
   place (`commit_review`), and its approvals the same way (`approvals`;
   `StageRecord.listed_approvals` gives the list). Both are the marker when
   the stage's results read no facts from Iltero Platform. The commit review
-  is also the marker when `ILT.CHANGE.COMMITS_REVIEWED` could not read one,
+  is also the marker when `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` could not read one,
   and is kept when that check passed or failed, `reviewed` exactly when it
   passed. A stage
   evaluates the check at most once. The kept review was decided no later
@@ -716,7 +871,7 @@ keep, so any two tools agree on what a record means.
   accepted build's verified commit and repository. A verification report
   gives it a tenth property, `commit_review`, whose result follows the kept
   outcome (`COMMIT_REVIEW_RESULTS`). A record of a
-  run the tool opened refuses an `ILT.CHANGE.COMMITS_REVIEWED` event that is
+  run the tool opened refuses an `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` event that is
   `pass`, `fail` or `not_applicable`, or `unknown` for another reason than
   `server_facts_unavailable`; a record of a run Iltero Platform opened
   refuses one that passed or failed without facts from Iltero Platform. A git
@@ -725,7 +880,7 @@ keep, so any two tools agree on what a record means.
   record vectors cover it.
 - Scan coverage. `iltero_schemas.change_types.scan_coverage(build)` says
   which of a build's platform images its scan reports name and which none
-  does, counted as `ILT.IMAGE.SCAN_RAN` counts them, with vectors in
+  does, counted as `ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN` counts them, with vectors in
   `vectors/scan_coverage/`. A scan report of an image built for several
   platforms, in a record or an evaluation input, names the platform it
   scanned, never the image's own digest.
@@ -741,7 +896,7 @@ keep, so any two tools agree on what a record means.
   `check_attestation_outcome` checks that the answer is about the
   attestation the record keeps, and that it is `not_sent` exactly when the
   record keeps none or one it did not send. The starter assertion
-  `ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN` holds that a verified
+  `ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN` holds that a verified
   attestation names the built image and the run's repository, commit and
   run; it fails when no attestation was sent, passes only for a record that
   keeps the attestation it sent, and on a run the tool opened is always
@@ -763,7 +918,7 @@ keep, so any two tools agree on what a record means.
   `equal: null`, or that it is set with `not_equal: null`. Any other
   comparison with `null` is refused ("only equal and not_equal compare with
   null"). A value that is absent, or an unknown marker, is still unknown.
-  The conformance vector `VEC.OPS.NULL` and its evaluation cases show each
+  The conformance vector `VEC.IAC.RESOURCE.VEC.THING.OPS_NULL` and its evaluation cases show each
   outcome. Existing assertions compile to the same bytes as before.
 - One spelling of no value. An assertion document or an evaluator binding
   set writes no value only as the word `null`. YAML also reads an empty
@@ -776,3 +931,246 @@ keep, so any two tools agree on what a record means.
   `ValidationError.errors()` passes `include_input=False`. The
   `assertions_invalid/` vectors expect these messages, such as
   `duplicate key`.
+- Evaluations from a scanner's results. A scanner such as Checkov or Trivy
+  runs in the pipeline, and an evaluator binding set says which of its
+  checks decide which assertion. The plan stage of an infrastructure change
+  reads each report it is given and turns the bound results into one
+  evaluation per scanner, beside the assertion's own evaluation, and every
+  reader can recompute each of those verdicts from the files the stage kept.
+  - An assertion can leave its rule to scanners. `assert` is always written;
+    `assert: null` marks an assertion that only scanners decide. Such an
+    assertion is about a resource, names the stages whose scanner results may
+    decide it (`spec.evidence.stages`, only stages whose scanner results
+    Iltero reads, which is `plan`) instead of `spec.stage`, and needs a
+    `metadata.description` that says exactly what is true of a resource that
+    meets it. Its compiled program never passes or fails: it applies the
+    `when` guard and is otherwise `unknown` with the reason
+    `observed_by_scanners`. Any assertion may now carry a description.
+  - An evaluator binding set holds one binding per assertion: the assertion
+    it decides, by id, version and document digest, and its `evaluators`.
+    Each evaluator names a tool, a stage, the checks that decide together
+    (`rule_ids`: any failure fails, all must pass), a version range that must
+    have an upper bound, what the scanner read (`input_kind`: `plan` at the
+    plan stage, `deployed_resources` at runtime), how a result finds its
+    subject (`subject_match`: `exact_address`, or `plan_configures` for a
+    resource that configures the subject, such as a bucket's public access
+    block), and the attribute paths the checks read (`paths_read`). A binding
+    is a lookup table, not a requirement: a scanner with no report adds
+    nothing, and a check bound nowhere is kept as evidence only. Results a
+    tool wrote about the configuration as written decide nothing: they are
+    counted (`written_configuration_results`) and left out.
+    `check_project_set` refuses a project's own set that takes an `ILT.` id
+    or decides an assertion Iltero ships.
+  - A run can require scanners (`required_scanners`, as the record states
+    them; a reader does not check them against any configuration). A required scanner that gave
+    no report gives every subject its bound checks cover an evaluation that
+    is `not_evaluated` with `scanner_not_run`, naming no version and no input.
+    That, or a required scanner's report from a version its binding does not
+    allow (`scanner_version_not_allowed`), is a gap no pass fills: it cancels
+    every pass and not applicable verdict, and a failure, an unknown result or
+    another evaluator's error still stands. A scanner the run does not
+    require cancels nothing. `combined_verdict`, `stage_verdicts` and the
+    stage counts take the scanners the run requires
+    (`stage_required_scanners`).
+  - Each stage lists, for each reason an evaluation was not evaluated or
+    ended in error, a count gap of the combined verdicts that reason left
+    undecided (`undecided_reason_counts`). The integrity checks recompute
+    the counts from the events.
+  - An evaluation that could not decide and that the subject's combined
+    verdict does not count is a gap too: beside a verdict another evaluator
+    decided, beside an undecided verdict another evaluator reached, or beside
+    one with another status. The verdict stands, and the stage
+    lists one `evaluator_did_not_decide` gap for each evaluator and reason,
+    with the number of such evaluations (`evaluator_did_not_decide_counts`),
+    which the integrity checks recompute from the events. A gap for an
+    evaluator error marks the stage incomplete with reason
+    `required_policy_evaluation_failed`; a gap for a check not evaluated is
+    listed only.
+  - Seven starter assertions about AWS resources join the package: no SSH or
+    RDP open to the internet in a security group, S3 default encryption with
+    a KMS key (Key Management Service), unknown at plan when the plan has no
+    encryption configuration for the bucket (checked again after the
+    deployment, a bucket left on Amazon S3 managed keys fails), and five that
+    only scanners decide, about IAM (Identity and Access Management) policies, CloudTrail trails and
+    AWS Config recorders. The shipped set `ILT.BINDINGS.STARTER` binds nine
+    starters to Checkov and Trivy checks.
+  - Scanner observations (`ScannerObservations` v1) are what a stage read
+    from one report, in one shape for every tool. The Checkov and Trivy
+    readers build them from a report and the plan's addresses. A result's
+    address resolves to a plan resource by an exact rule per tool: Checkov
+    writes the plan's address, and Trivy writes the type and name, with the
+    MD5 digest of the module path inside a module. Resources made by `count`
+    or `for_each` share a Trivy address, so a result about one is ambiguous.
+    A result whose word for what it read is not a string is an unreadable
+    result, not a failure of the reader, and so is a Trivy `CauseMetadata` or
+    a Checkov `connected_node` that is present but not an object. A reader
+    refuses a report with a redaction marker where it expects an object, a
+    list or a count, such as a list of results, whatever the marker's
+    `present` says; only a marker whose `type` is `null` and whose `present`
+    is `false` reads as the `null` it stands for. A Checkov report that gives its parsing-error count for
+    some frameworks but not others, gives one that is not a count, or gives
+    a framework a `summary` that is not an object, is refused.
+  - A stage keeps each scanner report in the contract's kept form
+    (`kept_report`): only the fields the reader reads, plus each check's
+    title and severity and the reason the scanned source gives for skipping
+    a check. It keeps none of the plan's values, file paths, source lines,
+    secrets or rendered source, and it reads into the same observations as
+    the whole report. A value read only for its shape that is not of that
+    shape, and a list of names that is not a list of strings and redaction
+    markers, is kept as `null` or as its truth, never as text. An object the
+    reader reads that is neither an object nor `null` is kept as its truth,
+    never as `null`, so it is never read as absent. A whole
+    redaction marker is kept as written wherever it stands in place of a kept
+    value, object, list or name, so a report the stage kept and then redacted
+    is its own kept form. A Checkov framework whose results
+    the reader only counts keeps only enough of each to be counted and read
+    the same way. A reader refuses a kept report whose canonical bytes are not those
+    of its kept form.
+  - Each scanner report entry of a record counts, in `redacted_values`, the
+    redaction markers that stand for a value in the report as the stage kept
+    it, by reason (`{}` for none). It describes the kept file, not what the
+    redaction policy did: a marker in a field the kept form drops is not
+    counted. A reader recomputes the count with `redacted_value_counts` and
+    refuses a report entry whose count differs. Only the JSON value `true`
+    marks a value redacted, never `1` or `1.0`, as in the evaluator's runtime;
+    the context case `redaction_marker_written_with_one_for_true` refuses a
+    marker whose `__redacted` is `1`.
+  - Each scanner evaluation names the checks it rests on, the resources their
+    results were about, the paths the plan knows only after the deployment,
+    and which checks failed or decided nothing. Its verdict is a pass, a
+    fail, `unknown` (a value known only after the deployment, no result from
+    a tool that reports passes, an ambiguous failure, a failure tied to no
+    resource of the plan, or an incomplete report) or `not_evaluated` (a version outside the range, a check the
+    source suppressed, no result from a tool that names only failures, or a
+    required scanner that gave no report). A report that holds results the
+    stage could not read, or files the tool could not parse, makes every
+    subject that no failure decides `unknown` with
+    `scanner_report_incomplete`, for every tool, before a check with no
+    result is read as silence. A failed check tied to no resource of the
+    plan (no address, or one the plan does not hold) makes every subject
+    without a failure of its own `unknown` with `scanner_result_unresolved`,
+    before a suppression or a tool's silence. A suppressed check gives `suppressed_in_source`
+    only when nothing else is left open: the stage read the whole report, no
+    other result is a word that is not a decision, and every other check
+    without a decision is suppressed too or, for a tool that names only
+    failures, silent.
+    An assertion that only scanners decide and that no report covers is
+    `not_evaluated` with `no_scanner_report`. Such an assertion's subjects
+    leave out every resource the stage's coverage excludes for its identity,
+    and a reader checks each exclusion against the plan the stage kept, for a
+    stage that keeps a scanner report or requires a scanner: its `id` is the
+    address the plan wrote there, or `null` when that address is not text, and
+    its `reason` is exactly the one the plan gives for that resource
+    (`exclusion_reason`). That reason is the first that holds, in this order:
+    `identity_redacted` when a naming field holds a whole redaction marker
+    (any other value that is not text makes the plan unreadable);
+    `identity_unnameable` when a naming field is empty, too long or holds a
+    control character; `not_managed` when the resource's `mode` is not
+    `managed`; `deposed` when its `deposed` holds a value; and
+    `identity_unnameable` when its provider has no short name an assertion
+    can target. For Terraform the naming fields are `address`,
+    `module_address`, `type` and `provider_name`.
+  - A stage evaluates an assertion once per subject and evaluator. Its
+    verdict for an assertion and subject combines its evaluators: a failure
+    wins, then `unknown`, then a pass (`COMBINING_ORDER`). Coverage counts
+    these combined verdicts, and an earlier evaluation served by Iltero
+    Platform names the engines that reached its verdict (`decided_by`).
+  - A record's `scanners` names the binding sets the stage applied
+    (`evaluator_binding_sets`), the scanners the run requires, and each
+    report. A stage always applies the binding set Iltero ships, and may
+    also apply one binding set from the project's own file, listed first.
+    The project's set decides only the project's own assertions and the
+    shipped set only Iltero's starter assertions, so each scanner verdict's
+    `provenance.evaluator_binding.digest` matches exactly one binding across
+    the stage's sets, and a reader finds the set that decided it from that
+    digest. The evidence register lists the copy of each set, and the copy
+    of a project's set names the file it was read from. For each report the
+    record names who supplied it, what it read, its results,
+    unreadable results, results about the configuration and the files the
+    tool could not parse. A reader must call
+    `scanner_evidence_problems` with the files the stage kept (`KeptFiles`):
+    it rebuilds the observations from the kept report and the one plan the
+    stage kept, and checks every evaluation against the verdict they give.
+  - A plan stage may postpone a check that read a value the plan knows only
+    after the deployment (`values_known_after_deployment: postpone`). It
+    lists each such check (`postponed_checks`) and counts it as a
+    `checked_after_deployment` gap, so its gate treats the check as decided
+    later; the post-verify stage then evaluates it over the values after the
+    apply and reports what it redacted of them (`resource_redaction`). The
+    list may leave a check out, which then stays unknown and holds the gate.
+    Each evaluation about a resource at post-verify
+    (`settles_a_postponed_check`) settles one postponed check, once, over the
+    plan it was postponed from: the assertion's own rule decides it, or, when
+    no evaluator could run, it is `not_evaluated` with no evaluator.
+    Until the post-verify stage reports, the record is incomplete with reason
+    `checks_postponed_until_after_the_deployment` (`OPEN_CHECKS_REASON`) and a
+    detail that counts the open checks, unless its stages give a reason that
+    comes earlier. Only a record holds this reason. In
+    `INCOMPLETE_REASON_PRECEDENCE` it comes after `state_not_read` and before
+    `plan_not_complete`. `postponed_check_problems` checks the list against
+    the kept plan.
+  - A stage none of whose evaluations ran over an input that carries approvals
+    or a commit review keeps the marker `not_read_by_the_stage` in their
+    place; one whose checks read such an input keeps the list, the review or
+    the `server_facts_unavailable` marker as before. An evaluation input is at most 16 MiB of canonical JSON, and
+    the input's `assurance` part has a shape: an assertion's current and
+    previous results about one subject, and the deployments and exceptions in
+    between.
+  - A project's own exceptions file (`LocalExceptions` v1) names, for each
+    exception, an assertion, an environment, resources and a period, and who
+    the project says approved it: it is the project's own word. Each
+    resource is named by its address, scoped by exactly its unit, each
+    exception lasts at most 365 days of 24 hours from its `valid_from`
+    (`MAX_EXCEPTION_DAYS`), and no two
+    exceptions cover the same assertion, environment and resource at
+    overlapping times. `read_local_exceptions` reads the file as JSON for
+    `.json` and as YAML for `.yaml` or `.yml`, at most 256 KiB. A stage that
+    applies it names it in `scanners.local_exceptions` (`file_path`, the
+    `digest` of its raw bytes, and `copy_path`, with the same suffix) and
+    keeps a byte copy in the evidence register, unredacted, whose `source`
+    names the file. A scanner evaluation whose check the source suppressed
+    may name an exception from that file only; it stays not evaluated. A
+    record of a run Iltero Platform opened applies no such file and names no
+    such exception. An exception is in force from `valid_from` up to and
+    including `expires_at`, judged at the stage's reference time
+    (`exception_in_force`); `why_no_exception` says why none covers a result.
+    `scanner_evidence_problems`, given the copy in `KeptFiles.exceptions`,
+    works out again which exception covers each suppressed result and lists
+    a record that names another, or leaves one out.
+  - These checks show that each verdict follows from what the stage kept.
+    They do not show that the scanner ran, that the report is what it wrote,
+    that it read the plan the record names, or that its version is genuine.
+    In a self-attested record, all of it is the writer's claim, and so is
+    `required_scanners`: a record that leaves a scanner out of the list,
+    with its evaluations and gaps, still holds together, so a reader
+    compares the list with the scanners its own policy requires.
+  - Names and shapes that changed:
+
+    | Before | Now |
+    | --- | --- |
+    | A binding entry with its own `id` and `version`, one `rule_id` and a `status_map` | A binding per assertion, with `evaluators` and `rule_ids`; a tool's words are read only as `TOOL_DECISIONS` lists them |
+    | An event's `evaluator_binding` with `id`, `version` and `digest` | `evaluator_binding` with the evaluator's `digest` only |
+    | `binding_count` | `assertions_bound` |
+    | A report's `parsing_errors` | `tool_parsing_errors`, `null` when the tool does not say |
+    | A report's `input_kinds` in the tool's words (`terraform_plan`) | The contract's words (`plan`) |
+    | `results_accepted`, `results_scanner_version_not_allowed`, `results_without_binding` | Removed: every verdict is an event |
+    | The `accepted_by_binding` gap | Removed; the `checked_after_deployment` gap is new |
+
+  - Vectors are in `vectors/binding_sets/`, `vectors/binding_sets_invalid/`,
+    `vectors/binding_sets_project_invalid/`, `vectors/scanner_reports/iac/`,
+    `vectors/scanner_observations/iac/`, `vectors/scanner_evidence/iac/`,
+    `vectors/records/iac/local_run_scanned.json`,
+    `vectors/records/iac/local_run_scanned_project.json`,
+    `vectors/records/iac/local_run_scanner_required.json`,
+    `vectors/records/iac/local_run_scanned_project_required.json` (a
+    required scanner's version that its binding does not allow cancels a
+    pass), `vectors/records/iac/local_run_scanned_redacted_result.json` (a
+    redacted Trivy result leaves the subjects Trivy is silent about
+    `unknown`), `vectors/records/iac/local_run_suppressed_with_exception.json`
+    (a suppressed result names the exception the kept exceptions file gives
+    it), each with its kept files in its own folder of
+    `vectors/scanner_evidence/iac/`, which may hold a `cases.json`,
+    `vectors/records/iac/local_run_postponed.json`,
+    `vectors/records/iac/local_run_postponed_settled.json` (with the project
+    assertion `ACME.IAC.RESOURCE.TERRAFORM.DATA.OUTPUT_SET` it evaluates) and
+    the evaluation cases.

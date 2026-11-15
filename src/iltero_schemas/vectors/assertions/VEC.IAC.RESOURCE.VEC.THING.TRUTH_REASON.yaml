@@ -1,0 +1,25 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON
+  version: "1.0.0"
+  title: A failure names the comparison that caused it
+spec:
+  change_type: iac_change
+  stage: plan
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: vec
+        resource_types: [thing]
+  assert:
+    all:
+      - any:
+          - path: resource.after.a
+            equal: 1
+          - path: resource.after.b
+            equal: 1
+      - not:
+          path: resource.after.c
+          equal: 1

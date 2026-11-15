@@ -1,0 +1,130 @@
+[
+  {
+    "name": "rds_checkov",
+    "observations": "rds_checkov.json",
+    "plan_addresses": "rds_plan_addresses.json",
+    "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+    "report": "rds_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "rds_trivy",
+    "observations": "rds_trivy.json",
+    "plan_addresses": "rds_plan_addresses.json",
+    "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+    "report": "rds_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "rds_skipped_checkov",
+    "observations": "rds_skipped_checkov.json",
+    "plan_addresses": "rds_skipped_plan_addresses.json",
+    "plan_digest": "sha256:6e0c8154ecf5aedcdf41af1e82860df130b005fdfd1b4e4e2b3fafa62e83c783",
+    "report": "rds_skipped_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "s3_public_access_checkov",
+    "observations": "s3_public_access_checkov.json",
+    "plan_addresses": "s3_public_access_plan_addresses.json",
+    "plan_digest": "sha256:bd61276b09283b1a36d56ea54e21d6749d73ff9d0efeea08edadab272fb82c12",
+    "report": "s3_public_access_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "s3_public_access_trivy",
+    "observations": "s3_public_access_trivy.json",
+    "plan_addresses": "s3_public_access_plan_addresses.json",
+    "plan_digest": "sha256:bd61276b09283b1a36d56ea54e21d6749d73ff9d0efeea08edadab272fb82c12",
+    "report": "s3_public_access_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "s3_encryption_checkov",
+    "observations": "s3_encryption_checkov.json",
+    "plan_addresses": "s3_encryption_plan_addresses.json",
+    "plan_digest": "sha256:d37a513b07feba66be9eadcd5ea7f5637c24c6c848a3070177a0c469ec018809",
+    "report": "s3_encryption_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "s3_encryption_trivy",
+    "observations": "s3_encryption_trivy.json",
+    "plan_addresses": "s3_encryption_plan_addresses.json",
+    "plan_digest": "sha256:d37a513b07feba66be9eadcd5ea7f5637c24c6c848a3070177a0c469ec018809",
+    "report": "s3_encryption_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "security_groups_checkov",
+    "observations": "security_groups_checkov.json",
+    "plan_addresses": "security_groups_plan_addresses.json",
+    "plan_digest": "sha256:56be10d2c4e2d7bffacdd152afa89337962556bc2e1d5247bd61bbe194c30865",
+    "report": "security_groups_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "security_groups_trivy",
+    "observations": "security_groups_trivy.json",
+    "plan_addresses": "security_groups_plan_addresses.json",
+    "plan_digest": "sha256:56be10d2c4e2d7bffacdd152afa89337962556bc2e1d5247bd61bbe194c30865",
+    "report": "security_groups_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "iam_checkov",
+    "observations": "iam_checkov.json",
+    "plan_addresses": "iam_plan_addresses.json",
+    "plan_digest": "sha256:ad4cd6a00fb46063c2bf8ee7fee276d1f744685c666325df9ae5da61ab0c82a5",
+    "report": "iam_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "iam_trivy",
+    "observations": "iam_trivy.json",
+    "plan_addresses": "iam_plan_addresses.json",
+    "plan_digest": "sha256:ad4cd6a00fb46063c2bf8ee7fee276d1f744685c666325df9ae5da61ab0c82a5",
+    "report": "iam_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "cloudtrail_checkov",
+    "observations": "cloudtrail_checkov.json",
+    "plan_addresses": "cloudtrail_plan_addresses.json",
+    "plan_digest": "sha256:c77994d0494236e1097fda921f285d71750e01e0372193c0019c038fa8cb3444",
+    "report": "cloudtrail_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "cloudtrail_trivy",
+    "observations": "cloudtrail_trivy.json",
+    "plan_addresses": "cloudtrail_plan_addresses.json",
+    "plan_digest": "sha256:c77994d0494236e1097fda921f285d71750e01e0372193c0019c038fa8cb3444",
+    "report": "cloudtrail_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "config_checkov",
+    "observations": "config_checkov.json",
+    "plan_addresses": "config_plan_addresses.json",
+    "plan_digest": "sha256:d8198108ac1d48a64f4516b0e04f95306a6c32444055372c708f1ac8c0306a4a",
+    "report": "config_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "config_trivy",
+    "observations": "config_trivy.json",
+    "plan_addresses": "config_plan_addresses.json",
+    "plan_digest": "sha256:d8198108ac1d48a64f4516b0e04f95306a6c32444055372c708f1ac8c0306a4a",
+    "report": "config_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "addresses_trivy",
+    "observations": "addresses_trivy.json",
+    "plan_addresses": "addresses_plan_addresses.json",
+    "plan_digest": "sha256:66c282a41f04e0c0cf1393d22664df910b706f9ea76b1589c15fcd7a164d8b23",
+    "report": "addresses_trivy.json",
+    "tool": "trivy"
+  }
+]

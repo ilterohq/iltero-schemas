@@ -1,0 +1,18 @@
+[
+  "aws_eip.e",
+  "aws_security_group.all_world",
+  "aws_security_group.bare",
+  "aws_security_group.compliant",
+  "aws_security_group.rdp_world",
+  "aws_security_group.ssh_world",
+  "aws_security_group.ssh_world_v6",
+  "aws_security_group.unknown_cidr",
+  "aws_security_group_rule.ssh_private",
+  "aws_security_group_rule.ssh_world",
+  "aws_vpc.v",
+  "aws_vpc_security_group_ingress_rule.all_world",
+  "aws_vpc_security_group_ingress_rule.rdp_world",
+  "aws_vpc_security_group_ingress_rule.ssh_private",
+  "aws_vpc_security_group_ingress_rule.ssh_unknown",
+  "aws_vpc_security_group_ingress_rule.ssh_world"
+]

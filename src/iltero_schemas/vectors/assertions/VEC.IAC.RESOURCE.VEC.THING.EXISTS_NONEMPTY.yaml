@@ -1,0 +1,18 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.IAC.RESOURCE.VEC.THING.EXISTS_NONEMPTY
+  version: "1.0.0"
+  title: A collection is non-empty
+spec:
+  change_type: iac_change
+  stage: plan
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: vec
+        resource_types: [thing]
+  assert:
+    exists:
+      in: resource.related

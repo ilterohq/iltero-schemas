@@ -1,7 +1,7 @@
 """The assertions shipped with the package, the ones a runner always evaluates (see ``paths``), and their shipped
 digests (see ``built_in``)."""
 
-from iltero_schemas.assertions.built_in import BUILT_INS, BuiltIn
+from iltero_schemas.assertions.built_in import BUILT_INS, SHIPPED_ASSERTIONS, ShippedAssertion
 from iltero_schemas.assertions.paths import (
     APPLIED_PLAN_MATCHES_EVALUATED_PLAN,
     APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
@@ -14,10 +14,13 @@ from iltero_schemas.assertions.paths import (
     COMMITS_REVIEWED_ID,
     NO_DRIFT_AFTER_APPLY,
     NO_DRIFT_AFTER_APPLY_ID,
+    NOT_DECIDED_BY_SCANNERS,
+    PRODUCTION_APPROVED_ID,
     REPORTED_IMAGE_MATCHES_CHECKED_IMAGE,
     REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
     RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE,
     RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+    SENSITIVE_CHANGE_APPROVED_ID,
     SIGNED_PROVENANCE_MATCHES_RUN_ID,
 )
 
@@ -37,7 +40,11 @@ __all__ = [
     "APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID",
     "SIGNED_PROVENANCE_MATCHES_RUN_ID",
     "COMMITS_REVIEWED_ID",
+    "NOT_DECIDED_BY_SCANNERS",
+    "SHIPPED_ASSERTIONS",
+    "PRODUCTION_APPROVED_ID",
+    "SENSITIVE_CHANGE_APPROVED_ID",
     "RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID",
-    "BuiltIn",
+    "ShippedAssertion",
 ]

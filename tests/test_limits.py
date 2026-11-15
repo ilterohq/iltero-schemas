@@ -40,9 +40,13 @@ def _maximal_document() -> dict[str, Any]:
     assert first <= MAX_ARGS and PREDICATES - first <= MAX_ARGS
     check = {"all": [{"any": [predicate] * first}, {"any": [predicate] * (PREDICATES - first)}]}
     return {
-        "apiVersion": "iltero.io/v1",
+        "apiVersion": "iltero.com/v1",
         "kind": "TechnicalAssertion",
-        "metadata": {"id": "VEC.LIMITS.MAXIMAL", "version": "1.0.0", "title": "As large as the language allows"},
+        "metadata": {
+            "id": "VEC.IAC.RESOURCE.VEC.THING.LIMITS_MAXIMAL",
+            "version": "1.0.0",
+            "title": "As large as the language allows",
+        },
         "spec": {
             "change_type": "iac_change",
             "stage": "plan",

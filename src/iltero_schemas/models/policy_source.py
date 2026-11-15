@@ -1,14 +1,14 @@
-"""``PolicySourceManifest``: what a directory of hand-written policy claims to decide.
+"""``PolicySource``: what a directory of hand-written policy claims to decide.
 
 The assertion language covers what most rules need, and nothing more. A rule
 that needs logic beyond it is written as a **custom policy source**: a
-directory of ``.rego`` files with a manifest saying, for each of them, which
+directory of ``.rego`` files with a policy source document saying, for each of them, which
 assertion it decides, at which stage, and about what.
 
 The assertion document stays out of it. A ``TechnicalAssertion`` describes a
 rule in a language this project owns and can compile; a custom policy source
 is code somebody else wrote. Mixing the two would put an engine's name inside
-the one document that is meant to outlive any engine. So a manifest entry
+the one document that is meant to outlive any engine. So a policy entry
 carries everything an assertion carries *except* the logic — the id, the
 version, the stage and the target — and the ``.rego`` files carry the logic.
 
@@ -31,13 +31,16 @@ from iltero_schemas.models.assertion import (
     VERSION_MAX_LENGTH,
     VERSION_PATTERN,
     ProcessTarget,
+    ResourceTarget,
     Target,
     check_target,
 )
+from iltero_schemas.models.assertion_id import change_type_of_id, check_assertion_id, check_project_id
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.base import StageValue, StrictModel
+from iltero_schemas.models.fields import ProjectDocumentMetadata
 
-API_VERSION = "iltero.io/v1"
-KIND = "PolicySourceManifest"
+KIND = "PolicySource"
 # A file name inside the source directory: a plain name, no directory part, no escape.
 FILE_PATTERN = r"^[A-Za-z0-9._-]+\.rego$"
 FILE_MAX_LENGTH = 255
@@ -78,22 +81,25 @@ class PolicyEntry(StrictModel):
 
     @model_validator(mode="after")
     def _the_combination_is_one_that_exists(self) -> PolicyEntry:
-        # A hand-written policy names no change type, so it may declare any stage and target some change type allows.
+        # A hand-written policy names its change type in its assertion's id; its stage and target are checked for it.
         if isinstance(self.target, ProcessTarget) and self.target.resources is not None:
             raise ValueError("a hand-written policy names no resources: no compiler writes its scope guard")
-        check_target(self.stage, self.target, None)
+        # A hand-written policy is a project's own: its assertion is never one of Iltero's.
+        check_project_id(self.assertion.id)
+        change_type = change_type_of_id(self.assertion.id)
+        provider = self.target.resources[0].provider if isinstance(self.target, ResourceTarget) else None
+        check_assertion_id(self.assertion.id, change_type, self.target.kind, provider)
+        check_target(self.stage, self.target, change_type)
         return self
 
 
-class PolicySourceManifest(StrictModel):
-    """A directory of hand-written policy, read as a whole so its rules hold before any of it is loaded."""
+class PolicySourceSpec(StrictModel):
+    """The policies of the directory, each assertion decided once per stage and each file written once."""
 
-    api_version: Literal["iltero.io/v1"] = Field(alias="apiVersion")
-    kind: Literal["PolicySourceManifest"]
     policies: Annotated[list[PolicyEntry], Field(min_length=1, max_length=MAX_POLICIES)]
 
     @model_validator(mode="after")
-    def _each_assertion_is_decided_once(self) -> PolicySourceManifest:
+    def _each_assertion_is_decided_once(self) -> PolicySourceSpec:
         decided = [(entry.stage.value, entry.assertion.id) for entry in self.policies]
         if len(set(decided)) != len(decided):
             raise ValueError("two policies decide the same assertion at the same stage")
@@ -101,3 +107,12 @@ class PolicySourceManifest(StrictModel):
         if len(set(written)) != len(written):
             raise ValueError("two policies are written in the same file")
         return self
+
+
+class PolicySource(StrictModel):
+    """A directory of hand-written policy, read as a whole so its rules hold before any of it is loaded."""
+
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
+    kind: Literal["PolicySource"]
+    metadata: ProjectDocumentMetadata
+    spec: PolicySourceSpec

@@ -4,7 +4,7 @@
   "cases": [
     {
       "name": "production_run_approved",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -37,7 +37,7 @@
     },
     {
       "name": "production_run_approved_by_a_self_approval_the_policy_permits",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -70,7 +70,7 @@
     },
     {
       "name": "production_change_approved_by_its_digest",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -105,13 +105,13 @@
     },
     {
       "name": "production_without_an_approval",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": []
       },
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "branches": [
           "false",
           "false"
@@ -120,7 +120,7 @@
     },
     {
       "name": "production_approval_of_another_run",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -144,7 +144,7 @@
       },
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "branches": [
           "false",
           "false"
@@ -153,7 +153,7 @@
     },
     {
       "name": "production_approval_of_another_change",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -179,7 +179,7 @@
       },
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "branches": [
           "false",
           "false"
@@ -188,7 +188,7 @@
     },
     {
       "name": "production_change_self_approved",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -214,7 +214,7 @@
       },
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "branches": [
           "false",
           "false"
@@ -223,7 +223,7 @@
     },
     {
       "name": "production_change_approved_without_the_security_role",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": [
           {
@@ -247,7 +247,7 @@
       },
       "expected": {
         "status": "fail",
-        "reason": "assert: false; predicate 1 is false: approvals exists",
+        "reason": "assert: false; approvals exists is false",
         "branches": [
           "false",
           "false"
@@ -256,7 +256,7 @@
     },
     {
       "name": "production_approvals_unavailable",
-      "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+      "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
       "set": {
         "approvals": {
           "__unknown": true,
@@ -274,7 +274,7 @@
     },
     {
       "name": "sensitive_change_run_approved",
-      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
       "set": {
         "approvals": [
           {
@@ -307,7 +307,7 @@
     },
     {
       "name": "no_sensitive_resource_changed",
-      "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
       "set": {
         "approvals": [],
         "change": {

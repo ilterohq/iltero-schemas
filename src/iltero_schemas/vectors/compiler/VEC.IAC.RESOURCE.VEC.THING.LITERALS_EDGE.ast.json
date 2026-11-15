@@ -1,0 +1,46 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "op": "equal",
+          "path": "resource.after.s128"
+        }
+      },
+      {
+        "predicate": {
+          "literal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "op": "equal",
+          "path": "resource.after.s129"
+        }
+      },
+      {
+        "predicate": {
+          "literal": 4,
+          "op": "contains",
+          "path": "resource.after.l4"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.IAC.RESOURCE.VEC.THING.LITERALS_EDGE",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

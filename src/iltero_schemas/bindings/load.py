@@ -4,7 +4,7 @@ A set is plain data: one document, string keys, no duplicate keys, no
 anchors, aliases or tags, no value written other than as ``null``, bounded
 size and nesting. What comes back is the
 validated model, so every rule in ``models.binding`` has held before a
-caller can use an entry.
+caller can use a binding.
 """
 
 from __future__ import annotations

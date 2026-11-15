@@ -250,3 +250,14 @@ def _bounded(value: dict[str, Any]) -> dict[str, Any]:
 # An object of no fixed shape, such as a policy's observations, held to a depth, a size and text with no control
 # characters.
 BoundedObject = Annotated[dict[str, Any], AfterValidator(_bounded)]
+
+
+# A name a project gives a document of its own: lowercase letters, digits and inner hyphens, like a DNS label, so a
+# name cannot pass for another one by its case, spacing or look-alike characters.
+PROJECT_DOCUMENT_NAME_PATTERN = r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$"
+
+
+class ProjectDocumentMetadata(StrictModel):
+    """The metadata of a document a project writes for itself: the name the project gives it."""
+
+    name: Annotated[str, Field(pattern=PROJECT_DOCUMENT_NAME_PATTERN)]

@@ -15,7 +15,8 @@ from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES
 from iltero_schemas.canonical import required_assertion_digest
 from iltero_schemas.canonical.encoding import canonical_bytes
 from iltero_schemas.models import bundle as bundle_model
-from iltero_schemas.models.bundle import API_VERSION, MAX_TARBALL_BYTES, BundleDescriptor
+from iltero_schemas.models.base import API_VERSION
+from iltero_schemas.models.bundle import KIND, MAX_TARBALL_BYTES, BundleDescriptor
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
 COMPILER = VECTORS / "compiler"
@@ -40,6 +41,7 @@ def _assertion(assertion_id: str, version: str, document_digest: str) -> dict[st
 ASSERTIONS = [_assertion(*triple) for triple in sorted(STARTER_SET["assertions"])]
 DESCRIPTOR: dict[str, Any] = {
     "apiVersion": API_VERSION,
+    "kind": KIND,
     "content_digest": "sha256:" + "3" * 64,
     "tarball_digest": "sha256:" + "4" * 64,
     "key_id": "iltero-bundle-2026-09",

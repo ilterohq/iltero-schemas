@@ -277,17 +277,21 @@ def parse_document(document: dict[str, Any]) -> Assertion:
     except ValidationError as exc:
         raise AssertionSyntaxError(_model_issues(document, exc)) from None
     target = _target(model)
-    parser = _ExpressionParser(allowed_roots(model.spec.change_type, model.spec.stage, target.kind))
+    stages = model.spec.stages
+    # A path is valid only where it resolves at every stage the assertion is evaluated or observed at.
+    roots = frozenset.intersection(*(allowed_roots(model.spec.change_type, stage, target.kind) for stage in stages))
+    parser = _ExpressionParser(roots)
     when = None if model.spec.when is None else parser.expr(model.spec.when, "spec.when", 1, False)
-    assert_ = parser.expr(model.spec.assert_, "spec.assert", 1, False)
-    if parser.issues or assert_ is None:
+    written = model.spec.assert_
+    assert_ = None if written is None else parser.expr(written, "spec.assert", 1, False)
+    if parser.issues or (written is not None and assert_ is None):
         raise AssertionSyntaxError(parser.issues)
     return Assertion(
         id=model.metadata.id,
         version=model.metadata.version,
         type=model.spec.derived_type,
         change_type=model.spec.change_type,
-        stage=model.spec.stage,
+        stages=stages,
         target=target,
         when=when,
         assert_=assert_,

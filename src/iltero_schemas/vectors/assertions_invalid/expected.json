@@ -62,5 +62,53 @@
   "reserved_device_name": {
     "path": "metadata",
     "message": "reserves for a device"
+  },
+  "observed_without_description": {
+    "path": "document",
+    "message": "has a metadata.description saying exactly what it checks"
+  },
+  "observed_with_a_stage": {
+    "path": "spec",
+    "message": "names evidence.stages and no stage"
+  },
+  "observed_process": {
+    "path": "spec",
+    "message": "is about a resource: only a resource is scanned"
+  },
+  "id_naming_another_target_kind": {
+    "path": "document",
+    "message": "the id's third segment must be RESOURCE, for target kind resource"
+  },
+  "id_naming_another_change_type": {
+    "path": "document",
+    "message": "iac_change"
+  },
+  "id_naming_another_provider": {
+    "path": "document",
+    "message": "the id's fourth segment must be AWS, for provider aws"
+  },
+  "id_without_its_scope": {
+    "path": "document",
+    "message": "a resource assertion's id must be NAMESPACE.CHANGE_TYPE.RESOURCE.PROVIDER.SERVICE.CHECK"
+  },
+  "id_in_a_namespace_like_iltero": {
+    "path": "document",
+    "message": "an assertion id's namespace must be ILT or one not starting ILT"
+  },
+  "iltero_id_in_an_area_not_listed": {
+    "path": "document",
+    "message": "an Iltero process assertion's area must be one of"
+  },
+  "id_with_a_segment_too_long": {
+    "path": "document",
+    "message": "each segment of an assertion id must be at most 48 characters"
+  },
+  "id_too_long": {
+    "path": "metadata.id",
+    "message": "at most 96 characters"
+  },
+  "observed_at_runtime": {
+    "path": "spec.evidence",
+    "message": "evidence.stages may name only plan: Iltero reads scanner results at no other stage"
   }
 }

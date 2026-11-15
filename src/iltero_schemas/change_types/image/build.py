@@ -317,9 +317,9 @@ class ScanCoverage(NamedTuple):
 
 
 def scan_coverage(build: ImageBuild) -> ScanCoverage:
-    """The platform images the build's scan reports name, counted as ``ILT.IMAGE.SCAN_RAN`` reads them: a scanner's
-    report that itself names the image (``image_digest_source: report``). An image pushed as a single manifest is
-    its own one platform image. Both tuples are sorted, as the build's platform digests are."""
+    """The platform images the build's scan reports name, counted as ``ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN`` reads
+    them: a scanner's report that itself names the image (``image_digest_source: report``). An image pushed as a
+    single manifest is its own one platform image. Both tuples are sorted, as the build's platform digests are."""
     platforms = build.platform_digests or [build.image.digest]
     named = {
         report.image_digest
@@ -390,4 +390,5 @@ IMAGE_BUILD = Activity(
     change_digest_problems=_no_problems,
     integrity_problems=_no_problems,
     reads_a_state_after_the_apply=False,
+    stages_that_read_scanner_reports=frozenset(),
 )

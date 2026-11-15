@@ -1,0 +1,172 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV2_AWS_48",
+        "check_name": "Ensure AWS Config must record all possible resources",
+        "check_result": {
+          "evaluated_keys": [
+            "recording_group/include_global_resource_types"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_config_configuration_recorder.noncompliant",
+        "resource_address": "aws_config_configuration_recorder.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_48",
+        "check_name": "Ensure AWS Config must record all possible resources",
+        "check_result": {
+          "evaluated_keys": [
+            "recording_group/include_global_resource_types"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_config_configuration_recorder.no_status",
+        "resource_address": "aws_config_configuration_recorder.no_status",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_45",
+        "check_name": "Ensure AWS Config recorder is enabled to record all supported resources",
+        "check_result": {
+          "evaluated_keys": [
+            "recording_group/all_supported",
+            "is_enabled",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_config_configuration_recorder_status.noncompliant",
+        "resource_address": "aws_config_configuration_recorder_status.noncompliant",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_274",
+        "check_name": "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.cfg",
+        "resource_address": "aws_iam_role.cfg",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_393",
+        "check_name": "Ensure AWS GitHub Actions OIDC authorization policies only allow safe claims and claim order on IAM role",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.cfg",
+        "resource_address": "aws_iam_role.cfg",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_61",
+        "check_name": "Ensure AWS IAM policy does not allow assume role permission across all services",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.cfg",
+        "resource_address": "aws_iam_role.cfg",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_60",
+        "check_name": "Ensure IAM role allows only specific services or principals to assume it",
+        "check_result": {
+          "evaluated_keys": [
+            "assume_role_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.cfg",
+        "resource_address": "aws_iam_role.cfg",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_56",
+        "check_name": "Ensure AWS Managed IAMFullAccess IAM policy is not used.",
+        "check_result": {
+          "evaluated_keys": [
+            "arn",
+            "managed_policy_arn",
+            "policy_arn",
+            "name",
+            "managed_policy_arns/*"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_iam_role.cfg",
+        "resource_address": "aws_iam_role.cfg",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_48",
+        "check_name": "Ensure AWS Config must record all possible resources",
+        "check_result": {
+          "evaluated_keys": [
+            "recording_group/include_global_resource_types"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_config_configuration_recorder.compliant",
+        "resource_address": "aws_config_configuration_recorder.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_45",
+        "check_name": "Ensure AWS Config recorder is enabled to record all supported resources",
+        "check_result": {
+          "evaluated_keys": [
+            "recording_group/all_supported",
+            "is_enabled",
+            "resource_type"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_config_configuration_recorder_status.compliant",
+        "resource_address": "aws_config_configuration_recorder_status.compliant",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

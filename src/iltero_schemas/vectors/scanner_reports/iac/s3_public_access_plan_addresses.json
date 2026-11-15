@@ -1,0 +1,12 @@
+[
+  "aws_kms_key.k",
+  "aws_s3_bucket.compliant",
+  "aws_s3_bucket.defaults",
+  "aws_s3_bucket.no_block",
+  "aws_s3_bucket.noncompliant",
+  "aws_s3_bucket.unknown",
+  "aws_s3_bucket_public_access_block.compliant",
+  "aws_s3_bucket_public_access_block.defaults",
+  "aws_s3_bucket_public_access_block.noncompliant",
+  "aws_s3_bucket_public_access_block.unknown"
+]

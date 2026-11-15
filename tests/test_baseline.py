@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -18,8 +19,10 @@ from typing import Any
 
 import pytest
 
-from iltero_schemas.canonical import canonical_bytes, change_digest, digest
-from tests.conftest import ROOT, VECTORS
+from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes, change_digest, digest, record_uuid
+from iltero_schemas.models.base import API_VERSION
+from iltero_schemas.models.event import EVENTS_FILE_KIND
+from tests.conftest import ROOT, STARTER_ASSERTIONS, VECTORS
 from tests.records import UNKNOWN
 
 BASELINE = ROOT / "tests" / "baseline"
@@ -35,6 +38,9 @@ CHANGED: list[tuple[str, str, Any]] = [
     ("records", "/expected_stages", ["plan", "pre_deploy", "post_deploy", "post_verify"]),
     ("records", "/out_of_scope", []),
     ("records", "/stages/plan/commit_review", None),
+    ("records", "/stages/plan/values_known_after_deployment", "block"),
+    ("records", "/stages/plan/postponed_checks", None),
+    ("records", "/stages/plan/resource_redaction", None),
     (
         "records",
         "/units_file/units",
@@ -72,8 +78,14 @@ RENAMED_KEYS = {
 RENAMED_VALUES = {
     "locally_derived": "project_files",
     "binding_unverified": "scanner_version_not_allowed",
-    "iltero.io/identity-bindings/v1": "iltero.io/resource-identities/v1",
 }
+# Every document now has the one apiVersion and names itself by its kind, by the apiVersion it had.
+RENAMED_DOCUMENTS = {
+    "iltero.io/car/v1": "ChangeAssuranceRecord",
+    "iltero.io/identity-bindings/v1": "ResourceIdentities",
+}
+# The fixed facts each document now keeps in its metadata, by its kind.
+METADATA_FIELDS = {"ChangeAssuranceRecord": ("uuid", "issuer"), "ResourceIdentities": ("generator",)}
 RENAMED_VECTORS = {"identity_bindings.json": "resource_identities.json"}
 # A subject's resolution, removed since the baseline: its identities say whether the cloud knows it.
 REMOVED_SUBJECT_KEY = "resolution"
@@ -83,8 +95,15 @@ MOVED_PROBLEMS = {"drift_check.change_digest": "change.drift_check.change_digest
 REMOVED_CASES = {"change_of_another_unit"}
 # Cases rebuilt since the baseline, each still a case: a stage lists approvals only when its results read facts from
 # the server, so an approval of another change is now listed in the record of a run the server opened; and a stage's
-# owed set describes its events, so a pre-deploy stage the case added with no event owes nothing.
-REBUILT_CASES = {"approval_of_another_change", "pre_deploy_stage_of_a_forged_change_digest"}
+# owed set describes its events, so a pre-deploy stage the case added with no event owes nothing; and only the shipped
+# binding set takes the starter set's id, so a set read from a file takes another.
+REBUILT_CASES = {
+    "evaluator_error_on_an_incomplete_plan_names_the_error",
+    "plan_flag_gap_in_a_later_stage",
+    "approval_of_another_change",
+    "pre_deploy_stage_of_a_forged_change_digest",
+    "binding_set_file_named_by_its_path",
+}
 # Where the baseline's cases added a stage, its events file: a stage now names an entry of the record's register, so
 # such a stage names the plan stage's events file and assertion index, and redacts the facts the pre-deploy stage reads.
 ADDED_STAGE_EVENTS = "units/root/pre_deploy/events.json"
@@ -97,6 +116,27 @@ RENAMED_MODULES = {
     "tests/test_models_identity.py": "tests/iac/test_models_resource_identities.py",
     "tests/test_models_tools_terraform.py": "tests/iac/test_models_tools_terraform.py",
     "tests/test_models_tools_variants.py": "tests/iac/test_models_tools_variants.py",
+}
+# Terraform tests moved to another module with the code they test, by their name: combining stages into a record's
+# coverage moved to its own module.
+RECORD_COVERAGE_TESTS = "tests/test_models_record_coverage.py"
+MOVED_TESTS = {
+    "test_a_record_counts_the_resources_of_its_one_plan_stage_first": RECORD_COVERAGE_TESTS,
+    "test_a_record_is_incomplete_when_any_stage_is_and_says_which": RECORD_COVERAGE_TESTS,
+    "test_a_record_lists_a_bounded_number_of_placeholders_across_its_stages": RECORD_COVERAGE_TESTS,
+    "test_a_set_pinned_in_part_is_derived_locally": RECORD_COVERAGE_TESTS,
+    "test_a_stage_gap_that_names_a_stage_is_refused": RECORD_COVERAGE_TESTS,
+    "test_a_stages_placeholders_name_no_stage": RECORD_COVERAGE_TESTS,
+    "test_an_assertion_counted_by_two_stages_is_refused": RECORD_COVERAGE_TESTS,
+    "test_an_evaluator_error_in_a_later_stage_names_the_records_reason": RECORD_COVERAGE_TESTS,
+    "test_combining_names_the_stage_of_each_placeholder": RECORD_COVERAGE_TESTS,
+    "test_one_stage_is_its_own_record_by_precedence": RECORD_COVERAGE_TESTS,
+    "test_the_assertion_set_of_several_stages_is_named_by_each_stages_own": RECORD_COVERAGE_TESTS,
+    "test_the_first_incomplete_stage_is_named_even_without_a_detail": RECORD_COVERAGE_TESTS,
+    "test_the_plans_reason_leads_a_later_stages_placeholders_and_yields_to_its_error": RECORD_COVERAGE_TESTS,
+    "test_the_verdict_is_the_stage_verdict_that_wins_by_precedence": RECORD_COVERAGE_TESTS,
+    "test_truncated_and_sampled_carry_over_from_any_stage": RECORD_COVERAGE_TESTS,
+    "test_two_stages_add_up_and_keep_the_plans_resources_in_scope": RECORD_COVERAGE_TESTS,
 }
 RENAMED_TESTS = {
     "test_only_a_stage_whose_input_carries_approvals_lists_them": (
@@ -124,6 +164,8 @@ REMOVED_TESTS = {
     "tests/test_canonical_digests.py::test_a_change_of_no_units_has_no_digest",
     "tests/test_models_change.py::test_a_change_always_names_its_digest",
     "tests/test_models_change.py::test_a_change_names_one_unit_with_its_plan_digest",
+    # A stage no longer counts single scanner results: each verdict from them is an event of the stage.
+    "tests/test_models_car.py::test_a_scanner_block_whose_counts_do_not_add_up_is_refused",
 }
 # The starter assertions gained ``spec.change_type``, so each digest of theirs the baseline cites, and each digest of a
 # set of them, maps to its value now; ``sizes`` gives the size of each retained file now.
@@ -140,7 +182,7 @@ BASELINE_CASE_FOLDERS = {
     "identities_invalid": "identities",
     "identities_valid": "identities",
 }
-EVENTS_API_VERSION = "iltero.io/assurance-events/v1"
+EVENTS_FILE = {"apiVersion": API_VERSION, "kind": EVENTS_FILE_KIND}
 UNITS = "/units_file/units"
 
 
@@ -191,13 +233,28 @@ def _new_change_digest(document: dict[str, Any]) -> dict[str, str]:
     }
 
 
+# Every starter assertion was renamed to the positional id form and kept its check word, the last segment of its id.
+STARTER_IDS = {path.stem.rsplit(".", 1)[1]: path.stem for path in STARTER_ASSERTIONS.glob("*.yaml")}
+_OLD_STARTER_ID = re.compile(r"\bILT\.[A-Z0-9_]+\.(?:[A-Z0-9_]+\.)?([A-Z0-9_]+)\b")
+
+
+def _renamed_ids(text: str) -> str:
+    """``text`` with every starter assertion id the baseline names written as it is now."""
+
+    def renamed(match: re.Match[str]) -> str:
+        new = STARTER_IDS.get(match.group(1))
+        return new if new is not None and match.group(0) not in STARTER_IDS.values() else match.group(0)
+
+    return _OLD_STARTER_ID.sub(renamed, text)
+
+
 def _renamed(value: Any, key: str | None = None) -> Any:
     """``value`` with every key and value named as it is now: the event's evaluator binding, the identity document's
     resolved list, no run origin and no subject resolution."""
     if isinstance(value, list):
         return [_renamed(item, key) for item in value]
     if isinstance(value, str):
-        return RENAMED_VALUES.get(value, value)
+        return _renamed_ids(RENAMED_VALUES.get(value, value))
     if not isinstance(value, dict):
         return value
     renamed: dict[str, Any] = {}
@@ -206,12 +263,18 @@ def _renamed(value: Any, key: str | None = None) -> Any:
             continue
         if field == REMOVED_SUBJECT_KEY and "identities" in value:
             continue
-        new = str(RENAMED_KEYS.get(field, field))
+        if field == "apiVersion" and item in RENAMED_DOCUMENTS:
+            renamed |= {"apiVersion": API_VERSION, "kind": RENAMED_DOCUMENTS[item]}
+            continue
+        new = _renamed_ids(str(RENAMED_KEYS.get(field, field)))
         if field == "binding" and key == "provenance":
             new = "evaluator_binding"
         if field == "bindings" and "unresolved" in value:
             new = "resolved"
         renamed[new] = _renamed(item, new)
+    fields = METADATA_FIELDS.get(renamed.get("kind", ""), ())
+    if fields and "metadata" not in renamed:
+        renamed["metadata"] = {field: renamed.pop(field) for field in fields}
     return renamed
 
 
@@ -219,6 +282,10 @@ def _renamed_pointer(pointer: str, vector: str) -> str:
     for old, new in RENAMED_KEYS.items():
         pointer = pointer.replace(f"/{old}", f"/{new}")
     pointer = pointer.replace("/provenance/binding", "/provenance/evaluator_binding")
+    kind = "ResourceIdentities" if "identit" in vector else "ChangeAssuranceRecord"
+    for field in METADATA_FIELDS[kind]:
+        if pointer == f"/{field}" or pointer.startswith(f"/{field}/"):
+            pointer = f"/metadata{pointer}"
     return pointer.replace("/bindings", "/resolved") if "identit" in vector or "/identity/" in pointer else pointer
 
 
@@ -231,6 +298,16 @@ def _replaced(value: Any, digests: dict[str, str]) -> Any:
     if isinstance(value, dict):
         return {key: _replaced(item, digests) for key, item in value.items()}
     return value
+
+
+# A failed condition's reason names its comparison plainly since the baseline:
+# "assert: false; predicate 0 is false: P op" became "assert: false; P op is false".
+_OLD_REASON = re.compile(r"^assert: false; predicate \d+ is false: (.+) ([a-z_]+)$")
+
+
+def _reworded_reason(reason: str | None) -> str | None:
+    match = _OLD_REASON.match(reason) if reason is not None else None
+    return f"assert: false; {match.group(1)} {match.group(2)} is false" if match else reason
 
 
 def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
@@ -246,13 +323,18 @@ def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
         **{key: moved.pop(key, None) for key in MOVED_INTO_CHANGE},
     }
     _with_plan_observation(moved, name)
+    for event in moved["events"]:
+        event["evaluation"]["policy_reason"] = _reworded_reason(event["evaluation"]["policy_reason"])
     for stage, record in moved["stages"].items():
         events = [event for event in moved["events"] if event["evaluation"]["stage"] == stage]
-        data = canonical_bytes({"apiVersion": EVENTS_API_VERSION, "events": events})
+        data = canonical_bytes({**EVENTS_FILE, "events": events})
         for ref in moved["evidence_refs"]:
             if ref["path"] == record["events"]["path"]:
-                ref.update(digest=digest(data), size_bytes=len(data))
+                # An events file is canonical JSON, and its entry now says so.
+                ref.update(digest=digest(data), size_bytes=len(data), canonicalization=CANONICALIZATION)
         record["events"]["digest"] = digest(data)
+    # A record's id is now derived from its run and unit.
+    moved["metadata"]["uuid"] = record_uuid(moved["run"]["id"], moved["unit"])
     return moved
 
 
@@ -326,7 +408,7 @@ def _moved_case(case: dict[str, Any], folder: str) -> dict[str, Any]:
     moved["remove"] = [_renamed_pointer(_moved_pointer(pointer), case["vector"]) for pointer in case["remove"]]
     moved["vector"] = _moved_vector(folder, case["vector"])
     if "message" in case:
-        moved["message"] = _reworded(case["message"])
+        moved["message"] = _renamed_ids(_reworded(case["message"]))
     if "problems" in case:
         moved["problems"] = [[MOVED_PROBLEMS.get(where, where), _reworded(what)] for where, what in case["problems"]]
     return moved
@@ -386,6 +468,15 @@ def test_no_baseline_vector_was_removed(folder: str) -> None:
     assert [path.name for path in baseline if not (VECTORS / folder / _moved_vector(folder, path.name)).is_file()] == []
 
 
+# A case that edits an event now also gives its stage's events file the digest and size its events give.
+_EVENTS_FILE_VALUE = re.compile(r"^/(stages/[a-z_]+/events/digest|evidence_refs/[0-9]+/(digest|size_bytes))$")
+
+
+def _without_events_file_values(case: dict[str, Any]) -> dict[str, Any]:
+    """``case`` without the events-file digests and sizes it sets for the events it edits."""
+    return {**case, "set": {k: v for k, v in case["set"].items() if not _EVENTS_FILE_VALUE.match(k)}}
+
+
 @pytest.mark.parametrize("folder", tuple(BASELINE_CASE_FOLDERS))
 def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
     shipped = {case["name"]: case for case in _read(_shipped_cases(folder))}
@@ -396,7 +487,7 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
         for case in baseline
         if case["name"] in shipped
         and case["name"] not in REBUILT_CASES
-        and shipped[case["name"]] != _moved_case(case, BASELINE_CASE_FOLDERS[folder])
+        and _without_events_file_values(shipped[case["name"]]) != _moved_case(case, BASELINE_CASE_FOLDERS[folder])
     ]
     # A rebuilt case is built anew, but still refuses its record for the reason it did.
     refused_otherwise = [
@@ -416,7 +507,7 @@ def test_every_terraform_test_of_the_baseline_still_exists() -> None:
     baseline = (BASELINE / "terraform_tests.txt").read_text(encoding="utf-8").split()
     kept = [test for test in baseline if test.split("[")[0] not in REMOVED_TESTS]
     listed = [
-        f"{RENAMED_MODULES.get(module, module)}::{RENAMED_TESTS.get(name, name)}"
+        f"{MOVED_TESTS.get(name.split('[')[0], RENAMED_MODULES.get(module, module))}::{RENAMED_TESTS.get(name, name)}"
         for module, name in (test.split("::", 1) for test in kept)
     ]
     modules = sorted({test.split("::")[0] for test in listed})

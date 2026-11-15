@@ -1,0 +1,19 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ACME.IAC.RESOURCE.AWS.RDS.DELETION_PROTECTED
+  version: "1.0.0"
+  title: RDS instance is protected from deletion
+  remediation: Set deletion_protection to true.
+spec:
+  change_type: iac_change
+  stage: plan
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_db_instance]
+  assert:
+    path: resource.after.deletion_protection
+    equal: true

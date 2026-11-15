@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "eval_003",
     "activity": "iac_change",
     "stage": "post_verify",
     "timestamp": "2026-09-16T18:43:00Z",
     "assertion": {
-      "id": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+      "id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
       "version": "1.0.0"
     }
   },

@@ -1,7 +1,7 @@
 [
   {
     "name": "pass",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -41,7 +41,7 @@
   },
   {
     "name": "fail",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -63,7 +63,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "reason": "assert: false; resource.after.storage_encrypted equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -81,7 +81,7 @@
   },
   {
     "name": "known_after_deploy",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -128,7 +128,7 @@
   },
   {
     "name": "redacted",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -165,7 +165,7 @@
   },
   {
     "name": "path_missing",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -197,7 +197,7 @@
   },
   {
     "name": "sentinel_on_the_way",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -231,7 +231,7 @@
   },
   {
     "name": "unknown_marker_without_reason",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -265,7 +265,7 @@
   },
   {
     "name": "unknown_marker_reason_not_a_token",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -300,7 +300,7 @@
   },
   {
     "name": "unknown_marker_reason_not_a_string",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -335,7 +335,7 @@
   },
   {
     "name": "redacted_marker_present_false",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -372,7 +372,7 @@
   },
   {
     "name": "intermediate_not_an_object",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -401,7 +401,7 @@
   },
   {
     "name": "intermediate_is_a_list",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -434,7 +434,7 @@
   },
   {
     "name": "null_is_a_known_value",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -456,7 +456,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "reason": "assert: false; resource.after.storage_encrypted equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -474,7 +474,7 @@
   },
   {
     "name": "subject_absent_still_evaluates",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "organization_scope": {
         "environment": {
@@ -498,7 +498,7 @@
   },
   {
     "name": "subject_is_echoed_as_its_kind_and_key_only",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -522,14 +522,14 @@
       "unknown": null,
       "when": null,
       "subject": {
-        "kind": "resource",
-        "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "key": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "kind": "resource"
       }
     }
   },
   {
     "name": "a_long_subject_key_is_echoed_shortened",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -553,17 +553,17 @@
       "unknown": null,
       "when": null,
       "subject": {
-        "kind": "resource",
         "key": {
-          "type": "string",
-          "length": 200
-        }
+          "length": 200,
+          "type": "string"
+        },
+        "kind": "resource"
       }
     }
   },
   {
     "name": "subject_not_an_object",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": "aws_db_instance.payments",
       "resource": {
@@ -582,7 +582,7 @@
   },
   {
     "name": "input_not_an_object",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": [
       "not",
       "a",
@@ -601,7 +601,7 @@
   },
   {
     "name": "actual_object_by_shape",
-    "assertion": "ILT.AWS.RDS.STORAGE_ENCRYPTED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -625,7 +625,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.storage_encrypted equal",
+      "reason": "assert: false; resource.after.storage_encrypted equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -645,7 +645,7 @@
   },
   {
     "name": "not_public_pass",
-    "assertion": "ILT.AWS.RDS.NOT_PUBLIC",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
     "input": {
       "subject": {
         "kind": "resource",
@@ -674,7 +674,7 @@
   },
   {
     "name": "not_public_fail",
-    "assertion": "ILT.AWS.RDS.NOT_PUBLIC",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
     "input": {
       "subject": {
         "kind": "resource",
@@ -696,14 +696,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.publicly_accessible equal",
+      "reason": "assert: false; resource.after.publicly_accessible equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "backup_retention_pass",
-    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -732,7 +732,7 @@
   },
   {
     "name": "backup_retention_fail",
-    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -754,14 +754,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.backup_retention_period greater_than_or_equal",
+      "reason": "assert: false; resource.after.backup_retention_period greater_than_or_equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "backup_retention_float_equal_int",
-    "assertion": "ILT.AWS.RDS.BACKUP_RETENTION",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -790,7 +790,7 @@
   },
   {
     "name": "guard_true_all_pass",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -822,7 +822,7 @@
   },
   {
     "name": "guard_false_not_applicable",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -854,7 +854,7 @@
   },
   {
     "name": "guard_false_hides_unknown_assert",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -890,7 +890,7 @@
   },
   {
     "name": "guard_unknown",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -935,7 +935,7 @@
   },
   {
     "name": "guard_path_missing",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -965,7 +965,7 @@
   },
   {
     "name": "false_beats_unknown",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -994,14 +994,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 2 is false: resource.after.publicly_accessible equal",
+      "reason": "assert: false; resource.after.publicly_accessible equal is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "unknown_beats_true",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1040,7 +1040,7 @@
   },
   {
     "name": "first_unknown_is_reported",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1084,7 +1084,7 @@
   },
   {
     "name": "not_in_small_instance",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1109,14 +1109,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 4 is false: resource.after.instance_class not_in",
+      "reason": "assert: false; resource.after.instance_class not_in is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "string_where_number_expected_is_false",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1141,14 +1141,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 3 is false: resource.after.backup_retention_period greater_than_or_equal",
+      "reason": "assert: false; resource.after.backup_retention_period greater_than_or_equal is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "index_counts_when_predicates_first",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1173,7 +1173,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: resource.after.storage_encrypted equal",
+      "reason": "assert: false; resource.after.storage_encrypted equal is false",
       "unknown": null,
       "when": "true",
       "predicates": [
@@ -1230,7 +1230,7 @@
   },
   {
     "name": "any_true_beats_unknown",
-    "assertion": "VEC.TRUTH.ANY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_ANY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1263,7 +1263,7 @@
   },
   {
     "name": "any_unknown_beats_false",
-    "assertion": "VEC.TRUTH.ANY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_ANY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1299,7 +1299,7 @@
   },
   {
     "name": "any_all_false",
-    "assertion": "VEC.TRUTH.ANY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_ANY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1321,14 +1321,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.a equal",
+      "reason": "assert: false; resource.after.a equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "not_true_is_false",
-    "assertion": "VEC.TRUTH.NEGATION",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_NEGATION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1349,7 +1349,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; a negated expression held",
+      "reason": "assert: false; resource.after.a equal is true, but must be false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -1367,7 +1367,7 @@
   },
   {
     "name": "not_false_is_true",
-    "assertion": "VEC.TRUTH.NEGATION",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_NEGATION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1395,7 +1395,7 @@
   },
   {
     "name": "not_unknown_is_unknown",
-    "assertion": "VEC.TRUTH.NEGATION",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_NEGATION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1430,7 +1430,7 @@
   },
   {
     "name": "all_unknown_and_false_is_false",
-    "assertion": "VEC.TRUTH.ALL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_ALL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1456,14 +1456,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: resource.after.b equal",
+      "reason": "assert: false; resource.after.b equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "all_unknown_and_true_is_unknown",
-    "assertion": "VEC.TRUTH.ALL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_ALL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1499,7 +1499,7 @@
   },
   {
     "name": "ordering_numbers_and_strings",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1533,7 +1533,7 @@
   },
   {
     "name": "ordering_ref_unknown",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1565,7 +1565,7 @@
   },
   {
     "name": "ordering_mixed_types_is_false",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1592,14 +1592,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.n greater_than",
+      "reason": "assert: false; resource.after.n greater_than is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "ordering_ref_records_resolved_value",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1626,7 +1626,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 5 is false: resource.after.t less_than",
+      "reason": "assert: false; resource.after.t less_than is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -1692,7 +1692,7 @@
   },
   {
     "name": "timestamps_compare_as_text",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1726,7 +1726,7 @@
   },
   {
     "name": "timestamp_offset_is_not_understood",
-    "assertion": "VEC.OPS.ORDERING",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_ORDERING",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1760,7 +1760,7 @@
   },
   {
     "name": "membership_pass",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1861,7 +1861,7 @@
   },
   {
     "name": "contains_on_non_list_is_false",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1888,14 +1888,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 2 is false: resource.after.tags contains",
+      "reason": "assert: false; resource.after.tags contains is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "in_ref_not_a_list_is_unknown",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1932,7 +1932,7 @@
   },
   {
     "name": "in_with_a_list_on_the_left_is_false",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -1963,14 +1963,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.kind in",
+      "reason": "assert: false; resource.after.kind in is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "not_equal_type_mismatch_is_true",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2006,7 +2006,7 @@
   },
   {
     "name": "contains_ref_resolving_to_list",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2042,7 +2042,7 @@
   },
   {
     "name": "list_of_five_by_shape",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2144,7 +2144,7 @@
   },
   {
     "name": "list_with_an_object_by_shape",
-    "assertion": "VEC.OPS.MEMBERSHIP",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_MEMBERSHIP",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2245,7 +2245,7 @@
   },
   {
     "name": "null_comparisons_pass",
-    "assertion": "VEC.OPS.NULL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_NULL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2298,7 +2298,7 @@
   },
   {
     "name": "null_comparisons_fail_on_a_null_that_should_be_set",
-    "assertion": "VEC.OPS.NULL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_NULL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2320,7 +2320,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.set not_equal",
+      "reason": "assert: false; resource.after.set not_equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -2347,7 +2347,7 @@
   },
   {
     "name": "null_comparisons_fail_on_a_value_that_should_be_null",
-    "assertion": "VEC.OPS.NULL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_NULL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2369,7 +2369,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: resource.after.cleared equal",
+      "reason": "assert: false; resource.after.cleared equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -2396,7 +2396,7 @@
   },
   {
     "name": "null_comparisons_unknown_on_an_absent_value",
-    "assertion": "VEC.OPS.NULL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_NULL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2447,7 +2447,7 @@
   },
   {
     "name": "null_comparisons_unknown_on_a_marker",
-    "assertion": "VEC.OPS.NULL",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.OPS_NULL",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2502,7 +2502,7 @@
   },
   {
     "name": "exists_match",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2561,7 +2561,7 @@
   },
   {
     "name": "exists_no_match",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2586,14 +2586,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "reason": "assert: false; resource.related exists is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "exists_empty",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2613,14 +2613,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "reason": "assert: false; resource.related exists is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "exists_collection_missing",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2661,7 +2661,7 @@
   },
   {
     "name": "exists_collection_not_a_list_is_unknown",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2691,7 +2691,7 @@
   },
   {
     "name": "exists_collection_is_a_marker",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2726,7 +2726,7 @@
   },
   {
     "name": "exists_unknown_element_no_match",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2766,7 +2766,7 @@
   },
   {
     "name": "exists_match_beats_unknown_element",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2815,7 +2815,7 @@
   },
   {
     "name": "exists_element_is_a_marker",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2851,7 +2851,7 @@
   },
   {
     "name": "exists_element_is_redacted",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2888,7 +2888,7 @@
   },
   {
     "name": "nested_exists_match",
-    "assertion": "VEC.EXISTS.NESTED",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NESTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2931,7 +2931,7 @@
   },
   {
     "name": "nested_exists_inner_no_match",
-    "assertion": "VEC.EXISTS.NESTED",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NESTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -2964,14 +2964,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "reason": "assert: false; resource.related exists is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "nested_exists_inner_unknown",
-    "assertion": "VEC.EXISTS.NESTED",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NESTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3018,7 +3018,7 @@
   },
   {
     "name": "nested_exists_inner_not_a_list",
-    "assertion": "VEC.EXISTS.NESTED",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NESTED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3057,7 +3057,7 @@
   },
   {
     "name": "bare_item_path_matches_element",
-    "assertion": "VEC.ITEM.BARE",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.ITEM_BARE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3088,7 +3088,7 @@
   },
   {
     "name": "bare_item_path_no_match",
-    "assertion": "VEC.ITEM.BARE",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.ITEM_BARE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3111,14 +3111,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.after.tags exists",
+      "reason": "assert: false; resource.after.tags exists is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "bare_item_marker_element",
-    "assertion": "VEC.ITEM.BARE",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.ITEM_BARE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3156,7 +3156,7 @@
   },
   {
     "name": "nonempty_list_of_markers_passes",
-    "assertion": "VEC.EXISTS.NONEMPTY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NONEMPTY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3189,7 +3189,7 @@
   },
   {
     "name": "nonempty_over_non_list_is_unknown",
-    "assertion": "VEC.EXISTS.NONEMPTY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NONEMPTY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3221,7 +3221,7 @@
   },
   {
     "name": "not_exists_over_empty_passes",
-    "assertion": "VEC.EXISTS.NONEMPTY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NONEMPTY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3241,14 +3241,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: resource.related exists",
+      "reason": "assert: false; resource.related exists is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "guard_unknown_hides_assert",
-    "assertion": "VEC.GUARD.UNKNOWN",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.GUARD_UNKNOWN",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3282,7 +3282,7 @@
   },
   {
     "name": "approval_bound_to_change",
-    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3329,7 +3329,7 @@
   },
   {
     "name": "approval_for_other_change",
-    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3369,14 +3369,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "reason": "assert: false; approvals exists is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "approval_without_security_role",
-    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3416,14 +3416,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "reason": "assert: false; approvals exists is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "no_approvals_outside_production",
-    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3449,7 +3449,7 @@
   },
   {
     "name": "sensitive_change_approved",
-    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3503,7 +3503,7 @@
   },
   {
     "name": "sensitive_change_unapproved",
-    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3529,14 +3529,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: approvals exists",
+      "reason": "assert: false; approvals exists is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "no_sensitive_resource_not_applicable",
-    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3569,7 +3569,7 @@
   },
   {
     "name": "sensitive_guard_unmapped_kind",
-    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3612,7 +3612,7 @@
   },
   {
     "name": "sensitive_guard_resources_not_a_list",
-    "assertion": "ILT.CHANGE.SENSITIVE_CHANGE_APPROVED",
+    "assertion": "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -3707,7 +3707,7 @@
   },
   {
     "name": "applied_plan_is_evaluated_plan",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -3741,7 +3741,7 @@
   },
   {
     "name": "applied_plan_is_another_plan",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -3768,14 +3768,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: deployment.plan.digest equal",
+      "reason": "assert: false; deployment.plan.digest equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "applied_plan_differs",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -3802,7 +3802,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "reason": "assert: false; deployment.plan.artifact_digest equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -3847,7 +3847,7 @@
   },
   {
     "name": "artifact_digest_unavailable",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -3874,14 +3874,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "reason": "assert: false; deployment.plan.artifact_digest equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "regression_without_deployment",
-    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3908,14 +3908,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 2 is false: assurance.since_previous.deployments exists",
+      "reason": "assert: false; assurance.since_previous.deployments exists is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "regression_explained_by_deployment",
-    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3953,7 +3953,7 @@
   },
   {
     "name": "regression_explained_by_approved_exception",
-    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -3991,7 +3991,7 @@
   },
   {
     "name": "rejected_exception_does_not_explain",
-    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4022,14 +4022,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 2 is false: assurance.since_previous.deployments exists",
+      "reason": "assert: false; assurance.since_previous.deployments exists is false",
       "unknown": null,
       "when": "true"
     }
   },
   {
     "name": "no_regression",
-    "assertion": "ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION",
+    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4063,7 +4063,7 @@
   },
   {
     "name": "long_literals",
-    "assertion": "VEC.LITERALS.LONG",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.LITERALS_LONG",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4087,7 +4087,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: resource.after.text equal",
+      "reason": "assert: false; resource.after.text equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -4141,7 +4141,7 @@
   },
   {
     "name": "string_of_128_is_kept_129_by_shape",
-    "assertion": "VEC.LITERALS.EDGE",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.LITERALS_EDGE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4216,7 +4216,7 @@
   },
   {
     "name": "production_approved_without_a_production_flag",
-    "assertion": "ILT.CHANGE.PRODUCTION_APPROVED",
+    "assertion": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
     "input": {
       "subject": {
         "kind": "change",
@@ -4269,7 +4269,7 @@
   },
   {
     "name": "production_baseline_without_a_production_flag",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4307,7 +4307,7 @@
   },
   {
     "name": "scope_first_selector_picks",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4342,7 +4342,7 @@
   },
   {
     "name": "scope_second_selector_picks",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4377,7 +4377,7 @@
   },
   {
     "name": "scope_no_selector_picks",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4412,7 +4412,7 @@
   },
   {
     "name": "scope_unmapped_kind_of_the_provider",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4453,7 +4453,7 @@
   },
   {
     "name": "scope_unmapped_kind_beside_a_pick",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4499,7 +4499,7 @@
   },
   {
     "name": "scope_resource_of_another_provider",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4534,7 +4534,7 @@
   },
   {
     "name": "scope_in_but_when_false",
-    "assertion": "VEC.SCOPE.CHANGE",
+    "assertion": "VEC.IAC.CHANGE.TEST.SCOPE_CHANGE",
     "input": {
       "subject": {
         "kind": "change",
@@ -4569,7 +4569,7 @@
   },
   {
     "name": "plan_binding_neither_artifact_provided",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -4603,7 +4603,7 @@
   },
   {
     "name": "plan_binding_applied_without_the_saved_plan",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -4630,14 +4630,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: deployment.plan.artifact_digest equal",
+      "reason": "assert: false; deployment.plan.artifact_digest equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "negation_of_a_null_leaf_is_true",
-    "assertion": "VEC.TRUTH.NEGATION",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_NEGATION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4665,7 +4665,7 @@
   },
   {
     "name": "negation_of_an_unreported_fact_is_unknown",
-    "assertion": "VEC.TRUTH.NEGATION",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_NEGATION",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4699,7 +4699,7 @@
   },
   {
     "name": "guard_through_a_null_part_is_path_missing",
-    "assertion": "ILT.AWS.RDS.PRODUCTION_BASELINE",
+    "assertion": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4726,7 +4726,7 @@
   },
   {
     "name": "related_copy_left_out_is_path_missing",
-    "assertion": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4762,7 +4762,7 @@
   },
   {
     "name": "exists_over_a_null_collection_is_not_a_list",
-    "assertion": "VEC.EXISTS.NONEMPTY",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NONEMPTY",
     "input": {
       "subject": {
         "kind": "resource",
@@ -4792,7 +4792,7 @@
   },
   {
     "name": "no_resource_drifted_after_the_apply",
-    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "assertion": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -4818,7 +4818,7 @@
   },
   {
     "name": "a_resource_differed_in_the_first_reading_only",
-    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "assertion": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -4850,7 +4850,7 @@
   },
   {
     "name": "a_resource_drifted_after_the_apply",
-    "assertion": "ILT.IAC.NO_DRIFT_AFTER_APPLY",
+    "assertion": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -4874,14 +4874,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: drift_check.differences_count equal",
+      "reason": "assert: false; drift_check.differences_count equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "image_from_the_verified_commit",
-    "assertion": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+    "assertion": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -4931,7 +4931,7 @@
   },
   {
     "name": "image_from_another_commit",
-    "assertion": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+    "assertion": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -4960,7 +4960,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: artifact.build_commit equal",
+      "reason": "assert: false; artifact.build_commit equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -4981,7 +4981,7 @@
   },
   {
     "name": "image_whose_build_names_no_commit",
-    "assertion": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+    "assertion": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5037,7 +5037,7 @@
   },
   {
     "name": "image_build_commit_not_verified_by_a_server",
-    "assertion": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+    "assertion": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5085,7 +5085,7 @@
   },
   {
     "name": "image_tests_ran_on_the_index",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5149,7 +5149,7 @@
   },
   {
     "name": "image_tests_ran_on_one_platform",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5213,7 +5213,7 @@
   },
   {
     "name": "image_tests_ran_on_another_image",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5255,7 +5255,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: tests exists",
+      "reason": "assert: false; tests exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5277,7 +5277,7 @@
   },
   {
     "name": "image_tests_report_with_no_tests",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5319,7 +5319,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: tests exists",
+      "reason": "assert: false; tests exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5341,7 +5341,7 @@
   },
   {
     "name": "image_tests_report_with_every_test_skipped",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5383,7 +5383,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: tests exists",
+      "reason": "assert: false; tests exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5405,7 +5405,7 @@
   },
   {
     "name": "image_tests_none",
-    "assertion": "ILT.IMAGE.TESTS_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5434,7 +5434,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: tests exists",
+      "reason": "assert: false; tests exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5453,7 +5453,7 @@
   },
   {
     "name": "image_scan_names_the_index",
-    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5522,7 +5522,7 @@
   },
   {
     "name": "image_scan_names_one_platform",
-    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5591,7 +5591,7 @@
   },
   {
     "name": "image_scan_tied_only_by_the_pipeline",
-    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5638,7 +5638,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: scans exists",
+      "reason": "assert: false; scans exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5660,7 +5660,7 @@
   },
   {
     "name": "image_scan_of_another_image",
-    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5707,7 +5707,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: scans exists",
+      "reason": "assert: false; scans exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5729,7 +5729,7 @@
   },
   {
     "name": "image_scan_none",
-    "assertion": "ILT.IMAGE.SCAN_RAN",
+    "assertion": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -5758,7 +5758,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: scans exists",
+      "reason": "assert: false; scans exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5777,7 +5777,7 @@
   },
   {
     "name": "image_deployed_as_checked",
-    "assertion": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -5845,7 +5845,7 @@
   },
   {
     "name": "image_deployed_of_another_digest",
-    "assertion": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -5880,7 +5880,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: deployment.digest equal",
+      "reason": "assert: false; deployment.digest equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5913,7 +5913,7 @@
   },
   {
     "name": "image_deployed_from_another_repository",
-    "assertion": "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -5948,7 +5948,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: deployment.repository equal",
+      "reason": "assert: false; deployment.repository equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -5981,7 +5981,7 @@
   },
   {
     "name": "workload_runs_the_index",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6110,7 +6110,7 @@
   },
   {
     "name": "workload_runs_platform_images",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6247,7 +6247,7 @@
   },
   {
     "name": "workload_runs_another_image",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6315,7 +6315,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; a negated expression held",
+      "reason": "assert: false; drift_check.containers_read exists is true, but must be false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -6384,7 +6384,7 @@
   },
   {
     "name": "workload_runs_no_compared_container",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6444,7 +6444,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 3 is false: drift_check.containers_read exists",
+      "reason": "assert: false; drift_check.containers_read exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -6513,7 +6513,7 @@
   },
   {
     "name": "workload_runs_another_image_in_an_uncompared_container",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6652,7 +6652,7 @@
   },
   {
     "name": "workload_whose_rollout_has_not_finished",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6712,7 +6712,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: drift_check.rollout.complete equal",
+      "reason": "assert: false; drift_check.rollout.complete equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -6781,7 +6781,7 @@
   },
   {
     "name": "workload_with_fewer_live_pods_read_than_its_rollout_calls_for",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -6840,7 +6840,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: drift_check.live_pods_read equal",
+      "reason": "assert: false; drift_check.live_pods_read equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -6909,7 +6909,7 @@
   },
   {
     "name": "workload_with_a_terminating_pod_on_another_image",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7047,7 +7047,7 @@
   },
   {
     "name": "workload_running_an_image_whose_digest_was_not_reported",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7190,7 +7190,7 @@
   },
   {
     "name": "workload_whose_rollout_has_not_finished_running_an_image_whose_digest_was_not_reported",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7253,7 +7253,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: drift_check.rollout.complete equal",
+      "reason": "assert: false; drift_check.rollout.complete equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -7322,7 +7322,7 @@
   },
   {
     "name": "workload_running_another_image_and_one_whose_digest_was_not_reported",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7393,7 +7393,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; a negated expression held",
+      "reason": "assert: false; drift_check.containers_read exists is true, but must be false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -7462,7 +7462,7 @@
   },
   {
     "name": "workload_with_a_finished_pod_on_another_image",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7600,7 +7600,7 @@
   },
   {
     "name": "workload_whose_template_compares_no_container_running_the_image_in_an_added_one",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7670,7 +7670,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 2 is false: drift_check.template_containers exists",
+      "reason": "assert: false; drift_check.template_containers exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -7739,7 +7739,7 @@
   },
   {
     "name": "workload_scaled_to_zero",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7788,7 +7788,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 3 is false: drift_check.containers_read exists",
+      "reason": "assert: false; drift_check.containers_read exists is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -7851,7 +7851,7 @@
   },
   {
     "name": "workload_runs_another_image_with_no_accepted_build",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -7969,7 +7969,7 @@
   },
   {
     "name": "workload_runs_a_platform_image_with_no_accepted_build",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -8087,7 +8087,7 @@
   },
   {
     "name": "workload_runs_the_index_with_no_accepted_build",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -8202,7 +8202,7 @@
   },
   {
     "name": "workload_runs_another_image_in_a_run_no_server_opened",
-    "assertion": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+    "assertion": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -8332,16 +8332,17 @@
   },
   {
     "name": "accepted_build_pass",
-    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "assertion": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
         "activity": "image_deploy",
         "stage": "pre_deploy",
         "timestamp": "2026-11-02T09:00:00Z",
         "assertion": {
-          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
           "version": "1.0.0"
         }
       },
@@ -8447,16 +8448,17 @@
   },
   {
     "name": "accepted_build_fail_when_the_server_accepted_none",
-    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "assertion": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
         "activity": "image_deploy",
         "stage": "pre_deploy",
         "timestamp": "2026-11-02T09:00:00Z",
         "assertion": {
-          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
           "version": "1.0.0"
         }
       },
@@ -8524,7 +8526,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "reason": "assert: false; change.build not_equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -8546,16 +8548,17 @@
   },
   {
     "name": "accepted_build_unknown_in_a_run_no_server_opened",
-    "assertion": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+    "assertion": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
         "activity": "image_deploy",
         "stage": "pre_deploy",
         "timestamp": "2026-11-02T09:00:00Z",
         "assertion": {
-          "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+          "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
           "version": "1.0.0"
         }
       },
@@ -8663,7 +8666,7 @@
   },
   {
     "name": "signed_provenance_for_this_run",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8733,7 +8736,7 @@
   },
   {
     "name": "signed_provenance_not_sent",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8765,14 +8768,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: attestation_outcome.outcome equal",
+      "reason": "assert: false; attestation_outcome.outcome equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "signed_provenance_refused",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8815,14 +8818,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: attestation_outcome.outcome equal",
+      "reason": "assert: false; attestation_outcome.outcome equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "signed_provenance_unavailable",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8865,7 +8868,7 @@
   },
   {
     "name": "signed_provenance_of_another_run_attempt",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8928,14 +8931,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 7 is false: attestation_outcome.ci_run_attempt equal",
+      "reason": "assert: false; attestation_outcome.ci_run_attempt equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "signed_provenance_of_a_platform_image_only",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -8998,14 +9001,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 1 is false: attestation_outcome.image_digest equal",
+      "reason": "assert: false; attestation_outcome.image_digest equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "signed_provenance_of_another_commit",
-    "assertion": "ILT.IMAGE.SIGNED_PROVENANCE_MATCHES_RUN",
+    "assertion": "ILT.IMAGE.ARTIFACT.PROVENANCE.SIGNED_PROVENANCE_MATCHES_RUN",
     "input": {
       "subject": {
         "kind": "artifact",
@@ -9068,14 +9071,14 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 5 is false: attestation_outcome.commit equal",
+      "reason": "assert: false; attestation_outcome.commit equal is false",
       "unknown": null,
       "when": null
     }
   },
   {
     "name": "applied_plan_decided_with_the_state_not_read",
-    "assertion": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+    "assertion": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -9115,7 +9118,7 @@
   },
   {
     "name": "state_read_after_the_apply",
-    "assertion": "VEC.DEPLOYMENT.STATE",
+    "assertion": "VEC.IAC.DEPLOYMENT.TEST.DEPLOYMENT_STATE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -9151,7 +9154,7 @@
   },
   {
     "name": "state_not_read_after_the_apply",
-    "assertion": "VEC.DEPLOYMENT.STATE",
+    "assertion": "VEC.IAC.DEPLOYMENT.TEST.DEPLOYMENT_STATE",
     "input": {
       "subject": {
         "kind": "deployment",
@@ -9189,16 +9192,17 @@
   },
   {
     "name": "commits_reviewed_pass",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -9371,16 +9375,17 @@
   },
   {
     "name": "commits_reviewed_pass_at_the_starting_point",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -9553,16 +9558,17 @@
   },
   {
     "name": "commits_reviewed_pass_since_an_earlier_reviewed_reading",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -9739,16 +9745,17 @@
   },
   {
     "name": "commits_reviewed_fail_two_reasons",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -9910,7 +9917,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -9932,16 +9939,17 @@
   },
   {
     "name": "commits_reviewed_fail_list_incomplete",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -10295,7 +10303,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -10317,16 +10325,17 @@
   },
   {
     "name": "commits_reviewed_fail_too_many_commits",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -10477,7 +10486,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -10499,16 +10508,17 @@
   },
   {
     "name": "commits_reviewed_fail_no_review_starting_point",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -10645,7 +10655,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -10667,16 +10677,17 @@
   },
   {
     "name": "commits_reviewed_fail_starting_point_not_in_history",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -10822,7 +10833,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -10844,16 +10855,17 @@
   },
   {
     "name": "commits_reviewed_fail_head_commit_before_review_starting_point",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -10999,7 +11011,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -11021,16 +11033,17 @@
   },
   {
     "name": "commits_reviewed_fail_source_commit_not_verified_commit",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -11167,7 +11180,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -11189,16 +11202,17 @@
   },
   {
     "name": "commits_reviewed_unknown_marker",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "eval_003",
         "activity": "iac_change",
         "stage": "pre_deploy",
         "timestamp": "2026-09-16T18:30:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -11352,16 +11366,17 @@
   },
   {
     "name": "commits_reviewed_fail_build_commit_not_verified_commit",
-    "assertion": "ILT.CHANGE.COMMITS_REVIEWED",
+    "assertion": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
     "input": {
-      "apiVersion": "iltero.io/assurance-context/v1",
+      "apiVersion": "iltero.com/v1",
+      "kind": "AssuranceContext",
       "evaluation": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
         "activity": "image_deploy",
         "stage": "pre_deploy",
         "timestamp": "2026-11-02T09:00:00Z",
         "assertion": {
-          "id": "ILT.CHANGE.COMMITS_REVIEWED",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
           "version": "1.0.0"
         }
       },
@@ -11452,7 +11467,7 @@
     },
     "expected": {
       "status": "fail",
-      "reason": "assert: false; predicate 0 is false: commit_review.outcome equal",
+      "reason": "assert: false; commit_review.outcome equal is false",
       "unknown": null,
       "when": null,
       "predicates": [
@@ -11470,6 +11485,1552 @@
         "key": "sha256:7c365e0fdd721656a180f517674f781a5c5bc111ecf975862ed0aafa6ed5e355",
         "kind": "change"
       }
+    }
+  },
+  {
+    "name": "scanner_observed_guard_admits",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "thing.a",
+        "type": "thing",
+        "after": {}
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "assert: observed_by_scanners",
+      "unknown": {
+        "path": "assert",
+        "reason": "observed_by_scanners"
+      },
+      "when": "true",
+      "predicates": [
+        {
+          "actual": true,
+          "clause": "when",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "organization_scope.environment.production",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "scanner_observed_guard_excludes",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "thing.a",
+        "type": "thing",
+        "after": {}
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "staging",
+          "production": false
+        }
+      }
+    },
+    "expected": {
+      "status": "not_applicable",
+      "reason": "when: false",
+      "unknown": null,
+      "when": "false",
+      "predicates": [
+        {
+          "actual": false,
+          "clause": "when",
+          "expected": true,
+          "index": 0,
+          "op": "equal",
+          "path": "organization_scope.environment.production",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "scanner_observed_guard_unknown",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "thing.a",
+        "type": "thing",
+        "after": {}
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production"
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "organization_scope.environment.production: path_missing",
+      "unknown": {
+        "path": "organization_scope.environment.production",
+        "reason": "path_missing"
+      },
+      "when": "unknown"
+    }
+  },
+  {
+    "name": "security_group_security_group_all_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.all_world",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "all_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_bare",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.bare",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "name": "bare",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "ingress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.ingress: known_after_deploy",
+      "unknown": {
+        "path": "resource.after.ingress",
+        "reason": "known_after_deploy"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_compliant",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.compliant",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "10.0.0.0/8"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "compliant",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_rdp_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.rdp_world",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 3389,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 3389
+            }
+          ],
+          "name": "rdp_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_ssh_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.ssh_world",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "ssh_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_ssh_world_v6",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.ssh_world_v6",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [
+                "::/0"
+              ],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "ssh_world_v6",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_unknown_cidr",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.unknown_cidr",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22,
+              "cidr_blocks": {
+                "__unknown": true,
+                "reason": "known_after_deploy"
+              }
+            }
+          ],
+          "name": "unknown_cidr",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "item.cidr_blocks: known_after_deploy",
+      "unknown": {
+        "path": "item.cidr_blocks",
+        "reason": "known_after_deploy"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_rule_ssh_private",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group_rule.ssh_private",
+        "type": "aws_security_group_rule",
+        "after": {
+          "cidr_blocks": [
+            "10.0.0.0/8"
+          ],
+          "description": null,
+          "from_port": 22,
+          "ipv6_cidr_blocks": null,
+          "prefix_list_ids": null,
+          "protocol": "tcp",
+          "region": "us-east-1",
+          "self": false,
+          "timeouts": null,
+          "to_port": 22,
+          "type": "ingress",
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "source_security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_rule_ssh_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group_rule.ssh_world",
+        "type": "aws_security_group_rule",
+        "after": {
+          "cidr_blocks": [
+            "0.0.0.0/0"
+          ],
+          "description": null,
+          "from_port": 22,
+          "ipv6_cidr_blocks": null,
+          "prefix_list_ids": null,
+          "protocol": "tcp",
+          "region": "us-east-1",
+          "self": false,
+          "timeouts": null,
+          "to_port": 22,
+          "type": "ingress",
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "source_security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.to_port greater_than_or_equal is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_vpc_security_group_ingress_rule_all_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_vpc_security_group_ingress_rule.all_world",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "after": {
+          "cidr_ipv4": "0.0.0.0/0",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": null,
+          "ip_protocol": "-1",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": null,
+          "tags_all": {},
+          "to_port": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ip_protocol in is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_vpc_security_group_ingress_rule_rdp_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_vpc_security_group_ingress_rule.rdp_world",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "after": {
+          "cidr_ipv4": "0.0.0.0/0",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 3389,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 3389,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.to_port greater_than_or_equal is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_vpc_security_group_ingress_rule_ssh_private",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_vpc_security_group_ingress_rule.ssh_private",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "after": {
+          "cidr_ipv4": "10.0.0.0/8",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 22,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 22,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_vpc_security_group_ingress_rule_ssh_unknown",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_vpc_security_group_ingress_rule.ssh_unknown",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "after": {
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 22,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 22,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "cidr_ipv4": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.cidr_ipv4: known_after_deploy",
+      "unknown": {
+        "path": "resource.after.cidr_ipv4",
+        "reason": "known_after_deploy"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_vpc_security_group_ingress_rule_ssh_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_vpc_security_group_ingress_rule.ssh_world",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "after": {
+          "cidr_ipv4": "0.0.0.0/0",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 22,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "us-east-1",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 22,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "security_group_rule_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.to_port greater_than_or_equal is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_default_security_group_ssh_world",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_default_security_group.default",
+        "type": "aws_default_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "ssh_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_all_protocols_written_upper_case",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.ssh_world",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "ALL",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "ssh_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "security_group_security_group_open_block_beside_an_unknown_block",
+    "assertion": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_security_group.ssh_world",
+        "type": "aws_security_group",
+        "after": {
+          "description": "Managed by Terraform",
+          "ingress": [
+            {
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22,
+              "cidr_blocks": {
+                "__unknown": true,
+                "reason": "known_after_deploy"
+              }
+            },
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "ssh_world",
+          "region": "us-east-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "timeouts": null,
+          "arn": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "egress": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "name_prefix": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "tags_all": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          },
+          "vpc_id": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.ingress exists is true, but must be false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "s3_kms_kms_configuration",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_s3_bucket.kms",
+        "type": "aws_s3_bucket",
+        "after": {
+          "bucket": "ilt-enc-kms",
+          "force_destroy": false,
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "server_side_encryption_configuration": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        },
+        "related": [
+          {
+            "address": "aws_s3_bucket_server_side_encryption_configuration.kms",
+            "type": "aws_s3_bucket_server_side_encryption_configuration",
+            "relation": "configures",
+            "via": [
+              "bucket"
+            ],
+            "resource": {
+              "after": {
+                "expected_bucket_owner": null,
+                "region": "us-east-1",
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "sse_algorithm": "aws:kms"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "s3_kms_aes256_configuration",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_s3_bucket.aes",
+        "type": "aws_s3_bucket",
+        "after": {
+          "bucket": "ilt-enc-aes",
+          "force_destroy": false,
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "server_side_encryption_configuration": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        },
+        "related": [
+          {
+            "address": "aws_s3_bucket_server_side_encryption_configuration.aes",
+            "type": "aws_s3_bucket_server_side_encryption_configuration",
+            "relation": "configures",
+            "via": [
+              "bucket"
+            ],
+            "resource": {
+              "after": {
+                "expected_bucket_owner": null,
+                "region": "us-east-1",
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "sse_algorithm": "AES256"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.related exists is false",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "s3_kms_no_configuration",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_s3_bucket.none",
+        "type": "aws_s3_bucket",
+        "after": {
+          "bucket": "ilt-enc-none",
+          "force_destroy": false,
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "server_side_encryption_configuration": {
+            "__unknown": true,
+            "reason": "known_after_deploy"
+          }
+        },
+        "related": []
+      }
+    },
+    "expected": {
+      "status": "unknown",
+      "reason": "resource.after.server_side_encryption_configuration: known_after_deploy",
+      "unknown": {
+        "path": "resource.after.server_side_encryption_configuration",
+        "reason": "known_after_deploy"
+      },
+      "when": null
+    }
+  },
+  {
+    "name": "s3_kms_inline_kms",
+    "assertion": "ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "resource": {
+        "id": "aws_s3_bucket.none",
+        "type": "aws_s3_bucket",
+        "after": {
+          "bucket": "ilt-enc-none",
+          "force_destroy": false,
+          "region": "us-east-1",
+          "tags": null,
+          "timeouts": null,
+          "server_side_encryption_configuration": [
+            {
+              "rule": [
+                {
+                  "apply_server_side_encryption_by_default": [
+                    {
+                      "sse_algorithm": "aws:kms"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "related": []
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null
+    }
+  },
+  {
+    "name": "reason_names_the_negated_comparison_that_held",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": 0,
+          "b": 1,
+          "c": 1
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.c equal is true, but must be false",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.a",
+          "status": "false"
+        },
+        {
+          "actual": 1,
+          "clause": "assert",
+          "expected": 1,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.b",
+          "status": "true"
+        },
+        {
+          "actual": 1,
+          "clause": "assert",
+          "expected": 1,
+          "index": 2,
+          "op": "equal",
+          "path": "resource.after.c",
+          "status": "true"
+        }
+      ]
+    }
+  },
+  {
+    "name": "reason_names_the_first_false_part_of_a_false_all",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": 0,
+          "b": 0,
+          "c": 0
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; resource.after.a equal is false",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.a",
+          "status": "false"
+        },
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.b",
+          "status": "false"
+        },
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 2,
+          "op": "equal",
+          "path": "resource.after.c",
+          "status": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "reason_of_a_pass",
+    "assertion": "VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON",
+    "input": {
+      "subject": {
+        "kind": "resource",
+        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "organization_scope": {
+        "environment": {
+          "name": "production",
+          "production": true
+        }
+      },
+      "resource": {
+        "type": "thing",
+        "after": {
+          "a": 0,
+          "b": 1,
+          "c": 0
+        }
+      }
+    },
+    "expected": {
+      "status": "pass",
+      "reason": "assert: true",
+      "unknown": null,
+      "when": null,
+      "predicates": [
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 0,
+          "op": "equal",
+          "path": "resource.after.a",
+          "status": "false"
+        },
+        {
+          "actual": 1,
+          "clause": "assert",
+          "expected": 1,
+          "index": 1,
+          "op": "equal",
+          "path": "resource.after.b",
+          "status": "true"
+        },
+        {
+          "actual": 0,
+          "clause": "assert",
+          "expected": 1,
+          "index": 2,
+          "op": "equal",
+          "path": "resource.after.c",
+          "status": "false"
+        }
+      ]
     }
   }
 ]

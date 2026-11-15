@@ -1,8 +1,10 @@
-"""The built-in assertions as this package ships them: each one's version, document digest and compiled module digest.
+"""The assertions this package ships, and its built-ins among them: each one's version, document digest and compiled
+module digest.
 
-A built-in assertion's id is reserved: an evaluation that names it names the
-shipped document, at its shipped version, and ran the module compiled from it,
-so no other rule can stand in its place under that id.
+A shipped assertion's id is reserved: an evaluation that names it as this
+package's starter names the shipped document at its shipped version. A
+built-in is also always evaluated from it, and runs the module compiled from
+it, so no other rule can stand in its place under that id.
 """
 
 from __future__ import annotations
@@ -11,7 +13,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from iltero_schemas.assertions.paths import BUILT_IN_DOCUMENTS
+from iltero_schemas.assertions.paths import ASSERTIONS, BUILT_IN_DOCUMENTS
 from iltero_schemas.ast import parse_document
 from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical.encoding import digest_of
@@ -19,24 +21,31 @@ from iltero_schemas.compiler import compile
 
 
 @dataclass(frozen=True)
-class BuiltIn:
-    """A built-in assertion as shipped: its version, the digest of its document, and of its compiled module."""
+class ShippedAssertion:
+    """An assertion as this package ships it: its version, the digest of its document, and of its compiled module."""
 
     version: str
     digest: str
     compiled_digest: str
 
 
-def _built_in(text: str) -> BuiltIn:
+def _shipped(text: str) -> tuple[str, ShippedAssertion]:
+    """The shipped document's id, as the document itself gives it, and the document as shipped."""
     document = load_document(text)
     assertion = parse_document(document)
-    return BuiltIn(version=assertion.version, digest=digest_of(document), compiled_digest=compile(assertion).digest)
+    return assertion.id, ShippedAssertion(
+        version=assertion.version, digest=digest_of(document), compiled_digest=compile(assertion).digest
+    )
 
 
-# Each built-in assertion, by its id.
-BUILT_INS: Mapping[str, BuiltIn] = MappingProxyType(
-    {
-        assertion_id: _built_in(document.read_text(encoding="utf-8"))
-        for assertion_id, document in BUILT_IN_DOCUMENTS.items()
-    }
+# Every assertion this package ships, by the id its document gives, and the built-ins among them.
+SHIPPED_ASSERTIONS: Mapping[str, ShippedAssertion] = MappingProxyType(
+    dict(
+        _shipped(path.read_text(encoding="utf-8"))
+        for path in sorted(ASSERTIONS.iterdir(), key=lambda path: path.name)
+        if path.name.endswith(".yaml")
+    )
+)
+BUILT_INS: Mapping[str, ShippedAssertion] = MappingProxyType(
+    {assertion_id: SHIPPED_ASSERTIONS[assertion_id] for assertion_id in BUILT_IN_DOCUMENTS}
 )

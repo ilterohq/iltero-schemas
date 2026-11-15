@@ -1,0 +1,19 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: VEC.IAC.RESOURCE.VEC.TEST.INVALID_CASE
+  version: "1.0.0"
+  title: An invalid document
+  description: A thing meets this assertion when the scanner checks its binding names all pass for it.
+spec:
+  change_type: iac_change
+  stage: plan
+  evidence:
+    stages: [plan]
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: vec
+        resource_types: [thing]
+  assert: null

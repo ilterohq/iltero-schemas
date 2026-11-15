@@ -1,0 +1,18 @@
+{
+  "iac/addresses_trivy.json": "sha256:50aff7e1bbf9b92ce921c6756c351cad108106f0d41475c366e4279ccb0ebdac",
+  "iac/cloudtrail_checkov.json": "sha256:c9e745f3b2192b197aa7c7d1f856ff7b708d7b4209f258f62b1e3cf990707d2f",
+  "iac/cloudtrail_trivy.json": "sha256:1016e238268fb5e7b80703a40644219f420680ca6656a288a242b650206f1a8b",
+  "iac/config_checkov.json": "sha256:2cfe78420d4d13c296f7b2553c6956128e30c938e920b17a453606d6687a1f68",
+  "iac/config_trivy.json": "sha256:379c45a76d7078868aedec7ee33baa3d43ee04d3d34461f46388b536bbab1619",
+  "iac/iam_checkov.json": "sha256:53b701950eb470a3a8825eb52d9c645da2c3d6ebcdf75f03ab7502ad99578a40",
+  "iac/iam_trivy.json": "sha256:3c55ac3acda3f722020e409d68610ab122630172266058299adf6dc03df4b800",
+  "iac/rds_checkov.json": "sha256:21a1ccd8efce61de6455e37702af988ca9cdd7a13bd8b4cb28e08835570fc04e",
+  "iac/rds_skipped_checkov.json": "sha256:7bcd7b93284f37467cacb90cdae108555f399891cc992cc4a254961ec803691f",
+  "iac/rds_trivy.json": "sha256:1e475d7145ee5cfd4ebc64d287850c0e99a51b9b87ccc4700d875481fb300e3c",
+  "iac/s3_encryption_checkov.json": "sha256:010949ff9f2fd7e7470326e713172b63aaa58966371cbd77be232cfb4e9a8760",
+  "iac/s3_encryption_trivy.json": "sha256:6ade1e81cdd12e40fd705ab15ac38f17f31e091dcf906c1dfad0400c3ebfa54f",
+  "iac/s3_public_access_checkov.json": "sha256:90dedd46f786768cb352efb393df2f7f137eebdbf9cece8009bc0f6b6794b419",
+  "iac/s3_public_access_trivy.json": "sha256:3d809f16d2571340b40f6d36ae7cee79a160990f4f5efa0e0d8b3fdea55933ac",
+  "iac/security_groups_checkov.json": "sha256:ac3af96923c33981c633f69f2e69063b67e4702a73c6d430e1749aa7845e99ff",
+  "iac/security_groups_trivy.json": "sha256:5701ac1401cd0950234d18cc4cecfdca8227216f0ffa76a40adc351c002ca301"
+}

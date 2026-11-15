@@ -1,0 +1,1212 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_161",
+        "check_name": "Ensure RDS database has IAM authentication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "iam_database_authentication_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_293",
+        "check_name": "Ensure that AWS database instances have deletion protection enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "deletion_protection"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_353",
+        "check_name": "Ensure that RDS instances have performance insights enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_157",
+        "check_name": "Ensure that RDS instances have Multi-AZ enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "multi_az"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_129",
+        "check_name": "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enabled_cloudwatch_logs_exports/[0]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_118",
+        "check_name": "Ensure that enhanced monitoring is enabled for Amazon RDS instances",
+        "check_result": {
+          "evaluated_keys": [
+            "monitoring_interval"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_161",
+        "check_name": "Ensure RDS database has IAM authentication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "iam_database_authentication_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_293",
+        "check_name": "Ensure that AWS database instances have deletion protection enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "deletion_protection"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_353",
+        "check_name": "Ensure that RDS instances have performance insights enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_157",
+        "check_name": "Ensure that RDS instances have Multi-AZ enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "multi_az"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_129",
+        "check_name": "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enabled_cloudwatch_logs_exports/[0]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_118",
+        "check_name": "Ensure that enhanced monitoring is enabled for Amazon RDS instances",
+        "check_result": {
+          "evaluated_keys": [
+            "monitoring_interval"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_16",
+        "check_name": "Ensure all data stored in the RDS is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "storage_encrypted"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_161",
+        "check_name": "Ensure RDS database has IAM authentication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "iam_database_authentication_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_293",
+        "check_name": "Ensure that AWS database instances have deletion protection enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "deletion_protection"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_353",
+        "check_name": "Ensure that RDS instances have performance insights enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_157",
+        "check_name": "Ensure that RDS instances have Multi-AZ enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "multi_az"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_129",
+        "check_name": "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enabled_cloudwatch_logs_exports/[0]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_118",
+        "check_name": "Ensure that enhanced monitoring is enabled for Amazon RDS instances",
+        "check_result": {
+          "evaluated_keys": [
+            "monitoring_interval"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_16",
+        "check_name": "Ensure all data stored in the RDS is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "storage_encrypted"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_161",
+        "check_name": "Ensure RDS database has IAM authentication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "iam_database_authentication_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_293",
+        "check_name": "Ensure that AWS database instances have deletion protection enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "deletion_protection"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_353",
+        "check_name": "Ensure that RDS instances have performance insights enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_157",
+        "check_name": "Ensure that RDS instances have Multi-AZ enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "multi_az"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_129",
+        "check_name": "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enabled_cloudwatch_logs_exports/[0]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_118",
+        "check_name": "Ensure that enhanced monitoring is enabled for Amazon RDS instances",
+        "check_result": {
+          "evaluated_keys": [
+            "monitoring_interval"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_7",
+        "check_name": "Ensure rotation for customer created CMKs is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_key_rotation"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_161",
+        "check_name": "Ensure RDS database has IAM authentication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "iam_database_authentication_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_293",
+        "check_name": "Ensure that AWS database instances have deletion protection enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "deletion_protection"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_353",
+        "check_name": "Ensure that RDS instances have performance insights enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_157",
+        "check_name": "Ensure that RDS instances have Multi-AZ enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "multi_az"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_129",
+        "check_name": "Ensure that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enabled_cloudwatch_logs_exports/[0]"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_118",
+        "check_name": "Ensure that enhanced monitoring is enabled for Amazon RDS instances",
+        "check_result": {
+          "evaluated_keys": [
+            "monitoring_interval"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_16",
+        "check_name": "Ensure all data stored in the RDS is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "storage_encrypted"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_60",
+        "check_name": "Ensure RDS instance with copy tags to snapshots is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "copy_tags_to_snapshot"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_60",
+        "check_name": "Ensure RDS instance with copy tags to snapshots is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "copy_tags_to_snapshot"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_60",
+        "check_name": "Ensure RDS instance with copy tags to snapshots is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "copy_tags_to_snapshot"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_60",
+        "check_name": "Ensure RDS instance with copy tags to snapshots is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "copy_tags_to_snapshot"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_60",
+        "check_name": "Ensure RDS instance with copy tags to snapshots is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "copy_tags_to_snapshot"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_30",
+        "check_name": "Ensure Postgres RDS as aws_db_instance has Query Logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "parameter/*/name",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_30",
+        "check_name": "Ensure Postgres RDS as aws_db_instance has Query Logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "parameter/*/name",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_30",
+        "check_name": "Ensure Postgres RDS as aws_db_instance has Query Logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "parameter/*/name",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_30",
+        "check_name": "Ensure Postgres RDS as aws_db_instance has Query Logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "parameter/*/name",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_30",
+        "check_name": "Ensure Postgres RDS as aws_db_instance has Query Logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "engine",
+            "parameter/*/name",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_64",
+        "check_name": "Ensure KMS key Policy is defined",
+        "check_result": {
+          "evaluated_keys": [
+            "policy",
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_354",
+        "check_name": "Ensure RDS Performance Insights are encrypted using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_388",
+        "check_name": "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_133",
+        "check_name": "Ensure that RDS instances has backup policy",
+        "check_result": {
+          "evaluated_keys": [
+            "backup_retention_period"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_226",
+        "check_name": "Ensure DB instance gets all minor upgrades automatically",
+        "check_result": {
+          "evaluated_keys": [
+            "auto_minor_version_upgrade"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_211",
+        "check_name": "Ensure RDS uses a modern CaCert",
+        "check_result": {
+          "evaluated_keys": [
+            "ca_cert_identifier"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_16",
+        "check_name": "Ensure all data stored in the RDS is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "storage_encrypted"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_354",
+        "check_name": "Ensure RDS Performance Insights are encrypted using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_388",
+        "check_name": "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_133",
+        "check_name": "Ensure that RDS instances has backup policy",
+        "check_result": {
+          "evaluated_keys": [
+            "backup_retention_period"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_226",
+        "check_name": "Ensure DB instance gets all minor upgrades automatically",
+        "check_result": {
+          "evaluated_keys": [
+            "auto_minor_version_upgrade"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_211",
+        "check_name": "Ensure RDS uses a modern CaCert",
+        "check_result": {
+          "evaluated_keys": [
+            "ca_cert_identifier"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_354",
+        "check_name": "Ensure RDS Performance Insights are encrypted using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_388",
+        "check_name": "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_133",
+        "check_name": "Ensure that RDS instances has backup policy",
+        "check_result": {
+          "evaluated_keys": [
+            "backup_retention_period"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_226",
+        "check_name": "Ensure DB instance gets all minor upgrades automatically",
+        "check_result": {
+          "evaluated_keys": [
+            "auto_minor_version_upgrade"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_211",
+        "check_name": "Ensure RDS uses a modern CaCert",
+        "check_result": {
+          "evaluated_keys": [
+            "ca_cert_identifier"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_354",
+        "check_name": "Ensure RDS Performance Insights are encrypted using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_388",
+        "check_name": "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_133",
+        "check_name": "Ensure that RDS instances has backup policy",
+        "check_result": {
+          "evaluated_keys": [
+            "backup_retention_period"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_226",
+        "check_name": "Ensure DB instance gets all minor upgrades automatically",
+        "check_result": {
+          "evaluated_keys": [
+            "auto_minor_version_upgrade"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_211",
+        "check_name": "Ensure RDS uses a modern CaCert",
+        "check_result": {
+          "evaluated_keys": [
+            "ca_cert_identifier"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_227",
+        "check_name": "Ensure KMS key is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "is_enabled"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_33",
+        "check_name": "Ensure KMS key policy does not contain wildcard (*) principal",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_354",
+        "check_name": "Ensure RDS Performance Insights are encrypted using KMS CMKs",
+        "check_result": {
+          "evaluated_keys": [
+            "performance_insights_kms_key_id"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_388",
+        "check_name": "Ensure AWS Aurora PostgreSQL is not exposed to local file read vulnerability",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_133",
+        "check_name": "Ensure that RDS instances has backup policy",
+        "check_result": {
+          "evaluated_keys": [
+            "backup_retention_period"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_226",
+        "check_name": "Ensure DB instance gets all minor upgrades automatically",
+        "check_result": {
+          "evaluated_keys": [
+            "auto_minor_version_upgrade"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_211",
+        "check_name": "Ensure RDS uses a modern CaCert",
+        "check_result": {
+          "evaluated_keys": [
+            "ca_cert_identifier"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_69",
+        "check_name": "Ensure AWS RDS database instance configured with encryption in transit",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "family",
+            "parameter[?(@/name=='rds/force_ssl')]/value",
+            "parameter[?(@/name=='require_secure_transport')]/value",
+            "parameter[?(@/name=='db2comm')]/value"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.compliant",
+        "resource_address": "aws_db_instance.compliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_69",
+        "check_name": "Ensure AWS RDS database instance configured with encryption in transit",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "family",
+            "parameter[?(@/name=='rds/force_ssl')]/value",
+            "parameter[?(@/name=='require_secure_transport')]/value",
+            "parameter[?(@/name=='db2comm')]/value"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.missing",
+        "resource_address": "aws_db_instance.missing",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_69",
+        "check_name": "Ensure AWS RDS database instance configured with encryption in transit",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "family",
+            "parameter[?(@/name=='rds/force_ssl')]/value",
+            "parameter[?(@/name=='require_secure_transport')]/value",
+            "parameter[?(@/name=='db2comm')]/value"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_69",
+        "check_name": "Ensure AWS RDS database instance configured with encryption in transit",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "family",
+            "parameter[?(@/name=='rds/force_ssl')]/value",
+            "parameter[?(@/name=='require_secure_transport')]/value",
+            "parameter[?(@/name=='db2comm')]/value"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.unknown",
+        "resource_address": "aws_db_instance.unknown",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_69",
+        "check_name": "Ensure AWS RDS database instance configured with encryption in transit",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "family",
+            "parameter[?(@/name=='rds/force_ssl')]/value",
+            "parameter[?(@/name=='require_secure_transport')]/value",
+            "parameter[?(@/name=='db2comm')]/value"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "module.db.aws_db_instance.inner",
+        "resource_address": "module.db.aws_db_instance.inner",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

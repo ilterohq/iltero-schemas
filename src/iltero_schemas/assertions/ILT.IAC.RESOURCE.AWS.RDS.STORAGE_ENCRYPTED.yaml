@@ -1,0 +1,19 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED
+  version: "1.0.0"
+  title: RDS storage encryption enabled
+  remediation: Set storage_encrypted to true.
+spec:
+  change_type: iac_change
+  stage: plan
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_db_instance]
+  assert:
+    path: resource.after.storage_encrypted
+    equal: true

@@ -196,7 +196,14 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/evaluation/activity": "iac_change",
-      "/events/0/provenance/facts_source": null
+      "/events/0/provenance/facts_source": null,
+      "/evidence_refs/15/digest": "sha256:5df31191050943f79c313d43bbf2b9570529a470d0e7d346caa03f04410e489d",
+      "/evidence_refs/15/size_bytes": 6585,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:5df31191050943f79c313d43bbf2b9570529a470d0e7d346caa03f04410e489d",
+        "count": 3
+      }
     },
     "remove": [],
     "message": "stage 'plan' is not valid for target kind 'artifact' in an iac_change input"
@@ -210,6 +217,13 @@
         "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
         "digest_version": "1",
         "tool": "terraform"
+      },
+      "/evidence_refs/15/digest": "sha256:c00f4c8477078e065aeb604b5482f3840bf3d3a41f7f65fbb2936f54cf41fff1",
+      "/evidence_refs/15/size_bytes": 6585,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:c00f4c8477078e065aeb604b5482f3840bf3d3a41f7f65fbb2936f54cf41fff1",
+        "count": 3
       }
     },
     "remove": [],
@@ -223,6 +237,12 @@
         "kind": "container_image",
         "repository": "ghcr.io/acme/api",
         "digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
+      },
+      "/evidence_refs/15/digest": "sha256:a570db3ac98248489c43193890982b0ca43468e5f1bc5bff9dc0230cb9de4c2c",
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:a570db3ac98248489c43193890982b0ca43468e5f1bc5bff9dc0230cb9de4c2c",
+        "count": 3
       }
     },
     "remove": [],
@@ -259,7 +279,14 @@
     "name": "image_build_event_without_its_facts_source",
     "vector": "image/local_run_build.json",
     "set": {
-      "/events/0/provenance/facts_source": null
+      "/events/0/provenance/facts_source": null,
+      "/evidence_refs/15/digest": "sha256:f8832519bc9fbf980922bb1e07b86492fa62e51d3d73c9ec9d4be9aeab749285",
+      "/evidence_refs/15/size_bytes": 6586,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:f8832519bc9fbf980922bb1e07b86492fa62e51d3d73c9ec9d4be9aeab749285",
+        "count": 3
+      }
     },
     "remove": [],
     "message": "facts_source is present exactly when the evaluation's input reads server facts"
@@ -427,68 +454,110 @@
     "name": "image_build_without_its_match_check",
     "vector": "image/local_run_build.json",
     "set": {
-      "/events/0/assertion/id": "ACME.IMAGE.COMMIT",
+      "/events/0/assertion/id": "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT",
       "/stages/plan/coverage/subjects_per_assertion": {
-        "ACME.IMAGE.COMMIT@1.0.0": 1,
-        "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-        "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1,
+        "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
       },
       "/coverage/subjects_per_assertion": {
-        "ACME.IMAGE.COMMIT@1.0.0": 1,
-        "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-        "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1,
+        "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+      },
+      "/events/0/provenance/assertion_source": "local",
+      "/evidence_refs/15/digest": "sha256:6c171a074d70ce97e7a5efc719fca44a4b8346bb5a6d0b569b17ba0f150b2047",
+      "/evidence_refs/15/size_bytes": 6548,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:6c171a074d70ce97e7a5efc719fca44a4b8346bb5a6d0b569b17ba0f150b2047",
+        "count": 3
       }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported"
   },
   {
     "name": "image_build_naming_another_match_check",
     "vector": "image/local_run_build.json",
     "set": {
-      "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/evidence_refs/15/digest": "sha256:35895ae3da213581bea7ff62b686f5040471e0f6fdc4df7a3debe1529e20822c",
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:35895ae3da213581bea7ff62b686f5040471e0f6fdc4df7a3debe1529e20822c",
+        "count": 3
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is a built-in assertion: it names the document this package ships"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is a built-in assertion: it names the document this package ships"
   },
   {
     "name": "image_build_of_a_local_run_claiming_its_commit_was_verified",
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null
+      "/events/0/evaluation/status_reason": null,
+      "/evidence_refs/15/digest": "sha256:10262eaff3017167826dd35274ddf8a4076c7ea3c28dc622b5ca4c7e0848bd85",
+      "/evidence_refs/15/size_bytes": 6563,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:10262eaff3017167826dd35274ddf8a4076c7ea3c28dc622b5ca4c7e0848bd85",
+        "count": 3
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
     "name": "image_build_of_a_local_run_whose_commit_check_failed",
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/evaluation/status": "fail",
-      "/events/0/evaluation/status_reason": null
+      "/events/0/evaluation/status_reason": null,
+      "/evidence_refs/15/digest": "sha256:fa78ee6a05794cccd28dbf90b7bffb65dbd5aff437b8ad76190f4c0fa0265ea2",
+      "/evidence_refs/15/size_bytes": 6563,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:fa78ee6a05794cccd28dbf90b7bffb65dbd5aff437b8ad76190f4c0fa0265ea2",
+        "count": 3
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
     "name": "image_build_of_a_local_run_whose_commit_check_is_unknown_for_another_reason",
     "vector": "image/local_run_build.json",
     "set": {
-      "/events/0/evaluation/status_reason": "path_missing"
+      "/events/0/evaluation/status_reason": "path_missing",
+      "/evidence_refs/15/digest": "sha256:c07b1f70440280d13eca35160297506b48c4cf8402e72fd22b5f77b06816d20f",
+      "/evidence_refs/15/size_bytes": 6576,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:c07b1f70440280d13eca35160297506b48c4cf8402e72fd22b5f77b06816d20f",
+        "count": 3
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
   },
   {
     "name": "image_build_whose_match_check_did_not_apply",
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/evaluation/status": "not_applicable",
-      "/events/0/evaluation/status_reason": "when_guard_excluded"
+      "/events/0/evaluation/status_reason": "when_guard_excluded",
+      "/evidence_refs/15/digest": "sha256:116485a50014da6535fac20d30ee2e0c240bf262246ac8f756ba3299f3c98861",
+      "/evidence_refs/15/size_bytes": 6590,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:116485a50014da6535fac20d30ee2e0c240bf262246ac8f756ba3299f3c98861",
+        "count": 3
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT always applies to the plan stage's one subject"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT always applies to the plan stage's one subject"
   },
   {
     "name": "image_report_with_a_source_that_is_not_a_digest",
@@ -529,7 +598,14 @@
     "set": {
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server"
+      "/events/2/provenance/facts_source": "server",
+      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+      "/evidence_refs/15/size_bytes": 6594,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "count": 3
+      }
     },
     "remove": [],
     "message": "every evaluation of a build whose run was opened by local reads its facts from none"
@@ -631,7 +707,7 @@
       "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
+    "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
   },
   {
     "name": "image_deploy_of_a_local_run_naming_a_build",
@@ -1087,7 +1163,10 @@
     "name": "image_deploy_with_an_event_of_a_build",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/0/evaluation/activity": "image_build"
+      "/events/0/evaluation/activity": "image_build",
+      "/stages/pre_deploy/events/digest": "sha256:7e7db2f23bb4f238df28054578a57261283074090745c875c9334f1bdbbad2f7",
+      "/evidence_refs/25/digest": "sha256:7e7db2f23bb4f238df28054578a57261283074090745c875c9334f1bdbbad2f7",
+      "/evidence_refs/25/size_bytes": 4978
     },
     "remove": [],
     "message": "stage 'pre_deploy' is not valid for target kind 'change' in an image_build input"
@@ -1120,15 +1199,18 @@
     "vector": "image/local_run_deploy.json",
     "set": {
       "/events/2/assertion": {
-        "id": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
+        "id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN",
         "version": "1.0.0",
-        "digest": "sha256:f5e5f5cb9c3bcb92eb82cf97b91fa9cced62fed452eb24a7756a0999c3682e5a"
+        "digest": "sha256:aeb5e36fb2af03939b2c1ad4bd3c7122ae30cf2918d08a686c8ac71f1e1204b8"
       },
-      "/events/2/provenance/compiled_digest": "sha256:43451ce9eec7d7dcfc77187ee2b97f483842284ccae50228a3fe6493923febd7",
-      "/events/2/provenance/assertion_source_digest": "sha256:cab2dce831c7081e4634b3bc65dc72d36af9e7b6402e773cd040b387aff32d2f"
+      "/events/2/provenance/compiled_digest": "sha256:fea3ec6c560381f77d3466b696bdb3e62124f550fd27de31410c86dd1b2491c0",
+      "/events/2/provenance/assertion_source_digest": "sha256:d3a7802bf6a7b97e55e8da557e949a5224c12cbfc98428a50f4c1d6f4185993f",
+      "/stages/post_deploy/events/digest": "sha256:9c1008ba3844606ee6ec9137c7271c7e5df1483c74a09c3e202a5930ecc23908",
+      "/evidence_refs/5/digest": "sha256:9c1008ba3844606ee6ec9137c7271c7e5df1483c74a09c3e202a5930ecc23908",
+      "/evidence_refs/5/size_bytes": 2632
     },
     "remove": [],
-    "message": "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
+    "message": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
   },
   {
     "name": "image_deploy_with_a_tag_whose_metadata_file_is_not_kept",
@@ -1147,10 +1229,18 @@
     "name": "image_deploy_without_its_reading_check",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/3/assertion/id": "ACME.IMAGE.RUNNING"
+      "/events/3/assertion/id": "ACME.IMAGE.DEPLOYMENT.DRIFT.RUNNING",
+      "/events/3/provenance/assertion_source": "local",
+      "/evidence_refs/11/digest": "sha256:b5acb692e602664a99e92fda54c9e37bebf248174d3026017860d0f44856efa2",
+      "/evidence_refs/11/size_bytes": 2900,
+      "/stages/post_verify/events": {
+        "path": "units/api/post_verify/events.json",
+        "digest": "sha256:b5acb692e602664a99e92fda54c9e37bebf248174d3026017860d0f44856efa2",
+        "count": 1
+      }
     },
     "remove": [],
-    "message": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
+    "message": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE is evaluated once, at the post_verify stage, once it has reported"
   },
   {
     "name": "image_deploy_listing_the_state_not_read",
@@ -1175,19 +1265,25 @@
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
       "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:d75200f72ea23b837f3f263a64552d7efd484c1a8626f21f8934b747ff115b7a",
+      "/evidence_refs/25/digest": "sha256:d75200f72ea23b837f3f263a64552d7efd484c1a8626f21f8934b747ff115b7a",
+      "/evidence_refs/25/size_bytes": 4954
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
   },
   {
     "name": "image_deploy_of_a_local_run_whose_build_check_is_unknown_for_another_reason",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/1/evaluation/status_reason": "path_missing"
+      "/events/1/evaluation/status_reason": "path_missing",
+      "/stages/pre_deploy/events/digest": "sha256:7152fec7df1251f9ed4596a6247678404a7f8c11197df0ce8d93d4c7cf6bd951",
+      "/evidence_refs/25/digest": "sha256:7152fec7df1251f9ed4596a6247678404a7f8c11197df0ce8d93d4c7cf6bd951",
+      "/evidence_refs/25/size_bytes": 4967
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
   },
   {
     "name": "image_deploy_whose_build_check_did_not_run_for_want_of_its_subject",
@@ -1202,10 +1298,12 @@
       "/coverage/status_counts/unknown": 1,
       "/coverage/status_counts/not_evaluated": 1,
       "/verdict/value": "fail",
-      "/verdict/exit_code": 6
+      "/verdict/exit_code": 6,
+      "/stages/pre_deploy/events/digest": "sha256:19374ab93861ff9d645d71d10781737945373cd50bd4358ecf95594f6cb5fe76",
+      "/evidence_refs/25/digest": "sha256:19374ab93861ff9d645d71d10781737945373cd50bd4358ecf95594f6cb5fe76"
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts"
   },
   {
     "name": "image_deploy_whose_build_check_did_not_apply",
@@ -1216,10 +1314,13 @@
       "/events/1/evaluation/status": "not_applicable",
       "/events/1/evaluation/status_reason": "when_guard_excluded",
       "/coverage/status_counts/unknown": 1,
-      "/coverage/status_counts/not_applicable": 1
+      "/coverage/status_counts/not_applicable": 1,
+      "/stages/pre_deploy/events/digest": "sha256:55e787c3c218748b0ce8f8975e9731864c63ba4c0abf20d2c8260c0d0bd7c171",
+      "/evidence_refs/25/digest": "sha256:55e787c3c218748b0ce8f8975e9731864c63ba4c0abf20d2c8260c0d0bd7c171",
+      "/evidence_refs/25/size_bytes": 4981
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT always applies to the pre_deploy stage's one subject"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT always applies to the pre_deploy stage's one subject"
   },
   {
     "name": "image_deploy_of_a_local_run_whose_build_check_failed",
@@ -1230,10 +1331,13 @@
       "/events/1/evaluation/status": "fail",
       "/events/1/evaluation/status_reason": null,
       "/coverage/status_counts/fail": 1,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:9881e9ee98ab0bffa7002b692327109df93295169bcbe753224daaab588784bb",
+      "/evidence_refs/25/digest": "sha256:9881e9ee98ab0bffa7002b692327109df93295169bcbe753224daaab588784bb",
+      "/evidence_refs/25/size_bytes": 4954
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
   },
   {
     "name": "image_deploy_whose_build_check_errored_reading_a_scanner_report",
@@ -1254,55 +1358,68 @@
       "/verdict/exit_code": 4,
       "/assurance_status/value": "incomplete",
       "/assurance_status/reason": "required_policy_evaluation_failed",
-      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error"
+      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error",
+      "/stages/pre_deploy/events/digest": "sha256:4e8367660f790a6a0a7ed6ad7b275259632c239d7e15aaf4d31c1990f0d6f095",
+      "/evidence_refs/25/digest": "sha256:4e8367660f790a6a0a7ed6ad7b275259632c239d7e15aaf4d31c1990f0d6f095",
+      "/evidence_refs/25/size_bytes": 4974
     },
     "remove": [],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is error only for a fault of the evaluator, never for want of the change or its facts"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is error only for a fault of the evaluator, never for want of the change or its facts"
   },
   {
     "name": "image_deploy_without_its_build_check",
     "vector": "image/local_run_deploy.json",
-    "set": {},
+    "set": {
+      "/stages/pre_deploy/events/digest": "sha256:9a7eb97188b6df015e50ce1c121ad74581040239c53244154badd0bb909254b1",
+      "/evidence_refs/25/digest": "sha256:9a7eb97188b6df015e50ce1c121ad74581040239c53244154badd0bb909254b1",
+      "/evidence_refs/25/size_bytes": 2689
+    },
     "remove": [
       "/events/1"
     ],
-    "message": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT is evaluated once, at the pre_deploy stage, once it has reported"
+    "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is evaluated once, at the pre_deploy stage, once it has reported"
   },
   {
     "name": "image_record_of_a_local_run_whose_commit_review_check_passed",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/0/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
-      "/events/0/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:73af39f49814d7387d932f651e6109546701dd17503c308d49fc5963264b1bce",
+      "/evidence_refs/25/digest": "sha256:73af39f49814d7387d932f651e6109546701dd17503c308d49fc5963264b1bce",
+      "/evidence_refs/25/size_bytes": 4949
     },
     "remove": [],
-    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+    "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
   },
   {
     "name": "image_record_of_a_local_run_whose_commit_review_check_failed",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/0/assertion/id": "ILT.CHANGE.COMMITS_REVIEWED",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1
       },
       "/events/0/evaluation/status": "fail",
       "/events/0/evaluation/status_reason": null,
-      "/events/0/assertion/digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85",
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:b7200b901ff8f405a1d31df724fac19c0fa9fe7dcf670b2a6fa6f497a28b71d0",
+      "/evidence_refs/25/digest": "sha256:b7200b901ff8f405a1d31df724fac19c0fa9fe7dcf670b2a6fa6f497a28b71d0",
+      "/evidence_refs/25/size_bytes": 4949
     },
     "remove": [],
-    "message": "ILT.CHANGE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
+    "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
   },
   {
     "name": "image_record_of_a_local_run_keeping_a_commit_review",
@@ -1409,9 +1526,9 @@
       "/events/1/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": null,
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -1432,8 +1549,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -1463,10 +1580,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -1497,8 +1614,11 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": [],
     "message": "the pre_deploy stage keeps a commit review, or the unknown marker, exactly where its input carries one"
@@ -1572,9 +1692,9 @@
         "commits_not_reviewed_list_complete": true
       },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -1595,8 +1715,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -1626,10 +1746,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -1660,11 +1780,14 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": [],
-    "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.CHANGE.COMMITS_REVIEWED check passed"
+    "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check passed"
   },
   {
     "name": "image_deploy_record_keeping_a_commit_review_its_check_could_not_read",
@@ -1728,9 +1851,9 @@
         "outcome": "reviewed"
       },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "unknown",
       "/events/0/evaluation/status_reason": "server_facts_unavailable",
@@ -1754,8 +1877,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -1785,10 +1908,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 3,
@@ -1819,11 +1942,14 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:0f31219b5c52288a368c8b951f6b1ae8c19dbac5ad038be1cdc9649960f09d8f",
+      "/evidence_refs/25/digest": "sha256:0f31219b5c52288a368c8b951f6b1ae8c19dbac5ad038be1cdc9649960f09d8f",
+      "/evidence_refs/25/size_bytes": 4571
     },
     "remove": [],
-    "message": "the pre_deploy stage keeps the unknown marker when its ILT.CHANGE.COMMITS_REVIEWED check could not read a commit review"
+    "message": "the pre_deploy stage keeps the unknown marker when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check could not read a commit review"
   },
   {
     "name": "image_deploy_record_whose_commit_review_check_passed_without_facts_from_the_server",
@@ -1860,14 +1986,10 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "none",
-      "/stages/pre_deploy/commit_review": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -1888,8 +2010,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -1919,10 +2041,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -1953,11 +2075,14 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:89edf8d419f6fd01e9d56ded59a42fff48e924e00d8961394a51fc3e1f29fc93",
+      "/evidence_refs/25/digest": "sha256:89edf8d419f6fd01e9d56ded59a42fff48e924e00d8961394a51fc3e1f29fc93",
+      "/evidence_refs/25/size_bytes": 4446
     },
     "remove": [],
-    "message": "ILT.CHANGE.COMMITS_REVIEWED passes or fails only on facts read from the server"
+    "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED passes or fails only on facts read from the server"
   },
   {
     "name": "image_deploy_record_keeping_a_commit_review_of_another_repository",
@@ -2022,7 +2147,10 @@
         },
         "commits_counted": 3,
         "outcome": "reviewed"
-      }
+      },
+      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/size_bytes": 4887
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the accepted build's verified commit and repository"
@@ -2076,7 +2204,10 @@
         },
         "head_commit": "9d1f00a000000000000000000000000000000000",
         "outcome": "source_commit_not_verified_commit"
-      }
+      },
+      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
+      "/evidence_refs/25/size_bytes": 4887
     },
     "remove": [],
     "message": "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit"
@@ -2143,9 +2274,9 @@
         "outcome": "reviewed"
       },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -2166,8 +2297,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -2197,10 +2328,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -2231,8 +2362,11 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
@@ -2272,14 +2406,10 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/stages/pre_deploy/commit_review": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -2300,8 +2430,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -2331,10 +2461,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -2365,11 +2495,14 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": [],
-    "message": "the pre_deploy stage keeps the commit review its ILT.CHANGE.COMMITS_REVIEWED check decided from"
+    "message": "the pre_deploy stage keeps the commit review its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check decided from"
   },
   {
     "name": "image_deploy_record_keeping_a_reviewed_commit_review_without_its_starting_point",
@@ -2424,9 +2557,9 @@
         "outcome": "reviewed"
       },
       "/events/0/assertion": {
-        "id": "ILT.CHANGE.COMMITS_REVIEWED",
+        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
         "version": "1.0.0",
-        "digest": "sha256:351b16f63a0f93188dd8eae772e297ee94776130e05f28ce162bd217f91abe85"
+        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
       },
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
@@ -2447,8 +2580,8 @@
         "when": null
       },
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
@@ -2478,10 +2611,10 @@
         },
         "assertions_evaluated": 4,
         "subjects_per_assertion": {
-          "ILT.CHANGE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.DEPLOYMENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
         "status_counts": {
           "pass": 4,
@@ -2512,8 +2645,11 @@
         "reason": null,
         "detail": null
       },
-      "/events/0/provenance/assertion_source_digest": "sha256:60ded663938230bd4d2a128176a24546c55a9dbd9e78cff29227bc648d100430",
-      "/events/0/provenance/compiled_digest": "sha256:59d6c2d7598b91327c2eafff06970d30b63542d6cb2137c016186b5e35b275da"
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
+      "/evidence_refs/25/size_bytes": 4450
     },
     "remove": [],
     "message": "Field required"

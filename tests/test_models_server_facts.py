@@ -43,7 +43,7 @@ EXCEPTION: dict[str, Any] = {
     "id": "exc_0001",
     "status": "approved",
     "scope": {
-        "assertion": {"id": "ILT.AWS.S3.PUBLIC_ACCESS_BLOCKED"},
+        "assertion": {"id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED"},
         "environment": "production",
         "resources": [{"scheme": "terraform_address", "value": "aws_s3_bucket.legacy", "scope": {"unit": "root"}}],
     },
@@ -109,10 +109,10 @@ def test_an_exception_never_covers_any_built_in(assertion_id: str) -> None:
 CHECKED_PLAN = {"kind": "plan", "digest": "sha256:" + "8" * 64, "digest_version": "1", "tool": "terraform"}
 EARLIER = {
     "id": "aevt_0001",
-    "assertion": {"id": "ILT.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
+    "assertion": {"id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED", "version": "1.0.0"},
     "stage": "plan",
     "subject": {"kind": "resource", "key": "sha256:" + "5" * 64},
-    "result": {"status": "pass"},
+    "result": {"status": "pass", "decided_by": ["checkov", "opa"]},
     "checked_content": CHECKED_PLAN,
     "observed_at": "2026-09-22T13:00:13.568Z",
 }
@@ -120,6 +120,15 @@ EARLIER = {
 
 def test_an_earlier_evaluation_names_its_assertion_stage_subject_and_result() -> None:
     EarlierEvaluation.model_validate(EARLIER)
+
+
+@pytest.mark.parametrize(
+    ("decided_by", "message"),
+    [([], "at least 1 item"), (["opa", "checkov"], "decided_by is sorted"), (["prowler"], "Input should be")],
+)
+def test_an_earlier_result_names_each_engine_that_decided_it_once_in_order(decided_by: list[str], message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        EarlierEvaluation.model_validate({**EARLIER, "result": {"status": "pass", "decided_by": decided_by}})
 
 
 @pytest.mark.parametrize(
@@ -233,5 +242,7 @@ def test_an_earlier_evaluation_names_the_kind_of_content_its_stage_reads() -> No
     at_verify = {**EARLIER, "stage": "post_verify", "subject": deployment}
     EarlierEvaluation.model_validate({**at_verify, "checked_content": image})
     EarlierEvaluation.model_validate({**at_verify, "checked_content": None})
+    # A check the plan stage postponed is settled at post-verify over the plan it came from.
+    EarlierEvaluation.model_validate({**at_verify, "checked_content": CHECKED_PLAN})
     with pytest.raises(ValidationError, match="exactly when its stage reads that content"):
-        EarlierEvaluation.model_validate({**at_verify, "checked_content": CHECKED_PLAN})
+        EarlierEvaluation.model_validate({**EARLIER, "stage": "runtime", "checked_content": CHECKED_PLAN})

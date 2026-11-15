@@ -37,3 +37,11 @@ CHANGE_TYPE_OF: Mapping[ActivityName, ChangeTypeName] = MappingProxyType(
 CHECKED_CONTENT_KIND_OF: Mapping[ActivityName, Literal["plan", "container_image"]] = MappingProxyType(
     {IAC_CHANGE_ACTIVITY: "plan", IMAGE_BUILD_ACTIVITY: "container_image", IMAGE_DEPLOY_ACTIVITY: "container_image"}
 )
+
+
+# Each change type as the second segment of an assertion id names it, and the segment of an assertion about every
+# change type (``change_type: null``). A new change type adds its row.
+CHANGE_TYPE_SEGMENT: Mapping[ChangeTypeName, str] = MappingProxyType(
+    {IAC_CHANGE_TYPE: "IAC", IMAGE_RELEASE_TYPE: "IMAGE"}
+)
+COMMON_SEGMENT: Final = "COMMON"

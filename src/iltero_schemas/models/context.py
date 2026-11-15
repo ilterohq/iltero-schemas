@@ -44,9 +44,12 @@ from pydantic import (
 )
 
 from iltero_schemas.canonical.change import change_digest
+from iltero_schemas.canonical.encoding import canonical_bytes
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
 from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
 from iltero_schemas.models.assertion import ProviderName
+from iltero_schemas.models.assurance import Assurance
+from iltero_schemas.models.base import API_VERSION as API_VERSION
 from iltero_schemas.models.base import StageValue, StrictModel, TargetKindValue
 from iltero_schemas.models.change_type import (
     IAC_CHANGE_ACTIVITY,
@@ -65,7 +68,6 @@ from iltero_schemas.models.fields import (
     Address,
     ArtifactDigestSource,
     AssertionKey,
-    BoundedObject,
     Commit,
     Digest,
     Identifier,
@@ -88,7 +90,11 @@ from iltero_schemas.models.server_facts import Approvals, AttestationOutcome, Ev
 from iltero_schemas.models.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
 from iltero_schemas.profiles import ALWAYS_REQUIRED_PARTS, profile_for
 
-API_VERSION = "iltero.io/assurance-context/v1"
+KIND = "AssuranceContext"
+# The largest input an evaluation reads, measured over the canonical JSON of the input as this model writes it (every
+# part, a part not given written as null): far more than one resource's plan, its related resources
+# and the server's facts need, and a bound on what an evaluator is given to read.
+MAX_INPUT_BYTES = 16 * 1024 * 1024
 Relation = Literal["attached_to", "member_of", "targets", "configures"]
 # The parts a profile may name, whether or not this version specifies their shape.
 PARTS = (
@@ -302,7 +308,8 @@ class PlanResource(StrictModel):
 class AssuranceContext(StrictModel):
     """The document; the parts present are exactly what the stage's profile provides for the subject's kind."""
 
-    api_version: Literal["iltero.io/assurance-context/v1"] = Field(alias="apiVersion")
+    api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
+    kind: Literal["AssuranceContext"]
     evaluation: EvaluationRun
     organization_scope: OrganizationScope
     reference_time: ReferenceTime
@@ -320,8 +327,8 @@ class AssuranceContext(StrictModel):
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     drift_check: DriftCheck | ImageDriftCheck | None = None
-    # Not specified by this version: any object, held to the bounds of a policy's observations.
-    assurance: BoundedObject | None = None
+    # An assertion's results about one subject over time (``models.assurance``).
+    assurance: Assurance | None = None
     # The image a build produced, and the test and scan reports the build was given.
     artifact: ImageArtifact | None = None
     tests: TestReports | None = None
@@ -362,6 +369,12 @@ class AssuranceContext(StrictModel):
             if self.drift_check.change_digest != change.digest:
                 raise ValueError("drift_check.change_digest is change.digest")
             check_compared(self.drift_check, change.image.repository)
+
+    @model_validator(mode="after")
+    def _bounded(self) -> AssuranceContext:
+        if len(canonical_bytes(self.model_dump(mode="json", by_alias=True))) > MAX_INPUT_BYTES:
+            raise ValueError(f"an evaluation input is at most {MAX_INPUT_BYTES} bytes of canonical JSON")
+        return self
 
     @model_validator(mode="after")
     def _parts_match_the_profile(self) -> AssuranceContext:

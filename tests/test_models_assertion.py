@@ -17,13 +17,14 @@ from iltero_schemas.models.assertion import (
     TechnicalAssertion,
     assert_assertion_id,
 )
+from tests.conftest import positional_id
 
 
 def _document(**overrides: Any) -> dict[str, Any]:
     document: dict[str, Any] = {
-        "apiVersion": "iltero.io/v1",
+        "apiVersion": "iltero.com/v1",
         "kind": "TechnicalAssertion",
-        "metadata": {"id": "ACME.AWS.RDS.ENCRYPTED", "version": "1.0.0", "title": "RDS encrypted"},
+        "metadata": {"id": "ACME.IAC.RESOURCE.AWS.RDS.ENCRYPTED", "version": "1.0.0", "title": "RDS encrypted"},
         "spec": {
             "change_type": "iac_change",
             "stage": "plan",
@@ -40,6 +41,10 @@ def _document(**overrides: Any) -> dict[str, Any]:
             document[section][field] = value
         else:
             document[section] = value
+    if "metadata" not in overrides and "metadata__id" not in overrides and isinstance(document["spec"], dict):
+        spec = document["spec"]
+        if isinstance(spec.get("target"), dict) and "kind" in spec["target"] and spec["target"].get("resources") != []:
+            document["metadata"]["id"] = positional_id(spec.get("change_type"), spec["target"], "ENCRYPTED")
     return document
 
 
@@ -351,7 +356,7 @@ def test_a_kind_selector_for_a_provider_with_no_kinds_names_the_providers_that_h
 
 
 def test_an_assertion_id_is_upper_case_segments_joined_by_dots() -> None:
-    assert assert_assertion_id("ACME.AWS.RDS.ENCRYPTED") == "ACME.AWS.RDS.ENCRYPTED"
+    assert assert_assertion_id("ACME.IAC.RESOURCE.AWS.RDS.ENCRYPTED") == "ACME.IAC.RESOURCE.AWS.RDS.ENCRYPTED"
     for value in ("acme.rds", "ACME", "ACME." + "X" * 200):
         with pytest.raises(ValueError, match="upper-case segments joined by dots") as refused:
             assert_assertion_id(value)

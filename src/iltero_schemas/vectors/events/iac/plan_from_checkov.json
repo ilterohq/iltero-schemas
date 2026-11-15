@@ -1,0 +1,75 @@
+{
+  "assertion": {
+    "digest": "sha256:c600e013d2528c0b425972fd06db795814320709fe18cec25949e12b712c4a69",
+    "id": "ACME.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
+    "version": "1.0.0"
+  },
+  "evaluation": {
+    "activity": "iac_change",
+    "observations": null,
+    "policy_reason": null,
+    "stage": "plan",
+    "status": "pass",
+    "status_detail": null,
+    "status_reason": null
+  },
+  "observed_at": "2026-11-13T16:42:51.963Z",
+  "provenance": {
+    "assertion_source": "local",
+    "assertion_source_digest": "sha256:3d306a8f9f94c29e5610ebde88004115d4a2d03f7d70767a1899bff64a93d0a2",
+    "bundle": null,
+    "checked_content": {
+      "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+      "digest_version": "1",
+      "kind": "plan",
+      "tool": "terraform"
+    },
+    "compiled_digest": null,
+    "compiler": null,
+    "evaluator": {
+      "digest": null,
+      "engine": "checkov",
+      "reason": "not_executed_by_cli",
+      "version": "3.3.8",
+      "rule_ids": [
+        "CKV_AWS_16"
+      ],
+      "subject_match": "exact_address",
+      "result_addresses": [
+        "aws_db_instance.payments"
+      ],
+      "unknown_paths": [],
+      "failed_rule_ids": [],
+      "undecided_rule_ids": [],
+      "local_exception": null
+    },
+    "evaluator_binding": {
+      "digest": "sha256:c2c4278ffc9edfba79b8a2b5a5901339ec25de13e8f161b3f87fc5b2b8699a96"
+    },
+    "executor": {
+      "ci_run_id": null,
+      "provider": "local",
+      "type": "human"
+    },
+    "facts_source": null,
+    "input_digest": "sha256:d3b86cbd1e7fc516b000742fae3df0516f6e6d201766b7b5de2a0e70d11826ee",
+    "run": {
+      "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+      "unit": "root"
+    },
+    "source_commit": "34c631ea2a087b2474390ad811f8bf7158cd0117"
+  },
+  "subject": {
+    "identities": [
+      {
+        "scheme": "terraform_address",
+        "scope": {
+          "unit": "root"
+        },
+        "value": "aws_db_instance.payments"
+      }
+    ],
+    "key": "sha256:b4a6e085a27299da641df0f6014d58551f6af1a059c92d76e75d8ac3b1cba193",
+    "kind": "resource"
+  }
+}

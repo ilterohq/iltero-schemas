@@ -979,5 +979,19 @@
     },
     "remove": [],
     "message": "post_deploy: not part of this profile: commit_review"
+  },
+  {
+    "name": "redaction_marker_written_with_one_for_true",
+    "vector": "iac/plan_resource.json",
+    "set": {
+      "/resource/name": {
+        "__redacted": 1,
+        "reason": "matched_pattern",
+        "present": true,
+        "type": "string"
+      }
+    },
+    "remove": [],
+    "message": "a redaction marker's __redacted is true"
   }
 ]

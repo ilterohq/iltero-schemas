@@ -1,0 +1,49 @@
+{
+  "assert": {
+    "exists": {
+      "in": "resource.related",
+      "where": {
+        "all": [
+          {
+            "predicate": {
+              "literal": "attachment",
+              "op": "equal",
+              "path": "item.type"
+            }
+          },
+          {
+            "exists": {
+              "in": "item.resource.after.rules",
+              "where": {
+                "predicate": {
+                  "literal": 443,
+                  "op": "equal",
+                  "path": "item.port"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "VEC.IAC.RESOURCE.VEC.THING.EXISTS_NESTED",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "vec",
+        "resource_types": [
+          "thing"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

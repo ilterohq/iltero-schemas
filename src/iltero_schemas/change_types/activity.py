@@ -74,6 +74,9 @@ class Activity:
     integrity_problems: Callable[[CAR], list[tuple[str, str]]]
     # Whether a record of this activity reads a state after an apply, which can go unread (``state_not_read``).
     reads_a_state_after_the_apply: bool
+    # The stages that read scanner reports: only they keep one, and only their evaluations may stand on a scanner's
+    # result.
+    stages_that_read_scanner_reports: frozenset[Stage]
 
 
 @dataclass(frozen=True)

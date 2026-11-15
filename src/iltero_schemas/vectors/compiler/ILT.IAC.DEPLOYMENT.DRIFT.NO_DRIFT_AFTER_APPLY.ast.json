@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": 0,
+      "op": "equal",
+      "path": "drift_check.differences_count"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
+  "stage": "post_verify",
+  "target": {
+    "kind": "deployment",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

@@ -67,7 +67,8 @@ def _keys(status: str = "active") -> Mapping[str, BundleKey]:
         **dates,
     }
     return parse_bundle_keys(
-        json.dumps({"apiVersion": "iltero.io/bundle-keys/v1", "keys": [entry]}).encode(), development=False
+        json.dumps({"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": [entry]}).encode(),
+        development=False,
     )
 
 
@@ -120,8 +121,10 @@ def test_the_manifest_names_every_assertion_and_its_revision_is_the_content_dige
     assert manifest["rego_version"] == 1
     assert manifest["revision"] == BUNDLE.content_digest == digest_of(manifest["metadata"]["iltero"])
     metadata = manifest["metadata"]["iltero"]
+    assert (metadata["apiVersion"], metadata["kind"]) == ("iltero.com/v1", "AssertionBundle")
     assert set(metadata) == {
         "apiVersion",
+        "kind",
         "compiler_version",
         "capabilities_digest",
         "minimum_cli_version",
@@ -195,6 +198,21 @@ def test_the_descriptor_carries_the_sources_and_the_digests() -> None:
     assert read_tarball(TARBALL) == _signed_files()
 
 
+def test_a_bundle_holds_an_assertion_observed_by_scanners_with_its_guard_module() -> None:
+    source = (VECTORS / "assertions" / "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED.yaml").read_text(encoding="utf-8")
+    bundle = unsigned_bundle([*SOURCES, source], minimum_cli_version=MINIMUM_CLI_VERSION)
+    member = next(m for m in bundle.members if m.id == "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED")
+    compiled = (
+        (VECTORS / "compiler" / "VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED.rego.digest")
+        .read_text(encoding="utf-8")
+        .strip()
+    )
+    assert (
+        member.compiled_digest == compiled
+        and bundle.files["VEC.IAC.RESOURCE.VEC.THING.SCANNED_GUARDED.rego"] == member.module
+    )
+
+
 # --- checking ---------------------------------------------------------------
 
 
@@ -257,6 +275,19 @@ def test_a_source_that_does_not_compile_is_refused(source: str) -> None:
 def test_a_content_digest_that_is_not_the_metadatas_digest_is_refused() -> None:
     with pytest.raises(BundleError, match="content digest"):
         check_descriptor(_changed(content_digest="sha256:" + "0" * 64), _keys())
+
+
+def test_a_bundle_made_under_the_names_before_iltero_com_v1_is_refused() -> None:
+    """A manifest whose description has the old apiVersion and no kind is not the one these sources rebuild to."""
+    files = _signed_files()
+    manifest = json.loads(files[MANIFEST])
+    old = {key: value for key, value in manifest["metadata"]["iltero"].items() if key != "kind"}
+    manifest["metadata"]["iltero"] = {**old, "apiVersion": "iltero.io/assertion-bundle/v1"}
+    manifest["revision"] = digest_of(manifest["metadata"]["iltero"])
+    files[MANIFEST] = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    served = _serving(files)
+    with pytest.raises(BundleError):
+        check_descriptor(served.model_copy(update={"content_digest": manifest["revision"]}), _keys())
 
 
 def test_a_changed_minimum_tool_version_breaks_the_rebuilt_manifest() -> None:
@@ -452,7 +483,7 @@ def test_opa_verifies_a_genuine_bundle_under_its_scope(opa: Path, tmp_path: Path
 
 def test_a_verified_bundle_evaluates_as_its_modules_do(opa: Path, tmp_path: Path) -> None:
     assert _opa_verify(opa, tmp_path, TARBALL, "--scope", BUNDLE_SIGNING_SCOPE).returncode == 0
-    assertion_id = "ILT.AWS.RDS.STORAGE_ENCRYPTED"
+    assertion_id = "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED"
     context = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
     context["evaluation"]["assertion"]["id"] = assertion_id
     evaluated = _opa(

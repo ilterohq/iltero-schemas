@@ -2,7 +2,7 @@
 
 ``BINDINGS`` is the directory they live in; ``STARTER_SET`` is the one set
 this package publishes. A consumer reads a set with
-``iltero_schemas.models.binding.load_binding_set``.
+``iltero_schemas.bindings.load.load_binding_set``.
 """
 
 from __future__ import annotations

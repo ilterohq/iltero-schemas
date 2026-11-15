@@ -1,12 +1,16 @@
 {
-  "apiVersion": "iltero.io/verification-report/v1",
-  "record": {
-    "uuid": "0b6e5d4c-3b2a-5918-8f7e-6d5c4b3a2918",
-    "digest": "sha256:72c274122b2ae06f6a52fc8eac322b4c7aa6bdb22b3aa8bd1e64573e3b627c39"
+  "apiVersion": "iltero.com/v1",
+  "kind": "VerificationReport",
+  "metadata": {
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-11-01T10:10:00Z"
   },
-  "verifier": {
-    "name": "iltero",
-    "version": "0.1.0"
+  "record": {
+    "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
+    "digest": "sha256:f20348b9ac3b74ee59e3106fe87f47c0a829c4ec300f825d8c9187c4ec90f74d"
   },
   "properties": {
     "integrity": {

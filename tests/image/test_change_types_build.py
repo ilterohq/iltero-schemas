@@ -14,6 +14,7 @@ from iltero_schemas.assertions import (
     APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
     BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID,
     NO_DRIFT_AFTER_APPLY_ID,
+    SHIPPED_ASSERTIONS,
     SIGNED_PROVENANCE_MATCHES_RUN_ID,
 )
 from iltero_schemas.canonical import digest_of
@@ -124,19 +125,22 @@ def test_a_build_has_no_change_digest_and_nothing_to_approve() -> None:
 def test_a_local_build_is_undecided_until_a_server_verifies_its_commit() -> None:
     car = CAR.model_validate(BUILD)
     statuses = {event.assertion.id: event.evaluation.status for event in car.events}
-    assert statuses["ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT"] == "unknown"
+    assert statuses["ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT"] == "unknown"
     assert car.verdict.value == "indeterminate" and car.complete
 
 
 def _with_provenance_event(status: str, reason: str | None) -> dict[str, Any]:
     """The local build record with its scan check's event made the signed provenance check's, of ``status``."""
     record = copy.deepcopy(BUILD)
-    (event,) = [event for event in record["events"] if event["assertion"]["id"] == "ILT.IMAGE.SCAN_RAN"]
-    event["assertion"]["id"] = SIGNED_PROVENANCE_MATCHES_RUN_ID
+    (event,) = [event for event in record["events"] if event["assertion"]["id"] == "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN"]
+    event["assertion"].update(
+        id=SIGNED_PROVENANCE_MATCHES_RUN_ID, digest=SHIPPED_ASSERTIONS[SIGNED_PROVENANCE_MATCHES_RUN_ID].digest
+    )
     event["evaluation"].update(status=status, status_reason=reason)
     for coverage in (record["coverage"], record["stages"]["plan"]["coverage"]):
         counted = coverage["subjects_per_assertion"]
-        counted[f"{SIGNED_PROVENANCE_MATCHES_RUN_ID}@1.0.0"] = counted.pop("ILT.IMAGE.SCAN_RAN@1.0.0")
+        scan_ran = "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0"
+        counted[f"{SIGNED_PROVENANCE_MATCHES_RUN_ID}@1.0.0"] = counted.pop(scan_ran)
     return record
 
 

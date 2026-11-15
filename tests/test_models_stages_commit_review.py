@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from iltero_schemas.assertions import COMMITS_REVIEWED_ID
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.facts import ServerFactsUnavailable
+from iltero_schemas.models.facts import NotReadByTheStage, ServerFactsUnavailable
 from tests.conftest import VECTORS
 from tests.records import DEPLOYED, UNKNOWN, served, valid_case_record, with_commit_review_check
 
@@ -45,7 +45,7 @@ def _keeping(document: dict[str, Any], kept: dict[str, Any]) -> dict[str, Any]:
 def test_the_pre_deploy_stage_keeps_the_commit_review_it_read_from_the_server() -> None:
     car = CAR.model_validate(_keeping(served(DEPLOYED), READING), context=_READER)
     kept = car.stages[Stage.PRE_DEPLOY].commit_review
-    assert kept is not None and not isinstance(kept, ServerFactsUnavailable)
+    assert kept is not None and not isinstance(kept, ServerFactsUnavailable | NotReadByTheStage)
     assert (kept.head_commit, kept.decided_at) == (HEAD, READING["decided_at"])
     CAR.model_validate(_keeping(served(DEPLOYED), NO_STARTING_POINT), context=_READER)
 
@@ -104,7 +104,9 @@ def test_a_stage_evaluates_its_commit_review_check_at_most_once() -> None:
     again = copy.deepcopy(check)
     again["evaluation"].update(status="unknown", status_reason="server_facts_unavailable")
     document["events"].append(again)
-    with pytest.raises(ValidationError, match="evaluates ILT.CHANGE.COMMITS_REVIEWED at most once, so it keeps one"):
+    with pytest.raises(
+        ValidationError, match="evaluates ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED at most once, so it keeps one"
+    ):
         CAR.model_validate(document, context=_READER)
 
 

@@ -331,7 +331,10 @@
     "name": "image_deploy_unknown_for_a_state_not_read",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/events/0/evaluation/status_reason": "state_not_read"
+      "/events/0/evaluation/status_reason": "state_not_read",
+      "/stages/pre_deploy/events/digest": "sha256:2e5bb662a227f27407535bb859a35a0e9ab05d83eb5878c612b37c3a1bbaadb4",
+      "/evidence_refs/25/digest": "sha256:2e5bb662a227f27407535bb859a35a0e9ab05d83eb5878c612b37c3a1bbaadb4",
+      "/evidence_refs/25/size_bytes": 4969
     },
     "remove": [],
     "problems": [
@@ -354,13 +357,16 @@
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: false; predicate 0 is false: change.build not_equal",
+      "/events/1/evaluation/policy_reason": "assert: false; change.build not_equal is false",
       "/events/1/evaluation/observations/predicates/0/status": "false",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:bb7306140a45f1f25d8b4d15eeb81fff955aedffb67e3cc238d463f07b81fb27",
+      "/evidence_refs/25/digest": "sha256:bb7306140a45f1f25d8b4d15eeb81fff955aedffb67e3cc238d463f07b81fb27",
+      "/evidence_refs/25/size_bytes": 4909
     },
     "remove": [],
     "problems": [
@@ -407,7 +413,10 @@
       "/events/1/provenance/facts_source": "server",
       "/coverage/assertions_expected/origin": "server_pinned",
       "/coverage/status_counts/fail": 1,
-      "/coverage/status_counts/unknown": 1
+      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:f6689ca101012765732016e21acce3915a8e8ca85f091bbebd7e068b25a525c2",
+      "/evidence_refs/25/digest": "sha256:f6689ca101012765732016e21acce3915a8e8ca85f091bbebd7e068b25a525c2",
+      "/evidence_refs/25/size_bytes": 4887
     },
     "remove": [],
     "problems": [
@@ -427,13 +436,30 @@
       "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned"
+      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/events/digest": "sha256:597cc1ebdbe3d09326ac918ed4046041f717736b869a81be8bc94bce196ab0fb",
+      "/evidence_refs/25/digest": "sha256:597cc1ebdbe3d09326ac918ed4046041f717736b869a81be8bc94bce196ab0fb",
+      "/evidence_refs/25/size_bytes": 4983
     },
     "remove": [],
     "problems": [
       [
         "events.1.evaluation.status",
         "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "image_build_event_reworded_after_its_stage_wrote_its_events_file",
+    "vector": "image/local_run_build.json",
+    "set": {
+      "/events/0/evaluation/policy_reason": "assert: true; reworded"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.events.digest",
+        "is not the digest of the stage's events"
       ]
     ]
   }

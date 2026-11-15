@@ -1,0 +1,50 @@
+[
+  {
+    "name": "record_naming_an_exception_its_kept_file_does_not_give",
+    "set_record": {
+      "/events/16/provenance/evaluator/local_exception": {
+        "file_digest": "sha256:855047e2ee6b5aa5101a95ff7720f23e04c84e51d41d548d18ddd4ff60f43c6d",
+        "id": "ex-9"
+      },
+      "/stages/plan/events/digest": "sha256:61a633781890912c0d6d5fe7d28be924063bccf7a1d301b082fb3ca2d2b1eaa1",
+      "/evidence_refs/51/digest": "sha256:61a633781890912c0d6d5fe7d28be924063bccf7a1d301b082fb3ca2d2b1eaa1",
+      "/evidence_refs/51/size_bytes": 44273
+    },
+    "problems": [
+      [
+        "events.16.provenance.evaluator.local_exception",
+        "names an exception the kept exceptions file does not give this result"
+      ]
+    ]
+  },
+  {
+    "name": "record_leaving_out_the_exception_its_kept_file_gives",
+    "set_record": {
+      "/events/16/provenance/evaluator/local_exception": null,
+      "/stages/plan/events/digest": "sha256:9e13cadebe621bdd2ee5a200ad93ceeb9704cecfee03de370699d23cee665840",
+      "/evidence_refs/51/digest": "sha256:9e13cadebe621bdd2ee5a200ad93ceeb9704cecfee03de370699d23cee665840",
+      "/evidence_refs/51/size_bytes": 44176
+    },
+    "problems": [
+      [
+        "events.16.provenance.evaluator.local_exception",
+        "names no exception, but the kept exceptions file gives this result one"
+      ]
+    ]
+  },
+  {
+    "name": "record_whose_exceptions_file_the_reader_is_not_given",
+    "drop_file": [
+      [
+        "exceptions",
+        "sha256:855047e2ee6b5aa5101a95ff7720f23e04c84e51d41d548d18ddd4ff60f43c6d"
+      ]
+    ],
+    "problems": [
+      [
+        "stages.plan.scanners.local_exceptions",
+        "the record does not keep an exceptions file with the digest the stage names"
+      ]
+    ]
+  }
+]

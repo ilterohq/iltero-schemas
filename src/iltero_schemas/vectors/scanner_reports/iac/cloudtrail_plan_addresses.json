@@ -1,0 +1,8 @@
+[
+  "aws_cloudtrail.compliant",
+  "aws_cloudtrail.missing",
+  "aws_cloudtrail.noncompliant",
+  "aws_cloudtrail.unknown",
+  "aws_kms_key.k",
+  "aws_s3_bucket.logs"
+]

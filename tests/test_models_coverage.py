@@ -22,7 +22,6 @@ from iltero_schemas.models.coverage import (
     Coverage,
     StageOutcome,
     Verdict,
-    combine,
     stage_outcome,
 )
 from iltero_schemas.models.fields import MAX_RESOURCES, RAW_TEXT_MAX_BYTES
@@ -55,7 +54,7 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
         "coverage.assertions_expected.value": 1,
         "coverage.assertions_expected.required_assertion_digest": "sha256:" + "d" * 64,
         "coverage.assertions_evaluated": 1,
-        "coverage.subjects_per_assertion": {"ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1},
+        "coverage.subjects_per_assertion": {"ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1},
         "coverage.status_counts": dict.fromkeys(PLAN.coverage.status_counts, 0) | {"pass": 1},
         "coverage.evaluations": 1,
         "coverage.gaps": [{"kind": "timeout", "count": 1}],
@@ -69,59 +68,6 @@ DEPLOYED = StageOutcome.model_validate(DEPLOYED_STAGE)
 def _verdict(code: int) -> dict[str, Any]:
     value = {0: "pass", 3: "indeterminate"}.get(code, "fail")
     return {"value": value, "exit_code": code, "computed_from": "status_counts", "stage": None}
-
-
-def test_one_stage_is_its_own_record_by_precedence() -> None:
-    combined = combine([("plan", PLAN)])
-    assert combined.coverage.evaluations == PLAN.coverage.evaluations
-    assert combined.verdict.computed_from == "stage_precedence" and combined.verdict.stage == "plan"
-    assert combined.verdict.exit_code == PLAN.verdict.exit_code
-
-
-def test_two_stages_add_up_and_keep_the_plans_resources_in_scope() -> None:
-    coverage = combine([("plan", PLAN), ("post_deploy", DEPLOYED)]).coverage
-    assert coverage.evaluations == PLAN.coverage.evaluations + 1
-    assert coverage.status_counts["pass"] == PLAN.coverage.status_counts["pass"] + 1
-    assert coverage.assertions_expected.value == PLAN.coverage.assertions_expected.value + 1
-    assert coverage.subjects_in_scope == PLAN.coverage.subjects_in_scope
-    assert coverage.subjects_evaluated == PLAN.coverage.subjects_evaluated
-    assert "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0" in coverage.subjects_per_assertion
-    assert CountGap.model_validate({"kind": "timeout", "count": 1, "stage": "post_deploy"}) in coverage.gaps
-
-
-def test_the_assertion_set_of_several_stages_is_named_by_each_stages_own() -> None:
-    def digest_with(stage_digest: str) -> str:
-        stage = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.required_assertion_digest": stage_digest})
-        return combine([("plan", PLAN), ("post_deploy", stage)]).coverage.assertions_expected.required_assertion_digest
-
-    assert digest_with("sha256:" + "d" * 64) == digest_with("sha256:" + "d" * 64) != digest_with("sha256:" + "e" * 64)
-    assert digest_with("sha256:" + "d" * 64) != PLAN.coverage.assertions_expected.required_assertion_digest
-
-
-def test_a_set_pinned_in_part_is_derived_locally() -> None:
-    pinned = _outcome(PLAN_STAGE, **{"coverage.assertions_expected.origin": "server_pinned"})
-    local = _outcome(DEPLOYED_STAGE, **{"coverage.assertions_expected.origin": "project_files"})
-    assert combine([("plan", pinned), ("post_deploy", local)]).coverage.assertions_expected.origin == "project_files"
-
-
-@pytest.mark.parametrize(
-    ("codes", "winner", "stage"),
-    [
-        ((1, 0), 1, "plan"),
-        ((0, 1), 1, "post_deploy"),
-        ((1, 4), 4, "post_deploy"),
-        ((9, 6), 9, "plan"),
-        ((3, 1), 3, "plan"),
-        ((0, 0), 0, "plan"),
-    ],
-)
-def test_the_verdict_is_the_stage_verdict_that_wins_by_precedence(
-    codes: tuple[int, int], winner: int, stage: str
-) -> None:
-    first = _outcome(PLAN_STAGE, verdict=_verdict(codes[0]))
-    second = _outcome(DEPLOYED_STAGE, verdict=_verdict(codes[1]))
-    verdict = combine([("plan", first), ("post_deploy", second)]).verdict
-    assert (verdict.exit_code, verdict.stage) == (winner, stage)
 
 
 def test_the_precedence_names_every_exit_code_once() -> None:
@@ -158,58 +104,6 @@ def test_the_precedence_names_every_exit_code_once() -> None:
 def test_a_verdict_has_one_meaning(verdict: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         Verdict.model_validate(verdict)
-
-
-def test_a_record_is_incomplete_when_any_stage_is_and_says_which() -> None:
-    incomplete = _outcome(
-        DEPLOYED_STAGE,
-        assurance_status={"value": "incomplete", "reason": "evaluator_error", "detail": "1 of 1"},
-    )
-    status = combine([("plan", PLAN), ("post_deploy", incomplete)]).assurance_status
-    assert (status.value, status.reason, status.detail) == ("incomplete", "evaluator_error", "post_deploy: 1 of 1")
-
-
-def test_an_assertion_counted_by_two_stages_is_refused() -> None:
-    twice = _outcome(DEPLOYED_STAGE, **{"coverage.subjects_per_assertion": PLAN.coverage.subjects_per_assertion})
-    with pytest.raises(ValueError, match="counted by one stage only"):
-        combine([("plan", PLAN), ("post_deploy", twice)])
-
-
-@pytest.mark.parametrize(
-    ("stages", "message"),
-    [
-        ([], "at least one stage"),
-        ([("post_deploy", "deployed")], "one stage counts them, and it comes first"),
-        ([("post_deploy", "deployed"), ("plan", "plan")], "one stage counts them, and it comes first"),
-        ([("plan", "plan"), ("plan", "plan")], "one stage counts them, and it comes first"),
-    ],
-    ids=["no stage", "no plan", "plan not first", "two plans"],
-)
-def test_a_record_counts_the_resources_of_its_one_plan_stage_first(stages: list[tuple[str, str]], message: str) -> None:
-    outcomes = {"plan": PLAN, "deployed": DEPLOYED}
-    with pytest.raises(ValueError, match=message):
-        combine([(name, outcomes[key]) for name, key in stages])
-
-
-def test_a_stage_gap_that_names_a_stage_is_refused() -> None:
-    named = _outcome(DEPLOYED_STAGE, **{"coverage.gaps": [{"kind": "timeout", "count": 1, "stage": "plan"}]})
-    with pytest.raises(ValueError, match="a stage's gaps do not name a stage"):
-        combine([("plan", PLAN), ("post_deploy", named)])
-
-
-def test_truncated_and_sampled_carry_over_from_any_stage() -> None:
-    truncated = {"value": True, "limit": 10, "reason": "event_cap"}
-    later = _outcome(DEPLOYED_STAGE, **{"coverage.truncated": truncated, "coverage.sampled": True})
-    coverage = combine([("plan", PLAN), ("post_deploy", later)]).coverage
-    assert coverage.truncated.model_dump() == truncated and coverage.sampled is True
-    assert combine([("plan", PLAN), ("post_deploy", DEPLOYED)]).coverage.sampled is False
-
-
-def test_the_first_incomplete_stage_is_named_even_without_a_detail() -> None:
-    first = _outcome(PLAN_STAGE, assurance_status={"value": "incomplete", "reason": "evaluator_error", "detail": None})
-    second = _outcome(DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": "other_reason", "detail": "x"})
-    status = combine([("plan", first), ("post_deploy", second)]).assurance_status
-    assert (status.reason, status.detail) == ("evaluator_error", "plan")
 
 
 @pytest.mark.parametrize(
@@ -283,19 +177,6 @@ def test_an_evaluator_error_outranks_the_plan_and_the_plan_outranks_a_placeholde
     assert stage_outcome(_substituted(gaps=gaps, status_counts=counts)).assurance_status.reason == INCOMPLETE_REASON
 
 
-def test_combining_names_the_stage_of_each_placeholder() -> None:
-    combined = combine([("plan", stage_outcome(_substituted()))])
-    assert [entry.stage for entry in combined.coverage.substituted_inputs] == ["plan"]
-
-
-def test_a_stages_placeholders_name_no_stage() -> None:
-    named = Coverage.model_validate(
-        {**PLAN_STAGE["coverage"], "substituted_inputs": [{**PLACEHOLDER, "stage": "plan"}]}
-    )
-    with pytest.raises(ValueError, match="substituted inputs do not name a stage"):
-        combine([("plan", stage_outcome(named))])
-
-
 def test_a_stage_lists_a_bounded_number_of_placeholders_each_once() -> None:
     many = [
         {**PLACEHOLDER, "source": f"data.terraform_remote_state.u{index}"}
@@ -307,27 +188,6 @@ def test_a_stage_lists_a_bounded_number_of_placeholders_each_once() -> None:
         Coverage.model_validate({**PLAN_STAGE["coverage"], "substituted_inputs": [PLACEHOLDER, PLACEHOLDER]})
 
 
-def test_an_evaluator_error_in_a_later_stage_names_the_records_reason() -> None:
-    errored = _outcome(
-        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": INCOMPLETE_REASON, "detail": "x"}
-    )
-    status = combine([("plan", stage_outcome(_substituted())), ("post_deploy", errored)]).assurance_status
-    assert (status.reason, status.detail) == (INCOMPLETE_REASON, "post_deploy: x")
-
-
-def test_the_plans_reason_leads_a_later_stages_placeholders_and_yields_to_its_error() -> None:
-    gaps = [{"kind": "plan_incomplete", "value": False}]
-    plan = stage_outcome(Coverage.model_validate({**PLAN_STAGE["coverage"], "gaps": gaps}))
-    placeholders = _outcome(
-        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": SUBSTITUTED_REASON, "detail": "x"}
-    )
-    errored = _outcome(
-        DEPLOYED_STAGE, assurance_status={"value": "incomplete", "reason": INCOMPLETE_REASON, "detail": "x"}
-    )
-    assert combine([("plan", plan), ("post_deploy", placeholders)]).assurance_status.reason == PLAN_REASON
-    assert combine([("plan", plan), ("post_deploy", errored)]).assurance_status.reason == INCOMPLETE_REASON
-
-
 def test_a_change_scope_is_its_one_change() -> None:
     changes = {"coverage.subjects_in_scope.counted_from": "change_unit", "coverage.subjects_in_scope.value": 2}
     with pytest.raises(ValidationError, match="that one subject"):
@@ -336,14 +196,6 @@ def test_a_change_scope_is_its_one_change() -> None:
 
 def _placeholders(prefix: str) -> list[dict[str, Any]]:
     return [{**PLACEHOLDER, "source": f"data.terraform_remote_state.{prefix}{index:03d}"} for index in range(200)]
-
-
-def test_a_record_lists_a_bounded_number_of_placeholders_across_its_stages() -> None:
-    plan = stage_outcome(_substituted(substituted_inputs=_placeholders("a")))
-    deployed_coverage = {**DEPLOYED_STAGE["coverage"], "substituted_inputs": _placeholders("b")}
-    deployed = stage_outcome(Coverage.model_validate(deployed_coverage))
-    with pytest.raises(ValueError, match="across its stages"):
-        combine([("plan", plan), ("post_deploy", deployed)])
 
 
 def test_a_stages_placeholders_are_sorted_by_source() -> None:
@@ -359,7 +211,6 @@ def test_a_stages_placeholders_are_sorted_by_source() -> None:
         {"kind": "plan_not_applyable", "value": {"__unknown": True, "reason": "not_reported_by_tool"}},
         {"kind": "deferred_changes", "count": 2},
         {"kind": "evaluator_timeout", "count": 1},
-        {"kind": "accepted_by_binding", "count": 4},
     ],
 )
 def test_each_gap_shape_is_accepted(gap: dict[str, Any]) -> None:
@@ -456,17 +307,6 @@ def test_a_plan_resource_is_excluded_once_for_one_reason(reasons: list[str]) -> 
         Coverage.model_validate({**PLAN_STAGE["coverage"], "subjects_in_scope": scope})
 
 
-def test_a_build_record_counts_the_one_artifact_its_plan_stage_counts() -> None:
-    artifact = {"value": 1, "counted_from": "artifact_unit", "source_digest": "sha256:" + "7" * 64}
-    built = _outcome(
-        DEPLOYED_STAGE,
-        **{"coverage.subjects_in_scope": {**artifact, "removed_by_plan": 0, "excluded": []}},
-    )
-    assert combine([("plan", built)]).coverage.subjects_in_scope.counted_from == "artifact_unit"
-    with pytest.raises(ValueError, match="one stage counts them, and it comes first"):
-        combine([("plan", built), ("post_deploy", PLAN)])
-
-
 STATE_GAP = {"kind": "state_not_read"}
 
 
@@ -495,6 +335,6 @@ def test_a_stage_lists_the_state_not_read_once() -> None:
 
 
 def test_a_count_gap_names_a_kind_a_count_can_describe() -> None:
-    with pytest.raises(ValidationError, match="kind must be a gap a count can describe: accepted_by_binding") as e:
+    with pytest.raises(ValidationError, match="kind must be a gap a count can describe: ") as e:
         CountGap.model_validate({"kind": "made_up_kind", "count": 1})
     assert "made_up_kind" not in str(e.value)

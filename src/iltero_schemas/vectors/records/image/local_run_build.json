@@ -1,16 +1,19 @@
 {
-  "apiVersion": "iltero.io/car/v1",
-  "uuid": "0b6e5d4c-3b2a-5918-8f7e-6d5c4b3a2918",
+  "apiVersion": "iltero.com/v1",
+  "kind": "ChangeAssuranceRecord",
+  "metadata": {
+    "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
+    "issuer": {
+      "type": "local",
+      "identity_verified": false
+    }
+  },
   "run": {
     "id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b"
   },
   "unit": "api",
   "trust_level": "self_attested",
   "compliance_determination": null,
-  "issuer": {
-    "type": "local",
-    "identity_verified": false
-  },
   "governance": {
     "run_opened_by": "local"
   },
@@ -125,7 +128,7 @@
       },
       "events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:798190a0e3059e988fdd15fbb40318cd890c2cc2ef7400e6296281f59012ea65",
+        "digest": "sha256:d42e60c663fbc7bdb72a250d4a4ac29b3dd90cb582cab24c1c749ac23a51a53a",
         "count": 3
       },
       "assertions": {
@@ -134,6 +137,9 @@
         "count": 3
       },
       "scanners": null,
+      "values_known_after_deployment": "block",
+      "postponed_checks": null,
+      "resource_redaction": null,
       "coverage": {
         "subjects_in_scope": {
           "value": 1,
@@ -146,13 +152,13 @@
         "assertions_expected": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:2dd49db08b97118e6e93ed7632a5c6f661595eb93b3a5b346b4d9bacf7a990e8"
+          "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-          "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -188,9 +194,9 @@
   "events": [
     {
       "assertion": {
-        "id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+        "id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
         "version": "1.0.0",
-        "digest": "sha256:ad9f41b3d83c4df10562c8797700073e2e0cf997c67408bd8ef9aaea8b5f18be"
+        "digest": "sha256:37e8badbeab9f642c2d9e56374269dc0ae21cb0e2e477d72bd7efeb693f65bee"
       },
       "subject": {
         "kind": "artifact",
@@ -269,8 +275,8 @@
         },
         "evaluator_binding": null,
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:a50cbd322d83567e14cc39310d1fdb09bd534032417ad3727e8ec50fc12a790d",
-        "compiled_digest": "sha256:eab684cc5dd242a8feb865bf35dafddb197a8caa453c3263a0d45839b1026428",
+        "assertion_source_digest": "sha256:02e2fe5805fa1e08d62caf5da2556643f45b45e5bef7e35941b16d04df604a15",
+        "compiled_digest": "sha256:1706e0c72d4b571e285f7799d1347da97da9e30596f04fed65e1a7bb9fcac53a",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -288,9 +294,9 @@
     },
     {
       "assertion": {
-        "id": "ILT.IMAGE.SCAN_RAN",
+        "id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
         "version": "1.0.0",
-        "digest": "sha256:715f3e0dd9652575a86c46448be89693e3194d08269d799662a4b62a315f2846"
+        "digest": "sha256:5389a65c1dfa408cc444052c95aac03cbbf6246949f8c43baf4d35c3c92224b1"
       },
       "subject": {
         "kind": "artifact",
@@ -367,8 +373,8 @@
         },
         "evaluator_binding": null,
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:4ab27c98774ee31aebd230d74ceaa4fb73a1c32ecb68c8b8da2a940e321d2ad4",
-        "compiled_digest": "sha256:3efe421d1df10ba0b1397af183aa67fa1fb1026f16dcbe5e116f7d2495205b85",
+        "assertion_source_digest": "sha256:7c55680b254f181248d69587c6af56a6cb44b92f4d664cacf0e851d9ba1ab8ec",
+        "compiled_digest": "sha256:0c31092c4e729a066321d34046ce2ad8c39152eeaf5fe55f6b85ef554ed24da9",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -386,9 +392,9 @@
     },
     {
       "assertion": {
-        "id": "ILT.IMAGE.TESTS_RAN",
+        "id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
         "version": "1.0.0",
-        "digest": "sha256:fa95d53391b9cc51845dc9073fe6f19b0470f3ad2ab0efa4dc9fddce592a6154"
+        "digest": "sha256:39a3fae5217c800a09800f24ee2ba10dc68bec3de4c387bb7e3dc24964bc079a"
       },
       "subject": {
         "kind": "artifact",
@@ -465,8 +471,8 @@
         },
         "evaluator_binding": null,
         "assertion_source": "contract_starter",
-        "assertion_source_digest": "sha256:4fb630908ca31b98b17c0acf39a52926f79b0b125b6a0ec31b99dcef86372740",
-        "compiled_digest": "sha256:1879ee06154f1f7c69beb2897734c05738a55acb1c55fc9d6eec0636f9d9e75a",
+        "assertion_source_digest": "sha256:0fd7a0afafeb21fde9be6b4ced849b0cb6dda459d31a87f2e1fdd9198573ab9c",
+        "compiled_digest": "sha256:ec1a198ca63693c05dc5c3f27be907be950d343d4468ba6aa95bd583fcad318e",
         "compiler": {
           "version": "1.0.0",
           "contract_version": "0.1.0",
@@ -495,13 +501,13 @@
     "assertions_expected": {
       "value": 3,
       "origin": "project_files",
-      "required_assertion_digest": "sha256:4ac7ba57d44aae99bfcbdc503762998159b0fad67c3360f90fdd40e57538623b"
+      "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
     },
     "assertions_evaluated": 3,
     "subjects_per_assertion": {
-      "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
-      "ILT.IMAGE.SCAN_RAN@1.0.0": 1,
-      "ILT.IMAGE.TESTS_RAN@1.0.0": 1
+      "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
+      "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+      "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
@@ -539,11 +545,11 @@
   "out_of_scope": [],
   "evidence_refs": [
     {
-      "ref_id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
       "media_type": "application/json",
-      "digest": "sha256:b12ecffffcd7c4fb36583516bf35a61fc698b5d1c571475ce7b19865949e4097",
-      "size_bytes": 398,
-      "path": "units/api/plan/assertions/ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "digest": "sha256:630bf2776c48117e9a44537ef6ffb471abceaff6b1bf86c8ced2148389c301f0",
+      "size_bytes": 414,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -556,11 +562,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
-      "digest": "sha256:eab684cc5dd242a8feb865bf35dafddb197a8caa453c3263a0d45839b1026428",
-      "size_bytes": 11368,
-      "path": "units/api/plan/assertions/ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
+      "digest": "sha256:1706e0c72d4b571e285f7799d1347da97da9e30596f04fed65e1a7bb9fcac53a",
+      "size_bytes": 12710,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -573,11 +579,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
       "media_type": "application/yaml",
-      "digest": "sha256:d95a3c087900f9023f1f149e16133fe22f3eb0b2e717575ca9ec0d82b31dc21c",
-      "size_bytes": 493,
-      "path": "units/api/plan/assertions/ILT.IMAGE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
+      "digest": "sha256:071718a6c69be917d85c7e448bbe3ed070b20a988ff0ddece9edd0109fe15510",
+      "size_bytes": 510,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -590,11 +596,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.SCAN_RAN@1.0.0.ast.json",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.ast.json",
       "media_type": "application/json",
-      "digest": "sha256:9d5e22499fb4b7ddb3eeb5973b592a42e4eab77df880432720453da823e84b17",
-      "size_bytes": 1173,
-      "path": "units/api/plan/assertions/ILT.IMAGE.SCAN_RAN@1.0.0.ast.json",
+      "digest": "sha256:eec283ba7c6b09c370ab911ec6fb44c6905654a4211a6e2e30cc22c731047037",
+      "size_bytes": 1189,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.ast.json",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -607,11 +613,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.SCAN_RAN@1.0.0.rego",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
-      "digest": "sha256:3efe421d1df10ba0b1397af183aa67fa1fb1026f16dcbe5e116f7d2495205b85",
-      "size_bytes": 11709,
-      "path": "units/api/plan/assertions/ILT.IMAGE.SCAN_RAN@1.0.0.rego",
+      "digest": "sha256:0c31092c4e729a066321d34046ce2ad8c39152eeaf5fe55f6b85ef554ed24da9",
+      "size_bytes": 13051,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -624,11 +630,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.SCAN_RAN@1.0.0.yaml",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.yaml",
       "media_type": "application/yaml",
-      "digest": "sha256:3c6a891fded02ef7d57f26f95e5b4506e1211d46b8d23981d5e81dcdf697a71f",
-      "size_bytes": 817,
-      "path": "units/api/plan/assertions/ILT.IMAGE.SCAN_RAN@1.0.0.yaml",
+      "digest": "sha256:39fbf7745694f286d157f970b306a7fd3eaa034450e6cac685e0085bbd381091",
+      "size_bytes": 834,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -641,11 +647,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.TESTS_RAN@1.0.0.ast.json",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.ast.json",
       "media_type": "application/json",
-      "digest": "sha256:f59cf8c2fb99737dae818b9e5a6b6ea3ed6a8ff099484da7478881204bb256f4",
-      "size_bytes": 1006,
-      "path": "units/api/plan/assertions/ILT.IMAGE.TESTS_RAN@1.0.0.ast.json",
+      "digest": "sha256:a5e5618b0f3b3d2a2eccee0253192c413c02aebd30197a8fc7bda6230aff2b70",
+      "size_bytes": 1022,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.ast.json",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -658,11 +664,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.TESTS_RAN@1.0.0.rego",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.rego",
       "media_type": "application/vnd.iltero.rego",
-      "digest": "sha256:1879ee06154f1f7c69beb2897734c05738a55acb1c55fc9d6eec0636f9d9e75a",
-      "size_bytes": 11649,
-      "path": "units/api/plan/assertions/ILT.IMAGE.TESTS_RAN@1.0.0.rego",
+      "digest": "sha256:ec1a198ca63693c05dc5c3f27be907be950d343d4468ba6aa95bd583fcad318e",
+      "size_bytes": 12991,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.rego",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -675,11 +681,11 @@
       "redaction_policy": null
     },
     {
-      "ref_id": "ILT.IMAGE.TESTS_RAN@1.0.0.yaml",
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.yaml",
       "media_type": "application/yaml",
-      "digest": "sha256:cb9569f43ef399842f0264a9483d5a38725e86f6aae448800741075c9e7d36e0",
-      "size_bytes": 765,
-      "path": "units/api/plan/assertions/ILT.IMAGE.TESTS_RAN@1.0.0.yaml",
+      "digest": "sha256:c07aa1c9af8f67b832fe8330bb8a18d693bc9239b21f932d53ee84818741c187",
+      "size_bytes": 782,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.yaml",
       "storage_uri": null,
       "retention_until": null,
       "collected_at": "2026-11-01T10:05:00Z",
@@ -802,8 +808,8 @@
     {
       "ref_id": "plan/events.json",
       "media_type": "application/json",
-      "digest": "sha256:798190a0e3059e988fdd15fbb40318cd890c2cc2ef7400e6296281f59012ea65",
-      "size_bytes": 6531,
+      "digest": "sha256:d42e60c663fbc7bdb72a250d4a4ac29b3dd90cb582cab24c1c749ac23a51a53a",
+      "size_bytes": 6588,
       "path": "units/api/plan/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -813,7 +819,7 @@
         "version": "0.1.0"
       },
       "source": null,
-      "canonicalization": null,
+      "canonicalization": "RFC8785",
       "redaction_policy": null
     },
     {

@@ -370,4 +370,5 @@ IAC_CHANGE = Activity(
     change_digest_problems=_change_digest_problems,
     integrity_problems=_integrity_problems,
     reads_a_state_after_the_apply=True,
+    stages_that_read_scanner_reports=frozenset({Stage.PLAN}),
 )

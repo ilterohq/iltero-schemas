@@ -8,12 +8,13 @@ from typing import Any
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from iltero_schemas.canonical import change_digest, digest_of
+from iltero_schemas.canonical import change_digest, digest_of, record_uuid
 from iltero_schemas.change_types import PlanRecord
 from iltero_schemas.models.assertion import Stage
 from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, StageRecord
-from iltero_schemas.models.coverage import Coverage, combine_in_order, stage_outcome
+from iltero_schemas.models.coverage import Coverage, stage_outcome
 from iltero_schemas.models.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
+from iltero_schemas.models.record_coverage import combine_in_order
 from iltero_schemas.models.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.stages import integrity_problems
 from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
@@ -23,6 +24,7 @@ from tests.records import (
     add_built_in,
     count_by_digest,
     iac_change,
+    keep_events_files,
     keep_the_apply_log,
     keep_the_scanner_files,
     owe_its_events,
@@ -79,7 +81,10 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
         ({"compliance_determination": "compliant"}, "Input should be None"),
         ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
         ({"change.plan.tool": "pulumi"}, "Input should be 'terraform'"),
-        ({"uuid": "not-a-uuid"}, "String should match pattern"),
+        (
+            {"metadata": {"uuid": "not-a-uuid", "issuer": {"type": "local", "identity_verified": False}}},
+            "String should match pattern",
+        ),
         ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
         ({"retention_class": "soc2_730d"}, "Input should be None"),
         ({"complete": True}, "complete exactly when every expected stage has reported"),
@@ -168,21 +173,20 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     assert scanners is not None
     (report,) = scanners.reports
     assert report.tool == "checkov" and report.results_read == 73
-    assert scanners.results_accepted == 2 and scanners.evaluator_binding_set.id == "ILT.BINDINGS.STARTER"
+    assert scanners.evaluator_binding_sets[0].id == "ACME.BINDINGS.PAYMENTS"
 
 
-@pytest.mark.parametrize(
-    ("change", "message"),
-    [
-        ({"results_without_binding": 70}, "results_without_binding is the sum"),
-        ({"results_accepted": 3}, "every result a tool reported"),
-        ({"results_scanner_version_not_allowed": 1}, "every result a tool reported"),
-    ],
-)
-def test_a_scanner_block_whose_counts_do_not_add_up_is_refused(change: dict[str, Any], message: str) -> None:
-    scanners = {**copy.deepcopy(SCANNERS), **change}
-    with pytest.raises(ValidationError, match=message):
-        CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
+def test_a_scanner_block_keeps_a_report_or_names_a_required_scanner() -> None:
+    with pytest.raises(ValidationError, match="keep a report or name a required scanner"):
+        CAR.model_validate(_record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "reports": []}}))
+
+
+@pytest.mark.parametrize("required", [["trivy", "checkov"], ["checkov", "checkov"]], ids=["unsorted", "repeated"])
+def test_the_required_scanners_are_sorted_each_once(required: list[str]) -> None:
+    with pytest.raises(ValidationError, match="required_scanners is sorted, each once"):
+        CAR.model_validate(
+            _record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "required_scanners": required}})
+        )
 
 
 def test_a_report_of_a_scanner_outside_the_list_is_refused() -> None:
@@ -195,8 +199,6 @@ def test_a_report_of_a_scanner_outside_the_list_is_refused() -> None:
 def test_one_report_per_tool_per_stage() -> None:
     scanners = copy.deepcopy(SCANNERS)
     scanners["reports"] = [scanners["reports"][0], copy.deepcopy(scanners["reports"][0])]
-    scanners["results_without_binding"] = 142
-    scanners["results_accepted"] = 4
     with pytest.raises(ValidationError, match="one report per tool"):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
@@ -204,22 +206,22 @@ def test_one_report_per_tool_per_stage() -> None:
 @pytest.mark.parametrize(
     ("binding_set", "message"),
     [
-        ({"origin": "file"}, "a binding set read from a file names it"),
-        ({"file_name": "bindings.yaml"}, "a binding set read from a file names it"),
+        ({"origin": "shipped"}, "a binding set read from a file names it"),
+        ({"file_name": None}, "a binding set read from a file names it"),
     ],
 )
 def test_a_binding_set_must_say_where_it_came_from(binding_set: dict[str, Any], message: str) -> None:
     """A file cannot claim to be the set the contract package ships."""
     scanners = copy.deepcopy(SCANNERS)
-    scanners["evaluator_binding_set"] = {**scanners["evaluator_binding_set"], **binding_set}
+    scanners["evaluator_binding_sets"][0] = {**scanners["evaluator_binding_sets"][0], **binding_set}
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_record(**{"stages.plan.scanners": scanners}))
 
 
 def test_a_binding_set_read_from_a_file_names_it() -> None:
     scanners = copy.deepcopy(SCANNERS)
-    scanners["evaluator_binding_set"] = {
-        **scanners["evaluator_binding_set"],
+    scanners["evaluator_binding_sets"][0] = {
+        **scanners["evaluator_binding_sets"][0],
         "origin": "file",
         "file_name": "bindings.yaml",
     }
@@ -259,6 +261,7 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     """A post-deploy stage record that ran no check: one deployment in scope, nothing evaluated."""
     stage = copy.deepcopy(plan_stage)
     stage["stage"] = "post_deploy"
+    stage["values_known_after_deployment"] = None
     stage["observed_at"] = "2026-09-22T14:02:00Z"
     stage["reference_time"] = {**plan_stage["reference_time"], "value": stage["observed_at"]}
     # The plan stage's events file stays named: it is an entry of the record's register.
@@ -290,6 +293,7 @@ def _combined(document: dict[str, Any]) -> dict[str, Any]:
     if "post_deploy" in document["stages"] and document["change"]["deployment"] is not None:
         count_by_digest(document["stages"]["post_deploy"], digest_of(document["change"]["deployment"]))
     outcomes = {name: StageRecord.model_validate(stage).outcome for name, stage in document["stages"].items()}
+    keep_events_files(document)
     return {**document, **combine_in_order(document["expected_stages"], outcomes).model_dump(mode="json")}
 
 
@@ -485,6 +489,14 @@ def test_a_change_digest_names_the_records_environment() -> None:
     assert iac_change(CAR.model_validate(document)).digest == change_digest("iac_change", "root", "staging", plan)
 
 
+def test_a_records_id_is_the_one_its_run_and_unit_give() -> None:
+    document = _record(**{"metadata.uuid": record_uuid(RECORD["run"]["id"], "another-unit")})
+    with pytest.raises(ValidationError, match="metadata.uuid is not the id of the record's run and unit"):
+        CAR.model_validate(document)
+    car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+    assert ("metadata.uuid", "is not the id of the record's run and unit") in integrity_problems(car)
+
+
 @pytest.mark.parametrize("value", [1, "true", "no", [True]])
 def test_only_true_skips_the_integrity_checks(value: object) -> None:
     document = _record(**{"stages.plan.verdict.value": "pass", "stages.plan.verdict.exit_code": 0})
@@ -618,8 +630,8 @@ def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
 
 def test_a_binding_set_file_is_named_without_its_directories() -> None:
     scanners = copy.deepcopy(SCANNERS)
-    scanners["evaluator_binding_set"] = {
-        **scanners["evaluator_binding_set"],
+    scanners["evaluator_binding_sets"][0] = {
+        **scanners["evaluator_binding_sets"][0],
         "origin": "file",
         "file_name": "config/bindings.yaml",
     }

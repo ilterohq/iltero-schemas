@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
     "activity": "image_deploy",
     "stage": "pre_deploy",
     "timestamp": "2026-11-02T09:00:00Z",
     "assertion": {
-      "id": "ILT.IMAGE.BUILD_ACCEPTED_FOR_ENVIRONMENT",
+      "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT",
       "version": "1.0.0"
     }
   },

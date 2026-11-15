@@ -1,0 +1,614 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_7",
+        "check_name": "Ensure rotation for customer created CMKs is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "enable_key_rotation"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_62",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_62",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_62",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_6",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "block_public_policy",
+            "block_public_acls"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_6",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "block_public_policy",
+            "block_public_acls"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_6",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "block_public_policy",
+            "block_public_acls"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_64",
+        "check_name": "Ensure KMS key Policy is defined",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "policy"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_61",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "lifecycle_rule"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_61",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "lifecycle_rule"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV2_AWS_61",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "lifecycle_rule"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "logging"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "logging"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "logging"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "replication_configuration/rules/*/status",
+            "rule/*/status"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "replication_configuration/rules/*/status",
+            "rule/*/status"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_144",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "replication_configuration/rules/*/status",
+            "rule/*/status"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "versioning_configuration/status",
+            "versioning/enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "versioning_configuration/status",
+            "versioning/enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "versioning_configuration/status",
+            "versioning/enabled"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": {
+          "resource_address": "aws_s3_bucket_server_side_encryption_configuration.aes"
+        },
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      }
+    ],
+    "passed_checks": [
+      {
+        "check_id": "CKV_AWS_41",
+        "check_name": "Ensure no hard coded AWS access key and secret key exists in provider",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws.default",
+        "resource_address": "aws.default",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_227",
+        "check_name": "Ensure KMS key is enabled",
+        "check_result": {
+          "evaluated_keys": [
+            "is_enabled"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_33",
+        "check_name": "Ensure KMS key policy does not contain wildcard (*) principal",
+        "check_result": {
+          "evaluated_keys": [],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_kms_key.k",
+        "resource_address": "aws_kms_key.k",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_93",
+        "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+        "check_result": {
+          "evaluated_keys": [
+            "policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_93",
+        "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+        "check_result": {
+          "evaluated_keys": [
+            "policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_93",
+        "check_name": "Ensure S3 bucket policy does not lockout all but root user. (Prevent lockouts needing root account fixes)",
+        "check_result": {
+          "evaluated_keys": [
+            "policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_57",
+        "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/permission",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_57",
+        "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/permission",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_57",
+        "check_name": "S3 Bucket has an ACL defined which allows public WRITE access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/permission",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "acl",
+            "access_control_policy/grant",
+            "access_control_policy/grant/*/grantee/uri",
+            "access_control_policy"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": {
+          "resource_address": "aws_s3_bucket_server_side_encryption_configuration.kms"
+        },
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_19",
+        "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": null,
+        "resource": "aws_s3_bucket.none",
+        "resource_address": "aws_s3_bucket.none",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_19",
+        "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": {
+          "resource_address": "aws_s3_bucket_server_side_encryption_configuration.aes"
+        },
+        "resource": "aws_s3_bucket.aes",
+        "resource_address": "aws_s3_bucket.aes",
+        "severity": null
+      },
+      {
+        "check_id": "CKV_AWS_19",
+        "check_name": "Ensure all data stored in the S3 bucket is securely encrypted at rest",
+        "check_result": {
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ],
+          "result": "PASSED"
+        },
+        "connected_node": {
+          "resource_address": "aws_s3_bucket_server_side_encryption_configuration.kms"
+        },
+        "resource": "aws_s3_bucket.kms",
+        "resource_address": "aws_s3_bucket.kms",
+        "severity": null
+      }
+    ],
+    "skipped_checks": []
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "parsing_errors": 0
+  }
+}

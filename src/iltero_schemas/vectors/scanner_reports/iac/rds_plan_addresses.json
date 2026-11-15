@@ -1,0 +1,8 @@
+[
+  "aws_db_instance.compliant",
+  "aws_db_instance.missing",
+  "aws_db_instance.noncompliant",
+  "aws_db_instance.unknown",
+  "aws_kms_key.k",
+  "module.db.aws_db_instance.inner"
+]

@@ -1,0 +1,240 @@
+{
+  "Results": [
+    {
+      "Type": "terraformplan"
+    },
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0077",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Cluster and RDS instance should have backup retention longer than default 1 day"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0077",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Cluster and RDS instance should have backup retention longer than default 1 day"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.deep_bbb110433ce5993116a928804fe86722"
+          },
+          "ID": "AWS-0077",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Cluster and RDS instance should have backup retention longer than default 1 day"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0077",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Cluster and RDS instance should have backup retention longer than default 1 day"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0077",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Cluster and RDS instance should have backup retention longer than default 1 day"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0080",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "RDS encryption has not been enabled at a DB Instance level."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0080",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "RDS encryption has not been enabled at a DB Instance level."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.deep_bbb110433ce5993116a928804fe86722"
+          },
+          "ID": "AWS-0080",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "RDS encryption has not been enabled at a DB Instance level."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0080",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "RDS encryption has not been enabled at a DB Instance level."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0080",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "RDS encryption has not been enabled at a DB Instance level."
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0133",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "Enable Performance Insights to detect potential problems"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0133",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "Enable Performance Insights to detect potential problems"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.deep_bbb110433ce5993116a928804fe86722"
+          },
+          "ID": "AWS-0133",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "Enable Performance Insights to detect potential problems"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0133",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "Enable Performance Insights to detect potential problems"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0133",
+          "Severity": "LOW",
+          "Status": "FAIL",
+          "Title": "Enable Performance Insights to detect potential problems"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0176",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS IAM Database Authentication Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0176",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS IAM Database Authentication Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.deep_bbb110433ce5993116a928804fe86722"
+          },
+          "ID": "AWS-0176",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS IAM Database Authentication Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0176",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS IAM Database Authentication Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0176",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS IAM Database Authentication Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0177",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Deletion Protection Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.counted"
+          },
+          "ID": "AWS-0177",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Deletion Protection Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.deep_bbb110433ce5993116a928804fe86722"
+          },
+          "ID": "AWS-0177",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Deletion Protection Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0177",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Deletion Protection Disabled"
+        },
+        {
+          "CauseMetadata": {
+            "Resource": "aws_db_instance.keyed"
+          },
+          "ID": "AWS-0177",
+          "Severity": "MEDIUM",
+          "Status": "FAIL",
+          "Title": "RDS Deletion Protection Disabled"
+        }
+      ],
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

@@ -1,0 +1,43 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED
+  version: "1.0.0"
+  title: "Production change approved: its digest by a security reviewer, or its run"
+  remediation: Have an independent security reviewer approve the change's digest, or get the run approved.
+spec:
+  change_type: null
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    path: organization_scope.environment.production
+    equal: true
+  assert:
+    any:
+      - exists:
+          in: approvals
+          where:
+            all:
+              - path: item.status
+                equal: approved
+              - path: item.subject.kind
+                equal: change
+              - path: item.subject.digest
+                equal:
+                  path: change.digest
+              - path: item.roles
+                contains: security
+              - path: item.independence
+                equal: independent
+      - exists:
+          in: approvals
+          where:
+            all:
+              - path: item.status
+                equal: approved
+              - path: item.subject.kind
+                equal: run
+              - path: item.subject.id
+                equal:
+                  path: run.id

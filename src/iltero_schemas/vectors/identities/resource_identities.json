@@ -1,10 +1,13 @@
 {
-  "apiVersion": "iltero.io/resource-identities/v1",
-  "unit": "root",
-  "generator": {
-    "name": "iltero",
-    "version": "0.1.0"
+  "apiVersion": "iltero.com/v1",
+  "kind": "ResourceIdentities",
+  "metadata": {
+    "generator": {
+      "name": "iltero",
+      "version": "0.1.0"
+    }
   },
+  "unit": "root",
   "sources": {
     "state": {
       "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",

@@ -14,6 +14,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from iltero_schemas.models.assertion import Stage, TargetKind
 
+# The apiVersion of every document of the contract; its top-level ``kind`` names which document it is.
+API_VERSION = "iltero.com/v1"
+
 
 class StrictModel(BaseModel):
     # A refusal names the field and the rule, never the value it refused.

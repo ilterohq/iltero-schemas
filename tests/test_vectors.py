@@ -21,6 +21,7 @@ from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_js
 from iltero_schemas.ast.parse import parse_document
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import (
+    CANONICALIZATION,
     PLAN_DIGEST_VERSIONS,
     canonical_assertion_set_bytes,
     canonical_bytes,
@@ -30,13 +31,19 @@ from iltero_schemas.canonical import (
     digest,
     digest_of,
     plan_digest,
+    record_uuid,
     required_assertion_digest,
 )
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, package_of
+from iltero_schemas.models.binding import EvaluatorBindingSet
 from iltero_schemas.models.car import CAR
 from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.event import AssuranceEvent, events_file_bytes
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
+from iltero_schemas.models.iac.scanner_observations import ScannerObservations
+from iltero_schemas.models.iac.scanner_reports.checkov import read_checkov
+from iltero_schemas.models.iac.scanner_reports.common import Source
+from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from iltero_schemas.models.verification import VerificationReport
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
@@ -56,16 +63,18 @@ APPROVALS = json.loads((VECTORS / "evaluation" / "approvals.json").read_text(enc
 INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json").read_text(encoding="utf-8"))
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
+    "binding_sets": EvaluatorBindingSet,
     "contexts": AssuranceContext,
     "events": AssuranceEvent,
     "identities": ResourceIdentities,
     "records": CAR,
     "reports": VerificationReport,
+    "scanner_observations": ScannerObservations,
 }
-# Every document folder but identities, and every folder of their cases, holds one subfolder per change type it
-# has documents of; events are of IaC changes only. A document folder also holds its one digests.json.
+# Every document folder but binding sets and identities, and every folder of their cases, holds one subfolder per
+# change type it has documents of; events are of IaC changes only. A document folder also holds its one digests.json.
 SPLIT_FOLDERS = {folder: set(CHANGE_TYPES) for folder in ("contexts", "records", "reports", *SPLIT_CASE_FOLDERS)} | {
-    "events": {"iac"}
+    folder: {"iac"} for folder in ("events", "scanner_observations", "scanner_reports", "scanner_evidence")
 }
 DIGESTS_FILE = "digests.json"
 # Each document by its folder and its path from that folder.
@@ -75,7 +84,11 @@ DOCUMENT_FILES = sorted(
 
 
 # The three state assertions of the plan-stage scenario the context vector describes.
-CONTEXT_SCENARIO = ("ILT.AWS.RDS.STORAGE_ENCRYPTED", "ILT.AWS.RDS.NOT_PUBLIC", "ILT.AWS.RDS.BACKUP_RETENTION")
+CONTEXT_SCENARIO = (
+    "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
+    "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+    "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
+)
 
 
 def _name(path: Path) -> str:
@@ -205,11 +218,35 @@ def test_document_vector_is_written_as_its_model_dumps_it(folder: str, path: str
     assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
-def test_the_image_build_report_names_the_image_build_record() -> None:
-    report = json.loads((VECTORS / "reports" / "image" / "verification_report_build.json").read_text(encoding="utf-8"))
-    record = json.loads((VECTORS / "records" / "image" / "local_run_build.json").read_text(encoding="utf-8"))
+@pytest.mark.parametrize(
+    ("report", "vector"),
+    [
+        ("image/verification_report_build.json", "image/local_run_build.json"),
+        ("iac/verification_report.json", "iac/local_run.json"),
+    ],
+)
+def test_a_report_vector_names_its_record_by_id_and_digest(report: str, vector: str) -> None:
+    named = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
+    record = json.loads((VECTORS / "records" / vector).read_text(encoding="utf-8"))
     digests = json.loads((VECTORS / "records" / DIGESTS_FILE).read_text(encoding="utf-8"))
-    assert report["record"] == {"uuid": record["uuid"], "digest": digests["image/local_run_build.json"]}
+    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digests[vector]}
+
+
+@pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
+def test_each_stage_names_its_events_file_by_the_digest_of_its_events(path: Path) -> None:
+    record = CAR.model_validate(json.loads(path.read_text(encoding="utf-8")))
+    register = {ref.path: ref for ref in record.evidence_refs}
+    for stage, kept in record.stages.items():
+        data = events_file_bytes([event for event in record.events if event.evaluation.stage is stage])
+        entry = register[kept.events.path]
+        assert kept.events.digest == entry.digest == digest(data), stage
+        assert (entry.size_bytes, entry.canonicalization) == (len(data), CANONICALIZATION), stage
+
+
+@pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
+def test_each_record_vector_has_the_id_its_run_and_unit_give(path: Path) -> None:
+    record = json.loads(path.read_text(encoding="utf-8"))
+    assert record["metadata"]["uuid"] == record_uuid(record["run"]["id"], record["unit"])
 
 
 def test_the_vectors_hold_exactly_the_known_folders() -> None:
@@ -218,6 +255,8 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "assertions",
         "assertions_invalid",
         "attestations",
+        "binding_sets_invalid",
+        "binding_sets_project_invalid",
         "buildx",
         "canonical",
         "compiler",
@@ -231,6 +270,8 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "records_valid",
         "reports_invalid",
         "scan_coverage",
+        "scanner_evidence",
+        "scanner_reports",
         "subjects",
     }
     assert folders == known | set(DOCUMENT_MODELS)
@@ -303,9 +344,9 @@ def test_all_compiled_modules_build_into_one_bundle(opa: Path, capabilities: Pat
 
 
 def test_an_id_that_prefixes_another_still_bundles(opa: Path, capabilities: Path, tmp_path: Path) -> None:
-    for assertion_id in ("ACME.RDS", "ACME.RDS.STATUS", "ACME.RDS.STATUS.EVALUATE"):
+    for assertion_id in ("ACME.IAC.RESOURCE.AWS.RDS.STATUS", "ACME.IAC.RESOURCE.AWS.RDS.STATUS_EVALUATE"):
         document = {
-            "apiVersion": "iltero.io/v1",
+            "apiVersion": "iltero.com/v1",
             "kind": "TechnicalAssertion",
             "metadata": {"id": assertion_id, "version": "1.0.0", "title": "t"},
             "spec": {
@@ -473,9 +514,9 @@ def test_plan_binding_decides_on_the_post_deploy_vector(
         "--capabilities",
         str(capabilities),
         "--data",
-        str(COMPILER / "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"),
+        str(COMPILER / "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"),
         "--stdin-input",
-        f"data.{package_of('ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN')}.evaluate",
+        f"data.{package_of('ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN')}.evaluate",
         stdin=json.dumps(context),
     )
     assert evaluated.returncode == 0, evaluated.stderr
@@ -485,10 +526,10 @@ def test_plan_binding_decides_on_the_post_deploy_vector(
 
 
 _READS_THE_SUMMARY = """\
-apiVersion: iltero.io/v1
+apiVersion: iltero.com/v1
 kind: TechnicalAssertion
 metadata:
-  id: ACME.DEPLOYMENT.ONE_CHANGE
+  id: ACME.IAC.DEPLOYMENT.TEST.ONE_CHANGE
   version: "1.0.0"
   title: The apply changed one resource
 spec:
@@ -512,8 +553,43 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     path.write_bytes(module.source)
     reads = _evaluate(opa, capabilities, path, module.package, context)
     assert reads["status"] == "unknown" and "deployment_log_incomplete" in json.dumps(reads)
-    binding = COMPILER / "ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"
+    binding = COMPILER / "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"
     ignores = _evaluate(
-        opa, capabilities, binding, package_of("ILT.DEPLOYMENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"), context
+        opa,
+        capabilities,
+        binding,
+        package_of("ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"),
+        context,
     )
     assert ignores["status"] == "pass"
+
+
+@pytest.mark.parametrize("path", documents("binding_sets"), ids=_name)
+def test_an_evaluator_digest_is_over_the_assertion_and_the_evaluator_as_the_copy_holds_them(path: Path) -> None:
+    """An event names an evaluator by this digest; a reader recomputes it from the copy's raw binding."""
+    document = json.loads(path.read_text(encoding="utf-8"))
+    for raw, binding in zip(
+        document["spec"]["bindings"], EvaluatorBindingSet.model_validate(document).spec.bindings, strict=True
+    ):
+        for raw_evaluator, evaluator in zip(raw["evaluators"], binding.evaluators, strict=True):
+            assert digest_of({"assertion": raw["assertion"], "evaluator": raw_evaluator}) == binding.evaluator_digest(
+                evaluator
+            )
+
+
+SCANNER_REPORT_CASES = json.loads((VECTORS / "scanner_reports" / "iac" / "cases.json").read_text(encoding="utf-8"))
+REPORT_READERS = {"checkov": read_checkov, "trivy": read_trivy}
+
+
+@pytest.mark.parametrize("case", SCANNER_REPORT_CASES, ids=[c["name"] for c in SCANNER_REPORT_CASES])
+def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> None:
+    """A real report, trimmed to what a reader reads, gives the same observations everywhere."""
+    folder = VECTORS / "scanner_reports" / "iac"
+    report = json.loads((folder / case["report"]).read_text(encoding="utf-8"))
+    addresses = json.loads((folder / case["plan_addresses"]).read_text(encoding="utf-8"))
+    source = Source(
+        report_digest=digest_of(report), plan_digest=case["plan_digest"], rules_digest=None, configuration_digest=None
+    )
+    observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
+    expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))
+    assert observed == expected

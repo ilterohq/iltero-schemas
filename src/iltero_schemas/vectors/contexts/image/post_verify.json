@@ -1,12 +1,13 @@
 {
-  "apiVersion": "iltero.io/assurance-context/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
   "evaluation": {
     "id": "eval_post_verify_1",
     "activity": "image_deploy",
     "stage": "post_verify",
     "timestamp": "2026-11-02T09:05:30Z",
     "assertion": {
-      "id": "ILT.IMAGE.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
+      "id": "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE",
       "version": "1.0.0"
     }
   },

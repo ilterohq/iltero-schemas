@@ -33,6 +33,7 @@ from iltero_schemas.ast.parse import (
 )
 from iltero_schemas.canonical import INT_MAX
 from iltero_schemas.models.assertion import Stage, TargetKind
+from tests.conftest import positional_id
 
 RESOURCE = {
     "kind": "resource",
@@ -52,9 +53,9 @@ def _document(
     if when is not None:
         spec["when"] = when
     return {
-        "apiVersion": "iltero.io/v1",
+        "apiVersion": "iltero.com/v1",
         "kind": "TechnicalAssertion",
-        "metadata": {"id": "ACME.TEST.CASE", "version": "1.0.0", "title": "t"},
+        "metadata": {"id": positional_id("iac_change", target or RESOURCE), "version": "1.0.0", "title": "t"},
         "spec": spec,
     }
 
@@ -297,13 +298,13 @@ def test_envelope_errors_are_reported_before_expression_errors() -> None:
 
 def test_parse_reads_yaml_text_and_reports_document_errors() -> None:
     ast = parse(
-        "apiVersion: iltero.io/v1\nkind: TechnicalAssertion\n"
-        "metadata: {id: A.B, version: '1.0.0', title: t}\n"
+        "apiVersion: iltero.com/v1\nkind: TechnicalAssertion\n"
+        "metadata: {id: A.IAC.RESOURCE.AWS.X.B, version: '1.0.0', title: t}\n"
         "spec:\n  change_type: iac_change\n  stage: plan\n"
         "  target: {kind: resource, resources: [{tool: terraform, provider: aws, resource_types: [x]}]}\n"
         "  assert: {path: resource.x, equal: 1}\n"
     )
-    assert ast.id == "A.B"
+    assert ast.id == "A.IAC.RESOURCE.AWS.X.B"
     with pytest.raises(AssertionSyntaxError) as raised:
         parse("- not a mapping")
     assert raised.value.issues[0].path == "document"

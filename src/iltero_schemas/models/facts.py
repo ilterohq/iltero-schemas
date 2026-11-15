@@ -38,6 +38,19 @@ class ServerFactsUnavailable(StrictModel):
     reason: UnknownReason
 
 
+class NotReadByTheStage(StrictModel):
+    """What a stage keeps in place of a part of the server's facts that none of its evaluations read.
+
+    The server may have supplied the part; no result of the stage depended on it, so the stage keeps no copy. It is
+    a stage record's marker, never an evaluation input's. It is always written under its marker name, ``__unknown``.
+    """
+
+    model_config = ConfigDict(serialize_by_alias=True)
+
+    unknown: Literal[True] = Field(alias="__unknown")
+    reason: Literal["not_read_by_the_stage"]
+
+
 class NotReported(StrictModel):
     """What stands where a tool did not report a fact: the evaluator reads it as ``unknown``, with this reason."""
 

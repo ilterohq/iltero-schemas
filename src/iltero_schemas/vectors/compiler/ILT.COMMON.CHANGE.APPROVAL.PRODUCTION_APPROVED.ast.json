@@ -1,0 +1,97 @@
+{
+  "assert": {
+    "any": [
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "literal": "approved",
+                  "op": "equal",
+                  "path": "item.status"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "change",
+                  "op": "equal",
+                  "path": "item.subject.kind"
+                }
+              },
+              {
+                "predicate": {
+                  "op": "equal",
+                  "path": "item.subject.digest",
+                  "ref": "change.digest"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "security",
+                  "op": "contains",
+                  "path": "item.roles"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "independent",
+                  "op": "equal",
+                  "path": "item.independence"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "exists": {
+          "in": "approvals",
+          "where": {
+            "all": [
+              {
+                "predicate": {
+                  "literal": "approved",
+                  "op": "equal",
+                  "path": "item.status"
+                }
+              },
+              {
+                "predicate": {
+                  "literal": "run",
+                  "op": "equal",
+                  "path": "item.subject.kind"
+                }
+              },
+              {
+                "predicate": {
+                  "op": "equal",
+                  "path": "item.subject.id",
+                  "ref": "run.id"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": null,
+  "id": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": true,
+      "op": "equal",
+      "path": "organization_scope.environment.production"
+    }
+  }
+}

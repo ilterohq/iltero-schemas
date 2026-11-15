@@ -1,0 +1,8 @@
+[
+  "aws_kms_key.k",
+  "aws_s3_bucket.aes",
+  "aws_s3_bucket.kms",
+  "aws_s3_bucket.none",
+  "aws_s3_bucket_server_side_encryption_configuration.aes",
+  "aws_s3_bucket_server_side_encryption_configuration.kms"
+]

@@ -1,4 +1,5 @@
 {
-  "apiVersion": "iltero.io/bundle-keys/v1",
+  "apiVersion": "iltero.com/v1",
+  "kind": "BundleSigningKeys",
   "keys": []
 }

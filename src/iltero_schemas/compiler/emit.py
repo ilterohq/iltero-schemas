@@ -8,6 +8,14 @@ by a verbatim copy of ``runtime.rego`` — and exposes
 ``data.iltero.assertions["<id>"].evaluate``, which returns one result
 ``{subject, status, reason, observations}`` for the subject the input
 describes. ``status`` is ``pass``, ``fail``, ``unknown`` or ``not_applicable``.
+
+An assertion observed by scanners (``assert: null``) compiles to a module whose
+check is unknown for the reason ``observed_by_scanners``: its ``evaluate`` is
+never ``pass`` or ``fail``, so a runner that treats it like any other module
+records no verdict nobody decided. Its result still answers the guard:
+``not_applicable`` when the guard excludes the subject, unknown for the reason
+``observed_by_scanners`` when it admits it (the scanners' verdict applies), and
+unknown for another reason when the guard itself could not be settled.
 """
 
 from __future__ import annotations
@@ -121,6 +129,14 @@ class _Emitter:
         return "[\n" + "".join(f"{inner}{item},\n" for item in items) + f"{outer}]"
 
 
+# The check of an assertion observed by scanners: unknown, because only its scanners decide it.
+OBSERVED_BY_SCANNERS_REASON = "observed_by_scanners"
+OBSERVED_BY_SCANNERS_CHECK = (
+    '{"status": "unknown", "unknown": {"path": "assert", "reason": "' + OBSERVED_BY_SCANNERS_REASON + '"}, '
+    '"predicates": []}'
+)
+
+
 def _guarded(scope: Expr | None, when: Expr | None) -> Expr | None:
     """A module's guard: the target's scope guard, then the author's ``when``, whichever are present."""
     if scope is None or when is None:
@@ -134,7 +150,9 @@ def compile(assertion: Assertion) -> RegoModule:
     emitter = _Emitter()
     when = _guarded(scope_guard(assertion.target), assertion.when)
     guard = "_true" if when is None else emitter.expr(when, 0)
-    check = emitter.expr(assertion.assert_, 0)
+    # An assertion observed by scanners has no condition its module could decide: its check is unknown, so the
+    # module's own verdict is never a pass or a fail.
+    check = OBSERVED_BY_SCANNERS_CHECK if assertion.assert_ is None else emitter.expr(assertion.assert_, 0)
     rules = [
         f"package {package}\n",
         f"assertion_id := {_rego(assertion.id)}\n",

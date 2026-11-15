@@ -1,0 +1,8 @@
+[
+  "aws_config_configuration_recorder.compliant",
+  "aws_config_configuration_recorder.no_status",
+  "aws_config_configuration_recorder.noncompliant",
+  "aws_config_configuration_recorder_status.compliant",
+  "aws_config_configuration_recorder_status.noncompliant",
+  "aws_iam_role.cfg"
+]

@@ -23,8 +23,8 @@ from typing import Annotated, ClassVar, Literal, get_args
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Count, Digest, Identifier, Timestamp
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.fields import Count, Digest, Identifier, Timestamp
 
 # More reports of one kind than a build is given.
 MAX_REPORTS = 64

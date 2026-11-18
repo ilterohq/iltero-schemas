@@ -16,7 +16,7 @@ from types import MappingProxyType
 from iltero_schemas.assertions.paths import ASSERTIONS, BUILT_IN_DOCUMENTS
 from iltero_schemas.ast import parse_document
 from iltero_schemas.ast.document import load_document
-from iltero_schemas.canonical.encoding import digest_of
+from iltero_schemas.canonical.common.encoding import digest_of
 from iltero_schemas.compiler import compile
 
 

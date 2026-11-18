@@ -27,9 +27,9 @@ from typing import Annotated, Literal, TypeAlias
 from pydantic import Field, model_validator
 
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
-from iltero_schemas.models.base import API_VERSION as API_VERSION
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.fields import MAX_RESOURCES, Address, Digest, Identifier
+from iltero_schemas.models.common.base import API_VERSION as API_VERSION
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.fields import MAX_RESOURCES, Address, Digest, Identifier
 from iltero_schemas.models.iac.deployment import Removal, StateSource
 from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.iac.tools.variants import IdentityToolData, check_tool_data

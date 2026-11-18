@@ -5,12 +5,13 @@ the body of one activity, and the activity's declaration says which stages its
 records pass through and holds the rules that compare its body with them.
 """
 
-from iltero_schemas.change_types.activity import (
+from iltero_schemas.change_types.common.activity import (
     Activity,
     ChangeType,
     DocumentName,
     RunType,
 )
+from iltero_schemas.change_types.common.registry import ACTIVITIES, CHANGE_TYPES
 from iltero_schemas.change_types.iac.change import IAC_CHANGE, IacChange, PlanRecord, not_supported_by
 from iltero_schemas.change_types.image.build import (
     IMAGE_BUILD,
@@ -26,8 +27,7 @@ from iltero_schemas.change_types.image.build import (
     scan_coverage,
 )
 from iltero_schemas.change_types.image.deploy import IMAGE_DEPLOY, ImageDeploy
-from iltero_schemas.change_types.registry import ACTIVITIES, CHANGE_TYPES
-from iltero_schemas.models.change_type import ActivityName, ChangeTypeName
+from iltero_schemas.models.common.change_type import ActivityName, ChangeTypeName
 
 __all__ = [
     "ACTIVITIES",

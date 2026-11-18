@@ -6,7 +6,7 @@
   ],
   "kind": "ScannerObservations",
   "plan_digest": "sha256:56be10d2c4e2d7bffacdd152afa89337962556bc2e1d5247bd61bbe194c30865",
-  "report_digest": "sha256:07d6e9fde439699a1517555349769358b7f19e342d4c1009390fa434e0f0189a",
+  "report_digest": "sha256:52e554ec1a8c0a83b826fdd56b1f1c868a2cfa44eb97a94008d35b030abacd38",
   "results": [
     {
       "connected_plan_address": null,
@@ -1451,6 +1451,7 @@
       "unresolved_reason": "not_in_plan"
     }
   ],
+  "results_not_listed": 0,
   "rules_digest": null,
   "supplied_by": "pipeline",
   "tool": "checkov",

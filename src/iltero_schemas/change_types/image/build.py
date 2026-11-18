@@ -23,13 +23,14 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.assertions.paths import BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, SIGNED_PROVENANCE_MATCHES_RUN_ID
 from iltero_schemas.canonical import digest_of
-from iltero_schemas.change_types.activity import Activity, DocumentName
-from iltero_schemas.change_types.evidence import JSON_MEDIA_TYPE, given_digest
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.change_type import IMAGE_BUILD_ACTIVITY, IMAGE_RELEASE_TYPE
-from iltero_schemas.models.checked_content import CheckedImage, checked_image
-from iltero_schemas.models.fields import Commit, Digest, Identifier
+from iltero_schemas.change_types.common.activity import Activity, DocumentName
+from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_digest
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.change_type import IMAGE_BUILD_ACTIVITY, IMAGE_RELEASE_TYPE
+from iltero_schemas.models.common.checked_content import CheckedImage, checked_image
+from iltero_schemas.models.common.fields import Commit, Digest, Identifier
+from iltero_schemas.models.common.server_facts import AttestationNotSent, AttestationOutcome
 from iltero_schemas.models.image.build_reports import (
     MAX_REPORTS,
     REPORT_MEDIA_TYPES_OF,
@@ -49,10 +50,9 @@ from iltero_schemas.models.image.naming import (
     in_one_spelling,
     repository_of,
 )
-from iltero_schemas.models.server_facts import AttestationNotSent, AttestationOutcome
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR, EvidenceRef
+    from iltero_schemas.models.common.car import CAR, EvidenceRef
 
 
 class TagResolution(StrictModel):
@@ -241,13 +241,15 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
     fails without a build commit to compare, or on a run the tool opened: when it was evaluated, it is unknown for
     want of the build commit, or of the server's facts."""
     opened_by = car.governance.run_opened_by
-    owed = "server" if opened_by == "server" else "none"
-    if any(event.provenance.facts_source != owed for event in car.events):
-        raise ValueError(f"every evaluation of a build whose run was opened by {opened_by} reads its facts from {owed}")
-    if owed == "none" and _sent_to_server(build):
+    expected_source = "server" if opened_by == "server" else "none"
+    if any(event.provenance.facts_source != expected_source for event in car.events):
+        raise ValueError(
+            f"every evaluation of a build whose run was opened by {opened_by} reads its facts from {expected_source}"
+        )
+    if expected_source == "none" and _sent_to_server(build):
         raise ValueError("a run the tool opened sent the server no attestation")
     provenance = [event for event in car.events if event.assertion.id == SIGNED_PROVENANCE_MATCHES_RUN_ID]
-    if owed == "none" and any(
+    if expected_source == "none" and any(
         event.evaluation.status in ("pass", "fail", "not_applicable")
         or (event.evaluation.status == "unknown" and event.evaluation.status_reason != "server_facts_unavailable")
         for event in provenance
@@ -263,7 +265,7 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
         )
     if build.build_commit is None:
         reason, why = "not_reported_by_tool", "when the build names no commit"
-    elif owed == "none":
+    elif expected_source == "none":
         reason, why = "server_facts_unavailable", "on a run the tool opened: only the server verifies the commit"
     else:
         return
@@ -351,7 +353,7 @@ def check_attestation_outcome(car: CAR, outcome: AttestationOutcome) -> None:
 
 
 def _named_documents(car: CAR) -> Mapping[Stage, Mapping[DocumentName, tuple[str, ...]]]:
-    """The raw index the build names, which its plan stage owes: the one file a reader checks the record against
+    """The raw index the build names, which its plan stage must keep: the one file a reader checks the record against
     when it receives it (``platform_digests_of``)."""
     index = _body(car).index_evidence_ref
     return MappingProxyType({Stage.PLAN: MappingProxyType({"image_index": (index,)} if index else {})})

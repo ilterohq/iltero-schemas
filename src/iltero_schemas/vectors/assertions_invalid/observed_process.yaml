@@ -4,7 +4,7 @@ metadata:
   id: VEC.IAC.CHANGE.TEST.INVALID_CASE
   version: "1.0.0"
   title: An invalid document
-  description: A change meets this assertion when the scanner checks its binding names all pass for it.
+  description: A change meets this assertion when every scanner check a scanner check mapping names for it passes.
 spec:
   change_type: iac_change
   evidence:

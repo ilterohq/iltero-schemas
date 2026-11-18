@@ -29,10 +29,10 @@ from iltero_schemas.change_types import (
     check_build_metadata,
     scan_coverage,
 )
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.checked_content import CheckedImage
-from iltero_schemas.models.server_facts import AttestationNotSent, VerifiedAttestation
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.checked_content import CheckedImage
+from iltero_schemas.models.common.server_facts import AttestationNotSent, VerifiedAttestation
 from tests.conftest import VECTORS
 from tests.records import RECORD
 
@@ -56,7 +56,7 @@ def test_a_build_is_a_build_run_checked_at_its_plan_stage_only() -> None:
     assert IMAGE_BUILD.not_supported(CAR.model_validate(BUILD)) == frozenset()
 
 
-def test_a_build_owes_its_record_and_its_raw_index_and_no_other_file() -> None:
+def test_a_build_keeps_its_record_and_its_raw_index_and_no_other_file() -> None:
     assert dict(IMAGE_BUILD.required_documents) == {Stage.PLAN: ("record",)}
     car = CAR.model_validate(BUILD)
     assert isinstance(car.change, ImageBuild)
@@ -65,7 +65,7 @@ def test_a_build_owes_its_record_and_its_raw_index_and_no_other_file() -> None:
     }
 
 
-def test_a_build_that_names_no_file_owes_only_its_record() -> None:
+def test_a_build_that_names_no_file_keeps_only_its_record() -> None:
     change = copy.deepcopy(BUILD["change"])
     change.update(platform_digests=[], index_evidence_ref=None, reports=[], build_commit=None)
     change["image"]["tag_resolution"] = None
@@ -126,7 +126,7 @@ def test_a_local_build_is_undecided_until_a_server_verifies_its_commit() -> None
     car = CAR.model_validate(BUILD)
     statuses = {event.assertion.id: event.evaluation.status for event in car.events}
     assert statuses["ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT"] == "unknown"
-    assert car.verdict.value == "indeterminate" and car.complete
+    assert car.verdict.value == "undecided" and car.all_expected_stages_reported
 
 
 def _with_provenance_event(status: str, reason: str | None) -> dict[str, Any]:
@@ -164,7 +164,7 @@ def _opened_by_server(record: dict[str, Any]) -> dict[str, Any]:
     """``record`` as a record of a run the server opened, whose evaluations read the server's facts."""
     record["governance"]["run_opened_by"] = "server"
     for coverage in (record["coverage"], record["stages"]["plan"]["coverage"]):
-        coverage["assertions_expected"]["origin"] = "server_pinned"
+        coverage["assertions_required"]["origin"] = "server_pinned"
     for event in record["events"]:
         event["provenance"]["facts_source"] = "server"
     return record

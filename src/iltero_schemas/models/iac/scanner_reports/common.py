@@ -7,8 +7,9 @@ from dataclasses import dataclass
 
 from pydantic import ValidationError
 
-from iltero_schemas.models.binding import TOOL_DECISIONS
+from iltero_schemas.models.common.redaction import is_redaction_marker
 from iltero_schemas.models.iac.scanner_addresses import resolve
+from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS
 from iltero_schemas.models.iac.scanner_observations import (
     API_VERSION,
     KIND,
@@ -19,7 +20,6 @@ from iltero_schemas.models.iac.scanner_observations import (
     ScannerResult,
     input_kind_of,
 )
-from iltero_schemas.models.redaction import is_redaction_marker
 
 
 class ReportError(ValueError):
@@ -192,6 +192,7 @@ def observations(
     index: Mapping[str, str | None],
     source: Source,
     tool_parsing_errors: int | None,
+    results_not_listed: int | None,
     repeats_allowed: bool,
 ) -> ScannerObservations:
     """The observations of ``reads``: each readable result once per check, input kind and address, and how many were
@@ -232,6 +233,7 @@ def observations(
                 "unreadable_results": errors,
                 "written_configuration_results": configuration,
                 "tool_parsing_errors": tool_parsing_errors,
+                "results_not_listed": results_not_listed,
                 "results": [result.model_dump(mode="json") for result in results],
             }
         )

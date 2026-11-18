@@ -1,0 +1,150 @@
+apiVersion: iltero.com/v1
+kind: ScannerCheckMapping
+metadata:
+  id: ILT.SCANNER_CHECKS.STARTER
+  version: "1.0.0"
+# This file says which scanner checks answer which Iltero assertion.
+# You do not need every scanner listed here: Iltero uses the reports you give it.
+# Trivy names a resource only when a check fails, so a Trivy check can fail an
+# assertion but cannot pass it.
+spec:
+  assertion_mappings:
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS
+        version: "1.0.0"
+        digest: "sha256:fd812f1950cc411f848a0dabb51a09b7a5be55996f0a2c00a4d015981aa24c03"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_67]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [is_multi_region_trail]
+        - tool: trivy
+          stage: plan
+          rule_ids: [AWS-0014]
+          tool_version_constraint: ">=0.72,<1"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [is_multi_region_trail]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES
+        version: "1.0.0"
+        digest: "sha256:8266a48d92f4f623df00af1d44a7c78c85e7905797821ef7e04ce8a6201d0d98"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_36]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [enable_log_file_validation]
+        - tool: trivy
+          stage: plan
+          rule_ids: [AWS-0016]
+          tool_version_constraint: ">=0.72,<1"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [enable_log_file_validation]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED
+        version: "1.0.0"
+        digest: "sha256:c5620ff5ce130afaeff2c3c276496d822449d52a8e96c5b1e4656ea3950f6de2"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV2_AWS_45]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [is_enabled, recording_group/*/all_supported]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES
+        version: "1.0.0"
+        digest: "sha256:1ee1e696b95bab2379236dca1db8ca2921f8b1d8acb79b50ec0ca04a274ccfb6"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV2_AWS_48]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [recording_group/*/include_global_resource_types]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET
+        version: "1.0.0"
+        digest: "sha256:5c20029daebe59249c73d94b664db819ea6daeba9b3d752c42bd27784b6205ac"
+      scanner_checks:
+      # Iltero checks this assertion itself. A Trivy result can add a fail.
+        - tool: trivy
+          stage: plan
+          rule_ids: [AWS-0107]
+          tool_version_constraint: ">=0.72,<1"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [cidr_blocks, cidr_ipv4, cidr_ipv6, from_port, ingress, ip_protocol, ipv6_cidr_blocks, protocol, to_port, type]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES
+        version: "1.0.0"
+        digest: "sha256:0709623a10af4e005ea3f8e8540b0abd07eac9ba594c7baddd73e545240440c6"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_62]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [inline_policy, policy]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC
+        version: "1.0.0"
+        digest: "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_17]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [publicly_accessible]
+        - tool: trivy
+          stage: plan
+          rule_ids: [AWS-0180]
+          tool_version_constraint: ">=0.72,<1"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [publicly_accessible]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED
+        version: "1.0.0"
+        digest: "sha256:d59f095aadcaa1e4047978dac556a7c128d3d29d822fe9d948f72bf415ca7b6b"
+      scanner_checks:
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_16]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [storage_encrypted]
+        - tool: trivy
+          stage: plan
+          rule_ids: [AWS-0080]
+          tool_version_constraint: ">=0.72,<1"
+          input_kind: plan
+          subject_match: exact_address
+          paths_read: [storage_encrypted]
+    - assertion:
+        id: ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED
+        version: "1.0.0"
+        digest: "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57"
+      scanner_checks:
+      # These checks report on the bucket's public access block, so each result is
+      # matched to the bucket that the block belongs to.
+        - tool: checkov
+          stage: plan
+          rule_ids: [CKV_AWS_53, CKV_AWS_54, CKV_AWS_55, CKV_AWS_56]
+          tool_version_constraint: ">=3,<4"
+          input_kind: plan
+          subject_match: plan_configures
+          paths_read: [block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets]

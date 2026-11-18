@@ -10,10 +10,9 @@
   },
   "trust_level": "self_attested",
   "compliance_determination": null,
-  "assurance_status": {
-    "value": "complete",
-    "reason": null,
-    "detail": null
+  "evidence_status": {
+    "value": "whole",
+    "reasons": []
   },
   "change": {
     "activity": "iac_change",
@@ -36,7 +35,7 @@
     "drift_check": null
   },
   "units_file": null,
-  "complete": false,
+  "all_expected_stages_reported": false,
   "coverage": {
     "subjects_in_scope": {
       "value": 20,
@@ -46,7 +45,7 @@
       "excluded": []
     },
     "subjects_evaluated": 2,
-    "assertions_expected": {
+    "assertions_required": {
       "value": 5,
       "origin": "project_files",
       "required_assertion_digest": "sha256:38b03a6ba0f6e2df062a25439ec99befb07a04e4cec2a2cf7d4d7a80064651bd"
@@ -73,7 +72,7 @@
         "stage": "plan",
         "kind": "evaluator_did_not_decide",
         "engine": "trivy",
-        "reason": "tool_reports_only_failures",
+        "reason": "no_result_of_the_mapped_checks",
         "count": 2
       }
     ],
@@ -83,7 +82,33 @@
       "reason": null
     },
     "sampled": false,
-    "substituted_inputs": []
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "checkov": {
+        "pass": 2,
+        "fail": 1,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      },
+      "opa": {
+        "pass": 2,
+        "fail": 2,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      },
+      "trivy": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 2,
+        "error": 0
+      }
+    }
   },
   "events": [
     {
@@ -125,7 +150,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
         "compiler": {
@@ -222,7 +247,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
         "compiler": {
@@ -361,7 +386,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
         "compiler": {
@@ -458,7 +483,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
         "compiler": {
@@ -559,7 +584,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
         "compiler": {
@@ -637,8 +662,8 @@
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
         "bundle": null,
-        "evaluator_binding": {
-          "digest": "sha256:533a181b736280c5d8782afab5b0b0141d8c0ea83f224133a98bfb97d82b7cc6"
+        "scanner_checks": {
+          "digest": "sha256:ae42e8f9a86ba93a7002aafaa1c29d439c0716012181f60e4eecf7c04b196aac"
         },
         "facts_source": null,
         "compiled_digest": null,
@@ -665,7 +690,7 @@
           "ci_run_id": null,
           "type": "human"
         },
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "checked_content": {
           "kind": "plan",
           "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -705,15 +730,15 @@
         "stage": "plan",
         "status": "not_evaluated",
         "status_detail": null,
-        "status_reason": "tool_reports_only_failures"
+        "status_reason": "no_result_of_the_mapped_checks"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
         "bundle": null,
-        "evaluator_binding": {
-          "digest": "sha256:bd917cfe3f2e6376eab03b1b20bd9863dbd9e323acc472fe2a5e6e8206deb48e"
+        "scanner_checks": {
+          "digest": "sha256:b939196bff6c1e05eed3169b43afcf5a4c40cd624965566248756943986e0fab"
         },
         "facts_source": null,
         "compiled_digest": null,
@@ -787,8 +812,8 @@
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
         "bundle": null,
-        "evaluator_binding": {
-          "digest": "sha256:f3f5e2fda4d5888b84c6a4bd14921563d6e8b8b09af95cf961db2abf4dce4f27"
+        "scanner_checks": {
+          "digest": "sha256:4b2161d473e8804172f658bb8a3c7a2d453603b6c80778c402fbe8dc80452af4"
         },
         "facts_source": null,
         "compiled_digest": null,
@@ -815,7 +840,7 @@
           "ci_run_id": null,
           "type": "human"
         },
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "checked_content": {
           "kind": "plan",
           "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -855,15 +880,15 @@
         "stage": "plan",
         "status": "not_evaluated",
         "status_detail": null,
-        "status_reason": "tool_reports_only_failures"
+        "status_reason": "no_result_of_the_mapped_checks"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
       "provenance": {
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
         "bundle": null,
-        "evaluator_binding": {
-          "digest": "sha256:2c4eb75eef6c421dbac5ce23761a048008579bf79fc14e56a63b1a3128ccab0d"
+        "scanner_checks": {
+          "digest": "sha256:c04d7d7c06b2c92108e307b60da02b8315eb2a476bcaafa59b7cc835a6955340"
         },
         "facts_source": null,
         "compiled_digest": null,
@@ -937,8 +962,8 @@
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:7c96ba7d5c37ce6a22c3e0965bcbb7af5e543ea3ea3731657c32fbb3886a926d",
         "bundle": null,
-        "evaluator_binding": {
-          "digest": "sha256:c589a239e71ee7eee97b3b6b849b9c03557a14c72cdd64dd1bbc83809bb87c16"
+        "scanner_checks": {
+          "digest": "sha256:6cec9c6903271bc9b73af547f56c2145390d4c987be51b112e60a42f184db8f7"
         },
         "facts_source": null,
         "compiled_digest": null,
@@ -970,7 +995,7 @@
           "ci_run_id": null,
           "type": "human"
         },
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "checked_content": {
           "kind": "plan",
           "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -1445,13 +1470,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:807c16d26549a85a046b9a1195e082f0ecc74ed96e792bcb55494bdd771b932e",
+      "digest": "sha256:ec24fab7a30c9e7d49e1444e7525c8d6d80eec42e19b82ae405d737445e36ce2",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 19945,
+      "size_bytes": 19923,
       "source": null,
       "storage_uri": null
     },
@@ -1462,16 +1487,16 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:bd5cc4a09716e95bd76eb362d967fdad9840e2d8c42a336bce4954b38cf9dd2f",
+      "digest": "sha256:2b9f1298134dedf6cba699372ee1645256cf1e9356a3cb23401e821dd19509cb",
       "media_type": "application/json",
-      "path": "units/root/plan/project-bindings.json",
+      "path": "units/root/plan/project-scanner-check-mapping.json",
       "redaction_policy": null,
-      "ref_id": "project-bindings.json",
+      "ref_id": "project-scanner-check-mapping.json",
       "retention_until": null,
-      "size_bytes": 1234,
+      "size_bytes": 1262,
       "source": {
         "name": "payments.json",
-        "digest": "sha256:a1ffad9a8216829c42a6a790c1573e4e65723c78ac7256f6b95453bad1eabc8a"
+        "digest": "sha256:ba35d997710815142210096d39f5ff55463cf4827191be36e4e2da74ce940379"
       },
       "storage_uri": null
     },
@@ -1482,13 +1507,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+      "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
       "media_type": "application/json",
-      "path": "units/root/plan/bindings.json",
+      "path": "units/root/plan/scanner-check-mapping.json",
       "redaction_policy": null,
-      "ref_id": "bindings.json",
+      "ref_id": "scanner-check-mapping.json",
       "retention_until": null,
-      "size_bytes": 4524,
+      "size_bytes": 4576,
       "source": null,
       "storage_uri": null
     },
@@ -1499,17 +1524,17 @@
         "tool": "checkov",
         "version": "0.1.0"
       },
-      "digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "media_type": "application/json",
-      "path": "units/root/artifacts/sha256-2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "path": "units/root/artifacts/sha256-537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "redaction_policy": {
         "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
         "id": "iltero.redaction",
         "version": "1"
       },
-      "ref_id": "sha256-2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "ref_id": "sha256-537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "retention_until": null,
-      "size_bytes": 23757,
+      "size_bytes": 23793,
       "source": {
         "name": "checkov.json",
         "digest": "sha256:8a571721c05216b5985e58df7347af0a423adf3ad3067d6d301fca0503daf9f3"
@@ -1523,7 +1548,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:4a3d9010140361ec021545a11617dcf4c901e270bd66aa412667e2d55fe711ac",
+      "digest": "sha256:d41997affc62f715db8a1aee51e55ba300dbb3aa178c47a540e31f93e9e98de1",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -1533,7 +1558,7 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 25690,
+      "size_bytes": 25713,
       "source": {
         "name": "checkov.json",
         "digest": "sha256:8a571721c05216b5985e58df7347af0a423adf3ad3067d6d301fca0503daf9f3"
@@ -1571,7 +1596,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:368c51f1de5f35ed12d55fb7aedddff5dd49730871de8c2639a96f4a87063df8",
+      "digest": "sha256:b57b35f90c960a9ddb96c17f6ca1046389c4fd417436ee16436cac12c74a000e",
       "media_type": "application/json",
       "path": "units/root/plan/trivy-observations.json",
       "redaction_policy": {
@@ -1581,7 +1606,7 @@
       },
       "ref_id": "trivy-observations.json",
       "retention_until": null,
-      "size_bytes": 5080,
+      "size_bytes": 5106,
       "source": {
         "name": "trivy.json",
         "digest": "sha256:8c9fb8d0fc25eeb535e3deeac5afcf179658f7192646cfcbeb4a036955f5fa5a"
@@ -1624,7 +1649,7 @@
       },
       "events": {
         "count": 10,
-        "digest": "sha256:807c16d26549a85a046b9a1195e082f0ecc74ed96e792bcb55494bdd771b932e",
+        "digest": "sha256:ec24fab7a30c9e7d49e1444e7525c8d6d80eec42e19b82ae405d737445e36ce2",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -2099,31 +2124,29 @@
         ]
       },
       "reference_time": {
-        "source": "runner_clock",
-        "trust": "asserted",
         "value": "2026-09-22T13:00:13.568Z",
-        "time_window": null
+        "source": "runner_clock"
       },
       "stage": "plan",
       "scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "payments.json",
-            "digest": "sha256:bd5cc4a09716e95bd76eb362d967fdad9840e2d8c42a336bce4954b38cf9dd2f",
-            "copy_path": "units/root/plan/project-bindings.json",
-            "assertions_bound": 3
+            "file_path": "payments.json",
+            "digest": "sha256:2b9f1298134dedf6cba699372ee1645256cf1e9356a3cb23401e821dd19509cb",
+            "copy_path": "units/root/plan/project-scanner-check-mapping.json",
+            "assertions_mapped": 3
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -2135,12 +2158,13 @@
             "input_kinds": [
               "plan"
             ],
-            "report_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+            "report_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
             "observations": "units/root/plan/checkov-observations.json",
             "results_read": 74,
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           },
           {
@@ -2156,6 +2180,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": null,
+            "results_not_listed": null,
             "redacted_values": {}
           }
         ],
@@ -2166,7 +2191,7 @@
       "resource_redaction": null,
       "coverage": {
         "assertions_evaluated": 5,
-        "assertions_expected": {
+        "assertions_required": {
           "origin": "project_files",
           "required_assertion_digest": "sha256:dabda96d009781399fb2d31ee624a427e07d62123600227083e37b25380f1edd",
           "value": 5
@@ -2177,7 +2202,7 @@
             "stage": null,
             "kind": "evaluator_did_not_decide",
             "engine": "trivy",
-            "reason": "tool_reports_only_failures",
+            "reason": "no_result_of_the_mapped_checks",
             "count": 2
           }
         ],
@@ -2210,18 +2235,43 @@
           "reason": null,
           "value": false
         },
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "checkov": {
+            "pass": 2,
+            "fail": 1,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          },
+          "opa": {
+            "pass": 2,
+            "fail": 2,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          },
+          "trivy": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 2,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "not_met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "approvals": null,
       "commit_review": null
@@ -2242,12 +2292,16 @@
       "repository": null,
       "pull_request": null
     },
-    "unit": "root"
+    "unit": "root",
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
+    }
   },
   "unit": "root",
   "verdict": {
-    "value": "indeterminate",
-    "exit_code": 3,
+    "value": "not_met",
+    "reason": null,
     "computed_from": "stage_precedence",
     "stage": "plan"
   }

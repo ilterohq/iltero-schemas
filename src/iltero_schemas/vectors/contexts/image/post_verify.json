@@ -24,9 +24,7 @@
   },
   "reference_time": {
     "value": "2026-11-02T09:05:30Z",
-    "source": "runner_clock",
-    "trust": "asserted",
-    "time_window": null
+    "source": "runner_clock"
   },
   "source": null,
   "change": {

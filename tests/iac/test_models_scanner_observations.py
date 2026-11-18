@@ -9,11 +9,11 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.models.common.scanners import SCANNER_TOOLS
 from iltero_schemas.models.iac.scanner_observations import TOOL_INPUT_KINDS, ScannerObservations, input_kind_of
 from iltero_schemas.models.iac.scanner_reports.checkov import read_checkov
 from iltero_schemas.models.iac.scanner_reports.common import ReportError, Source
 from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
-from iltero_schemas.models.scanners import SCANNER_TOOLS
 from tests.conftest import VECTORS
 
 OBSERVED: dict[str, Any] = json.loads(
@@ -81,7 +81,7 @@ def test_results_are_sorted_each_check_of_an_address_once() -> None:
 def _checkov(*results: dict[str, Any], version: str = "3.3.8") -> dict[str, Any]:
     return {
         "check_type": "terraform_plan",
-        "summary": {"checkov_version": version},
+        "summary": {"checkov_version": version, "parsing_errors": 0, "passed": 0, "failed": len(results), "skipped": 0},
         "results": {"passed_checks": [], "failed_checks": list(results), "skipped_checks": []},
     }
 
@@ -107,6 +107,7 @@ def test_a_result_about_the_configuration_never_hides_one_about_the_plan() -> No
     passed = {**_failed("aws_db_instance.a"), "check_result": {"result": "PASSED", "evaluated_keys": []}}
     plan = _checkov(_failed("aws_db_instance.a"))
     plan["results"]["passed_checks"], plan["results"]["failed_checks"] = [passed], []
+    plan["summary"].update(passed=1, failed=0)
     observed = read_checkov([configuration, plan], ["aws_db_instance.a"], SOURCE)
     assert [(r.input_kind, r.decision) for r in observed.results] == [("plan", "pass")]
     assert (observed.written_configuration_results, observed.unreadable_results) == (1, 0)
@@ -150,7 +151,7 @@ def test_the_tools_own_count_of_files_it_could_not_parse_is_kept() -> None:
 
 def test_a_report_with_no_version_of_its_tool_is_refused() -> None:
     with pytest.raises(ReportError, match="names one version of the tool"):
-        read_checkov({"check_type": "terraform_plan", "results": {}}, [], SOURCE)
+        read_checkov({"check_type": "terraform_plan", "summary": {}, "results": {}}, [], SOURCE)
     with pytest.raises(ReportError, match="names no version of the tool"):
         read_trivy({"Results": []}, [], SOURCE)
 
@@ -162,7 +163,7 @@ def test_a_report_that_is_not_the_tools_shape_is_refused() -> None:
         read_trivy([], [], SOURCE)
 
 
-def test_a_result_of_an_input_no_binding_reads_is_counted_and_left_out() -> None:
+def test_a_result_of_an_input_no_scanner_checks_entry_reads_is_counted_and_left_out() -> None:
     report = {"Trivy": {"Version": "0.72.0"}, "Results": [{"Type": "dockerfile", "Misconfigurations": [{"ID": "X"}]}]}
     observed = read_trivy(report, [], SOURCE)
     assert (observed.unreadable_results, observed.results) == (1, [])
@@ -183,7 +184,7 @@ def test_the_observations_name_the_report_and_the_plan_they_were_read_from() -> 
 )
 def test_a_checkov_report_with_a_summary_of_the_wrong_shape_is_refused_not_raised(summary: Any) -> None:
     report = {"check_type": "terraform_plan", "summary": summary, "results": {}}
-    with pytest.raises(ReportError, match="names one version of the tool|a summary that is not an object"):
+    with pytest.raises(ReportError, match="names one version of the tool|one that is not an object"):
         read_checkov(report, [], SOURCE)
 
 
@@ -195,3 +196,64 @@ def test_trivy_results_about_the_configuration_are_counted_and_left_out() -> Non
     observed = read_trivy(report, ["aws_db_instance.a"], SOURCE)
     assert [(r.input_kind, r.decision) for r in observed.results] == [("plan", "fail")]
     assert observed.written_configuration_results == 1
+
+
+def _counted(report: dict[str, Any], **counts: int) -> dict[str, Any]:
+    counted = copy.deepcopy(report)
+    counted["summary"].update(counts)
+    return counted
+
+
+def test_a_checkov_report_counts_the_results_its_summary_counts_but_it_does_not_list() -> None:
+    # Checkov run with --quiet lists only failures while its summary still counts the passes and skips.
+    observed = read_checkov(_counted(_checkov(_failed("aws_db_instance.a")), passed=2, skipped=1), [], SOURCE)
+    assert observed.results_not_listed == 3 and not observed.read_in_full
+
+
+def test_a_checkov_report_that_lists_every_result_it_counts_is_read_in_full() -> None:
+    observed = read_checkov(_checkov(_failed("aws_db_instance.a")), ["aws_db_instance.a"], SOURCE)
+    assert observed.results_not_listed == 0 and observed.read_in_full
+
+
+@pytest.mark.parametrize(
+    ("counts", "outcome"),
+    [({"failed": 0}, "failed"), ({"failed": 0, "passed": 1}, "failed")],
+    ids=["fewer_failures", "a_surplus_of_passes_beside"],
+)
+def test_a_checkov_summary_that_counts_fewer_results_than_a_list_holds_is_refused(
+    counts: dict[str, int], outcome: str
+) -> None:
+    """Each list is compared with its own count, so a surplus in one never hides a shortfall in another."""
+    with pytest.raises(ReportError, match=f"counts fewer {outcome} results than the report lists"):
+        read_checkov(_counted(_checkov(_failed("aws_db_instance.a")), **counts), [], SOURCE)
+
+
+def test_a_tool_that_writes_no_counts_says_nothing_of_results_not_listed() -> None:
+    assert read_trivy(_trivy("FAIL"), ["aws_db_instance.a"], SOURCE).results_not_listed is None
+
+
+def test_results_not_listed_are_summed_over_every_framework_one_the_reader_only_counts_too() -> None:
+    plan = _counted(_checkov(_failed("aws_db_instance.a")), passed=2)
+    configuration = {**_counted(_checkov(_failed("aws_db_instance.a")), skipped=1), "check_type": "terraform"}
+    observed = read_checkov([configuration, plan], ["aws_db_instance.a"], SOURCE)
+    assert (observed.results_not_listed, observed.written_configuration_results) == (3, 1)
+
+
+@pytest.mark.parametrize(
+    ("tool", "counts"),
+    [
+        ("checkov", {"results_not_listed": None}),
+        ("checkov", {"tool_parsing_errors": None}),
+        ("trivy", {"results_not_listed": 0}),
+        ("trivy", {"tool_parsing_errors": 0}),
+    ],
+    ids=["checkov_results_not_listed", "checkov_parsing_errors", "trivy_results_not_listed", "trivy_parsing_errors"],
+)
+def test_the_counts_a_tool_writes_are_null_exactly_when_it_writes_none(tool: str, counts: dict[str, Any]) -> None:
+    observed = (
+        read_checkov(_checkov(_failed("aws_db_instance.a")), [], SOURCE)
+        if tool == "checkov"
+        else read_trivy(_trivy("FAIL"), [], SOURCE)
+    ).model_dump(mode="json", by_alias=True)
+    with pytest.raises(ValidationError, match="given exactly when the tool writes counts"):
+        ScannerObservations.model_validate({**observed, **counts})

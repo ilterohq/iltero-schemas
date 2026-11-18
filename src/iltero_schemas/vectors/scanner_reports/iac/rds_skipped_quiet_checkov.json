@@ -1,0 +1,28 @@
+{
+  "check_type": "terraform_plan",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_17",
+        "check_name": "Ensure all data stored in RDS is not publicly accessible",
+        "check_result": {
+          "evaluated_keys": [
+            "publicly_accessible"
+          ],
+          "result": "FAILED"
+        },
+        "connected_node": null,
+        "resource": "aws_db_instance.noncompliant",
+        "resource_address": "aws_db_instance.noncompliant",
+        "severity": null
+      }
+    ]
+  },
+  "summary": {
+    "checkov_version": "3.3.8",
+    "failed": 1,
+    "parsing_errors": 0,
+    "passed": 0,
+    "skipped": 1
+  }
+}

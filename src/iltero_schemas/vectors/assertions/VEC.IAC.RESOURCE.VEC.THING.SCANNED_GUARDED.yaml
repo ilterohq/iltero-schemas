@@ -5,8 +5,8 @@ metadata:
   version: "1.0.0"
   title: A scanner-observed assertion that applies only in production
   description: >-
-    A thing in a production environment meets this assertion when the scanner checks its binding names all pass for
-    it. The module compiled from it decides only where it applies.
+    A thing in a production environment meets this assertion when every scanner check a scanner check mapping names
+    for it passes. The module compiled from it decides only where it applies.
 spec:
   change_type: iac_change
   evidence:

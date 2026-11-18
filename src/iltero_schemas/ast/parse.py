@@ -38,7 +38,7 @@ from iltero_schemas.ast.nodes import (
 )
 from iltero_schemas.ast.roots import ITEM_ROOT, allowed_roots
 from iltero_schemas.canonical import INT_MAX, INT_MIN
-from iltero_schemas.models.assertion import (
+from iltero_schemas.models.common.assertion import (
     CONTROL_CHARACTERS,
     KindSelector,
     TargetKind,

@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
+from iltero_schemas.models.common.redaction import is_redaction_marker
 from iltero_schemas.models.iac.scanner_addresses import address_index
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
 from iltero_schemas.models.iac.scanner_reports.common import (
@@ -29,7 +30,6 @@ from iltero_schemas.models.iac.scanner_reports.common import (
     observations,
     opened,
 )
-from iltero_schemas.models.redaction import is_redaction_marker
 
 TOOL = "trivy"
 
@@ -80,7 +80,7 @@ def read_trivy(report: object, plan_addresses: list[str], source: Source) -> Sca
     tool = opened(report.get("Trivy"), "what names the tool's version", "an object")
     version = tool.get("Version") if isinstance(tool, dict) else None
     index = address_index(TOOL, plan_addresses)
-    return observations(TOOL, version, _reads(results), index, source, None, repeats_allowed=True)
+    return observations(TOOL, version, _reads(results), index, source, None, None, repeats_allowed=True)
 
 
 # The fields of a misconfiguration a kept report holds: what the reader reads, and the check's title and severity,

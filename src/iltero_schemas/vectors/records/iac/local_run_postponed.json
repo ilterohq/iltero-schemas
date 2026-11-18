@@ -32,6 +32,10 @@
         "name": "main"
       },
       "pull_request": null
+    },
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
     }
   },
   "change": {
@@ -61,9 +65,7 @@
       "observed_at": "2026-09-22T13:00:13.568Z",
       "reference_time": {
         "value": "2026-09-22T13:00:13.568Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "execution": {
         "evaluator": {
@@ -545,7 +547,7 @@
       },
       "events": {
         "path": "units/root/plan/events.json",
-        "digest": "sha256:73fed265710abc955199d4e4228ffe6f14c322515e033baa4e6a420ae68c117b",
+        "digest": "sha256:f2d878ec7a664abb73c5cf10e4b57975aae4208f16998426039eda8d9ff39169",
         "count": 5
       },
       "assertions": {
@@ -577,7 +579,7 @@
           "excluded": []
         },
         "subjects_evaluated": 2,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 5,
           "origin": "project_files",
           "required_assertion_digest": "sha256:dabda96d009781399fb2d31ee624a427e07d62123600227083e37b25380f1edd"
@@ -612,18 +614,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 2,
+            "unknown": 2,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "not_met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     }
   },
@@ -706,7 +717,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:f8348f5fc3e49c609ec75513e6b90d059276465c22ed5ba14f39afaae3b7031c",
         "compiled_digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
@@ -803,7 +814,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
         "compiled_digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
@@ -942,7 +953,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:2a2ef911b1530e49f3062ae77ff50f1fa314b77bb7a205474b75d9b81cfd8287",
         "compiled_digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
@@ -1032,7 +1043,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
         "compiled_digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
@@ -1133,7 +1144,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:7c96ba7d5c37ce6a22c3e0965bcbb7af5e543ea3ea3731657c32fbb3886a926d",
         "compiled_digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
@@ -1162,7 +1173,7 @@
       "excluded": []
     },
     "subjects_evaluated": 2,
-    "assertions_expected": {
+    "assertions_required": {
       "value": 5,
       "origin": "project_files",
       "required_assertion_digest": "sha256:38b03a6ba0f6e2df062a25439ec99befb07a04e4cec2a2cf7d4d7a80064651bd"
@@ -1197,20 +1208,35 @@
       "reason": null
     },
     "sampled": false,
-    "substituted_inputs": []
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "opa": {
+        "pass": 1,
+        "fail": 2,
+        "unknown": 2,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    }
   },
   "verdict": {
-    "value": "indeterminate",
-    "exit_code": 3,
+    "value": "not_met",
+    "reason": null,
     "computed_from": "stage_precedence",
     "stage": "plan"
   },
-  "assurance_status": {
-    "value": "incomplete",
-    "reason": "checks_postponed_until_after_the_deployment",
-    "detail": "1 check postponed until after the deployment was not settled"
+  "evidence_status": {
+    "value": "has_gaps",
+    "reasons": [
+      {
+        "reason": "checks_postponed_until_after_the_deployment",
+        "stage": null,
+        "detail": "1 check postponed until after the deployment was not settled"
+      }
+    ]
   },
-  "complete": false,
+  "all_expected_stages_reported": false,
   "expected_stages": [
     "plan",
     "pre_deploy",
@@ -1661,8 +1687,8 @@
     {
       "ref_id": "plan/events.json",
       "media_type": "application/json",
-      "digest": "sha256:73fed265710abc955199d4e4228ffe6f14c322515e033baa4e6a420ae68c117b",
-      "size_bytes": 11710,
+      "digest": "sha256:f2d878ec7a664abb73c5cf10e4b57975aae4208f16998426039eda8d9ff39169",
+      "size_bytes": 11695,
       "path": "units/root/plan/events.json",
       "storage_uri": null,
       "retention_until": null,

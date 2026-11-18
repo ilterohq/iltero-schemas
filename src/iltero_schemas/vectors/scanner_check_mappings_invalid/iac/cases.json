@@ -1,0 +1,513 @@
+[
+  {
+    "name": "scanner_checks_entry_deciding_an_assertion_every_run_evaluates",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/assertion/id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"
+    },
+    "remove": [],
+    "message": "no scanner checks decide ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN: a scanner's result never decides it"
+  },
+  {
+    "name": "scanner_checks_entry_deciding_an_assertion_that_reads_a_fact_only_the_server_holds",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/assertion/id": "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED"
+    },
+    "remove": [],
+    "message": "no scanner checks decide ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED: a scanner's result never decides it"
+  },
+  {
+    "name": "scanner_checks_deciding_a_plan_assertion_from_deployed_resources",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/input_kind": "deployed_resources"
+    },
+    "remove": [],
+    "message": "a scanner checks entry at plan reads plan input"
+  },
+  {
+    "name": "scanner_checks_naming_its_checks_out_of_order",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/rule_ids": [
+        "CKV_AWS_99",
+        "CKV_AWS_67"
+      ]
+    },
+    "remove": [],
+    "message": "rule_ids is sorted, each check once"
+  },
+  {
+    "name": "two_assertion_mappings_using_one_check",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/1/scanner_checks/0/rule_ids": [
+        "CKV_AWS_36",
+        "CKV_AWS_67"
+      ]
+    },
+    "remove": [],
+    "message": "two assertion mappings use the same check of the same tool at the same stage"
+  },
+  {
+    "name": "one_assertion_mapped_twice",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/1/assertion/id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC"
+    },
+    "remove": [],
+    "message": "assertion_mappings are sorted by assertion id, each assertion once"
+  },
+  {
+    "name": "two_scanner_checks_entries_of_one_tool_at_one_stage",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks": [
+        {
+          "input_kind": "plan",
+          "paths_read": [
+            "is_multi_region_trail"
+          ],
+          "rule_ids": [
+            "CKV_AWS_67"
+          ],
+          "stage": "plan",
+          "subject_match": "exact_address",
+          "tool": "checkov",
+          "tool_version_constraint": ">=3,<4"
+        },
+        {
+          "input_kind": "plan",
+          "paths_read": [
+            "is_multi_region_trail"
+          ],
+          "rule_ids": [
+            "CKV_AWS_99"
+          ],
+          "stage": "plan",
+          "subject_match": "exact_address",
+          "tool": "checkov",
+          "tool_version_constraint": ">=3,<4"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "one per tool and stage"
+  },
+  {
+    "name": "scanner_checks_deciding_a_running_state_from_the_plan",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/stage": "runtime"
+    },
+    "remove": [],
+    "message": "a scanner checks entry at runtime reads deployed_resources input"
+  },
+  {
+    "name": "scanner_checks_at_a_stage_no_scanner_input_stands_for",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/stage": "pre_deploy"
+    },
+    "remove": [],
+    "message": "a scanner checks entry at pre_deploy reads no scanner input"
+  },
+  {
+    "name": "scanner_checks_naming_no_check",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/rule_ids": []
+    },
+    "remove": [],
+    "message": "at least 1 item"
+  },
+  {
+    "name": "assertion_mapping_with_no_scanner_checks",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks": []
+    },
+    "remove": [],
+    "message": "at least 1 item"
+  },
+  {
+    "name": "scanner_checks_with_an_open_version_range",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/tool_version_constraint": ">=3"
+    },
+    "remove": [],
+    "message": "bounds the version from above"
+  },
+  {
+    "name": "scanner_checks_out_of_tool_order",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks": [
+        {
+          "input_kind": "plan",
+          "paths_read": [
+            "is_multi_region_trail"
+          ],
+          "rule_ids": [
+            "AWS-0014"
+          ],
+          "stage": "plan",
+          "subject_match": "exact_address",
+          "tool": "trivy",
+          "tool_version_constraint": ">=0.72,<1"
+        },
+        {
+          "input_kind": "plan",
+          "paths_read": [
+            "is_multi_region_trail"
+          ],
+          "rule_ids": [
+            "CKV_AWS_67"
+          ],
+          "stage": "plan",
+          "subject_match": "exact_address",
+          "tool": "checkov",
+          "tool_version_constraint": ">=3,<4"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "scanner_checks are in lifecycle order of their stage, then by tool"
+  },
+  {
+    "name": "assertion_mappings_out_of_assertion_order",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings": [
+        {
+          "assertion": {
+            "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+            "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "block_public_acls",
+                "block_public_policy",
+                "ignore_public_acls",
+                "restrict_public_buckets"
+              ],
+              "rule_ids": [
+                "CKV_AWS_53",
+                "CKV_AWS_54",
+                "CKV_AWS_55",
+                "CKV_AWS_56"
+              ],
+              "stage": "plan",
+              "subject_match": "plan_configures",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:d59f095aadcaa1e4047978dac556a7c128d3d29d822fe9d948f72bf415ca7b6b",
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "storage_encrypted"
+              ],
+              "rule_ids": [
+                "CKV_AWS_16"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            },
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "storage_encrypted"
+              ],
+              "rule_ids": [
+                "AWS-0080"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "trivy",
+              "tool_version_constraint": ">=0.72,<1"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e",
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "publicly_accessible"
+              ],
+              "rule_ids": [
+                "CKV_AWS_17"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            },
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "publicly_accessible"
+              ],
+              "rule_ids": [
+                "AWS-0180"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "trivy",
+              "tool_version_constraint": ">=0.72,<1"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:0709623a10af4e005ea3f8e8540b0abd07eac9ba594c7baddd73e545240440c6",
+            "id": "ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "inline_policy",
+                "policy"
+              ],
+              "rule_ids": [
+                "CKV_AWS_62"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:5c20029daebe59249c73d94b664db819ea6daeba9b3d752c42bd27784b6205ac",
+            "id": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "cidr_blocks",
+                "cidr_ipv4",
+                "cidr_ipv6",
+                "from_port",
+                "ingress",
+                "ip_protocol",
+                "ipv6_cidr_blocks",
+                "protocol",
+                "to_port",
+                "type"
+              ],
+              "rule_ids": [
+                "AWS-0107"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "trivy",
+              "tool_version_constraint": ">=0.72,<1"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:1ee1e696b95bab2379236dca1db8ca2921f8b1d8acb79b50ec0ca04a274ccfb6",
+            "id": "ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "recording_group/*/include_global_resource_types"
+              ],
+              "rule_ids": [
+                "CKV2_AWS_48"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:c5620ff5ce130afaeff2c3c276496d822449d52a8e96c5b1e4656ea3950f6de2",
+            "id": "ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "is_enabled",
+                "recording_group/*/all_supported"
+              ],
+              "rule_ids": [
+                "CKV2_AWS_45"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:8266a48d92f4f623df00af1d44a7c78c85e7905797821ef7e04ce8a6201d0d98",
+            "id": "ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "enable_log_file_validation"
+              ],
+              "rule_ids": [
+                "CKV_AWS_36"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            },
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "enable_log_file_validation"
+              ],
+              "rule_ids": [
+                "AWS-0016"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "trivy",
+              "tool_version_constraint": ">=0.72,<1"
+            }
+          ]
+        },
+        {
+          "assertion": {
+            "digest": "sha256:fd812f1950cc411f848a0dabb51a09b7a5be55996f0a2c00a4d015981aa24c03",
+            "id": "ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS",
+            "version": "1.0.0"
+          },
+          "scanner_checks": [
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "is_multi_region_trail"
+              ],
+              "rule_ids": [
+                "CKV_AWS_67"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "checkov",
+              "tool_version_constraint": ">=3,<4"
+            },
+            {
+              "input_kind": "plan",
+              "paths_read": [
+                "is_multi_region_trail"
+              ],
+              "rule_ids": [
+                "AWS-0014"
+              ],
+              "stage": "plan",
+              "subject_match": "exact_address",
+              "tool": "trivy",
+              "tool_version_constraint": ">=0.72,<1"
+            }
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "assertion_mappings are sorted by assertion id, each assertion once"
+  },
+  {
+    "name": "scanner_checks_naming_a_check_twice",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/rule_ids": [
+        "CKV_AWS_67",
+        "CKV_AWS_67"
+      ]
+    },
+    "remove": [],
+    "message": "rule_ids is sorted, each check once"
+  },
+  {
+    "name": "scanner_checks_with_a_constraint_that_is_not_a_specifier",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/tool_version_constraint": "=>3"
+    },
+    "remove": [],
+    "message": "is not a version specifier"
+  },
+  {
+    "name": "scanner_checks_naming_too_many_checks",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/rule_ids": [
+        "R00",
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16"
+      ]
+    },
+    "remove": [],
+    "message": "at most 16 items"
+  },
+  {
+    "name": "scanner_checks_matching_its_subject_by_name",
+    "vector": "iac/starter.json",
+    "set": {
+      "/spec/assertion_mappings/0/scanner_checks/0/subject_match": "same_name"
+    },
+    "remove": [],
+    "message": "Input should be"
+  }
+]

@@ -21,11 +21,11 @@
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
       "/coverage/subjects_in_scope/source_digest": "sha256:e840909c4ec26fa6d18ddbe50d6ffeca6636254fd369eb3d42854ddfbab71cb4",
       "/events/0/evaluation/status_reason": "not_reported_by_tool",
-      "/evidence_refs/15/digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
-      "/evidence_refs/15/size_bytes": 6584,
+      "/evidence_refs/15/digest": "sha256:8a4472b07fc2436ec19804b261c3e1934372905f55e06973a1f9dfb541a4ce2c",
+      "/evidence_refs/15/size_bytes": 6575,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+        "digest": "sha256:8a4472b07fc2436ec19804b261c3e1934372905f55e06973a1f9dfb541a4ce2c",
         "count": 3
       }
     },
@@ -46,16 +46,16 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
-      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
-      "/evidence_refs/15/size_bytes": 6594,
+      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
+      "/evidence_refs/15/size_bytes": 6585,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
         "count": 3
       }
     },
@@ -66,19 +66,19 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/change/attestation/sent_to_server": true,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
       "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
-      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
-      "/evidence_refs/15/size_bytes": 6594,
+      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
+      "/evidence_refs/15/size_bytes": 6585,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
         "count": 3
       }
     },
@@ -100,6 +100,45 @@
       "/events/2/evaluation/status_reason": "evaluator_unavailable",
       "/events/2/evaluation/policy_reason": null,
       "/events/2/evaluation/observations": null,
+      "/stages/plan/verdict": {
+        "value": "incomplete",
+        "reason": "not_evaluated",
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/verdict": {
+        "value": "incomplete",
+        "reason": "not_evaluated",
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/evidence_refs/15/digest": "sha256:41c1a7c4827290ec65444b3dfdbf8e2c70c80b3898aa84e6b3a4f06f07f929cc",
+      "/evidence_refs/15/size_bytes": 5945,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:41c1a7c4827290ec65444b3dfdbf8e2c70c80b3898aa84e6b3a4f06f07f929cc",
+        "count": 3
+      },
+      "/stages/plan/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": null,
+            "detail": "3 of 3 required checks were not evaluated"
+          }
+        ]
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": "plan",
+            "detail": "3 of 3 required checks were not evaluated"
+          }
+        ]
+      },
       "/stages/plan/coverage": {
         "subjects_in_scope": {
           "value": 1,
@@ -108,17 +147,17 @@
           "removed_by_plan": 0,
           "excluded": []
         },
-        "subjects_evaluated": 1,
-        "assertions_expected": {
+        "subjects_evaluated": 0,
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 0,
         "subjects_per_assertion": {
-          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
         },
         "status_counts": {
           "pass": 0,
@@ -142,18 +181,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
-      },
-      "/stages/plan/verdict": {
-        "value": "fail",
-        "exit_code": 6,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/plan/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 3,
+            "error": 0
+          }
+        }
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -163,17 +201,17 @@
           "removed_by_plan": 0,
           "excluded": []
         },
-        "subjects_evaluated": 1,
-        "assertions_expected": {
+        "subjects_evaluated": 0,
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 0,
         "subjects_per_assertion": {
-          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
         },
         "status_counts": {
           "pass": 0,
@@ -197,25 +235,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
-      },
-      "/verdict": {
-        "value": "fail",
-        "exit_code": 6,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
-      },
-      "/evidence_refs/15/digest": "sha256:a209f8c1bde330c84d96b657ccc7c21c0fa68d6525f23b525553879415eee4d3",
-      "/evidence_refs/15/size_bytes": 5954,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:a209f8c1bde330c84d96b657ccc7c21c0fa68d6525f23b525553879415eee4d3",
-        "count": 3
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 3,
+            "error": 0
+          }
+        }
       }
     },
     "remove": []
@@ -228,6 +258,45 @@
       "/events/0/evaluation/status_reason": "evaluator_crash",
       "/events/0/evaluation/policy_reason": null,
       "/events/0/evaluation/observations": null,
+      "/stages/plan/verdict": {
+        "value": "incomplete",
+        "reason": "evaluator_failed",
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/stages/plan/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": null,
+            "detail": "1 of 3 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/verdict": {
+        "value": "incomplete",
+        "reason": "evaluator_failed",
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": "plan",
+            "detail": "1 of 3 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/evidence_refs/15/digest": "sha256:6eb124ff84e28c087580a86096d77c9756caa83733d4cea0e6fa5a7301232948",
+      "/evidence_refs/15/size_bytes": 6251,
+      "/stages/plan/events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:6eb124ff84e28c087580a86096d77c9756caa83733d4cea0e6fa5a7301232948",
+        "count": 3
+      },
       "/stages/plan/coverage": {
         "subjects_in_scope": {
           "value": 1,
@@ -237,16 +306,16 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 2,
         "subjects_per_assertion": {
-          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -270,18 +339,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
-      },
-      "/stages/plan/verdict": {
-        "value": "fail",
-        "exit_code": 4,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/plan/assurance_status": {
-        "value": "incomplete",
-        "reason": "required_policy_evaluation_failed",
-        "detail": "1 of 3 evaluations ended in an evaluator error"
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 1
+          }
+        }
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -292,16 +360,16 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 2,
         "subjects_per_assertion": {
-          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -325,25 +393,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
-      },
-      "/verdict": {
-        "value": "fail",
-        "exit_code": 4,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/assurance_status": {
-        "value": "incomplete",
-        "reason": "required_policy_evaluation_failed",
-        "detail": "plan: 1 of 3 evaluations ended in an evaluator error"
-      },
-      "/evidence_refs/15/digest": "sha256:bc22e1b05d70d650dd35882ead182f2d7721ab47a8a284420612ece5766540f6",
-      "/evidence_refs/15/size_bytes": 6260,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:bc22e1b05d70d650dd35882ead182f2d7721ab47a8a284420612ece5766540f6",
-        "count": 3
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 1
+          }
+        }
       }
     },
     "remove": []
@@ -356,11 +416,11 @@
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
       "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
       "/events/0/evaluation/status_reason": "not_reported_by_tool",
-      "/evidence_refs/15/digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
-      "/evidence_refs/15/size_bytes": 6584,
+      "/evidence_refs/15/digest": "sha256:8a4472b07fc2436ec19804b261c3e1934372905f55e06973a1f9dfb541a4ce2c",
+      "/evidence_refs/15/size_bytes": 6575,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:433234611df6795d269428e13a0307db322659f73fd4116f3ef27f9fed2c24ce",
+        "digest": "sha256:8a4472b07fc2436ec19804b261c3e1934372905f55e06973a1f9dfb541a4ce2c",
         "count": 3
       }
     },
@@ -568,11 +628,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -583,12 +643,32 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/size_bytes": 4887
+      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/size_bytes": 4881,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": []
   },
@@ -612,11 +692,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -627,7 +707,7 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/unknown": 1,
       "/stages/pre_deploy/commit_review": {
@@ -656,9 +736,29 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/size_bytes": 4887
+      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/size_bytes": 4881,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": []
   },
@@ -687,7 +787,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:14fc1cac49f2c4f2dc85a18192fdf6a5dc53145206469856d49f14ab44e5fcc4"
@@ -714,18 +814,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 2,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     },
     "remove": [
@@ -738,11 +847,11 @@
     "vector": "image/local_run_deploy.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/fail": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "fail",
       "/events/1/evaluation/status_reason": null,
@@ -750,12 +859,44 @@
       "/events/1/evaluation/observations/predicates/0/status": "false",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/status_counts/fail": 1,
       "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:68171ff8923ff1351507e8665796dafadb40de423843c7d8ad14897761a20769",
-      "/evidence_refs/25/digest": "sha256:68171ff8923ff1351507e8665796dafadb40de423843c7d8ad14897761a20769",
-      "/evidence_refs/25/size_bytes": 4909
+      "/stages/pre_deploy/events/digest": "sha256:3793e388c756c15e483d08e1c82a796133ccc93c0cc2363c138b60fa56250b15",
+      "/evidence_refs/25/digest": "sha256:3793e388c756c15e483d08e1c82a796133ccc93c0cc2363c138b60fa56250b15",
+      "/evidence_refs/25/size_bytes": 4903,
+      "/stages/pre_deploy/verdict": {
+        "value": "not_met",
+        "reason": null,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "/verdict": {
+        "value": "not_met",
+        "reason": null,
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": []
   },
@@ -763,33 +904,143 @@
     "name": "image_deploy_whose_build_check_did_not_run_for_want_of_its_evaluator",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/coverage/status_counts/not_evaluated": 1,
-      "/stages/pre_deploy/verdict/value": "fail",
-      "/stages/pre_deploy/verdict/exit_code": 6,
+      "/stages/pre_deploy/verdict/value": "incomplete",
+      "/stages/pre_deploy/verdict/reason": "not_evaluated",
       "/events/1/evaluation/status": "not_evaluated",
       "/events/1/evaluation/status_reason": "evaluator_unavailable",
-      "/coverage/status_counts/unknown": 1,
-      "/coverage/status_counts/not_evaluated": 1,
-      "/verdict/value": "fail",
-      "/verdict/exit_code": 6,
-      "/stages/pre_deploy/coverage/gaps": [
-        {
-          "stage": null,
-          "kind": "evaluator_unavailable",
-          "count": 1
+      "/verdict/value": "incomplete",
+      "/verdict/reason": "not_evaluated",
+      "/stages/pre_deploy/events/digest": "sha256:92db68bbb32db329e4607ddc91351ecad517d776168a73d4506f6cef3eda0544",
+      "/evidence_refs/25/digest": "sha256:92db68bbb32db329e4607ddc91351ecad517d776168a73d4506f6cef3eda0544",
+      "/evidence_refs/25/size_bytes": 4976,
+      "/stages/pre_deploy/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": null,
+            "detail": "1 of 2 required checks were not evaluated"
+          }
+        ]
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": "pre_deploy",
+            "detail": "1 of 2 required checks were not evaluated"
+          }
+        ]
+      },
+      "/stages/pre_deploy/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_required": {
+          "value": 2,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e"
+        },
+        "assertions_evaluated": 1,
+        "subjects_per_assertion": {
+          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        },
+        "evaluations": 2,
+        "gaps": [
+          {
+            "stage": null,
+            "kind": "evaluator_unavailable",
+            "count": 1
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 1,
+            "error": 0
+          }
         }
-      ],
-      "/coverage/gaps": [
-        {
-          "stage": "pre_deploy",
-          "kind": "evaluator_unavailable",
-          "count": 1
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_required": {
+          "value": 4,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        },
+        "evaluations": 4,
+        "gaps": [
+          {
+            "stage": "pre_deploy",
+            "kind": "evaluator_unavailable",
+            "count": 1
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 1,
+            "error": 0
+          }
         }
-      ],
-      "/stages/pre_deploy/events/digest": "sha256:1aac21916477d0d6bf594bc5abb0927b0e578c30edfb1c2b6c957308a957aecb",
-      "/evidence_refs/25/digest": "sha256:1aac21916477d0d6bf594bc5abb0927b0e578c30edfb1c2b6c957308a957aecb",
-      "/evidence_refs/25/size_bytes": 4982
+      }
     },
     "remove": []
   },
@@ -797,39 +1048,143 @@
     "name": "image_deploy_whose_build_check_evaluator_crashed",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/coverage/status_counts/error": 1,
-      "/stages/pre_deploy/verdict/value": "fail",
-      "/stages/pre_deploy/verdict/exit_code": 4,
-      "/stages/pre_deploy/assurance_status/value": "incomplete",
-      "/stages/pre_deploy/assurance_status/reason": "required_policy_evaluation_failed",
-      "/stages/pre_deploy/assurance_status/detail": "1 of 2 evaluations ended in an evaluator error",
+      "/stages/pre_deploy/verdict/value": "incomplete",
+      "/stages/pre_deploy/verdict/reason": "evaluator_failed",
       "/events/1/evaluation/status": "error",
       "/events/1/evaluation/status_reason": "evaluator_crash",
-      "/coverage/status_counts/unknown": 1,
-      "/coverage/status_counts/error": 1,
-      "/verdict/value": "fail",
-      "/verdict/exit_code": 4,
-      "/assurance_status/value": "incomplete",
-      "/assurance_status/reason": "required_policy_evaluation_failed",
-      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error",
-      "/stages/pre_deploy/coverage/gaps": [
-        {
-          "stage": null,
-          "kind": "evaluator_crash",
-          "count": 1
+      "/verdict/value": "incomplete",
+      "/verdict/reason": "evaluator_failed",
+      "/stages/pre_deploy/events/digest": "sha256:3795190295e06811c040f05f4cb4228e666b377d6437084652ece56b2b41072e",
+      "/evidence_refs/25/digest": "sha256:3795190295e06811c040f05f4cb4228e666b377d6437084652ece56b2b41072e",
+      "/evidence_refs/25/size_bytes": 4962,
+      "/stages/pre_deploy/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": null,
+            "detail": "1 of 2 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": "pre_deploy",
+            "detail": "1 of 2 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/stages/pre_deploy/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_required": {
+          "value": 2,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e"
+        },
+        "assertions_evaluated": 1,
+        "subjects_per_assertion": {
+          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        },
+        "evaluations": 2,
+        "gaps": [
+          {
+            "stage": null,
+            "kind": "evaluator_crash",
+            "count": 1
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 1
+          }
         }
-      ],
-      "/coverage/gaps": [
-        {
-          "stage": "pre_deploy",
-          "kind": "evaluator_crash",
-          "count": 1
+      },
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "change_unit",
+          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_required": {
+          "value": 4,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        },
+        "evaluations": 4,
+        "gaps": [
+          {
+            "stage": "pre_deploy",
+            "kind": "evaluator_crash",
+            "count": 1
+          }
+        ],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 1
+          }
         }
-      ],
-      "/stages/pre_deploy/events/digest": "sha256:272bc8a6c8e8ddd56d32bb2aa96b8986241d1fd09674f26875a482c4b6a39206",
-      "/evidence_refs/25/digest": "sha256:272bc8a6c8e8ddd56d32bb2aa96b8986241d1fd09674f26875a482c4b6a39206",
-      "/evidence_refs/25/size_bytes": 4968
+      }
     },
     "remove": []
   },
@@ -853,11 +1208,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -921,17 +1276,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e09d31bcffc26c90abf6f5dd77a649abc260e4a1609ebb037e58181b812cded6",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e09d31bcffc26c90abf6f5dd77a649abc260e4a1609ebb037e58181b812cded6",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -942,7 +1296,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:32973982d1db76646e3cafa4d623139a10fba0613a5e24cd75aaf3eb4ab89203"
@@ -970,24 +1324,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": []
   }

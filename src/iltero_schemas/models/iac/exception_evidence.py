@@ -1,7 +1,7 @@
 """Every scanner result a stage's source suppressed names exactly the project's exception its kept file gives it.
 
 A stage that applied the project's own exceptions file keeps a byte copy of it
-(``models.local_exceptions.LocalExceptionsUsed``). A reader reads that copy and
+(``models.common.local_exceptions.LocalExceptionsUsed``). A reader reads that copy and
 works out again, for each result the scanned source suppressed, which exception
 covers it: the same assertion, the resource's address in the plan, the run's
 environment and the stage's reference time (``exception_in_force``). The record
@@ -15,17 +15,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from iltero_schemas.canonical.encoding import digest
-from iltero_schemas.models.checked_content import CheckedPlan
+from iltero_schemas.canonical.common.encoding import digest
+from iltero_schemas.models.common.checked_content import CheckedPlan
+from iltero_schemas.models.common.local_exceptions import exception_in_force, read_local_exceptions
+from iltero_schemas.models.common.scanner_evaluator import SUPPRESSED_IN_SOURCE, ScannerEvaluator
+from iltero_schemas.models.common.server_facts import ExceptionGrant
 from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
-from iltero_schemas.models.local_exceptions import exception_in_force, read_local_exceptions
-from iltero_schemas.models.scanner_evaluator import SUPPRESSED_IN_SOURCE, ScannerEvaluator
-from iltero_schemas.models.server_facts import ExceptionGrant
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR
-    from iltero_schemas.models.event import AssuranceEvent
-    from iltero_schemas.models.kept_files import KeptFiles
+    from iltero_schemas.models.common.car import CAR
+    from iltero_schemas.models.common.event import AssuranceEvent
+    from iltero_schemas.models.iac.kept_files import KeptFiles
 
 NOT_KEPT = "the record does not keep an exceptions file with the digest the stage names"
 NOT_READABLE = "is not a project's exceptions file the contract can read"

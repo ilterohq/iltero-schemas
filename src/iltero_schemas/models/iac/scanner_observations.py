@@ -22,19 +22,19 @@ from typing import Annotated, Literal, get_args
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import API_VERSION as API_VERSION
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.binding import TOOL_DECISIONS, AcceptedStatus, InputKind, RuleId
-from iltero_schemas.models.fields import Address, Count, Digest, Identifier
-from iltero_schemas.models.scanners import ScannerTool
+from iltero_schemas.models.common.base import API_VERSION as API_VERSION
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.fields import Address, Count, Digest, Identifier
+from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS, AcceptedStatus, InputKind, RuleId
 
 KIND = "ScannerObservations"
 # Far more results than one report of a plan of the largest size holds; the bound keeps a reader's work finite.
 MAX_RESULTS = 200_000
 # More keys than one check reads of one resource.
 MAX_EVALUATED_KEYS = 32
-# What each tool calls the input it read, and what the contract calls it. A word not listed names no input a binding
-# reads, so no result read from it decides anything.
+# What each tool calls the input it read, and what the contract calls it. A word not listed names no input a scanner
+# checks entry reads, so no result read from it decides anything.
 TOOL_INPUT_KINDS: Mapping[str, Mapping[str, InputKind]] = MappingProxyType(
     {
         "checkov": MappingProxyType({"terraform_plan": "plan"}),
@@ -46,6 +46,9 @@ TOOL_INPUT_KINDS: Mapping[str, Mapping[str, InputKind]] = MappingProxyType(
 TOOL_CONFIGURATION_WORDS: Mapping[str, frozenset[str]] = MappingProxyType(
     {"checkov": frozenset({"terraform"}), "trivy": frozenset({"terraform"})}
 )
+# The tools whose reports count neither the files they could not parse nor their results, so whose observations give
+# both counts as null; every other tool's give both.
+TOOLS_THAT_WRITE_NO_COUNTS = frozenset({"trivy"})
 
 # Why a result's address resolves to no resource of the plan: it names none (``not_in_plan``), it could name more
 # than one (``ambiguous``), or the tool wrote no address for it (``no_address``).
@@ -53,7 +56,7 @@ UnresolvedReason = Literal["not_in_plan", "ambiguous", "no_address"]
 
 
 def input_kind_of(tool: str, word: str) -> InputKind | None:
-    """The input kind ``tool`` means by ``word``; None for a word that names no input a binding reads."""
+    """The input kind ``tool`` means by ``word``; None for a word that names no input a scanner checks entry reads."""
     return TOOL_INPUT_KINDS[tool].get(word)
 
 
@@ -61,8 +64,9 @@ class ScannerResult(StrictModel):
     """One result of one check, as the tool reported it and as the stage resolved it."""
 
     rule_id: RuleId
-    # The tool's own word for the outcome, and the decision it names (``models.binding.TOOL_DECISIONS``), or null for
-    # a word that is not a decision, such as a check the tool skipped.
+    # The tool's own word for the outcome, and the decision it names
+    # (``models.iac.scanner_check_mapping.TOOL_DECISIONS``), or null for a word that is not a decision, such as a check
+    # the tool skipped.
     tool_status: Identifier
     decision: AcceptedStatus | None
     # The tool reported the check as skipped because the scanned source asked it to.
@@ -106,6 +110,7 @@ class ScannerObservations(StrictModel):
     api_version: Literal["iltero.com/v1"] = Field(alias="apiVersion")
     kind: Literal["ScannerObservations"]
     tool: ScannerTool
+    # The version the scanner wrote in its own report; nothing checks it against the scanner that ran.
     tool_version: Identifier
     # Who ran the tool: in this version always the pipeline, which supplied the report.
     supplied_by: Literal["pipeline"]
@@ -124,13 +129,30 @@ class ScannerObservations(StrictModel):
     # Results about the configuration as written, which no stage reads, counted and left out.
     written_configuration_results: Count
     tool_parsing_errors: Count | None
+    # Results the tool's own summary counts that its report does not list, such as the passes Checkov leaves out when
+    # run with ``--quiet``; null when the tool writes no counts (Trivy). The tool's own word: 0 does not show that every
+    # check ran, only that every result it counts is listed.
+    results_not_listed: Count | None
     # Sorted by check, then by input kind, then by the tool's address (a result with no address first), each once.
     results: Annotated[list[ScannerResult], Field(max_length=MAX_RESULTS)]
+
+    @property
+    def read_in_full(self) -> bool:
+        """Whether the stage read every result the report holds or counts: none unreadable, no file the tool could
+        not parse, none counted but not listed. An unreadable result or an unparsed file may hide a failure; a result
+        counted but not listed is about no resource the report names, so a subject with no listed failure may have
+        passed, been skipped or not been checked."""
+        return not (self.unreadable_results or self.tool_parsing_errors or self.results_not_listed)
 
     @model_validator(mode="after")
     def _consistent(self) -> ScannerObservations:
         if not sorted_unique(self.input_kinds):
             raise ValueError("input_kinds is sorted, each kind once")
+        without_counts = self.tool in TOOLS_THAT_WRITE_NO_COUNTS
+        if any((count is None) != without_counts for count in (self.tool_parsing_errors, self.results_not_listed)):
+            raise ValueError(
+                "the counts of unparsed files and of results not listed are given exactly when the tool writes counts"
+            )
         decisions = TOOL_DECISIONS[self.tool]
         keys: list[tuple[str, str, str]] = []
         for result in self.results:

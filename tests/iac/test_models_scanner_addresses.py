@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from iltero_schemas.models.common.scanners import SCANNER_TOOLS
 from iltero_schemas.models.iac.scanner_addresses import address_index, plan_resource_addresses, resolve, trivy_address
-from iltero_schemas.models.scanners import SCANNER_TOOLS
 
 # The addresses of a real plan, and how Trivy 0.72.0 wrote each of them.
 PLAN = [

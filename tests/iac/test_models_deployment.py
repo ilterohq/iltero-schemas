@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.context import AssuranceContext
+from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.iac.deployment import (
     AppliedChange,
     Apply,

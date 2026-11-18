@@ -11,13 +11,13 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.canonical import digest_of
-from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS, StageRecord
-from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.coverage import STATE_REASON, Coverage, stage_outcome
-from iltero_schemas.models.record_coverage import combine_in_order
-from iltero_schemas.models.stages import integrity_problems
+from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.context import AssuranceContext
+from iltero_schemas.models.common.coverage import Coverage, stage_outcome
+from iltero_schemas.models.common.evidence_status import STATE_REASON
+from iltero_schemas.models.common.stages import integrity_problems
 from tests.conftest import VECTORS
-from tests.records import DEPLOYED, VERIFIED, count_by_digest, iac_change
+from tests.records import DEPLOYED, VERIFIED, count_by_digest, iac_change, top_level
 
 NOT_READ = {"__unknown": True, "reason": "state_not_read"}
 STATE_GAP = {"kind": "state_not_read"}
@@ -27,9 +27,8 @@ def _restaged(document: dict[str, Any], stage: str) -> None:
     """``stage``'s verdict and status recomputed from its coverage, and the record's top level from its stages."""
     record = document["stages"][stage]
     outcome = stage_outcome(Coverage.model_validate(record["coverage"])).model_dump(mode="json")
-    record.update(verdict=outcome["verdict"], assurance_status=outcome["assurance_status"])
-    outcomes = {name: StageRecord.model_validate(value).outcome for name, value in document["stages"].items()}
-    document.update(combine_in_order(document["expected_stages"], outcomes).model_dump(mode="json"))
+    record.update(verdict=outcome["verdict"], evidence_status=outcome["evidence_status"])
+    document.update(top_level(document))
 
 
 def _not_read(source: dict[str, Any] = DEPLOYED) -> dict[str, Any]:
@@ -50,9 +49,13 @@ def _not_read(source: dict[str, Any] = DEPLOYED) -> dict[str, Any]:
 def test_a_record_of_an_apply_whose_state_was_not_read_has_no_identities_and_a_gap() -> None:
     car = CAR.model_validate(_not_read())
     assert iac_change(car).identity is None
-    assert (car.verdict.exit_code, car.assurance_status.value) == (6, "incomplete")
+    assert (car.verdict.value, car.verdict.reason, car.evidence_status.value) == (
+        "incomplete",
+        "not_evaluated",
+        "has_gaps",
+    )
     post_deploy = car.stages[next(stage for stage in car.stages if stage.value == "post_deploy")]
-    assert (post_deploy.verdict.exit_code, post_deploy.assurance_status.reason) == (6, STATE_REASON)
+    assert (post_deploy.verdict.reason, post_deploy.evidence_status.leading_reason) == ("not_evaluated", STATE_REASON)
 
 
 def test_a_record_names_no_identities_when_the_state_was_not_read() -> None:

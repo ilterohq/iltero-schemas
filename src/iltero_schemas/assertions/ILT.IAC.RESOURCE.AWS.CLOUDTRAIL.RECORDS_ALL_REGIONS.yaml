@@ -19,5 +19,5 @@ spec:
         provider: aws
         resource_types: [aws_cloudtrail]
   # Iltero does not check this itself. A scanner such as Checkov does, and the
-  # binding set ILT.BINDINGS.STARTER lists which scanner checks to use.
+  # scanner check mapping ILT.SCANNER_CHECKS.STARTER lists which scanner checks to use.
   assert: null

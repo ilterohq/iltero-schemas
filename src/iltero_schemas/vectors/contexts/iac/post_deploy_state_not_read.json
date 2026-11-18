@@ -25,9 +25,7 @@
   },
   "reference_time": {
     "value": "2026-09-16T18:40:00Z",
-    "source": "runner_clock",
-    "trust": "asserted",
-    "time_window": null
+    "source": "runner_clock"
   },
   "source": {
     "vcs": "git",

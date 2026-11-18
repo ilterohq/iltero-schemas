@@ -1,0 +1,35 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [
+    "plan"
+  ],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:6e0c8154ecf5aedcdf41af1e82860df130b005fdfd1b4e4e2b3fafa62e83c783",
+  "report_digest": "sha256:19a4feaa42b14fe184ce7b348cb5dbcc2bd75f88b24100507633949a3f3fb328",
+  "results": [
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "publicly_accessible"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_17",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    }
+  ],
+  "results_not_listed": 1,
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

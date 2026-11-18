@@ -6,7 +6,7 @@
   ],
   "kind": "ScannerObservations",
   "plan_digest": "sha256:bd61276b09283b1a36d56ea54e21d6749d73ff9d0efeea08edadab272fb82c12",
-  "report_digest": "sha256:db31c60ef3daaa6f9cc2cbfe5c0f70a2053c72c1c28386d7f650eba4994fdbd5",
+  "report_digest": "sha256:2f8f389a79aaeb417a1419dc95127975a731cac575569f278128a64e412fa2e0",
   "results": [
     {
       "connected_plan_address": "aws_s3_bucket_public_access_block.compliant",
@@ -1174,6 +1174,7 @@
       "unresolved_reason": null
     }
   ],
+  "results_not_listed": 0,
   "rules_digest": null,
   "supplied_by": "pipeline",
   "tool": "checkov",

@@ -186,7 +186,7 @@
         "plan",
         "pre_deploy"
       ],
-      "/complete": false
+      "/all_expected_stages_reported": false
     },
     "remove": [],
     "message": "the record accounts for every stage of the lifecycle: expected, or not in scope"
@@ -197,11 +197,11 @@
     "set": {
       "/events/0/evaluation/activity": "iac_change",
       "/events/0/provenance/facts_source": null,
-      "/evidence_refs/15/digest": "sha256:5df31191050943f79c313d43bbf2b9570529a470d0e7d346caa03f04410e489d",
-      "/evidence_refs/15/size_bytes": 6585,
+      "/evidence_refs/15/digest": "sha256:e6be666d7ce1fd0233867fda7ecd05c969a6a9c100ea19df0f5459d8132e22cc",
+      "/evidence_refs/15/size_bytes": 6576,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:5df31191050943f79c313d43bbf2b9570529a470d0e7d346caa03f04410e489d",
+        "digest": "sha256:e6be666d7ce1fd0233867fda7ecd05c969a6a9c100ea19df0f5459d8132e22cc",
         "count": 3
       }
     },
@@ -218,11 +218,11 @@
         "digest_version": "1",
         "tool": "terraform"
       },
-      "/evidence_refs/15/digest": "sha256:c00f4c8477078e065aeb604b5482f3840bf3d3a41f7f65fbb2936f54cf41fff1",
-      "/evidence_refs/15/size_bytes": 6585,
+      "/evidence_refs/15/digest": "sha256:925f1792df169a9feb94c3c9668472947de60612b8fc83b1d5b333fb7e925de6",
+      "/evidence_refs/15/size_bytes": 6576,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:c00f4c8477078e065aeb604b5482f3840bf3d3a41f7f65fbb2936f54cf41fff1",
+        "digest": "sha256:925f1792df169a9feb94c3c9668472947de60612b8fc83b1d5b333fb7e925de6",
         "count": 3
       }
     },
@@ -238,10 +238,10 @@
         "repository": "ghcr.io/acme/api",
         "digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7"
       },
-      "/evidence_refs/15/digest": "sha256:a570db3ac98248489c43193890982b0ca43468e5f1bc5bff9dc0230cb9de4c2c",
+      "/evidence_refs/15/digest": "sha256:ce5b19c7bf8b739dd1b67b581b60487ba1e4ccff5930a5cb1c16f937d8dd0dc7",
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:a570db3ac98248489c43193890982b0ca43468e5f1bc5bff9dc0230cb9de4c2c",
+        "digest": "sha256:ce5b19c7bf8b739dd1b67b581b60487ba1e4ccff5930a5cb1c16f937d8dd0dc7",
         "count": 3
       }
     },
@@ -280,11 +280,11 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/provenance/facts_source": null,
-      "/evidence_refs/15/digest": "sha256:f8832519bc9fbf980922bb1e07b86492fa62e51d3d73c9ec9d4be9aeab749285",
-      "/evidence_refs/15/size_bytes": 6586,
+      "/evidence_refs/15/digest": "sha256:d3162dc005cd8052928cea20e12cb761ec9379ac477a7c51a07f353ad72b2ed9",
+      "/evidence_refs/15/size_bytes": 6577,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:f8832519bc9fbf980922bb1e07b86492fa62e51d3d73c9ec9d4be9aeab749285",
+        "digest": "sha256:d3162dc005cd8052928cea20e12cb761ec9379ac477a7c51a07f353ad72b2ed9",
         "count": 3
       }
     },
@@ -466,11 +466,11 @@
         "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
       },
       "/events/0/provenance/assertion_source": "local",
-      "/evidence_refs/15/digest": "sha256:6c171a074d70ce97e7a5efc719fca44a4b8346bb5a6d0b569b17ba0f150b2047",
-      "/evidence_refs/15/size_bytes": 6548,
+      "/evidence_refs/15/digest": "sha256:662a82b74b0ec614d0aecbb095981dea7cf079d6b8684ab5e925a499d76ffdb0",
+      "/evidence_refs/15/size_bytes": 6539,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:6c171a074d70ce97e7a5efc719fca44a4b8346bb5a6d0b569b17ba0f150b2047",
+        "digest": "sha256:662a82b74b0ec614d0aecbb095981dea7cf079d6b8684ab5e925a499d76ffdb0",
         "count": 3
       }
     },
@@ -482,10 +482,10 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/evidence_refs/15/digest": "sha256:35895ae3da213581bea7ff62b686f5040471e0f6fdc4df7a3debe1529e20822c",
+      "/evidence_refs/15/digest": "sha256:7ece4fe5a391094f02b2ddfb92b331faaa0547674109d0dd63081b6f13cf51a6",
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:35895ae3da213581bea7ff62b686f5040471e0f6fdc4df7a3debe1529e20822c",
+        "digest": "sha256:7ece4fe5a391094f02b2ddfb92b331faaa0547674109d0dd63081b6f13cf51a6",
         "count": 3
       }
     },
@@ -498,12 +498,32 @@
     "set": {
       "/events/0/evaluation/status": "pass",
       "/events/0/evaluation/status_reason": null,
-      "/evidence_refs/15/digest": "sha256:10262eaff3017167826dd35274ddf8a4076c7ea3c28dc622b5ca4c7e0848bd85",
-      "/evidence_refs/15/size_bytes": 6563,
+      "/evidence_refs/15/digest": "sha256:d44c2a2167433eded59d1a275367180cc5859ec4f1294372256207e307e431a9",
+      "/evidence_refs/15/size_bytes": 6554,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:10262eaff3017167826dd35274ddf8a4076c7ea3c28dc622b5ca4c7e0848bd85",
+        "digest": "sha256:d44c2a2167433eded59d1a275367180cc5859ec4f1294372256207e307e431a9",
         "count": 3
+      },
+      "/stages/plan/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
       }
     },
     "remove": [],
@@ -515,12 +535,32 @@
     "set": {
       "/events/0/evaluation/status": "fail",
       "/events/0/evaluation/status_reason": null,
-      "/evidence_refs/15/digest": "sha256:fa78ee6a05794cccd28dbf90b7bffb65dbd5aff437b8ad76190f4c0fa0265ea2",
-      "/evidence_refs/15/size_bytes": 6563,
+      "/evidence_refs/15/digest": "sha256:77cd6bbdeffef2742865b8157234742b01bb75ca5a16916054116eb2a393d94d",
+      "/evidence_refs/15/size_bytes": 6554,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:fa78ee6a05794cccd28dbf90b7bffb65dbd5aff437b8ad76190f4c0fa0265ea2",
+        "digest": "sha256:77cd6bbdeffef2742865b8157234742b01bb75ca5a16916054116eb2a393d94d",
         "count": 3
+      },
+      "/stages/plan/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
       }
     },
     "remove": [],
@@ -531,11 +571,11 @@
     "vector": "image/local_run_build.json",
     "set": {
       "/events/0/evaluation/status_reason": "path_missing",
-      "/evidence_refs/15/digest": "sha256:c07b1f70440280d13eca35160297506b48c4cf8402e72fd22b5f77b06816d20f",
-      "/evidence_refs/15/size_bytes": 6576,
+      "/evidence_refs/15/digest": "sha256:4df3b6c3d8e405b9dd30b20c7759e06d23be305817efd25cb9a255e6fbf5321d",
+      "/evidence_refs/15/size_bytes": 6567,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:c07b1f70440280d13eca35160297506b48c4cf8402e72fd22b5f77b06816d20f",
+        "digest": "sha256:4df3b6c3d8e405b9dd30b20c7759e06d23be305817efd25cb9a255e6fbf5321d",
         "count": 3
       }
     },
@@ -548,12 +588,32 @@
     "set": {
       "/events/0/evaluation/status": "not_applicable",
       "/events/0/evaluation/status_reason": "when_guard_excluded",
-      "/evidence_refs/15/digest": "sha256:116485a50014da6535fac20d30ee2e0c240bf262246ac8f756ba3299f3c98861",
-      "/evidence_refs/15/size_bytes": 6590,
+      "/evidence_refs/15/digest": "sha256:7355fef5c855a6e0c6aa50404d07b7089bd2476d28c5e431a379381405235914",
+      "/evidence_refs/15/size_bytes": 6581,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:116485a50014da6535fac20d30ee2e0c240bf262246ac8f756ba3299f3c98861",
+        "digest": "sha256:7355fef5c855a6e0c6aa50404d07b7089bd2476d28c5e431a379381405235914",
         "count": 3
+      },
+      "/stages/plan/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
       }
     },
     "remove": [],
@@ -599,11 +659,11 @@
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
-      "/evidence_refs/15/digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
-      "/evidence_refs/15/size_bytes": 6594,
+      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
+      "/evidence_refs/15/size_bytes": 6585,
       "/stages/plan/events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:b6435f3fa4c1c3f71b1ae28e48d2e6f20cbb4bbc33cd82a3033d7ee1ad1b2f01",
+        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
         "count": 3
       }
     },
@@ -1164,9 +1224,9 @@
     "vector": "image/local_run_deploy.json",
     "set": {
       "/events/0/evaluation/activity": "image_build",
-      "/stages/pre_deploy/events/digest": "sha256:7e7db2f23bb4f238df28054578a57261283074090745c875c9334f1bdbbad2f7",
-      "/evidence_refs/25/digest": "sha256:7e7db2f23bb4f238df28054578a57261283074090745c875c9334f1bdbbad2f7",
-      "/evidence_refs/25/size_bytes": 4978
+      "/stages/pre_deploy/events/digest": "sha256:5f7ec984b2f7a57039b30b020aa6400da53d0d22db2b77808dee8b04e4778a21",
+      "/evidence_refs/25/digest": "sha256:5f7ec984b2f7a57039b30b020aa6400da53d0d22db2b77808dee8b04e4778a21",
+      "/evidence_refs/25/size_bytes": 4972
     },
     "remove": [],
     "message": "stage 'pre_deploy' is not valid for target kind 'change' in an image_build input"
@@ -1205,9 +1265,9 @@
       },
       "/events/2/provenance/compiled_digest": "sha256:fea3ec6c560381f77d3466b696bdb3e62124f550fd27de31410c86dd1b2491c0",
       "/events/2/provenance/assertion_source_digest": "sha256:d3a7802bf6a7b97e55e8da557e949a5224c12cbfc98428a50f4c1d6f4185993f",
-      "/stages/post_deploy/events/digest": "sha256:9c1008ba3844606ee6ec9137c7271c7e5df1483c74a09c3e202a5930ecc23908",
-      "/evidence_refs/5/digest": "sha256:9c1008ba3844606ee6ec9137c7271c7e5df1483c74a09c3e202a5930ecc23908",
-      "/evidence_refs/5/size_bytes": 2632
+      "/stages/post_deploy/events/digest": "sha256:e1998221c6a4dd1408418dbe5be1bc13591ee59c7abc8e50f41134a9f3a9b721",
+      "/evidence_refs/5/digest": "sha256:e1998221c6a4dd1408418dbe5be1bc13591ee59c7abc8e50f41134a9f3a9b721",
+      "/evidence_refs/5/size_bytes": 2629
     },
     "remove": [],
     "message": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN is a built-in assertion of another activity, not of image_deploy"
@@ -1231,11 +1291,11 @@
     "set": {
       "/events/3/assertion/id": "ACME.IMAGE.DEPLOYMENT.DRIFT.RUNNING",
       "/events/3/provenance/assertion_source": "local",
-      "/evidence_refs/11/digest": "sha256:b5acb692e602664a99e92fda54c9e37bebf248174d3026017860d0f44856efa2",
-      "/evidence_refs/11/size_bytes": 2900,
+      "/evidence_refs/11/digest": "sha256:69d211d557428576248e9b1c9a77dc4caf8586ded7a0cda36ac493e66bbec30e",
+      "/evidence_refs/11/size_bytes": 2897,
       "/stages/post_verify/events": {
         "path": "units/api/post_verify/events.json",
-        "digest": "sha256:b5acb692e602664a99e92fda54c9e37bebf248174d3026017860d0f44856efa2",
+        "digest": "sha256:69d211d557428576248e9b1c9a77dc4caf8586ded7a0cda36ac493e66bbec30e",
         "count": 1
       }
     },
@@ -1266,9 +1326,29 @@
       "/events/1/evaluation/status_reason": null,
       "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:d75200f72ea23b837f3f263a64552d7efd484c1a8626f21f8934b747ff115b7a",
-      "/evidence_refs/25/digest": "sha256:d75200f72ea23b837f3f263a64552d7efd484c1a8626f21f8934b747ff115b7a",
-      "/evidence_refs/25/size_bytes": 4954
+      "/stages/pre_deploy/events/digest": "sha256:97261bb6f5e1d96be941874d1182896baab03a0e963fbd71c933859616214f83",
+      "/evidence_refs/25/digest": "sha256:97261bb6f5e1d96be941874d1182896baab03a0e963fbd71c933859616214f83",
+      "/evidence_refs/25/size_bytes": 4948,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
@@ -1278,9 +1358,9 @@
     "vector": "image/local_run_deploy.json",
     "set": {
       "/events/1/evaluation/status_reason": "path_missing",
-      "/stages/pre_deploy/events/digest": "sha256:7152fec7df1251f9ed4596a6247678404a7f8c11197df0ce8d93d4c7cf6bd951",
-      "/evidence_refs/25/digest": "sha256:7152fec7df1251f9ed4596a6247678404a7f8c11197df0ce8d93d4c7cf6bd951",
-      "/evidence_refs/25/size_bytes": 4967
+      "/stages/pre_deploy/events/digest": "sha256:caf833127d2cf86eee7114dd84c654177e7ca22fdfba9763a024ef7af2ff703c",
+      "/evidence_refs/25/digest": "sha256:caf833127d2cf86eee7114dd84c654177e7ca22fdfba9763a024ef7af2ff703c",
+      "/evidence_refs/25/size_bytes": 4961
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
@@ -1291,16 +1371,36 @@
     "set": {
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
       "/stages/pre_deploy/coverage/status_counts/not_evaluated": 1,
-      "/stages/pre_deploy/verdict/value": "fail",
-      "/stages/pre_deploy/verdict/exit_code": 6,
+      "/stages/pre_deploy/verdict/value": "incomplete",
+      "/stages/pre_deploy/verdict/reason": "not_evaluated",
       "/events/1/evaluation/status": "not_evaluated",
       "/events/1/evaluation/status_reason": "subject_unresolved",
       "/coverage/status_counts/unknown": 1,
       "/coverage/status_counts/not_evaluated": 1,
-      "/verdict/value": "fail",
-      "/verdict/exit_code": 6,
-      "/stages/pre_deploy/events/digest": "sha256:19374ab93861ff9d645d71d10781737945373cd50bd4358ecf95594f6cb5fe76",
-      "/evidence_refs/25/digest": "sha256:19374ab93861ff9d645d71d10781737945373cd50bd4358ecf95594f6cb5fe76"
+      "/verdict/value": "incomplete",
+      "/verdict/reason": "not_evaluated",
+      "/stages/pre_deploy/events/digest": "sha256:af817392fd76b05242487442457e37c85192a0cb643c967f900dd3a83420b5b4",
+      "/evidence_refs/25/digest": "sha256:af817392fd76b05242487442457e37c85192a0cb643c967f900dd3a83420b5b4",
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is not_evaluated only for a fault of the evaluator, never for want of the change or its facts"
@@ -1315,9 +1415,29 @@
       "/events/1/evaluation/status_reason": "when_guard_excluded",
       "/coverage/status_counts/unknown": 1,
       "/coverage/status_counts/not_applicable": 1,
-      "/stages/pre_deploy/events/digest": "sha256:55e787c3c218748b0ce8f8975e9731864c63ba4c0abf20d2c8260c0d0bd7c171",
-      "/evidence_refs/25/digest": "sha256:55e787c3c218748b0ce8f8975e9731864c63ba4c0abf20d2c8260c0d0bd7c171",
-      "/evidence_refs/25/size_bytes": 4981
+      "/stages/pre_deploy/events/digest": "sha256:f4c52aa437fff7fd6d57fc8206850441b127010aeb99874401a428794800a50d",
+      "/evidence_refs/25/digest": "sha256:f4c52aa437fff7fd6d57fc8206850441b127010aeb99874401a428794800a50d",
+      "/evidence_refs/25/size_bytes": 4975,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT always applies to the pre_deploy stage's one subject"
@@ -1332,9 +1452,29 @@
       "/events/1/evaluation/status_reason": null,
       "/coverage/status_counts/fail": 1,
       "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:9881e9ee98ab0bffa7002b692327109df93295169bcbe753224daaab588784bb",
-      "/evidence_refs/25/digest": "sha256:9881e9ee98ab0bffa7002b692327109df93295169bcbe753224daaab588784bb",
-      "/evidence_refs/25/size_bytes": 4954
+      "/stages/pre_deploy/events/digest": "sha256:874a84bae885089acc4c3a2ce90610a91cbe8be5f6fb20476ca593d0b9f4251d",
+      "/evidence_refs/25/digest": "sha256:874a84bae885089acc4c3a2ce90610a91cbe8be5f6fb20476ca593d0b9f4251d",
+      "/evidence_refs/25/size_bytes": 4948,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is unknown with reason server_facts_unavailable on a run the tool opened: only the server accepts a build for the environment"
@@ -1345,23 +1485,57 @@
     "set": {
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
       "/stages/pre_deploy/coverage/status_counts/error": 1,
-      "/stages/pre_deploy/verdict/value": "fail",
-      "/stages/pre_deploy/verdict/exit_code": 4,
-      "/stages/pre_deploy/assurance_status/value": "incomplete",
-      "/stages/pre_deploy/assurance_status/reason": "required_policy_evaluation_failed",
-      "/stages/pre_deploy/assurance_status/detail": "1 of 2 evaluations ended in an evaluator error",
+      "/stages/pre_deploy/verdict/value": "incomplete",
+      "/stages/pre_deploy/verdict/reason": "evaluator_failed",
       "/events/1/evaluation/status": "error",
       "/events/1/evaluation/status_reason": "adapter_parse_failure",
       "/coverage/status_counts/unknown": 1,
       "/coverage/status_counts/error": 1,
-      "/verdict/value": "fail",
-      "/verdict/exit_code": 4,
-      "/assurance_status/value": "incomplete",
-      "/assurance_status/reason": "required_policy_evaluation_failed",
-      "/assurance_status/detail": "pre_deploy: 1 of 2 evaluations ended in an evaluator error",
-      "/stages/pre_deploy/events/digest": "sha256:4e8367660f790a6a0a7ed6ad7b275259632c239d7e15aaf4d31c1990f0d6f095",
-      "/evidence_refs/25/digest": "sha256:4e8367660f790a6a0a7ed6ad7b275259632c239d7e15aaf4d31c1990f0d6f095",
-      "/evidence_refs/25/size_bytes": 4974
+      "/verdict/value": "incomplete",
+      "/verdict/reason": "evaluator_failed",
+      "/stages/pre_deploy/events/digest": "sha256:37399c9f9d64b71316ef92d15327201d221fdfcb58f3d111d397857c7e99a329",
+      "/evidence_refs/25/digest": "sha256:37399c9f9d64b71316ef92d15327201d221fdfcb58f3d111d397857c7e99a329",
+      "/evidence_refs/25/size_bytes": 4968,
+      "/stages/pre_deploy/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": null,
+            "detail": "1 of 2 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_policy_evaluation_failed",
+            "stage": "pre_deploy",
+            "detail": "1 of 2 evaluations ended in an evaluator error"
+          }
+        ]
+      },
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 1
+        }
+      }
     },
     "remove": [],
     "message": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT is error only for a fault of the evaluator, never for want of the change or its facts"
@@ -1370,9 +1544,29 @@
     "name": "image_deploy_without_its_build_check",
     "vector": "image/local_run_deploy.json",
     "set": {
-      "/stages/pre_deploy/events/digest": "sha256:9a7eb97188b6df015e50ce1c121ad74581040239c53244154badd0bb909254b1",
-      "/evidence_refs/25/digest": "sha256:9a7eb97188b6df015e50ce1c121ad74581040239c53244154badd0bb909254b1",
-      "/evidence_refs/25/size_bytes": 2689
+      "/stages/pre_deploy/events/digest": "sha256:b40a181134765ea67951bc08ec22d54f86a1f40c824293e273f3edb254aef25f",
+      "/evidence_refs/25/digest": "sha256:b40a181134765ea67951bc08ec22d54f86a1f40c824293e273f3edb254aef25f",
+      "/evidence_refs/25/size_bytes": 2686,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [
       "/events/1"
@@ -1393,9 +1587,29 @@
       "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:73af39f49814d7387d932f651e6109546701dd17503c308d49fc5963264b1bce",
-      "/evidence_refs/25/digest": "sha256:73af39f49814d7387d932f651e6109546701dd17503c308d49fc5963264b1bce",
-      "/evidence_refs/25/size_bytes": 4949
+      "/stages/pre_deploy/events/digest": "sha256:ebdbe0374d646da6b5074cd43c96db9544b3c80e5a94f1ffdad09bcc617ffed6",
+      "/evidence_refs/25/digest": "sha256:ebdbe0374d646da6b5074cd43c96db9544b3c80e5a94f1ffdad09bcc617ffed6",
+      "/evidence_refs/25/size_bytes": 4943,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
@@ -1414,9 +1628,29 @@
       "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:b7200b901ff8f405a1d31df724fac19c0fa9fe7dcf670b2a6fa6f497a28b71d0",
-      "/evidence_refs/25/digest": "sha256:b7200b901ff8f405a1d31df724fac19c0fa9fe7dcf670b2a6fa6f497a28b71d0",
-      "/evidence_refs/25/size_bytes": 4949
+      "/stages/pre_deploy/events/digest": "sha256:e668afd9b8971888109e7627fd6360fc1f38650353073b52b43ae3acfe5baf8d",
+      "/evidence_refs/25/digest": "sha256:e668afd9b8971888109e7627fd6360fc1f38650353073b52b43ae3acfe5baf8d",
+      "/evidence_refs/25/size_bytes": 4943,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED is unknown with reason server_facts_unavailable, never pass, fail or not_applicable, on a run the tool opened"
@@ -1509,11 +1743,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -1552,17 +1786,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -1573,7 +1806,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -1601,24 +1834,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage keeps a commit review, or the unknown marker, exactly where its input carries one"
@@ -1643,11 +1895,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -1718,17 +1970,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -1739,7 +1990,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -1767,24 +2018,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check passed"
@@ -1809,11 +2079,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -1880,17 +2150,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -1901,7 +2170,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -1929,24 +2198,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 3,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:0f31219b5c52288a368c8b951f6b1ae8c19dbac5ad038be1cdc9649960f09d8f",
-      "/evidence_refs/25/digest": "sha256:0f31219b5c52288a368c8b951f6b1ae8c19dbac5ad038be1cdc9649960f09d8f",
-      "/evidence_refs/25/size_bytes": 4571
+      "/stages/pre_deploy/events/digest": "sha256:8ec761ee27a98dea6e3c00cb357706a922f3a33d44e2b35d902acc8baa9ce61b",
+      "/evidence_refs/25/digest": "sha256:8ec761ee27a98dea6e3c00cb357706a922f3a33d44e2b35d902acc8baa9ce61b",
+      "/evidence_refs/25/size_bytes": 4565,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the unknown marker when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check could not read a commit review"
@@ -1971,11 +2259,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "none",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2013,17 +2301,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -2034,7 +2321,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -2062,24 +2349,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:89edf8d419f6fd01e9d56ded59a42fff48e924e00d8961394a51fc3e1f29fc93",
-      "/evidence_refs/25/digest": "sha256:89edf8d419f6fd01e9d56ded59a42fff48e924e00d8961394a51fc3e1f29fc93",
-      "/evidence_refs/25/size_bytes": 4446
+      "/stages/pre_deploy/events/digest": "sha256:5239879958fd7de1219d4eec87210578c975b48926e4c83fdcff8ea263d90d9e",
+      "/evidence_refs/25/digest": "sha256:5239879958fd7de1219d4eec87210578c975b48926e4c83fdcff8ea263d90d9e",
+      "/evidence_refs/25/size_bytes": 4440,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED passes or fails only on facts read from the server"
@@ -2104,11 +2410,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2119,7 +2425,7 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/unknown": 1,
       "/stages/pre_deploy/commit_review": {
@@ -2148,9 +2454,29 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/size_bytes": 4887
+      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/size_bytes": 4881,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the accepted build's verified commit and repository"
@@ -2175,11 +2501,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2190,7 +2516,7 @@
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
       "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/unknown": 1,
       "/stages/pre_deploy/commit_review": {
@@ -2205,9 +2531,29 @@
         "head_commit": "9d1f00a000000000000000000000000000000000",
         "outcome": "source_commit_not_verified_commit"
       },
-      "/stages/pre_deploy/events/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/digest": "sha256:88ddedc2003ed46ae9d090d8f8fe2f7c42929e1c0872b0a335a48665cb2ad1af",
-      "/evidence_refs/25/size_bytes": 4887
+      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
+      "/evidence_refs/25/size_bytes": 4881,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 3,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit"
@@ -2232,11 +2578,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2300,17 +2646,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -2321,7 +2666,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -2349,24 +2694,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
@@ -2391,11 +2755,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2433,17 +2797,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -2454,7 +2817,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -2482,24 +2845,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the commit review its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check decided from"
@@ -2524,11 +2906,11 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2583,17 +2965,16 @@
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/pre_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/pre_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -2604,7 +2985,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
@@ -2632,24 +3013,43 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "stage_precedence",
         "stage": "pre_deploy"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/digest": "sha256:93bac02edeeaa0713e9b4437236e0004a614e19f99edd815b9de59aff77e500d",
-      "/evidence_refs/25/size_bytes": 4450
+      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
+      "/evidence_refs/25/size_bytes": 4444,
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "Field required"

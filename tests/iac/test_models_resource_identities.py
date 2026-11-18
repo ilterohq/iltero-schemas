@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.models.base import API_VERSION
+from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.models.iac.resource_identities import KIND, ResourceIdentities
 from tests.conftest import binding, identity_record, removed
 

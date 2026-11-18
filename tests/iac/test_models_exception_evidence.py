@@ -5,10 +5,10 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from iltero_schemas.canonical.encoding import digest
-from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.canonical.common.encoding import digest
+from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.iac.exception_evidence import LEFT_OUT, NOT_GIVEN, NOT_KEPT, NOT_READABLE, exception_problems
-from iltero_schemas.models.kept_files import KeptFiles
+from iltero_schemas.models.iac.kept_files import KeptFiles
 from tests.exceptions import FILE_BYTES, FILE_DIGEST, GRANT, applying_exceptions, suppressed
 
 WHERE = "stages.plan.scanners.local_exceptions"
@@ -16,7 +16,9 @@ WHERE = "stages.plan.scanners.local_exceptions"
 
 def _problems(record: dict[str, Any], exceptions: dict[str, bytes]) -> list[tuple[str, str]]:
     car = CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
-    files = KeptFiles(binding_sets={}, observations={}, reports={}, plans={}, assertions={}, exceptions=exceptions)
+    files = KeptFiles(
+        scanner_check_mappings={}, observations={}, reports={}, plans={}, assertions={}, exceptions=exceptions
+    )
     return exception_problems(car, files)
 
 
@@ -121,6 +123,11 @@ def test_a_result_whose_subject_has_no_address_is_given_no_exception() -> None:
     events = list(car.events)
     events[index] = car.events[index].model_copy(update={"subject": subject})
     files = KeptFiles(
-        binding_sets={}, observations={}, reports={}, plans={}, assertions={}, exceptions={FILE_DIGEST: FILE_BYTES}
+        scanner_check_mappings={},
+        observations={},
+        reports={},
+        plans={},
+        assertions={},
+        exceptions={FILE_DIGEST: FILE_BYTES},
     )
     assert exception_problems(car.model_copy(update={"events": events}), files) == [(_at(record), NOT_GIVEN)]

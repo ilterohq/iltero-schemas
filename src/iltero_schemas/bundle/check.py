@@ -49,7 +49,7 @@ from iltero_schemas.bundle.build import (
 )
 from iltero_schemas.canonical import CanonicalizationError
 from iltero_schemas.compiler import COMPILER_VERSION
-from iltero_schemas.models.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.models.common.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 from iltero_schemas.trust import BundleKey
 

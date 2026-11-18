@@ -4,7 +4,7 @@ metadata:
   id: VEC.IAC.RESOURCE.AWS.RDS.INVALID_CASE
   version: "1.0.0"
   title: An invalid document
-  description: An RDS instance whose storage the scanner checks its binding names find encrypted.
+  description: An RDS instance whose storage the scanner checks a scanner check mapping names for it find encrypted.
 spec:
   change_type: iac_change
   evidence:

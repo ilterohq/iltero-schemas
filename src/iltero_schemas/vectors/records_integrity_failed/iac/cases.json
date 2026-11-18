@@ -46,8 +46,8 @@
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_expected/value": 5,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:ad53a89ec1899d73526afc4c4d0fcdfa8446cd71543442630354fe41445dd8b7",
+      "/coverage/assertions_required/value": 5,
+      "/coverage/assertions_required/required_assertion_digest": "sha256:ad53a89ec1899d73526afc4c4d0fcdfa8446cd71543442630354fe41445dd8b7",
       "/coverage/assertions_evaluated": 5,
       "/stages/pre_deploy": {
         "assertions": {
@@ -538,10 +538,8 @@
           ]
         },
         "reference_time": {
-          "source": "runner_clock",
-          "trust": "asserted",
           "value": "2026-09-22T13:00:13.568Z",
-          "time_window": null
+          "source": "runner_clock"
         },
         "stage": "pre_deploy",
         "scanners": null,
@@ -550,7 +548,7 @@
         "resource_redaction": null,
         "coverage": {
           "assertions_evaluated": 0,
-          "assertions_expected": {
+          "assertions_required": {
             "origin": "project_files",
             "required_assertion_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
             "value": 0
@@ -566,7 +564,7 @@
             "pass": 0,
             "unknown": 0
           },
-          "subjects_evaluated": 2,
+          "subjects_evaluated": 0,
           "subjects_in_scope": {
             "counted_from": "change_unit",
             "excluded": [],
@@ -580,18 +578,24 @@
             "reason": null,
             "value": false
           },
-          "substituted_inputs": []
+          "substituted_inputs": [],
+          "evaluator_status_counts": {}
         },
         "verdict": {
-          "value": "fail",
-          "exit_code": 6,
+          "value": "met",
+          "reason": null,
           "computed_from": "status_counts",
           "stage": null
         },
-        "assurance_status": {
-          "value": "complete",
-          "reason": null,
-          "detail": null
+        "evidence_status": {
+          "value": "has_gaps",
+          "reasons": [
+            {
+              "reason": "no_assertion_required",
+              "stage": null,
+              "detail": "the stage was required to evaluate no assertion"
+            }
+          ]
         },
         "approvals": {
           "__unknown": true,
@@ -601,12 +605,6 @@
           "__unknown": true,
           "reason": "not_read_by_the_stage"
         }
-      },
-      "/verdict": {
-        "value": "fail",
-        "exit_code": 6,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
       },
       "/evidence_refs": [
         {
@@ -1055,13 +1053,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -1082,7 +1080,23 @@
           "source": null,
           "storage_uri": null
         }
-      ]
+      ],
+      "/verdict": {
+        "value": "not_met",
+        "reason": null,
+        "computed_from": "stage_precedence",
+        "stage": "plan"
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "no_assertion_required",
+            "stage": "pre_deploy",
+            "detail": "the stage was required to evaluate no assertion"
+          }
+        ]
+      }
     },
     "remove": [],
     "problems": [
@@ -1097,10 +1111,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/approvals": [
@@ -1124,11 +1138,11 @@
           "timestamp": "2026-10-29T00:23:59.760Z"
         }
       ],
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -1144,8 +1158,8 @@
     "name": "edited_plan_verdict",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/verdict/value": "pass",
-      "/stages/plan/verdict/exit_code": 0
+      "/stages/plan/verdict/value": "met",
+      "/stages/plan/verdict/reason": null
     },
     "remove": [],
     "problems": [
@@ -1164,8 +1178,8 @@
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/stages/plan/verdict/value": "pass",
-      "/stages/plan/verdict/exit_code": 0
+      "/stages/plan/verdict/value": "met",
+      "/stages/plan/verdict/reason": null
     },
     "remove": [],
     "problems": [
@@ -1204,10 +1218,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/subject/environment": "staging",
@@ -1234,11 +1248,11 @@
       ],
       "/change/digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e",
       "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e",
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -1310,8 +1324,28 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/events/3/evaluation/status": "fail",
-      "/stages/post_deploy/events/digest": "sha256:3f3d950f1861aa37e64a5ad94be4b8c3f7b283d9006b0eb5498cbf4b4c76f759",
-      "/evidence_refs/25/digest": "sha256:3f3d950f1861aa37e64a5ad94be4b8c3f7b283d9006b0eb5498cbf4b4c76f759"
+      "/stages/post_deploy/events/digest": "sha256:6649df60d1879152c6e103c01418b77297022ca97384e61aafa7a5b8101e99cb",
+      "/evidence_refs/25/digest": "sha256:6649df60d1879152c6e103c01418b77297022ca97384e61aafa7a5b8101e99cb",
+      "/stages/post_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "problems": [
@@ -1326,22 +1360,22 @@
     ]
   },
   {
-    "name": "plan_stage_owing_another_set_than_its_events",
+    "name": "plan_stage_requiring_another_set_than_its_events",
     "vector": "iac/local_run.json",
     "remove": [],
     "set": {
-      "/stages/plan/coverage/assertions_expected/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945"
+      "/stages/plan/coverage/assertions_required/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945"
     },
     "problems": [
       [
-        "stages.plan.coverage.assertions_expected",
+        "stages.plan.coverage.assertions_required",
         "does not describe the assertions of the stage's events"
       ]
     ]
   },
   {
-    "name": "plan_stage_owing_another_count_than_its_assertion_index",
+    "name": "plan_stage_requiring_another_count_than_its_assertion_index",
     "vector": "iac/local_run.json",
     "remove": [],
     "set": {
@@ -1349,7 +1383,7 @@
     },
     "problems": [
       [
-        "stages.plan.coverage.assertions_expected",
+        "stages.plan.coverage.assertions_required",
         "is not the count the stage gives its assertion index"
       ]
     ]
@@ -1360,26 +1394,30 @@
     "set": {
       "/stages/post_deploy/coverage/gaps": [],
       "/stages/post_deploy/verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/post_deploy/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/stages/post_deploy/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/verdict": {
-        "value": "fail",
-        "exit_code": 6,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/assurance_status": {
-        "value": "complete",
+        "value": "undecided",
         "reason": null,
-        "detail": null
+        "computed_from": "stage_precedence",
+        "stage": "pre_deploy"
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "no_resource_in_scope_for_any_check",
+            "stage": "plan",
+            "detail": "no required assertion had a subject in scope"
+          }
+        ]
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -1396,12 +1434,12 @@
           ]
         },
         "subjects_evaluated": 0,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "project_files",
           "required_assertion_digest": "sha256:7d5d9ce1e48c15697243245c759edbdfc0fad7fdf2794c3bc12f70dbbd23eea6"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 4,
         "subjects_per_assertion": {
           "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
           "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
@@ -1424,7 +1462,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 2,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       }
     },
     "remove": [],
@@ -1446,26 +1494,41 @@
         }
       ],
       "/stages/post_deploy/verdict": {
-        "value": "fail",
-        "exit_code": 6,
+        "value": "incomplete",
+        "reason": "not_evaluated",
         "computed_from": "status_counts",
         "stage": null
       },
-      "/stages/post_deploy/assurance_status": {
-        "value": "incomplete",
-        "reason": "state_not_read",
-        "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
+      "/stages/post_deploy/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "state_not_read",
+            "stage": null,
+            "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
+          }
+        ]
       },
       "/verdict": {
-        "value": "fail",
-        "exit_code": 6,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/assurance_status": {
         "value": "incomplete",
-        "reason": "state_not_read",
-        "detail": "post_deploy: the state after the apply was not read, so no outcome of the apply was held to it"
+        "reason": "not_evaluated",
+        "computed_from": "stage_precedence",
+        "stage": "post_deploy"
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "state_not_read",
+            "stage": "post_deploy",
+            "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
+          },
+          {
+            "reason": "no_resource_in_scope_for_any_check",
+            "stage": "plan",
+            "detail": "no required assertion had a subject in scope"
+          }
+        ]
       },
       "/coverage": {
         "subjects_in_scope": {
@@ -1482,12 +1545,12 @@
           ]
         },
         "subjects_evaluated": 0,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "project_files",
           "required_assertion_digest": "sha256:7d5d9ce1e48c15697243245c759edbdfc0fad7fdf2794c3bc12f70dbbd23eea6"
         },
-        "assertions_evaluated": 3,
+        "assertions_evaluated": 4,
         "subjects_per_assertion": {
           "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
           "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
@@ -1515,7 +1578,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 2,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       }
     },
     "remove": [],
@@ -1531,11 +1604,11 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/events/1/evaluation/status_reason": "state_not_read",
-      "/evidence_refs/18/digest": "sha256:cbd2ed35b5e8e4d13978b03be3f95e27d23f740b69d15dfb43ff7dac2f07ae3f",
-      "/evidence_refs/18/size_bytes": 5156,
+      "/evidence_refs/18/digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
+      "/evidence_refs/18/size_bytes": 5150,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:cbd2ed35b5e8e4d13978b03be3f95e27d23f740b69d15dfb43ff7dac2f07ae3f",
+        "digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -1552,11 +1625,11 @@
     "vector": "iac/local_run_state_not_read.json",
     "set": {
       "/events/1/evaluation/status_reason": "state_not_read",
-      "/evidence_refs/18/digest": "sha256:cbd2ed35b5e8e4d13978b03be3f95e27d23f740b69d15dfb43ff7dac2f07ae3f",
-      "/evidence_refs/18/size_bytes": 5156,
+      "/evidence_refs/18/digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
+      "/evidence_refs/18/size_bytes": 5150,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:cbd2ed35b5e8e4d13978b03be3f95e27d23f740b69d15dfb43ff7dac2f07ae3f",
+        "digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -1579,7 +1652,7 @@
     "problems": [
       [
         "stages.plan.coverage",
-        "does not count, for each reason, the verdicts of the stage it left undecided"
+        "does not count, for each reason, the verdicts of the stage that the reason left without a decision"
       ]
     ]
   },
@@ -1606,7 +1679,7 @@
     "problems": [
       [
         "stages.plan.coverage",
-        "does not count, for each reason, the verdicts of the stage it left undecided"
+        "does not count, for each reason, the verdicts of the stage that the reason left without a decision"
       ]
     ]
   },
@@ -1635,6 +1708,114 @@
       [
         "stages.plan.events.digest",
         "is not the digest of the stage's events"
+      ]
+    ]
+  },
+  {
+    "name": "plan_stage_counting_no_subject_for_assertions_its_events_evaluated",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/subjects_per_assertion": {
+        "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 0,
+        "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 0,
+        "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 0,
+        "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 0,
+        "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
+      }
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.coverage",
+        "does not count the assertions and subjects the stage's evaluations reached a result for, or the subjects each required assertion was evaluated about"
+      ],
+      [
+        "stages.plan.evidence_status",
+        "is not the status the stage's counts give"
+      ],
+      [
+        "coverage",
+        "is not the record's stages combined"
+      ]
+    ]
+  },
+  {
+    "name": "plan_stage_counting_more_assertions_evaluated_than_its_events_reached_a_result_for",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/assertions_evaluated": 6
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.coverage",
+        "does not count the assertions and subjects the stage's evaluations reached a result for, or the subjects each required assertion was evaluated about"
+      ],
+      [
+        "coverage",
+        "is not the record's stages combined"
+      ]
+    ]
+  },
+  {
+    "name": "plan_stage_counting_more_subjects_evaluated_than_its_events_reached_a_result_for",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/subjects_evaluated": 3
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.coverage",
+        "does not count the assertions and subjects the stage's evaluations reached a result for, or the subjects each required assertion was evaluated about"
+      ],
+      [
+        "coverage",
+        "is not the record's stages combined"
+      ]
+    ]
+  },
+  {
+    "name": "stage_whose_evaluator_status_counts_are_not_what_its_events_give",
+    "vector": "iac/local_run_scanned.json",
+    "set": {
+      "/stages/plan/coverage/evaluator_status_counts/checkov": {
+        "pass": 1,
+        "fail": 2,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      },
+      "/coverage/evaluator_status_counts/checkov": {
+        "pass": 1,
+        "fail": 2,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.coverage",
+        "does not count, for each evaluator, the statuses of the evaluations it gave"
+      ]
+    ]
+  },
+  {
+    "name": "record_whose_evaluator_status_counts_are_not_its_stages_combined",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/fail": 1
+    },
+    "remove": [],
+    "problems": [
+      [
+        "coverage",
+        "is not the record's stages combined"
       ]
     ]
   }

@@ -79,7 +79,7 @@
       "content_digest": null,
       "key_id": null
     },
-    "evaluator_binding": null,
+    "scanner_checks": null,
     "assertion_source": "contract_starter",
     "assertion_source_digest": "sha256:7d0e58fd64fad627fc20be7a6c45da5a483572aa79b977fd8b6cf86b2ad71d0a",
     "compiled_digest": "sha256:439bfafcbf6eb8464fde368da526000035441f72536dfe3c404dbd3e7febacaa",

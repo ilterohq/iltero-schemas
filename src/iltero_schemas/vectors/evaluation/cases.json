@@ -1520,8 +1520,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "server",
-        "trust": "attested"
+        "source": "server"
       }
     },
     "expected": {
@@ -1586,8 +1585,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "server",
-        "trust": "attested"
+        "source": "server"
       }
     },
     "expected": {
@@ -1620,8 +1618,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "server",
-        "trust": "attested"
+        "source": "server"
       }
     },
     "expected": {
@@ -1713,8 +1710,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "server",
-        "trust": "attested"
+        "source": "server"
       }
     },
     "expected": {
@@ -1747,8 +1743,7 @@
       },
       "reference_time": {
         "value": "2026-09-21T00:00:00.000Z",
-        "source": "server",
-        "trust": "attested"
+        "source": "server"
       }
     },
     "expected": {
@@ -3877,188 +3872,6 @@
       "reason": "assert: false; deployment.plan.artifact_digest equal is false",
       "unknown": null,
       "when": null
-    }
-  },
-  {
-    "name": "regression_without_deployment",
-    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
-    "input": {
-      "subject": {
-        "kind": "resource",
-        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "organization_scope": {
-        "environment": {
-          "name": "production",
-          "production": true
-        }
-      },
-      "assurance": {
-        "previous": {
-          "status": "pass"
-        },
-        "current": {
-          "status": "fail"
-        },
-        "since_previous": {
-          "deployments": [],
-          "exceptions": []
-        }
-      }
-    },
-    "expected": {
-      "status": "fail",
-      "reason": "assert: false; assurance.since_previous.deployments exists is false",
-      "unknown": null,
-      "when": "true"
-    }
-  },
-  {
-    "name": "regression_explained_by_deployment",
-    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
-    "input": {
-      "subject": {
-        "kind": "resource",
-        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "organization_scope": {
-        "environment": {
-          "name": "production",
-          "production": true
-        }
-      },
-      "assurance": {
-        "previous": {
-          "status": "pass"
-        },
-        "current": {
-          "status": "fail"
-        },
-        "since_previous": {
-          "deployments": [
-            {
-              "id": "dep_1"
-            }
-          ],
-          "exceptions": []
-        }
-      }
-    },
-    "expected": {
-      "status": "pass",
-      "reason": "assert: true",
-      "unknown": null,
-      "when": "true"
-    }
-  },
-  {
-    "name": "regression_explained_by_approved_exception",
-    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
-    "input": {
-      "subject": {
-        "kind": "resource",
-        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "organization_scope": {
-        "environment": {
-          "name": "production",
-          "production": true
-        }
-      },
-      "assurance": {
-        "previous": {
-          "status": "pass"
-        },
-        "current": {
-          "status": "fail"
-        },
-        "since_previous": {
-          "deployments": [],
-          "exceptions": [
-            {
-              "status": "approved"
-            }
-          ]
-        }
-      }
-    },
-    "expected": {
-      "status": "pass",
-      "reason": "assert: true",
-      "unknown": null,
-      "when": "true"
-    }
-  },
-  {
-    "name": "rejected_exception_does_not_explain",
-    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
-    "input": {
-      "subject": {
-        "kind": "resource",
-        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "organization_scope": {
-        "environment": {
-          "name": "production",
-          "production": true
-        }
-      },
-      "assurance": {
-        "previous": {
-          "status": "pass"
-        },
-        "current": {
-          "status": "fail"
-        },
-        "since_previous": {
-          "deployments": [],
-          "exceptions": [
-            {
-              "status": "rejected"
-            }
-          ]
-        }
-      }
-    },
-    "expected": {
-      "status": "fail",
-      "reason": "assert: false; assurance.since_previous.deployments exists is false",
-      "unknown": null,
-      "when": "true"
-    }
-  },
-  {
-    "name": "no_regression",
-    "assertion": "ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION",
-    "input": {
-      "subject": {
-        "kind": "resource",
-        "key": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-      },
-      "organization_scope": {
-        "environment": {
-          "name": "production",
-          "production": true
-        }
-      },
-      "assurance": {
-        "previous": {
-          "status": "pass"
-        },
-        "current": {
-          "status": "pass"
-        },
-        "since_previous": {
-          "deployments": [],
-          "exceptions": []
-        }
-      }
-    },
-    "expected": {
-      "status": "not_applicable",
-      "reason": "when: false",
-      "unknown": null,
-      "when": "false"
     }
   },
   {
@@ -8356,9 +8169,7 @@
       },
       "reference_time": {
         "value": "2026-11-02T09:00:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -8472,9 +8283,7 @@
       },
       "reference_time": {
         "value": "2026-11-02T09:00:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -8575,9 +8384,7 @@
       },
       "reference_time": {
         "value": "2026-11-02T09:00:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "source": {
         "vcs": "git",
@@ -9220,9 +9027,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -9403,9 +9208,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -9586,9 +9389,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -9773,9 +9574,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -9967,9 +9766,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -10353,9 +10150,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -10536,9 +10331,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -10705,9 +10498,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -10883,9 +10674,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -11061,9 +10850,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -11230,9 +11017,7 @@
       },
       "reference_time": {
         "value": "2026-09-16T18:30:00Z",
-        "source": "server",
-        "trust": "attested",
-        "time_window": null
+        "source": "server"
       },
       "source": {
         "vcs": "git",
@@ -11390,9 +11175,7 @@
       },
       "reference_time": {
         "value": "2026-11-02T09:00:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "source": {
         "vcs": "git",

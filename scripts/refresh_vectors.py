@@ -8,13 +8,12 @@ them. Canonical vectors: the canonical bytes and digest of each value in
 ``src/iltero_schemas/vectors/canonical/values.json``, of each plan in
 ``canonical/iac/plan_values.json``, and of every case of the assertion-set and
 change digests, from the inputs each case names. Document vectors: the digest
-of every binding set under ``vectors/binding_sets``, every context under
+of every scanner check mapping under ``vectors/scanner_check_mappings``, every context under
 ``vectors/contexts``, every event under ``vectors/events``, every identity
 document under ``vectors/identities``, every record under ``vectors/records``,
 every verification report under ``vectors/reports`` and every set of scanner
 observations under ``vectors/scanner_observations``, each validated against
-its model first. Each document folder but ``binding_sets``, ``identities``
-and ``scanner_observations`` keeps its documents in the ``iac/`` or
+its model first. Each document folder but ``identities`` keeps its documents in the ``iac/`` or
 ``image/`` subfolder of their change type; the folder's one ``digests.json`` names each
 document by its path from the folder. A ``digests.json`` this script does not
 write is reported.
@@ -46,13 +45,13 @@ from iltero_schemas.canonical import (
     plan_digest,
 )
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile
-from iltero_schemas.models.binding import EvaluatorBindingSet
-from iltero_schemas.models.car import CAR
-from iltero_schemas.models.context import AssuranceContext
-from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.context import AssuranceContext
+from iltero_schemas.models.common.event import AssuranceEvent
+from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
+from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
-from iltero_schemas.models.verification import VerificationReport
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "iltero_schemas"
@@ -62,7 +61,7 @@ COMPILER_VECTORS = VECTORS / "compiler"
 CANONICAL_VECTORS = VECTORS / "canonical"
 # Each folder holds one kind of document, and one digests.json that lists them all.
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
-    VECTORS / "binding_sets": EvaluatorBindingSet,
+    VECTORS / "scanner_check_mappings": ScannerCheckMapping,
     VECTORS / "contexts": AssuranceContext,
     VECTORS / "events": AssuranceEvent,
     VECTORS / "identities": ResourceIdentities,

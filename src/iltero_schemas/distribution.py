@@ -28,7 +28,7 @@ from importlib.metadata import Distribution, PackageNotFoundError, distribution
 from pathlib import Path, PurePosixPath
 from typing import Literal
 
-from iltero_schemas.canonical.encoding import digest
+from iltero_schemas.canonical.common.encoding import digest
 
 DISTRIBUTION_NAME = "iltero-schemas"
 PACKAGE_DIRECTORY = "iltero_schemas/"

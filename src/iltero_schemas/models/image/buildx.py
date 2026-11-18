@@ -19,8 +19,8 @@ from __future__ import annotations
 import re
 from typing import Any, NamedTuple
 
-from iltero_schemas.models.fields import COMMIT_PATTERN, DIGEST_PATTERN
-from iltero_schemas.models.strict_json import strict_json
+from iltero_schemas.models.common.fields import DIGEST_PATTERN, GIT_OBJECT_ID_PATTERN
+from iltero_schemas.models.common.strict_json import strict_json
 
 # The keys Buildx writes in its metadata file.
 _IMAGE_DIGEST = "containerimage.digest"
@@ -29,7 +29,7 @@ _IMAGE_NAMES = "image.name"
 _PROVENANCE = "buildx.build.provenance"
 # Larger than any metadata file Buildx writes, which a reader refuses before parsing it.
 MAX_METADATA_BYTES = 1_048_576
-_COMMIT = re.compile(COMMIT_PATTERN)
+_COMMIT = re.compile(GIT_OBJECT_ID_PATTERN)
 _DIGEST = re.compile(DIGEST_PATTERN)
 
 

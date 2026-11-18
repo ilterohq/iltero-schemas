@@ -9,8 +9,8 @@ inside ``exists.where`` and is handled by the parser.
 
 from __future__ import annotations
 
-from iltero_schemas.models.assertion import Stage, TargetKind
-from iltero_schemas.models.change_type import ChangeTypeName
+from iltero_schemas.models.common.assertion import Stage, TargetKind
+from iltero_schemas.models.common.change_type import ChangeTypeName
 from iltero_schemas.profiles import roots_for
 
 ITEM_ROOT = "item"

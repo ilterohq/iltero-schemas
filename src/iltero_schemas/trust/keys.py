@@ -40,9 +40,9 @@ from importlib import resources
 from types import MappingProxyType
 from typing import Any, Literal, cast
 
-from iltero_schemas.canonical.encoding import digest
-from iltero_schemas.models.base import API_VERSION as API_VERSION
-from iltero_schemas.models.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
+from iltero_schemas.canonical.common.encoding import digest
+from iltero_schemas.models.common.base import API_VERSION as API_VERSION
+from iltero_schemas.models.common.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
 
 TRUST_FILE_KIND = "BundleSigningKeys"
 # Local development keys carry this prefix, and only a development tool accepts them.

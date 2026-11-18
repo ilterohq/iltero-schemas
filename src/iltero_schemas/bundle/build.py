@@ -42,8 +42,8 @@ from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of, required_assertion_digest
 from iltero_schemas.compiler import COMPILER_VERSION, PACKAGE_PREFIX, compile
-from iltero_schemas.models.assertion import VERSION_PATTERN
-from iltero_schemas.models.bundle import API_VERSION, BUNDLE_KIND, KIND, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
+from iltero_schemas.models.common.assertion import VERSION_PATTERN
+from iltero_schemas.models.common.bundle import API_VERSION, BUNDLE_KIND, KIND, MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 
 MANIFEST = ".manifest"

@@ -16,8 +16,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 
-from iltero_schemas.models.assertion import COMBINATIONS, Stage, TargetKind
-from iltero_schemas.models.change_type import (
+from iltero_schemas.models.common.assertion import COMBINATIONS, Stage, TargetKind
+from iltero_schemas.models.common.change_type import (
     CHANGE_TYPE_OF,
     CHECKED_CONTENT_KIND_OF,
     IAC_CHANGE_ACTIVITY,

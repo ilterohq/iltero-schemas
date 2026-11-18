@@ -10,10 +10,15 @@
   },
   "trust_level": "self_attested",
   "compliance_determination": null,
-  "assurance_status": {
-    "value": "incomplete",
-    "reason": "upstream_state_unavailable",
-    "detail": "plan: upstream inputs replaced with placeholders: 1"
+  "evidence_status": {
+    "value": "has_gaps",
+    "reasons": [
+      {
+        "reason": "upstream_state_unavailable",
+        "stage": "plan",
+        "detail": "upstream inputs replaced with placeholders: 1"
+      }
+    ]
   },
   "change": {
     "activity": "iac_change",
@@ -36,7 +41,7 @@
     "drift_check": null
   },
   "units_file": null,
-  "complete": false,
+  "all_expected_stages_reported": false,
   "coverage": {
     "subjects_in_scope": {
       "value": 20,
@@ -46,7 +51,7 @@
       "excluded": []
     },
     "subjects_evaluated": 2,
-    "assertions_expected": {
+    "assertions_required": {
       "value": 5,
       "origin": "project_files",
       "required_assertion_digest": "sha256:38b03a6ba0f6e2df062a25439ec99befb07a04e4cec2a2cf7d4d7a80064651bd"
@@ -81,7 +86,17 @@
         "source": "data.terraform_remote_state.network",
         "stage": "plan"
       }
-    ]
+    ],
+    "evaluator_status_counts": {
+      "opa": {
+        "pass": 4,
+        "fail": 0,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    }
   },
   "events": [
     {
@@ -123,7 +138,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
         "compiler": {
@@ -220,7 +235,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
         "compiler": {
@@ -359,7 +374,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
         "compiler": {
@@ -456,7 +471,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
         "compiler": {
@@ -557,7 +572,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "facts_source": null,
         "compiled_digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
         "compiler": {
@@ -1063,13 +1078,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:7ee87ed4f8164dae3110c5893915c586e304760ac67111a668d8296202713417",
+      "digest": "sha256:fea0d43fe96a1cbbcecc1a87b9b95d8298f3cd97ecc6fefd4588cdca890b960d",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 11603,
+      "size_bytes": 11588,
       "source": null,
       "storage_uri": null
     }
@@ -1109,7 +1124,7 @@
       },
       "events": {
         "count": 5,
-        "digest": "sha256:7ee87ed4f8164dae3110c5893915c586e304760ac67111a668d8296202713417",
+        "digest": "sha256:fea0d43fe96a1cbbcecc1a87b9b95d8298f3cd97ecc6fefd4588cdca890b960d",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1584,10 +1599,8 @@
         ]
       },
       "reference_time": {
-        "source": "runner_clock",
-        "trust": "asserted",
         "value": "2026-09-22T13:00:13.568Z",
-        "time_window": null
+        "source": "runner_clock"
       },
       "stage": "plan",
       "scanners": null,
@@ -1596,7 +1609,7 @@
       "resource_redaction": null,
       "coverage": {
         "assertions_evaluated": 5,
-        "assertions_expected": {
+        "assertions_required": {
           "origin": "project_files",
           "required_assertion_digest": "sha256:dabda96d009781399fb2d31ee624a427e07d62123600227083e37b25380f1edd",
           "value": 5
@@ -1638,18 +1651,33 @@
             "source": "data.terraform_remote_state.network",
             "stage": null
           }
-        ]
+        ],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 4,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "incomplete",
-        "reason": "upstream_state_unavailable",
-        "detail": "upstream inputs replaced with placeholders: 1"
+      "evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "upstream_state_unavailable",
+            "stage": null,
+            "detail": "upstream inputs replaced with placeholders: 1"
+          }
+        ]
       },
       "approvals": null,
       "commit_review": null
@@ -1670,12 +1698,16 @@
       "repository": null,
       "pull_request": null
     },
-    "unit": "root"
+    "unit": "root",
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
+    }
   },
   "unit": "root",
   "verdict": {
-    "value": "indeterminate",
-    "exit_code": 3,
+    "value": "undecided",
+    "reason": null,
     "computed_from": "stage_precedence",
     "stage": "plan"
   }

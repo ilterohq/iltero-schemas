@@ -10,9 +10,9 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR
-from iltero_schemas.models.checked_content import CheckedPlan
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.iac.drift_check import TOOLS_WITH_DRIFT_READER
 from tests.records import RECORD, iac_change
 
@@ -33,7 +33,7 @@ def test_the_post_verify_stage_is_not_supported_only_for_a_tool_whose_drift_no_p
     assert TOOLS_WITH_DRIFT_READER == {"terraform"}
 
 
-def test_every_stage_of_an_infrastructure_change_owes_its_record_and_post_deploy_its_resource_identities() -> None:
+def test_every_stage_of_an_infrastructure_change_keeps_its_record_and_post_deploy_its_resource_identities() -> None:
     assert dict(IAC_CHANGE.required_documents) == {
         Stage.PLAN: ("record",),
         Stage.PRE_DEPLOY: ("record",),

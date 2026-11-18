@@ -10,48 +10,68 @@
   },
   "record": {
     "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
-    "digest": "sha256:c516b0641be8745d6f846b728d370c66189d9b25ebd153ea0325b8c9a9e8f12d"
+    "digest": "sha256:ecb9bf065f2928754413d520b082ad02f97cc0d396577a0d3e6d87ef5ea790a1"
   },
   "properties": {
     "integrity": {
-      "state": "client_asserted",
-      "reason": "file_digests"
+      "state": "claimed_by_record",
+      "reason": "file_digests",
+      "detail": null
     },
     "source_identity": {
       "state": "not_performed",
-      "reason": "run_opened_locally"
+      "reason": "run_opened_locally",
+      "detail": null
     },
     "approval_identity": {
-      "state": "not_assessed",
-      "reason": "pre_deploy_pending"
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
     },
     "bundle_provenance": {
       "state": "not_performed",
-      "reason": "local_assertions"
+      "reason": "local_assertions",
+      "detail": null
     },
     "stage_completeness": {
       "state": "not_assessed",
-      "reason": "stages_pending"
+      "reason": "stages_pending",
+      "detail": null
     },
     "plan_apply_match": {
       "state": "not_performed",
-      "reason": "no_post_deploy_stage"
+      "reason": "no_post_deploy_stage",
+      "detail": null
     },
     "runtime_verification": {
       "state": "not_assessed",
-      "reason": "stage_pending"
+      "reason": "stage_pending",
+      "detail": null
     },
     "deployment_coverage": {
       "state": "not_assessed",
-      "reason": null
+      "reason": null,
+      "detail": null
     },
     "exceptions": {
-      "state": "not_assessed",
-      "reason": "pre_deploy_pending"
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
     },
     "commit_review": {
-      "state": "not_assessed",
-      "reason": "pre_deploy_pending"
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "reference_time": {
+      "state": "not_performed",
+      "reason": "runner_clock",
+      "detail": null
+    },
+    "evaluator_binary": {
+      "state": "failed",
+      "reason": "other_binary_named",
+      "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (4 more problems)"
     }
   }
 }

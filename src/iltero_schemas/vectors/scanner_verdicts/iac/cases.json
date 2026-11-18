@@ -1,0 +1,182 @@
+[
+  {
+    "name": "trivy_failure_fails_its_resource",
+    "scanner_checks": {
+      "tool": "trivy",
+      "stage": "plan",
+      "rule_ids": [
+        "AWS-0107"
+      ],
+      "tool_version_constraint": ">=0.72,<1",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "ingress"
+      ]
+    },
+    "observations": "open_ssh_trivy.json",
+    "subject": "aws_security_group.open",
+    "status": "fail",
+    "status_reason": null
+  },
+  {
+    "name": "trivy_silence_after_a_pass_of_the_mapped_check_is_no_result",
+    "scanner_checks": {
+      "tool": "trivy",
+      "stage": "plan",
+      "rule_ids": [
+        "AWS-0104"
+      ],
+      "tool_version_constraint": ">=0.72,<1",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "ingress"
+      ]
+    },
+    "observations": "open_ssh_trivy.json",
+    "subject": "aws_security_group.open",
+    "status": "not_evaluated",
+    "status_reason": "tool_reports_only_failures"
+  },
+  {
+    "name": "trivy_pass_naming_the_subjects_resource_decides_nothing",
+    "scanner_checks": {
+      "tool": "trivy",
+      "stage": "plan",
+      "rule_ids": [
+        "AWS-0107"
+      ],
+      "tool_version_constraint": ">=0.72,<1",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "ingress"
+      ]
+    },
+    "observations": "hand_written_pass_naming_a_resource_trivy.json",
+    "subject": "aws_security_group.open",
+    "status": "not_evaluated",
+    "status_reason": "tool_reports_only_failures"
+  },
+  {
+    "name": "trivy_given_a_state_file_holds_no_result_of_the_mapped_check",
+    "scanner_checks": {
+      "tool": "trivy",
+      "stage": "plan",
+      "rule_ids": [
+        "AWS-0107"
+      ],
+      "tool_version_constraint": ">=0.72,<1",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "ingress"
+      ]
+    },
+    "observations": "open_ssh_state_given_trivy.json",
+    "subject": "aws_security_group.open",
+    "status": "not_evaluated",
+    "status_reason": "no_result_of_the_mapped_checks"
+  },
+  {
+    "name": "checkov_report_with_no_result_at_all_evaluates_no_subject",
+    "scanner_checks": {
+      "tool": "checkov",
+      "stage": "plan",
+      "rule_ids": [
+        "CKV_AWS_24"
+      ],
+      "tool_version_constraint": ">=3,<4",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "ingress"
+      ]
+    },
+    "observations": "no_change_checkov.json",
+    "subject": "aws_security_group.open",
+    "status": "not_evaluated",
+    "status_reason": "no_result_in_the_report"
+  },
+  {
+    "name": "checkov_quiet_report_failure_still_fails_its_resource",
+    "scanner_checks": {
+      "tool": "checkov",
+      "stage": "plan",
+      "rule_ids": [
+        "CKV_AWS_16"
+      ],
+      "tool_version_constraint": ">=3,<4",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "storage_encrypted"
+      ]
+    },
+    "observations": "rds_quiet_checkov.json",
+    "subject": "aws_db_instance.noncompliant",
+    "status": "fail",
+    "status_reason": null
+  },
+  {
+    "name": "checkov_quiet_report_leaves_a_resource_with_no_listed_failure_unknown",
+    "scanner_checks": {
+      "tool": "checkov",
+      "stage": "plan",
+      "rule_ids": [
+        "CKV_AWS_16"
+      ],
+      "tool_version_constraint": ">=3,<4",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "storage_encrypted"
+      ]
+    },
+    "observations": "rds_quiet_checkov.json",
+    "subject": "aws_db_instance.compliant",
+    "status": "unknown",
+    "status_reason": "scanner_report_incomplete"
+  },
+  {
+    "name": "checkov_quiet_report_whose_checks_all_passed_is_not_one_that_checked_nothing",
+    "scanner_checks": {
+      "tool": "checkov",
+      "stage": "plan",
+      "rule_ids": [
+        "CKV_AWS_226"
+      ],
+      "tool_version_constraint": ">=3,<4",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "auto_minor_version_upgrade"
+      ]
+    },
+    "observations": "rds_quiet_all_passing_checkov.json",
+    "subject": "aws_db_instance.compliant",
+    "status": "unknown",
+    "status_reason": "scanner_report_incomplete"
+  },
+  {
+    "name": "checkov_quiet_report_leaves_a_skip_asked_in_the_source_unknown",
+    "scanner_checks": {
+      "tool": "checkov",
+      "stage": "plan",
+      "rule_ids": [
+        "CKV_AWS_16"
+      ],
+      "tool_version_constraint": ">=3,<4",
+      "input_kind": "plan",
+      "subject_match": "exact_address",
+      "paths_read": [
+        "storage_encrypted"
+      ]
+    },
+    "observations": "rds_skipped_quiet_checkov.json",
+    "subject": "aws_db_instance.noncompliant",
+    "status": "unknown",
+    "status_reason": "scanner_report_incomplete"
+  }
+]

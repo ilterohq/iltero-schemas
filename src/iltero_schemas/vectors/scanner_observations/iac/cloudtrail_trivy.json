@@ -308,6 +308,7 @@
       "unresolved_reason": null
     }
   ],
+  "results_not_listed": null,
   "rules_digest": null,
   "supplied_by": "pipeline",
   "tool": "trivy",

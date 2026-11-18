@@ -1,8 +1,8 @@
 """Why a resource of a plan is left out of the subjects a stage evaluates, decided from the plan alone.
 
 A stage evaluates every resource of the plan it kept except those it leaves out, and it says why for each one
-(``models.coverage.Excluded``). ``exclusion_reason`` gives that reason from the resource's own entry in the plan, so
-the writer and every reader decide it the same way: a resource any of whose naming fields is not text was redacted
+(``models.common.coverage.Excluded``). ``exclusion_reason`` gives that reason from the resource's own entry in the plan,
+so the writer and every reader decide it the same way: a resource any of whose naming fields is not text was redacted
 (``identity_redacted``), whatever its other naming fields hold; one whose naming fields are text too long, empty or
 holding control characters, or whose provider has no short name an assertion can target, cannot be named
 (``identity_unnameable``); one the
@@ -17,12 +17,12 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Any
 
-from iltero_schemas.models.assertion import CONTROL_CHARACTERS, PROVIDER_MAX_LENGTH, PROVIDER_PATTERN
-from iltero_schemas.models.coverage import ExclusionReason
-from iltero_schemas.models.fields import ADDRESS_MAX_LENGTH, IDENTIFIER_MAX_LENGTH
+from iltero_schemas.models.common.assertion import CONTROL_CHARACTERS, PROVIDER_MAX_LENGTH, PROVIDER_PATTERN
+from iltero_schemas.models.common.coverage import ExclusionReason
+from iltero_schemas.models.common.fields import ADDRESS_MAX_LENGTH, IDENTIFIER_MAX_LENGTH
+from iltero_schemas.models.common.redaction import is_redaction_marker
 from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.iac.tools.variants import PLAN_NAMING, PlanNaming
-from iltero_schemas.models.redaction import is_redaction_marker
 
 # The longest text each naming field holds.
 NAMING_FIELD_MAX_LENGTHS: Mapping[str, int] = MappingProxyType(

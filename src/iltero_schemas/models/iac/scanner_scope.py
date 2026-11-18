@@ -8,7 +8,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from iltero_schemas.models.coverage import IDENTITY_REASONS, Excluded
+from iltero_schemas.models.common.coverage import IDENTITY_REASONS, Excluded
 from iltero_schemas.models.iac.plan_exclusions import exclusion_reason
 from iltero_schemas.models.iac.plan_relations import plan_configures
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths

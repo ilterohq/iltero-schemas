@@ -1,0 +1,626 @@
+"""The conformance vectors are reproduced by this implementation.
+
+A consumer that reproduces these files is conformant: canonical bytes and
+digests, the AST and digest of every assertion, the compiled module bytes,
+and the rejection path of every invalid document. The evaluation vectors run
+each compiled module under the pinned evaluator with the capabilities
+allowlist and compare the result.
+"""
+
+from __future__ import annotations
+
+import json
+import subprocess
+from pathlib import Path
+from typing import Any
+
+import pytest
+from pydantic import BaseModel
+
+from iltero_schemas.ast import AssertionSyntaxError, parse, source_digest, to_json
+from iltero_schemas.ast.parse import parse_document
+from iltero_schemas.bundle.build import member
+from iltero_schemas.canonical import (
+    CANONICALIZATION,
+    PLAN_DIGEST_VERSIONS,
+    canonical_assertion_set_bytes,
+    canonical_bytes,
+    canonical_change_bytes,
+    canonical_plan_bytes,
+    change_digest,
+    digest,
+    digest_of,
+    plan_digest,
+    record_uuid,
+    required_assertion_digest,
+)
+from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, package_of
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.context import AssuranceContext
+from iltero_schemas.models.common.event import AssuranceEvent, events_file_bytes
+from iltero_schemas.models.common.reference_time import ReferenceTime
+from iltero_schemas.models.common.verification import VerificationReport
+from iltero_schemas.models.iac.resource_identities import ResourceIdentities
+from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
+from iltero_schemas.models.iac.scanner_observations import ScannerObservations
+from iltero_schemas.models.iac.scanner_reports.checkov import read_checkov
+from iltero_schemas.models.iac.scanner_reports.common import Source
+from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
+from iltero_schemas.opa import CAPABILITIES
+from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
+from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, STARTER_ASSERTIONS, VECTORS, documents, visible
+
+COMPILER = VECTORS / "compiler"
+ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
+CANONICAL_CASES = json.loads((VECTORS / "canonical" / "cases.json").read_text(encoding="utf-8"))
+PLAN_DIGEST_DOCUMENT = json.loads(
+    (VECTORS / "canonical" / "iac" / "plan_digest_cases.json").read_text(encoding="utf-8")
+)
+ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.json").read_text(encoding="utf-8"))
+CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
+EVALUATION_CASES = json.loads((VECTORS / "evaluation" / "cases.json").read_text(encoding="utf-8"))
+FACTS_UNKNOWN = json.loads((VECTORS / "evaluation" / "facts_unknown.json").read_text(encoding="utf-8"))
+APPROVALS = json.loads((VECTORS / "evaluation" / "approvals.json").read_text(encoding="utf-8"))
+INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json").read_text(encoding="utf-8"))
+# Each folder holds one kind of document.
+DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
+    "scanner_check_mappings": ScannerCheckMapping,
+    "contexts": AssuranceContext,
+    "events": AssuranceEvent,
+    "identities": ResourceIdentities,
+    "records": CAR,
+    "reports": VerificationReport,
+    "scanner_observations": ScannerObservations,
+}
+# Every document folder but scanner check mappings and identities, and every folder of their cases, holds one subfolder
+# per change type it has documents of; events are of IaC changes only. A document folder also holds its one
+# digests.json.
+SPLIT_FOLDERS = {folder: set(CHANGE_TYPES) for folder in ("contexts", "records", "reports", *SPLIT_CASE_FOLDERS)} | {
+    folder: {"iac"}
+    for folder in (
+        "events",
+        "scanner_check_mappings",
+        "scanner_check_mappings_invalid",
+        "scanner_check_mappings_project_invalid",
+        "scanner_observations",
+        "scanner_reports",
+        "scanner_evidence",
+    )
+}
+DIGESTS_FILE = "digests.json"
+# Each document by its folder and its path from that folder.
+DOCUMENT_FILES = sorted(
+    (folder, path.relative_to(VECTORS / folder).as_posix()) for folder in DOCUMENT_MODELS for path in documents(folder)
+)
+
+
+# The three state assertions of the plan-stage scenario the context vector describes.
+CONTEXT_SCENARIO = (
+    "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED",
+    "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+    "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
+)
+
+
+def _name(path: Path) -> str:
+    return path.stem
+
+
+@pytest.mark.parametrize("case", CANONICAL_CASES, ids=[c["name"] for c in CANONICAL_CASES])
+def test_canonical_vector_is_reproduced(case: dict[str, Any]) -> None:
+    encoded = canonical_bytes(case["value"])
+    assert encoded.decode("utf-8") == case["canonical"]
+    assert digest(encoded) == case["digest"]
+
+
+@pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
+def test_plan_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    assert canonical_plan_bytes(case["tool"], case["plan"]).decode("utf-8") == case["canonical"]
+    assert plan_digest(case["tool"], case["plan"]) == case["digest"]
+
+
+@pytest.mark.parametrize("case", ASSERTION_SET_CASES["cases"], ids=[c["name"] for c in ASSERTION_SET_CASES["cases"]])
+def test_required_assertion_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    triples = [tuple(triple) for triple in case["assertions"]]
+    assert canonical_assertion_set_bytes(triples).decode("utf-8") == case["canonical"]
+    assert required_assertion_digest(tuple(triple) for triple in case["assertions"]) == case["digest"]
+
+
+@pytest.mark.parametrize("case", CHANGE_DIGEST_CASES["cases"], ids=[c["name"] for c in CHANGE_DIGEST_CASES["cases"]])
+def test_change_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    parts = (case["change_type"], case["unit"], case["environment_key"], case["checked_content"])
+    assert canonical_change_bytes(*parts).decode("utf-8") == case["canonical"]
+    assert change_digest(*parts) == case["digest"]
+
+
+def test_each_part_of_a_change_gives_another_change_digest() -> None:
+    digests = [case["digest"] for case in CHANGE_DIGEST_CASES["cases"]]
+    assert len(set(digests)) == len(digests)
+
+
+def test_the_reversed_starter_set_names_the_same_assertions_in_reverse() -> None:
+    cases = {case["name"]: case for case in ASSERTION_SET_CASES["cases"]}
+    assert cases["starter_set_reversed"]["assertions"] == cases["starter_set"]["assertions"][::-1]
+    assert cases["starter_set_reversed"]["digest"] == cases["starter_set"]["digest"]
+
+
+def test_the_starter_set_vector_holds_every_starter_assertion() -> None:
+    starter = next(c for c in ASSERTION_SET_CASES["cases"] if c["name"] == "starter_set")
+    assert sorted(tuple(triple) for triple in starter["assertions"]) == sorted(
+        (shipped.id, shipped.version, shipped.digest)
+        for shipped in (member(path.read_text(encoding="utf-8")) for path in STARTER_ASSERTIONS.glob("*.yaml"))
+    )
+
+
+def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
+    context = json.loads((VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text(encoding="utf-8"))
+    environment = context["organization_scope"]["environment"]
+    key = environment["name"] if environment is not None else None
+    plan = context["plan"]
+    checked = {"kind": "plan", "digest": plan["digest"], "digest_version": plan["digest_version"], "tool": plan["tool"]}
+    assert context["change"]["digest"] == change_digest("iac_change", "root", key, checked)
+
+
+@pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
+def test_plan_digest_vectors_record_the_current_version_of_their_tool(case: dict[str, Any]) -> None:
+    assert case["version"] == PLAN_DIGEST_VERSIONS[case["tool"]]
+
+
+def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:
+    assert (COMPILER / "COMPILER_VERSION").read_text(encoding="utf-8") == f"{COMPILER_VERSION}\n"
+    assert (COMPILER / "RUNTIME.digest").read_text(encoding="utf-8") == f"{digest(RUNTIME_REGO.encode('utf-8'))}\n"
+
+
+def test_the_vectors_ship_inside_the_package() -> None:
+    assert PACKAGED_VECTORS.joinpath("compiler", "COMPILER_VERSION").is_file()
+    assert PACKAGED_VECTORS.joinpath("evaluation", "cases.json").is_file()
+
+
+@pytest.mark.parametrize("path", ASSERTION_FILES, ids=_name)
+def test_ast_and_source_digest_are_reproduced(path: Path) -> None:
+    assertion = parse(path.read_text(encoding="utf-8"))
+    expected = json.loads((COMPILER / f"{path.stem}.ast.json").read_text(encoding="utf-8"))
+    assert to_json(assertion) == expected
+    assert source_digest(assertion) == (COMPILER / f"{path.stem}.digest").read_text(encoding="utf-8").strip()
+
+
+@pytest.mark.parametrize("path", ASSERTION_FILES, ids=_name)
+def test_compiled_module_is_byte_identical(path: Path) -> None:
+    module = compile(parse(path.read_text(encoding="utf-8")))
+    assert module.source == (COMPILER / f"{path.stem}.rego").read_bytes()
+    assert module.digest == (COMPILER / f"{path.stem}.rego.digest").read_text(encoding="utf-8").strip()
+    assert module.assertion_id == path.stem
+    assert module.package == package_of(path.stem)
+
+
+def test_every_compiled_vector_has_its_source_and_nothing_else() -> None:
+    stems = {p.stem for p in ASSERTION_FILES}
+    generated = {p.name for p in visible(COMPILER)} - {"COMPILER_VERSION", "RUNTIME.digest"}
+    assert generated == {f"{s}{suffix}" for s in stems for suffix in (".ast.json", ".digest", ".rego", ".rego.digest")}
+
+
+@pytest.mark.parametrize("name", sorted(INVALID_EXPECTED), ids=str)
+def test_invalid_document_is_rejected_at_the_expected_path(name: str) -> None:
+    text = (VECTORS / "assertions_invalid" / f"{name}.yaml").read_text(encoding="utf-8")
+    with pytest.raises(AssertionSyntaxError) as raised:
+        parse(text)
+    assert raised.value.issues[0].path == INVALID_EXPECTED[name]["path"]
+    assert INVALID_EXPECTED[name]["message"] in raised.value.issues[0].message
+
+
+def test_every_invalid_document_is_listed() -> None:
+    assert {p.stem for p in (VECTORS / "assertions_invalid").glob("*.yaml")} == set(INVALID_EXPECTED)
+
+
+@pytest.mark.parametrize(("folder", "path"), DOCUMENT_FILES, ids=str)
+def test_document_vector_validates_and_its_digest_is_reproduced(folder: str, path: str) -> None:
+    file = VECTORS / folder / path
+    document = json.loads(file.read_text(encoding="utf-8"))
+    DOCUMENT_MODELS[folder].model_validate(document)
+    digests = json.loads((VECTORS / folder / DIGESTS_FILE).read_text(encoding="utf-8"))
+    assert digest_of(document) == digests[path]
+
+
+@pytest.mark.parametrize(("folder", "path"), DOCUMENT_FILES, ids=str)
+def test_document_vector_is_written_as_its_model_dumps_it(folder: str, path: str) -> None:
+    # One form per document: every optional field written, null when it has no value.
+    document = json.loads((VECTORS / folder / path).read_text(encoding="utf-8"))
+    dumped = DOCUMENT_MODELS[folder].model_validate(document).model_dump(mode="json", by_alias=True)
+    assert canonical_bytes(document) == canonical_bytes(dumped)
+
+
+@pytest.mark.parametrize(
+    ("report", "vector"),
+    [
+        ("image/verification_report_build.json", "image/local_run_build.json"),
+        ("iac/verification_report.json", "iac/local_run.json"),
+    ],
+)
+def test_a_report_vector_names_its_record_by_id_and_digest(report: str, vector: str) -> None:
+    named = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
+    record = json.loads((VECTORS / "records" / vector).read_text(encoding="utf-8"))
+    digests = json.loads((VECTORS / "records" / DIGESTS_FILE).read_text(encoding="utf-8"))
+    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digests[vector]}
+
+
+@pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
+def test_each_stage_names_its_events_file_by_the_digest_of_its_events(path: Path) -> None:
+    record = CAR.model_validate(json.loads(path.read_text(encoding="utf-8")))
+    register = {ref.path: ref for ref in record.evidence_refs}
+    for stage, kept in record.stages.items():
+        data = events_file_bytes([event for event in record.events if event.evaluation.stage is stage])
+        entry = register[kept.events.path]
+        assert kept.events.digest == entry.digest == digest(data), stage
+        assert (entry.size_bytes, entry.canonicalization) == (len(data), CANONICALIZATION), stage
+
+
+@pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
+def test_each_record_vector_has_the_id_its_run_and_unit_give(path: Path) -> None:
+    record = json.loads(path.read_text(encoding="utf-8"))
+    assert record["metadata"]["uuid"] == record_uuid(record["run"]["id"], record["unit"])
+
+
+def test_the_vectors_hold_exactly_the_known_folders() -> None:
+    folders = {path.name for path in visible(VECTORS) if path.is_dir() and path.name != "__pycache__"}
+    known = {
+        "assertions",
+        "assertions_invalid",
+        "attestations",
+        "scanner_check_mappings_invalid",
+        "scanner_check_mappings_project_invalid",
+        "buildx",
+        "canonical",
+        "compiler",
+        "contexts_invalid",
+        "evaluation",
+        "identities_invalid",
+        "identities_valid",
+        "opa",
+        "records_integrity_failed",
+        "records_invalid",
+        "records_valid",
+        "reports_expected",
+        "reports_invalid",
+        "scan_coverage",
+        "scanner_evidence",
+        "scanner_reports",
+        "scanner_verdicts",
+        "subjects",
+    }
+    assert folders == known | set(DOCUMENT_MODELS)
+
+
+@pytest.mark.parametrize("folder", sorted(SPLIT_FOLDERS))
+def test_a_split_folder_holds_only_its_change_types_subfolders(folder: str) -> None:
+    entries = [
+        path for path in visible(VECTORS / folder) if not (folder in DOCUMENT_MODELS and path.name == DIGESTS_FILE)
+    ]
+    assert {path.name for path in entries} == SPLIT_FOLDERS[folder]
+    assert all(path.is_dir() for path in entries)
+
+
+@pytest.mark.parametrize("folder", sorted(SPLIT_CASE_FOLDERS))
+def test_a_change_types_cases_folder_holds_its_cases_file_and_nothing_else(folder: str) -> None:
+    for change_type in SPLIT_FOLDERS[folder]:
+        assert [path.name for path in visible(VECTORS / folder / change_type)] == ["cases.json"]
+
+
+@pytest.mark.parametrize("folder", sorted(DOCUMENT_MODELS))
+def test_every_document_vector_has_its_digest_and_nothing_else(folder: str) -> None:
+    root = VECTORS / folder
+    shipped = {
+        path.relative_to(root).as_posix()
+        for path in root.rglob("*")
+        if path.is_file() and not any(part.startswith(".") for part in path.relative_to(root).parts)
+    }
+    digests = json.loads((root / DIGESTS_FILE).read_text(encoding="utf-8"))
+    assert shipped == {DIGESTS_FILE, *digests}
+    assert list(digests) == sorted(digests)
+
+
+# --- under the pinned evaluator ---------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def capabilities(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    path = tmp_path_factory.mktemp("opa") / "capabilities.json"
+    path.write_bytes(CAPABILITIES)
+    return path
+
+
+def _run(opa: Path, *args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([str(opa), *args], input=stdin, capture_output=True, text=True, check=False, timeout=60)
+
+
+@pytest.mark.parametrize("path", ASSERTION_FILES, ids=_name)
+def test_compiled_module_checks_under_the_capabilities_and_is_fmt_stable(
+    opa: Path, capabilities: Path, path: Path
+) -> None:
+    module = COMPILER / f"{path.stem}.rego"
+    checked = _run(opa, "check", "--strict", "--capabilities", str(capabilities), str(module))
+    assert checked.returncode == 0, checked.stderr
+    formatted = _run(opa, "fmt", "--diff", str(module))
+    assert formatted.returncode == 0 and formatted.stdout == "", formatted.stdout
+
+
+def _build(opa: Path, capabilities: Path, directory: Path) -> subprocess.CompletedProcess[str]:
+    return _run(
+        opa, "build", "--capabilities", str(capabilities), "-b", str(directory), "-o", str(directory / "b.tar.gz")
+    )
+
+
+def test_all_compiled_modules_build_into_one_bundle(opa: Path, capabilities: Path, tmp_path: Path) -> None:
+    for path in ASSERTION_FILES:
+        (tmp_path / f"{path.stem}.rego").write_bytes((COMPILER / f"{path.stem}.rego").read_bytes())
+    built = _build(opa, capabilities, tmp_path)
+    assert built.returncode == 0, built.stderr
+
+
+def test_an_id_that_prefixes_another_still_bundles(opa: Path, capabilities: Path, tmp_path: Path) -> None:
+    for assertion_id in ("ACME.IAC.RESOURCE.AWS.RDS.STATUS", "ACME.IAC.RESOURCE.AWS.RDS.STATUS_EVALUATE"):
+        document = {
+            "apiVersion": "iltero.com/v1",
+            "kind": "TechnicalAssertion",
+            "metadata": {"id": assertion_id, "version": "1.0.0", "title": "t"},
+            "spec": {
+                "change_type": "iac_change",
+                "stage": "plan",
+                "target": {
+                    "kind": "resource",
+                    "resources": [{"tool": "terraform", "provider": "aws", "resource_types": ["aws_db_instance"]}],
+                },
+                "assert": {"path": "resource.after.x", "equal": 1},
+            },
+        }
+        (tmp_path / f"{assertion_id}.rego").write_bytes(compile(parse_document(document)).source)
+    built = _build(opa, capabilities, tmp_path)
+    assert built.returncode == 0, built.stderr
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        "http.send({})",
+        "time.now_ns()",
+        'regex.match("a", "a")',
+        "opa.runtime()",
+        'rand.intn("a", 2)',
+        'net.lookup_ip_addr("a")',
+        'io.jwt.decode("a")',
+    ],
+)
+def test_forbidden_builtin_is_refused_by_the_capabilities(
+    opa: Path, capabilities: Path, tmp_path: Path, policy: str
+) -> None:
+    module = tmp_path / "policy.rego"
+    module.write_text(f"package x\n\nr := {policy}\n", encoding="utf-8")
+    checked = _run(opa, "check", "--capabilities", str(capabilities), str(module))
+    assert checked.returncode != 0 and "undefined function" in checked.stderr
+
+
+def _reference_times(value: Any) -> list[Any]:
+    """Every reference time an evaluation input holds."""
+    if isinstance(value, list):
+        return [found for item in value for found in _reference_times(item)]
+    if not isinstance(value, dict):
+        return []
+    here = [value["reference_time"]] if "reference_time" in value else []
+    return here + [found for item in value.values() for found in _reference_times(item)]
+
+
+@pytest.mark.parametrize("case", EVALUATION_CASES, ids=[c["name"] for c in EVALUATION_CASES])
+def test_an_evaluation_input_states_each_reference_time_as_a_record_does(case: dict[str, Any]) -> None:
+    for time in _reference_times(case["input"]):
+        ReferenceTime.model_validate(time)
+
+
+@pytest.mark.parametrize("case", EVALUATION_CASES, ids=[c["name"] for c in EVALUATION_CASES])
+def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    module = COMPILER / f"{case['assertion']}.rego"
+    query = f"data.{package_of(case['assertion'])}.evaluate"
+    evaluated = _run(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(module),
+        "--stdin-input",
+        query,
+        stdin=json.dumps(case["input"]),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    results = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"]
+    assert len(results) == 1
+    result = results[0]
+    expected = case["expected"]
+    default_subject = case["input"].get("subject") if isinstance(case["input"], dict) else None
+    assert result["subject"] == expected.get("subject", default_subject)
+    assert result["status"] == expected["status"]
+    assert result["reason"] == expected["reason"]
+    assert result["observations"]["unknown"] == expected["unknown"]
+    assert result["observations"]["when"] == expected["when"]
+    if "predicates" in expected:
+        assert result["observations"]["predicates"] == expected["predicates"]
+
+
+def _evaluate(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
+    evaluated = _run(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(module),
+        "--stdin-input",
+        f"data.{package}.evaluate",
+        stdin=json.dumps(context),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+
+
+@pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
+def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    assert case["facts"] in ("unknown_marker", "empty_list")
+    if case["facts"] == "empty_list":
+        for part in ("evaluations", "approvals", "exceptions"):
+            context[part] = []
+    result = _evaluate(
+        opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
+    )
+    expected = case["expected"]
+    assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
+    assert result["observations"]["unknown"] == expected["unknown"]
+    assert result["observations"]["when"] == expected["when"]
+
+
+@pytest.mark.parametrize("case", APPROVALS["cases"], ids=[c["name"] for c in APPROVALS["cases"]])
+def test_an_approval_counts_for_its_change_or_its_run(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
+    context = json.loads((VECTORS / "contexts" / APPROVALS["context"]).read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = case["assertion"]
+    context.update(case["set"])
+    AssuranceContext.model_validate(context)
+    result = _evaluate(
+        opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
+    )
+    expected = case["expected"]
+    assert (result["status"], result["reason"]) == (expected["status"], expected["reason"])
+    exists = [
+        p["status"] for p in result["observations"]["predicates"] if (p["clause"], p["op"]) == ("assert", "exists")
+    ]
+    assert exists == expected["branches"]
+
+
+@pytest.mark.parametrize("assertion_id", CONTEXT_SCENARIO)
+def test_the_scenario_assertions_pass_on_the_context_vector(opa: Path, capabilities: Path, assertion_id: str) -> None:
+    context = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
+    context["evaluation"]["assertion"]["id"] = assertion_id
+    evaluated = _run(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(COMPILER / f"{assertion_id}.rego"),
+        "--stdin-input",
+        f"data.{package_of(assertion_id)}.evaluate",
+        stdin=json.dumps(context),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+    assert result["status"] == "pass"
+    assert result["subject"] == {"kind": "resource", "key": context["subject"]["key"]}
+
+
+@pytest.mark.parametrize(
+    ("applied", "status"),
+    [({}, "pass"), ({"digest": "sha256:" + "b" * 64}, "fail")],
+    ids=["the evaluated plan", "another plan"],
+)
+def test_plan_binding_decides_on_the_post_deploy_vector(
+    opa: Path, capabilities: Path, applied: dict[str, str], status: str
+) -> None:
+    context = json.loads((VECTORS / "contexts" / "iac" / "post_deploy.json").read_text(encoding="utf-8"))
+    context["deployment"]["plan"].update(applied)
+    evaluated = _run(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(COMPILER / "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"),
+        "--stdin-input",
+        f"data.{package_of('ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN')}.evaluate",
+        stdin=json.dumps(context),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    result = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
+    assert result["status"] == status
+    assert result["subject"] == {"kind": "deployment", "key": context["subject"]["key"]}
+
+
+_READS_THE_SUMMARY = """\
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ACME.IAC.DEPLOYMENT.TEST.ONE_CHANGE
+  version: "1.0.0"
+  title: The apply changed one resource
+spec:
+  change_type: iac_change
+  stage: post_deploy
+  target:
+    kind: deployment
+  assert:
+    path: deployment.apply.tool_data.summary.changed
+    equal: 1
+"""
+
+
+def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothing_to_one_that_does_not(
+    opa: Path, capabilities: Path, tmp_path: Path
+) -> None:
+    context = json.loads((VECTORS / "contexts" / "iac" / "post_deploy.json").read_text(encoding="utf-8"))
+    context["deployment"]["apply"]["tool_data"]["summary"] = {"__unknown": True, "reason": "deployment_log_incomplete"}
+    module = compile(parse(_READS_THE_SUMMARY))
+    path = tmp_path / "one_change.rego"
+    path.write_bytes(module.source)
+    reads = _evaluate(opa, capabilities, path, module.package, context)
+    assert reads["status"] == "unknown" and "deployment_log_incomplete" in json.dumps(reads)
+    entry = COMPILER / "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"
+    ignores = _evaluate(
+        opa,
+        capabilities,
+        entry,
+        package_of("ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"),
+        context,
+    )
+    assert ignores["status"] == "pass"
+
+
+@pytest.mark.parametrize("path", documents("scanner_check_mappings"), ids=_name)
+def test_a_scanner_checks_digest_is_over_the_assertion_and_the_entry_as_the_copy_holds_them(path: Path) -> None:
+    """An event names a scanner checks entry by this digest; a reader recomputes it from the copy's raw entry."""
+    document = json.loads(path.read_text(encoding="utf-8"))
+    for raw, entry in zip(
+        document["spec"]["assertion_mappings"],
+        ScannerCheckMapping.model_validate(document).spec.assertion_mappings,
+        strict=True,
+    ):
+        for raw_checks, checks in zip(raw["scanner_checks"], entry.scanner_checks, strict=True):
+            assert digest_of(
+                {"assertion": raw["assertion"], "scanner_checks": raw_checks}
+            ) == entry.scanner_checks_digest(checks)
+
+
+SCANNER_REPORT_CASES = json.loads((VECTORS / "scanner_reports" / "iac" / "cases.json").read_text(encoding="utf-8"))
+REPORT_READERS = {"checkov": read_checkov, "trivy": read_trivy}
+
+
+@pytest.mark.parametrize("case", SCANNER_REPORT_CASES, ids=[c["name"] for c in SCANNER_REPORT_CASES])
+def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> None:
+    """A real report, trimmed to what a reader reads, gives the same observations everywhere."""
+    folder = VECTORS / "scanner_reports" / "iac"
+    report = json.loads((folder / case["report"]).read_text(encoding="utf-8"))
+    addresses = json.loads((folder / case["plan_addresses"]).read_text(encoding="utf-8"))
+    source = Source(
+        report_digest=digest_of(report), plan_digest=case["plan_digest"], rules_digest=None, configuration_digest=None
+    )
+    observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
+    expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))
+    assert observed == expected

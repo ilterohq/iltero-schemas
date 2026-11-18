@@ -32,7 +32,6 @@
     "set": {
       "/organization_scope/environment/production": true,
       "/reference_time/source": "server",
-      "/reference_time/trust": "attested",
       "/evaluations": [],
       "/approvals": [],
       "/exceptions": []
@@ -46,7 +45,6 @@
     "set": {
       "/organization_scope/environment/production": true,
       "/reference_time/source": "server",
-      "/reference_time/trust": "attested",
       "/change/build": null,
       "/evaluations": [],
       "/approvals": [],

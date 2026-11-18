@@ -21,8 +21,8 @@ import binascii
 import re
 from typing import Any, Literal, NamedTuple, get_args
 
+from iltero_schemas.models.common.strict_json import strict_json
 from iltero_schemas.models.image.naming import ATTESTATION_MEDIA_TYPES
-from iltero_schemas.models.strict_json import strict_json
 
 # No build writes an attestation this large; a reader refuses a larger one before parsing it.
 MAX_ATTESTATION_BYTES = 1_048_576

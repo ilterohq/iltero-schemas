@@ -54,7 +54,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "evaluator_binding": null,
+            "scanner_checks": null,
             "facts_source": null,
             "compiled_digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
             "compiler": {
@@ -151,7 +151,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "evaluator_binding": null,
+            "scanner_checks": null,
             "facts_source": null,
             "compiled_digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
             "compiler": {
@@ -290,7 +290,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "evaluator_binding": null,
+            "scanner_checks": null,
             "facts_source": null,
             "compiled_digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
             "compiler": {
@@ -387,7 +387,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "evaluator_binding": null,
+            "scanner_checks": null,
             "facts_source": null,
             "compiled_digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
             "compiler": {
@@ -488,7 +488,7 @@
               "content_digest": null,
               "key_id": null
             },
-            "evaluator_binding": null,
+            "scanner_checks": null,
             "facts_source": null,
             "compiled_digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
             "compiler": {
@@ -566,8 +566,8 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
             "bundle": null,
-            "evaluator_binding": {
-              "digest": "sha256:533a181b736280c5d8782afab5b0b0141d8c0ea83f224133a98bfb97d82b7cc6"
+            "scanner_checks": {
+              "digest": "sha256:ae42e8f9a86ba93a7002aafaa1c29d439c0716012181f60e4eecf7c04b196aac"
             },
             "facts_source": null,
             "compiled_digest": null,
@@ -594,7 +594,7 @@
               "ci_run_id": null,
               "type": "human"
             },
-            "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+            "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
             "checked_content": {
               "kind": "plan",
               "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -634,15 +634,15 @@
             "stage": "plan",
             "status": "not_evaluated",
             "status_detail": null,
-            "status_reason": "tool_reports_only_failures"
+            "status_reason": "no_result_of_the_mapped_checks"
           },
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:21d16d3264d41c50115499847e4f6a29a25894c87926b5c6f38a256ec5523af1",
             "bundle": null,
-            "evaluator_binding": {
-              "digest": "sha256:bd917cfe3f2e6376eab03b1b20bd9863dbd9e323acc472fe2a5e6e8206deb48e"
+            "scanner_checks": {
+              "digest": "sha256:b939196bff6c1e05eed3169b43afcf5a4c40cd624965566248756943986e0fab"
             },
             "facts_source": null,
             "compiled_digest": null,
@@ -716,8 +716,8 @@
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
             "bundle": null,
-            "evaluator_binding": {
-              "digest": "sha256:f3f5e2fda4d5888b84c6a4bd14921563d6e8b8b09af95cf961db2abf4dce4f27"
+            "scanner_checks": {
+              "digest": "sha256:4b2161d473e8804172f658bb8a3c7a2d453603b6c80778c402fbe8dc80452af4"
             },
             "facts_source": null,
             "compiled_digest": null,
@@ -744,7 +744,7 @@
               "ci_run_id": null,
               "type": "human"
             },
-            "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+            "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
             "checked_content": {
               "kind": "plan",
               "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
@@ -784,15 +784,15 @@
             "stage": "plan",
             "status": "not_evaluated",
             "status_detail": null,
-            "status_reason": "tool_reports_only_failures"
+            "status_reason": "no_result_of_the_mapped_checks"
           },
           "observed_at": "2026-09-22T13:00:13.568Z",
           "provenance": {
             "assertion_source": "contract_starter",
             "assertion_source_digest": "sha256:98cccdfb27fe665b1f0892bac27a48897a6b37ce637d74f386798f972a757875",
             "bundle": null,
-            "evaluator_binding": {
-              "digest": "sha256:2c4eb75eef6c421dbac5ce23761a048008579bf79fc14e56a63b1a3128ccab0d"
+            "scanner_checks": {
+              "digest": "sha256:c04d7d7c06b2c92108e307b60da02b8315eb2a476bcaafa59b7cc835a6955340"
             },
             "facts_source": null,
             "compiled_digest": null,
@@ -859,17 +859,17 @@
   {
     "name": "evaluator_of_another_assertion",
     "set_record": {
-      "/events/5/provenance/evaluator_binding/digest": "sha256:f3f5e2fda4d5888b84c6a4bd14921563d6e8b8b09af95cf961db2abf4dce4f27"
+      "/events/5/provenance/scanner_checks/digest": "sha256:4b2161d473e8804172f658bb8a3c7a2d453603b6c80778c402fbe8dc80452af4"
     },
     "problems": [
       [
-        "events.5.provenance.evaluator_binding",
-        "names a binding of another assertion"
+        "events.5.provenance.scanner_checks",
+        "names a scanner checks entry of another assertion"
       ]
     ]
   },
   {
-    "name": "other_checks_than_the_binding",
+    "name": "other_checks_than_the_scanner_checks_entry",
     "set_record": {
       "/events/5/provenance/evaluator/rule_ids": [
         "CKV_AWS_16"
@@ -878,7 +878,7 @@
     "problems": [
       [
         "events.5.provenance.evaluator",
-        "names other checks, or another match, than its binding"
+        "names other checks, or another match, than its scanner checks entry"
       ]
     ]
   },
@@ -933,16 +933,40 @@
     ]
   },
   {
-    "name": "binding_set_copy_not_given",
+    "name": "report_counts_results_not_listed_wrong",
+    "set_record": {
+      "/stages/plan/scanners/reports/0/results_not_listed": 1
+    },
+    "problems": [
+      [
+        "stages.plan.scanners.reports.0",
+        "does not count what its observations hold"
+      ],
+      [
+        "events.5.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ],
+      [
+        "events.7.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ],
+      [
+        "events.9.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ]
+    ]
+  },
+  {
+    "name": "scanner_check_mapping_copy_not_given",
     "drop_file": [
       [
-        "binding_sets",
-        "units/root/plan/bindings.json"
+        "scanner_check_mappings",
+        "units/root/plan/scanner-check-mapping.json"
       ]
     ],
     "problems": [
       [
-        "stages.plan.scanners.evaluator_binding_sets.1",
+        "stages.plan.scanners.scanner_check_mappings.1",
         "is not given"
       ]
     ]
@@ -991,7 +1015,7 @@
     "drop_file": [
       [
         "reports",
-        "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59"
+        "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53"
       ]
     ],
     "problems": [
@@ -1035,12 +1059,12 @@
         "names an assertion document that is not given"
       ],
       [
-        "events.7.provenance.evaluator_binding",
-        "names no evaluator of its stage's binding sets"
+        "events.7.provenance.scanner_checks",
+        "names no scanner checks entry of its stage's scanner check mappings"
       ],
       [
-        "events.8.provenance.evaluator_binding",
-        "names no evaluator of its stage's binding sets"
+        "events.8.provenance.scanner_checks",
+        "names no scanner checks entry of its stage's scanner check mappings"
       ]
     ]
   },

@@ -32,6 +32,10 @@
         "name": "main"
       },
       "pull_request": null
+    },
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
     }
   },
   "change": {
@@ -83,9 +87,7 @@
       "observed_at": "2026-11-01T10:05:00Z",
       "reference_time": {
         "value": "2026-11-01T10:05:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "execution": {
         "evaluator": {
@@ -128,7 +130,7 @@
       },
       "events": {
         "path": "units/api/plan/events.json",
-        "digest": "sha256:d42e60c663fbc7bdb72a250d4a4ac29b3dd90cb582cab24c1c749ac23a51a53a",
+        "digest": "sha256:d701432c2d6987e0f6494a1d92ccb438cdd220087612c0d68c59b2e88a315cc7",
         "count": 3
       },
       "assertions": {
@@ -149,16 +151,16 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 3,
           "origin": "project_files",
           "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
           "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
         },
         "status_counts": {
           "pass": 2,
@@ -176,18 +178,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     }
   },
@@ -273,7 +284,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:02e2fe5805fa1e08d62caf5da2556643f45b45e5bef7e35941b16d04df604a15",
         "compiled_digest": "sha256:1706e0c72d4b571e285f7799d1347da97da9e30596f04fed65e1a7bb9fcac53a",
@@ -371,7 +382,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:7c55680b254f181248d69587c6af56a6cb44b92f4d664cacf0e851d9ba1ab8ec",
         "compiled_digest": "sha256:0c31092c4e729a066321d34046ce2ad8c39152eeaf5fe55f6b85ef554ed24da9",
@@ -469,7 +480,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:0fd7a0afafeb21fde9be6b4ced849b0cb6dda459d31a87f2e1fdd9198573ab9c",
         "compiled_digest": "sha256:ec1a198ca63693c05dc5c3f27be907be950d343d4468ba6aa95bd583fcad318e",
@@ -498,16 +509,16 @@
       "excluded": []
     },
     "subjects_evaluated": 1,
-    "assertions_expected": {
+    "assertions_required": {
       "value": 3,
       "origin": "project_files",
       "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
     },
     "assertions_evaluated": 3,
     "subjects_per_assertion": {
-      "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1,
       "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-      "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+      "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+      "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
     },
     "status_counts": {
       "pass": 2,
@@ -525,20 +536,29 @@
       "reason": null
     },
     "sampled": false,
-    "substituted_inputs": []
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "opa": {
+        "pass": 2,
+        "fail": 0,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    }
   },
   "verdict": {
-    "value": "indeterminate",
-    "exit_code": 3,
+    "value": "undecided",
+    "reason": null,
     "computed_from": "stage_precedence",
     "stage": "plan"
   },
-  "assurance_status": {
-    "value": "complete",
-    "reason": null,
-    "detail": null
+  "evidence_status": {
+    "value": "whole",
+    "reasons": []
   },
-  "complete": true,
+  "all_expected_stages_reported": true,
   "expected_stages": [
     "plan"
   ],
@@ -808,8 +828,8 @@
     {
       "ref_id": "plan/events.json",
       "media_type": "application/json",
-      "digest": "sha256:d42e60c663fbc7bdb72a250d4a4ac29b3dd90cb582cab24c1c749ac23a51a53a",
-      "size_bytes": 6588,
+      "digest": "sha256:d701432c2d6987e0f6494a1d92ccb438cdd220087612c0d68c59b2e88a315cc7",
+      "size_bytes": 6579,
       "path": "units/api/plan/events.json",
       "storage_uri": null,
       "retention_until": null,

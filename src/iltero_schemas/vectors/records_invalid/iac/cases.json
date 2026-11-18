@@ -51,10 +51,12 @@
       "/units_file/units": [
         {
           "name": "network",
+          "directory": "network",
           "depends_on": []
         },
         {
           "name": "web",
+          "directory": "web",
           "depends_on": []
         }
       ]
@@ -69,10 +71,12 @@
       "/units_file/units": [
         {
           "name": "app",
+          "directory": "app",
           "depends_on": []
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": []
         }
       ]
@@ -123,262 +127,327 @@
       "/units_file/units": [
         {
           "name": "app",
+          "directory": "app",
           "depends_on": []
         },
         {
           "name": "u0",
+          "directory": "u0",
           "depends_on": []
         },
         {
           "name": "u1",
+          "directory": "u1",
           "depends_on": []
         },
         {
           "name": "u2",
+          "directory": "u2",
           "depends_on": []
         },
         {
           "name": "u3",
+          "directory": "u3",
           "depends_on": []
         },
         {
           "name": "u4",
+          "directory": "u4",
           "depends_on": []
         },
         {
           "name": "u5",
+          "directory": "u5",
           "depends_on": []
         },
         {
           "name": "u6",
+          "directory": "u6",
           "depends_on": []
         },
         {
           "name": "u7",
+          "directory": "u7",
           "depends_on": []
         },
         {
           "name": "u8",
+          "directory": "u8",
           "depends_on": []
         },
         {
           "name": "u9",
+          "directory": "u9",
           "depends_on": []
         },
         {
           "name": "u10",
+          "directory": "u10",
           "depends_on": []
         },
         {
           "name": "u11",
+          "directory": "u11",
           "depends_on": []
         },
         {
           "name": "u12",
+          "directory": "u12",
           "depends_on": []
         },
         {
           "name": "u13",
+          "directory": "u13",
           "depends_on": []
         },
         {
           "name": "u14",
+          "directory": "u14",
           "depends_on": []
         },
         {
           "name": "u15",
+          "directory": "u15",
           "depends_on": []
         },
         {
           "name": "u16",
+          "directory": "u16",
           "depends_on": []
         },
         {
           "name": "u17",
+          "directory": "u17",
           "depends_on": []
         },
         {
           "name": "u18",
+          "directory": "u18",
           "depends_on": []
         },
         {
           "name": "u19",
+          "directory": "u19",
           "depends_on": []
         },
         {
           "name": "u20",
+          "directory": "u20",
           "depends_on": []
         },
         {
           "name": "u21",
+          "directory": "u21",
           "depends_on": []
         },
         {
           "name": "u22",
+          "directory": "u22",
           "depends_on": []
         },
         {
           "name": "u23",
+          "directory": "u23",
           "depends_on": []
         },
         {
           "name": "u24",
+          "directory": "u24",
           "depends_on": []
         },
         {
           "name": "u25",
+          "directory": "u25",
           "depends_on": []
         },
         {
           "name": "u26",
+          "directory": "u26",
           "depends_on": []
         },
         {
           "name": "u27",
+          "directory": "u27",
           "depends_on": []
         },
         {
           "name": "u28",
+          "directory": "u28",
           "depends_on": []
         },
         {
           "name": "u29",
+          "directory": "u29",
           "depends_on": []
         },
         {
           "name": "u30",
+          "directory": "u30",
           "depends_on": []
         },
         {
           "name": "u31",
+          "directory": "u31",
           "depends_on": []
         },
         {
           "name": "u32",
+          "directory": "u32",
           "depends_on": []
         },
         {
           "name": "u33",
+          "directory": "u33",
           "depends_on": []
         },
         {
           "name": "u34",
+          "directory": "u34",
           "depends_on": []
         },
         {
           "name": "u35",
+          "directory": "u35",
           "depends_on": []
         },
         {
           "name": "u36",
+          "directory": "u36",
           "depends_on": []
         },
         {
           "name": "u37",
+          "directory": "u37",
           "depends_on": []
         },
         {
           "name": "u38",
+          "directory": "u38",
           "depends_on": []
         },
         {
           "name": "u39",
+          "directory": "u39",
           "depends_on": []
         },
         {
           "name": "u40",
+          "directory": "u40",
           "depends_on": []
         },
         {
           "name": "u41",
+          "directory": "u41",
           "depends_on": []
         },
         {
           "name": "u42",
+          "directory": "u42",
           "depends_on": []
         },
         {
           "name": "u43",
+          "directory": "u43",
           "depends_on": []
         },
         {
           "name": "u44",
+          "directory": "u44",
           "depends_on": []
         },
         {
           "name": "u45",
+          "directory": "u45",
           "depends_on": []
         },
         {
           "name": "u46",
+          "directory": "u46",
           "depends_on": []
         },
         {
           "name": "u47",
+          "directory": "u47",
           "depends_on": []
         },
         {
           "name": "u48",
+          "directory": "u48",
           "depends_on": []
         },
         {
           "name": "u49",
+          "directory": "u49",
           "depends_on": []
         },
         {
           "name": "u50",
+          "directory": "u50",
           "depends_on": []
         },
         {
           "name": "u51",
+          "directory": "u51",
           "depends_on": []
         },
         {
           "name": "u52",
+          "directory": "u52",
           "depends_on": []
         },
         {
           "name": "u53",
+          "directory": "u53",
           "depends_on": []
         },
         {
           "name": "u54",
+          "directory": "u54",
           "depends_on": []
         },
         {
           "name": "u55",
+          "directory": "u55",
           "depends_on": []
         },
         {
           "name": "u56",
+          "directory": "u56",
           "depends_on": []
         },
         {
           "name": "u57",
+          "directory": "u57",
           "depends_on": []
         },
         {
           "name": "u58",
+          "directory": "u58",
           "depends_on": []
         },
         {
           "name": "u59",
+          "directory": "u59",
           "depends_on": []
         },
         {
           "name": "u60",
+          "directory": "u60",
           "depends_on": []
         },
         {
           "name": "u61",
+          "directory": "u61",
           "depends_on": []
         },
         {
           "name": "u62",
+          "directory": "u62",
           "depends_on": []
         },
         {
           "name": "u63",
+          "directory": "u63",
           "depends_on": []
         }
       ]
@@ -402,10 +471,12 @@
       "/units_file/units": [
         {
           "name": "Network",
+          "directory": "Network",
           "depends_on": []
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": []
         }
       ]
@@ -420,10 +491,12 @@
       "/units_file/units": [
         {
           "name": "network",
+          "directory": "network",
           "depends_on": []
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": [
             "database"
           ]
@@ -440,12 +513,14 @@
       "/units_file/units": [
         {
           "name": "app",
+          "directory": "app",
           "depends_on": [
             "network"
           ]
         },
         {
           "name": "network",
+          "directory": "network",
           "depends_on": []
         }
       ]
@@ -460,10 +535,12 @@
       "/units_file/units": [
         {
           "name": "network",
+          "directory": "network",
           "depends_on": []
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": [
             "app"
           ]
@@ -480,14 +557,17 @@
       "/units_file/units": [
         {
           "name": "network",
+          "directory": "network",
           "depends_on": []
         },
         {
           "name": "database",
+          "directory": "database",
           "depends_on": []
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": [
             "network",
             "database"
@@ -504,10 +584,12 @@
     "set": {
       "/units_file/units": [
         {
-          "name": "network"
+          "name": "network",
+          "directory": "network"
         },
         {
           "name": "app",
+          "directory": "app",
           "depends_on": [
             "network"
           ]
@@ -537,7 +619,7 @@
       ]
     },
     "remove": [],
-    "message": "assurance_status"
+    "message": "evidence_status"
   },
   {
     "name": "substituted_input_of_an_unknown_kind",
@@ -626,27 +708,17 @@
     "vector": "iac/local_run.json",
     "set": {
       "/events/0/provenance/checked_content/digest_version": "2",
-      "/stages/plan/events/digest": "sha256:a01406bb886ab49a2e581b24e59e9cb5a165bea12e2129b9a6a986cec1007ff2",
-      "/evidence_refs/24/digest": "sha256:a01406bb886ab49a2e581b24e59e9cb5a165bea12e2129b9a6a986cec1007ff2"
+      "/stages/plan/events/digest": "sha256:4f73c1d50c1b7c98a22a056f77c205e1c022976e4974d2eec7811b8b910aacc4",
+      "/evidence_refs/24/digest": "sha256:4f73c1d50c1b7c98a22a056f77c205e1c022976e4974d2eec7811b8b910aacc4"
     },
     "remove": [],
     "message": "is not the version of the terraform plan digest rule"
   },
   {
-    "name": "record_of_a_local_run_with_attested_clock_time",
-    "vector": "iac/local_run.json",
-    "set": {
-      "/stages/plan/reference_time/trust": "attested"
-    },
-    "remove": [],
-    "message": "a runner's clock is only ever asserted"
-  },
-  {
     "name": "record_of_a_local_run_with_server_time",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/reference_time/trust": "attested"
+      "/stages/plan/reference_time/source": "server"
     },
     "remove": [],
     "message": "no time from the server"
@@ -659,37 +731,6 @@
     },
     "remove": [],
     "message": "uses the time it observed"
-  },
-  {
-    "name": "record_with_a_time_window_on_clock_time",
-    "vector": "iac/local_run.json",
-    "set": {
-      "/stages/plan/reference_time/time_window": {
-        "not_before": "2026-09-22T13:00:00Z",
-        "not_after": "2026-09-22T13:01:00Z",
-        "nonce_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      }
-    },
-    "remove": [],
-    "message": "exactly when a timestamp authority"
-  },
-  {
-    "name": "record_with_a_reversed_time_window",
-    "vector": "iac/local_run.json",
-    "set": {
-      "/stages/plan/reference_time": {
-        "value": "2026-09-22T13:00:13.568Z",
-        "source": "timestamp_authority",
-        "trust": "attested",
-        "time_window": {
-          "not_before": "2026-09-22T13:01:00Z",
-          "not_after": "2026-09-22T13:00:00Z",
-          "nonce_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        }
-      }
-    },
-    "remove": [],
-    "message": "inside its time window"
   },
   {
     "name": "plan_flag_written_as_null",
@@ -768,15 +809,25 @@
           "stage": "plan"
         }
       ],
-      "/stages/plan/assurance_status": {
-        "value": "incomplete",
-        "reason": "plan_not_complete",
-        "detail": "the plan says it is incomplete"
+      "/stages/plan/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "plan_not_complete",
+            "stage": null,
+            "detail": "the plan says it is incomplete"
+          }
+        ]
       },
-      "/assurance_status": {
-        "value": "incomplete",
-        "reason": "plan_not_complete",
-        "detail": "plan: the plan says it is incomplete"
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "plan_not_complete",
+            "stage": "plan",
+            "detail": "the plan says it is incomplete"
+          }
+        ]
       }
     },
     "remove": [],
@@ -821,7 +872,7 @@
           "excluded": []
         },
         "subjects_evaluated": 2,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 10,
           "origin": "project_files",
           "required_assertion_digest": "sha256:e91b5f03a1fa4cd10fd9d369f40ca86cc228f2e3a50f8c6c4db91e5f490f8cbe"
@@ -861,7 +912,17 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 2,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/change/plan": {
         "applyable": true,
@@ -891,7 +952,7 @@
           },
           "events": {
             "count": 5,
-            "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+            "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
             "path": "units/root/plan/events.json"
           },
           "observed_at": "2026-09-22T13:00:13.568Z",
@@ -1366,10 +1427,8 @@
             ]
           },
           "reference_time": {
-            "source": "runner_clock",
-            "trust": "asserted",
             "value": "2026-09-22T13:00:13.568Z",
-            "time_window": null
+            "source": "runner_clock"
           },
           "stage": "plan",
           "scanners": null,
@@ -1378,7 +1437,7 @@
           "resource_redaction": null,
           "coverage": {
             "assertions_evaluated": 5,
-            "assertions_expected": {
+            "assertions_required": {
               "origin": "project_files",
               "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
               "value": 5
@@ -1419,18 +1478,27 @@
               "reason": null,
               "value": false
             },
-            "substituted_inputs": []
+            "substituted_inputs": [],
+            "evaluator_status_counts": {
+              "opa": {
+                "pass": 2,
+                "fail": 2,
+                "unknown": 1,
+                "not_applicable": 0,
+                "not_evaluated": 0,
+                "error": 0
+              }
+            }
           },
           "verdict": {
-            "value": "indeterminate",
-            "exit_code": 3,
+            "value": "not_met",
+            "reason": null,
             "computed_from": "status_counts",
             "stage": null
           },
-          "assurance_status": {
-            "value": "complete",
-            "reason": null,
-            "detail": null
+          "evidence_status": {
+            "value": "whole",
+            "reasons": []
           },
           "approvals": null,
           "commit_review": null
@@ -1924,10 +1992,8 @@
             ]
           },
           "reference_time": {
-            "source": "runner_clock",
-            "trust": "asserted",
             "value": "2026-09-22T13:00:13.568Z",
-            "time_window": null
+            "source": "runner_clock"
           },
           "stage": "pre_deploy",
           "scanners": null,
@@ -1936,7 +2002,7 @@
           "resource_redaction": null,
           "coverage": {
             "assertions_evaluated": 5,
-            "assertions_expected": {
+            "assertions_required": {
               "origin": "project_files",
               "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
               "value": 5
@@ -1971,18 +2037,18 @@
               "reason": null,
               "value": false
             },
-            "substituted_inputs": []
+            "substituted_inputs": [],
+            "evaluator_status_counts": {}
           },
           "verdict": {
-            "value": "pass",
-            "exit_code": 0,
+            "value": "met",
+            "reason": null,
             "computed_from": "status_counts",
             "stage": null
           },
-          "assurance_status": {
-            "value": "complete",
-            "reason": null,
-            "detail": null
+          "evidence_status": {
+            "value": "whole",
+            "reasons": []
           },
           "approvals": {
             "__unknown": true,
@@ -2441,13 +2507,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -2494,16 +2560,13 @@
       ]
     },
     "remove": [],
-    "message": "stages.plan.assurance_status is not the status the stage's counts give"
+    "message": "stages.plan.evidence_status is not the status the stage's counts give"
   },
   {
     "name": "pre_deploy_stage_of_a_forged_change_digest",
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_expected/value": 10,
-      "/coverage/assertions_expected/required_assertion_digest": "sha256:e4c2e70b248e8c5c185f29fff747bfadd8193fd9ed27d43f6d61a55086d99bd4",
-      "/coverage/assertions_evaluated": 10,
       "/stages/pre_deploy": {
         "assertions": {
           "count": 5,
@@ -2993,10 +3056,8 @@
           ]
         },
         "reference_time": {
-          "source": "runner_clock",
-          "trust": "asserted",
           "value": "2026-09-22T13:00:13.568Z",
-          "time_window": null
+          "source": "runner_clock"
         },
         "stage": "pre_deploy",
         "scanners": null,
@@ -3004,8 +3065,8 @@
         "postponed_checks": null,
         "resource_redaction": null,
         "coverage": {
-          "assertions_evaluated": 5,
-          "assertions_expected": {
+          "assertions_evaluated": 0,
+          "assertions_required": {
             "origin": "project_files",
             "required_assertion_digest": "sha256:835b714c59eecd8b56417eda5e8e67d9045534961d40bfda364327e358de6e75",
             "value": 5
@@ -3021,7 +3082,7 @@
             "pass": 0,
             "unknown": 0
           },
-          "subjects_evaluated": 2,
+          "subjects_evaluated": 0,
           "subjects_in_scope": {
             "counted_from": "change_unit",
             "excluded": [],
@@ -3035,18 +3096,24 @@
             "reason": null,
             "value": false
           },
-          "substituted_inputs": []
+          "substituted_inputs": [],
+          "evaluator_status_counts": {}
         },
         "verdict": {
-          "value": "pass",
-          "exit_code": 0,
+          "value": "incomplete",
+          "reason": "not_evaluated",
           "computed_from": "status_counts",
           "stage": null
         },
-        "assurance_status": {
-          "value": "complete",
-          "reason": null,
-          "detail": null
+        "evidence_status": {
+          "value": "has_gaps",
+          "reasons": [
+            {
+              "reason": "required_checks_not_evaluated",
+              "stage": null,
+              "detail": "5 of 5 required assertions have no evaluation"
+            }
+          ]
         },
         "approvals": {
           "__unknown": true,
@@ -3504,13 +3571,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -3531,7 +3598,67 @@
           "source": null,
           "storage_uri": null
         }
-      ]
+      ],
+      "/coverage": {
+        "subjects_in_scope": {
+          "value": 20,
+          "counted_from": "plan_resource_enumeration",
+          "source_digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 2,
+        "assertions_required": {
+          "value": 10,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:d164d8b426e6f06afb03b32661e3286006d1eaac933b8e4228c8c4affd027242"
+        },
+        "assertions_evaluated": 5,
+        "subjects_per_assertion": {
+          "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 1,
+          "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 2,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "evaluations": 5,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 2,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": "pre_deploy",
+            "detail": "5 of 5 required assertions have no evaluation"
+          }
+        ]
+      }
     },
     "remove": [],
     "message": "change.digest is not the digest of the change type, unit, environment and plan"
@@ -3612,9 +3739,9 @@
         "content_digest": null,
         "key_id": "iltero-bundle-2026-09"
       },
-      "/stages/plan/events/digest": "sha256:4397da2c96062c6a95c800307b17faa3442e0adb61c0cc5e6cbd44b33e06e3e7",
-      "/evidence_refs/24/digest": "sha256:4397da2c96062c6a95c800307b17faa3442e0adb61c0cc5e6cbd44b33e06e3e7",
-      "/evidence_refs/24/size_bytes": 11725
+      "/stages/plan/events/digest": "sha256:35204313703fd261c170e19daa2c5b5e6a9a6c8ef9d168f07134a3dc19ce442d",
+      "/evidence_refs/24/digest": "sha256:35204313703fd261c170e19daa2c5b5e6a9a6c8ef9d168f07134a3dc19ce442d",
+      "/evidence_refs/24/size_bytes": 11710
     },
     "remove": [],
     "message": "a bundle names its content digest and signing key exactly when its kind is server"
@@ -3624,9 +3751,9 @@
     "vector": "iac/local_run.json",
     "set": {
       "/events/0/provenance/assertion_source": "server_bundle",
-      "/stages/plan/events/digest": "sha256:9d6bd66d936f9c9765caf7a77c4a56742624d242a22494b035d0f0429ca17f9e",
-      "/evidence_refs/24/digest": "sha256:9d6bd66d936f9c9765caf7a77c4a56742624d242a22494b035d0f0429ca17f9e",
-      "/evidence_refs/24/size_bytes": 11709
+      "/stages/plan/events/digest": "sha256:8ceac1d95409e2612ff06f05ab598abb2074991da23a2378e3fbf444c0c622fb",
+      "/evidence_refs/24/digest": "sha256:8ceac1d95409e2612ff06f05ab598abb2074991da23a2378e3fbf444c0c622fb",
+      "/evidence_refs/24/size_bytes": 11694
     },
     "remove": [],
     "message": "an assertion from the server's bundle is evaluated over the server's bundle"
@@ -3652,28 +3779,28 @@
     "message": "must be a file name without its directories"
   },
   {
-    "name": "binding_set_file_named_by_its_path",
+    "name": "scanner_check_mapping_file_outside_the_project",
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "config/bindings.yaml",
+            "file_path": "../config/scanner-check-mapping.yaml",
             "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -3682,17 +3809,17 @@
       }
     },
     "remove": [],
-    "message": "must be a file name without its directories"
+    "message": "must be a relative path inside the project, with no '..', '.', empty part, ':' or leading '/'"
   },
   {
     "name": "served_approval_of_another_run",
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/approvals": [
@@ -3714,11 +3841,11 @@
           "timestamp": "2026-09-22T13:05:30.000Z"
         }
       ],
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -3730,8 +3857,8 @@
     "vector": "iac/local_run.json",
     "set": {
       "/events/2/provenance/checked_content/digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-      "/stages/plan/events/digest": "sha256:dd1503ca2ed0b9e7b65856afd8e3972959d98c1e494c310d0f11fa0d7b5d3eed",
-      "/evidence_refs/24/digest": "sha256:dd1503ca2ed0b9e7b65856afd8e3972959d98c1e494c310d0f11fa0d7b5d3eed"
+      "/stages/plan/events/digest": "sha256:6b9a0516df4bd5b50644eb513e6623d09a9a8e5e5fd9b72e2951a0db8481f664",
+      "/evidence_refs/24/digest": "sha256:6b9a0516df4bd5b50644eb513e6623d09a9a8e5e5fd9b72e2951a0db8481f664"
     },
     "remove": [],
     "message": "every event names the content the record's change checked"
@@ -3770,10 +3897,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/events/1/provenance/checked_content/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-      "/evidence_refs/18/digest": "sha256:1d46f89c751ba25db8fbe49e4c1972472ea597349e94533e19c15a4012cbdf0a",
+      "/evidence_refs/18/digest": "sha256:c78aa03dc0880188164ace8ad5a4262084474e621dcc76d9bbfaa88a85dcb49c",
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:1d46f89c751ba25db8fbe49e4c1972472ea597349e94533e19c15a4012cbdf0a",
+        "digest": "sha256:c78aa03dc0880188164ace8ad5a4262084474e621dcc76d9bbfaa88a85dcb49c",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -3785,8 +3912,8 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/events/3/provenance/checked_content/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-      "/stages/post_deploy/events/digest": "sha256:bed20605576b37498911a5a44e142b0c7c4b2543c169199b15459b31cb5e6e88",
-      "/evidence_refs/25/digest": "sha256:bed20605576b37498911a5a44e142b0c7c4b2543c169199b15459b31cb5e6e88"
+      "/stages/post_deploy/events/digest": "sha256:655d20908092dcacf642ec743337b041ff5794ebc13f1309edbae670a7b224c1",
+      "/evidence_refs/25/digest": "sha256:655d20908092dcacf642ec743337b041ff5794ebc13f1309edbae670a7b224c1"
     },
     "remove": [],
     "message": "every event names the content the record's change checked"
@@ -4112,7 +4239,18 @@
     "set": {
       "/stages/post_deploy/events/digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
       "/evidence_refs/25/digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
-      "/evidence_refs/25/size_bytes": 67
+      "/evidence_refs/25/size_bytes": 67,
+      "/stages/post_deploy/coverage/evaluator_status_counts": {},
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [
       "/events/3"
@@ -4125,7 +4263,18 @@
     "set": {
       "/stages/post_verify/events/digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
       "/evidence_refs/32/digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
-      "/evidence_refs/32/size_bytes": 67
+      "/evidence_refs/32/size_bytes": 67,
+      "/stages/post_verify/coverage/evaluator_status_counts": {},
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      }
     },
     "remove": [
       "/events/4"
@@ -4261,8 +4410,8 @@
     "vector": "iac/local_run.json",
     "set": {
       "/events/0/provenance/input_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/stages/plan/events/digest": "sha256:4e7ec296c7a626b7a9c2f6c9d2fd3f5012e90e806b9ee23ae5f3f7811cdbf14f",
-      "/evidence_refs/24/digest": "sha256:4e7ec296c7a626b7a9c2f6c9d2fd3f5012e90e806b9ee23ae5f3f7811cdbf14f"
+      "/stages/plan/events/digest": "sha256:fa376f213f3ad34969923d2df9cb2661cbdb5e5a04ccb8ec90eda06664639bdd",
+      "/evidence_refs/24/digest": "sha256:fa376f213f3ad34969923d2df9cb2661cbdb5e5a04ccb8ec90eda06664639bdd"
     },
     "remove": [],
     "message": "the input every event was evaluated over is an entry of the evidence register"
@@ -4707,12 +4856,32 @@
       "/events/1/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/1/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/events/1/provenance/assertion_source": "contract_starter",
-      "/evidence_refs/18/digest": "sha256:eb9d947737ff0992bbc293c968562e2d9e6645ef6ae491c849a01535c18b4e8c",
-      "/evidence_refs/18/size_bytes": 5146,
+      "/evidence_refs/18/digest": "sha256:439cb8b2e20c509fd3ca0c09f896014a00d5984bae89cd0ff1aea4dfbae59055",
+      "/evidence_refs/18/size_bytes": 5140,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:eb9d947737ff0992bbc293c968562e2d9e6645ef6ae491c849a01535c18b4e8c",
+        "digest": "sha256:439cb8b2e20c509fd3ca0c09f896014a00d5984bae89cd0ff1aea4dfbae59055",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 0,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        }
       }
     },
     "remove": [],
@@ -4733,12 +4902,32 @@
       "/events/1/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/1/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/events/1/provenance/assertion_source": "contract_starter",
-      "/evidence_refs/18/digest": "sha256:2a6a753fd6541313a0cbd452c75ad26d78aa94816a8c0c81fd511ad2b9628c93",
-      "/evidence_refs/18/size_bytes": 5146,
+      "/evidence_refs/18/digest": "sha256:c058324892c90ab0384e74dbe194eb1058e34665acd7820b85c677afffdb025e",
+      "/evidence_refs/18/size_bytes": 5140,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:2a6a753fd6541313a0cbd452c75ad26d78aa94816a8c0c81fd511ad2b9628c93",
+        "digest": "sha256:c058324892c90ab0384e74dbe194eb1058e34665acd7820b85c677afffdb025e",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/pre_deploy/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 0,
+          "fail": 1,
+          "unknown": 0,
+          "not_applicable": 1,
+          "not_evaluated": 0,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 1,
+          "fail": 1,
+          "unknown": 0,
+          "not_applicable": 2,
+          "not_evaluated": 0,
+          "error": 0
+        }
       }
     },
     "remove": [],
@@ -4817,10 +5006,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -4835,11 +5024,11 @@
         "head_commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
         "outcome": "build_commit_not_verified_commit"
       },
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -4851,10 +5040,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -4890,11 +5079,11 @@
         ],
         "commits_not_reviewed_list_complete": true
       },
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -4906,9 +5095,9 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -4955,7 +5144,7 @@
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 2
       },
-      "/stages/pre_deploy/coverage/assertions_expected/required_assertion_digest": "sha256:08382ff0834079643901dd3b19cb422ec1cf5db11ab41c489d4f58fc774da6bf",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:08382ff0834079643901dd3b19cb422ec1cf5db11ab41c489d4f58fc774da6bf",
       "/coverage": {
         "subjects_in_scope": {
           "value": 11,
@@ -4971,7 +5160,7 @@
           ]
         },
         "subjects_evaluated": 0,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 4,
           "origin": "server_pinned",
           "required_assertion_digest": "sha256:af49146878a0783141af598e2363f13e7d2a387eb281a51491aeed2f5091540f"
@@ -4998,18 +5187,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 2,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "/verdict": {
-        "value": "fail",
-        "exit_code": 6,
+        "value": "incomplete",
+        "reason": "not_evaluated",
         "computed_from": "stage_precedence",
         "stage": "plan"
       },
-      "/assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "/evidence_status": {
+        "value": "whole",
+        "reasons": []
       },
       "/events/1/assertion": {
         "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
@@ -5019,36 +5217,36 @@
       "/events/1/provenance/assertion_source": "contract_starter",
       "/events/1/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/1/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:66a48574165903a788f53a141b40ce7e0ef4eb214994d28ad370319947891627",
-      "/evidence_refs/18/digest": "sha256:66a48574165903a788f53a141b40ce7e0ef4eb214994d28ad370319947891627",
-      "/evidence_refs/18/size_bytes": 5177
+      "/stages/pre_deploy/events/digest": "sha256:548f28fa5aaf2acaae78060e3e9b7e5f0862afdeed2358458639122b5a751895",
+      "/evidence_refs/18/digest": "sha256:548f28fa5aaf2acaae78060e3e9b7e5f0862afdeed2358458639122b5a751895",
+      "/evidence_refs/18/size_bytes": 5171
     },
     "remove": [],
     "message": "the pre_deploy stage evaluates ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED at most once, so it keeps one reading"
   },
   {
-    "name": "iac_record_whose_scanner_bindings_copy_is_not_in_the_evidence_register",
+    "name": "iac_record_whose_scanner_check_mapping_copy_is_not_in_the_evidence_register",
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -5066,6 +5264,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -5518,13 +5717,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -5583,44 +5782,44 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
       ]
     },
     "remove": [],
-    "message": "the evidence register lists the copy of each binding set the plan stage applied"
+    "message": "the evidence register lists the copy of each scanner check mapping the plan stage applied"
   },
   {
     "name": "iac_record_whose_scanner_observations_are_not_in_the_evidence_register",
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -5638,6 +5837,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -6090,13 +6290,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -6109,14 +6309,14 @@
           },
           "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
           "media_type": "application/json",
-          "path": "units/root/plan/bindings.json",
+          "path": "units/root/plan/scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "bindings.json",
+          "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
           "size_bytes": 412,
           "source": {
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-            "name": "bindings.yaml"
+            "name": "scanner-check-mapping.yaml"
           },
           "storage_uri": null
         },
@@ -6151,13 +6351,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
@@ -6171,24 +6371,24 @@
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -6206,6 +6406,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -6658,13 +6859,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -6677,14 +6878,14 @@
           },
           "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
           "media_type": "application/json",
-          "path": "units/root/plan/bindings.json",
+          "path": "units/root/plan/scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "bindings.json",
+          "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
           "size_bytes": 412,
           "source": {
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-            "name": "bindings.yaml"
+            "name": "scanner-check-mapping.yaml"
           },
           "storage_uri": null
         },
@@ -6716,13 +6917,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
@@ -6880,10 +7081,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -6919,11 +7120,11 @@
         ],
         "commits_not_reviewed_list_complete": true
       },
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -6935,10 +7136,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -6974,11 +7175,11 @@
         ],
         "commits_not_reviewed_list_complete": true
       },
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -6990,10 +7191,10 @@
     "vector": "iac/local_run_deployed.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_expected/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_expected/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
       "/events/1/provenance/facts_source": "server",
       "/events/2/provenance/facts_source": "server",
       "/stages/pre_deploy/commit_review": {
@@ -7025,11 +7226,11 @@
         ],
         "commits_not_reviewed_list_complete": true
       },
-      "/evidence_refs/18/digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
-      "/evidence_refs/18/size_bytes": 5170,
+      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
+      "/evidence_refs/18/size_bytes": 5164,
       "/stages/pre_deploy/events": {
         "count": 2,
-        "digest": "sha256:94a1aaec96de504ea7525cd282134d863dd5903f8b8b9a72228963402a3bd76d",
+        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
       }
     },
@@ -7060,24 +7261,24 @@
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -7095,6 +7296,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -7547,13 +7749,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -7566,14 +7768,14 @@
           },
           "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
           "media_type": "application/json",
-          "path": "units/root/plan/bindings.json",
+          "path": "units/root/plan/scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "bindings.json",
+          "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
           "size_bytes": 412,
           "source": {
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-            "name": "bindings.yaml"
+            "name": "scanner-check-mapping.yaml"
           },
           "storage_uri": null
         },
@@ -7626,13 +7828,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
@@ -7646,24 +7848,24 @@
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -7681,6 +7883,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -8133,13 +8336,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": null,
           "storage_uri": null
         },
@@ -8152,14 +8355,14 @@
           },
           "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
           "media_type": "application/json",
-          "path": "units/root/plan/bindings.json",
+          "path": "units/root/plan/scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "bindings.json",
+          "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
           "size_bytes": 412,
           "source": {
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-            "name": "bindings.yaml"
+            "name": "scanner-check-mapping.yaml"
           },
           "storage_uri": null
         },
@@ -8214,13 +8417,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
@@ -8234,24 +8437,24 @@
     "vector": "iac/local_run.json",
     "set": {
       "/stages/plan/scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2
           },
           {
-            "id": "ILT.BINDINGS.STARTER",
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "version": "1.0.0",
             "origin": "shipped",
-            "file_name": null,
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "copy_path": "units/root/plan/shipped-bindings.json",
-            "assertions_bound": 9
+            "file_path": null,
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+            "assertions_mapped": 9
           }
         ],
         "required_scanners": [],
@@ -8269,6 +8472,7 @@
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {}
           }
         ],
@@ -8721,13 +8925,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:717df2003b296bca79da73a5c1604d0967997f8f9b282c04e848babc7d0393fa",
+          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 11712,
+          "size_bytes": 11697,
           "source": {
             "name": "checkov.json",
             "digest": "sha256:e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4"
@@ -8743,14 +8947,14 @@
           },
           "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
           "media_type": "application/json",
-          "path": "units/root/plan/bindings.json",
+          "path": "units/root/plan/scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "bindings.json",
+          "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
           "size_bytes": 412,
           "source": {
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-            "name": "bindings.yaml"
+            "name": "scanner-check-mapping.yaml"
           },
           "storage_uri": null
         },
@@ -8806,13 +9010,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+          "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
           "media_type": "application/json",
-          "path": "units/root/plan/shipped-bindings.json",
+          "path": "units/root/plan/shipped-scanner-check-mapping.json",
           "redaction_policy": null,
-          "ref_id": "shipped-bindings.json",
+          "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 4524,
+          "size_bytes": 4576,
           "source": null,
           "storage_uri": null
         }
@@ -8832,11 +9036,6 @@
           "stage": null
         }
       ],
-      "/stages/plan/assurance_status": {
-        "value": "incomplete",
-        "reason": "upstream_state_unavailable",
-        "detail": "upstream inputs replaced with placeholders: 1"
-      },
       "/coverage/substituted_inputs": [
         {
           "kind": "upstream_state",
@@ -8844,14 +9043,39 @@
           "stage": "plan"
         }
       ],
-      "/assurance_status": {
-        "value": "incomplete",
-        "reason": "upstream_state_unavailable",
-        "detail": "plan: upstream inputs replaced with placeholders: 1"
+      "/stages/plan/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "upstream_state_unavailable",
+            "stage": null,
+            "detail": "upstream inputs replaced with placeholders: 1"
+          },
+          {
+            "reason": "no_resource_in_scope_for_any_check",
+            "stage": null,
+            "detail": "no required assertion had a subject in scope"
+          }
+        ]
+      },
+      "/evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "upstream_state_unavailable",
+            "stage": "plan",
+            "detail": "upstream inputs replaced with placeholders: 1"
+          },
+          {
+            "reason": "no_resource_in_scope_for_any_check",
+            "stage": "plan",
+            "detail": "no required assertion had a subject in scope"
+          }
+        ]
       }
     },
     "remove": [],
-    "message": "assurance_status is not the record's stages combined"
+    "message": "evidence_status is not the record's stages combined"
   },
   {
     "name": "apply_log_holding_neither_its_counts_nor_an_error_with_a_null_summary",
@@ -8923,9 +9147,29 @@
     "set": {
       "/events/0/evaluation/status": "not_evaluated",
       "/events/0/evaluation/status_reason": "scanner_version_not_allowed",
-      "/stages/plan/events/digest": "sha256:aa7332410c51697a686e668101f5d7841d30d9705e2abab3c5d727f6f91a79c1",
-      "/evidence_refs/24/digest": "sha256:aa7332410c51697a686e668101f5d7841d30d9705e2abab3c5d727f6f91a79c1",
-      "/evidence_refs/24/size_bytes": 11746
+      "/stages/plan/events/digest": "sha256:0dcd940ba5b6b8b7c761d1d8d334eddda5fa4d57c58fa47826b28b8275e124ba",
+      "/evidence_refs/24/digest": "sha256:0dcd940ba5b6b8b7c761d1d8d334eddda5fa4d57c58fa47826b28b8275e124ba",
+      "/evidence_refs/24/size_bytes": 11731,
+      "/stages/plan/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        }
+      },
+      "/coverage/evaluator_status_counts": {
+        "opa": {
+          "pass": 2,
+          "fail": 1,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "error": 0
+        }
+      }
     },
     "remove": [],
     "message": "only an evaluation from a scanner's results is scanner_version_not_allowed"
@@ -8981,9 +9225,9 @@
     "vector": "iac/local_run_postponed.json",
     "set": {
       "/events/3/evaluation/observations/when": "unknown",
-      "/stages/plan/events/digest": "sha256:7b56d578b2a52014dee2c217b51a39b9d0e4f85cf5ea6007e05e427ac1c3b0f1",
-      "/evidence_refs/24/digest": "sha256:7b56d578b2a52014dee2c217b51a39b9d0e4f85cf5ea6007e05e427ac1c3b0f1",
-      "/evidence_refs/24/size_bytes": 11715
+      "/stages/plan/events/digest": "sha256:96b032f1b43a5337a0ca27027fcf998e4f41e8f9ad5957e3658ede3cd141cca2",
+      "/evidence_refs/24/digest": "sha256:96b032f1b43a5337a0ca27027fcf998e4f41e8f9ad5957e3658ede3cd141cca2",
+      "/evidence_refs/24/size_bytes": 11700
     },
     "remove": [],
     "message": "the plan stage lists, once each, only checks it may postpone"
@@ -9005,5 +9249,245 @@
     },
     "remove": [],
     "message": "the plan stage's events file is kept as canonical JSON (RFC8785)"
+  },
+  {
+    "name": "iac_record_whose_project_mapping_copy_names_no_source_file",
+    "vector": "iac/local_run_scanned.json",
+    "set": {
+      "/evidence_refs/25/source": null
+    },
+    "remove": [],
+    "message": "in the evidence register, the copy of a project's scanner check mapping names the file it was read from, and the copy of the shipped mapping names no file"
+  },
+  {
+    "name": "iac_record_whose_shipped_mapping_copy_names_a_source_file",
+    "vector": "iac/local_run_scanned.json",
+    "set": {
+      "/evidence_refs/26/source": {
+        "name": "scanner-check-mapping.yaml",
+        "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    "remove": [],
+    "message": "in the evidence register, the copy of a project's scanner check mapping names the file it was read from, and the copy of the shipped mapping names no file"
+  },
+  {
+    "name": "post_verify_stage_counting_the_check_it_settles_as_its_own",
+    "vector": "iac/local_run_postponed_settled.json",
+    "set": {
+      "/stages/post_verify/coverage/subjects_per_assertion": {
+        "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY@1.0.0": 1,
+        "ACME.IAC.RESOURCE.TERRAFORM.DATA.OUTPUT_SET@1.0.0": 1
+      }
+    },
+    "remove": [],
+    "message": "the post_verify stage counts subjects only for the assertions it was required to evaluate"
+  },
+  {
+    "name": "record_whose_reference_time_names_a_timestamp_authority",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/reference_time/source": "timestamp_authority"
+    },
+    "remove": [],
+    "message": "Input should be 'server' or 'runner_clock'"
+  },
+  {
+    "name": "record_whose_reference_time_names_how_far_it_is_trusted",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/reference_time/trust": "asserted"
+    },
+    "remove": [],
+    "message": "Extra inputs are not permitted"
+  },
+  {
+    "name": "record_whose_project_directory_starts_with_a_dot_slash",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "./infra"
+    },
+    "remove": [],
+    "message": "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'"
+  },
+  {
+    "name": "record_whose_project_directory_ends_with_a_slash",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "infra/"
+    },
+    "remove": [],
+    "message": "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'"
+  },
+  {
+    "name": "record_whose_project_directory_leaves_the_repository",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "../infra"
+    },
+    "remove": [],
+    "message": "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'"
+  },
+  {
+    "name": "record_whose_project_directory_names_a_drive",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "C:/infra"
+    },
+    "remove": [],
+    "message": "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'"
+  },
+  {
+    "name": "record_whose_project_directory_has_a_look_alike_slash",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "infra∕payments"
+    },
+    "remove": [],
+    "message": "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon"
+  },
+  {
+    "name": "record_whose_project_directory_is_only_dots",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_directory": "..."
+    },
+    "remove": [],
+    "message": "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon"
+  },
+  {
+    "name": "units_file_unit_outside_the_project",
+    "vector": "iac/local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        {
+          "name": "network",
+          "directory": "network",
+          "depends_on": []
+        },
+        {
+          "name": "app",
+          "directory": "../app",
+          "depends_on": [
+            "network"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'"
+  },
+  {
+    "name": "units_file_unit_named_without_its_directory",
+    "vector": "iac/local_run_declared_units.json",
+    "set": {
+      "/units_file/units": [
+        {
+          "name": "network",
+          "directory": "network",
+          "depends_on": []
+        },
+        {
+          "name": "app",
+          "depends_on": [
+            "network"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "Field required"
+  },
+  {
+    "name": "scanner_check_mapping_copy_naming_another_file",
+    "vector": "iac/local_run_scanned.json",
+    "set": {
+      "/stages/plan/scanners/scanner_check_mappings/0/file_path": "config/other.json"
+    },
+    "remove": [],
+    "message": "in the evidence register, the copy of a project's scanner check mapping names the file it was read from"
+  },
+  {
+    "name": "units_file_path_with_a_look_alike_slash",
+    "vector": "iac/local_run_declared_units.json",
+    "set": {
+      "/units_file/path": ".iltero∕units.json"
+    },
+    "remove": [],
+    "message": "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon"
+  },
+  {
+    "name": "stage_whose_evaluator_status_counts_leave_out_a_status",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/evaluator_status_counts/opa": {
+        "pass": 2,
+        "fail": 2,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0
+      }
+    },
+    "remove": [],
+    "message": "each evaluator's status counts name every status: pass, fail, unknown, not_applicable, not_evaluated, error"
+  },
+  {
+    "name": "stage_whose_evaluator_status_counts_list_an_evaluator_that_gave_no_evaluation",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/evaluator_status_counts/checkov": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    },
+    "remove": [],
+    "message": "an evaluator's status counts are listed only for an evaluator that gave an evaluation"
+  },
+  {
+    "name": "stage_whose_evaluator_status_counts_name_no_known_evaluator",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/evaluator_status_counts/semgrep": {
+        "pass": 2,
+        "fail": 2,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    },
+    "remove": [],
+    "message": "Input should be 'opa' or 'none'"
+  },
+  {
+    "name": "record_without_its_project_tree",
+    "vector": "iac/local_run.json",
+    "set": {},
+    "remove": [
+      "/subject/project_tree"
+    ],
+    "message": "Field required"
+  },
+  {
+    "name": "record_whose_project_tree_id_uses_another_hash_than_its_commit",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_tree/id": "7e3d5a1000000000000000000000000000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "the project tree's id and the commit's id use the same hash: both are 40 or both 64 characters long"
+  },
+  {
+    "name": "record_whose_project_tree_id_is_not_lowercase_hex",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/project_tree/id": "7E3D5A1000000000000000000000000000000000"
+    },
+    "remove": [],
+    "message": "String should match pattern"
   }
 ]

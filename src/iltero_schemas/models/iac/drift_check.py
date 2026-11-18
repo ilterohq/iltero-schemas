@@ -26,8 +26,8 @@ from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.fields import (
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.fields import (
     MAX_RESOURCES,
     Address,
     Count,

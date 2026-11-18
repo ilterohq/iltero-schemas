@@ -1,0 +1,516 @@
+{
+  "Results": [
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0008",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Launch configuration with unencrypted block device."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0009",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Launch configuration should not have a public IP address."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0019",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Config configuration aggregator should be using all regions for source"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0026",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "EBS volumes must be encrypted"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0027",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "EBS volume encryption should use Customer Managed Keys"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0028",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "aws_instance should activate session tokens for Instance Metadata Service."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0029",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "User data for EC2 instances must not contain sensitive AWS keys"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0056",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should prevent password reuse."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0058",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have requirement for at least one lowercase character."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0059",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have requirement for at least one number in the password."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0060",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have requirement for at least one symbol in the password."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0061",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have requirement for at least one uppercase character."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0062",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have expiry less than or equal to 90 days."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0063",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Password policy should have minimum password length of 14 or more characters."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0099",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Missing description for security group."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0101",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "AWS best practice to not use the default VPC for workflows"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0102",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "An Network ACL rule allows ALL ports."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0104",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "A security group rule should not allow unrestricted egress to any IP address."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0105",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Network ACLs should not allow unrestricted ingress to SSH or RDP from any IP address."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0122",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Ensure all data stored in the launch configuration EBS is securely encrypted"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0123",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM groups should have MFA enforcement activated."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0124",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Missing description for security group rule."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0129",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "User data for EC2 instances must not contain sensitive AWS keys"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0130",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "aws_instance should activate session tokens for Instance Metadata Service."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0131",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Instance with unencrypted block device."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0140",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "The \"root\" account has unrestricted access to all resources in the AWS account. It is highly recommended that the use of this account be avoided."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0141",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "The root user has complete access to all services and resources in an AWS account. AWS Access Keys provide programmatic access to a given account."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0143",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "IAM policies should not be granted directly to users."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0164",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Instances in a subnet should not receive a public IP address by default."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0178",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs. It is recommended that VPC Flow Logs be enabled for packet \"Rejects\" for VPCs."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0342",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "IAM Pass Role Filtering"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0344",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "AWS AMI data source should specify owners"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0345",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Disallow unrestricted S3 IAM Policies"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AWS-0346",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Reduce unnecessary unauthorized access or information disclosure of S3 buckets."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0007",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Storage containers in blob storage mode should not have public access"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0008",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Storage accounts should be configured to only accept transfers that are over secure connections"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0009",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "When using Queue Services for a storage account, logging should be enabled."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0010",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Trusted Microsoft Services should have bypass access to Storage accounts"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0011",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "The minimum TLS version for Storage Accounts should be TLS1_2 or higher"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0012",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "The default action on Storage account network rules should be set to deny"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0056",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Storage account should have blob soft delete enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0057",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Storage account should have logging enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0058",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Storage account should use geo-redundant replication"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0059",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Storage account should have secure transfer and minimum TLS version configured"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0060",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Storage account should use customer-managed keys for encryption"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "AZU-0061",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Storage account should have infrastructure encryption enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0027",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "A firewall rule should not allow unrestricted ingress from any IP address."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0029",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "VPC flow logs should be enabled for all subnetworks"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0030",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Disable project-wide SSH keys for all instances"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0031",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Instances should not have public IP addresses"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0032",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Disable serial port connectivity for all instances"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0033",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "VM disks should be encrypted with Customer Supplied Encryption Keys"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0034",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Disks should be encrypted with customer managed encryption keys"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0035",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "A firewall rule should not allow unrestricted egress to any IP address."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0036",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Instances should not override the project setting for OS Login"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0037",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "The encryption key used to encrypt a compute disk has been specified in plaintext."
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0039",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "SSL policies should enforce secure versions of TLS"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0041",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Instances should have Shielded VM VTPM enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0042",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "OS Login should be enabled at project level"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0043",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "Instances should not have IP forwarding enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0044",
+          "Severity": "CRITICAL",
+          "Status": "PASS",
+          "Title": "Instances should not use the default service account"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0045",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Instances should have Shielded VM integrity monitoring enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0067",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Instances should have Shielded VM secure boot enabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0070",
+          "Severity": "HIGH",
+          "Status": "PASS",
+          "Title": "RDP Access Is Not Restricted"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0071",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "SSH Access Is Not Restricted"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0072",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Google Compute Network Using Firewall Rule that Allows All Ports"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0073",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Disable Default Firewall Rules"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0074",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Google Compute Network Using Firewall Rule that Allows Large Port Range"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0075",
+          "Severity": "LOW",
+          "Status": "PASS",
+          "Title": "Google Compute Subnetwork with Private Google Access Disabled"
+        },
+        {
+          "CauseMetadata": {},
+          "ID": "GCP-0076",
+          "Severity": "MEDIUM",
+          "Status": "PASS",
+          "Title": "Google Compute Subnetwork Logging Disabled"
+        }
+      ],
+      "Type": "terraformplan"
+    },
+    {
+      "Misconfigurations": [
+        {
+          "CauseMetadata": {
+            "Resource": "aws_security_group.open"
+          },
+          "ID": "AWS-0107",
+          "Severity": "HIGH",
+          "Status": "FAIL",
+          "Title": "Security groups should not allow unrestricted ingress to SSH or RDP from any IP address."
+        }
+      ],
+      "Type": "terraformplan"
+    }
+  ],
+  "Trivy": {
+    "Version": "0.72.0"
+  }
+}

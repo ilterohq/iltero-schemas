@@ -18,22 +18,22 @@ from pydantic import model_validator
 from iltero_schemas.assertions.paths import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, NO_DRIFT_AFTER_APPLY_ID
 from iltero_schemas.canonical import change_digest, digest_of
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
-from iltero_schemas.change_types.activity import Activity
-from iltero_schemas.change_types.bindings import bound_to_change_digest_problems
-from iltero_schemas.change_types.owed_status import owed_status_problems
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
-from iltero_schemas.models.checked_content import CheckedPlan, checked_plan
-from iltero_schemas.models.coverage import (
+from iltero_schemas.change_types.common.activity import Activity
+from iltero_schemas.change_types.common.bindings import bound_to_change_digest_problems
+from iltero_schemas.change_types.common.expected_status import expected_status_problems
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
+from iltero_schemas.models.common.checked_content import CheckedPlan, checked_plan
+from iltero_schemas.models.common.coverage import (
     IDENTITY_REASONS,
-    STATE_REASON,
     PlanFlagGap,
     StateNotReadGap,
     state_not_read_reason_problem,
 )
-from iltero_schemas.models.facts import NotReported
-from iltero_schemas.models.fields import (
+from iltero_schemas.models.common.evidence_status import STATE_REASON
+from iltero_schemas.models.common.facts import NotReported
+from iltero_schemas.models.common.fields import (
     ArtifactDigestSource,
     Digest,
     FileName,
@@ -55,7 +55,7 @@ from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.iac.tools.variants import check_identity_against_apply
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR
+    from iltero_schemas.models.common.car import CAR
 
 
 class PlanRecord(StrictModel):
@@ -112,7 +112,8 @@ class IacChange(StrictModel):
     def _check_identity(self) -> None:
         """The identities are the deployment's: read after it, from its plan, naming exactly what left the state.
 
-        A deployment whose state after the apply was not read has none, though the post-deploy stage still owes them.
+        A deployment whose state after the apply was not read has none, though the post-deploy stage must still keep
+        them.
         """
         if self.deployment is not None and not self.deployment.apply.state_read:
             if self.identity is not None:
@@ -284,10 +285,10 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     return problems + bound_to_change_digest_problems(car, change.digest)
 
 
-def _owed_statuses(change: IacChange) -> dict[str, str]:
+def _expected_statuses(change: IacChange) -> dict[str, str]:
     """The status each built-in check must have, recomputed from what the record holds: whether the applied plan is
     the evaluated one, and whether the reading after the apply found no resource that differed."""
-    owed: dict[str, str] = {}
+    expected: dict[str, str] = {}
     if change.deployment is not None:
         applied, evaluated = change.deployment.plan, change.plan
         same = (applied.digest, applied.artifact_digest, applied.artifact_digest_source) == (
@@ -295,10 +296,10 @@ def _owed_statuses(change: IacChange) -> dict[str, str]:
             evaluated.artifact_digest,
             evaluated.artifact_digest_source,
         )
-        owed[APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID] = "pass" if same else "fail"
+        expected[APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID] = "pass" if same else "fail"
     if change.drift_check is not None:
-        owed[NO_DRIFT_AFTER_APPLY_ID] = "pass" if change.drift_check.differences_count == 0 else "fail"
-    return owed
+        expected[NO_DRIFT_AFTER_APPLY_ID] = "pass" if change.drift_check.differences_count == 0 else "fail"
+    return expected
 
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
@@ -307,7 +308,9 @@ def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
     The plan stage lists the gaps the plan's flags call for, the post-deploy stage the gap of a state not read, and
     each built-in check found the status they give.
     """
-    return _plan_flag_problems(car) + _state_problems(car) + owed_status_problems(car, _owed_statuses(_body(car)))
+    return (
+        _plan_flag_problems(car) + _state_problems(car) + expected_status_problems(car, _expected_statuses(_body(car)))
+    )
 
 
 def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
@@ -315,13 +318,13 @@ def _plan_flag_problems(car: CAR) -> list[tuple[str, str]]:
     order."""
     plan = _body(car).plan
     # In kind order.
-    owed = [
+    required = [
         (kind, value)
         for kind, value in (("plan_incomplete", plan.complete), ("plan_not_applyable", plan.applyable))
         if value is not True
     ]
     gaps = car.stages[Stage.PLAN].coverage.gaps
-    if [(gap.kind, gap.value) for gap in gaps if isinstance(gap, PlanFlagGap)] != owed:
+    if [(gap.kind, gap.value) for gap in gaps if isinstance(gap, PlanFlagGap)] != required:
         where, what = "stages.plan.coverage.gaps", "does not match change.plan.complete and change.plan.applyable"
         return [(where, f"{what}: one gap, in kind order, for each that is not true, with its value")]
     return []

@@ -1,0 +1,122 @@
+[
+  {
+    "name": "approvals_of_a_run_the_tool_opened",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "approval_identity",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server served its approvals."
+  },
+  {
+    "name": "commit_review_of_a_run_the_tool_opened",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "commit_review",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server served its commit review."
+  },
+  {
+    "name": "approvals_of_a_run_the_tool_opened_whose_pre_deploy_stage_is_pending",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "approval_identity",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "run_opened_locally comes before pre_deploy_pending: no server will ever serve approvals to this run."
+  },
+  {
+    "name": "approvals_of_a_run_the_tool_opened_whose_stage_read_none",
+    "record": {
+      "case": "pre_deploy_stage_whose_results_read_no_fact_from_the_server"
+    },
+    "property": "approval_identity",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "run_opened_locally comes before the stage's own result, here the marker that it read no approvals."
+  },
+  {
+    "name": "approvals_a_server_opened_run_needed_and_did_not_get",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+    },
+    "property": "approval_identity",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The server opened the run and the pre-deploy stage kept the unknown marker where a check needed its approvals."
+  },
+  {
+    "name": "exceptions_of_a_run_that_relied_on_a_project_exception",
+    "record": {
+      "vector": "iac/local_run_suppressed_with_exception.json"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "project_exception_relied_on",
+    "why": "An event names an exception from the project's own exceptions file; it comes before run_opened_locally and pre_deploy_pending."
+  },
+  {
+    "name": "exceptions_of_a_server_opened_run_that_lists_none",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+    },
+    "property": "exceptions",
+    "state": "not_assessed",
+    "reason": "exceptions_not_listed",
+    "why": "The server opened the run and the record lists no exception, so a verifier cannot assess any the server may have served."
+  },
+  {
+    "name": "reference_time_of_a_run_on_the_runners_clock",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "reference_time",
+    "state": "not_performed",
+    "reason": "runner_clock",
+    "why": "Every stage took its time from the runner's clock, so no trusted time source was used."
+  },
+  {
+    "name": "reference_time_of_a_run_on_the_servers_time",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_on_the_servers_time"
+    },
+    "property": "reference_time",
+    "state": "claimed_by_record",
+    "reason": "server",
+    "why": "Every stage took the time the server gave, the record's own claim."
+  },
+  {
+    "name": "evaluator_binary_of_a_record_on_a_placeholder_binary",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "evaluator_binary",
+    "state": "failed",
+    "reason": "other_binary_named",
+    "why": "Its OPA evaluations name a placeholder digest, not the pinned binary for their platform."
+  },
+  {
+    "name": "evaluator_binary_of_a_record_on_the_pinned_binary",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "evaluator_binary",
+    "state": "claimed_by_record",
+    "reason": "pinned_binary_named",
+    "why": "Every OPA evaluation names the pinned binary for its platform."
+  },
+  {
+    "name": "exceptions_of_a_run_that_relied_on_a_project_exception_with_its_pre_deploy_stage_out_of_scope",
+    "record": {
+      "case": "iac_record_relying_on_a_project_exception_with_its_pre_deploy_stage_out_of_scope"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "project_exception_relied_on",
+    "why": "The plan stage relied on an exception from the project's own exceptions file; it comes before pre_deploy_out_of_scope, which would otherwise hide it."
+  }
+]

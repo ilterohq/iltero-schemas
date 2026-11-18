@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import ConfigDict, Field
 
-from iltero_schemas.models.base import StrictModel
+from iltero_schemas.models.common.base import StrictModel
 
 
 class ApplyLogIncomplete(StrictModel):

@@ -35,26 +35,23 @@ from pydantic import Field
 from iltero_schemas.ast import AssertionSyntaxError, parse_document
 from iltero_schemas.ast.nodes import All, AnyOf, Assertion, Exists, Expr, Not, Path, Predicate
 from iltero_schemas.ast.roots import ITEM_ROOT
-from iltero_schemas.canonical.encoding import digest_of
-from iltero_schemas.models.assertion import Stage, TargetKind
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.change_type import ActivityName
-from iltero_schemas.models.coverage import (
+from iltero_schemas.canonical.common.encoding import digest_of
+from iltero_schemas.models.common.assertion import Stage, TargetKind
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.change_type import ActivityName
+from iltero_schemas.models.common.coverage import (
     CHECKED_AFTER_DEPLOYMENT,
-    INCOMPLETE_REASON_PRECEDENCE,
-    OPEN_CHECKS_REASON,
-    AssuranceStatus,
     postponed_count,
 )
-from iltero_schemas.models.event import AssertionRef, AssuranceEvent, OpaEvaluator
-from iltero_schemas.models.fields import MAX_RESOURCES, Digest
+from iltero_schemas.models.common.event import AssertionRef, AssuranceEvent, OpaEvaluator
+from iltero_schemas.models.common.fields import MAX_RESOURCES, Digest
+from iltero_schemas.models.common.subjects import local_identity
+from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths
-from iltero_schemas.models.kept_files import KeptFiles
-from iltero_schemas.models.subjects import local_identity
 from iltero_schemas.profiles import profile_for
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR
+    from iltero_schemas.models.common.car import CAR
 
 # The one reason a check is postponed for.
 POSTPONED_REASON = "known_after_deploy"
@@ -150,20 +147,6 @@ def open_postponed_checks(car: CAR) -> int:
     if plan is None or not plan.postponed_checks or Stage.POST_VERIFY in car.stages:
         return 0
     return len(plan.postponed_checks)
-
-
-def open_checks_status(count: int, stages: AssuranceStatus) -> AssuranceStatus:
-    """The status of a record that leaves ``count`` postponed checks open, given the status its stages combine into:
-    incomplete, for the open checks unless the stages give a reason that comes first in
-    ``INCOMPLETE_REASON_PRECEDENCE``."""
-    if count == 0 or (
-        stages.reason in INCOMPLETE_REASON_PRECEDENCE
-        and INCOMPLETE_REASON_PRECEDENCE.index(stages.reason) < INCOMPLETE_REASON_PRECEDENCE.index(OPEN_CHECKS_REASON)
-    ):
-        return stages
-    checks = "check" if count == 1 else "checks"
-    detail = f"{count} {checks} postponed until after the deployment {'was' if count == 1 else 'were'} not settled"
-    return AssuranceStatus(value="incomplete", reason=OPEN_CHECKS_REASON, detail=detail)
 
 
 def settles_a_postponed_check(event: AssuranceEvent) -> bool:

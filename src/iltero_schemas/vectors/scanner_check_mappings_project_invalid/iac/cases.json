@@ -1,0 +1,20 @@
+[
+  {
+    "name": "project_mapping_named_as_an_iltero_mapping",
+    "vector": "iac/payments.json",
+    "set": {
+      "/metadata/id": "ILT.SCANNER_CHECKS.PAYMENTS"
+    },
+    "remove": [],
+    "message": "a project's own id has a namespace of its own, not ILT or one starting so"
+  },
+  {
+    "name": "project_mapping_deciding_a_shipped_starter",
+    "vector": "iac/payments.json",
+    "set": {
+      "/spec/assertion_mappings/2/assertion/id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED"
+    },
+    "remove": [],
+    "message": "a project's scanner check mapping decides only the project's own assertions, not ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED"
+  }
+]

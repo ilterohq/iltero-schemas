@@ -22,10 +22,10 @@ from typing import Annotated, Any, Final
 
 from pydantic import AfterValidator, Field, model_validator
 
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.facts import NotReported
-from iltero_schemas.models.fields import DIGEST_PATTERN, Commit, Digest
-from iltero_schemas.models.strict_json import strict_json
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.facts import NotReported
+from iltero_schemas.models.common.fields import DIGEST_PATTERN, Commit, Digest
+from iltero_schemas.models.common.strict_json import strict_json
 
 # The longest repository name a registry accepts.
 REPOSITORY_MAX_LENGTH = 255

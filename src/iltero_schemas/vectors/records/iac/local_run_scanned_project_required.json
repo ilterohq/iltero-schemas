@@ -1,9 +1,14 @@
 {
   "apiVersion": "iltero.com/v1",
-  "assurance_status": {
-    "detail": null,
-    "reason": null,
-    "value": "complete"
+  "evidence_status": {
+    "value": "has_gaps",
+    "reasons": [
+      {
+        "reason": "required_checks_not_evaluated",
+        "stage": "plan",
+        "detail": "1 of 15 required checks were not evaluated"
+      }
+    ]
   },
   "change": {
     "activity": "iac_change",
@@ -25,47 +30,23 @@
       "tool_version": "1.14.0"
     }
   },
-  "complete": false,
+  "all_expected_stages_reported": false,
   "compliance_determination": null,
   "coverage": {
-    "assertions_evaluated": 9,
-    "assertions_expected": {
-      "origin": "project_files",
-      "required_assertion_digest": "sha256:29c0c8f5598f9cf3719aedd937dcbe103606acb2775a2471c943ad0023302d5f",
-      "value": 15
-    },
-    "evaluations": 15,
-    "gaps": [
-      {
-        "count": 1,
-        "kind": "scanner_version_not_allowed",
-        "stage": "plan"
-      },
-      {
-        "count": 3,
-        "engine": "trivy",
-        "kind": "evaluator_did_not_decide",
-        "reason": "tool_reports_only_failures",
-        "stage": "plan"
-      }
-    ],
-    "sampled": false,
-    "status_counts": {
-      "error": 0,
-      "fail": 3,
-      "not_applicable": 5,
-      "not_evaluated": 1,
-      "pass": 4,
-      "unknown": 2
+    "subjects_in_scope": {
+      "value": 20,
+      "counted_from": "plan_resource_enumeration",
+      "source_digest": "sha256:fc56ad8e66f6e21f5efb7d292fd9c7a37469f6141ce7e70a0c068d8394de2ae8",
+      "removed_by_plan": 0,
+      "excluded": []
     },
     "subjects_evaluated": 3,
-    "subjects_in_scope": {
-      "counted_from": "plan_resource_enumeration",
-      "excluded": [],
-      "removed_by_plan": 0,
-      "source_digest": "sha256:fc56ad8e66f6e21f5efb7d292fd9c7a37469f6141ce7e70a0c068d8394de2ae8",
-      "value": 20
+    "assertions_required": {
+      "value": 15,
+      "origin": "project_files",
+      "required_assertion_digest": "sha256:29c0c8f5598f9cf3719aedd937dcbe103606acb2775a2471c943ad0023302d5f"
     },
+    "assertions_evaluated": 14,
     "subjects_per_assertion": {
       "ACME.IAC.RESOURCE.AWS.RDS.DELETION_PROTECTED@1.0.0": 1,
       "ACME.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 1,
@@ -83,11 +64,69 @@
       "ILT.IAC.RESOURCE.AWS.S3.ENCRYPTED_WITH_KMS_KEY@1.0.0": 1,
       "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 1
     },
-    "substituted_inputs": [],
+    "status_counts": {
+      "pass": 4,
+      "fail": 3,
+      "unknown": 2,
+      "not_applicable": 5,
+      "not_evaluated": 1,
+      "error": 0
+    },
+    "evaluations": 15,
+    "gaps": [
+      {
+        "stage": "plan",
+        "kind": "scanner_version_not_allowed",
+        "count": 1
+      },
+      {
+        "stage": "plan",
+        "kind": "evaluator_did_not_decide",
+        "engine": "trivy",
+        "reason": "no_result_of_the_mapped_checks",
+        "count": 3
+      }
+    ],
     "truncated": {
+      "value": false,
       "limit": null,
-      "reason": null,
-      "value": false
+      "reason": null
+    },
+    "sampled": false,
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "checkov": {
+        "pass": 3,
+        "fail": 1,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 1,
+        "error": 0
+      },
+      "none": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0,
+        "not_applicable": 5,
+        "not_evaluated": 0,
+        "error": 0
+      },
+      "opa": {
+        "pass": 5,
+        "fail": 3,
+        "unknown": 2,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      },
+      "trivy": {
+        "pass": 0,
+        "fail": 1,
+        "unknown": 0,
+        "not_applicable": 0,
+        "not_evaluated": 3,
+        "error": 0
+      }
     }
   },
   "events": [
@@ -160,7 +199,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -235,8 +274,8 @@
           "unknown_paths": [],
           "version": "0.72.0"
         },
-        "evaluator_binding": {
-          "digest": "sha256:d532ba28f68b37b7d12d4dd5c99ad595e1cd8b66d4fd4887d99b8a73d11b81ea"
+        "scanner_checks": {
+          "digest": "sha256:7dc0d7d604900eab25274d51e0027b2171a6376122067ffcf65a52e673ba8194"
         },
         "executor": {
           "ci_run_id": null,
@@ -334,7 +373,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -407,8 +446,8 @@
           "unknown_paths": [],
           "version": "3.3.8"
         },
-        "evaluator_binding": {
-          "digest": "sha256:79d2eb71d2dcd64f71b1d3b1032fc7b6a281cd1a94bbfceff487bfe21f8dbf3a"
+        "scanner_checks": {
+          "digest": "sha256:e8d77b3b5d99f8d44de0c2696519e0d2b0cc3fc7f5a7fbc8de0aec4d4702a082"
         },
         "executor": {
           "ci_run_id": null,
@@ -416,7 +455,7 @@
           "type": "human"
         },
         "facts_source": null,
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "run": {
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
@@ -506,7 +545,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -579,8 +618,8 @@
           "unknown_paths": [],
           "version": "3.3.8"
         },
-        "evaluator_binding": {
-          "digest": "sha256:c2c4278ffc9edfba79b8a2b5a5901339ec25de13e8f161b3f87fc5b2b8699a96"
+        "scanner_checks": {
+          "digest": "sha256:ffd49fbb71a150f47f49c8e69615a97bdffbadde620513b0532d2c32680aca41"
         },
         "executor": {
           "ci_run_id": null,
@@ -588,7 +627,7 @@
           "type": "human"
         },
         "facts_source": null,
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "run": {
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
@@ -643,7 +682,7 @@
           "version": "1.0.0"
         },
         "evaluator": null,
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -697,7 +736,7 @@
           "version": "1.0.0"
         },
         "evaluator": null,
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -751,7 +790,7 @@
           "version": "1.0.0"
         },
         "evaluator": null,
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -805,7 +844,7 @@
           "version": "1.0.0"
         },
         "evaluator": null,
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1071,7 +1110,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1112,7 +1151,7 @@
         "stage": "plan",
         "status": "not_evaluated",
         "status_detail": null,
-        "status_reason": "tool_reports_only_failures"
+        "status_reason": "no_result_of_the_mapped_checks"
       },
       "observed_at": "2026-11-16T09:00:00.000Z",
       "provenance": {
@@ -1144,8 +1183,8 @@
           "unknown_paths": [],
           "version": "0.72.0"
         },
-        "evaluator_binding": {
-          "digest": "sha256:514ffd613aa4c0e0652be30d04512db5a87b52ab5a67a2546b542f5e299f5523"
+        "scanner_checks": {
+          "digest": "sha256:d0e81b767c5e20cf70d784d465e439ccb24e7cc6d491868d67e4b2658fb3db15"
         },
         "executor": {
           "ci_run_id": null,
@@ -1208,7 +1247,7 @@
           "version": "1.0.0"
         },
         "evaluator": null,
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1297,7 +1336,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1394,7 +1433,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1467,8 +1506,8 @@
           "unknown_paths": [],
           "version": "3.3.8"
         },
-        "evaluator_binding": {
-          "digest": "sha256:533a181b736280c5d8782afab5b0b0141d8c0ea83f224133a98bfb97d82b7cc6"
+        "scanner_checks": {
+          "digest": "sha256:ae42e8f9a86ba93a7002aafaa1c29d439c0716012181f60e4eecf7c04b196aac"
         },
         "executor": {
           "ci_run_id": null,
@@ -1476,7 +1515,7 @@
           "type": "human"
         },
         "facts_source": null,
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "run": {
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
@@ -1510,7 +1549,7 @@
         "stage": "plan",
         "status": "not_evaluated",
         "status_detail": null,
-        "status_reason": "tool_reports_only_failures"
+        "status_reason": "no_result_of_the_mapped_checks"
       },
       "observed_at": "2026-11-16T09:00:00.000Z",
       "provenance": {
@@ -1542,8 +1581,8 @@
           "unknown_paths": [],
           "version": "0.72.0"
         },
-        "evaluator_binding": {
-          "digest": "sha256:bd917cfe3f2e6376eab03b1b20bd9863dbd9e323acc472fe2a5e6e8206deb48e"
+        "scanner_checks": {
+          "digest": "sha256:b939196bff6c1e05eed3169b43afcf5a4c40cd624965566248756943986e0fab"
         },
         "executor": {
           "ci_run_id": null,
@@ -1683,7 +1722,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1780,7 +1819,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -1853,8 +1892,8 @@
           "unknown_paths": [],
           "version": "3.3.8"
         },
-        "evaluator_binding": {
-          "digest": "sha256:f3f5e2fda4d5888b84c6a4bd14921563d6e8b8b09af95cf961db2abf4dce4f27"
+        "scanner_checks": {
+          "digest": "sha256:4b2161d473e8804172f658bb8a3c7a2d453603b6c80778c402fbe8dc80452af4"
         },
         "executor": {
           "ci_run_id": null,
@@ -1862,7 +1901,7 @@
           "type": "human"
         },
         "facts_source": null,
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "run": {
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
@@ -1896,7 +1935,7 @@
         "stage": "plan",
         "status": "not_evaluated",
         "status_detail": null,
-        "status_reason": "tool_reports_only_failures"
+        "status_reason": "no_result_of_the_mapped_checks"
       },
       "observed_at": "2026-11-16T09:00:00.000Z",
       "provenance": {
@@ -1928,8 +1967,8 @@
           "unknown_paths": [],
           "version": "0.72.0"
         },
-        "evaluator_binding": {
-          "digest": "sha256:2c4eb75eef6c421dbac5ce23761a048008579bf79fc14e56a63b1a3128ccab0d"
+        "scanner_checks": {
+          "digest": "sha256:c04d7d7c06b2c92108e307b60da02b8315eb2a476bcaafa59b7cc835a6955340"
         },
         "executor": {
           "ci_run_id": null,
@@ -2057,7 +2096,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -2158,7 +2197,7 @@
           },
           "version": "1.20.2"
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "executor": {
           "ci_run_id": null,
           "provider": "local",
@@ -2236,8 +2275,8 @@
           "unknown_paths": [],
           "version": "3.3.8"
         },
-        "evaluator_binding": {
-          "digest": "sha256:c589a239e71ee7eee97b3b6b849b9c03557a14c72cdd64dd1bbc83809bb87c16"
+        "scanner_checks": {
+          "digest": "sha256:6cec9c6903271bc9b73af547f56c2145390d4c987be51b112e60a42f184db8f7"
         },
         "executor": {
           "ci_run_id": null,
@@ -2245,7 +2284,7 @@
           "type": "human"
         },
         "facts_source": null,
-        "input_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+        "input_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
         "run": {
           "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
           "unit": "root"
@@ -2547,13 +2586,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:671f37be2478fde076cbcc69dc6aad8c6aea99757afa348058800b601add4dd5",
+      "digest": "sha256:b699fad7b6d513e18a81edcdf42965293a09f294634d25f7c1750a20674959a3",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 841,
+      "size_bytes": 857,
       "source": null,
       "storage_uri": null
     },
@@ -2598,13 +2637,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c654919e6be832c117d721f89cd5122d1d2f7022edadad593245c2dc277ce557",
+      "digest": "sha256:ab7b71c03f98d0b0b5c883188970eb982b20ee13f2a16de2558112c94bcd2002",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 770,
+      "size_bytes": 786,
       "source": null,
       "storage_uri": null
     },
@@ -2649,13 +2688,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:bf3d01bbe2a4071a28bf2823c0ff0ea425dcd7c94f7c8b3dd3dcf221a57846df",
+      "digest": "sha256:e05609c30bbddabd3dda13e670ca847e677122065a9afdb80dedbea221a91fd1",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 1032,
+      "size_bytes": 1048,
       "source": null,
       "storage_uri": null
     },
@@ -2700,13 +2739,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:93ee2e498744eefe5de350276024c2f6b29924c416280614993c65482d92f5ec",
+      "digest": "sha256:75d6e57bedf19c1911177c9ffd899c516adf2fa41b63d4dfc58372e44e34a8dc",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 880,
+      "size_bytes": 896,
       "source": null,
       "storage_uri": null
     },
@@ -2802,13 +2841,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c6a3fe15bf313970822d2cb479304d02fa432e730263d76975ba401900b4aec5",
+      "digest": "sha256:4a3fd2177914a68a538c5ebd4f01543b97bec6ce3bcf533de4b007d217a5a6df",
       "media_type": "application/yaml",
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES@1.0.0.yaml",
       "retention_until": null,
-      "size_bytes": 956,
+      "size_bytes": 972,
       "source": null,
       "storage_uri": null
     },
@@ -3329,13 +3368,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:8e3b77def54516aa050e7dfc0a364091e2f52d2576bffd289085bd0684e67f98",
+      "digest": "sha256:2402372c707ca7af011631196c8653c1bc94c6b05dd2b62cac141c10fcb2248e",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 47591,
+      "size_bytes": 47531,
       "source": null,
       "storage_uri": null
     },
@@ -3346,15 +3385,15 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:bd5cc4a09716e95bd76eb362d967fdad9840e2d8c42a336bce4954b38cf9dd2f",
+      "digest": "sha256:2b9f1298134dedf6cba699372ee1645256cf1e9356a3cb23401e821dd19509cb",
       "media_type": "application/json",
-      "path": "units/root/plan/project-bindings.json",
+      "path": "units/root/plan/project-scanner-check-mapping.json",
       "redaction_policy": null,
-      "ref_id": "project-bindings.json",
+      "ref_id": "project-scanner-check-mapping.json",
       "retention_until": null,
-      "size_bytes": 1234,
+      "size_bytes": 1262,
       "source": {
-        "digest": "sha256:a1ffad9a8216829c42a6a790c1573e4e65723c78ac7256f6b95453bad1eabc8a",
+        "digest": "sha256:ba35d997710815142210096d39f5ff55463cf4827191be36e4e2da74ce940379",
         "name": "payments.json"
       },
       "storage_uri": null
@@ -3366,13 +3405,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
+      "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
       "media_type": "application/json",
-      "path": "units/root/plan/bindings.json",
+      "path": "units/root/plan/scanner-check-mapping.json",
       "redaction_policy": null,
-      "ref_id": "bindings.json",
+      "ref_id": "scanner-check-mapping.json",
       "retention_until": null,
-      "size_bytes": 4524,
+      "size_bytes": 4576,
       "source": null,
       "storage_uri": null
     },
@@ -3383,19 +3422,19 @@
         "tool": "checkov",
         "version": "0.1.0"
       },
-      "digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "media_type": "application/json",
-      "path": "units/root/artifacts/sha256-2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "path": "units/root/artifacts/sha256-537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "redaction_policy": {
         "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
         "id": "iltero.redaction",
         "version": "1"
       },
-      "ref_id": "sha256-2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+      "ref_id": "sha256-537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
       "retention_until": null,
-      "size_bytes": 23757,
+      "size_bytes": 23793,
       "source": {
-        "digest": "sha256:ef5d9ced99d928b462f6afba25a3507079d8372cd8f184fb4837f3d7af4b0220",
+        "digest": "sha256:3cebac85bbd14f6034bf08d3f29203f50d3616c7777c119ab02e187b8e060ca4",
         "name": "checkov_report.json"
       },
       "storage_uri": null
@@ -3407,7 +3446,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c3672de49f2f9937a8d1cc2375235356b1ee146bd9f09ebe93378c24537d22e1",
+      "digest": "sha256:ea0408ed994224fe425eee3e75a1024c180f719201f2ca494b26646756af0b3b",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -3417,9 +3456,9 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 25690,
+      "size_bytes": 25713,
       "source": {
-        "digest": "sha256:ef5d9ced99d928b462f6afba25a3507079d8372cd8f184fb4837f3d7af4b0220",
+        "digest": "sha256:3cebac85bbd14f6034bf08d3f29203f50d3616c7777c119ab02e187b8e060ca4",
         "name": "checkov_report.json"
       },
       "storage_uri": null
@@ -3455,7 +3494,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:8d7befc3e38b6d84636d357dff2f5f3a680dac640aa13213a063173924218c80",
+      "digest": "sha256:fed0eed227ed8d9fdb727dcc5b1b85239ae659993837c89aa6b2c44b2b4d8cb3",
       "media_type": "application/json",
       "path": "units/root/plan/trivy-observations.json",
       "redaction_policy": {
@@ -3465,7 +3504,7 @@
       },
       "ref_id": "trivy-observations.json",
       "retention_until": null,
-      "size_bytes": 5080,
+      "size_bytes": 5106,
       "source": {
         "digest": "sha256:b8a621040aa154f3ba54a5255f1681d8c2c80091d0bb49681dc61388e0a69233",
         "name": "trivy_report.json"
@@ -3509,10 +3548,15 @@
         "digest": "sha256:49dbe4d0a92a6714ba29b46c933446f28d3afceb22d39f983cc4211a03449863",
         "index": "units/root/plan/assertions/compiled.json"
       },
-      "assurance_status": {
-        "detail": null,
-        "reason": null,
-        "value": "complete"
+      "evidence_status": {
+        "value": "has_gaps",
+        "reasons": [
+          {
+            "reason": "required_checks_not_evaluated",
+            "stage": null,
+            "detail": "1 of 15 required checks were not evaluated"
+          }
+        ]
       },
       "commit_review": null,
       "compiler": {
@@ -3522,8 +3566,8 @@
         "version": "1.0.0"
       },
       "coverage": {
-        "assertions_evaluated": 9,
-        "assertions_expected": {
+        "assertions_evaluated": 14,
+        "assertions_required": {
           "origin": "project_files",
           "required_assertion_digest": "sha256:df75ac4037ab532dcf89074b29fc7fcd2703f1466f1c4d7a9d77ab3ba51ab11b",
           "value": 15
@@ -3539,7 +3583,7 @@
             "count": 3,
             "engine": "trivy",
             "kind": "evaluator_did_not_decide",
-            "reason": "tool_reports_only_failures",
+            "reason": "no_result_of_the_mapped_checks",
             "stage": null
           }
         ],
@@ -3582,12 +3626,46 @@
           "limit": null,
           "reason": null,
           "value": false
+        },
+        "evaluator_status_counts": {
+          "checkov": {
+            "pass": 3,
+            "fail": 1,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 1,
+            "error": 0
+          },
+          "none": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 5,
+            "not_evaluated": 0,
+            "error": 0
+          },
+          "opa": {
+            "pass": 5,
+            "fail": 3,
+            "unknown": 2,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          },
+          "trivy": {
+            "pass": 0,
+            "fail": 1,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 3,
+            "error": 0
+          }
         }
       },
       "enforcement_mode": "enforcing",
       "events": {
         "count": 24,
-        "digest": "sha256:8e3b77def54516aa050e7dfc0a364091e2f52d2576bffd289085bd0684e67f98",
+        "digest": "sha256:2402372c707ca7af011631196c8653c1bc94c6b05dd2b62cac141c10fcb2248e",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -4062,29 +4140,27 @@
         ]
       },
       "reference_time": {
-        "source": "runner_clock",
-        "time_window": null,
-        "trust": "asserted",
-        "value": "2026-11-16T09:00:00.000Z"
+        "value": "2026-11-16T09:00:00.000Z",
+        "source": "runner_clock"
       },
       "resource_redaction": null,
       "scanners": {
-        "evaluator_binding_sets": [
+        "scanner_check_mappings": [
           {
-            "assertions_bound": 3,
-            "copy_path": "units/root/plan/project-bindings.json",
-            "digest": "sha256:bd5cc4a09716e95bd76eb362d967fdad9840e2d8c42a336bce4954b38cf9dd2f",
-            "file_name": "payments.json",
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "assertions_mapped": 3,
+            "copy_path": "units/root/plan/project-scanner-check-mapping.json",
+            "digest": "sha256:2b9f1298134dedf6cba699372ee1645256cf1e9356a3cb23401e821dd19509cb",
+            "file_path": "payments.json",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "origin": "file",
             "version": "1.0.0"
           },
           {
-            "assertions_bound": 9,
-            "copy_path": "units/root/plan/bindings.json",
-            "digest": "sha256:595b89313ee53ad09828c064937933df310c46f0854d178937a57684f0327cfd",
-            "file_name": null,
-            "id": "ILT.BINDINGS.STARTER",
+            "assertions_mapped": 9,
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
+            "file_path": null,
+            "id": "ILT.SCANNER_CHECKS.STARTER",
             "origin": "shipped",
             "version": "1.0.0"
           }
@@ -4097,7 +4173,8 @@
             ],
             "observations": "units/root/plan/checkov-observations.json",
             "redacted_values": {},
-            "report_digest": "sha256:2045fa2244dcc89b69a8f94ac49af8c7688a27807aa95d38579f7d4ad6180c59",
+            "report_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
+            "results_not_listed": 0,
             "results_read": 74,
             "supplied_by": "pipeline",
             "tool": "checkov",
@@ -4113,6 +4190,7 @@
             "observations": "units/root/plan/trivy-observations.json",
             "redacted_values": {},
             "report_digest": "sha256:822a333698c1314770058cfd3f7ae6432b3ee2fe6781361cd83148fdfff3fd62",
+            "results_not_listed": null,
             "results_read": 15,
             "supplied_by": "pipeline",
             "tool": "trivy",
@@ -4129,10 +4207,10 @@
       "stage": "plan",
       "values_known_after_deployment": "block",
       "verdict": {
+        "value": "not_met",
+        "reason": null,
         "computed_from": "status_counts",
-        "exit_code": 6,
-        "stage": null,
-        "value": "fail"
+        "stage": null
       }
     }
   },
@@ -4151,15 +4229,19 @@
       "repository": null,
       "vcs": "git"
     },
-    "unit": "root"
+    "unit": "root",
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
+    }
   },
   "trust_level": "self_attested",
   "unit": "root",
   "units_file": null,
   "verdict": {
+    "value": "not_met",
+    "reason": null,
     "computed_from": "stage_precedence",
-    "exit_code": 6,
-    "stage": "plan",
-    "value": "fail"
+    "stage": "plan"
   }
 }

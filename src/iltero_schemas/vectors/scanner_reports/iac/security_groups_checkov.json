@@ -1363,6 +1363,9 @@
   },
   "summary": {
     "checkov_version": "3.3.8",
-    "parsing_errors": 0
+    "failed": 19,
+    "parsing_errors": 0,
+    "passed": 69,
+    "skipped": 0
   }
 }

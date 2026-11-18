@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from iltero_schemas.models.coverage import Excluded
+from iltero_schemas.models.common.coverage import Excluded
 from iltero_schemas.models.iac.scanner_scope import exclusion_holds, left_out_for_identity, plan_scope
 
 REDACTED = {"__redacted": True, "reason": "matched_pattern", "present": True, "type": "string"}

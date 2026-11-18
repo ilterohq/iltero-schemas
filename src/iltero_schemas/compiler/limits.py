@@ -24,7 +24,7 @@ REASON_MAX_BYTES = 2 * 1024
 # observations: at most 125 predicate entries (128 expressions less the
 # combinators that hold them), each under 4 KiB in the worst case (a long
 # path, two lists of four 128-char strings, a scalar and the fixed keys) in
-# canonical JSON — about 390 KiB measured; `tests/test_limits.py` pins it.
+# canonical JSON — about 390 KiB measured; `tests/common/test_limits.py` pins it.
 OBSERVATIONS_MAX_BYTES = 512 * 1024
 # observations -> predicates[] -> entry -> a list or object value -> scalar.
 OBSERVATIONS_MAX_DEPTH = 4

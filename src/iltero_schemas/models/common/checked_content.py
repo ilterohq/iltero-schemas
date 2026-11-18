@@ -1,0 +1,58 @@
+"""The checked content: what a record's change is about and its evaluations ran on, named by its digest.
+
+Every evaluation names the checked content it read, so an evaluation of other
+content cannot be added to a record. For an infrastructure change made with an
+infrastructure-as-code (IaC) tool, the checked content is the plan, named by
+the plan digest (``canonical.plan_digest``) and the version of the rule that
+computed it. For a container image, it is the image, named by its repository
+and its digest: the same image promoted to several environments is the same
+checked content.
+"""
+
+from __future__ import annotations
+
+from typing import Annotated, Literal
+
+from pydantic import Field, model_validator
+
+from iltero_schemas.canonical.iac.plan import check_plan_digest_version
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.fields import Digest, Identifier
+from iltero_schemas.models.iac.tool_names import IacTool
+from iltero_schemas.models.image.naming import ImageRepository
+
+
+class CheckedPlan(StrictModel):
+    """A plan, by its digest and the IaC tool and version of the rule that computed it."""
+
+    kind: Literal["plan"]
+    digest: Digest
+    digest_version: Identifier
+    tool: IacTool
+
+    @model_validator(mode="after")
+    def _version_is_the_tools(self) -> CheckedPlan:
+        check_plan_digest_version(self.tool, self.digest_version)
+        return self
+
+
+class CheckedImage(StrictModel):
+    """A container image, by its repository and its digest: the index digest for an image of several platforms."""
+
+    kind: Literal["container_image"]
+    repository: ImageRepository
+    digest: Digest
+
+
+# The content an evaluation names, told apart by ``kind``.
+CheckedContent = Annotated[CheckedPlan | CheckedImage, Field(discriminator="kind")]
+
+
+def checked_plan(digest: str, digest_version: str, tool: IacTool) -> CheckedPlan:
+    """The plan with the digest ``digest``, computed by version ``digest_version`` of ``tool``'s rule."""
+    return CheckedPlan(kind="plan", digest=digest, digest_version=digest_version, tool=tool)
+
+
+def checked_image(repository: str, digest: str) -> CheckedImage:
+    """The image with the digest ``digest`` in ``repository``."""
+    return CheckedImage(kind="container_image", repository=repository, digest=digest)

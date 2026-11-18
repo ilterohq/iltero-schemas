@@ -9,8 +9,8 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.canonical import digest_of
-from iltero_schemas.models.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.coverage import IDENTITY_REASONS
+from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.coverage import IDENTITY_REASONS
 from tests.records import count_by_digest, valid_case_record
 
 _CASE = "state_not_read_with_a_deposed_delete_left_unknown"

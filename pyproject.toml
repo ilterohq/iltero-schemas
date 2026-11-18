@@ -20,7 +20,7 @@ dependencies = [
     "pydantic>=2.11.0",  # models that read external input (extra="forbid"); serialize_by_alias needs 2.11
     "pyyaml>=6.0",       # assertion documents (safe loader only)
     "rfc8785>=0.1.4",    # RFC 8785 JSON canonicalization
-    "packaging>=23.0",   # PEP 440 version specifiers in evaluator bindings
+    "packaging>=23.0",   # PEP 440 version specifiers in scanner check mappings
 ]
 
 [dependency-groups]

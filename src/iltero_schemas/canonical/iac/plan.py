@@ -25,7 +25,7 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Any
 
-from iltero_schemas.canonical.encoding import canonical_bytes, digest
+from iltero_schemas.canonical.common.encoding import canonical_bytes, digest
 from iltero_schemas.models.iac.tool_names import IacTool
 
 # The version of each tool's rule; it moves when the bytes the rule produces change.

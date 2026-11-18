@@ -15,10 +15,10 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.fields import MAX_RESOURCES, Address, Count, Identifier
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.fields import MAX_RESOURCES, Address, Count, Identifier
+from iltero_schemas.models.common.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.iac.markers import ApplyLogIncomplete, OutcomeUnknown, StateNotRead
-from iltero_schemas.models.redaction import MaybeRedacted, MaybeRedactedAddress
 
 if TYPE_CHECKING:
     from iltero_schemas.models.iac.deployment import Apply

@@ -32,6 +32,10 @@
         "name": "main"
       },
       "pull_request": null
+    },
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
     }
   },
   "change": {
@@ -130,9 +134,7 @@
       "observed_at": "2026-11-02T09:00:00Z",
       "reference_time": {
         "value": "2026-11-02T09:00:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "execution": {
         "evaluator": {
@@ -181,7 +183,7 @@
       },
       "events": {
         "path": "units/api/pre_deploy/events.json",
-        "digest": "sha256:9164127c567debc27f20e69e1a6a46d3807e0e58f04ff578a2647926d31ab7cc",
+        "digest": "sha256:d9c051bf418347af11164b651a5ce1b65700575b8c80dc0727b0362cac721de4",
         "count": 2
       },
       "assertions": {
@@ -202,7 +204,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 2,
           "origin": "project_files",
           "required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e"
@@ -228,18 +230,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 0,
+            "fail": 0,
+            "unknown": 2,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "indeterminate",
-        "exit_code": 3,
+        "value": "undecided",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     },
     "post_deploy": {
@@ -247,9 +258,7 @@
       "observed_at": "2026-11-02T09:03:00Z",
       "reference_time": {
         "value": "2026-11-02T09:03:00Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "execution": {
         "evaluator": {
@@ -292,7 +301,7 @@
       },
       "events": {
         "path": "units/api/post_deploy/events.json",
-        "digest": "sha256:a3ae9a529d004e3d7032158e3185571e25a641d68854113a286a4f18b883a492",
+        "digest": "sha256:1bf1526fbe413d956d2c7b9650039b77bebca93ef948316b07b55e240fa982eb",
         "count": 1
       },
       "assertions": {
@@ -313,7 +322,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 1,
           "origin": "project_files",
           "required_assertion_digest": "sha256:d893f15326d79f191cf4720cfc83515edddf47e1840f78b92ac4fea6ef02df90"
@@ -338,18 +347,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     },
     "post_verify": {
@@ -357,9 +375,7 @@
       "observed_at": "2026-11-02T09:05:30Z",
       "reference_time": {
         "value": "2026-11-02T09:05:30Z",
-        "source": "runner_clock",
-        "trust": "asserted",
-        "time_window": null
+        "source": "runner_clock"
       },
       "execution": {
         "evaluator": {
@@ -402,7 +418,7 @@
       },
       "events": {
         "path": "units/api/post_verify/events.json",
-        "digest": "sha256:2a4e97f4af8bd92d6938ca3d5437a28155c7078b7974fafec2937c405e784c06",
+        "digest": "sha256:4034b31c100ad658a72c975a64bec0e2e6d1f61edc6399b79ea0655ed98b3ba5",
         "count": 1
       },
       "assertions": {
@@ -423,7 +439,7 @@
           "excluded": []
         },
         "subjects_evaluated": 1,
-        "assertions_expected": {
+        "assertions_required": {
           "value": 1,
           "origin": "project_files",
           "required_assertion_digest": "sha256:e3b07b94db7e296b30d3e77161df25344eb1152b4323e7807c72ed97153dd37a"
@@ -448,18 +464,27 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": []
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
       },
       "verdict": {
-        "value": "pass",
-        "exit_code": 0,
+        "value": "met",
+        "reason": null,
         "computed_from": "status_counts",
         "stage": null
       },
-      "assurance_status": {
-        "value": "complete",
-        "reason": null,
-        "detail": null
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
       }
     }
   },
@@ -562,7 +587,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:2076c110c367a946f341dc64f73ccc9a95b15f51731929dec95263607dcf9937",
         "compiled_digest": "sha256:c05ae70a8fcde52181e3c53d14ef659557e36ea7d72fb4b92c883104e38260bb",
@@ -659,7 +684,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:703748a3409565d3f8a245def640e98bd61860f444ef37ce278f997110f0a865",
         "compiled_digest": "sha256:f6615a48568b87a4d02050ef6f7663a056e7baf2f04477965744e17c41c5936d",
@@ -768,7 +793,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:a530eb4ef13e055f6dbf64d4daaf656d55fecf2853eb7f5529867bf423b595f8",
         "compiled_digest": "sha256:9dc0e7997cb17cfcca25de16873ab48ac23ba5e49f068fa400a1e94d6d148bd3",
@@ -913,7 +938,7 @@
           "content_digest": null,
           "key_id": null
         },
-        "evaluator_binding": null,
+        "scanner_checks": null,
         "assertion_source": "contract_starter",
         "assertion_source_digest": "sha256:77ed273c6fc5031a3382da31102376c8f71cab039c338e4c3e9d212cc94c38f3",
         "compiled_digest": "sha256:b1245a36b7c1cbbdb1050cc24dc1de9dac36312f6e3ae1266aeb3a78de5bdfa5",
@@ -942,7 +967,7 @@
       "excluded": []
     },
     "subjects_evaluated": 1,
-    "assertions_expected": {
+    "assertions_required": {
       "value": 4,
       "origin": "project_files",
       "required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83"
@@ -970,20 +995,29 @@
       "reason": null
     },
     "sampled": false,
-    "substituted_inputs": []
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "opa": {
+        "pass": 2,
+        "fail": 0,
+        "unknown": 2,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    }
   },
   "verdict": {
-    "value": "indeterminate",
-    "exit_code": 3,
+    "value": "undecided",
+    "reason": null,
     "computed_from": "stage_precedence",
     "stage": "pre_deploy"
   },
-  "assurance_status": {
-    "value": "complete",
-    "reason": null,
-    "detail": null
+  "evidence_status": {
+    "value": "whole",
+    "reasons": []
   },
-  "complete": true,
+  "all_expected_stages_reported": true,
   "expected_stages": [
     "pre_deploy",
     "post_deploy",
@@ -1079,8 +1113,8 @@
     {
       "ref_id": "post_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:a3ae9a529d004e3d7032158e3185571e25a641d68854113a286a4f18b883a492",
-      "size_bytes": 2635,
+      "digest": "sha256:1bf1526fbe413d956d2c7b9650039b77bebca93ef948316b07b55e240fa982eb",
+      "size_bytes": 2632,
       "path": "units/api/post_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1181,8 +1215,8 @@
     {
       "ref_id": "post_verify/events.json",
       "media_type": "application/json",
-      "digest": "sha256:2a4e97f4af8bd92d6938ca3d5437a28155c7078b7974fafec2937c405e784c06",
-      "size_bytes": 2939,
+      "digest": "sha256:4034b31c100ad658a72c975a64bec0e2e6d1f61edc6399b79ea0655ed98b3ba5",
+      "size_bytes": 2936,
       "path": "units/api/post_verify/events.json",
       "storage_uri": null,
       "retention_until": null,
@@ -1447,8 +1481,8 @@
     {
       "ref_id": "pre_deploy/events.json",
       "media_type": "application/json",
-      "digest": "sha256:9164127c567debc27f20e69e1a6a46d3807e0e58f04ff578a2647926d31ab7cc",
-      "size_bytes": 4979,
+      "digest": "sha256:d9c051bf418347af11164b651a5ce1b65700575b8c80dc0727b0362cac721de4",
+      "size_bytes": 4973,
       "path": "units/api/pre_deploy/events.json",
       "storage_uri": null,
       "retention_until": null,

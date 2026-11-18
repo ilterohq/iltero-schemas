@@ -24,22 +24,22 @@ from iltero_schemas.assertions.paths import (
     RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
 )
 from iltero_schemas.canonical import change_digest, digest_of
-from iltero_schemas.change_types.activity import Activity
-from iltero_schemas.change_types.bindings import bound_to_change_digest_problems
-from iltero_schemas.change_types.evidence import JSON_MEDIA_TYPE, given_digest
+from iltero_schemas.change_types.common.activity import Activity
+from iltero_schemas.change_types.common.bindings import bound_to_change_digest_problems
+from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_digest
+from iltero_schemas.change_types.common.expected_status import expected_status_problems
 from iltero_schemas.change_types.image.build import ImageRef
-from iltero_schemas.change_types.owed_status import owed_status_problems
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.change_type import IMAGE_DEPLOY_ACTIVITY, IMAGE_RELEASE_TYPE
-from iltero_schemas.models.checked_content import CheckedImage, checked_image
-from iltero_schemas.models.event import EVALUATOR_FAULT_REASONS
-from iltero_schemas.models.fields import Digest
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.change_type import IMAGE_DEPLOY_ACTIVITY, IMAGE_RELEASE_TYPE
+from iltero_schemas.models.common.checked_content import CheckedImage, checked_image
+from iltero_schemas.models.common.event import EVALUATOR_FAULT_REASONS
+from iltero_schemas.models.common.fields import Digest
 from iltero_schemas.models.image.deploy import AcceptedBuild, ImageDeployment, ImageDriftCheck, check_compared
 from iltero_schemas.models.image.naming import check_platform_digests
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.car import CAR, StageRecord
+    from iltero_schemas.models.common.car import CAR, StageRecord
 
 
 class ImageDeploy(StrictModel):
@@ -186,7 +186,7 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
 
 
 def running_image_status(image_digest: str, platform_digests: list[str] | None, check: ImageDriftCheck) -> str:
-    """The status ``RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`` owes, given the deployed image's digest and the accepted
+    """The status ``RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE`` must give, given the deployed image's digest and the accepted
     build's platform digests (None without an accepted build).
 
     Fail when the rollout had not finished, the live pods read are not the ones it calls for, the template compares
@@ -209,29 +209,29 @@ def running_image_status(image_digest: str, platform_digests: list[str] | None, 
     return "pass"
 
 
-def _owed_statuses(car: CAR, deploy: ImageDeploy) -> dict[str, str]:
+def _expected_statuses(car: CAR, deploy: ImageDeploy) -> dict[str, str]:
     """The status each built-in check must have, recomputed from what the record holds: in a run the server opened,
     whether it accepted a build of the image (a run the tool opened is held to unknown by its structure); whether the
     deployed image is the checked one; and whether the workload's live pods run it."""
-    owed: dict[str, str] = {}
+    expected: dict[str, str] = {}
     if _opened_by_server(car):
-        owed[BUILD_ACCEPTED_FOR_ENVIRONMENT_ID] = "pass" if deploy.build is not None else "fail"
+        expected[BUILD_ACCEPTED_FOR_ENVIRONMENT_ID] = "pass" if deploy.build is not None else "fail"
     if deploy.deployment is not None:
         deployed = (deploy.deployment.repository, deploy.deployment.digest)
-        owed[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] = (
+        expected[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] = (
             "pass" if deployed == (deploy.image.repository, deploy.image.digest) else "fail"
         )
     if deploy.drift_check is not None:
         platforms = deploy.build.platform_digests if deploy.build is not None else None
-        owed[RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID] = running_image_status(
+        expected[RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID] = running_image_status(
             deploy.image.digest, platforms, deploy.drift_check
         )
-    return owed
+    return expected
 
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
     """Each built-in check found what the record's own image, deployment and reading say it must."""
-    return owed_status_problems(car, _owed_statuses(car, _body(car)))
+    return expected_status_problems(car, _expected_statuses(car, _body(car)))
 
 
 IMAGE_DEPLOY = Activity(

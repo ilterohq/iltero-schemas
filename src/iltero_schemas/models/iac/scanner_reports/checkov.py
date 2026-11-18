@@ -8,12 +8,32 @@ its check (``check_id``), its outcome (``check_result.result``), the keys it rea
 ``resource``); a check about two resources also names the other one
 (``connected_node.resource_address``). A skipped result is one the scanned source
 asked Checkov to skip.
+
+When no framework has a result and no file failed to parse, Checkov writes one
+summary object instead, with no framework: exactly ``passed``, ``failed``,
+``skipped``, ``parsing_errors`` and ``resource_count``, each the count 0, and
+``checkov_version`` (Checkov 3.3.8 does so for an empty plan, ``{}``, ``[]``, a
+file that is not JSON and an unknown check id). It reads as a report with no
+result. Any other set of keys, or a count other than 0, is refused, so a later
+release that writes it differently is never read as a report that checked
+nothing. The summary does not say why nothing was checked, so a record cannot
+tell a plan that changes nothing from a run set up wrongly, such as one given a
+file that is not the plan or a check filter that matches nothing.
+
+Each framework's summary counts its results: ``passed``, ``failed`` and
+``skipped``, the results Checkov holds in each list, and ``parsing_errors``. Every
+count is required. Checkov run with ``--quiet`` writes only ``failed_checks`` while its
+summary still counts the passed and skipped results, so for each framework and
+each list the count less the list's length is a result the report counts but
+does not list (``results_not_listed``, summed over every framework); a count
+lower than its list is refused. The counts are Checkov's own word: a check left
+out of the run by a command-line filter is in neither the counts nor the lists.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, TypeGuard
 
 from iltero_schemas.models.iac.scanner_addresses import address_index
 from iltero_schemas.models.iac.scanner_observations import TOOL_CONFIGURATION_WORDS, ScannerObservations, input_kind_of
@@ -33,8 +53,20 @@ from iltero_schemas.models.iac.scanner_reports.common import (
 )
 
 TOOL = "checkov"
+# The counts of a framework's summary, and of the summary Checkov writes when no framework has a result (each 0,
+# beside its version), each with the words a refusal names it by.
+_SUMMARY_COUNTS = {
+    "passed": "count of passed checks",
+    "failed": "count of failed checks",
+    "skipped": "count of skipped checks",
+    "parsing_errors": "count of files it could not parse",
+    "resource_count": "count of resources",
+}
+_SUMMARY_KEYS = frozenset({*_SUMMARY_COUNTS, "checkov_version"})
 # Each list of results, and the outcome word every result in it gives.
 _RESULT_LISTS = {"passed_checks": "PASSED", "failed_checks": "FAILED", "skipped_checks": "SKIPPED"}
+# Each list of results, and the count of a framework's summary that counts it.
+_LIST_COUNTS = {"passed_checks": "passed", "failed_checks": "failed", "skipped_checks": "skipped"}
 
 
 def _read(entry: object, input_word: object, listed_as: str) -> Read | None:
@@ -76,11 +108,31 @@ def _frameworks(report: object) -> list[dict[str, Any]]:
 
 def _summary(framework: dict[str, Any]) -> dict[str, Any]:
     summary = opened(framework.get("summary"), "a framework's summary", "an object")
-    if summary is None:
-        return {}
     if not isinstance(summary, dict):
-        raise ReportError("the checkov report gives a framework a summary that is not an object")
+        raise ReportError("the checkov report gives a framework no summary, or one that is not an object")
     return summary
+
+
+def _is_count(value: object) -> TypeGuard[int]:
+    """Whether ``value`` is a count: an integer of at least 0, never true or false."""
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _count(summary: dict[str, Any], name: str) -> int:
+    """The summary's count ``name``; ``ReportError`` when it gives none, or a value that is not a count."""
+    count = opened(summary.get(name), f"the summary's {_SUMMARY_COUNTS[name]}", "a count")
+    if not _is_count(count):
+        raise ReportError(f"the checkov report's summary gives no {_SUMMARY_COUNTS[name]}, or one that is not a count")
+    return count
+
+
+def _results(framework: dict[str, Any], name: str) -> list[object]:
+    """A framework's list of results ``name``: as written, or empty when the framework writes none."""
+    entries = opened(framework["results"].get(name), f"the list of {name.replace('_', ' ')}", "a list")
+    entries = [] if entries is None else entries
+    if not isinstance(entries, list):
+        raise ReportError(f"the checkov report's {name} is not a list")
+    return entries
 
 
 def _version(frameworks: list[dict[str, Any]]) -> object:
@@ -93,38 +145,56 @@ def _version(frameworks: list[dict[str, Any]]) -> object:
 def _reads(frameworks: list[dict[str, Any]]) -> Iterator[Read | None]:
     for framework in frameworks:
         for name, word in _RESULT_LISTS.items():
-            entries = opened(framework["results"].get(name), f"the list of {name.replace('_', ' ')}", "a list")
-            entries = [] if entries is None else entries
-            if not isinstance(entries, list):
-                raise ReportError(f"the checkov report's {name} is not a list")
-            for entry in entries:
+            for entry in _results(framework, name):
                 yield _read(entry, framework.get("check_type"), word)
 
 
-def _tool_parsing_errors(frameworks: list[dict[str, Any]]) -> int | None:
-    """The files Checkov says it could not parse, over every framework; None when no framework says. A report in which
-    some frameworks say and others do not, or one says with anything but a count, is refused: one framework that does
-    not say never hides the files another could not parse."""
-    counts = [
-        opened(_summary(f).get("parsing_errors"), "the count of files a framework could not parse", "a count")
-        for f in frameworks
-    ]
-    if all(count is None for count in counts):
-        return None
-    if not all(isinstance(count, int) and not isinstance(count, bool) and count >= 0 for count in counts):
-        raise ReportError(
-            "the checkov report gives the count of files it could not parse for some frameworks but not for others, "
-            "or gives one that is not a count"
-        )
-    return sum(int(count) for count in counts if isinstance(count, int))
+def _tool_parsing_errors(frameworks: list[dict[str, Any]]) -> int:
+    """The files Checkov says it could not parse, over every framework."""
+    return sum(_count(_summary(f), "parsing_errors") for f in frameworks)
+
+
+def _results_not_listed(frameworks: list[dict[str, Any]]) -> int:
+    """The results the summaries count but the report does not list, over every framework and each list: one list's
+    surplus never hides another's shortfall, since a count lower than its own list is refused."""
+    total = 0
+    for framework in frameworks:
+        summary = _summary(framework)
+        for name, count_name in _LIST_COUNTS.items():
+            count, listed = _count(summary, count_name), len(_results(framework, name))
+            if count < listed:
+                raise ReportError(
+                    f"the checkov report's summary counts fewer {count_name} results than the report lists"
+                )
+            total += count - listed
+    return total
+
+
+def _is_summary_only(report: object) -> TypeGuard[dict[str, Any]]:
+    """Whether ``report`` has the keys of the summary Checkov writes when no framework has a result."""
+    return isinstance(report, dict) and set(report) == _SUMMARY_KEYS
+
+
+def _summary_only_version(report: dict[str, Any]) -> object:
+    """The version a summary-only report names, once every count it gives is 0."""
+    for name in _SUMMARY_COUNTS:
+        count = opened(report[name], f"the summary's {_SUMMARY_COUNTS[name]}", "a count")
+        if not _is_count(count) or count != 0:
+            raise ReportError(
+                "the checkov report is a summary with no framework, whose counts are not all the number 0"
+            )
+    return report["checkov_version"]
 
 
 def read_checkov(report: object, plan_addresses: list[str], source: Source) -> ScannerObservations:
     """The observations of a Checkov report, resolved against the addresses of the plan the stage evaluated."""
-    frameworks = _frameworks(report)
     index = address_index(TOOL, plan_addresses)
-    errors = _tool_parsing_errors(frameworks)
-    return observations(TOOL, _version(frameworks), _reads(frameworks), index, source, errors, repeats_allowed=False)
+    if _is_summary_only(report):
+        return observations(TOOL, _summary_only_version(report), [], index, source, 0, 0, repeats_allowed=False)
+    frameworks = _frameworks(report)
+    version = _version(frameworks)
+    errors, not_listed = _tool_parsing_errors(frameworks), _results_not_listed(frameworks)
+    return observations(TOOL, version, _reads(frameworks), index, source, errors, not_listed, repeats_allowed=False)
 
 
 # The fields of a result a kept report holds: what the reader reads, and the check's title and severity and the
@@ -137,7 +207,11 @@ _KEPT_RESULT = {
     "resource": kept_value,
 }
 _KEPT_OUTCOME = {"result": kept_value, "evaluated_keys": kept_names, "suppress_comment": kept_value}
-_KEPT_SUMMARY = {"checkov_version": kept_value, "parsing_errors": kept_number}
+_KEPT_SUMMARY = {
+    "checkov_version": kept_value,
+    "parsing_errors": kept_number,
+    **{name: kept_number for name in _LIST_COUNTS.values()},
+}
 
 
 def _kept_entry(entry: dict[str, object]) -> object:
@@ -153,8 +227,8 @@ def _kept_entry(entry: dict[str, object]) -> object:
 
 def _counted_entry(entry: dict[str, object]) -> object:
     """A result of a framework whose results the reader only counts (one it reads as configuration, or one that reads
-    nothing a binding reads, such as a secrets scan): just enough to be counted, and read, the same way: the outcome
-    and the other resource as their shape, with none of their text."""
+    nothing a scanner checks entry reads, such as a secrets scan): just enough to be counted, and read, the same way:
+    the outcome and the other resource as their shape, with none of their text."""
     kept: dict[str, object] = {}
     if "check_result" in entry:
         kept["check_result"] = kept_object(
@@ -187,7 +261,10 @@ def _kept_framework(framework: dict[str, object]) -> object:
 def kept_checkov(report: object) -> object:
     """A Checkov report as a stage keeps it: only what the reader reads, plus each check's title and severity and the
     reason a skip gives, so a kept report holds none of the plan's values, file paths or source lines and reads into
-    the same observations as the report the pipeline gave."""
+    the same observations as the report the pipeline gave. A summary with no framework is kept with its counts and
+    version, which are all it holds."""
+    if _is_summary_only(report):
+        return kept_fields(report, {"checkov_version": kept_value, **{name: kept_number for name in _SUMMARY_COUNTS}})
     if isinstance(report, list):
         return [kept_object(framework, _kept_framework) for framework in report]
     return kept_object(report, _kept_framework)

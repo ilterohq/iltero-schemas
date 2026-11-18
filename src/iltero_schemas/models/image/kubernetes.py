@@ -15,8 +15,8 @@ from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import StrictModel
-from iltero_schemas.models.fields import Count, Identifier, Uuid
+from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.fields import Count, Identifier, Uuid
 
 # The Kubernetes workload kinds whose running images a reader can read: those whose pods a controller rolls out.
 KubernetesWorkloadKind = Literal["deployment", "stateful_set", "daemon_set"]

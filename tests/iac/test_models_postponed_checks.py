@@ -11,19 +11,26 @@ import pytest
 from iltero_schemas.ast import parse_document
 from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import digest_of
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR
-from iltero_schemas.models.coverage import INCOMPLETE_REASON, OPEN_CHECKS_REASON, AssuranceStatus, stage_outcome
-from iltero_schemas.models.event import AssuranceEvent
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.coverage import stage_outcome
+from iltero_schemas.models.common.event import AssuranceEvent
+from iltero_schemas.models.common.evidence_status import (
+    EVALUATOR_ERROR_REASON,
+    OPEN_CHECKS_REASON,
+    STAGE_NOT_REPORTED_REASON,
+    EvidenceStatus,
+    GapReason,
+)
+from iltero_schemas.models.common.record_coverage import record_evidence_status
+from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.postponed_checks import (
     check_postponed_checks,
-    open_checks_status,
     postponable,
     postponable_checks,
     postponed_check_problems,
     settles_a_postponed_check,
 )
-from iltero_schemas.models.kept_files import KeptFiles
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
 # The plan the scanned record's stage kept: the same plan as the postponed record's.
@@ -46,12 +53,16 @@ def test_a_plan_stage_lists_and_counts_each_check_it_postpones() -> None:
 def test_a_postponed_check_does_not_hold_the_plan_gate() -> None:
     """The record's other unknown (server facts not given) still holds it; the postponed one alone would not."""
     car = CAR.model_validate(POSTPONED)
-    coverage = car.stages[next(iter(car.stages))].coverage
-    assert stage_outcome(coverage).verdict.exit_code == 3
-    counts = dict(coverage.status_counts)
+    kept = car.stages[next(iter(car.stages))].coverage
+    # Without its failures, so the verdict turns on the unknown checks alone.
+    counts = dict(kept.status_counts)
+    counts["pass"], counts["fail"] = counts["pass"] + counts["fail"], 0
+    coverage = kept.model_copy(update={"status_counts": counts})
+    assert stage_outcome(coverage).verdict.value == "undecided"
+    counts = dict(counts)
     counts["unknown"] -= 1
     only_postponed = coverage.model_copy(update={"status_counts": counts, "evaluations": coverage.evaluations - 1})
-    assert stage_outcome(only_postponed).verdict.exit_code != 3
+    assert stage_outcome(only_postponed).verdict.value == "met"
 
 
 def _document(name: str) -> Any:
@@ -110,7 +121,7 @@ def _files(car: CAR, plan: dict[str, Any], assertions: dict[str, Any]) -> KeptFi
     """The kept files, the plan keyed by the digest of the record's own plan entry."""
     kept = next(ref.digest for ref in car.evidence_refs if ref.collector.tool == "terraform_plan")
     return KeptFiles(
-        binding_sets={}, observations={}, reports={}, plans={kept: plan}, assertions=assertions, exceptions={}
+        scanner_check_mappings={}, observations={}, reports={}, plans={kept: plan}, assertions=assertions, exceptions={}
     )
 
 
@@ -138,22 +149,27 @@ def test_a_postponed_check_whose_assertion_is_not_given_is_listed() -> None:
     ]
 
 
-def test_an_open_check_does_not_outrank_an_evaluator_error() -> None:
-    error = AssuranceStatus(value="incomplete", reason=INCOMPLETE_REASON, detail="1 of 4 evaluations ended in an error")
-    assert open_checks_status(1, error) == error
+def test_an_open_check_is_listed_after_an_evaluator_error() -> None:
+    error = EvidenceStatus(
+        value="has_gaps",
+        reasons=[
+            GapReason(reason=EVALUATOR_ERROR_REASON, stage=Stage.PLAN, detail="1 of 4 evaluations ended in an error")
+        ],
+    )
+    status = record_evidence_status(error, ["plan"], {"plan"}, 1)
+    assert [gap.reason for gap in status.reasons] == [EVALUATOR_ERROR_REASON, OPEN_CHECKS_REASON]
 
 
 def test_a_record_with_no_open_check_keeps_its_stages_status() -> None:
-    complete = AssuranceStatus(value="complete", reason=None, detail=None)
-    assert open_checks_status(0, complete) == complete
+    whole = EvidenceStatus(value="whole", reasons=[])
+    assert record_evidence_status(whole, ["plan"], {"plan"}, 0) == whole
 
 
 def test_one_open_check_reads_in_the_singular() -> None:
-    opened = open_checks_status(1, AssuranceStatus(value="complete", reason=None, detail=None))
-    assert (opened.reason, opened.detail) == (
-        OPEN_CHECKS_REASON,
-        "1 check postponed until after the deployment was not settled",
-    )
+    opened = record_evidence_status(EvidenceStatus(value="whole", reasons=[]), ["plan"], {"plan"}, 1)
+    assert [(gap.reason, gap.stage, gap.detail) for gap in opened.reasons] == [
+        (OPEN_CHECKS_REASON, None, "1 check postponed until after the deployment was not settled")
+    ]
 
 
 def _settling_event(status: str, reason: str | None) -> AssuranceEvent:
@@ -195,9 +211,9 @@ SETTLED: dict[str, Any] = json.loads(
 )
 
 
-def test_a_record_that_reached_post_verify_settles_its_postponed_check_and_is_complete() -> None:
+def test_a_record_that_reached_post_verify_settles_its_postponed_check_and_lists_no_open_check() -> None:
     """The Iltero CLI wrote this record: its plan stage postponed one check, which post-verify settled over the state
-    after the apply."""
+    after the apply. Its pre-deploy stage never reported, the one gap its evidence lists."""
     car = CAR.model_validate(SETTLED)
     plan = car.stages[Stage.PLAN]
     assert plan.postponed_checks is not None and len(plan.postponed_checks) == 1
@@ -206,4 +222,6 @@ def test_a_record_that_reached_post_verify_settles_its_postponed_check_and_is_co
         ("ACME.IAC.RESOURCE.TERRAFORM.DATA.OUTPUT_SET", "pass")
     ]
     assert car.stages[Stage.POST_VERIFY].resource_redaction is not None
-    assert car.assurance_status.value == "complete"
+    assert [(gap.reason, gap.stage) for gap in car.evidence_status.reasons] == [
+        (STAGE_NOT_REPORTED_REASON, Stage.PRE_DEPLOY)
+    ]

@@ -18,10 +18,10 @@ from typing import Annotated, Literal, NamedTuple
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.base import StrictModel, sorted_unique
-from iltero_schemas.models.facts import NotReported, ServerFactsUnavailable
-from iltero_schemas.models.fields import Commit, Count, Digest, Identifier, Uuid
-from iltero_schemas.models.git import GitRepository
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.facts import NotReported, ServerFactsUnavailable
+from iltero_schemas.models.common.fields import Commit, Count, Digest, Identifier, Uuid
+from iltero_schemas.models.common.git import GitRepository
 from iltero_schemas.models.image.kubernetes import KubernetesRollout, KubernetesWorkload, StatefulSetRollout
 from iltero_schemas.models.image.naming import (
     MAX_PLATFORM_DIGESTS,

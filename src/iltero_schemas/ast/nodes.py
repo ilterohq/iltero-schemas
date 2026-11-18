@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any, TypeAlias
 
-from iltero_schemas.models.assertion import AssertionType, Stage, TargetKind, check_evidence_stages
-from iltero_schemas.models.change_type import ChangeTypeName
+from iltero_schemas.models.common.assertion import AssertionType, Stage, TargetKind, check_evidence_stages
+from iltero_schemas.models.common.change_type import ChangeTypeName
 from iltero_schemas.models.iac.tool_names import IacTool
 
 # Bumped when the JSON form below changes shape; part of every digest.

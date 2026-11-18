@@ -17,8 +17,8 @@ from typing import Annotated, Final, Literal
 
 from pydantic import Field, model_validator
 
-from iltero_schemas.models.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
-from iltero_schemas.models.base import StrictModel, sorted_unique
+from iltero_schemas.models.common.assertion import VERSION_MAX_LENGTH, VERSION_PATTERN
+from iltero_schemas.models.common.base import StrictModel, sorted_unique
 
 # The scheme a cloud identifier is written in when it is an ARN.
 SCHEME_AWS_ARN: Final = "aws_arn"

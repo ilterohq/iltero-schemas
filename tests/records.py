@@ -7,20 +7,23 @@ import json
 from typing import Any
 
 from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID, SHIPPED_ASSERTIONS
-from iltero_schemas.bindings.shipped import SHIPPED_SET, SHIPPED_SET_DIGEST
-from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes, encoding
-from iltero_schemas.canonical.assertion_set import required_assertion_digest
+from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes
+from iltero_schemas.canonical.common import encoding
+from iltero_schemas.canonical.common.assertion_set import required_assertion_digest
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.base import API_VERSION
-from iltero_schemas.models.car import CAR
-from iltero_schemas.models.change_type import IAC_CHANGE_ACTIVITY
-from iltero_schemas.models.coverage import Coverage, stage_outcome
-from iltero_schemas.models.event import EVENTS_FILE_KIND
-from iltero_schemas.models.fields import Identity
-from iltero_schemas.models.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
-from iltero_schemas.models.subjects import subject_key
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.base import API_VERSION
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY
+from iltero_schemas.models.common.coverage import Coverage, StageOutcome, stage_outcome
+from iltero_schemas.models.common.event import EVENTS_FILE_KIND, AssuranceEvent
+from iltero_schemas.models.common.fields import Identity
+from iltero_schemas.models.common.record_coverage import combine_in_order, record_evidence_status
+from iltero_schemas.models.common.stage_counts import evaluated_counts, evaluator_status_counts
+from iltero_schemas.models.common.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
+from iltero_schemas.models.common.subjects import subject_key
 from iltero_schemas.profiles import reads_part
+from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING, SHIPPED_MAPPING_DIGEST
 from tests.conftest import VECTORS
 
 # The unknown marker a stage keeps for a part its input carries when no facts were read from the server.
@@ -53,18 +56,19 @@ def count_by_digest(stage: dict[str, Any], digest: str) -> None:
     stage["redaction"]["input"]["digest"] = digest
 
 
-def owe_its_events(document: dict[str, Any], name: str) -> None:
-    """Make the ``name`` stage owe the assertions of its events: its owed count and digest, and its index's count."""
-    owed = {
+def require_its_events(document: dict[str, Any], name: str) -> None:
+    """Make the ``name`` stage require the assertions of its events: its required count and digest, and its index's
+    count."""
+    required = {
         (e["assertion"]["id"], e["assertion"]["version"], e["assertion"]["digest"])
         for e in document["events"]
         if e["evaluation"]["stage"] == name
     }
     stage = document["stages"][name]
-    stage["coverage"]["assertions_expected"].update(
-        value=len(owed), required_assertion_digest=required_assertion_digest(owed)
+    stage["coverage"]["assertions_required"].update(
+        value=len(required), required_assertion_digest=required_assertion_digest(required)
     )
-    stage["assertions"]["count"] = len(owed)
+    stage["assertions"]["count"] = len(required)
 
 
 def record(**changes: Any) -> dict[str, Any]:
@@ -93,12 +97,48 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     coverage["subjects_in_scope"].update(value=1, counted_from=counted_from, removed_by_plan=0, excluded=[])
     if name == "pre_deploy":
         coverage["subjects_in_scope"]["source_digest"] = RECORD["change"]["digest"]
-    coverage.update(subjects_per_assertion={}, evaluations=0, status_counts=dict.fromkeys(coverage["status_counts"], 0))
-    owe_its_events({"events": [], "stages": {name: copied}}, name)
+    coverage.update(
+        subjects_per_assertion={},
+        assertions_evaluated=0,
+        subjects_evaluated=0,
+        evaluations=0,
+        status_counts=dict.fromkeys(coverage["status_counts"], 0),
+        evaluator_status_counts={},
+    )
+    require_its_events({"events": [], "stages": {name: copied}}, name)
     for dotted, value in changes.items():
         set_path(copied, dotted, value)
     outcome = stage_outcome(Coverage.model_validate(copied["coverage"])).model_dump(mode="json")
-    return {**copied, **{key: outcome[key] for key in ("verdict", "assurance_status")}}
+    return {**copied, **{key: outcome[key] for key in ("verdict", "evidence_status")}}
+
+
+def recount(document: dict[str, Any], name: str) -> None:
+    """Give the ``name`` stage, of a stage that settles no postponed check and requires no scanner, the assertions and
+    subjects its events evaluated, and each evaluator's statuses, as a reader recounts them."""
+    assert name != "post_verify" and document["stages"][name].get("scanners") is None, "recount counts simple stages"
+    events = [AssuranceEvent.model_validate(e) for e in document["events"] if e["evaluation"]["stage"] == name]
+    required = {f"{e.assertion.id}@{e.assertion.version}" for e in events}
+    assertions, subjects, per_assertion = evaluated_counts(events, required, required_scanners=frozenset())
+    document["stages"][name]["coverage"].update(
+        assertions_evaluated=assertions,
+        subjects_evaluated=subjects,
+        subjects_per_assertion=per_assertion,
+        evaluator_status_counts=evaluator_status_counts(events),
+    )
+
+
+def top_level(document: dict[str, Any]) -> dict[str, Any]:
+    """The record's coverage, verdict and evidence status as its stages and its own reasons give them, from the stages
+    alone: the record's other parts are not checked, so a test of them still fails on its own rule."""
+    outcomes = {
+        name: StageOutcome.model_validate({key: stage[key] for key in ("coverage", "verdict", "evidence_status")})
+        for name, stage in document["stages"].items()
+    }
+    combined = combine_in_order(document["expected_stages"], outcomes)
+    plan = document["stages"].get("plan") or {}
+    open_checks = 0 if "post_verify" in document["stages"] else len(plan.get("postponed_checks") or [])
+    status = record_evidence_status(combined.evidence_status, document["expected_stages"], set(outcomes), open_checks)
+    return combined.model_copy(update={"evidence_status": status}).model_dump(mode="json")
 
 
 def iac_change(car: CAR) -> IacChange:
@@ -108,7 +148,7 @@ def iac_change(car: CAR) -> IacChange:
 
 
 def add_built_in(document: dict[str, Any], name: str) -> dict[str, Any]:
-    """``document`` with the passing evaluation of the built-in assertion its ``name`` stage owes, counted by it."""
+    """``document`` with the passing evaluation of the built-in assertion its ``name`` stage requires, counted by it."""
     assertion_id = IAC_CHANGE.always_evaluated[Stage(name)]
     shipped = BUILT_INS[assertion_id]
     unit = [Identity(scheme="iltero_unit", value=document["unit"])]
@@ -127,11 +167,11 @@ def add_built_in(document: dict[str, Any], name: str) -> dict[str, Any]:
     coverage["subjects_per_assertion"] = {**coverage["subjects_per_assertion"], key: 1}
     coverage["status_counts"] = {**coverage["status_counts"], "pass": coverage["status_counts"]["pass"] + 1}
     coverage["evaluations"] += 1
-    coverage["assertions_evaluated"] += 1
-    owe_its_events(document, name)
+    recount(document, name)
+    require_its_events(document, name)
     document["stages"][name]["events"]["count"] += 1
     outcome = stage_outcome(Coverage.model_validate(coverage)).model_dump(mode="json")
-    document["stages"][name].update(verdict=outcome["verdict"], assurance_status=outcome["assurance_status"])
+    document["stages"][name].update(verdict=outcome["verdict"], evidence_status=outcome["evidence_status"])
     return keep_events_files(document)
 
 
@@ -162,7 +202,7 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
     served_document = copy.deepcopy(document)
     served_document["governance"]["run_opened_by"] = "server"
     for coverage in [served_document["coverage"], *(s["coverage"] for s in served_document["stages"].values())]:
-        coverage["assertions_expected"]["origin"] = "server_pinned"
+        coverage["assertions_required"]["origin"] = "server_pinned"
     for event in served_document["events"]:
         if event["provenance"]["facts_source"] == "none":
             event["provenance"]["facts_source"] = "server"
@@ -197,31 +237,31 @@ def with_commit_review_check(source: dict[str, Any], status: str, reason: str | 
     return document
 
 
-# The shipped binding set as a stage's scanners name it.
-SHIPPED_SET_USED: dict[str, Any] = {
-    "id": SHIPPED_SET.metadata.id,
-    "version": SHIPPED_SET.metadata.version,
+# The shipped scanner check mapping as a stage's scanners name it.
+SHIPPED_MAPPING_USED: dict[str, Any] = {
+    "id": SHIPPED_MAPPING.metadata.id,
+    "version": SHIPPED_MAPPING.metadata.version,
     "origin": "shipped",
-    "file_name": None,
-    "digest": SHIPPED_SET_DIGEST,
-    "copy_path": "units/root/plan/shipped-bindings.json",
-    "assertions_bound": len(SHIPPED_SET.spec.bindings),
+    "file_path": None,
+    "digest": SHIPPED_MAPPING_DIGEST,
+    "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
+    "assertions_mapped": len(SHIPPED_MAPPING.spec.assertion_mappings),
 }
 
-# A plan stage's scanners block: one Checkov report read under a project's bindings and the shipped set, none of its
-# results bound.
+# A plan stage's scanners block: one Checkov report read under a project's scanner checks entries and the shipped
+# mapping, none of its results bound.
 SCANNERS: dict[str, Any] = {
-    "evaluator_binding_sets": [
+    "scanner_check_mappings": [
         {
-            "id": "ACME.BINDINGS.PAYMENTS",
+            "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "version": "1.0.0",
             "origin": "file",
-            "file_name": "bindings.yaml",
+            "file_path": "scanner-check-mapping.yaml",
             "digest": "sha256:" + "b" * 64,
-            "copy_path": "units/root/plan/bindings.json",
-            "assertions_bound": 2,
+            "copy_path": "units/root/plan/scanner-check-mapping.json",
+            "assertions_mapped": 2,
         },
-        SHIPPED_SET_USED,
+        SHIPPED_MAPPING_USED,
     ],
     "required_scanners": [],
     "reports": [
@@ -236,6 +276,7 @@ SCANNERS: dict[str, Any] = {
             "unreadable_results": 0,
             "written_configuration_results": 0,
             "tool_parsing_errors": 0,
+            "results_not_listed": 0,
             "redacted_values": {},
         }
     ],
@@ -244,18 +285,19 @@ SCANNERS: dict[str, Any] = {
 
 
 def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> None:
-    """Add to ``document``'s register the files its ``stage``'s scanners name: the copy of each binding set, and each
-    report as the stage kept it, collected by its scanner and redacted, with the observations the stage read from the
-    same file."""
+    """Add to ``document``'s register the files its ``stage``'s scanners name: the copy of each scanner check mapping,
+    and each report as the stage kept it, collected by its scanner and redacted, with the observations the stage read
+    from the same file."""
     template = next(ref for ref in document["evidence_refs"] if ref["source"] is not None)
     scanners = document["stages"][stage]["scanners"]
     policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": "sha256:" + "e" * 64}
     files: list[tuple[str, str, Any, Any, str]] = []
-    for bindings in scanners["evaluator_binding_sets"]:
+    for used in scanners["scanner_check_mappings"]:
+        file_path = used["file_path"]
         read_from = (
-            None if bindings["file_name"] is None else {"name": bindings["file_name"], "digest": "sha256:" + "f" * 64}
+            None if file_path is None else {"name": file_path.rsplit("/", 1)[-1], "digest": "sha256:" + "f" * 64}
         )
-        files.append((bindings["copy_path"], bindings["digest"], None, read_from, "iltero"))
+        files.append((used["copy_path"], used["digest"], None, read_from, "iltero"))
     for report in scanners["reports"]:
         kept = report["report_digest"]
         files += [(f"units/root/artifacts/{kept.replace(':', '-')}", kept, policy, given, report["tool"])]

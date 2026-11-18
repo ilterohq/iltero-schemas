@@ -16,7 +16,7 @@ keep, so any two tools agree on what a record means.
   and one compiler to Rego for Open Policy Agent, with the evaluator's allowed
   functions and its pinned release.
 - One way for every document to name itself. Every contract document has
-  `apiVersion: iltero.com/v1` (`iltero_schemas.models.base.API_VERSION`) and
+  `apiVersion: iltero.com/v1` (`iltero_schemas.models.common.base.API_VERSION`) and
   a top-level `kind` that names the document type. A reader accepts exactly
   its own pair: a document with another `apiVersion`, including a name used
   before this release such as `iltero.io/v1` or `iltero.io/car/v1`, with no
@@ -32,7 +32,7 @@ keep, so any two tools agree on what a record means.
   | `ChangeAssuranceRecord` | A record (`CAR`) |
   | `VerificationReport` | A verification report |
   | `ResourceIdentities` | A resource identities document |
-  | `EvaluatorBindingSet` | An evaluator binding set |
+  | `ScannerCheckMapping` | A scanner check mapping: which scanner checks decide which assertion |
   | `ScannerObservations` | What a stage read from one scanner's report |
   | `LocalExceptions` | A project's own exceptions |
   | `PolicySource` | A directory of hand-written policies |
@@ -45,11 +45,12 @@ keep, so any two tools agree on what a record means.
   `metadata` object where it has any: a record's `uuid` and `issuer`, a
   verification report's `verifier` and `verified_at`, and a resource
   identities document's `generator`. A document a person writes has `apiVersion`, `kind`,
-  `metadata` and `spec`: an evaluator binding set keeps its `id` and
-  `version` in `metadata` and its bindings in `spec.bindings`, and local
+  `metadata` and `spec`: a scanner check mapping keeps its `id` and
+  `version` in `metadata` and its assertion mappings in
+  `spec.assertion_mappings`, and local
   exceptions and a policy source name themselves by `metadata.name`, a
   name the project chooses (1 to 63 lowercase letters, digits and inner
-  hyphens, `iltero_schemas.models.fields.PROJECT_DOCUMENT_NAME_PATTERN`), and
+  hyphens, `iltero_schemas.models.common.fields.PROJECT_DOCUMENT_NAME_PATTERN`), and
   keep their entries in
   `spec.exceptions` and `spec.policies`. A document's digest covers the whole
   document, `metadata` included. Every conformance vector, and every digest
@@ -57,7 +58,7 @@ keep, so any two tools agree on what a record means.
 - Assertion ids that say what kind of check an assertion is. An id is now
   segments in fixed places, joined by dots:
   `<NAMESPACE>.<CHANGE_TYPE>.<TARGET>.<SCOPE...>.<CHECK>`
-  (`iltero_schemas.models.assertion_id`). The namespace is `ILT` for Iltero's
+  (`iltero_schemas.models.common.assertion_id`). The namespace is `ILT` for Iltero's
   own assertions and the project's own name for its own. The change type
   segment is `IAC` for `iac_change`, `IMAGE` for `image_release` and `COMMON`
   when `spec.change_type` is `null`. The target segment is the target kind in
@@ -71,8 +72,9 @@ keep, so any two tools agree on what a record means.
   not match its own `spec` is refused, and so is a policy source entry whose
   id does not match its stage and target: a hand-written policy's change type
   is read from its id. An id that refers to an assertion, in an event, a
-  record or a binding, keeps only the general shape (upper-case segments
-  joined by dots), and a binding set's id is not an assertion id. Every id
+  record or an assertion mapping, keeps only the general shape (upper-case
+  segments joined by dots), and a scanner check mapping's id is not an
+  assertion id. Every id
   has the same limit of 96 characters: `ID_MAX_LENGTH` is
   `ASSERTION_ID_MAX_LENGTH`.
 
@@ -83,15 +85,12 @@ keep, so any two tools agree on what a record means.
   namespace, and a resource's service is the author's word. Once released,
   an id is never renamed: a renamed check is a new assertion.
 
-  The starter assertions were renamed to this form.
-  `ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION` is now about every
-  change type (`change_type: null`). Every conformance vector uses the new
+  The starter assertions were renamed to this form. Every conformance vector uses the new
   ids, and the vector assertions of a project's own are now
   `ACME.IAC.RESOURCE.AWS.RDS.*`.
 
   | Old id | New id |
   | --- | --- |
-  | `ILT.ASSURANCE.NO_UNEXPLAINED_REGRESSION` | `ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION` |
   | `ILT.AWS.RDS.BACKUP_RETENTION` | `ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION` |
   | `ILT.AWS.RDS.NOT_PUBLIC` | `ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC` |
   | `ILT.AWS.RDS.PRODUCTION_BASELINE` | `ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE` |
@@ -123,10 +122,10 @@ keep, so any two tools agree on what a record means.
   assertion id's namespace must be ILT or one not starting ILT". Every
   assertion id is also checked for a Windows device name as its first
   segment. Where an id is a project's own, `ILT` itself is refused too
-  (`iltero_schemas.models.assertion_id.check_project_id`, "a project's own
+  (`iltero_schemas.models.common.assertion_id.check_project_id`, "a project's own
   id has a namespace of its own, not ILT or one starting so"): a policy
-  source entry's assertion, a binding set read from a file, and the binding
-  set a record names as read from a file. An event whose assertion comes
+  source entry's assertion, a scanner check mapping read from a file, and
+  the scanner check mapping a record names as read from a file. An event whose assertion comes
   from the project's own files (`assertion_source` `local` or
   `custom_rego`) is refused when its id is in `ILT` or a namespace that
   starts so: "an assertion from a project's own files has an id outside
@@ -156,7 +155,7 @@ keep, so any two tools agree on what a record means.
   the verifier's own clock. Its `record.digest` is the digest of the record's
   canonical JSON, the record's document digest.
 - One form for a stage's events file.
-  `iltero_schemas.models.event.events_file_bytes(events)` gives its bytes: the
+  `iltero_schemas.models.common.event.events_file_bytes(events)` gives its bytes: the
   RFC 8785 canonical JSON of `{apiVersion, kind: AssuranceEvents, events}`,
   with the stage's events in the order the record lists them
   (`EVENTS_FILE_KIND` is the `kind`). The stage's `events.digest` is the
@@ -164,14 +163,14 @@ keep, so any two tools agree on what a record means.
   `canonicalization: RFC8785`.
 - The `kind` of the trusted bundle keys file is
   `iltero_schemas.trust.TRUST_FILE_KIND`. The `kind` of a bundle's own
-  description, `iltero_schemas.models.bundle.BUNDLE_KIND`, sits beside the
+  description, `iltero_schemas.models.common.bundle.BUNDLE_KIND`, sits beside the
   descriptor's `KIND`.
 - A compiled program's reason for a failure names the comparison that
   decided it: `assert: false; <path> <op> is false`, or, when a condition
   under `not` held, `assert: false; <path> <op> is true, but must be false`.
   A false `all` is decided by its first false part and a true `any` by its
   first true part. `VEC.IAC.RESOURCE.VEC.THING.TRUTH_REASON` and its evaluation cases cover it.
-- Twenty-five starter assertions, among them
+- Twenty-four starter assertions, among them
   `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`, which
   holds that the plan applied is the plan that was evaluated,
   `ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY`, which holds that no deployed resource drifted after the apply, and
@@ -259,9 +258,7 @@ keep, so any two tools agree on what a record means.
   digest: every optional field is written, as `null` when it has no value,
   as its model dumps it. A context part outside its stage's profile is `null`. A field
   left out still reads. Every document vector is in this form.
-- A reference time claims no more than its source: a runner's clock is
-  always `asserted`, and a `time_window` is present exactly when a timestamp
-  authority gave the time, with the time inside it. A stage's reference time
+- A reference time names its source, `server` or `runner_clock`. A stage's reference time
   read from its runner's clock is the same instant the stage observed
   (`observed_at`), and an input's is the same instant as its evaluation's
   `timestamp`. Invalid-record and invalid-input vectors cover them.
@@ -314,7 +311,7 @@ keep, so any two tools agree on what a record means.
   are in scope, and its evidence register: each file it cites, by its
   path and digest, with the name and digest of the file as the pipeline
   gave it (`source`). It holds each stage's events file and assertion
-  index, each stage's copy of each binding set it applied, what it read from each
+  index, each stage's copy of each scanner check mapping it applied, what it read from each
   scanner report and each report as it kept it, redacted from the file the
   pipeline gave, each an entry of its own, every event's input, what
   the plan stage redacted, as an entry that names the redaction policy, and,
@@ -333,7 +330,7 @@ keep, so any two tools agree on what a record means.
   the drift check, each the part the stage counts, which those stages keep as
   it is, so they list no path), and the paths redacted (each with a reason
   token), left unknown, or allowed (each with the project's reason). A stage's
-  `scanners` names the evaluator binding sets it applied and the scanner
+  `scanners` names the scanner check mappings it applied and the scanner
   reports it was given. An excluded resource (`subjects_in_scope.excluded`) names its
   index in the plan's resource list (`plan_index`), its address as written or
   `null`, and one of four reasons. A coverage gap is one of four shapes,
@@ -357,14 +354,14 @@ keep, so any two tools agree on what a record means.
   them, not the file. A name that holds `/`, `\`, `:` or a character that
   looks like a slash or backslash, or consists only of dots and spaces, in
   its NFKC (Unicode compatibility) form, is refused. A name is at most 255
-  UTF-8 bytes as written, with no control character. An evaluator binding set's
-  `file_name` follows the same rule. Record vectors cover each rule.
+  UTF-8 bytes as written, with no control character. Record vectors cover
+  each rule.
 - A plan stage with a `plan_incomplete` gap, whether the plan said it is
-  incomplete or did not say it is complete, is incomplete with reason
-  `plan_not_complete`. Its verdict still follows its evaluations. An evaluator
-  error's reason wins over it, and it wins over
+  incomplete or did not say it is complete, has evidence with gaps, with
+  reason `plan_not_complete`. Its verdict still follows its evaluations. It
+  is listed after an evaluator error's reason and before
   `upstream_state_unavailable`. A plan that cannot be applied leaves the
-  status as it is. The status's `reason` is the leading cause; every cause
+  evidence status as it is. The status lists every reason; every cause also
   stays in the coverage. Record vectors cover it and pin the order.
 - The integrity checks: a record's values that a reader can recompute,
   including its `change.digest`, the pre-deploy stage's source digest and each
@@ -372,10 +369,11 @@ keep, so any two tools agree on what a record means.
   the status each built-in check must have from the record's own change, and
   report an event a policy answered (`pass`, `fail`, `unknown` or
   `not_applicable`) that says otherwise; an event not evaluated, or that ended
-  in error, decides nothing. A stage's owed count is its assertion index's
-  count, and, unless the stage was cut short, its owed count and digest are
+  in error, decides nothing. A stage's required count is its assertion index's
+  count, and, unless the stage was cut short, its required count and digest are
   those of its events' assertions. These describe the stage's own events and
-  index: what a stage owed is shown only against the project's assertion files
+  index: which assertions a stage was required to evaluate is shown only
+  against the project's assertion files
   at its commit, or the set Iltero Platform pinned. In an infrastructure
   record, `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN`
   must pass exactly when the applied plan has the evaluated plan's digest,
@@ -432,17 +430,17 @@ keep, so any two tools agree on what a record means.
   RDS identifier that is not lowercase, ends with a hyphen or holds two
   hyphens in a row. No two of its resolved identities, and no two of its removed
   entries, name the same cloud identity.
-- Hand-written policy sources and evaluator binding sets. A scanner
-  evaluator's `input_kind` says what the scanner read, and a record's scanner
-  report lists its `input_kinds`, in the contract's words. Binding sets,
-  events and records name a scanner from one list: `checkov` and `trivy`. An
-  event read from a scanner's results names the evaluator whose checks
-  decided it (`provenance.evaluator_binding`).
+- Hand-written policy sources and scanner check mappings. A scanner checks
+  entry's `input_kind` says what the scanner read, and a record's scanner
+  report lists its `input_kinds`, in the contract's words. Scanner check
+  mappings, events and records name a scanner from one list: `checkov` and
+  `trivy`. An event read from a scanner's results names the scanner checks
+  entry whose checks decided it (`provenance.scanner_checks`).
 - Named constants for values consumers write as plain strings. Each constant
   lives with the part of the contract it belongs to. `SCHEME_UNIT` is in
-  `iltero_schemas.models.vocabulary`, `SCHEME_AWS_ARN` in
+  `iltero_schemas.models.common.vocabulary`, `SCHEME_AWS_ARN` in
   `iltero_schemas.models.providers.aws`, and the CI systems an executor may
-  name in `iltero_schemas.models.ci.CI_SYSTEMS`.
+  name in `iltero_schemas.models.common.ci.CI_SYSTEMS`.
 - Canonical JSON (RFC 8785) and `sha256` digests, including a plan's digest
   by its IaC tool's rule (`plan_digest(tool, plan)`); `PLAN_DIGEST_VERSIONS`
   gives each rule's version. A plan, or a deployment's applied plan, whose
@@ -490,12 +488,11 @@ keep, so any two tools agree on what a record means.
 - A stage that replaced an input it could not read, such as another unit's
   state, with a placeholder lists it (`coverage.substituted_inputs`: at most
   256, by the tool's address of the input, sorted). Its verdict still
-  follows its evaluations, and it is incomplete with reason
-  `upstream_state_unavailable`, so a pass on placeholders reads as
-  incomplete; an evaluator error's, a state not read's or the plan's reason
-  wins over it. One order (`INCOMPLETE_REASON_PRECEDENCE`) serves both: a
-  stage takes the first reason that holds, and a record the stage reason
-  that comes first, from the earliest stage incomplete for it. A record of a run Iltero Platform opened has none.
+  follows its evaluations, and its evidence has gaps, with reason
+  `upstream_state_unavailable`, so a `met` verdict on placeholders reads
+  beside evidence with gaps; an evaluator error's, a state not read's or the
+  plan's reason is listed before it. One order (`GAP_REASON_PRECEDENCE`)
+  serves both a stage's reasons and a record's, which list every stage's. A record of a run Iltero Platform opened has none.
 - The fixed order of statuses, worst first.
 - The digest of an assertion set and the digest of a change, with vectors.
   The change digest (`change_digest`) is taken over the change type, the
@@ -515,7 +512,7 @@ keep, so any two tools agree on what a record means.
   single record describes. `iac_change`, a change made with an IaC tool, has
   one activity of the same name; `image_release`, a container image built
   once and released to environments, has the activities `image_build` and
-  `image_deploy`. `iltero_schemas.models.change_type` names each
+  `image_deploy`. `iltero_schemas.models.common.change_type` names each
   (`IAC_CHANGE_TYPE`, `IAC_CHANGE_ACTIVITY`, `IMAGE_RELEASE_TYPE`,
   `IMAGE_BUILD_ACTIVITY`, `IMAGE_DEPLOY_ACTIVITY`) and
   gives each activity's change type (`CHANGE_TYPE_OF`). A record's `change` is the body of its activity
@@ -523,7 +520,7 @@ keep, so any two tools agree on what a record means.
   `plan`, and once they are known the `deployment`, the `identity` and the
   `drift_check`. The activity declares the type of run that records it, the
   stages a record passes through, which of them a project, an environment's
-  policy or the tool may leave out, and the documents each stage owes,
+  policy or the tool may leave out, and the documents each stage must keep,
   always or only when the change names one, with the field that names it.
 - The evaluation input's environment says whether Iltero Platform's policy
   treats it as production (`organization_scope.environment.production`), and
@@ -630,8 +627,8 @@ keep, so any two tools agree on what a record means.
   the log lost stays `deployment_log_incomplete`. Such a record shows that
   an apply was invoked, which plan the pipeline says it applied and what the
   log says of each change. Its post-deploy stage lists the gap `state_not_read`, which makes
-  it a coverage gap (exit code 6) and incomplete with reason
-  `state_not_read`; an evaluator error's reason comes first. When the log
+  its verdict `incomplete` (unless a check failed) and gives its evidence
+  gaps with reason `state_not_read`; an evaluator error's reason comes first. When the log
   lost messages, whether or not the state was read, no change that needs an
   operation, and no deposed object's delete, is `not_attempted`: it is
   unknown. The record
@@ -679,7 +676,7 @@ keep, so any two tools agree on what a record means.
   a build's evidence files except the attestation, when it was sent
   (`sent_to_server: true`), and never reads the pipeline's store: the
   pipeline keeps them in the run's artifact store, and the record keeps each
-  file's digest. The raw image index, which the plan stage owes
+  file's digest. The raw image index, which the plan stage must keep
   (`image_index`, the one document an image build's `named_documents`
   lists), passes through Iltero Platform, which checks it with
   `platform_digests_of`, refusing an index over 4 MiB or one that lists more
@@ -725,7 +722,7 @@ keep, so any two tools agree on what a record means.
   | Change type (`spec.change_type`) | `image_release` |
   | Activity (`change.activity`, `evaluation.activity`) | `image_build` |
   | Run type of an activity | `build` |
-  | Document a stage owes | `image_index` |
+  | Document a stage must keep | `image_index` |
   | Assertion target kind | `artifact` |
   | Evaluation input parts | `artifact`, `tests`, `scans`, `verified_source` |
   | Checked content kind | `container_image` |
@@ -747,7 +744,7 @@ keep, so any two tools agree on what a record means.
   `pre_deploy` that there is one: it passes when Iltero Platform accepted a
   build, fails when a run Iltero Platform opened has none, and is unknown
   with `server_facts_unavailable` in a run the tool opened, so that stage is
-  then at best indeterminate (exit code 3). It may otherwise only be not
+  then never `met`, and `undecided` when nothing else is wrong. It may otherwise only be not
   evaluated (`timeout`, `evaluator_unavailable`) or end in an error, for a
   fault of the evaluator. The evaluation input tells the two cases apart:
   it always names its environment, and its `change.build` is the unknown
@@ -827,7 +824,7 @@ keep, so any two tools agree on what a record means.
   image deploy carries `commit_review`, a fact only Iltero Platform holds:
   whether every commit the change ships since its review starting point, a
   commit an administrator recorded, was merged through a pull request with a
-  qualifying approval (`iltero_schemas.models.commit_review.CommitReview`).
+  qualifying approval (`iltero_schemas.models.common.commit_review.CommitReview`).
   Its outcome is `reviewed`, `not_reviewed` (with up to 50 commits not
   reviewed, each with one reason, and whether that list is complete),
   `too_many_commits` (more than the 100 Iltero Platform checks),
@@ -876,7 +873,7 @@ keep, so any two tools agree on what a record means.
   `server_facts_unavailable`; a record of a run Iltero Platform opened
   refuses one that passed or failed without facts from Iltero Platform. A git
   repository is named by its host (`github`), the host's instance and its id
-  there (`iltero_schemas.models.git.GitRepository`). Context, evaluation and
+  there (`iltero_schemas.models.common.git.GitRepository`). Context, evaluation and
   record vectors cover it.
 - Scan coverage. `iltero_schemas.change_types.scan_coverage(build)` says
   which of a build's platform images its scan reports name and which none
@@ -905,7 +902,7 @@ keep, so any two tools agree on what a record means.
 - A verification report's `runtime_verification` is one of seven results,
   each a state and its reason, among them `not_assessed` with
   `not_in_activity` for a record whose activity has no stage after
-  deployment, such as an image build, or `not_determined` when the record's
+  deployment, such as an image build, or `could_not_decide` when the record's
   integrity is not established.
 - Files grouped by change type. Modules and conformance vectors that belong
   to one change type live under `iac/`, for changes made with an
@@ -914,14 +911,30 @@ keep, so any two tools agree on what a record means.
   `vectors/records/iac/`. Each document folder's `digests.json` and each
   conformance case name a document by its path from that folder
   (`image/local_run_build.json`).
+
+  Code that every change type shares lives in a `common/` folder of its
+  layer, beside `iac/` and `image/`, so a model is imported from
+  `iltero_schemas.models.common.car` rather than `iltero_schemas.models.car`:
+
+  | Layer | Before | Now |
+  | --- | --- | --- |
+  | Models | `iltero_schemas.models.<module>`, such as `car`, `event` and `assertion` | `iltero_schemas.models.common.<module>` |
+  | Canonical form | `iltero_schemas.canonical.<module>` (`assertion_set`, `change`, `encoding`, `record`, `time`) | `iltero_schemas.canonical.common.<module>` |
+  | Change types | `iltero_schemas.change_types.<module>` (`activity`, `bindings`, `evidence`, `owed_status`, `registry`) | `iltero_schemas.change_types.common.<module>` |
+  | Resource kinds | `iltero_schemas.kinds.vocabulary` | `iltero_schemas.kinds.common.vocabulary` |
+  | Tests | `tests/test_<module>.py` | `tests/common/test_<module>.py` |
+
+  The package-level imports are unchanged: `iltero_schemas.canonical`,
+  `iltero_schemas.change_types` and `iltero_schemas.kinds` export the same
+  names as before. No document shape, vector or digest changed.
 - Comparisons with `null`. An assertion checks whether a value is null with
   `equal: null`, or that it is set with `not_equal: null`. Any other
   comparison with `null` is refused ("only equal and not_equal compare with
   null"). A value that is absent, or an unknown marker, is still unknown.
   The conformance vector `VEC.IAC.RESOURCE.VEC.THING.OPS_NULL` and its evaluation cases show each
   outcome. Existing assertions compile to the same bytes as before.
-- One spelling of no value. An assertion document or an evaluator binding
-  set writes no value only as the word `null`. YAML also reads an empty
+- One spelling of no value. An assertion document or a scanner check
+  mapping writes no value only as the word `null`. YAML also reads an empty
   value, `~`, `Null` and `NULL` as null, so the loader refuses them, and a
   forgotten value is never read as a comparison with null.
 - An exception never covers a built-in assertion: an exception served for
@@ -932,9 +945,9 @@ keep, so any two tools agree on what a record means.
   `assertions_invalid/` vectors expect these messages, such as
   `duplicate key`.
 - Evaluations from a scanner's results. A scanner such as Checkov or Trivy
-  runs in the pipeline, and an evaluator binding set says which of its
+  runs in the pipeline, and a scanner check mapping says which of its
   checks decide which assertion. The plan stage of an infrastructure change
-  reads each report it is given and turns the bound results into one
+  reads each report it is given and turns the mapped results into one
   evaluation per scanner, beside the assertion's own evaluation, and every
   reader can recompute each of those verdicts from the files the stage kept.
   - An assertion can leave its rule to scanners. `assert` is always written;
@@ -946,27 +959,28 @@ keep, so any two tools agree on what a record means.
     meets it. Its compiled program never passes or fails: it applies the
     `when` guard and is otherwise `unknown` with the reason
     `observed_by_scanners`. Any assertion may now carry a description.
-  - An evaluator binding set holds one binding per assertion: the assertion
-    it decides, by id, version and document digest, and its `evaluators`.
-    Each evaluator names a tool, a stage, the checks that decide together
+  - A scanner check mapping holds one assertion mapping per assertion: the
+    assertion it decides, by id, version and document digest, and its
+    `scanner_checks`. Each scanner checks entry names a tool, a stage, the
+    checks that decide together
     (`rule_ids`: any failure fails, all must pass), a version range that must
     have an upper bound, what the scanner read (`input_kind`: `plan` at the
     plan stage, `deployed_resources` at runtime), how a result finds its
     subject (`subject_match`: `exact_address`, or `plan_configures` for a
     resource that configures the subject, such as a bucket's public access
-    block), and the attribute paths the checks read (`paths_read`). A binding
-    is a lookup table, not a requirement: a scanner with no report adds
-    nothing, and a check bound nowhere is kept as evidence only. Results a
+    block), and the attribute paths the checks read (`paths_read`). A
+    mapping is a lookup table, not a requirement: a scanner with no report
+    adds nothing, and a check mapped nowhere is kept as evidence only. Results a
     tool wrote about the configuration as written decide nothing: they are
     counted (`written_configuration_results`) and left out.
-    `check_project_set` refuses a project's own set that takes an `ILT.` id
-    or decides an assertion Iltero ships.
+    `check_project_mapping` refuses a project's own mapping that takes an
+    `ILT.` id or decides an assertion Iltero ships.
   - A run can require scanners (`required_scanners`, as the record states
     them; a reader does not check them against any configuration). A required scanner that gave
-    no report gives every subject its bound checks cover an evaluation that
+    no report gives every subject its mapped checks cover an evaluation that
     is `not_evaluated` with `scanner_not_run`, naming no version and no input.
-    That, or a required scanner's report from a version its binding does not
-    allow (`scanner_version_not_allowed`), is a gap no pass fills: it cancels
+    That, or a required scanner's report from a version its scanner checks
+    entry does not allow (`scanner_version_not_allowed`), is a gap no pass fills: it cancels
     every pass and not applicable verdict, and a failure, an unknown result or
     another evaluator's error still stands. A scanner the run does not
     require cancels nothing. `combined_verdict`, `stage_verdicts` and the
@@ -974,16 +988,17 @@ keep, so any two tools agree on what a record means.
     (`stage_required_scanners`).
   - Each stage lists, for each reason an evaluation was not evaluated or
     ended in error, a count gap of the combined verdicts that reason left
-    undecided (`undecided_reason_counts`). The integrity checks recompute
+    without a decision (`no_decision_reason_counts`). The integrity checks recompute
     the counts from the events.
   - An evaluation that could not decide and that the subject's combined
     verdict does not count is a gap too: beside a verdict another evaluator
-    decided, beside an undecided verdict another evaluator reached, or beside
+    decided, beside a verdict without a decision that another evaluator
+    reached, or beside
     one with another status. The verdict stands, and the stage
     lists one `evaluator_did_not_decide` gap for each evaluator and reason,
     with the number of such evaluations (`evaluator_did_not_decide_counts`),
     which the integrity checks recompute from the events. A gap for an
-    evaluator error marks the stage incomplete with reason
+    evaluator error gives the stage's evidence gaps with reason
     `required_policy_evaluation_failed`; a gap for a check not evaluated is
     listed only.
   - Seven starter assertions about AWS resources join the package: no SSH or
@@ -992,8 +1007,8 @@ keep, so any two tools agree on what a record means.
     encryption configuration for the bucket (checked again after the
     deployment, a bucket left on Amazon S3 managed keys fails), and five that
     only scanners decide, about IAM (Identity and Access Management) policies, CloudTrail trails and
-    AWS Config recorders. The shipped set `ILT.BINDINGS.STARTER` binds nine
-    starters to Checkov and Trivy checks.
+    AWS Config recorders. The shipped mapping `ILT.SCANNER_CHECKS.STARTER`
+    maps nine starters to Checkov and Trivy checks.
   - Scanner observations (`ScannerObservations` v1) are what a stage read
     from one report, in one shape for every tool. The Checkov and Trivy
     readers build them from a report and the plan's addresses. A result's
@@ -1075,16 +1090,17 @@ keep, so any two tools agree on what a record means.
     wins, then `unknown`, then a pass (`COMBINING_ORDER`). Coverage counts
     these combined verdicts, and an earlier evaluation served by Iltero
     Platform names the engines that reached its verdict (`decided_by`).
-  - A record's `scanners` names the binding sets the stage applied
-    (`evaluator_binding_sets`), the scanners the run requires, and each
-    report. A stage always applies the binding set Iltero ships, and may
-    also apply one binding set from the project's own file, listed first.
-    The project's set decides only the project's own assertions and the
-    shipped set only Iltero's starter assertions, so each scanner verdict's
-    `provenance.evaluator_binding.digest` matches exactly one binding across
-    the stage's sets, and a reader finds the set that decided it from that
-    digest. The evidence register lists the copy of each set, and the copy
-    of a project's set names the file it was read from. For each report the
+  - A record's `scanners` names the scanner check mappings the stage applied
+    (`scanner_check_mappings`), the scanners the run requires, and each
+    report. A stage always applies the mapping Iltero ships, and may also
+    apply one mapping from the project's own file, listed first. The
+    project's mapping decides only the project's own assertions and the
+    shipped mapping only Iltero's starter assertions, so each scanner
+    verdict's `provenance.scanner_checks.digest` matches exactly one scanner
+    checks entry across the stage's mappings, and a reader finds the entry
+    that decided it from that digest. The evidence register lists the copy
+    of each mapping, and the copy of a project's mapping names the file it
+    was read from. For each report the
     record names who supplied it, what it read, its results,
     unreadable results, results about the configuration and the files the
     tool could not parse. A reader must call
@@ -1102,12 +1118,11 @@ keep, so any two tools agree on what a record means.
     (`settles_a_postponed_check`) settles one postponed check, once, over the
     plan it was postponed from: the assertion's own rule decides it, or, when
     no evaluator could run, it is `not_evaluated` with no evaluator.
-    Until the post-verify stage reports, the record is incomplete with reason
-    `checks_postponed_until_after_the_deployment` (`OPEN_CHECKS_REASON`) and a
-    detail that counts the open checks, unless its stages give a reason that
-    comes earlier. Only a record holds this reason. In
-    `INCOMPLETE_REASON_PRECEDENCE` it comes after `state_not_read` and before
-    `plan_not_complete`. `postponed_check_problems` checks the list against
+    Until the post-verify stage reports, the record's evidence has gaps, with
+    reason `checks_postponed_until_after_the_deployment` (`OPEN_CHECKS_REASON`)
+    and a detail that counts the open checks; the reason names no stage. Only
+    a record holds this reason. In `GAP_REASON_PRECEDENCE` it comes after
+    `required_checks_not_evaluated` and before `plan_not_complete`. `postponed_check_problems` checks the list against
     the kept plan.
   - A stage none of whose evaluations ran over an input that carries approvals
     or a commit review keeps the marker `not_read_by_the_stage` in their
@@ -1148,22 +1163,24 @@ keep, so any two tools agree on what a record means.
 
     | Before | Now |
     | --- | --- |
-    | A binding entry with its own `id` and `version`, one `rule_id` and a `status_map` | A binding per assertion, with `evaluators` and `rule_ids`; a tool's words are read only as `TOOL_DECISIONS` lists them |
-    | An event's `evaluator_binding` with `id`, `version` and `digest` | `evaluator_binding` with the evaluator's `digest` only |
-    | `binding_count` | `assertions_bound` |
+    | A binding entry with its own `id` and `version`, one `rule_id` and a `status_map` | An assertion mapping per assertion, with `scanner_checks` and `rule_ids`; a tool's words are read only as `TOOL_DECISIONS` lists them |
+    | An event's `evaluator_binding` with `id`, `version` and `digest` | `scanner_checks` with the scanner checks entry's `digest` only |
+    | `binding_count` | `assertions_mapped` |
     | A report's `parsing_errors` | `tool_parsing_errors`, `null` when the tool does not say |
     | A report's `input_kinds` in the tool's words (`terraform_plan`) | The contract's words (`plan`) |
     | `results_accepted`, `results_scanner_version_not_allowed`, `results_without_binding` | Removed: every verdict is an event |
     | The `accepted_by_binding` gap | Removed; the `checked_after_deployment` gap is new |
 
-  - Vectors are in `vectors/binding_sets/`, `vectors/binding_sets_invalid/`,
-    `vectors/binding_sets_project_invalid/`, `vectors/scanner_reports/iac/`,
+  - Vectors are in `vectors/scanner_check_mappings/iac/`,
+    `vectors/scanner_check_mappings_invalid/iac/`,
+    `vectors/scanner_check_mappings_project_invalid/iac/`,
+    `vectors/scanner_reports/iac/`,
     `vectors/scanner_observations/iac/`, `vectors/scanner_evidence/iac/`,
     `vectors/records/iac/local_run_scanned.json`,
     `vectors/records/iac/local_run_scanned_project.json`,
     `vectors/records/iac/local_run_scanner_required.json`,
     `vectors/records/iac/local_run_scanned_project_required.json` (a
-    required scanner's version that its binding does not allow cancels a
+    required scanner's version that its scanner checks entry does not allow cancels a
     pass), `vectors/records/iac/local_run_scanned_redacted_result.json` (a
     redacted Trivy result leaves the subjects Trivy is silent about
     `unknown`), `vectors/records/iac/local_run_suppressed_with_exception.json`
@@ -1174,3 +1191,458 @@ keep, so any two tools agree on what a record means.
     `vectors/records/iac/local_run_postponed_settled.json` (with the project
     assertion `ACME.IAC.RESOURCE.TERRAFORM.DATA.OUTPUT_SET` it evaluates) and
     the evaluation cases.
+- The scanner check mapping, a plain name for the document that says which
+  scanner checks decide which assertion. It was called the evaluator binding
+  set. Each assertion it maps is an assertion mapping, and each tool's checks
+  for that assertion at one stage are a scanner checks entry. The document
+  keeps its structure and its rules. Its fields, the code and vectors around
+  it, and the refusal messages that name it use the new words:
+
+  | Before | Now |
+  | --- | --- |
+  | `kind: EvaluatorBindingSet` | `kind: ScannerCheckMapping` |
+  | `spec.bindings` (`AssertionBinding`) | `spec.assertion_mappings` (`AssertionMapping`) |
+  | A binding's `evaluators` (`ScannerBinding`) | An assertion mapping's `scanner_checks` (`ScannerChecks`) |
+  | `BindingSetSpec`, `SetMetadata` | `ScannerCheckMappingSpec`, `MappingMetadata` |
+  | A record's `scanners.evaluator_binding_sets` (`EvaluatorBindingSetUsed`) | `scanners.scanner_check_mappings` (`ScannerCheckMappingUsed`) |
+  | `assertions_bound` | `assertions_mapped` |
+  | An event's `provenance.evaluator_binding` (`EvaluatorBindingRef`) | `provenance.scanner_checks` (`ScannerChecksRef`) |
+  | The digest of `{"assertion": ..., "evaluator": ...}` | The digest of `{"assertion": ..., "scanner_checks": ...}`, from `AssertionMapping.scanner_checks_digest` |
+  | `ILT.BINDINGS.STARTER`, `ACME.BINDINGS.PAYMENTS` | `ILT.SCANNER_CHECKS.STARTER`, `ACME.SCANNER_CHECKS.PAYMENTS` |
+  | `iltero_schemas.bindings` | `iltero_schemas.scanner_check_mappings` |
+  | `BINDINGS`, `STARTER_SET`, `STARTER_SET_ID` | `SCANNER_CHECK_MAPPINGS`, `STARTER_MAPPING`, `STARTER_MAPPING_ID` |
+  | `SHIPPED_SET`, `SHIPPED_SET_DIGEST` | `SHIPPED_MAPPING`, `SHIPPED_MAPPING_DIGEST` |
+  | `SHIPPED_SET_EVALUATORS`, `SHIPPED_SET_ASSERTIONS` | `SHIPPED_SCANNER_CHECKS`, `SHIPPED_MAPPING_ASSERTIONS` |
+  | `load_binding_set`, `starter_set` | `load_scanner_check_mapping`, `starter_mapping` |
+  | `check_project_set` | `check_project_mapping` |
+  | `MAX_BINDINGS`, `MAX_EVALUATORS`, `MAX_RULES_PER_EVALUATOR` | `MAX_ASSERTION_MAPPINGS`, `MAX_SCANNER_CHECKS`, `MAX_RULE_IDS` |
+  | The kept copies `bindings.json`, `shipped-bindings.json`, `project-bindings.json` and `bindings.yaml` in the vectors | `scanner-check-mapping.json`, `shipped-scanner-check-mapping.json`, `project-scanner-check-mapping.json` and `scanner-check-mapping.yaml` |
+
+  The code that serves only changes made with an IaC tool moved into `iac/`
+  folders, like the rest of the contract:
+
+  | Before | Now |
+  | --- | --- |
+  | `iltero_schemas.models.binding` | `iltero_schemas.models.iac.scanner_check_mapping` |
+  | `iltero_schemas.models.scanner_results` | `iltero_schemas.models.iac.scanner_results` |
+  | `iltero_schemas.models.kept_files` | `iltero_schemas.models.iac.kept_files` |
+  | The shipped mapping and its loader, in `iltero_schemas/bindings/` | `iltero_schemas/scanner_check_mappings/iac/`, still imported from `iltero_schemas.scanner_check_mappings` |
+  | `vectors/binding_sets/` | `vectors/scanner_check_mappings/iac/` |
+  | `vectors/binding_sets_invalid/cases.json` | `vectors/scanner_check_mappings_invalid/iac/cases.json` |
+  | `vectors/binding_sets_project_invalid/cases.json` | `vectors/scanner_check_mappings_project_invalid/iac/cases.json` |
+
+  Every digest of a document that cites a mapping, or one of its scanner
+  checks entries, changed with the names.
+- A plain verdict that never hides a failed check, and an evidence status
+  that lists every reason the evidence has gaps. A verdict says what the
+  stage's required checks came to. A required check is one assertion the
+  stage was required to evaluate about one subject in scope; an assertion
+  that ran and found no subject in scope counts as evaluated. The verdict
+  words describe those checks only: they never say that a framework control
+  is met or that anything is compliant. Before, the verdict and the status
+  each used the word "incomplete" for a different idea; now the verdict words
+  are about checks and the evidence status words are about evidence. A
+  verdict (`iltero_schemas.models.common.coverage.Verdict`) is
+  `{value, reason, computed_from, stage}`:
+
+  | `value` | Meaning |
+  | --- | --- |
+  | `met` | Every required check passed, did not apply, or was postponed until after the deployment. A stage none of whose required assertions found a subject, or that was required to evaluate none, is `met`, and its evidence says so. A check postponed until after the deployment counts as decided later. |
+  | `not_met` | A required check failed. |
+  | `undecided` | A required check could not be decided: it is `unknown`, and not a check postponed until after the deployment. |
+  | `incomplete` | The stage could not make every required check. `reason` says why: `not_evaluated` (a required assertion has no evaluation, a required check was not evaluated, the list of evaluations was cut short, or the state after the apply was not read) or `evaluator_failed` (an evaluator ended in an error). |
+
+  `reason` is present exactly when the value is `incomplete`, or the record
+  is refused with "a verdict names its reason exactly when it is
+  incomplete". A record holds no exit code: the Iltero CLI turns a verdict
+  into its own process exit code.
+
+  A stage's verdict is `not_met` whenever a required check failed. Otherwise
+  it is `incomplete` (with `not_evaluated` before `evaluator_failed`), then
+  `undecided`, and otherwise `met` (`VERDICT_ORDER`, `INCOMPLETE_ORDER`). A
+  record's verdict is the stage verdict that comes first in the same order,
+  from the earliest such stage on a tie, and names that stage
+  (`computed_from: stage_precedence`). Before, a check that was not made
+  outranked a failure, so a stage with five failures and one missing check
+  read as a gap. A failure now always shows in the verdict, and a missing
+  check always shows in the evidence status.
+
+  The evidence status
+  (`iltero_schemas.models.common.evidence_status.EvidenceStatus`) is
+  `{value, reasons}`. It `has_gaps` exactly when `reasons` lists at least one
+  `{reason, stage, detail}`, sorted by `GAP_REASON_PRECEDENCE` and then by
+  stage, each reason once per stage. A stage's own reasons name no stage; a
+  record's name the stage each holds for, except
+  `checks_postponed_until_after_the_deployment`, which holds for the record.
+  The reasons, in order: `required_policy_evaluation_failed`,
+  `state_not_read`, `expected_stage_not_reported` (new, a record only: an
+  expected stage did not report though a later one did),
+  `required_checks_not_evaluated` (new: a required check was not made,
+  whatever the verdict), `checks_postponed_until_after_the_deployment`,
+  `plan_not_complete`, `upstream_state_unavailable`,
+  `plan_resources_excluded_for_their_identity` (new: plan resources were left out
+  of scope because their identity was redacted or cannot be named; it does
+  not change the verdict), `no_resource_in_scope_for_any_check` (new: no
+  required assertion had a subject in scope; one assertion that does not
+  apply to the plan, beside others that do, is not a gap) and
+  `no_assertion_required` (new: the stage was required to evaluate no
+  assertion). The refusals are "the evidence has gaps exactly when the
+  status lists a reason", "the reasons are in the order of
+  GAP_REASON_PRECEDENCE" and "each reason is listed once for each stage it
+  holds for". `stages.record_outcome(car)` gives a record's coverage,
+  verdict and evidence status, and
+  `record_coverage.record_evidence_status` adds the two reasons only a
+  record holds.
+
+  The integrity checks also recompute, from each stage's events, its
+  `assertions_evaluated` (required assertions whose combined verdict reached
+  a result, one that found no subject in scope included), its
+  `subjects_evaluated` (distinct subjects a required assertion reached a
+  result about) and its `subjects_per_assertion` (the
+  distinct subjects each required assertion was evaluated about, 0 when it
+  found none); the assertions a post-verify stage evaluates to settle
+  postponed checks are not among a stage's required assertions. A count
+  that differs is refused with "does not count the assertions and subjects
+  the stage's evaluations reached a result for, or the subjects each
+  required assertion was evaluated about" (`stage_counts.evaluated_counts`).
+
+  "Undecided" now names only a verdict, the stage's or the record's. A
+  combined verdict that is `not_evaluated` or `error` is a verdict without a
+  decision. The renamed fields, values, names and messages:
+
+  | Before | Now |
+  | --- | --- |
+  | A verdict's `value`: `pass`, `fail`, `indeterminate` | `met`, `not_met`, `undecided`, `incomplete` |
+  | A verdict's `exit_code` | Removed; an `incomplete` verdict names its `reason` |
+  | `VERDICT_PRECEDENCE` (exit codes), `VERDICT_WORDS` | `VERDICT_ORDER`, `INCOMPLETE_ORDER` |
+  | `assurance_status` (`AssuranceStatus`), on a stage and on a record | `evidence_status` (`EvidenceStatus`) |
+  | An assurance status's `complete`, `incomplete` | An evidence status's `whole`, `has_gaps` |
+  | An assurance status's one `reason` and `detail` | `reasons`, every reason with its `stage` and `detail`; `EvidenceStatus.leading_reason` gives the first |
+  | `AssuranceStatus` and the reason constants in `iltero_schemas.models.common.coverage` | `EvidenceStatus`, `GapReason` and the reason constants in `iltero_schemas.models.common.evidence_status` |
+  | `INCOMPLETE_REASON_PRECEDENCE` | `GAP_REASON_PRECEDENCE`, with five new reasons |
+  | `INCOMPLETE_REASON` | `EVALUATOR_ERROR_REASON` (`required_policy_evaluation_failed`) |
+  | `iltero_schemas.models.iac.postponed_checks.open_checks_status` | Removed; `record_coverage.record_evidence_status` lists the open postponed checks |
+  | `coverage.assertions_expected` (`AssertionsExpected`) | `coverage.assertions_required` (`AssertionsRequired`) |
+  | A record's `complete` | `all_expected_stages_reported` |
+  | "a record is complete exactly when every expected stage has reported" | "all_expected_stages_reported is true exactly when every expected stage has reported" |
+  | `UNDECIDED_STATUSES`, `undecided_reason_counts`, `UNDECIDED_REASON_GAP_KINDS` | `NO_DECISION_STATUSES`, `no_decision_reason_counts`, `NO_DECISION_REASON_GAP_KINDS` |
+  | "… the verdicts of the stage it left undecided" | "does not count, for each reason, the verdicts of the stage that the reason left without a decision" |
+  | "… no undecided verdict of the stage counts" | "… the evaluations that could not decide where the stage's verdict about the same assertion and subject reached a decision or decided nothing for another reason" |
+  | `iltero_schemas.change_types.owed_status` (`owed_status_problems`) | `iltero_schemas.change_types.common.expected_status` (`expected_status_problems`) |
+
+  The record vectors' verdicts and statuses are recomputed, and every digest
+  that cites a record changed with them.
+- A verification report says more about each result, gives one result per
+  property for a record, and judges where each stage took its time and
+  which OPA binary it names. Every result now has a `detail`: a plain
+  sentence about what the verifier found, 1 to 1024 characters
+  (`RESULT_DETAIL_MAX_LENGTH`), or `null` when there is nothing to add. A
+  detail never changes what a state means or makes it stronger, and a
+  reader must not parse it. Two states have plainer names:
+
+  | Before | Now |
+  | --- | --- |
+  | `client_asserted` | `claimed_by_record` |
+  | `not_determined` | `could_not_decide` |
+  | `NOT_DETERMINED` | `COULD_NOT_DECIDE` |
+  | "when a record's integrity is not established, every other property is not_determined with the reason integrity_failed" | "… every other property is could_not_decide with the reason integrity_failed" |
+
+  The report has two new properties:
+
+  | Property | What `verified` would mean | Results |
+  | --- | --- | --- |
+  | `reference_time` | Every stage took its reference time, the time every expiry and ordering comparison uses, from a source a verifier can trust. | `not_performed` with `runner_clock` when any stage used the runner's own clock, since no trusted time source was used; `claimed_by_record` with `server` when every stage took Iltero Platform's time, since no signature binds that time to the record. |
+  | `evaluator_binary` | Every evaluation ran on the binary of the Open Policy Agent (OPA) release this contract pins, for its platform. | `claimed_by_record` with `pinned_binary_named`, `failed` with `other_binary_named` (the first problem in the `detail`), or `not_assessed` with `no_opa_evaluation`. |
+
+  Approvals, exceptions and the commit review now tell apart a run the tool
+  opened from a fact Iltero Platform did not supply:
+
+  | Case | Before | Now |
+  | --- | --- | --- |
+  | The tool opened the run | `not_performed`, `server_facts_unavailable` | `not_performed`, `run_opened_locally` |
+  | Iltero Platform opened the run, a check needed an approval or the commit review, and the stage kept the unknown marker | `not_performed`, `server_facts_unavailable` | `could_not_decide`, `server_facts_unavailable` (never an `exceptions` result) |
+  | None of the stage's results read an approval or the commit review | Not given | `not_assessed`, `not_read_by_the_stage` |
+
+  The `exceptions` property now means that every exception relied on was
+  approved and in force at the reference time of the stage that relied on
+  it, rather than at the time of deployment. It is `claimed_by_record` with
+  `project_exception_relied_on` when an event names an exception from the
+  project's own exceptions file, and with
+  `project_exceptions_file_not_relied_on` when a stage applied such a file
+  and no event relied on one. `exceptions_not_listed` is given only for a
+  run Iltero Platform opened.
+
+  For approvals, exceptions and the commit review, a verifier takes the
+  first result that holds, in the order
+  `iltero_schemas.models.common.verification.PRE_DEPLOY_RESULT_ORDER`
+  (`first_that_holds`): `project_exception_relied_on`,
+  `project_exceptions_file_not_relied_on`, `not_in_activity`,
+  `pre_deploy_out_of_scope`, `run_opened_locally`, `pre_deploy_pending`;
+  when none holds, the stage's own result. The project's own exceptions
+  come first, since a stage other than the pre-deploy stage may rely on
+  one. So one record gives one report. The new
+  `reports_expected/` vectors name a record, a property and the result
+  every verifier must give it, and three new accepted-record cases cover a
+  run on Iltero Platform's time, a pre-deploy stage that read no fact
+  from Iltero Platform, and a record relying on a project exception whose
+  pre-deploy stage is out of scope. The report vectors carry the new
+  results.
+- A reference time states only its value and its source; the verification
+  report judges how far it can be trusted. The record and the evaluation
+  input change in place:
+
+  | Before | Now |
+  | --- | --- |
+  | `source`: `server`, `timestamp_authority`, `rekor` or `runner_clock` | `source`: `server` or `runner_clock`; any other is refused with "Input should be 'server' or 'runner_clock'" |
+  | `trust`: `attested`, `corroborated` or `asserted` | Removed; refused with "Extra inputs are not permitted" |
+  | `time_window` (`TimeWindow`: `not_before`, `not_after`, `nonce_digest`) | Removed |
+  | The event status reason `reference_time_untrusted` | Removed, since nothing could give it |
+
+  A verified build attestation's `timestamp_source` (`transparency_log` or
+  `timestamp_authority`) is a different fact and is unchanged. Every record,
+  context and evaluation vector drops `trust` and `time_window`. The
+  invalid-record cases about a runner's clock that claimed more than
+  `asserted` and about time windows are removed, and two cases are added: a
+  reference time that names a timestamp authority, and one that says how far
+  it is trusted.
+- A verifier can check that each evaluation names the pinned OPA release's
+  binary for its platform.
+  `iltero_schemas.models.common.pinned_evaluator.pinned_evaluator_problems(events)`
+  lists, as `(where, what)` pairs, each OPA evaluator whose version is not
+  the pinned release, whose platform has no pinned binary, or whose digest
+  is not the pinned binary's for its platform, and `evaluator_binary_result`
+  turns them into the report's `evaluator_binary` result. A scanner's
+  evaluation, and one no evaluator ran, is not compared. The check compares
+  what the record states with this contract release's pin; it cannot show
+  which binary ran. Reading a record does not run it. Seven record vectors
+  name placeholder OPA digests, and their `evaluator_binary` is `failed`;
+  the others name the pinned binaries.
+- A stage counts subjects only for the assertions it was required to
+  evaluate, so a post-verify stage counts none for the checks it settles. The
+  refusal reads "the `<stage>` stage counts subjects only for the assertions it
+  was required to evaluate", where it read "… only for assertions it has
+  events for".
+- A Checkov report of a plan that changes nothing is read. When no
+  framework has a result and no file failed to parse, Checkov writes one
+  summary object with no framework: exactly `passed`, `failed`, `skipped`,
+  `parsing_errors` and `resource_count`, each the count 0, and
+  `checkov_version`. Checkov 3.3.8 writes it for an empty plan, `{}`, `[]`,
+  a file that is not JSON, an unknown check id, and a `--check` or
+  `--skip-check` filter that matches nothing on a plan with resources. Such
+  a report was refused before, so a run whose plan changed nothing failed
+  when it was given a Checkov report. `read_checkov` now reads it as a
+  report with no result (its `tool_version` from `checkov_version`,
+  `tool_parsing_errors` 0), and `kept_checkov` keeps it unchanged. A count
+  other than 0, or a truth or text in place of one, is refused with "the
+  checkov report is a summary with no framework, whose counts are not all
+  the number 0"; another set of keys with "the checkov report is not one or
+  more framework objects with results"; and a hidden count with "the report
+  hides the summary's count of resources, where its reader expects a count"
+  (or of another summary count). A
+  missing file is not such a summary: Checkov writes a whole framework with
+  `parsing_errors` 1, which reads as `scanner_report_incomplete`.
+- Two new reasons say when a scanner's report holds no result to decide a
+  subject from. Each applies only to a report the stage read in full; one
+  it could not read in full stays `unknown` with
+  `scanner_report_incomplete`. Both are decided after the version check.
+
+  | Tool | Report | Every subject of the entry |
+  | --- | --- | --- |
+  | Trivy, which names a resource only when a check fails | Holds no result, passed, failed or skipped, of any check the scanner checks entry names, of the entry's input kind | `not_evaluated` with `no_result_of_the_mapped_checks` |
+  | Checkov, which reports passes | Holds no result at all, such as Checkov's summary with no framework | `not_evaluated` with `no_result_in_the_report` |
+
+  Without `--include-non-failures` Trivy lists only failures, so a clean
+  plan leaves no result even when Trivy checked every resource; the report
+  then says nothing about any subject of the entry. For a required Trivy,
+  `no_result_of_the_mapped_checks` cancels every pass and `not_applicable`,
+  as `scanner_not_run` does (`REQUIRED_SCANNER_GAP_REASONS`), so the stage's
+  evidence lists `required_checks_not_evaluated`; for an optional one it
+  cancels nothing. `no_result_in_the_report` does the same for a required
+  Checkov; for an optional one another evaluator's pass stands, and the
+  stage lists an `evaluator_did_not_decide` gap for `checkov`. Trivy's
+  silence about one subject in a report that holds any result of the entry's
+  checks, even a pass about no resource, stays
+  `not_evaluated` with `tool_reports_only_failures`, which cancels nothing. A `no_result_of_the_mapped_checks` evaluation
+  names its version and input but no result address, unknown path or failed
+  check, and all its checks are undecided: "a scanner whose report holds no
+  result of its mapped checks decided none of them and read no resource". A
+  `no_result_in_the_report` evaluation follows the same rule: "a scanner
+  whose report holds no result at all decided none of its checks and read no
+  resource". A Checkov report with results about other resources still
+  leaves a silent subject `unknown` with `not_reported_by_tool`.
+
+  Trivy 0.72.0 reads the `terraform show -json` output of an applied state
+  as a plan. With `--include-non-failures` it also lists 51 checks as passed,
+  about no resource, even when it read no resource, such as `AWS-0019`,
+  `AWS-0056`, `AWS-0123` and `AWS-0140`, and `AZU-` and `GCP-` checks. None
+  is in the shipped mapping `ILT.SCANNER_CHECKS.STARTER`, whose Trivy checks
+  are `AWS-0014`, `AWS-0016`, `AWS-0080`, `AWS-0107` and `AWS-0180`. An
+  entry that names one of those always-listed checks never gets
+  `no_result_of_the_mapped_checks`: for it the rule shows nothing about what
+  Trivy read, and a required Trivy then leaves another evaluator's pass
+  standing. For the shipped mapping, a result of an entry's checks shows
+  Trivy read a plan with resources those checks cover, not that it read
+  this plan.
+
+  New scanner report vectors cover a plan that changes nothing for each
+  tool, and Trivy given an open-SSH plan and its state file. The new
+  `scanner_verdicts/` vectors give the status and reason every program
+  gives one subject from a scanner checks entry and one scanner's
+  observations. The Trivy evaluations of the three scanned record vectors,
+  and the coverage gaps that name them, are `no_result_of_the_mapped_checks`
+  in place of `tool_reports_only_failures`; no verdict changes. A new
+  accepted-record case
+  (`iac_record_whose_required_trivy_report_holds_no_result_of_its_checks`)
+  requires Trivy on `records/iac/local_run_scanned.json`. Two more give that
+  record a Checkov report with no result at all, one requiring Checkov
+  (`iac_record_whose_required_checkov_report_holds_no_result_at_all`) and
+  one not (`iac_record_whose_optional_checkov_report_holds_no_result_at_all`).
+- A Trivy pass never decides a subject, even one that names a resource,
+  which no Trivy release up to 0.76.2 writes: it counts as no result about
+  that resource, so a subject Trivy names no failure for is `not_evaluated`
+  with `tool_reports_only_failures`, and a failure still fails it. A
+  hand-written scanner report vector, `hand_written_pass_naming_a_resource_trivy.json`,
+  and a `scanner_verdicts/` case cover it.
+- Every project path a record names can now be located in the repository
+  at the record's commit, when the record names its repository. Before, a
+  path such as the units file's was relative to a project directory the
+  record did not name, and a scanner check mapping kept in a subdirectory
+  could be named only by its file name. The file found there is the one the
+  writer read only when its digest matches: the record does not say whether
+  the checkout was clean. Three fields are new or changed:
+
+  | Field | Before | Now |
+  | --- | --- | --- |
+  | `subject.project_directory` | Not given | Required: the project's directory relative to the repository's root, `.` for the root |
+  | A units file unit's `directory` (`DeclaredUnit`) | Not given | Required, after `name`: the unit's directory relative to the project's directory, `.` for the project's own |
+  | A scanner check mapping's `file_name` (`ScannerCheckMappingUsed`) | The file's name without its directories | `file_path`: the file's path in the project, `null` for the shipped mapping |
+
+  Every project path the record names (`units_file.path`, each unit's
+  `directory`, `out_of_scope[].declared_in.path`,
+  `scanners.local_exceptions.file_path` and a mapping's `file_path`) is
+  relative to `subject.project_directory`. `project_directory` is not part
+  of `subject.source`, which an evaluation reads, so no evaluation input or
+  input digest changes. The record's unit's code is in its entry's
+  directory, a record with no units file is about the one unit in the
+  project's own directory, and two units may share a directory. Each
+  directory is the writer's reading of the units file; a reader can check
+  only the file's digest at the commit.
+
+  A directory (`iltero_schemas.models.common.fields.DirectoryPath`) is
+  exactly `.` or a relative path of plain parts, with no leading `./` and
+  no trailing `/`; any other value is refused with "must be '.' or a
+  relative path with no '..', '.', empty part, ':' or leading '/'". A
+  mapping's `file_path` outside the project is refused with "must be a
+  relative path inside the project, with no '..', '.', empty part, ':' or
+  leading '/'". Every project path and directory is now also refused when a
+  part, in its compatibility form (NFKC), holds a character that looks like
+  a slash or is only dots and spaces, which Windows drops from the end of a
+  name: "must name each part plainly: not only dots and spaces, and with no
+  look-alike slash". This tightens `units_file.path`,
+  `out_of_scope[].declared_in.path` and `scanners.local_exceptions.file_path`
+  too. The kept copy of a project's mapping names, as its source, the last
+  part of `file_path`.
+
+  Every record vector names `project_directory: .`; the units of
+  `local_run_declared_units.json` are in `network` and `app`. New invalid
+  record cases cover project directories with a leading `./`, a trailing
+  `/`, a `..` part, a drive, a look-alike slash or only dots, a unit with no
+  directory or one outside the project, a mapping read from outside the
+  project, and a mapping whose `file_path` names another file than its kept
+  copy. A new accepted case is a project in a subdirectory whose mapping is
+  in a subdirectory of the project.
+- Each stage's coverage, and the record's, counts each evaluator's own
+  results before they combine (`Coverage.evaluator_status_counts`), keyed
+  by engine: `opa`, `checkov`, `trivy`, or `none` for evaluations no
+  evaluator ran. Each value names every status with a count, one per
+  assertion and subject the evaluator evaluated, so the counts add up to the
+  stage's events, not to `evaluations`. A required scanner that gave no
+  report is counted under its own name, as `not_evaluated`. An engine that
+  gave no evaluation is not listed, so a stage with no events has `{}`. The
+  record's coverage sums each evaluator over the stages that name it.
+
+  The verdict reads only `status_counts`: these counts decide nothing. A
+  required scanner's gap cancels other evaluators' passes, so an
+  evaluator's passes can sit beside a combined `pass` count of 0. A
+  scanner's counts are the results of its report as the pipeline supplied
+  it, not Iltero's own finding.
+
+  A stage's counts are refused when one leaves out a status ("each
+  evaluator's status counts name every status: pass, fail, unknown,
+  not_applicable, not_evaluated, error"), lists an evaluator that gave no
+  evaluation ("an evaluator's status counts are listed only for an
+  evaluator that gave an evaluation") or names an unknown engine. The
+  integrity checks recompute them from the stage's events with
+  `iltero_schemas.models.common.stage_counts.evaluator_status_counts`,
+  which a writer uses too: "does not count, for each evaluator, the
+  statuses of the evaluations it gave", at `stages.<stage>.coverage`. Every
+  record vector counts each evaluator, with three new invalid record cases
+  and two new integrity cases.
+- A record names the project's git tree at its commit
+  (`subject.project_tree`, required, beside `subject.project_directory`):
+  `{"id": <git object id>}`, git's id of the names, file modes and contents
+  of every file git tracks under the project directory at the commit, the
+  commit's root tree for `.`. A reader with the repository reads it again
+  with `git rev-parse <commit>:<project_directory>/`, or
+  `git rev-parse <commit>^{tree}` for `.`. It covers only committed files
+  under the directory: no uncommitted, untracked or ignored file, no shared
+  or remote module outside it, a submodule only by the commit it points
+  at, and no variable, state or tool version. Two records of the same
+  repository and project directory that name the same tree come from
+  commits whose project files are the same. That says nothing about the
+  files on disk when each run ran, and does not make their changes the
+  same. The id is lowercase hexadecimal and uses the same hash as
+  `subject.source.commit.sha`, or the record is refused with "the project
+  tree's id and the commit's id use the same hash: both are 40 or both 64
+  characters long". The subject's model is now
+  `iltero_schemas.models.common.record_subject.RecordSubject`, and the
+  public constant `iltero_schemas.models.common.fields.COMMIT_PATTERN` is
+  renamed `GIT_OBJECT_ID_PATTERN`, since it matches any git object id.
+  Every record vector names a project tree, with three new invalid record
+  cases and a new accepted case for a repository that names its git
+  objects by SHA-256. The verification report gains no field; its vectors name the
+  changed records' new digests.
+- The starter assertion
+  `ILT.COMMON.ASSURANCE.HISTORY.NO_UNEXPLAINED_REGRESSION` is withdrawn: no
+  record ever evaluated it. Its document, its compiler vectors and its
+  evaluation cases are removed, so the package ships 24 starter assertions,
+  and the digest of the starter set in
+  `vectors/canonical/assertion_set_cases.json` changes. The `runtime` stage,
+  the `assurance` target kind, the `assurance` part of an AssuranceContext
+  and the `HISTORY` area stay, with no starter assertion in that area.
+- Two more limits of a record are stated beside the fields they affect. A Checkov
+  report that checked nothing (`no_result_in_the_report`) may come from a
+  plan that changes nothing or from a run set up wrongly, such as one given
+  the wrong file or a check filter that matches nothing, and the record
+  cannot tell which. A scanner's version is the one the scanner wrote in its
+  own report.
+- A Checkov report run with `--quiet` is no longer read as a full report.
+  With `--quiet`, Checkov lists only failed checks, while each framework's
+  summary still counts the passed and skipped ones. The kept Checkov report
+  now keeps the summary's `passed`, `failed` and `skipped` counts beside
+  `checkov_version` and `parsing_errors`. The reader requires every
+  framework's summary and all four counts, each a whole number from 0, and
+  refuses a count lower than the length of its own list. The results a
+  summary counts that the report does not list are a new count,
+  `results_not_listed`, in the scanner observations and in each scanner
+  report entry of a record (`null` for Trivy, which writes no counts); the
+  integrity checks compare the two. Since `parsing_errors` is now required,
+  `tool_parsing_errors` is never `null` for Checkov: a report in which any
+  framework leaves out `parsing_errors` is now refused. Observations give both
+  counts as `null` exactly when the tool writes no counts. A report not read
+  in full (`ScannerObservations.read_in_full` is false) leaves `unknown` with
+  `scanner_report_incomplete` every subject the earlier rules do not decide: a
+  quiet report whose checks all passed no longer reads as one that checked
+  nothing (`no_result_in_the_report`), and a skip it does not list no longer
+  gives `suppressed_in_source`. A listed failure still fails its subject. For a
+  required Checkov, a quiet report whose checks all passed now leaves the
+  stage `undecided`, not `incomplete` with a required check not made, and an
+  optional Checkov's quiet report makes a subject `unknown` even when the
+  assertion's own rule passed. The count is Checkov's own: a check left out
+  of the run by a command-line filter, such as `--skip-check`, is in neither
+  the counts nor the lists. Checkov is meant to run without `--quiet`: a
+  quiet report passes no subject, so the formats reference advises against
+  it. Every Checkov report vector keeps its summary counts and every
+  observations and record vector gains `results_not_listed`, with three new
+  `--quiet` captures from Checkov 3.3.8, four new verdict cases and one new
+  integrity case.

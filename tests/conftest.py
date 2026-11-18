@@ -19,9 +19,9 @@ from typing import Any, cast, get_args
 
 import pytest
 
-from iltero_schemas.models.assertion import PROVIDER_PATTERN
-from iltero_schemas.models.assertion_id import ILTERO_NAMESPACE, change_type_segment, provider_segment
-from iltero_schemas.models.change_type import ChangeTypeName
+from iltero_schemas.models.common.assertion import PROVIDER_PATTERN
+from iltero_schemas.models.common.assertion_id import ILTERO_NAMESPACE, change_type_segment, provider_segment
+from iltero_schemas.models.common.change_type import ChangeTypeName
 from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent

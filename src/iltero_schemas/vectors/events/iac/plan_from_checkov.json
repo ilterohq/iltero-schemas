@@ -43,8 +43,8 @@
       "undecided_rule_ids": [],
       "local_exception": null
     },
-    "evaluator_binding": {
-      "digest": "sha256:c2c4278ffc9edfba79b8a2b5a5901339ec25de13e8f161b3f87fc5b2b8699a96"
+    "scanner_checks": {
+      "digest": "sha256:ffd49fbb71a150f47f49c8e69615a97bdffbadde620513b0532d2c32680aca41"
     },
     "executor": {
       "ci_run_id": null,

@@ -19,9 +19,9 @@ from iltero_schemas.assertions import (
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.change_types import IMAGE_DEPLOY, ImageDeploy
 from iltero_schemas.change_types.image.deploy import running_image_status
-from iltero_schemas.models.assertion import Stage
-from iltero_schemas.models.car import CAR
-from iltero_schemas.models.checked_content import CheckedImage
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.checked_content import CheckedImage
 from iltero_schemas.models.image.deploy import ImageDriftCheck
 from tests.conftest import VECTORS
 from tests.records import RECORD
@@ -43,7 +43,7 @@ def test_a_deploy_is_a_change_run_approved_deployed_and_read_back() -> None:
     assert IMAGE_DEPLOY.not_supported(CAR.model_validate(DEPLOY)) == {Stage.POST_VERIFY}
 
 
-def test_a_deploy_owes_its_record_at_every_stage_and_evaluates_its_three_builtin_assertions() -> None:
+def test_a_deploy_keeps_its_record_at_every_stage_and_evaluates_its_three_builtin_assertions() -> None:
     assert {stage: list(documents) for stage, documents in IMAGE_DEPLOY.required_documents.items()} == {
         stage: ["record"] for stage in IMAGE_DEPLOY.stages
     }
@@ -67,7 +67,7 @@ def test_the_change_digest_of_a_deploy_is_of_its_image_in_its_unit_and_environme
 
 def test_a_local_deploy_names_no_build_and_its_reading_matches_the_deployed_image() -> None:
     car = CAR.model_validate(DEPLOY)
-    assert isinstance(car.change, ImageDeploy) and car.change.build is None and car.complete
+    assert isinstance(car.change, ImageDeploy) and car.change.build is None and car.all_expected_stages_reported
     statuses = {event.assertion.id: event.evaluation.status for event in car.events}
     assert (
         statuses[REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID] == statuses[RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID] == "pass"

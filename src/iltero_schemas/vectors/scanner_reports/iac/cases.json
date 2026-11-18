@@ -126,5 +126,69 @@
     "plan_digest": "sha256:66c282a41f04e0c0cf1393d22664df910b706f9ea76b1589c15fcd7a164d8b23",
     "report": "addresses_trivy.json",
     "tool": "trivy"
+  },
+  {
+    "name": "no_change_checkov",
+    "observations": "no_change_checkov.json",
+    "plan_addresses": "no_change_plan_addresses.json",
+    "plan_digest": "sha256:33bef3d48d14d7ffd94ed94e94f1ba0a0a724b24955cb92ecf0d68fc1d1a8fdd",
+    "report": "no_change_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "no_change_trivy",
+    "observations": "no_change_trivy.json",
+    "plan_addresses": "no_change_plan_addresses.json",
+    "plan_digest": "sha256:33bef3d48d14d7ffd94ed94e94f1ba0a0a724b24955cb92ecf0d68fc1d1a8fdd",
+    "report": "no_change_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "open_ssh_trivy",
+    "observations": "open_ssh_trivy.json",
+    "plan_addresses": "open_ssh_plan_addresses.json",
+    "plan_digest": "sha256:259770b9ec1c7537fdbfeb6720d478baa499a0fdec27daefb3d596c1cb2b36f1",
+    "report": "open_ssh_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "open_ssh_state_given_trivy",
+    "observations": "open_ssh_state_given_trivy.json",
+    "plan_addresses": "open_ssh_state_given_plan_addresses.json",
+    "plan_digest": "sha256:259770b9ec1c7537fdbfeb6720d478baa499a0fdec27daefb3d596c1cb2b36f1",
+    "report": "open_ssh_state_given_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "hand_written_pass_naming_a_resource_trivy",
+    "observations": "hand_written_pass_naming_a_resource_trivy.json",
+    "plan_addresses": "open_ssh_plan_addresses.json",
+    "plan_digest": "sha256:259770b9ec1c7537fdbfeb6720d478baa499a0fdec27daefb3d596c1cb2b36f1",
+    "report": "hand_written_pass_naming_a_resource_trivy.json",
+    "tool": "trivy"
+  },
+  {
+    "name": "rds_quiet_checkov",
+    "observations": "rds_quiet_checkov.json",
+    "plan_addresses": "rds_plan_addresses.json",
+    "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+    "report": "rds_quiet_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "rds_quiet_all_passing_checkov",
+    "observations": "rds_quiet_all_passing_checkov.json",
+    "plan_addresses": "rds_plan_addresses.json",
+    "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+    "report": "rds_quiet_all_passing_checkov.json",
+    "tool": "checkov"
+  },
+  {
+    "name": "rds_skipped_quiet_checkov",
+    "observations": "rds_skipped_quiet_checkov.json",
+    "plan_addresses": "rds_skipped_plan_addresses.json",
+    "plan_digest": "sha256:6e0c8154ecf5aedcdf41af1e82860df130b005fdfd1b4e4e2b3fafa62e83c783",
+    "report": "rds_skipped_quiet_checkov.json",
+    "tool": "checkov"
   }
 ]

@@ -1,0 +1,741 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [
+    "plan"
+  ],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+  "report_digest": "sha256:6f6f9682db50241df8ce431709e376d9080f352efd868f1ee2e1c962160b32a1",
+  "results": [
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "engine",
+        "parameter/*/name",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV2_AWS_30",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "engine",
+        "parameter/*/name",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV2_AWS_30",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "engine",
+        "parameter/*/name",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV2_AWS_30",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "engine",
+        "parameter/*/name",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV2_AWS_30",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "engine",
+        "parameter/*/name",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV2_AWS_30",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "copy_tags_to_snapshot",
+        "engine"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV2_AWS_60",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "copy_tags_to_snapshot",
+        "engine"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV2_AWS_60",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "copy_tags_to_snapshot",
+        "engine"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV2_AWS_60",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "copy_tags_to_snapshot",
+        "engine"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV2_AWS_60",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "copy_tags_to_snapshot",
+        "engine"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV2_AWS_60",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "policy",
+        "resource_type"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV2_AWS_64",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "monitoring_interval"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_118",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "monitoring_interval"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_118",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "monitoring_interval"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_118",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "monitoring_interval"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_118",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "monitoring_interval"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_118",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enabled_cloudwatch_logs_exports/[0]"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_129",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enabled_cloudwatch_logs_exports/[0]"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_129",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enabled_cloudwatch_logs_exports/[0]"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_129",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enabled_cloudwatch_logs_exports/[0]"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_129",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enabled_cloudwatch_logs_exports/[0]"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_129",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "multi_az"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_157",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "multi_az"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_157",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "multi_az"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_157",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "multi_az"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_157",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "multi_az"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_157",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "storage_encrypted"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_16",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "storage_encrypted"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_16",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "storage_encrypted"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_16",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "iam_database_authentication_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_161",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "iam_database_authentication_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_161",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "iam_database_authentication_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_161",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "iam_database_authentication_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_161",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "iam_database_authentication_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_161",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "publicly_accessible"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_17",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "publicly_accessible"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_17",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "deletion_protection"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_293",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "deletion_protection"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_293",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "deletion_protection"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_293",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "deletion_protection"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_293",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "deletion_protection"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_293",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "performance_insights_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.compliant",
+      "rule_id": "CKV_AWS_353",
+      "scanner_address": "aws_db_instance.compliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "performance_insights_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.missing",
+      "rule_id": "CKV_AWS_353",
+      "scanner_address": "aws_db_instance.missing",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "performance_insights_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.noncompliant",
+      "rule_id": "CKV_AWS_353",
+      "scanner_address": "aws_db_instance.noncompliant",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "performance_insights_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_db_instance.unknown",
+      "rule_id": "CKV_AWS_353",
+      "scanner_address": "aws_db_instance.unknown",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "performance_insights_enabled"
+      ],
+      "input_kind": "plan",
+      "plan_address": "module.db.aws_db_instance.inner",
+      "rule_id": "CKV_AWS_353",
+      "scanner_address": "module.db.aws_db_instance.inner",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    },
+    {
+      "connected_plan_address": null,
+      "connected_scanner_address": null,
+      "decision": "fail",
+      "evaluated_keys": [
+        "enable_key_rotation"
+      ],
+      "input_kind": "plan",
+      "plan_address": "aws_kms_key.k",
+      "rule_id": "CKV_AWS_7",
+      "scanner_address": "aws_kms_key.k",
+      "suppressed": false,
+      "tool_status": "FAILED",
+      "unresolved_reason": null
+    }
+  ],
+  "results_not_listed": 37,
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

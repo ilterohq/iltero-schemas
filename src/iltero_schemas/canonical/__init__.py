@@ -1,10 +1,10 @@
-"""Canonical bytes and digests (``encoding``), the plan digest of each IaC tool (``iac.plan``), the digests of an
-assertion set (``assertion_set``) and of a change (``change``), the id of a record (``record``), and timestamps
-(``time``)."""
+"""Canonical bytes and digests (``common.encoding``), the plan digest of each IaC tool (``iac.plan``), the digests of
+an assertion set (``common.assertion_set``) and of a change (``common.change``), the id of a record
+(``common.record``), and timestamps (``common.time``)."""
 
-from iltero_schemas.canonical.assertion_set import canonical_assertion_set_bytes, required_assertion_digest
-from iltero_schemas.canonical.change import canonical_change_bytes, change_digest
-from iltero_schemas.canonical.encoding import (
+from iltero_schemas.canonical.common.assertion_set import canonical_assertion_set_bytes, required_assertion_digest
+from iltero_schemas.canonical.common.change import canonical_change_bytes, change_digest
+from iltero_schemas.canonical.common.encoding import (
     CANONICALIZATION,
     DIGEST_PREFIX,
     INT_MAX,
@@ -14,6 +14,8 @@ from iltero_schemas.canonical.encoding import (
     digest,
     digest_of,
 )
+from iltero_schemas.canonical.common.record import RECORD_UUID_NAMESPACE, record_uuid
+from iltero_schemas.canonical.common.time import now_rfc3339_milliseconds, rfc3339_milliseconds
 from iltero_schemas.canonical.iac.plan import (
     PLAN_DIGEST_VERSIONS,
     PLAN_EXCLUDED_TOP_LEVEL_KEYS,
@@ -21,8 +23,6 @@ from iltero_schemas.canonical.iac.plan import (
     check_plan_digest_version,
     plan_digest,
 )
-from iltero_schemas.canonical.record import RECORD_UUID_NAMESPACE, record_uuid
-from iltero_schemas.canonical.time import now_rfc3339_milliseconds, rfc3339_milliseconds
 
 __all__ = [
     "CANONICALIZATION",

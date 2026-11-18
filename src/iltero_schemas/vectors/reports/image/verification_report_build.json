@@ -10,48 +10,68 @@
   },
   "record": {
     "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
-    "digest": "sha256:f20348b9ac3b74ee59e3106fe87f47c0a829c4ec300f825d8c9187c4ec90f74d"
+    "digest": "sha256:2f037293dbf71c4555dbf45c038bc8e99fad486687cabbdd6d55c3210d2ebaa7"
   },
   "properties": {
     "integrity": {
-      "state": "client_asserted",
-      "reason": "file_digests"
+      "state": "claimed_by_record",
+      "reason": "file_digests",
+      "detail": null
     },
     "source_identity": {
       "state": "not_performed",
-      "reason": "run_opened_locally"
+      "reason": "run_opened_locally",
+      "detail": null
     },
     "approval_identity": {
       "state": "not_assessed",
-      "reason": "not_in_activity"
+      "reason": "not_in_activity",
+      "detail": null
     },
     "bundle_provenance": {
       "state": "not_performed",
-      "reason": "local_assertions"
+      "reason": "local_assertions",
+      "detail": null
     },
     "stage_completeness": {
-      "state": "client_asserted",
-      "reason": "expected_stages"
+      "state": "claimed_by_record",
+      "reason": "expected_stages",
+      "detail": null
     },
     "plan_apply_match": {
       "state": "not_assessed",
-      "reason": "not_in_activity"
+      "reason": "not_in_activity",
+      "detail": null
     },
     "runtime_verification": {
       "state": "not_assessed",
-      "reason": "not_in_activity"
+      "reason": "not_in_activity",
+      "detail": null
     },
     "deployment_coverage": {
       "state": "not_assessed",
-      "reason": null
+      "reason": null,
+      "detail": null
     },
     "exceptions": {
       "state": "not_assessed",
-      "reason": "not_in_activity"
+      "reason": "not_in_activity",
+      "detail": null
     },
     "commit_review": {
       "state": "not_assessed",
-      "reason": "not_in_activity"
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "reference_time": {
+      "state": "not_performed",
+      "reason": "runner_clock",
+      "detail": null
+    },
+    "evaluator_binary": {
+      "state": "failed",
+      "reason": "other_binary_named",
+      "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (2 more problems)"
     }
   }
 }

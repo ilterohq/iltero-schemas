@@ -6,7 +6,7 @@ import copy
 import json
 from typing import Any
 
-from iltero_schemas.canonical.encoding import digest
+from iltero_schemas.canonical.common.encoding import digest
 from tests.conftest import VECTORS
 from tests.records import keep_events_files
 

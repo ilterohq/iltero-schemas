@@ -1,0 +1,17 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "configuration_digest": null,
+  "input_kinds": [],
+  "kind": "ScannerObservations",
+  "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+  "report_digest": "sha256:2c14bb73d231a32e082d427a809227ec0e0a559499e34614eae291e2b210962f",
+  "results": [],
+  "results_not_listed": 5,
+  "rules_digest": null,
+  "supplied_by": "pipeline",
+  "tool": "checkov",
+  "tool_parsing_errors": 0,
+  "tool_version": "3.3.8",
+  "unreadable_results": 0,
+  "written_configuration_results": 0
+}

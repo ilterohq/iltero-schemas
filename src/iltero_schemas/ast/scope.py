@@ -12,7 +12,7 @@ a change out of scope.
 from __future__ import annotations
 
 from iltero_schemas.ast.nodes import All, AnyOf, Exists, Expr, Literal, Operator, Path, Predicate, Selector, Target
-from iltero_schemas.models.assertion import TargetKind
+from iltero_schemas.models.common.assertion import TargetKind
 
 SCOPED_KINDS = frozenset({TargetKind.CHANGE, TargetKind.DEPLOYMENT})
 _RESOURCES = Path(("change", "resources"))

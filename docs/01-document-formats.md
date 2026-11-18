@@ -13,6 +13,7 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [ScannerCheckMapping](#scannercheckmapping)
 - [ScannerObservations](#scannerobservations)
 - [LocalExceptions](#localexceptions)
+- [ServedExceptions](#servedexceptions)
 - [PolicySource](#policysource)
 - [AssertionBundleDescriptor](#assertionbundledescriptor)
 - [BundleSigningKeys](#bundlesigningkeys)
@@ -36,6 +37,7 @@ its parent.
 | `ScannerCheckMapping` | [A scanner check mapping](#scannercheckmapping) | `iltero_schemas.models.iac.scanner_check_mapping.ScannerCheckMapping` |
 | `ScannerObservations` | [What a stage read from a scanner's report](#scannerobservations) | `iltero_schemas.models.iac.scanner_observations.ScannerObservations` |
 | `LocalExceptions` | [A project's own exceptions](#localexceptions) | `iltero_schemas.models.common.local_exceptions.LocalExceptions` |
+| `ServedExceptions` | [The exceptions Iltero Platform serves one stage of a run](#servedexceptions) | `iltero_schemas.models.common.served_exceptions.ServedExceptions` |
 | `PolicySource` | [A directory of hand-written policies](#policysource) | `iltero_schemas.models.common.policy_source.PolicySource` |
 | `AssertionBundleDescriptor` | [How Iltero Platform serves a signed assertion bundle](#assertionbundledescriptor) | `iltero_schemas.models.common.bundle.BundleDescriptor` |
 | `AssertionBundle` | The assertion bundle's own description, in its `.manifest` file (`iltero_schemas.models.common.bundle.BUNDLE_KIND`) | `iltero_schemas.bundle.check_descriptor`, which rebuilds it |
@@ -537,12 +539,12 @@ Key rules:
 - The context holds no evaluator version, bundle digest or provenance.
 
 The facts only Iltero Platform holds are normalised whatever produced them. Each item is Iltero Platform's claim, as
-served. No input carries an exception: no assertion reads one.
+served. No input carries an exception: no assertion reads one. Iltero Platform serves exceptions in a
+[ServedExceptions](#servedexceptions) document.
 
 | Item | Fields |
 | --- | --- |
 | Approval | `id`, `actor` (`provider`, and `id`: the provider's stable account id, never a login, a name or an address), `roles`, `status` (`approved`), `subject`, `method` (`ci_deployment_review` or `iltero_review`), `independence` (`independent` when the approver neither started the run nor triggered the attempt; `self_permitted_by_policy` otherwise, with the permitting `policy_version`, `null` when independent), `timestamp`. An approval from a CI deployment review names no role, since none is verified. |
-| Exception | `id`, `status` (`approved`: only granted exceptions are served), `scope` (`assertion.id`, `environment`, and the `resources` it covers, by their identities), `valid_from`, `expires_at` (after `valid_from`), `approved_by`, `reason`. An exception never names a [built-in assertion](#assuranceevent) in `scope.assertion.id`: "an exception never covers a built-in assertion: what it records is never waived". |
 | Earlier evaluation | `id`, `assertion` (`id`, `version`), `stage`, `subject` (`kind`, `key`), `result`, `checked_content` (the [checked content](#checked-content) it read, or `null`: its kind, or `null`, is one an activity's input carries at that stage (`iltero_schemas.profiles.reads_checked_content`, one kind per activity, `None` for an activity whose input carries none). So `plan` and `container_image` are accepted at `plan`, `pre_deploy` and `post_deploy`; `container_image` or `null` at `post_verify`, where an `image_deploy` input carries the image and an `iac_change` input nothing; and only `null` at `runtime`. Any other is refused: "an earlier evaluation names the content it checked exactly when its stage reads that content"), `observed_at`. One earlier evaluation is the [combined verdict](#how-evaluators-combine) of a stage's evaluations of one assertion about one subject: `result.status` is that verdict, and `result.decided_by` names the engine of each evaluator that reached it (`opa`, `checkov`, `trivy` or `none`), sorted, each once ("decided_by is sorted, each engine once"). |
 | Verified source | `commit`: the commit Iltero Platform verified from the identity the CI system gave the job that opened the run. What that identity named: `ci_provider`, the CI system (`github_actions`, from `iltero_schemas.models.common.ci.CI_SYSTEMS`); `ci_instance`, the instance of it by its host name, such as `github.com`; `repository_id`, the repository's id at the CI system, which does not change when the repository is renamed, and `repository`, its name; `ci_run_id` and `ci_run_attempt` (an integer from 1), the CI run and its attempt. A CI system's ids are unique only within one instance of it, so each id is read with `ci_provider` and `ci_instance`. |
 
@@ -3330,11 +3332,11 @@ plan they name.
 ## LocalExceptions
 
 A local exceptions document holds the exceptions a project writes in its own files, for a run the tool opened. Each
-exception says that an assertion is excused for an environment and the resources it names, between two times, why,
-and who the project says approved it. It is the project's own word: nothing outside the project approved it. A stage
-applies the file only to the scanner results the scanned source suppressed, to name the exception each suppression
-rests on; such a result stays `not_evaluated` with `suppressed_in_source`. An exception explains a gap, it never
-fills it.
+exception says that an assertion does not have to hold for an environment and the resources it names, between two times,
+why, and who the project says approved it. It is the project's own word: nothing outside the project approved it. A
+stage applies the file only to the scanner results the scanned source suppressed, to name the exception each suppression
+rests on; such a result stays `not_evaluated` with `suppressed_in_source`. An exception explains a gap, it never fills
+it.
 
 - **apiVersion:** `iltero.com/v1`, with `kind: LocalExceptions`
 - **Model:** `iltero_schemas.models.common.local_exceptions.LocalExceptions`. `read_local_exceptions(data, file_path)` reads
@@ -3370,15 +3372,32 @@ spec:
 | --- | --- | --- |
 | `apiVersion`, `kind` | string | `iltero.com/v1` and `LocalExceptions`. |
 | `metadata.name` | string | The name the project gives the document: 1 to 63 lowercase letters, digits and hyphens, starting and ending with a letter or a digit. |
-| `spec.exceptions` | list | 1 to 256 exceptions, in the shape of the Exception item of the facts only Iltero Platform holds (see [AssuranceContext](#assurancecontext)): `id`, `status` (always `approved`), `scope` (`assertion.id`, `environment` and `resources`), `valid_from`, `expires_at`, `approved_by` and `reason`. In this file, `status` and `approved_by` are what the project says: nothing checks them. |
+| `spec.exceptions` | list | 1 to 256 exceptions (`LocalException`), each with the fields below. |
+
+| Exception field | Type | Meaning |
+| --- | --- | --- |
+| `id` | identifier | The exception's id, unique in the file. |
+| `status` | string | Always `approved`. |
+| `scope.assertion.id` | string | The assertion the exception is about, by its id: the exception covers every version of it. |
+| `scope.environment` | identifier | The Iltero environment the exception holds in. |
+| `scope.resources` | list | 1 to 256 resources, each by its identity (`scheme`, `value`, `scope`). |
+| `valid_from`, `expires_at` | timestamp | When the exception starts and when it expires. |
+| `approved_by` | object | Who the project says approved it: `provider` and `id`, each an identifier. |
+| `reason` | string | Why the exception was granted: 1 to 1,024 characters. |
+
+In this file, `status` and `approved_by` are what the project says: nothing checks them.
+
+The rules below hold for every exception, a project's or one Iltero Platform serves
+(`iltero_schemas.models.common.exception_terms.check_exception` and `check_exception_list`):
 
 | Rule | Refused with |
 | --- | --- |
 | Each exception has an id of its own. | "each exception has an id of its own" |
-| Each resource is named by its address in the IaC tool's configuration (`scheme: terraform_address`), with `scope` exactly `{"unit": <its unit>}`. A cloud identity is not accepted: a resource being created has none, and one that is replaced gets a new one. | "an exception in a project's own files names each resource by its address, scoped by its unit and nothing else" |
+| Each resource is named by its address in the IaC tool's configuration (`scheme: terraform_address`), with `scope` exactly `{"unit": <its unit>}`. A cloud identity is not accepted: a resource being created has none, and one that is replaced gets a new one. | "an exception names each resource by its address, scoped by its unit and nothing else" |
 | No two exceptions cover the same assertion, environment and resource at overlapping times, so the exception that covers a result is never a choice. Two periods overlap when each starts no later than the other expires. | "no two exceptions cover the same assertion, environment and resource at the same time" |
-| An exception lasts at most 365 days of 24 hours from its `valid_from` (`MAX_EXCEPTION_DAYS`), compared to the nanosecond. A calendar year that holds 29 February is 366 days, longer than this limit. | "an exception in a project's own files lasts at most 365 days from when it starts" |
-| An exception expires after it starts, and never names a built-in assertion, as for the Exception item. | "an exception expires after it starts", "an exception never covers a built-in assertion: what it records is never waived" |
+| An exception lasts at most 365 days of 24 hours from its `valid_from` (`MAX_EXCEPTION_DAYS`), compared to the nanosecond. A calendar year that holds 29 February is 366 days, longer than this limit. | "an exception lasts at most 365 days from when it starts" |
+| An exception expires after it starts. | "an exception expires after it starts" |
+| An exception never names a [built-in assertion](#assuranceevent) in `scope.assertion.id`. | "an exception never covers a built-in assertion: what it records is never waived" |
 
 ### Reading the file
 
@@ -3397,8 +3416,9 @@ refused.
 
 ### When an exception covers a result
 
-`exception_in_force(grants, assertion_id, identity, environment, at)` gives the exception that covers one result, or
-`null` when none does. An exception covers it when all of these hold:
+`exception_in_force(exceptions, assertion_id, identity, environment, at)`
+(`iltero_schemas.models.common.exception_terms`) gives the exception that covers one result, or `null` when none does.
+An exception covers it when all of these hold:
 
 - its `scope.assertion.id` is the assertion's id, at any version;
 - one of its `resources` is the result's subject: the same `scheme`, `value` and `scope`, the subject's identity in
@@ -3406,7 +3426,7 @@ refused.
 - its `scope.environment` is the record's `subject.environment`. A run that names no environment has no exception in
   force;
 - it is in force at the stage's `reference_time.value`: from `valid_from` up to and including `expires_at`, compared
-  to the nanosecond (`iltero_schemas.models.common.server_facts.in_force`).
+  to the nanosecond (`iltero_schemas.models.common.exception_terms.in_force`).
 
 At most one exception can cover a result. `why_no_exception` gives the reason none does, the first that holds, or
 `null` when one does:
@@ -3445,6 +3465,100 @@ The model does not read the copy. A reader does, with
 [`scanner_evidence_problems`](#the-check-a-reader-runs), given the copy's bytes in `KeptFiles.exceptions`: for each
 suppressed result of the stage it works out again which exception covers it, and the record must name that one, or
 none when none covers it.
+
+## ServedExceptions
+
+A served exceptions document holds the exceptions Iltero Platform serves one stage of a run it opened: those in force
+for that stage. Each exception (`ServedException`) says that an assertion does not have to hold for an environment and
+the resources it names, between two times, why, who asked for it, who approved it in Iltero Platform, and when. It names
+the assertion document it was approved for by its digest. The list is empty when no exception is in force.
+
+`version` and `digest` are carried as approved. A result is matched by the assertion's id only, as for a project's
+exception, whatever version or digest the result's assertion has (see
+[When an exception covers a result](#when-an-exception-covers-a-result)).
+
+- **apiVersion:** `iltero.com/v1`, with `kind: ServedExceptions`
+- **Model:** `iltero_schemas.models.common.served_exceptions.ServedExceptions`
+
+```json
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "ServedExceptions",
+  "metadata": {
+    "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+    "stage": "pre_deploy"
+  },
+  "spec": {
+    "exceptions": [
+      {
+        "id": "exc_0001",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+            "version": "1.0.0",
+            "digest": "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {"unit": "root"},
+              "value": "aws_db_instance.payments"
+            }
+          ]
+        },
+        "valid_from": "2026-11-01T00:00:00Z",
+        "expires_at": "2027-02-01T00:00:00Z",
+        "requested_by": {"provider": "iltero", "id": "user_7"},
+        "approved_by": {"provider": "iltero", "id": "user_3"},
+        "approved_at": "2026-10-30T14:12:00Z",
+        "requester_is_run_actor": false,
+        "reason": "The database is reached through a private link added in the next change."
+      }
+    ]
+  }
+}
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion`, `kind` | string | `iltero.com/v1` and `ServedExceptions`. |
+| `metadata.run_id` | UUID | Iltero's id of the run the exceptions were served to. |
+| `metadata.stage` | stage | The stage they were served to. |
+| `spec.exceptions` | list | 0 to 256 exceptions (`ServedException`), each with the fields below. |
+
+| Exception field | Type | Meaning |
+| --- | --- | --- |
+| `id` | identifier | The exception's id, unique in the document. |
+| `status` | string | Always `approved`. |
+| `scope.kind` | string | Always `resources`: an exception about the resources it names (`ResourcesScope`). Any other value is refused: "Input should be 'resources'". |
+| `scope.assertion` | object | The assertion the exception was approved for: its `id`, its `version` and the `digest` of its document. All three are required. |
+| `scope.environment` | identifier | The Iltero environment the exception holds in. |
+| `scope.resources` | list | 1 to 256 resources, each by its identity (`scheme`, `value`, `scope`). |
+| `valid_from`, `expires_at` | timestamp | When the exception starts and when it expires. |
+| `requested_by` | object | Who asked for the exception: `provider` and `id`, each an identifier. |
+| `approved_by` | object | Who approved it, in the same form. |
+| `approved_at` | timestamp | When it was approved. |
+| `requester_is_run_actor` | boolean | Whether the requester's Iltero user started the run or triggered the attempt the exception is served to, as Iltero Platform found. |
+| `reason` | string | Why the exception was granted: 1 to 1,024 characters. |
+
+A served exception follows every rule of a [project's exception](#localexceptions): an id of its own, each resource by
+its address scoped by its unit, no two covering the same assertion, environment and resource at the same time, at most
+365 days long, ending after it starts, and never about a built-in assertion. It also follows these rules:
+
+| Rule | Refused with |
+| --- | --- |
+| An exception is approved no later than it expires. | "an exception is approved no later than it expires" |
+| `requested_by` and `approved_by` name the same `provider`. | "an exception names who asked for it and who approved it by one identity provider" |
+| `requested_by` and `approved_by` name different `id`s. | "an exception is approved by someone other than who asked for it" |
+
+These two checks on people are the least the model can check from the document alone: two different accounts of one
+identity provider. They do not show that two accounts belong to two different people. Iltero Platform compares the
+requester and the approver as Iltero users, and states in `requester_is_run_actor` whether the requester's Iltero user
+started the run or triggered the attempt the exception is served to. The model reads that field as Iltero Platform's
+claim and does not check it.
 
 ## PolicySource
 

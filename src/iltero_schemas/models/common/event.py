@@ -22,7 +22,6 @@ from iltero_schemas.assertions.built_in import BUILT_INS, SHIPPED_ASSERTIONS
 from iltero_schemas.assertions.paths import NOT_DECIDED_BY_SCANNERS
 from iltero_schemas.canonical.common.encoding import canonical_bytes
 from iltero_schemas.compiler.limits import REASON_MAX_BYTES
-from iltero_schemas.models.common import fields
 from iltero_schemas.models.common.assertion import (
     TargetKind,
 )
@@ -33,6 +32,7 @@ from iltero_schemas.models.common.checked_content import CheckedContent
 from iltero_schemas.models.common.ci import CiSystem
 from iltero_schemas.models.common.fields import (
     MAX_SUBJECT_IDENTITIES,
+    AssertionRef,
     BoundedObject,
     Commit,
     Digest,
@@ -155,12 +155,6 @@ def _reason(value: str) -> str:
 
 
 Reason = Annotated[str, AfterValidator(_reason)]
-
-
-class AssertionRef(fields.AssertionKey):
-    """The assertion, with the digest of its document as it was read."""
-
-    digest: Digest
 
 
 class EventSubject(StrictModel):

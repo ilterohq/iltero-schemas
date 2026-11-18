@@ -32,6 +32,7 @@ DOCUMENT_KINDS = frozenset(
         "PolicySource",
         "ResourceIdentities",
         "ScannerObservations",
+        "ServedExceptions",
         "TechnicalAssertion",
         "VerificationReport",
     }

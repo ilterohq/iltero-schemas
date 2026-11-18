@@ -9,7 +9,7 @@ from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.iac.exception_evidence import LEFT_OUT, NOT_GIVEN, NOT_KEPT, NOT_READABLE, exception_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
-from tests.exceptions import FILE_BYTES, FILE_DIGEST, GRANT, applying_exceptions, suppressed
+from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
 
 WHERE = "stages.plan.scanners.local_exceptions"
 
@@ -65,13 +65,15 @@ def test_a_result_naming_an_exception_its_kept_file_does_not_give_it_is_listed()
 
 def test_a_result_naming_an_exception_for_another_environment_or_time_is_listed() -> None:
     for change in ({"environment": "staging"}, {"valid_from": "2026-10-01T00:00:00Z"}):
-        grant = copy.deepcopy(GRANT)
+        exception = copy.deepcopy(EXCEPTION)
         if "environment" in change:
-            grant["scope"]["environment"] = change["environment"]
+            exception["scope"]["environment"] = change["environment"]
         else:
-            grant["valid_from"] = change["valid_from"]
-        text = FILE_BYTES.replace(b"environment: production", b"environment: " + grant["scope"]["environment"].encode())
-        text = text.replace(b'"2026-09-01T00:00:00Z"', ('"' + grant["valid_from"] + '"').encode())
+            exception["valid_from"] = change["valid_from"]
+        text = FILE_BYTES.replace(
+            b"environment: production", b"environment: " + exception["scope"]["environment"].encode()
+        )
+        text = text.replace(b'"2026-09-01T00:00:00Z"', ('"' + exception["valid_from"] + '"').encode())
         record, files = _with_file(text)
         assert _problems(record, files) == [(_at(record), NOT_GIVEN)]
 

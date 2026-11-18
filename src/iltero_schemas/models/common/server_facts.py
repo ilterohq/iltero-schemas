@@ -1,6 +1,6 @@
-"""The facts only the server holds: approvals, exceptions, earlier evaluations, the verified source and the verified
-attestation. The sixth, whether a change's commits were reviewed, is in ``models.common.commit_review``. An evaluation
-input carries all of them except the exceptions, which no assertion reads.
+"""The facts only the server holds: approvals, earlier evaluations, the verified source and the verified attestation,
+as an evaluation input carries them. Whether a change's commits were reviewed is in ``models.common.commit_review``;
+the exceptions the server serves, which no evaluation input carries, are in ``models.common.served_exceptions``.
 
 Each is normalised whatever produced it, so an assertion compares neutral
 fields only.
@@ -12,8 +12,6 @@ fields only.
   other than whoever started the run or triggered the attempt; a
   self-approval the policy permitted names that policy's version. ``actor.id``
   is the provider's stable account id, never a login, a name or an address.
-- An **exception** waives one assertion for an environment and the resources
-  it names, between two times.
 - An **earlier evaluation** is the result of one evaluation of an earlier stage.
 - The **verified source** is the commit the server verified from the identity
   the continuous integration (CI) system gave the job that opened the run, not
@@ -24,7 +22,7 @@ fields only.
   the signing certificate names, or why it refused the attestation, or that
   none was sent.
 
-All six are the server's claims, as served.
+All are the server's claims, as served.
 """
 
 from __future__ import annotations
@@ -33,19 +31,16 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
-from iltero_schemas.assertions.paths import BUILT_IN_IDS
 from iltero_schemas.canonical.common.encoding import INT_MAX
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import StageValue, StrictModel, TargetKindValue, sorted_unique
 from iltero_schemas.models.common.checked_content import CheckedContent
 from iltero_schemas.models.common.ci import CiSystem
 from iltero_schemas.models.common.fields import (
-    AssertionId,
     AssertionKey,
     Commit,
     Digest,
     Identifier,
-    Identity,
     Status,
     Timestamp,
     Uuid,
@@ -58,8 +53,6 @@ from iltero_schemas.profiles import reads_checked_content
 
 # The most items of each kind one facts document carries: more than one stage needs.
 MAX_FACT_ITEMS = 256
-# The most resources one exception covers.
-MAX_EXCEPTION_RESOURCES = 256
 MAX_ROLES = 32
 # Free text a person wrote, such as why an exception was granted.
 TEXT_MAX_LENGTH = 1024
@@ -114,49 +107,6 @@ class Approval(StrictModel):
         if self.method == "ci_deployment_review" and self.roles:
             raise ValueError("an approval a CI deployment review gave names no role: none is verified")
         return self
-
-
-class AssertionName(StrictModel):
-    """An assertion by its id: an exception covers every version of it."""
-
-    id: AssertionId
-
-
-class ExceptionScope(StrictModel):
-    """What an exception covers: one assertion, in one environment, for the resources it names."""
-
-    assertion: AssertionName
-    environment: Identifier
-    resources: Annotated[list[Identity], Field(min_length=1, max_length=MAX_EXCEPTION_RESOURCES)]
-
-    @model_validator(mode="after")
-    def _not_a_built_in(self) -> ExceptionScope:
-        if self.assertion.id in BUILT_IN_IDS:
-            raise ValueError("an exception never covers a built-in assertion: what it records is never waived")
-        return self
-
-
-class ExceptionGrant(StrictModel):
-    """One exception: an assertion waived for an environment and resources, between two times."""
-
-    id: Identifier
-    status: Literal["approved"]
-    scope: ExceptionScope
-    valid_from: Timestamp
-    expires_at: Timestamp
-    approved_by: Actor
-    reason: Text
-
-    @model_validator(mode="after")
-    def _ends_after_it_starts(self) -> ExceptionGrant:
-        if parse_timestamp(self.expires_at) <= parse_timestamp(self.valid_from):
-            raise ValueError("an exception expires after it starts")
-        return self
-
-
-def in_force(grant: ExceptionGrant, at: str) -> bool:
-    """Whether ``grant`` holds at the time ``at``: from ``valid_from`` up to and including ``expires_at``."""
-    return parse_timestamp(grant.valid_from) <= parse_timestamp(at) <= parse_timestamp(grant.expires_at)
 
 
 class EvaluatedSubject(StrictModel):

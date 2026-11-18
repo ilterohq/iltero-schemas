@@ -1,6 +1,6 @@
 [
   {
-    "name": "exception_covering_a_built_in_assertion",
+    "name": "exception_covering_a_built_in",
     "vector": "scanner_evidence/iac/local_run_suppressed_with_exception/local-exceptions.yaml",
     "set": {
       "/spec/exceptions/0/scope/assertion/id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"
@@ -15,7 +15,7 @@
       "/spec/exceptions/0/expires_at": "2027-11-02T00:00:00Z"
     },
     "remove": [],
-    "message": "an exception in a project's own files lasts at most 365 days from when it starts"
+    "message": "an exception lasts at most 365 days from when it starts"
   },
   {
     "name": "exception_ending_before_it_starts",
@@ -37,6 +37,6 @@
       }
     },
     "remove": [],
-    "message": "an exception in a project's own files names each resource by its address, scoped by its unit and nothing else"
+    "message": "an exception names each resource by its address, scoped by its unit and nothing else"
   }
 ]

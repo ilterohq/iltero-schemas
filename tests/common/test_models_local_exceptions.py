@@ -9,19 +9,18 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.assertions import BUILT_IN_IDS
 from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.event import AssuranceEvent
-from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.local_exceptions import (
+    LocalException,
     LocalExceptions,
     LocalExceptionsUsed,
-    exception_in_force,
     read_local_exceptions,
-    why_no_exception,
 )
 from tests.conftest import VECTORS
-from tests.exceptions import COPY_PATH, FILE, FILE_BYTES, FILE_DIGEST, GRANT, applying_exceptions, suppressed
+from tests.exceptions import COPY_PATH, EXCEPTION, FILE, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
 from tests.records import served
 
 SCANNER: dict[str, Any] = json.loads(
@@ -30,10 +29,27 @@ SCANNER: dict[str, Any] = json.loads(
 REF = {"id": "exc_0001", "file_digest": "sha256:" + "7" * 64}
 
 
-def test_a_projects_exceptions_file_holds_exception_grants_each_id_once() -> None:
+def test_a_projects_exceptions_file_holds_exceptions_each_id_once() -> None:
     LocalExceptions.model_validate(FILE)
     with pytest.raises(ValidationError, match="each exception has an id of its own"):
-        LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [GRANT, GRANT]}})
+        LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [EXCEPTION, EXCEPTION]}})
+
+
+def test_an_exception_waives_one_assertion_for_the_resources_it_names_between_two_times() -> None:
+    LocalException.model_validate(EXCEPTION)
+    with pytest.raises(ValidationError, match="expires after it starts"):
+        LocalException.model_validate({**EXCEPTION, "expires_at": EXCEPTION["valid_from"]})
+    with pytest.raises(ValidationError, match="at least 1"):
+        LocalException.model_validate({**EXCEPTION, "scope": {**EXCEPTION["scope"], "resources": []}})
+    with pytest.raises(ValidationError, match="Input should be 'approved'"):
+        LocalException.model_validate({**EXCEPTION, "status": "rejected"})
+
+
+@pytest.mark.parametrize("assertion_id", sorted(BUILT_IN_IDS))
+def test_an_exception_never_covers_any_built_in(assertion_id: str) -> None:
+    scope = {**EXCEPTION["scope"], "assertion": {"id": assertion_id}}
+    with pytest.raises(ValidationError, match="an exception never covers a built-in assertion"):
+        LocalException.model_validate({**EXCEPTION, "scope": scope})
 
 
 def test_a_projects_exceptions_file_is_named_by_the_project() -> None:
@@ -119,31 +135,6 @@ def test_a_result_names_an_exception_only_from_the_file_its_stage_applied() -> N
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
-def _with(**grant: Any) -> dict[str, Any]:
-    return {**FILE, "spec": {"exceptions": [GRANT, {**GRANT, "id": "exc_0002", **grant}]}}
-
-
-def test_a_projects_exception_names_each_resource_by_its_address_scoped_by_its_unit() -> None:
-    for resource in (
-        {"scheme": "terraform_address", "scope": None, "value": "aws_db_instance.a"},
-        {"scheme": "terraform_address", "scope": {}, "value": "aws_db_instance.a"},
-        {"scheme": "terraform_address", "scope": {"unit": "root", "x": "y"}, "value": "aws_db_instance.a"},
-        {"scheme": "aws_arn", "scope": None, "value": "a-cloud-identity"},
-    ):
-        scope = {**GRANT["scope"], "resources": [resource]}
-        with pytest.raises(ValidationError, match="by its address, scoped by its unit and nothing else"):
-            LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [{**GRANT, "scope": scope}]}})
-
-
-def test_no_two_projects_exceptions_cover_one_resource_at_the_same_time() -> None:
-    with pytest.raises(ValidationError, match="no two exceptions cover the same assertion"):
-        LocalExceptions.model_validate(_with(valid_from="2026-12-01T00:00:00Z", expires_at="2027-01-01T00:00:00Z"))
-    LocalExceptions.model_validate(_with(valid_from="2026-12-01T00:00:01Z", expires_at="2027-01-01T00:00:00Z"))
-    LocalExceptions.model_validate(_with(scope={**GRANT["scope"], "environment": "staging"}))
-    other = [{"scheme": "terraform_address", "scope": {"unit": "other"}, "value": "aws_db_instance.a"}]
-    LocalExceptions.model_validate(_with(scope={**GRANT["scope"], "resources": other}))
-
-
 @pytest.mark.parametrize(
     ("file_path", "copy_path", "message"),
     [
@@ -182,76 +173,3 @@ def test_a_yaml_time_written_without_quotes_is_not_a_time_the_contract_reads() -
     assert unquoted != FILE_BYTES
     with pytest.raises(ValueError):
         read_local_exceptions(unquoted, "exceptions.yaml")
-
-
-IDENTITY = Identity.model_validate(GRANT["scope"]["resources"][0])
-ASSERTION = GRANT["scope"]["assertion"]["id"]
-GRANTS = LocalExceptions.model_validate(FILE).spec.exceptions
-
-
-@pytest.mark.parametrize(
-    ("assertion", "identity", "environment", "at", "applies", "reason"),
-    [
-        (ASSERTION, IDENTITY, "production", "2026-10-01T00:00:00Z", True, None),
-        (ASSERTION, IDENTITY, "production", "2026-09-01T00:00:00Z", True, None),
-        (ASSERTION, IDENTITY, "production", "2026-12-01T00:00:00Z", True, None),
-        (ASSERTION, IDENTITY, "production", "2026-12-01T00:00:00.001Z", False, "expired"),
-        (ASSERTION, IDENTITY, "production", "2026-08-31T23:59:59Z", False, "not_yet_in_force"),
-        (ASSERTION, IDENTITY, "staging", "2026-10-01T00:00:00Z", False, "for_another_environment"),
-        (ASSERTION, IDENTITY, None, "2026-10-01T00:00:00Z", False, "run_names_no_environment"),
-        (
-            "ACME.IAC.RESOURCE.AWS.RDS.OTHER",
-            IDENTITY,
-            "production",
-            "2026-10-01T00:00:00Z",
-            False,
-            "no_exception_for_the_assertion_and_resource",
-        ),
-        (
-            ASSERTION,
-            IDENTITY.model_copy(update={"scope": {"unit": "other"}}),
-            "production",
-            "2026-10-01T00:00:00Z",
-            False,
-            "no_exception_for_the_assertion_and_resource",
-        ),
-    ],
-    ids=[
-        "in_force",
-        "from_its_start",
-        "up_to_its_expiry",
-        "after_its_expiry",
-        "before_its_start",
-        "another_environment",
-        "no_environment",
-        "another_assertion",
-        "another_unit",
-    ],
-)
-def test_the_exception_that_covers_a_result_and_why_none_does(
-    assertion: str, identity: Identity, environment: str | None, at: str, applies: bool, reason: str | None
-) -> None:
-    found = exception_in_force(GRANTS, assertion, identity, environment, at)
-    assert (found is not None) is applies
-    assert why_no_exception(GRANTS, assertion, identity, environment, at) == reason
-
-
-def test_a_result_between_two_exceptions_is_not_yet_covered_by_the_next() -> None:
-    later = {**GRANT, "id": "exc_0002", "valid_from": "2027-01-01T00:00:00Z", "expires_at": "2027-02-01T00:00:00Z"}
-    grants = LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [GRANT, later]}}).spec.exceptions
-    at = "2026-12-15T00:00:00Z"
-    assert exception_in_force(grants, ASSERTION, IDENTITY, "production", at) is None
-    assert why_no_exception(grants, ASSERTION, IDENTITY, "production", at) == "not_yet_in_force"
-    assert why_no_exception(grants, ASSERTION, IDENTITY, "production", "2027-03-01T00:00:00Z") == "expired"
-
-
-def test_a_projects_exception_lasts_at_most_a_year_from_when_it_starts() -> None:
-    year = {**GRANT, "valid_from": "2026-01-01T00:00:00Z", "expires_at": "2027-01-01T00:00:00Z"}
-    LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [year]}})
-    leap = {**GRANT, "valid_from": "2028-01-01T00:00:00Z", "expires_at": "2029-01-01T00:00:00Z"}
-    with pytest.raises(ValidationError, match="lasts at most 365 days"):
-        LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [leap]}})
-    for expires_at in ("2027-01-01T00:00:00.000000001Z", "2099-01-01T00:00:00Z"):
-        longer = {**year, "expires_at": expires_at}
-        with pytest.raises(ValidationError, match="lasts at most 365 days"):
-            LocalExceptions.model_validate({**FILE, "spec": {"exceptions": [longer]}})

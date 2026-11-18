@@ -26,6 +26,7 @@ from iltero_schemas.change_types import ImageBuild, scan_coverage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.local_exceptions import LocalExceptions
+from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.stages import integrity_problems
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
@@ -53,6 +54,9 @@ PROJECT_MAPPING_INVALID_CASES = json.loads(
 )
 LOCAL_EXCEPTIONS_INVALID_CASES = json.loads(
     (VECTORS / "local_exceptions_invalid" / "cases.json").read_text(encoding="utf-8")
+)
+SERVED_EXCEPTIONS_INVALID_CASES = json.loads(
+    (VECTORS / "served_exceptions_invalid" / "cases.json").read_text(encoding="utf-8")
 )
 IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
@@ -104,6 +108,7 @@ CHANGING_CASES = [
     *SCANNER_CHECK_MAPPING_INVALID_CASES,
     *PROJECT_MAPPING_INVALID_CASES,
     *LOCAL_EXCEPTIONS_INVALID_CASES,
+    *SERVED_EXCEPTIONS_INVALID_CASES,
     *RECORD_INVALID_CASES,
     *RECORD_VALID_CASES,
     *RECORD_INTEGRITY_FAILED_CASES,
@@ -163,6 +168,14 @@ def test_a_project_mapping_that_decides_an_iltero_assertion_is_refused(case: dic
 def test_an_invalid_project_exceptions_file_is_refused(case: dict[str, Any]) -> None:
     with pytest.raises(ValidationError, match=re.escape(case["message"])):
         LocalExceptions.model_validate(_patched(case, "."))
+
+
+@pytest.mark.parametrize(
+    "case", SERVED_EXCEPTIONS_INVALID_CASES, ids=[c["name"] for c in SERVED_EXCEPTIONS_INVALID_CASES]
+)
+def test_an_invalid_served_exceptions_document_is_refused(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        ServedExceptions.model_validate(_patched(case, "served_exceptions"))
 
 
 @pytest.mark.parametrize(

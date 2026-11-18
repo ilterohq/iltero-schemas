@@ -43,8 +43,8 @@ from iltero_schemas.models.common.coverage import (
     CHECKED_AFTER_DEPLOYMENT,
     postponed_count,
 )
-from iltero_schemas.models.common.event import AssertionRef, AssuranceEvent, OpaEvaluator
-from iltero_schemas.models.common.fields import MAX_RESOURCES, Digest
+from iltero_schemas.models.common.event import AssuranceEvent, OpaEvaluator
+from iltero_schemas.models.common.fields import MAX_RESOURCES, AssertionRef, Digest
 from iltero_schemas.models.common.subjects import local_identity
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths

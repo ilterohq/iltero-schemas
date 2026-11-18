@@ -1,4 +1,4 @@
-"""Approvals, exceptions and earlier evaluations: each names what it covers, and says what it cannot prove."""
+"""Approvals and earlier evaluations: each names what it covers, and says what it cannot prove."""
 
 from __future__ import annotations
 
@@ -8,13 +8,11 @@ from typing import Any
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from iltero_schemas.assertions import BUILT_IN_IDS
 from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.common.server_facts import (
     MAX_ROLES,
     Approval,
     EarlierEvaluation,
-    ExceptionGrant,
     RefusedAttestation,
     VerifiedAttestation,
     VerifiedSource,
@@ -38,19 +36,6 @@ OF_CHANGE: dict[str, Any] = {
     "roles": ["security"],
     "subject": {"kind": "change", "digest": "sha256:" + "4" * 64},
     "method": "iltero_review",
-}
-EXCEPTION: dict[str, Any] = {
-    "id": "exc_0001",
-    "status": "approved",
-    "scope": {
-        "assertion": {"id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED"},
-        "environment": "production",
-        "resources": [{"scheme": "terraform_address", "value": "aws_s3_bucket.legacy", "scope": {"unit": "root"}}],
-    },
-    "valid_from": "2026-09-01T00:00:00.000Z",
-    "expires_at": "2026-12-01T00:00:00.000Z",
-    "approved_by": {"provider": "iltero", "id": "reviewer_1"},
-    "reason": "legacy migration",
 }
 APPROVAL: TypeAdapter[Any] = TypeAdapter(Approval)
 
@@ -89,21 +74,6 @@ def test_an_approval_a_ci_deployment_review_gave_names_no_role() -> None:
         APPROVAL.validate_python({**OF_RUN, "roles": ["security"]})
     with pytest.raises(ValidationError, match=f"at most {MAX_ROLES}"):
         APPROVAL.validate_python({**OF_CHANGE, "roles": ["security"] * (MAX_ROLES + 1)})
-
-
-def test_an_exception_waives_one_assertion_for_the_resources_it_names_between_two_times() -> None:
-    ExceptionGrant.model_validate(EXCEPTION)
-    with pytest.raises(ValidationError, match="expires after it starts"):
-        ExceptionGrant.model_validate({**EXCEPTION, "expires_at": EXCEPTION["valid_from"]})
-    with pytest.raises(ValidationError, match="at least 1"):
-        ExceptionGrant.model_validate({**EXCEPTION, "scope": {**EXCEPTION["scope"], "resources": []}})
-
-
-@pytest.mark.parametrize("assertion_id", sorted(BUILT_IN_IDS))
-def test_an_exception_never_covers_any_built_in(assertion_id: str) -> None:
-    scope = {**EXCEPTION["scope"], "assertion": {"id": assertion_id}}
-    with pytest.raises(ValidationError, match="an exception never covers a built-in assertion"):
-        ExceptionGrant.model_validate({**EXCEPTION, "scope": scope})
 
 
 CHECKED_PLAN = {"kind": "plan", "digest": "sha256:" + "8" * 64, "digest_version": "1", "tool": "terraform"}
@@ -229,11 +199,6 @@ def test_an_earlier_evaluation_names_its_subject_by_its_key() -> None:
     for subject in ({"kind": "resource", "key": "aws_db_instance.payments"}, {"kind": "resource", "id": "x"}):
         with pytest.raises(ValidationError):
             EarlierEvaluation.model_validate({**EARLIER, "subject": subject})
-
-
-def test_only_a_granted_exception_is_served() -> None:
-    with pytest.raises(ValidationError, match="Input should be 'approved'"):
-        ExceptionGrant.model_validate({**EXCEPTION, "status": "rejected"})
 
 
 def test_an_earlier_evaluation_names_the_kind_of_content_its_stage_reads() -> None:

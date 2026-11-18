@@ -39,6 +39,7 @@ from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import AssuranceEvent, events_file_bytes
 from iltero_schemas.models.common.reference_time import ReferenceTime
+from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
@@ -71,6 +72,7 @@ DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "records": CAR,
     "reports": VerificationReport,
     "scanner_observations": ScannerObservations,
+    "served_exceptions": ServedExceptions,
 }
 # Every document folder but scanner check mappings and identities, and every folder of their cases, holds one subfolder
 # per change type it has documents of; events are of IaC changes only. A document folder also holds its one
@@ -276,6 +278,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "identities_invalid",
         "identities_valid",
         "local_exceptions_invalid",
+        "served_exceptions_invalid",
         "opa",
         "records_integrity_failed",
         "records_invalid",

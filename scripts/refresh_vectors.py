@@ -48,6 +48,7 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import AssuranceEvent
+from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
@@ -68,6 +69,7 @@ DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     VECTORS / "records": CAR,
     VECTORS / "reports": VerificationReport,
     VECTORS / "scanner_observations": ScannerObservations,
+    VECTORS / "served_exceptions": ServedExceptions,
 }
 
 

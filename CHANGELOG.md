@@ -35,6 +35,7 @@ keep, so any two tools agree on what a record means.
   | `ScannerCheckMapping` | A scanner check mapping: which scanner checks decide which assertion |
   | `ScannerObservations` | What a stage read from one scanner's report |
   | `LocalExceptions` | A project's own exceptions |
+  | `ServedExceptions` | The exceptions Iltero Platform serves one stage of a run |
   | `PolicySource` | A directory of hand-written policies |
   | `AssertionBundleDescriptor` | How Iltero Platform serves a signed assertion bundle |
   | `AssertionBundle` | The bundle's own description in its `.manifest` file |
@@ -1160,6 +1161,24 @@ keep, so any two tools agree on what a record means.
     refuses: an exception that covers a built-in assertion, lasts more than
     365 days, ends before it starts, or names a resource by its unit rather
     than its address.
+  - The exceptions Iltero Platform serves one stage of a run it opened
+    (`ServedExceptions` v1, `metadata.run_id` and `metadata.stage`, 0 to 256
+    exceptions). A served exception names the assertion document it was
+    approved for by `id`, `version` and `digest` (`scope.kind: resources`),
+    who asked for it (`requested_by`), who approved it and when
+    (`approved_by`, `approved_at`), and whether the requester's Iltero user
+    started the run or triggered the attempt it is served to
+    (`requester_is_run_actor`, Iltero Platform's finding). It
+    is approved no later than it expires, and the requester and approver are
+    different accounts of one identity provider; that check does not show
+    the two accounts belong to two people. Every exception, a project's or a served one,
+    follows the same rules (`iltero_schemas.models.common.exception_terms`),
+    the 365-day limit included, and is matched to a result by the same
+    functions. `version` and `digest` are carried as approved: a result is
+    matched by the assertion's id only, whatever version or digest the
+    result's assertion has. A project's exception is `LocalException`. Vectors:
+    `served_exceptions/pre_deploy.json` and
+    `served_exceptions_invalid/cases.json`.
   - These checks show that each verdict follows from what the stage kept.
     They do not show that the scanner ran, that the report is what it wrote,
     that it read the plan the record names, or that its version is genuine.

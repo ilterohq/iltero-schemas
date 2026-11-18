@@ -258,6 +258,12 @@ class AssertionKey(StrictModel):
     version: Version
 
 
+class AssertionRef(AssertionKey):
+    """The assertion, with the digest of its document as it was read."""
+
+    digest: Digest
+
+
 def _clean(value: Any) -> bool:
     """Whether no string anywhere in ``value`` holds a control character."""
     if isinstance(value, str):

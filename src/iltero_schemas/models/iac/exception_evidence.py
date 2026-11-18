@@ -17,9 +17,9 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.models.common.checked_content import CheckedPlan
-from iltero_schemas.models.common.local_exceptions import exception_in_force, read_local_exceptions
+from iltero_schemas.models.common.exception_terms import exception_in_force
+from iltero_schemas.models.common.local_exceptions import LocalException, read_local_exceptions
 from iltero_schemas.models.common.scanner_evaluator import SUPPRESSED_IN_SOURCE, ScannerEvaluator
-from iltero_schemas.models.common.server_facts import ExceptionGrant
 from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ NOT_GIVEN = "names an exception the kept exceptions file does not give this resu
 LEFT_OUT = "names no exception, but the kept exceptions file gives this result one"
 
 
-def _given(car: CAR, event: AssuranceEvent, grants: list[ExceptionGrant]) -> ExceptionGrant | None:
+def _given(car: CAR, event: AssuranceEvent, exceptions: list[LocalException]) -> LocalException | None:
     """The exception the kept file gives the event's result, worked out as the stage worked it out."""
     content = event.provenance.checked_content
     scheme = ADDRESS_SCHEMES.get(content.tool) if isinstance(content, CheckedPlan) else None
@@ -41,7 +41,7 @@ def _given(car: CAR, event: AssuranceEvent, grants: list[ExceptionGrant]) -> Exc
     if identity is None:
         return None
     at = car.stages[event.evaluation.stage].reference_time.value
-    return exception_in_force(grants, event.assertion.id, identity, car.subject.environment, at)
+    return exception_in_force(exceptions, event.assertion.id, identity, car.subject.environment, at)
 
 
 def exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]]:
@@ -62,7 +62,7 @@ def exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]]:
             problems.append((where, NOT_KEPT))
             continue
         try:
-            grants = read_local_exceptions(data, used.file_path).spec.exceptions
+            exceptions = read_local_exceptions(data, used.file_path).spec.exceptions
         except ValueError:
             problems.append((where, NOT_READABLE))
             continue
@@ -74,7 +74,7 @@ def exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]]:
                 or event.evaluation.status_reason != SUPPRESSED_IN_SOURCE
             ):
                 continue
-            named, given = evaluator.local_exception, _given(car, event, grants)
+            named, given = evaluator.local_exception, _given(car, event, exceptions)
             at = f"events.{index}.provenance.evaluator.local_exception"
             if named is None and given is not None:
                 problems.append((at, LEFT_OUT))

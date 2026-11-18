@@ -23,6 +23,7 @@ from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import EVENTS_FILE_KIND
 from iltero_schemas.models.common.local_exceptions import LocalExceptions
 from iltero_schemas.models.common.policy_source import PolicySource
+from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
@@ -61,6 +62,7 @@ DOCUMENTS: list[tuple[type[BaseModel], dict[str, Any], str]] = [
     (BundleDescriptor, DESCRIPTOR, "iltero.io/assertion-bundle/v1"),
     (LocalExceptions, FILE, "iltero.io/local-exceptions/v1"),
     (PolicySource, _source(CHANGE), "iltero.io/v1"),
+    (ServedExceptions, _vector("served_exceptions/pre_deploy.json"), "iltero.io/v1"),
 ]
 IDS = [model.__name__ for model, _, _ in DOCUMENTS]
 # Every kind of the contract, the documents without a model of their own too: the bundle's description inside its

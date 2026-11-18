@@ -248,7 +248,7 @@ def _at(stage: str, **changes: Any) -> dict[str, Any]:
     return _event(**{"evaluation.stage": stage}, **subject, **changes)
 
 
-@pytest.mark.parametrize("stage", ["pre_deploy", "runtime"])
+@pytest.mark.parametrize("stage", ["pre_deploy"])
 @pytest.mark.parametrize("source", ["server", "none"])
 def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(stage: str, source: str) -> None:
     AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": source}))
@@ -256,7 +256,7 @@ def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(st
         AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": None}))
 
 
-@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify"])
+@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify", "runtime"])
 def test_a_check_at_a_stage_that_reads_no_server_facts_names_no_facts_source(stage: str) -> None:
     AssuranceEvent.model_validate(_at(stage))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):

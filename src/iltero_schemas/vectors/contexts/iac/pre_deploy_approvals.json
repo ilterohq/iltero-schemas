@@ -465,10 +465,6 @@
     "__unknown": true,
     "reason": "server_facts_unavailable"
   },
-  "exceptions": {
-    "__unknown": true,
-    "reason": "server_facts_unavailable"
-  },
   "run": {
     "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },

@@ -55,7 +55,6 @@
   "deployment": null,
   "evaluations": null,
   "approvals": null,
-  "exceptions": null,
   "run": null,
   "drift_check": null,
   "assurance": null,

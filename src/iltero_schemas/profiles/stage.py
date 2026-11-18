@@ -33,9 +33,9 @@ from iltero_schemas.models.common.change_type import (
 ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "organization_scope", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
-# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals, exceptions,
-# and whether its commits were reviewed.
-_CHANGE_FACTS = frozenset({"evaluations", "approvals", "exceptions", "commit_review"})
+# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals and whether its
+# commits were reviewed. Exceptions are never part of an input: no assertion reads one.
+_CHANGE_FACTS = frozenset({"evaluations", "approvals", "commit_review"})
 # The parts only the server holds. An input that may carry one reads server facts. A value the server supplies inside
 # another part (the environment's production flag, an image deploy's accepted build) is not one: it holds the unknown
 # marker in a run the tool opened, and follows who opened the run.
@@ -76,7 +76,7 @@ POST_VERIFY = Profile(
 POST_VERIFY_RESOURCE = Profile(
     "post_verify_resource", ALWAYS_REQUIRED_PARTS | {"subject", "resource", "plan", "deployment"}, _SOURCE
 )
-RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
+RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance"})
 # A build's input: the image it built, the test and scan reports it was given, the commit the server verified from
 # the build job's identity, and what the server found when it checked the build's attestation.
 PLAN_ARTIFACT = Profile(

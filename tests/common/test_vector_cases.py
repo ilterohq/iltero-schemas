@@ -19,11 +19,13 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.assertions import ASSERTIONS
+from iltero_schemas.ast.document import load_document
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import canonical_bytes
 from iltero_schemas.change_types import ImageBuild, scan_coverage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.context import AssuranceContext
+from iltero_schemas.models.common.local_exceptions import LocalExceptions
 from iltero_schemas.models.common.stages import integrity_problems
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
@@ -48,6 +50,9 @@ SCANNER_CHECK_MAPPING_INVALID_CASES = json.loads(
 )
 PROJECT_MAPPING_INVALID_CASES = json.loads(
     (VECTORS / "scanner_check_mappings_project_invalid" / "iac" / "cases.json").read_text(encoding="utf-8")
+)
+LOCAL_EXCEPTIONS_INVALID_CASES = json.loads(
+    (VECTORS / "local_exceptions_invalid" / "cases.json").read_text(encoding="utf-8")
 )
 IDENTITY_INVALID_CASES = json.loads((VECTORS / "identities_invalid" / "cases.json").read_text(encoding="utf-8"))
 IDENTITY_VALID_CASES = json.loads((VECTORS / "identities_valid" / "cases.json").read_text(encoding="utf-8"))
@@ -85,8 +90,9 @@ def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
 
 
 def _patched(case: dict[str, Any], folder: str) -> Any:
-    """The document a case names in ``folder``, with its values set and removed."""
-    document = json.loads((VECTORS / folder / case["vector"]).read_text(encoding="utf-8"))
+    """The document a case names in ``folder``, with its values set and removed; a YAML document read as YAML."""
+    text = (VECTORS / folder / case["vector"]).read_text(encoding="utf-8")
+    document = load_document(text) if case["vector"].endswith(".yaml") else json.loads(text)
     for pointer, value in case["set"].items():
         _changed(document, pointer, value, remove=False)
     for pointer in case["remove"]:
@@ -97,6 +103,7 @@ def _patched(case: dict[str, Any], folder: str) -> Any:
 CHANGING_CASES = [
     *SCANNER_CHECK_MAPPING_INVALID_CASES,
     *PROJECT_MAPPING_INVALID_CASES,
+    *LOCAL_EXCEPTIONS_INVALID_CASES,
     *RECORD_INVALID_CASES,
     *RECORD_VALID_CASES,
     *RECORD_INTEGRITY_FAILED_CASES,
@@ -148,6 +155,14 @@ def test_a_project_mapping_that_decides_an_iltero_assertion_is_refused(case: dic
     scanner_check_mapping = ScannerCheckMapping.model_validate(_patched(case, "scanner_check_mappings"))
     with pytest.raises(ValueError, match=re.escape(case["message"])):
         check_project_mapping(scanner_check_mapping)
+
+
+@pytest.mark.parametrize(
+    "case", LOCAL_EXCEPTIONS_INVALID_CASES, ids=[c["name"] for c in LOCAL_EXCEPTIONS_INVALID_CASES]
+)
+def test_an_invalid_project_exceptions_file_is_refused(case: dict[str, Any]) -> None:
+    with pytest.raises(ValidationError, match=re.escape(case["message"])):
+        LocalExceptions.model_validate(_patched(case, "."))
 
 
 @pytest.mark.parametrize(

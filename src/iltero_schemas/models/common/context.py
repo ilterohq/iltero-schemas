@@ -83,7 +83,6 @@ from iltero_schemas.models.common.server_facts import (
     Approvals,
     AttestationOutcome,
     Evaluations,
-    Exceptions,
     VerifiedSource,
 )
 from iltero_schemas.models.common.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
@@ -111,7 +110,6 @@ PARTS = (
     "plan",
     "evaluations",
     "approvals",
-    "exceptions",
     "run",
     "deployment",
     "drift_check",
@@ -329,7 +327,6 @@ class AssuranceContext(StrictModel):
     # Facts only the server holds (``models.common.server_facts``); a marker when it could not supply them.
     evaluations: Evaluations | ServerFactsUnavailable | None = None
     approvals: Approvals | ServerFactsUnavailable | None = None
-    exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     drift_check: DriftCheck | ImageDriftCheck | None = None

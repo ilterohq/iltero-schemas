@@ -1,6 +1,6 @@
-"""The facts only the server holds, as an evaluation input carries them: approvals, exceptions, earlier evaluations,
-the verified source and the verified attestation. The sixth, whether a change's commits were reviewed, is in
-``models.common.commit_review``.
+"""The facts only the server holds: approvals, exceptions, earlier evaluations, the verified source and the verified
+attestation. The sixth, whether a change's commits were reviewed, is in ``models.common.commit_review``. An evaluation
+input carries all of them except the exceptions, which no assertion reads.
 
 Each is normalised whatever produced it, so an assertion compares neutral
 fields only.
@@ -335,5 +335,4 @@ AttestationOutcome = Annotated[
 
 
 Approvals = Annotated[list[Approval], Field(max_length=MAX_FACT_ITEMS)]
-Exceptions = Annotated[list[ExceptionGrant], Field(max_length=MAX_FACT_ITEMS)]
 Evaluations = Annotated[list[EarlierEvaluation], Field(max_length=MAX_FACT_ITEMS)]

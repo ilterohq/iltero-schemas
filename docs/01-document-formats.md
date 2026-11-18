@@ -95,7 +95,7 @@ A stage is a point in a change's life at which assertions are checked:
 | Stage | What is checked |
 | --- | --- |
 | `plan` | The change to deploy, once it is produced and before anyone approves it. For an IaC (infrastructure-as-code) change, the IaC tool's plan. For a container image build, the image the build pushed, before any deployment uses it. |
-| `pre_deploy` | The change, at the gate before it is deployed: approvals, exceptions, earlier evaluations and whether its commits were reviewed. |
+| `pre_deploy` | The change, at the gate before it is deployed: approvals, earlier evaluations and whether its commits were reviewed. |
 | `post_deploy` | What the deployment did. |
 | `post_verify` | What runs after the deployment: the deployed resources, read back, or the workload that runs a deployed image. |
 | `runtime` | Resources as they run, outside any change. No record has a `runtime` stage. |
@@ -397,10 +397,10 @@ subject. The tool that runs OPA records the context's digest in the event as `in
 | `subject` | object | The subject's `kind`, its `key` and its `identities` (`scheme`, `value`, `scope`): one or two, its local identity and, at runtime, its cloud identity (at most `iltero_schemas.models.common.fields.MAX_SUBJECT_IDENTITIES`, 2). An identity's `scope` holds at most 8 keys (`MAX_SCOPE_KEYS`). |
 | `resource` | object | For a resource subject, the resource as planned: `id`, `provider`, `type`, `kind`, `name`, `module`, `action`, `before`, `after`, the resources that refer to it (`related`), and `tool_data`. |
 | `deployment` | object | What the apply did: the applied `plan`, and `apply` with its `source` log, the `state` after it, or the `state_not_read` marker when it was not read (see [When the state after the apply was not read](#apply-with-the-state-not-read)), `outcomes_from` (`apply_log`; `apply_log_and_state` when the log lost messages and the state settled what it could; `apply_log_alone` when the state was not read), each change of the applied plan once (`changes`, each saying where its outcome came from in `outcome_from`: `apply_log`, `apply_log_alone`, `state` or `none`), `timing`, and `tool_data`: what only the IaC tool says, keyed by `tool`, which must be `apply.source.tool`. For `terraform`: the `summary` counts it reported, `errors_reported`, the number of error diagnostics the log holds (see [When the state after the apply was not read](#apply-with-the-state-not-read) for the rules on both), the `log_lines` it could not read (`other_output_lines`, `damaged_messages`, `interrupted_operations`), and the delete of each `deposed` object (an old copy a replacement set aside), settled by the state, or the `state_not_read` marker when it was not read. `superseded_by` is `{"reason": "dependency_replanned"}` when the pipeline says it applied a re-plan, which must differ from the evaluated plan, and `null` otherwise. In an `image_deploy` input, the image the pipeline reports it deployed (see [The `image_deploy` body](#the-image_deploy-body)). |
-| `evaluations`, `approvals`, `exceptions` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.common.server_facts`). |
+| `evaluations`, `approvals` | list or marker | Facts only Iltero Platform holds, as the items below (`iltero_schemas.models.common.server_facts`). |
 | `run` | object | The run the input belongs to, by Iltero's run `id`; an approval of a run names it. |
 | `drift_check` | object | What two readings of the unit's deployed resources, taken after the apply, found: the shape of a record's [`drift_check`](#change-assurance-record-car). In an `image_deploy` input, what one reading of the workload found (see [The `image_deploy` body](#the-image_deploy-body)); its `change_digest` is `change.digest`: "drift_check.change_digest is change.digest", and it compares every container, of the pod template or of a pod, whose image is from `change.image.repository`: "a reading compares every container whose image is from the deployed repository". |
-| `assurance` | object | An assertion's results about one subject over time (`iltero_schemas.models.common.assurance.Assurance`): the `assertion` (`id`, `version`), the `subject` (`kind`, `key`), the `current` result and the `previous` one (each a `status`, the `stage` that reached it and `observed_at`), and what happened in between (`since_previous`: the `deployments` recorded for the subject's unit, each its `record` UUID, `change_digest` and `deployed_at`, and the `exceptions` approved, as the Exception item below). `previous` and `since_previous` are both `null` for a subject with no earlier result: "what happened since the previous result is given exactly when there is one". The previous result is no later than the current one ("the previous result comes before the current one"), and every deployment falls between them ("a deployment since the previous result comes between it and the current one"). |
+| `assurance` | object | An assertion's results about one subject over time (`iltero_schemas.models.common.assurance.Assurance`): the `assertion` (`id`, `version`), the `subject` (`kind`, `key`), the `current` result and the `previous` one (each a `status`, the `stage` that reached it and `observed_at`), and what happened in between (`since_previous`: the `deployments` recorded for the subject's unit, each its `record` UUID, `change_digest` and `deployed_at`). `previous` and `since_previous` are both `null` for a subject with no earlier result: "what happened since the previous result is given exactly when there is one". The previous result is no later than the current one ("the previous result comes before the current one"), and every deployment falls between them ("a deployment since the previous result comes between it and the current one"). |
 | `artifact` | object | The image a build produced: its `repository`, its `digest`, the digest of each platform's image (`platform_digests`) and `build_commit`: the commit the build tool's provenance names, or the unknown marker `{"__unknown": true, "reason": "not_reported_by_tool"}` when the build named none (see [The build's commit](#the-builds-commit)), with the rules of the [`image_build` body](#the-image_build-body). |
 | `tests` | list | Each test report the build was given, at most 64 (see below). |
 | `scans` | list | Each scan report the build was given, at most 64 (see below). |
@@ -418,13 +418,13 @@ Key rules:
   | Activity | Stage | Required | Optional |
   | --- | --- | --- | --- |
   | `iac_change` | `plan` | `source`, `change`, `plan`, `subject` | none |
-  | `iac_change` | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `exceptions`, `commit_review`, `run` | none |
+  | `iac_change` | `pre_deploy` | `source`, `change`, `plan`, `subject`, `evaluations`, `approvals`, `commit_review`, `run` | none |
   | `iac_change` | `post_deploy` | `source`, `change`, `plan`, `subject`, `deployment` | none |
   | `iac_change` | `post_verify` | `subject`, `deployment`, `drift_check` | `source`, `assurance` |
   | `iac_change` | `post_verify`, about a resource (a [postponed check](#checks-postponed-until-after-the-deployment)) | `subject`, `resource`, `plan`, `deployment` | `source` |
-  | `iac_change` | `runtime` | `subject` | `source`, `deployment`, `assurance`, `exceptions` |
+  | `iac_change` | `runtime` | `subject` | `source`, `deployment`, `assurance` |
   | `image_build` | `plan` | `source`, `subject`, `artifact`, `tests`, `scans`, `verified_source`, `attestation_outcome` | none |
-  | `image_deploy` | `pre_deploy` | `source`, `change`, `subject`, `evaluations`, `approvals`, `exceptions`, `commit_review`, `run` | none |
+  | `image_deploy` | `pre_deploy` | `source`, `change`, `subject`, `evaluations`, `approvals`, `commit_review`, `run` | none |
   | `image_deploy` | `post_deploy` | `source`, `change`, `subject`, `deployment` | none |
   | `image_deploy` | `post_verify` | `change`, `subject`, `deployment`, `drift_check` | `source` |
 
@@ -537,7 +537,7 @@ Key rules:
 - The context holds no evaluator version, bundle digest or provenance.
 
 The facts only Iltero Platform holds are normalised whatever produced them. Each item is Iltero Platform's claim, as
-served.
+served. No input carries an exception: no assertion reads one.
 
 | Item | Fields |
 | --- | --- |
@@ -802,7 +802,7 @@ who produced it and to reproduce it.
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and the CI system's run id (`ci_run_id`). |
-| `facts_source` | For an evaluation whose input may carry Iltero Platform facts (approvals, exceptions, earlier evaluations, the commit review, the verified source, the verified attestation: an `iac_change` input at `pre_deploy` or `runtime`, an `image_build` input at `plan`, and an `image_deploy` input at `pre_deploy`), where they came from: `server` or `none`. `null` for every other input (`iltero_schemas.profiles.reads_server_facts`). It names where the facts document came from: the parts only Iltero Platform holds (`SERVER_FACTS`: `evaluations`, `approvals`, `exceptions`, `commit_review`, `verified_source`, `attestation_outcome`). A value Iltero Platform supplies inside another part is not counted: the environment's production flag (`organization_scope.environment.production`) in every input, and the accepted build (`change.build`) in an `image_deploy` input. In a run the tool opened, such a value holds the unknown marker (`server_facts_unavailable`), so it follows `governance.run_opened_by`. The `post_deploy` and `post_verify` inputs of an `image_deploy` name no `facts_source`. |
+| `facts_source` | For an evaluation whose input may carry Iltero Platform facts (approvals, earlier evaluations, the commit review, the verified source, the verified attestation: an `iac_change` input at `pre_deploy`, an `image_build` input at `plan`, and an `image_deploy` input at `pre_deploy`), where they came from: `server` or `none`. `null` for every other input (`iltero_schemas.profiles.reads_server_facts`). It names where the facts document came from: the parts only Iltero Platform holds (`SERVER_FACTS`: `evaluations`, `approvals`, `commit_review`, `verified_source`, `attestation_outcome`). A value Iltero Platform supplies inside another part is not counted: the environment's production flag (`organization_scope.environment.production`) in every input, and the accepted build (`change.build`) in an `image_deploy` input. In a run the tool opened, such a value holds the unknown marker (`server_facts_unavailable`), so it follows `governance.run_opened_by`. The `post_deploy` and `post_verify` inputs of an `image_deploy` name no `facts_source`. |
 
 Key rules:
 
@@ -3370,7 +3370,7 @@ spec:
 | --- | --- | --- |
 | `apiVersion`, `kind` | string | `iltero.com/v1` and `LocalExceptions`. |
 | `metadata.name` | string | The name the project gives the document: 1 to 63 lowercase letters, digits and hyphens, starting and ending with a letter or a digit. |
-| `spec.exceptions` | list | 1 to 256 exceptions, in the shape of the Exception item of an [AssuranceContext](#assurancecontext): `id`, `status` (always `approved`), `scope` (`assertion.id`, `environment` and `resources`), `valid_from`, `expires_at`, `approved_by` and `reason`. In this file, `status` and `approved_by` are what the project says: nothing checks them. |
+| `spec.exceptions` | list | 1 to 256 exceptions, in the shape of the Exception item of the facts only Iltero Platform holds (see [AssuranceContext](#assurancecontext)): `id`, `status` (always `approved`), `scope` (`assertion.id`, `environment` and `resources`), `valid_from`, `expires_at`, `approved_by` and `reason`. In this file, `status` and `approved_by` are what the project says: nothing checks them. |
 
 | Rule | Refused with |
 | --- | --- |

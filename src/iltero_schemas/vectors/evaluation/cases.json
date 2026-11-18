@@ -8221,7 +8221,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },
@@ -8321,7 +8320,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },
@@ -8428,10 +8426,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9113,10 +9107,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -9294,10 +9284,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -9472,10 +9458,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9657,10 +9639,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9849,10 +9827,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -10236,10 +10210,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10417,10 +10387,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10581,10 +10547,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -10760,10 +10722,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10936,10 +10894,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -11103,10 +11057,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -11224,7 +11174,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },

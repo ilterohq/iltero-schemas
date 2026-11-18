@@ -58,7 +58,8 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str | None]] = 
         ("not_assessed", "not_in_activity"),
     }
 )
-# The results a verifier gives an approval, an exception or the commit review that the pre-deploy stage reads.
+# The results a verifier gives the approvals and the commit review the pre-deploy stage reads, and the exceptions a
+# record relied on.
 # not_in_activity: the record's activity has no pre-deploy stage. run_opened_locally: the tool opened the run, so no
 # server served the fact and no check of it happened. server_facts_unavailable: the server opened the run, a check
 # needed the fact, and the stage kept the unknown marker in its place. pre_deploy_pending: the run that would report the

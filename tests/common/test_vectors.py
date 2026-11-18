@@ -275,6 +275,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "evaluation",
         "identities_invalid",
         "identities_valid",
+        "local_exceptions_invalid",
         "opa",
         "records_integrity_failed",
         "records_invalid",
@@ -472,7 +473,7 @@ def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Pa
     context["evaluation"]["assertion"]["id"] = case["assertion"]
     assert case["facts"] in ("unknown_marker", "empty_list")
     if case["facts"] == "empty_list":
-        for part in ("evaluations", "approvals", "exceptions"):
+        for part in ("evaluations", "approvals"):
             context[part] = []
     result = _evaluate(
         opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context

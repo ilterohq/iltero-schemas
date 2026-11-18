@@ -541,8 +541,9 @@ keep, so any two tools agree on what a record means.
   than out of scope. `ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED` names IAM, KMS
   and network kinds, roles, policy attachments, key policies and grants
   included.
-- The facts only Iltero Platform holds, as items an assertion reads: approvals,
-  exceptions and earlier evaluations. An approval names the change it
+- The facts only Iltero Platform holds, as items an assertion reads: approvals
+  and earlier evaluations. Exceptions are never part of an evaluation input:
+  no assertion reads one, and an input that carries them is refused. An approval names the change it
   approves by its digest, or the run by Iltero's run id, and says how it was
   obtained and whether it was a self-approval the policy permitted. The
   pre-deploy input names its run (`run.id`), and the approval assertions
@@ -551,10 +552,13 @@ keep, so any two tools agree on what a record means.
   once and of the record's own change or run, and lists any only when its
   results read facts from Iltero Platform.
 - The unknown marker: where a fact only Iltero Platform holds (approvals,
-  exceptions, evaluations, the verified source of a build) is missing, the evaluation input holds a marker,
+  evaluations, the verified source of a build) is missing, the evaluation input holds a marker,
   so a condition that reads it is `unknown`, never true or false. An
   evaluation whose input reads Iltero Platform facts records where they came
-  from (`facts_source`: `server`, or `none`).
+  from (`facts_source`: `server`, or `none`). An `iac_change` input at
+  `runtime` reads no fact only Iltero Platform holds, so its event's
+  `provenance.facts_source` is `null`, and an event with `server` or `none`
+  there is refused.
 - The trusted bundle keys: the public keys an assertion bundle may be signed
   with, shipped in the package with their status (active, retired or
   revoked), and a reader that refuses development keys and every broken rule.
@@ -1129,8 +1133,7 @@ keep, so any two tools agree on what a record means.
     place; one whose checks read such an input keeps the list, the review or
     the `server_facts_unavailable` marker as before. An evaluation input is at most 16 MiB of canonical JSON, and
     the input's `assurance` part has a shape: an assertion's current and
-    previous results about one subject, and the deployments and exceptions in
-    between.
+    previous results about one subject, and the deployments in between.
   - A project's own exceptions file (`LocalExceptions` v1) names, for each
     exception, an assertion, an environment, resources and a period, and who
     the project says approved it: it is the project's own word. Each
@@ -1152,6 +1155,11 @@ keep, so any two tools agree on what a record means.
     `scanner_evidence_problems`, given the copy in `KeptFiles.exceptions`,
     works out again which exception covers each suppressed result and lists
     a record that names another, or leaves one out.
+    `vectors/local_exceptions_invalid/cases.json` changes the kept exceptions
+    file of `local_run_suppressed_with_exception` into files `LocalExceptions`
+    refuses: an exception that covers a built-in assertion, lasts more than
+    365 days, ends before it starts, or names a resource by its unit rather
+    than its address.
   - These checks show that each verdict follows from what the stage kept.
     They do not show that the scanner ran, that the report is what it wrote,
     that it read the plan the record names, or that its version is genuine.

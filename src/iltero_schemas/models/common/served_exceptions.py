@@ -16,11 +16,15 @@ The exception names who asked for it and who approved it by the pseudonym Iltero
 that removes Iltero's link only. A pseudonym is the same in every exception of that user, and the record also names the
 run's own continuous integration (CI) facts, so the person may still be identified without it. The contract checks
 that the two pseudonyms differ: two Iltero users, which does not show they are two people. The server says whether
-the requester is the person who started the run (``requester_and_run_starter``), or that it could not tell; it says
-nothing of who triggered a later attempt of the run.
+the requester and the approver are each the run's starter (``requester_and_run_starter``,
+``approver_and_run_starter``), or that it could not tell. The run's starter is the account of the continuous
+integration system that triggered the run, not necessarily the author of the change, and ``same_user`` means the
+server links that account to this Iltero user. The server says nothing of who triggered a later attempt of the run:
+the record's continuous integration facts say that.
 
 The server reads the exceptions in force when it opens a run and serves that one document to every plan stage of the
-run; a run opened later reads them again. Each plan stage still holds an exception to its own reference time.
+run, re-runs of the run's plan stage included; an exception approved after the run opened applies from a new run of
+the pipeline. Each plan stage still holds an exception to its own reference time.
 """
 
 from __future__ import annotations
@@ -70,8 +74,8 @@ NoServedExceptionReason = (
 )
 
 
-# Whether the person who asked for an exception started the run it is served to (``ServedException``).
-RequesterAndRunStarter = Literal["same_user", "different_users", "could_not_tell"]
+# Whether an Iltero user an exception names is the starter of the run it is served to (``ServedException``).
+SameAsRunStarter = Literal["same_user", "different_users", "could_not_tell"]
 
 
 class Pseudonym(StrictModel):
@@ -107,11 +111,14 @@ class ServedException(StrictModel):
     requested_by: Pseudonym
     approved_by: Pseudonym
     approved_at: Timestamp
-    # Whether the requester is the person who started the run, as the server found: ``same_user``; ``different_users``,
+    # Whether the requester is the run's starter, as the server found: ``same_user``; ``different_users``,
     # only when the server linked both to Iltero users and they differ, which shows two Iltero users, not two people;
-    # or ``could_not_tell``, when it could not link them, which never means they differ. A requester who started the
-    # run is recorded, not refused: a reader judges it.
-    requester_and_run_starter: RequesterAndRunStarter
+    # or ``could_not_tell``, when it could not link them, which never means they differ. A requester found to be the
+    # run's starter is recorded, not refused: a reader judges it.
+    requester_and_run_starter: SameAsRunStarter
+    # The same for the approver. An approver found to be the run's starter is recorded, not refused, because the
+    # exception was approved before the run opened; a reader judges it.
+    approver_and_run_starter: SameAsRunStarter
     reason: Text
 
     @model_validator(mode="after")
@@ -142,12 +149,20 @@ class ServedExceptionsSpec(StrictModel):
         check_exception_list(self.exceptions)
         found: dict[str, str] = {}
         for exception in self.exceptions:
-            if found.setdefault(exception.requested_by.id, exception.requester_and_run_starter) != (
-                exception.requester_and_run_starter
+            for person, finding in (
+                (exception.requested_by.id, exception.requester_and_run_starter),
+                (exception.approved_by.id, exception.approver_and_run_starter),
             ):
-                raise ValueError(
-                    "a run has one starter, so one requester is found to be them, or not, in every exception"
-                )
+                if found.setdefault(person, finding) != finding:
+                    raise ValueError(
+                        "a run has one starter, so one Iltero user is found to be them, or not, in every exception"
+                    )
+        starters = {person for person, finding in found.items() if finding == "same_user"}
+        if len(starters) > 1:
+            raise ValueError(
+                "a run has one starter, and the server links its account to one Iltero user at most, so no two are "
+                "found to be them"
+            )
         return self
 
 

@@ -118,6 +118,7 @@
         },
         "approved_at": "2026-10-30T14:12:00Z",
         "requester_and_run_starter": "different_users",
+        "approver_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       }
     },
@@ -152,6 +153,28 @@
       }
     },
     "remove": [],
-    "message": "a run has one starter, so one requester is found to be them, or not, in every exception"
+    "message": "a run has one starter, so one Iltero user is found to be them, or not, in every exception"
+  },
+  {
+    "name": "one_iltero_user_found_to_have_started_the_run_as_approver_and_not_as_requester",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1/approved_by": {
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+      },
+      "/spec/exceptions/1/approver_and_run_starter": "same_user"
+    },
+    "remove": [],
+    "message": "a run has one starter, so one Iltero user is found to be them, or not, in every exception"
+  },
+  {
+    "name": "two_iltero_users_found_to_have_started_the_run",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/requester_and_run_starter": "same_user"
+    },
+    "remove": [],
+    "message": "a run has one starter, and the server links its account to one Iltero user at most, so no two are found to be them"
   }
 ]

@@ -36,10 +36,11 @@
         },
         "approved_by": {
           "provider": "iltero_pseudonym",
-          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
         },
         "approved_at": "2026-08-31T09:30:00Z",
         "requester_and_run_starter": "could_not_tell",
+        "approver_and_run_starter": "same_user",
         "reason": "Backups are taken by the storage team's own schedule until the next change sets the retention."
       },
       {
@@ -75,6 +76,7 @@
         },
         "approved_at": "2026-08-31T09:30:00Z",
         "requester_and_run_starter": "same_user",
+        "approver_and_run_starter": "could_not_tell",
         "reason": "The access logs are shared with an outside auditor until the next change moves them."
       }
     ]

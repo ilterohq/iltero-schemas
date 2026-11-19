@@ -3597,8 +3597,8 @@ the assertion document it was approved for by its id, version and digest. The li
 force.
 
 Iltero Platform reads the exceptions in force when it opens a run, and serves that one document to every plan stage of
-the run; a run opened later reads them again, so an exception approved after a run opened applies only from a later
-run. Each plan stage still holds an exception to its own reference time.
+the run, re-runs of the run's plan stage included. An exception approved after the run opened applies from a new run of
+the pipeline. Each plan stage still holds an exception to its own reference time.
 
 A served exception covers a failed result only of the assertion document it was approved for: the same id, version
 and digest (see [When a served exception covers a failed result](#when-a-served-exception-covers-a-failed-result)).
@@ -3644,6 +3644,7 @@ served exceptions cover in full, with nothing else open, is `not_met` with the r
         "approved_by": {"provider": "iltero_pseudonym", "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"},
         "approved_at": "2026-10-30T14:12:00Z",
         "requester_and_run_starter": "different_users",
+        "approver_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       }
     ]
@@ -3674,7 +3675,8 @@ reader of a kept copy does (see [Checking the kept copy](#checking-the-kept-copy
 | `requested_by` | object | Who asked for the exception, by the pseudonym Iltero issued their Iltero user for the organization (`Pseudonym`): `provider`, always `iltero_pseudonym`, and `id`, a UUID. |
 | `approved_by` | object | Who approved it, in the same form. |
 | `approved_at` | timestamp | When it was approved. |
-| `requester_and_run_starter` | string | Whether the requester is the person who started the run, as Iltero Platform found: `same_user`; `different_users`, only when Iltero Platform linked both to Iltero users and they differ, which shows two Iltero users, not two people; or `could_not_tell`, when it could not link them. `could_not_tell` never means they are different people, so no reader treats it as a sign that the two are independent. Any other value, `true` and `false` included, is refused: "Input should be 'same_user', 'different_users' or 'could_not_tell'". |
+| `requester_and_run_starter` | string | Whether the requester is the [run's starter](#the-runs-starter), as Iltero Platform found: `same_user`, when Iltero Platform links the starter's account to this Iltero user; `different_users`, only when Iltero Platform linked both to Iltero users and they differ, which shows two Iltero users, not two people; or `could_not_tell`, when it could not link them. `could_not_tell` never means they are different people, so no reader treats it as a sign that the two are independent. Any other value, `true` and `false` included, is refused: "Input should be 'same_user', 'different_users' or 'could_not_tell'". |
+| `approver_and_run_starter` | string | Whether the approver is the run's starter, with the same values, meaning and refusal as `requester_and_run_starter`. |
 | `reason` | string | Why the exception was granted: 1 to 1,024 characters. |
 
 A served exception follows every rule of a [project's exception](#localexceptions): an id of its own, each resource by
@@ -3686,7 +3688,8 @@ its address scoped by its unit, no two covering the same assertion, environment 
 | An exception is approved no later than it expires. | "an exception is approved no later than it expires" |
 | `requested_by` and `approved_by` are pseudonyms: `provider` is `iltero_pseudonym`. An account at an identity provider is refused. | "Input should be 'iltero_pseudonym'" |
 | `requested_by` and `approved_by` name different `id`s. | "an exception is approved by someone other than who asked for it" |
-| In one document, every exception of one requester (`requested_by.id`) has the same `requester_and_run_starter`. | "a run has one starter, so one requester is found to be them, or not, in every exception" |
+| In one document, one Iltero user (one pseudonym `id`), as requester or approver, has one finding about the run's starter: every `requester_and_run_starter` and `approver_and_run_starter` about them has the same value. | "a run has one starter, so one Iltero user is found to be them, or not, in every exception" |
+| In one document, at most one Iltero user is found to be the run's starter (`same_user`): Iltero Platform links a CI account to at most one Iltero user of the organization. | "a run has one starter, and the server links its account to one Iltero user at most, so no two are found to be them" |
 
 A pseudonym is the one Iltero issued the user for the organization: the same for one Iltero user in every exception of
 that organization, and unrelated to the same person's pseudonym in another, so records of two organizations cannot be
@@ -3695,11 +3698,19 @@ link only. The person may still be identified without it: a pseudonym stays the 
 exceptions, and the record names the run's own CI facts. The free-text `reason` can name a person too, and erasing the
 link does not remove that.
 
-Two different pseudonyms show two Iltero users, not two people; the model checks only that they differ. Iltero
-Platform states in `requester_and_run_starter` whether the requester is the person who started the run, or that it
-could not tell. The field says nothing of who triggered a later attempt of the run. A requester who started the run
-(`same_user`) is recorded, not refused, so separation of duties rests on Iltero Platform and on a reader that checks
-this field. The model reads the field as Iltero Platform's claim and does not check it.
+Two different pseudonyms show two Iltero users, not two people; the model checks only that they differ.
+
+### The run's starter
+
+The run's starter is the account of the continuous integration (CI) system that triggered the run, not necessarily
+the author of the change. Iltero Platform states in `requester_and_run_starter` and `approver_and_run_starter` whether
+the requester and the approver are each the run's starter, or that it could not tell: `same_user` means Iltero
+Platform links that account to this Iltero user. The fields do not cover who triggered a later attempt of the run; the
+record's CI facts show who triggered each attempt.
+
+A requester or an approver found to be the run's starter (`same_user`) is recorded, not refused, because the exception
+was approved before the run opened; a reader judges it. Separation of duties rests on Iltero Platform and on a reader
+that checks these fields. The model reads the fields as Iltero Platform's claims and does not check them.
 
 ### A stage that applies served exceptions
 

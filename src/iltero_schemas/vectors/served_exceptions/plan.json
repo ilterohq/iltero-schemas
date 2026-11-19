@@ -40,6 +40,7 @@
         },
         "approved_at": "2026-10-30T14:12:00Z",
         "requester_and_run_starter": "different_users",
+        "approver_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       },
       {
@@ -75,6 +76,7 @@
         },
         "approved_at": "2026-08-31T09:30:00Z",
         "requester_and_run_starter": "same_user",
+        "approver_and_run_starter": "different_users",
         "reason": "The access logs are shared with an outside auditor until the next change moves them."
       }
     ]

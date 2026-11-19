@@ -89,7 +89,7 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/served_exceptions": {
-        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
+        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": [
           {
@@ -118,13 +118,13 @@
           "tool": "iltero",
           "version": "0.1.0"
         },
-        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
+        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
         "media_type": "application/json",
         "path": "units/root/plan/served-exceptions.json",
         "redaction_policy": null,
         "ref_id": "plan/served-exceptions.json",
         "retention_until": null,
-        "size_bytes": 1718,
+        "size_bytes": 1808,
         "source": null,
         "storage_uri": null
       },
@@ -141,7 +141,7 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/served_exceptions": {
-        "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
+        "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": [
           {
@@ -186,13 +186,13 @@
           "tool": "iltero",
           "version": "0.1.0"
         },
-        "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
+        "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
         "media_type": "application/json",
         "path": "units/root/plan/served-exceptions.json",
         "redaction_policy": null,
         "ref_id": "plan/served-exceptions.json",
         "retention_until": null,
-        "size_bytes": 1745,
+        "size_bytes": 1828,
         "source": null,
         "storage_uri": null
       },
@@ -1252,13 +1252,13 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
+          "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
           "media_type": "application/json",
           "path": "units/root/plan/served-exceptions.json",
           "redaction_policy": null,
           "ref_id": "plan/served-exceptions.json",
           "retention_until": null,
-          "size_bytes": 1745,
+          "size_bytes": 1828,
           "source": null,
           "storage_uri": null
         }
@@ -1762,7 +1762,7 @@
           "stage": "plan",
           "scanners": null,
           "served_exceptions": {
-            "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
+            "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
             "copy_path": "units/root/plan/served-exceptions.json",
             "excepted_failures": [
               {

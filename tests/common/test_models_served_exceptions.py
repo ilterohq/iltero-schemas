@@ -185,3 +185,31 @@ def test_the_order_a_stage_lists_its_excepted_failures_in_is_one_function() -> N
     later = {**FAILURE, "engine": "trivy"}
     failures = [ExceptedFailure.model_validate(item) for item in (later, FAILURE)]
     assert [failure.engine for failure in sorted_excepted_failures(failures)] == ["opa", "trivy"]
+
+
+@pytest.mark.parametrize("finding", ["same_user", "different_users", "could_not_tell"])
+def test_a_served_exception_says_whether_its_approver_started_the_run_or_that_the_server_could_not_tell(
+    finding: str,
+) -> None:
+    exception = ServedException.model_validate({**EXCEPTION, "approver_and_run_starter": finding})
+    assert exception.approver_and_run_starter == finding
+
+
+def test_one_person_is_found_to_have_started_the_run_or_not_whichever_role_they_hold() -> None:
+    """The approver of one exception who requested another is one person: one finding about the run's starter."""
+    second = {
+        **DOCUMENT["spec"]["exceptions"][1],
+        "requested_by": EXCEPTION["approved_by"],
+        "approved_by": EXCEPTION["requested_by"],
+        "requester_and_run_starter": "same_user",
+    }
+    with pytest.raises(ValidationError, match="a run has one starter"):
+        ServedExceptions.model_validate({**DOCUMENT, "spec": {"exceptions": [EXCEPTION, second]}})
+
+
+def test_no_two_iltero_users_are_found_to_have_started_one_run() -> None:
+    first = {**EXCEPTION, "requester_and_run_starter": "same_user"}
+    second = {**DOCUMENT["spec"]["exceptions"][1], "requester_and_run_starter": "same_user"}
+    assert first["requested_by"] != second["requested_by"]
+    with pytest.raises(ValidationError, match="no two are found to be them"):
+        ServedExceptions.model_validate({**DOCUMENT, "spec": {"exceptions": [first, second]}})

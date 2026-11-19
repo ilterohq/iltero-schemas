@@ -1212,19 +1212,30 @@ keep, so any two tools agree on what a record means.
     (`approved_by`, `approved_at`), each by the pseudonym Iltero issued
     their Iltero user for the organization (`Pseudonym`: `provider:
     iltero_pseudonym` and a UUID `id`), and
-    whether the requester is the person who started the run
-    (`requester_and_run_starter`, Iltero Platform's finding: `same_user`,
-    `different_users` only when it linked both to Iltero users and they
-    differ, which shows two Iltero users and not two people, or
-    `could_not_tell`, which never means they differ). It says nothing of who
-    triggered a later attempt. `same_user` is recorded, not refused, so
-    separation of duties rests on Iltero Platform and on a reader that checks
-    this field. In one document, one requester has one
-    `requester_and_run_starter` ("a run has one starter, so one requester is
-    found to be them, or not, in every exception"). Iltero
+    whether the requester and the approver are each the run's starter, the
+    account of the continuous integration system that triggered the run, not
+    necessarily the author of the change (`requester_and_run_starter`,
+    `approver_and_run_starter`, Iltero Platform's finding: `same_user` when
+    it links that account to this Iltero user, `different_users` only when it
+    linked both to Iltero users and they differ, which shows two Iltero users
+    and not two people, or `could_not_tell`, which never means they differ).
+    The fields do not cover who triggered a later attempt; the record's
+    continuous integration facts show that. A requester or an approver found
+    to be the run's starter is recorded, not refused, because the exception
+    was approved before the run opened; a reader judges it, so separation of
+    duties rests on Iltero Platform and on a reader that checks these fields.
+    In one document, one Iltero user, as requester or approver, has one
+    finding about the run's starter ("a run has one starter, so one Iltero
+    user is found to be them, or not, in every exception"). At most one
+    Iltero user is found to be the run's starter, since Iltero Platform links
+    a CI account to at most one Iltero user of the organization ("a run has
+    one starter, and the server links its account to one Iltero user at
+    most, so no two are found to be them"). Iltero
     Platform reads the exceptions in force when it opens a run and serves
-    that one document to every plan stage of the run; each plan stage holds
-    an exception to its own reference time. It
+    that one document to every plan stage of the run, re-runs of the run's
+    plan stage included; an exception approved after the run opened applies
+    from a new run of the pipeline. Each plan stage holds an exception to its
+    own reference time. It
     is approved no later than it expires, and the requester and the approver
     have different pseudonyms: two Iltero users, not necessarily two people.
     A pseudonym is the same for one Iltero user in every exception of the

@@ -2,10 +2,10 @@
 
 An ES256 signature is not a pure function of its input, so ``refresh_vectors.py`` cannot rebuild a signed vector.
 This script makes a throwaway development key (its id starts ``dev-``), signs
-``vectors/scanner_check_mappings/iac/served_catalog.json`` with it and then forgets the private key. It writes the key's
-public half to the trust file ``vectors/signing_keys/development.json``, the signed descriptor to
-``vectors/scanner_check_mapping_descriptors/iac/served_catalog.json``, and every refusal case whose value is derived
-from the signature. Run ``refresh_vectors.py`` afterwards to update the digests.
+``vectors/scanner_check_mappings/iac/served_catalog.json`` with it and then forgets the private key. It replaces the
+key's entry in the trust file ``vectors/signing_keys/development.json``, keeping the other development keys there, and
+writes the signed descriptor to ``vectors/scanner_check_mapping_descriptors/iac/served_catalog.json`` and every
+refusal case whose value is derived from the signature. Run ``refresh_vectors.py`` afterwards to update the digests.
 
 Usage: python scripts/sign_descriptor_vectors.py
 """
@@ -85,7 +85,12 @@ def main() -> int:
         "revoked_at": None,
         "revocation_reason": None,
     }
-    trust_file = {"apiVersion": API_VERSION, "kind": TRUST_FILE_KIND, "keys": [entry]}
+    others = [kept for kept in json.loads(TRUST_FILE.read_text(encoding="utf-8"))["keys"] if kept["key_id"] != KEY_ID]
+    trust_file = {
+        "apiVersion": API_VERSION,
+        "kind": TRUST_FILE_KIND,
+        "keys": sorted([*others, entry], key=lambda kept: kept["key_id"]),
+    }
     # The signer checks its own output, as a server does before it serves a descriptor.
     keys = parse_signing_keys(json.dumps(trust_file).encode("utf-8"), development=True)
     checked = check_scanner_check_mapping_descriptor(signed, keys)

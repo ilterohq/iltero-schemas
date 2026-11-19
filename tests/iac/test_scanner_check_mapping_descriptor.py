@@ -35,7 +35,7 @@ SERVED: dict[str, Any] = json.loads((FOLDER / "served_catalog.json").read_text(e
 MAPPING: dict[str, Any] = json.loads(
     (VECTORS / "scanner_check_mappings" / "iac" / "served_catalog.json").read_text(encoding="utf-8")
 )
-# The vectors' trust set: the one development key that signed the sample descriptor.
+# The vectors' development trust file; the key that signed the sample descriptor is one of its entries.
 KEYS = parse_signing_keys((VECTORS / "signing_keys" / "development.json").read_bytes(), development=True)
 CASES: list[dict[str, Any]] = json.loads(
     (VECTORS / "scanner_check_mapping_descriptors_invalid" / "iac" / "cases.json").read_text(encoding="utf-8")
@@ -116,8 +116,8 @@ def test_every_case_names_the_stage_that_refuses_it() -> None:
 
 
 def test_a_key_that_may_not_verify_is_refused() -> None:
-    (key,) = KEYS.values()
-    revoked = {key.key_id: dataclasses.replace(key, status="revoked")}
+    key = KEYS[SERVED["key_id"]]
+    revoked = {**KEYS, key.key_id: dataclasses.replace(key, status="revoked")}
     with pytest.raises(ScannerCheckMappingDescriptorError, match="not trusted, or is revoked"):
         check_scanner_check_mapping_descriptor(ScannerCheckMappingDescriptor.model_validate(SERVED), revoked)
 

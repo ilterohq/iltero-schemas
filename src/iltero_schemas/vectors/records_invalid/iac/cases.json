@@ -3937,7 +3937,7 @@
       "/coverage/status_counts/pass": 2,
       "/coverage/evaluator_status_counts/opa/pass": 2,
       "/coverage/evaluations": 4,
-      "/evidence_refs/24/digest": "sha256:ecf5fda33b98c15b2fa1427c9991c8a8b1609d9e88cf4e76b3444759b1ae5ac5",
+      "/evidence_refs/24/digest": "sha256:b913ab919cfd1075ce50d7e5286ccb712bb8cf4f6ac9a7ac1a40036d961f55b8",
       "/evidence_refs/24/size_bytes": 5276,
       "/stages/pre_deploy/assertions/count": 2,
       "/stages/pre_deploy/commit_review": {
@@ -3963,7 +3963,7 @@
         "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
       },
       "/stages/pre_deploy/events/count": 2,
-      "/stages/pre_deploy/events/digest": "sha256:ecf5fda33b98c15b2fa1427c9991c8a8b1609d9e88cf4e76b3444759b1ae5ac5"
+      "/stages/pre_deploy/events/digest": "sha256:b913ab919cfd1075ce50d7e5286ccb712bb8cf4f6ac9a7ac1a40036d961f55b8"
     },
     "remove": [
       "/events/2",
@@ -4034,9 +4034,9 @@
           "assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
           "bundle": {
             "content_digest": "sha256:a5596bdbe92c43bf28bed39298fb3d164889e28003521ed754c4b637265a4b30",
-            "key_id": "dev-bundle-test-vectors",
+            "key_id": "dev-signing-key-vectors",
             "kind": "server",
-            "tarball_digest": "sha256:e9a362f7d430e12a2682b62bdf757db69e3014c6e88c58394a39a46cdaeaa234"
+            "tarball_digest": "sha256:4b2c76596622c1d1dffc6520f5cdba0013e12e06bbff62a00c80f3e326e489de"
           },
           "checked_content": {
             "digest": "sha256:f87c2b46c9ce51b817183804b5d6dce4461ddb11f63c863614ffa404967e844b",
@@ -4094,10 +4094,10 @@
           "kind": "change"
         }
       },
-      "/evidence_refs/24/digest": "sha256:d7526d0a34238234455ea50d95f0cfc89391ce47aa194168e7c8a5ab99301974",
+      "/evidence_refs/24/digest": "sha256:d66b83396ab4b926504f83c87f3d28cb826362fc0253904d2c86ca7a7ec85bc2",
       "/evidence_refs/24/size_bytes": 9844,
       "/stages/pre_deploy/events/count": 4,
-      "/stages/pre_deploy/events/digest": "sha256:d7526d0a34238234455ea50d95f0cfc89391ce47aa194168e7c8a5ab99301974",
+      "/stages/pre_deploy/events/digest": "sha256:d66b83396ab4b926504f83c87f3d28cb826362fc0253904d2c86ca7a7ec85bc2",
       "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 3,
       "/coverage/evaluator_status_counts/opa/pass": 4
     },
@@ -9271,7 +9271,7 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:960639f588a360a4f1853d22e0cc139d50fb76c7fc8ce1f89f2768b35feeb804",
+          "digest": "sha256:13a7f79ed4ebe7a6a8de2d8893270d34d149ededba54cdc28bb3d5291e36fe56",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
@@ -9871,7 +9871,7 @@
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:960639f588a360a4f1853d22e0cc139d50fb76c7fc8ce1f89f2768b35feeb804",
+          "digest": "sha256:13a7f79ed4ebe7a6a8de2d8893270d34d149ededba54cdc28bb3d5291e36fe56",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,

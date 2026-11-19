@@ -664,7 +664,7 @@
       "/coverage/status_counts/pass": 4,
       "/coverage/evaluator_status_counts/opa/pass": 4,
       "/coverage/evaluations": 4,
-      "/evidence_refs/15/digest": "sha256:abd5c73ab49176a3dfe1937c004743345aa57213017040d090b9738c7553b622",
+      "/evidence_refs/15/digest": "sha256:a315b44cdd2d70f7f02ac310d9392d1df708c0e590a7477915cf3f336ac81297",
       "/evidence_refs/15/size_bytes": 4966,
       "/stages/pre_deploy/assertions/count": 2,
       "/stages/pre_deploy/coverage/assertions_evaluated": 2,
@@ -678,7 +678,7 @@
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
       "/stages/pre_deploy/events/count": 2,
-      "/stages/pre_deploy/events/digest": "sha256:abd5c73ab49176a3dfe1937c004743345aa57213017040d090b9738c7553b622"
+      "/stages/pre_deploy/events/digest": "sha256:a315b44cdd2d70f7f02ac310d9392d1df708c0e590a7477915cf3f336ac81297"
     },
     "remove": [
       "/events/1",
@@ -808,7 +808,7 @@
       "/evidence_refs/3/path": "units/root/pre_deploy/contexts/sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/ref_id": "sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/size_bytes": 1745,
-      "/evidence_refs/15/digest": "sha256:45ebf9f24d40be8b3c1c070416d405c8d8381187f92457410983f90e740f9a43",
+      "/evidence_refs/15/digest": "sha256:595550344466dbcfa68619a5a20b3ae0857ea16905812f99c24d1daa3755557a",
       "/evidence_refs/15/size_bytes": 7405,
       "/stages/pre_deploy/commit_review": {
         "__unknown": true,
@@ -820,7 +820,7 @@
       "/stages/pre_deploy/coverage/status_counts/fail": 1,
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:45ebf9f24d40be8b3c1c070416d405c8d8381187f92457410983f90e740f9a43",
+      "/stages/pre_deploy/events/digest": "sha256:595550344466dbcfa68619a5a20b3ae0857ea16905812f99c24d1daa3755557a",
       "/stages/pre_deploy/verdict/value": "not_met",
       "/verdict/value": "not_met"
     },

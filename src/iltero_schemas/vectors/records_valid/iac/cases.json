@@ -789,7 +789,7 @@
       "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-97ad7b7e55ee4c67191e6942fe25d42c12a99c2ef244e729b2a80ec95bf5a9c4",
       "/evidence_refs/12/ref_id": "sha256-97ad7b7e55ee4c67191e6942fe25d42c12a99c2ef244e729b2a80ec95bf5a9c4",
       "/evidence_refs/12/size_bytes": 5740,
-      "/evidence_refs/24/digest": "sha256:ebe2025ad31b953d090a85ded0f4f1a686e04831a5f91c723f4d7eedb0b687ee",
+      "/evidence_refs/24/digest": "sha256:7ea31d0217ad451985a460e1562347b0298993e99aa376c4fc2e8029a7acc073",
       "/evidence_refs/24/size_bytes": 5276,
       "/stages/pre_deploy/assertions/count": 2,
       "/stages/pre_deploy/commit_review/outcome": "not_reviewed",
@@ -811,7 +811,7 @@
         "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
       },
       "/stages/pre_deploy/events/count": 2,
-      "/stages/pre_deploy/events/digest": "sha256:ebe2025ad31b953d090a85ded0f4f1a686e04831a5f91c723f4d7eedb0b687ee"
+      "/stages/pre_deploy/events/digest": "sha256:7ea31d0217ad451985a460e1562347b0298993e99aa376c4fc2e8029a7acc073"
     },
     "remove": [
       "/events/2",
@@ -840,14 +840,14 @@
       "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-4c93ac32922b485139729b50361a79ad89a7dedd153f6b9ff069059043a0984b",
       "/evidence_refs/12/ref_id": "sha256-4c93ac32922b485139729b50361a79ad89a7dedd153f6b9ff069059043a0984b",
       "/evidence_refs/12/size_bytes": 5767,
-      "/evidence_refs/24/digest": "sha256:fef58cd7330790c2e5056ac67b883c4628e2b7cb92df3340eccfe47888cdfac4",
+      "/evidence_refs/24/digest": "sha256:00d9359ed303c2a93ff4f107f961a7a39a9b48e3a4ad4f25084193b8cef79c12",
       "/stages/pre_deploy/commit_review/counted_since/commit": "3e9d40b000000000000000000000000000000000",
       "/stages/pre_deploy/commit_review/counted_since/earlier_reading": {
         "host_reading_id": "2c0e1d2f-4a5b-4607-8c9d-0e1f2a3b4c5d",
         "host_reading_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
         "decided_at": "2026-09-10T12:00:00Z"
       },
-      "/stages/pre_deploy/events/digest": "sha256:fef58cd7330790c2e5056ac67b883c4628e2b7cb92df3340eccfe47888cdfac4"
+      "/stages/pre_deploy/events/digest": "sha256:00d9359ed303c2a93ff4f107f961a7a39a9b48e3a4ad4f25084193b8cef79c12"
     },
     "remove": []
   },
@@ -1553,15 +1553,15 @@
       "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-7421edd0afab39b9a0e04563e10f655fbdfc4eb0baf0be25d32e2ec0b2165383",
       "/evidence_refs/12/ref_id": "sha256-7421edd0afab39b9a0e04563e10f655fbdfc4eb0baf0be25d32e2ec0b2165383",
       "/evidence_refs/12/size_bytes": 5575,
-      "/evidence_refs/24/digest": "sha256:609cac8ff25afc35b370554862cac42451fb184c61db823b5a4b770429dfc106",
+      "/evidence_refs/24/digest": "sha256:1635e5bb778a394250be24e04f372bfd13300c8fd3ed3697c4fa3d1d1f165881",
       "/evidence_refs/26/digest": "sha256:140c59b97c7931f32cd0132a32c88492dbc2d99e886e43e7ec8465306fd721ea",
       "/evidence_refs/26/path": "units/root/post_deploy/contexts/sha256-140c59b97c7931f32cd0132a32c88492dbc2d99e886e43e7ec8465306fd721ea",
       "/evidence_refs/26/ref_id": "sha256-140c59b97c7931f32cd0132a32c88492dbc2d99e886e43e7ec8465306fd721ea",
       "/evidence_refs/26/size_bytes": 7379,
-      "/evidence_refs/32/digest": "sha256:78b8ab7cba38ce880a7a315ce85ab6673810534e358fe80c57982ea97705d9bd",
-      "/stages/post_deploy/events/digest": "sha256:78b8ab7cba38ce880a7a315ce85ab6673810534e358fe80c57982ea97705d9bd",
+      "/evidence_refs/32/digest": "sha256:651c0ba982b3376f811edca3c5915537bb077bd5e30b00259ecc295083de9b6d",
+      "/stages/post_deploy/events/digest": "sha256:651c0ba982b3376f811edca3c5915537bb077bd5e30b00259ecc295083de9b6d",
       "/stages/post_deploy/reference_time/source": "server",
-      "/stages/pre_deploy/events/digest": "sha256:609cac8ff25afc35b370554862cac42451fb184c61db823b5a4b770429dfc106",
+      "/stages/pre_deploy/events/digest": "sha256:1635e5bb778a394250be24e04f372bfd13300c8fd3ed3697c4fa3d1d1f165881",
       "/stages/pre_deploy/reference_time/source": "server"
     },
     "remove": []

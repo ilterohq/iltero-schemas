@@ -380,7 +380,7 @@
       "/evidence_refs/3/path": "units/root/pre_deploy/contexts/sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/ref_id": "sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/size_bytes": 1745,
-      "/evidence_refs/15/digest": "sha256:561e05bc69cc01a82faf7749293e932aa076e6b25adf2ba0d3c8116da5b5f3e9",
+      "/evidence_refs/15/digest": "sha256:3a872999188875c53c525b34ab42128f8f0e46adc967ba73e0bc034cf56a79ef",
       "/evidence_refs/15/size_bytes": 7405,
       "/stages/pre_deploy/commit_review": {
         "__unknown": true,
@@ -390,7 +390,7 @@
       "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:561e05bc69cc01a82faf7749293e932aa076e6b25adf2ba0d3c8116da5b5f3e9",
+      "/stages/pre_deploy/events/digest": "sha256:3a872999188875c53c525b34ab42128f8f0e46adc967ba73e0bc034cf56a79ef",
       "/stages/pre_deploy/verdict/value": "undecided",
       "/verdict/value": "undecided"
     },
@@ -411,12 +411,12 @@
       "/coverage/evaluator_status_counts/opa/pass": 4,
       "/coverage/evaluator_status_counts/opa/fail": 1,
       "/events/2/evaluation/status": "fail",
-      "/evidence_refs/15/digest": "sha256:8653a669a64eac98c2d3840bffc4a3808089ba256331656c55c6e57d268353be",
+      "/evidence_refs/15/digest": "sha256:3848639500e43ccaf2a53f83806be81e2bd45b0dd456ef4a29ab8f09a78fbc94",
       "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
       "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
       "/stages/pre_deploy/coverage/status_counts/fail": 1,
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
-      "/stages/pre_deploy/events/digest": "sha256:8653a669a64eac98c2d3840bffc4a3808089ba256331656c55c6e57d268353be",
+      "/stages/pre_deploy/events/digest": "sha256:3848639500e43ccaf2a53f83806be81e2bd45b0dd456ef4a29ab8f09a78fbc94",
       "/stages/pre_deploy/verdict/value": "not_met",
       "/verdict/value": "not_met"
     },
@@ -470,7 +470,7 @@
       "/evidence_refs/3/path": "units/root/pre_deploy/contexts/sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/ref_id": "sha256-7657b36ca8c1992f32bb638a87aa7cd82d3f5aced2bfc4d47fe890d3c6aa88cc",
       "/evidence_refs/3/size_bytes": 1745,
-      "/evidence_refs/15/digest": "sha256:866a2dad23faaeb75e72c4fc5e2b75bfd1abd34d75a41c49ccadc1ec8b1c4421",
+      "/evidence_refs/15/digest": "sha256:7dd687bb2cb407ee2f6c7fef4d2e36b5b73de26da3886531a90e08cd91d5c7b7",
       "/evidence_refs/15/size_bytes": 7479,
       "/stages/pre_deploy/commit_review": {
         "__unknown": true,
@@ -480,7 +480,7 @@
       "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 2,
       "/stages/pre_deploy/coverage/status_counts/pass": 1,
       "/stages/pre_deploy/coverage/status_counts/unknown": 2,
-      "/stages/pre_deploy/events/digest": "sha256:866a2dad23faaeb75e72c4fc5e2b75bfd1abd34d75a41c49ccadc1ec8b1c4421",
+      "/stages/pre_deploy/events/digest": "sha256:7dd687bb2cb407ee2f6c7fef4d2e36b5b73de26da3886531a90e08cd91d5c7b7",
       "/stages/pre_deploy/verdict/value": "undecided",
       "/verdict/value": "undecided"
     },

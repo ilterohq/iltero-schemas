@@ -2053,8 +2053,8 @@ keep, so any two tools agree on what a record means.
   kept files.
 - Six new records of runs Iltero Platform opened, which the Iltero CLI wrote
   with the pinned evaluator. Each evaluates a bundle Iltero Platform served,
-  signed by the development key `dev-bundle-test-vectors`, which no shipped
-  trust set accepts.
+  signed by the development key `dev-signing-key-vectors`, which
+  `signing_keys/development.json` lists and no shipped trust set accepts.
 
   | Record | What it shows |
   | --- | --- |

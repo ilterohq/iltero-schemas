@@ -10,8 +10,9 @@ from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.iac.exception_evidence import SERVED_NOT_GIVEN
 from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.vectors.kept_files import kept_files_of_case
 from tests.conftest import VECTORS, documents
-from tests.records import valid_case_record
+from tests.records import every_kept_copy, valid_case_record
 
 EVERY_FAILURE = (
     "iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers_and_one_check_undecided"
@@ -25,18 +26,14 @@ def _files(case: str | None = None) -> KeptFiles:
     """The served exceptions every case's plan stage may have kept, and the evaluation inputs ``case``'s record kept:
     each in the case's own folder, or else in the folder of the record it is built on."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
-    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
+    kept += every_kept_copy("served-exceptions.json")
     inputs: dict[str, bytes] = {}
     if case is not None:
         cases = json.loads((VECTORS / "records_valid" / "iac" / "cases.json").read_text(encoding="utf-8"))
-        vector = next(c["vector"] for c in cases if c["name"] == case).removesuffix(".json")
-        # A case's kept files sit in the folder named after it, without its change type's prefix.
-        folders = [VECTORS / "kept_files" / "iac" / "cases" / case.removeprefix("iac_")]
-        folders.append(VECTORS / "kept_files" / vector)
+        by_path = kept_files_of_case(next(c for c in cases if c["name"] == case))
         for ref in valid_case_record("iac", case)["evidence_refs"]:
-            held = next((folder / ref["path"] for folder in folders if (folder / ref["path"]).is_file()), None)
-            if held is not None and "/contexts/" in ref["path"]:
-                inputs[digest(held.read_bytes())] = held.read_bytes()
+            if ref["path"] in by_path and "/contexts/" in ref["path"]:
+                inputs[digest(by_path[ref["path"]])] = by_path[ref["path"]]
     return KeptFiles(
         scanner_check_mappings={},
         observations={},

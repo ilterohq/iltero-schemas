@@ -26,7 +26,7 @@ from iltero_schemas.models.iac.exception_evidence import (
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from tests.conftest import VECTORS, documents
 from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
-from tests.records import ran_by_the_cli, served, set_pointer, valid_case_record
+from tests.records import every_kept_copy, ran_by_the_cli, served, set_pointer, valid_case_record
 
 WHERE = "stages.plan.scanners.local_exceptions"
 
@@ -170,7 +170,7 @@ def _kept_by_digest() -> dict[str, bytes]:
     """Every served exceptions vector as a stage keeps it, by its digest: its canonical bytes; and every copy a record
     of the vectors kept, as it kept it."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
-    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
+    kept += every_kept_copy("served-exceptions.json")
     return {digest(data): data for data in kept}
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+from pathlib import PurePosixPath
 from typing import Any
 
 from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID, SHIPPED_ASSERTIONS
@@ -26,6 +27,7 @@ from iltero_schemas.models.common.stages import REDACTED_INPUT_KIND, STAGES_THAT
 from iltero_schemas.models.common.subjects import subject_key
 from iltero_schemas.profiles import reads_part
 from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING, SHIPPED_MAPPING_DIGEST
+from iltero_schemas.vectors.kept_files import case_files_of, kept_files_of
 from tests.conftest import VECTORS
 
 # The unknown marker a stage keeps for a part its input carries when no facts were read from the server.
@@ -508,13 +510,24 @@ def set_pointer(document: Any, pointer: str, value: Any) -> None:
         document[int(last) if isinstance(document, list) else last] = value
 
 
-def kept_files_of(name: str) -> dict[str, bytes]:
+def every_kept_copy(file_name: str) -> list[bytes]:
+    """Every file named ``file_name`` (``served-exceptions.json``) that a record or case of the vectors kept."""
+    copies = []
+    for held in sorted(VECTORS.joinpath("kept_files").rglob("*.json")):
+        change_type = held.relative_to(VECTORS / "kept_files").parts[0]
+        stem = held.name.removesuffix(".json")
+        files = (
+            case_files_of({"name": stem, "vector": f"{change_type}/"})
+            if held.parent.name == "cases"
+            else kept_files_of(f"{change_type}/{stem}")
+        )
+        copies += [data for path, data in files.items() if PurePosixPath(path).name == file_name]
+    return copies
+
+
+def kept_files_by_digest(name: str) -> dict[str, bytes]:
     """The files the record ``name`` (``iac/local_run``) kept that the vectors hold, by the digest its register names
     each by."""
     record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
-    folder = VECTORS / "kept_files" / name
-    return {
-        ref["digest"]: (folder / ref["path"]).read_bytes()
-        for ref in record["evidence_refs"]
-        if (folder / ref["path"]).is_file()
-    }
+    files = kept_files_of(name)
+    return {ref["digest"]: files[ref["path"]] for ref in record["evidence_refs"] if ref["path"] in files}

@@ -138,3 +138,37 @@ def test_no_module_of_the_package_reaches_the_network_or_starts_a_program(path: 
         )
     ]
     assert not dynamic
+
+
+# The longest path, from the package folder, of a file the package ships. Windows refuses a path longer than 260
+# characters unless long paths are turned on, and an installed package sits below Python's site-packages folder in the
+# user's profile, often 60 to 90 characters deep: 160 leaves 100 for it.
+MAX_SHIPPED_PATH = 160
+# The repository's own folders, whose files a checkout writes below its folder, and the longest path of one of their
+# files from the repository folder: the package's limit and ``src/``, leaving about 35 characters for a CI checkout
+# folder such as ``D:/a/<repository>/<repository>/``.
+CHECKED_OUT_FOLDERS = ("src", "tests", "scripts", "docs", ".github")
+MAX_CHECKED_OUT_PATH = MAX_SHIPPED_PATH + len("src/")
+
+
+def test_every_file_the_package_ships_has_a_path_short_enough_for_windows() -> None:
+    too_long = [
+        path.relative_to(PACKAGE.parent).as_posix()
+        for path in PACKAGE.rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and len(path.relative_to(PACKAGE.parent).as_posix()) > MAX_SHIPPED_PATH
+    ]
+    assert too_long == []
+
+
+def test_every_file_of_the_repository_has_a_path_short_enough_for_a_checkout_on_windows() -> None:
+    too_long = [
+        path.relative_to(ROOT).as_posix()
+        for folder in CHECKED_OUT_FOLDERS
+        for path in (ROOT / folder).rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and len(path.relative_to(ROOT).as_posix()) > MAX_CHECKED_OUT_PATH
+    ]
+    assert too_long == []

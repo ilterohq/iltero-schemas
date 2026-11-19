@@ -1963,14 +1963,26 @@ keep, so any two tools agree on what a record means.
 - New conformance vectors for the files a record kept that a reader checks.
   `kept_files/`, split into `iac/` and `image/`, holds each record's kept
   evaluation inputs and, for a run Iltero Platform opened, the plan stage's
-  copy of the exceptions it was served (`served-exceptions.json`), in a
-  folder named after the record (`iac/local_run/`,
-  `image/local_run_deploy_rolled_out/`), at the paths its evidence register
-  names them by, and, under `iac/cases/`, the inputs of the `records_valid/`
-  case `iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers`,
-  whose production value is `false`, and the served exceptions copy of the
-  case
-  `iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check`.
+  copy of the exceptions it was served (`served-exceptions.json`), in one
+  JSON file per record, `<change type>/<record>.json`, and one per case
+  that keeps files of its own, `<change type>/cases/<case name without its
+  change type>.json`. Each maps the path the record's evidence register
+  names a file by to its content, `{"text": ...}` for UTF-8 or
+  `{"base64": ...}` otherwise; a consumer writes each file at its path
+  beside the record before it reads the record. `iltero_schemas.vectors`
+  reads them: `kept_files_of(vector)` gives a record's files (empty when it
+  kept none, `KeyError` for a record the vectors do not hold),
+  `case_files_of(case)` a case's own files, and `kept_files_of_case(case)`
+  the base record's files with the case's own in their place at the same
+  paths. Each raises `ValueError` for a path that is empty, absolute, holds
+  `..` or a backslash, an entry that is not exactly one of `text` or
+  `base64` as a string, base64 that does not decode, and a file that holds
+  anything beside `files`. A test checks that every such file holds only
+  `files`, sorted by path, and uses `base64` only for bytes that are not
+  UTF-8. Every file the package
+  ships has a path of at most 160 characters from the package's parent
+  folder, and every repository file at most 164, so the paths fit on
+  every platform.
   `records/iac/local_run.json` is the
   record the Iltero CLI writes, run with the pinned evaluator: it names the
   pinned OPA binary for `darwin-aarch64` and the digest of the bundle it
@@ -2068,11 +2080,10 @@ keep, so any two tools agree on what a record means.
   Their kept files are in `kept_files/`, and a test runs every check a
   reader makes over each record whose kept files the vectors hold:
   `kept_input_problems`, and `kept_file_problems` for an `iac_change`
-  record; the records kept by hand, whose `kept_files/` folders hold the
-  scanner files their plan stage kept and no evaluation input, are left
-  out. Another test checks that every file in every
-  `kept_files/` folder, a case's included, has the digest and size its
-  evidence register entry names. New `reports_expected/` cases cover the
+  record; the records kept by hand, whose kept files are the scanner files
+  their plan stage kept and no evaluation input, are left
+  out. Another test checks that every kept file, a case's included, has
+  the digest and size its evidence register entry names. New `reports_expected/` cases cover the
   exceptions of a run Iltero Platform opened that relies on no served
   exception and of one that relies on served exceptions, the scanner
   evidence of such a run with no scanner report, the approvals and commit
@@ -2095,7 +2106,7 @@ keep, so any two tools agree on what a record means.
   `iac/local_run_scanned_project.json` and `iac/local_run_postponed.json`.
   A case that keeps a copy of the exceptions served to its run, or
   evaluation inputs evaluated again for the facts it changes, has them in
-  `kept_files/<type>/cases/<case>/`. The three image deploy integrity cases
+  `kept_files/<type>/cases/<case>.json`. The three image deploy integrity cases
   about the build check report it at `events.2`, the expected case
   `approvals_a_server_opened_run_needed_and_did_not_get` names
   `iac/governed_run_deployed_without_server_facts.json`, and
@@ -2115,7 +2126,7 @@ keep, so any two tools agree on what a record means.
   result `CKV_AWS_16` is reported as suppressed and is covered by `ex-1` in
   the project's exceptions file. Its scanner report is the kept form of
   `scanner_reports/iac/rds_skipped_checkov.json`.
-  `kept_files/iac/local_run_suppressed_with_exception/` holds every file its
+  `kept_files/iac/local_run_suppressed_with_exception.json` holds every file its
   register names, its evaluation inputs and assertion index included, so
   the test of every reader check runs on it, scanner checks included.
   `scanner_evidence/iac/local_run_suppressed_with_exception/` holds the new

@@ -23,7 +23,7 @@ from iltero_schemas.models.iac.report_results import (
 from iltero_schemas.scanners.pin import SCANNER_PIN
 from tests.conftest import VECTORS, documents
 from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _governed_scanned, _record, kept_files
-from tests.records import kept_files_of, valid_case_record
+from tests.records import every_kept_copy, kept_files_by_digest, valid_case_record
 
 # A run the server opened whose plan stage relies on the exceptions the server served, and one that applies them and
 # relies on none.
@@ -35,7 +35,7 @@ def _served_files() -> KeptFiles:
     """Every served exceptions document of the vectors, by the digest of its canonical JSON, and every copy a record of
     the vectors kept, as it kept it, and no other file."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
-    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
+    kept += every_kept_copy("served-exceptions.json")
     return KeptFiles(
         scanner_check_mappings={},
         observations={},
@@ -200,11 +200,7 @@ def _expected_record(case: dict[str, Any]) -> tuple[dict[str, Any], KeptFiles]:
         # The files the record kept that the vectors hold, by its register, beside the served exceptions documents the
         # cases built on it keep.
         files = _served_files()
-        kept = (
-            kept_files_of(vector.removesuffix(".json"))
-            if (VECTORS / "kept_files" / change_type / name).is_dir()
-            else {}
-        )
+        kept = kept_files_by_digest(vector.removesuffix(".json"))
         named = {
             stage["served_exceptions"]["digest"] for stage in record["stages"].values() if stage["served_exceptions"]
         }

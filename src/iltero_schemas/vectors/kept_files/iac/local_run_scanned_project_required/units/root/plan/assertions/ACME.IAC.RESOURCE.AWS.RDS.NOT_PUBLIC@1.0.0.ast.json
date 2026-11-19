@@ -1,0 +1,28 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": false,
+      "op": "equal",
+      "path": "resource.after.publicly_accessible"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ACME.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "aws",
+        "resource_types": [
+          "aws_db_instance"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

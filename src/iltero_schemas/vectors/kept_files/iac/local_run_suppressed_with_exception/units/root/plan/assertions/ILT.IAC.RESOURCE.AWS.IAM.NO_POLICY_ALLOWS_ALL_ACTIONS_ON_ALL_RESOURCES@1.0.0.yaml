@@ -1,0 +1,23 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.RESOURCE.AWS.IAM.NO_POLICY_ALLOWS_ALL_ACTIONS_ON_ALL_RESOURCES
+  version: "1.0.0"
+  title: IAM policy does not allow every action on every resource
+  description: >-
+    An aws_iam_policy, aws_iam_role_policy, aws_iam_user_policy or aws_iam_group_policy the plan defines meets this
+    assertion when none of its statements allows Action "*" on Resource "*".
+  remediation: Replace the wildcard statement with the actions and resources the principal needs.
+spec:
+  change_type: iac_change
+  evidence:
+    stages: [plan]
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_iam_group_policy, aws_iam_policy, aws_iam_role_policy, aws_iam_user_policy]
+  # Iltero does not check this itself. A scanner such as Checkov does, and the
+  # scanner check mapping ILT.SCANNER_CHECKS.STARTER lists which scanner checks to use.
+  assert: null

@@ -1,0 +1,24 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_ENABLED
+  version: "1.0.0"
+  title: AWS Config recorder the change defines is on and records all supported resource types
+  description: >-
+    An AWS Config recorder status resource the plan defines meets this assertion when it turns recording on for a
+    recorder the plan also defines, and that recorder does not turn off recording of all supported resource types.
+    A recorder with no status resource in the change is not checked.
+  remediation: Set is_enabled to true on the recorder status and all_supported to true on its recorder.
+spec:
+  change_type: iac_change
+  evidence:
+    stages: [plan]
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_config_configuration_recorder_status]
+  # Iltero does not check this itself. A scanner such as Checkov does, and the
+  # scanner check mapping ILT.SCANNER_CHECKS.STARTER lists which scanner checks to use.
+  assert: null

@@ -29,8 +29,10 @@ NOT_RELIED_ON = "iac_record_of_a_run_the_server_opened_keeping_its_commit_review
 
 
 def _served_files() -> KeptFiles:
-    """Every served exceptions document of the vectors, by the digest of its canonical JSON, and no other file."""
+    """Every served exceptions document of the vectors, by the digest of its canonical JSON, and every copy a record of
+    the vectors kept, as it kept it, and no other file."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
+    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
     return KeptFiles(
         scanner_check_mappings={},
         observations={},

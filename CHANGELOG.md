@@ -2051,11 +2051,9 @@ keep, so any two tools agree on what a record means.
   Their kept files are in `kept_files/`, and a test runs every check a
   reader makes over each record whose kept files the vectors hold:
   `kept_input_problems`, and `kept_file_problems` for an `iac_change`
-  record; the two hand-kept records `iac/local_run_scanned` and
-  `iac/local_run_scanned_project_required`, whose `kept_files/` folders
-  hold the scanner files their plan stage kept (scanner check mapping
-  copies, reports, observations and the redacted plan) and no evaluation
-  input, are left out. Another test checks that every file in every
+  record; the records kept by hand, whose `kept_files/` folders hold the
+  scanner files their plan stage kept and no evaluation input, are left
+  out. Another test checks that every file in every
   `kept_files/` folder, a case's included, has the digest and size its
   evidence register entry names. New `reports_expected/` cases cover the
   exceptions of a run Iltero Platform opened that relies on no served
@@ -2066,12 +2064,35 @@ keep, so any two tools agree on what a record means.
   reference time of a plan stage that left a check undecided (`server`),
   and the exceptions of an image deploy, opened by Iltero Platform or by
   the tool (`not_in_activity`).
-- Fourteen `records_valid/`, `records_invalid/` and
-  `records_integrity_failed/` cases of runs Iltero Platform opened now build
-  on the Iltero CLI's records of such runs (`iac/governed_run.json`,
+- The `records_valid/`, `records_invalid/` and `records_integrity_failed/`
+  cases of runs Iltero Platform opened now build on the Iltero CLI's records
+  of such runs, `iac/governed_run.json`,
+  `iac/governed_run_every_failure_excepted.json`,
+  `iac/governed_run_every_failure_excepted_one_check_undecided.json`,
   `iac/governed_run_deployed.json` and
-  `image/governed_run_deploy_rolled_out.json`) instead of turning a record
-  of a run the tool opened into one.
+  `image/governed_run_deploy_rolled_out.json`, instead of turning a record
+  of a run the tool opened into one, and each keeps its outcome. Seven still
+  turn such a record into one: the two image build cases, since a build
+  names no environment, and five refused cases about scanner reports or a
+  postponed check, on `iac/local_run_scanned.json`,
+  `iac/local_run_scanned_project.json` and `iac/local_run_postponed.json`.
+  A case that keeps a copy of the exceptions served to its run, or
+  evaluation inputs evaluated again for the facts it changes, has them in
+  `kept_files/<type>/cases/<case>/`. The three image deploy integrity cases
+  about the build check report it at `events.2`, the expected case
+  `approvals_a_server_opened_run_needed_and_did_not_get` names
+  `iac/governed_run_deployed_without_server_facts.json`, and
+  `reports/iac/verification_report_commit_not_reviewed.json` gives
+  `approval_identity` as `claimed_by_record` with `approvals_listed`.
+- `kept_files/` also holds the files the hand-kept records
+  `iac/local_run_scanned.json`, `iac/local_run_scanned_project_required.json`
+  and `iac/local_run_suppressed_with_exception.json` kept to decide their
+  scanner verdicts: their assertion documents, scanner check mapping copies,
+  reports, observations, redacted plan and, for the last, its
+  `local-exceptions.yaml`. Their evaluation inputs were never written, so
+  the test of every reader check leaves the three out, and their assertion
+  index (`compiled.json`) is not shipped. A test checks that their scanner
+  verdicts follow from those files.
 - The `exceptions` result of an image deploy the tool opened is now
   `not_assessed` with `not_in_activity`, not `not_performed` with
   `run_opened_locally`, since `not_in_activity` comes first in

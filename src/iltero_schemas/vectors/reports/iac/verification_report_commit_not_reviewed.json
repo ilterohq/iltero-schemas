@@ -9,8 +9,8 @@
     "verified_at": "2026-09-22T13:10:00.000Z"
   },
   "record": {
-    "uuid": "935c0eaf-dad5-597c-b2e8-37afafd9577a",
-    "digest": "sha256:94a4b03510da7f422f42b0903dbd0911415756813c3dc46c2f89ae27d3b3ac24"
+    "uuid": "33a12410-4244-5439-9b2c-56dd6516b8a7",
+    "digest": "sha256:f886b1e3d376551bec8898855a6657d41a572e98fdedda2f3af37bc1fb003220"
   },
   "properties": {
     "integrity": {
@@ -24,8 +24,8 @@
       "detail": null
     },
     "approval_identity": {
-      "state": "could_not_decide",
-      "reason": "server_facts_unavailable",
+      "state": "claimed_by_record",
+      "reason": "approvals_listed",
       "detail": null
     },
     "bundle_provenance": {

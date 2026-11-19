@@ -1,0 +1,23 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.RECORDS_ALL_REGIONS
+  version: "1.0.0"
+  title: CloudTrail trail the change defines records all regions
+  description: >-
+    A CloudTrail trail the plan defines meets this assertion when it is a multi-region trail. It says nothing about
+    trails the change does not define, or whether an account has a trail at all.
+  remediation: Set is_multi_region_trail to true on the trail.
+spec:
+  change_type: iac_change
+  evidence:
+    stages: [plan]
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_cloudtrail]
+  # Iltero does not check this itself. A scanner such as Checkov does, and the
+  # scanner check mapping ILT.SCANNER_CHECKS.STARTER lists which scanner checks to use.
+  assert: null

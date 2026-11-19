@@ -7,7 +7,6 @@ from typing import Any
 
 from iltero_schemas.canonical.common.encoding import canonical_bytes, digest
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.common.kept_inputs import INPUT_NOT_GIVEN
 from iltero_schemas.models.iac.exception_evidence import SERVED_NOT_GIVEN
 from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
@@ -23,15 +22,21 @@ NOTHING_ELSE_OPEN = "iac_record_of_a_run_the_server_opened_whose_every_plan_fail
 
 
 def _files(case: str | None = None) -> KeptFiles:
-    """The served exceptions every case's plan stage may have kept, and the evaluation inputs ``case`` kept."""
+    """The served exceptions every case's plan stage may have kept, and the evaluation inputs ``case``'s record kept:
+    each in the case's own folder, or else in the folder of the record it is built on."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
-    # A case's kept inputs sit in the folder named after it, without its change type's prefix.
-    folder = VECTORS / "kept_files" / "iac" / "cases" / case.removeprefix("iac_") if case is not None else None
-    inputs = (
-        {}
-        if folder is None
-        else {digest(path.read_bytes()): path.read_bytes() for path in folder.rglob("*") if path.is_file()}
-    )
+    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
+    inputs: dict[str, bytes] = {}
+    if case is not None:
+        cases = json.loads((VECTORS / "records_valid" / "iac" / "cases.json").read_text(encoding="utf-8"))
+        vector = next(c["vector"] for c in cases if c["name"] == case).removesuffix(".json")
+        # A case's kept files sit in the folder named after it, without its change type's prefix.
+        folders = [VECTORS / "kept_files" / "iac" / "cases" / case.removeprefix("iac_")]
+        folders.append(VECTORS / "kept_files" / vector)
+        for ref in valid_case_record("iac", case)["evidence_refs"]:
+            held = next((folder / ref["path"] for folder in folders if (folder / ref["path"]).is_file()), None)
+            if held is not None and "/contexts/" in ref["path"]:
+                inputs[digest(held.read_bytes())] = held.read_bytes()
     return KeptFiles(
         scanner_check_mappings={},
         observations={},
@@ -52,13 +57,8 @@ def test_a_record_whose_every_claim_a_reader_works_out_again_has_no_problem() ->
     assert _problems(valid_case_record("iac", NOTHING_ELSE_OPEN), NOTHING_ELSE_OPEN) == []
 
 
-def test_a_record_whose_every_failure_is_excepted_and_one_check_undecided_has_no_problem_but_its_unkept_inputs() -> (
-    None
-):
-    # This case keeps no evaluation inputs: with its environment's production value stated, its undecided check would
-    # read as a failure, so no input fits it. Every other check a reader makes holds.
-    problems = _problems(valid_case_record("iac", EVERY_FAILURE))
-    assert problems and {what for _, what in problems} == {INPUT_NOT_GIVEN}
+def test_a_record_whose_every_failure_is_excepted_and_one_check_undecided_has_no_problem() -> None:
+    assert _problems(valid_case_record("iac", EVERY_FAILURE), EVERY_FAILURE) == []
 
 
 def test_an_exception_the_kept_copy_does_not_hold_is_listed() -> None:

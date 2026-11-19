@@ -1,0 +1,26 @@
+{
+  "assert": null,
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "evidence": {
+    "stages": [
+      "plan"
+    ]
+  },
+  "id": "ILT.IAC.RESOURCE.AWS.CLOUDTRAIL.VALIDATES_LOG_FILES",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "aws",
+        "resource_types": [
+          "aws_cloudtrail"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

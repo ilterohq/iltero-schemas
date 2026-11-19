@@ -1,0 +1,23 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.RESOURCE.AWS.CONFIG.RECORDER_RECORDS_GLOBAL_RESOURCES
+  version: "1.0.0"
+  title: AWS Config recorder the change defines records global resource types
+  description: >-
+    An AWS Config recorder the plan defines meets this assertion when its recording group includes global resource
+    types, such as IAM users, roles and policies.
+  remediation: Set include_global_resource_types to true in the recorder's recording_group.
+spec:
+  change_type: iac_change
+  evidence:
+    stages: [plan]
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: aws
+        resource_types: [aws_config_configuration_recorder]
+  # Iltero does not check this itself. A scanner such as Checkov does, and the
+  # scanner check mapping ILT.SCANNER_CHECKS.STARTER lists which scanner checks to use.
+  assert: null

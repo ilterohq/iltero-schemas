@@ -1,0 +1,289 @@
+{
+  "assert": {
+    "not": {
+      "any": [
+        {
+          "all": [
+            {
+              "predicate": {
+                "literal": [
+                  "aws_default_security_group",
+                  "aws_security_group"
+                ],
+                "op": "in",
+                "path": "resource.type"
+              }
+            },
+            {
+              "exists": {
+                "in": "resource.after.ingress",
+                "where": {
+                  "all": [
+                    {
+                      "any": [
+                        {
+                          "predicate": {
+                            "literal": "0.0.0.0/0",
+                            "op": "contains",
+                            "path": "item.cidr_blocks"
+                          }
+                        },
+                        {
+                          "predicate": {
+                            "literal": "::/0",
+                            "op": "contains",
+                            "path": "item.ipv6_cidr_blocks"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "any": [
+                        {
+                          "predicate": {
+                            "literal": [
+                              "-1",
+                              "all",
+                              "ALL"
+                            ],
+                            "op": "in",
+                            "path": "item.protocol"
+                          }
+                        },
+                        {
+                          "all": [
+                            {
+                              "predicate": {
+                                "literal": 22,
+                                "op": "less_than_or_equal",
+                                "path": "item.from_port"
+                              }
+                            },
+                            {
+                              "predicate": {
+                                "literal": 22,
+                                "op": "greater_than_or_equal",
+                                "path": "item.to_port"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "all": [
+                            {
+                              "predicate": {
+                                "literal": 3389,
+                                "op": "less_than_or_equal",
+                                "path": "item.from_port"
+                              }
+                            },
+                            {
+                              "predicate": {
+                                "literal": 3389,
+                                "op": "greater_than_or_equal",
+                                "path": "item.to_port"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "all": [
+            {
+              "predicate": {
+                "literal": "aws_security_group_rule",
+                "op": "equal",
+                "path": "resource.type"
+              }
+            },
+            {
+              "predicate": {
+                "literal": "ingress",
+                "op": "equal",
+                "path": "resource.after.type"
+              }
+            },
+            {
+              "any": [
+                {
+                  "predicate": {
+                    "literal": "0.0.0.0/0",
+                    "op": "contains",
+                    "path": "resource.after.cidr_blocks"
+                  }
+                },
+                {
+                  "predicate": {
+                    "literal": "::/0",
+                    "op": "contains",
+                    "path": "resource.after.ipv6_cidr_blocks"
+                  }
+                }
+              ]
+            },
+            {
+              "any": [
+                {
+                  "predicate": {
+                    "literal": [
+                      "-1",
+                      "all",
+                      "ALL"
+                    ],
+                    "op": "in",
+                    "path": "resource.after.protocol"
+                  }
+                },
+                {
+                  "all": [
+                    {
+                      "predicate": {
+                        "literal": 22,
+                        "op": "less_than_or_equal",
+                        "path": "resource.after.from_port"
+                      }
+                    },
+                    {
+                      "predicate": {
+                        "literal": 22,
+                        "op": "greater_than_or_equal",
+                        "path": "resource.after.to_port"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "predicate": {
+                        "literal": 3389,
+                        "op": "less_than_or_equal",
+                        "path": "resource.after.from_port"
+                      }
+                    },
+                    {
+                      "predicate": {
+                        "literal": 3389,
+                        "op": "greater_than_or_equal",
+                        "path": "resource.after.to_port"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "all": [
+            {
+              "predicate": {
+                "literal": "aws_vpc_security_group_ingress_rule",
+                "op": "equal",
+                "path": "resource.type"
+              }
+            },
+            {
+              "any": [
+                {
+                  "predicate": {
+                    "literal": "0.0.0.0/0",
+                    "op": "equal",
+                    "path": "resource.after.cidr_ipv4"
+                  }
+                },
+                {
+                  "predicate": {
+                    "literal": "::/0",
+                    "op": "equal",
+                    "path": "resource.after.cidr_ipv6"
+                  }
+                }
+              ]
+            },
+            {
+              "any": [
+                {
+                  "predicate": {
+                    "literal": [
+                      "-1",
+                      "all",
+                      "ALL"
+                    ],
+                    "op": "in",
+                    "path": "resource.after.ip_protocol"
+                  }
+                },
+                {
+                  "all": [
+                    {
+                      "predicate": {
+                        "literal": 22,
+                        "op": "less_than_or_equal",
+                        "path": "resource.after.from_port"
+                      }
+                    },
+                    {
+                      "predicate": {
+                        "literal": 22,
+                        "op": "greater_than_or_equal",
+                        "path": "resource.after.to_port"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "predicate": {
+                        "literal": 3389,
+                        "op": "less_than_or_equal",
+                        "path": "resource.after.from_port"
+                      }
+                    },
+                    {
+                      "predicate": {
+                        "literal": 3389,
+                        "op": "greater_than_or_equal",
+                        "path": "resource.after.to_port"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "aws",
+        "resource_types": [
+          "aws_default_security_group",
+          "aws_security_group",
+          "aws_security_group_rule",
+          "aws_vpc_security_group_ingress_rule"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": null
+}

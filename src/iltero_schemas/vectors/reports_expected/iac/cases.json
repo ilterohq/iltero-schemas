@@ -42,7 +42,7 @@
   {
     "name": "approvals_a_server_opened_run_needed_and_did_not_get",
     "record": {
-      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
     },
     "property": "approval_identity",
     "state": "could_not_decide",

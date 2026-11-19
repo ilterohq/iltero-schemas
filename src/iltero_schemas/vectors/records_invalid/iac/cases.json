@@ -3923,73 +3923,23 @@
   },
   {
     "name": "iac_record_keeping_a_commit_review_about_an_images_build",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/facts_source": "server",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/7/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/evidence_refs/7/size_bytes": 1984,
-      "/evidence_refs/18/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/evidence_refs/18/size_bytes": 5344,
-      "/evidence_refs/25/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/evidence_refs/25/size_bytes": 2891,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:00:00.000Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
-        },
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 157,
-        "source": null,
-        "storage_uri": null
+      "/coverage/assertions_required/value": 4,
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8ae9839621bf880a1ba6adba949a4258ed955325256d1a97d73ec9ddd333a8df",
+      "/coverage/assertions_evaluated": 4,
+      "/coverage/subjects_per_assertion": {
+        "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
+        "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+        "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
+        "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
       },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/events/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/post_deploy/execution/bundle/kind": "server",
-      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/coverage/status_counts/pass": 2,
+      "/coverage/evaluator_status_counts/opa/pass": 2,
+      "/coverage/evaluations": 4,
+      "/evidence_refs/24/digest": "sha256:ecf5fda33b98c15b2fa1427c9991c8a8b1609d9e88cf4e76b3444759b1ae5ac5",
+      "/evidence_refs/24/size_bytes": 5276,
+      "/stages/pre_deploy/assertions/count": 2,
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -3997,20 +3947,31 @@
         "repository": {
           "host": "github",
           "instance": "github.com",
-          "repository_id": "712400318"
+          "repository_id": "7001"
         },
-        "head_commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
+        "head_commit": "c84e7a1000000000000000000000000000000000",
         "outcome": "build_commit_not_verified_commit"
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/events/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/subject/environment/production": true
+      "/stages/pre_deploy/coverage/assertions_evaluated": 2,
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:ab0b8b20f5568d35dc7f8f3ce9faefbd381e72d139127c923e12207d16d8487c",
+      "/stages/pre_deploy/coverage/assertions_required/value": 2,
+      "/stages/pre_deploy/coverage/evaluations": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+        "ILT.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1
+      },
+      "/stages/pre_deploy/events/count": 2,
+      "/stages/pre_deploy/events/digest": "sha256:ecf5fda33b98c15b2fa1427c9991c8a8b1609d9e88cf4e76b3444759b1ae5ac5"
     },
-    "remove": [],
+    "remove": [
+      "/events/2",
+      "/evidence_refs/19",
+      "/evidence_refs/18",
+      "/evidence_refs/17",
+      "/evidence_refs/11"
+    ],
     "message": "a record of iac_change keeps no commit review that is build_commit_not_verified_commit"
   },
   {
@@ -4036,137 +3997,109 @@
   },
   {
     "name": "iac_record_evaluating_its_commit_review_check_twice_in_a_stage",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/evidence_status/value": "whole",
-      "/evidence_status/reasons": [],
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/assertions_required/required_assertion_digest": "sha256:af49146878a0783141af598e2363f13e7d2a387eb281a51491aeed2f5091540f",
-      "/coverage/assertions_evaluated": 3,
-      "/coverage/subjects_per_assertion": {
-        "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
-        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 2,
-        "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
-      },
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
-      "/events/1/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
-      "/events/2/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/events/2/provenance/facts_source": "server",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/7/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/evidence_refs/7/size_bytes": 1984,
-      "/evidence_refs/18/digest": "sha256:b9d2a984d8d91f4abc72834791aacff1be4fe067a1df35de956289a2f76adb6c",
-      "/evidence_refs/18/size_bytes": 5329,
-      "/evidence_refs/25/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/evidence_refs/25/size_bytes": 2891,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:00:00.000Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
+      "/events/-": {
+        "assertion": {
+          "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+          "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+          "version": "1.0.0"
         },
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 157,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/events/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/post_deploy/execution/bundle/kind": "server",
-      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/pre_deploy/commit_review": {
-        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
-        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "decided_at": "2026-09-16T18:29:30Z",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
-        "head_commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
-        "review_starting_point": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "set_by": {
-            "provider": "iltero",
-            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
+        "evaluation": {
+          "activity": "iac_change",
+          "observations": {
+            "predicates": [
+              {
+                "actual": "reviewed",
+                "clause": "assert",
+                "expected": "reviewed",
+                "index": 0,
+                "op": "equal",
+                "path": "commit_review.outcome",
+                "status": "true"
+              }
+            ],
+            "unknown": null,
+            "when": null
           },
-          "set_at": "2026-09-01T08:00:00Z",
-          "reason": "Branch protection required reviews from this commit on."
+          "policy_reason": "assert: true",
+          "stage": "pre_deploy",
+          "status": "pass",
+          "status_detail": null,
+          "status_reason": null
         },
-        "counted_since": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "earlier_reading": null
+        "observed_at": "2026-09-22T00:05:00.000Z",
+        "provenance": {
+          "assertion_source": "server_bundle",
+          "assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+          "bundle": {
+            "content_digest": "sha256:a5596bdbe92c43bf28bed39298fb3d164889e28003521ed754c4b637265a4b30",
+            "key_id": "dev-bundle-test-vectors",
+            "kind": "server",
+            "tarball_digest": "sha256:e9a362f7d430e12a2682b62bdf757db69e3014c6e88c58394a39a46cdaeaa234"
+          },
+          "checked_content": {
+            "digest": "sha256:f87c2b46c9ce51b817183804b5d6dce4461ddb11f63c863614ffa404967e844b",
+            "digest_version": "1",
+            "kind": "plan",
+            "tool": "terraform"
+          },
+          "compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
+          "compiler": {
+            "contract_digest": "sha256:7c63da6215288747267868dcd66a193fd05f456ff2d242bd34a29d24bb955210",
+            "contract_version": "0.1.0",
+            "install": "wheel",
+            "version": "1.0.0"
+          },
+          "evaluator": {
+            "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
+            "engine": "opa",
+            "limits": {
+              "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+              "evaluations_per_process": 64,
+              "max_output_bytes": 1054720,
+              "memory_limit": {
+                "bytes": 536870912,
+                "enforced": false,
+                "kind": "none"
+              },
+              "platform": "darwin-aarch64",
+              "timeout_seconds": 60
+            },
+            "version": "1.20.2"
+          },
+          "executor": {
+            "ci_run_id": "9876543",
+            "provider": "github_actions",
+            "type": "workload"
+          },
+          "facts_source": "server",
+          "input_digest": "sha256:1c3de3d4c898f5f7f806b5f8936fb4053865f8fbc295d95faf6f21a8373d4286",
+          "run": {
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+            "unit": "root"
+          },
+          "scanner_checks": null,
+          "source_commit": "c84e7a1000000000000000000000000000000000"
         },
-        "commits_counted": 3,
-        "outcome": "not_reviewed",
-        "commits_not_reviewed": [
-          {
-            "commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
-            "reason": "no_qualifying_approval"
-          }
-        ],
-        "commits_not_reviewed_list_complete": true
+        "subject": {
+          "identities": [
+            {
+              "scheme": "iltero_unit",
+              "scope": null,
+              "value": "root"
+            }
+          ],
+          "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+          "kind": "change"
+        }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:08382ff0834079643901dd3b19cb422ec1cf5db11ab41c489d4f58fc774da6bf",
-      "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 2
-      },
-      "/stages/pre_deploy/events/digest": "sha256:b9d2a984d8d91f4abc72834791aacff1be4fe067a1df35de956289a2f76adb6c",
-      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/verdict/value": "incomplete",
-      "/verdict/reason": "not_evaluated",
-      "/verdict/stage": "plan",
-      "/subject/environment/production": true
+      "/evidence_refs/24/digest": "sha256:d7526d0a34238234455ea50d95f0cfc89391ce47aa194168e7c8a5ab99301974",
+      "/evidence_refs/24/size_bytes": 9844,
+      "/stages/pre_deploy/events/count": 4,
+      "/stages/pre_deploy/events/digest": "sha256:d7526d0a34238234455ea50d95f0cfc89391ce47aa194168e7c8a5ab99301974",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/pass": 4
     },
     "remove": [],
     "message": "the pre_deploy stage evaluates ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED at most once, so it keeps one reading"
@@ -6037,226 +5970,18 @@
   },
   {
     "name": "iac_record_keeping_a_commit_review_decided_after_its_stage_observed_it",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/facts_source": "server",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/7/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/evidence_refs/7/size_bytes": 1984,
-      "/evidence_refs/18/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/evidence_refs/18/size_bytes": 5344,
-      "/evidence_refs/25/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/evidence_refs/25/size_bytes": 2891,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:00:00.000Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
-        },
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 157,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/events/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/post_deploy/execution/bundle/kind": "server",
-      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/pre_deploy/commit_review": {
-        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
-        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "decided_at": "2026-12-31T00:00:00Z",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
-        "head_commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
-        "review_starting_point": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "set_by": {
-            "provider": "iltero",
-            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
-          },
-          "set_at": "2026-09-01T08:00:00Z",
-          "reason": "Branch protection required reviews from this commit on."
-        },
-        "counted_since": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "earlier_reading": null
-        },
-        "commits_counted": 3,
-        "outcome": "not_reviewed",
-        "commits_not_reviewed": [
-          {
-            "commit": "3acee273d9bf4dbffca4653ff4f0d4ad8a6e2dd8",
-            "reason": "no_qualifying_approval"
-          }
-        ],
-        "commits_not_reviewed_list_complete": true
-      },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/events/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/subject/environment/production": true
+      "/stages/pre_deploy/commit_review/decided_at": "2026-12-31T00:00:00Z"
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review was decided no later than the stage observed it"
   },
   {
     "name": "iac_record_keeping_a_commit_review_of_another_commit",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/facts_source": "server",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/7/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/evidence_refs/7/size_bytes": 1984,
-      "/evidence_refs/18/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/evidence_refs/18/size_bytes": 5344,
-      "/evidence_refs/25/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/evidence_refs/25/size_bytes": 2891,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:00:00.000Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
-        },
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 157,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:5a77db92308c5a67724b46e4a56c3f281bc935e5aa508c5e551af198642bf66e",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/events/digest": "sha256:0a043a51d672eb81efb931db211f8d241fdc52537e8c94d1cd4a31894b94df99",
-      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/post_deploy/execution/bundle/kind": "server",
-      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/pre_deploy/commit_review": {
-        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
-        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "decided_at": "2026-09-16T18:29:30Z",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
-        "head_commit": "9d1f00a000000000000000000000000000000000",
-        "review_starting_point": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "set_by": {
-            "provider": "iltero",
-            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
-          },
-          "set_at": "2026-09-01T08:00:00Z",
-          "reason": "Branch protection required reviews from this commit on."
-        },
-        "counted_since": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "earlier_reading": null
-        },
-        "commits_counted": 3,
-        "outcome": "not_reviewed",
-        "commits_not_reviewed": [
-          {
-            "commit": "9d1f00a000000000000000000000000000000000",
-            "reason": "no_qualifying_approval"
-          }
-        ],
-        "commits_not_reviewed_list_complete": true
-      },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/events/digest": "sha256:3e2bbc02af5557cae12d9949b822d61fdf21d681205bfab021d007bc5ad7689d",
-      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/subject/environment/production": true
+      "/stages/pre_deploy/commit_review/head_commit": "9d1f00a000000000000000000000000000000000"
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the record's source commit, unless it is source_commit_not_verified_commit, which names the verified commit"
@@ -8583,150 +8308,37 @@
   },
   {
     "name": "iac_record_applying_served_exceptions_on_the_runners_clock",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/evidence_refs/24/size_bytes": 12102,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T13:00:13.568Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
-        },
-        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 157,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/subject/environment/production": true
+      "/stages/plan/reference_time/source": "runner_clock",
+      "/stages/plan/reference_time/value": "2026-09-22T00:00:00.000Z"
     },
     "remove": [],
     "message": "a stage that applies served exceptions reads its time from the server"
   },
   {
     "name": "iac_record_naming_a_failed_result_of_another_evaluator_as_excepted",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/evidence_refs/24/size_bytes": 12102,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T13:00:13.568Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
+      "/evidence_refs/26/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/evidence_refs/26/size_bytes": 1808,
+      "/stages/plan/served_exceptions/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/stages/plan/served_exceptions/excepted_failures/-": {
+        "assertion": {
+          "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+          "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+          "version": "1.0.0"
         },
-        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 1808,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": [
-          {
-            "assertion": {
-              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
-              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
-              "version": "1.0.0"
-            },
-            "resource": {
-              "scheme": "terraform_address",
-              "scope": {
-                "unit": "root"
-              },
-              "value": "aws_s3_bucket.logs"
-            },
-            "engine": "checkov",
-            "exception_id": "exc_0002"
-          }
-        ]
-      },
-      "/subject/environment/production": true
+        "engine": "checkov",
+        "exception_id": "exc_0002",
+        "resource": {
+          "scheme": "terraform_address",
+          "scope": {
+            "unit": "root"
+          },
+          "value": "aws_s3_bucket.logs"
+        }
+      }
     },
     "remove": [],
     "message": "each failed result a served exception covers is a failed result of the stage, by its assertion, resource and engine"
@@ -8787,86 +8399,29 @@
   },
   {
     "name": "iac_record_counting_more_failed_checks_excepted_than_it_has_failed_checks",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/failed_checks_excepted": 3,
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/evidence_refs/24/size_bytes": 12102,
-      "/evidence_refs/-": {
-        "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T13:00:13.568Z",
-        "collector": {
-          "tool": "iltero",
-          "version": "0.1.0"
+      "/coverage/failed_checks_excepted": 4,
+      "/evidence_refs/26/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/evidence_refs/26/size_bytes": 1808,
+      "/stages/plan/coverage/failed_checks_excepted": 4,
+      "/stages/plan/served_exceptions/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/stages/plan/served_exceptions/excepted_failures/-": {
+        "assertion": {
+          "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+          "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+          "version": "1.0.0"
         },
-        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
-        "media_type": "application/json",
-        "path": "units/root/plan/served-exceptions.json",
-        "redaction_policy": null,
-        "ref_id": "plan/served-exceptions.json",
-        "retention_until": null,
-        "size_bytes": 1808,
-        "source": null,
-        "storage_uri": null
-      },
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/failed_checks_excepted": 3,
-      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": [
-          {
-            "assertion": {
-              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
-              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
-              "version": "1.0.0"
-            },
-            "resource": {
-              "scheme": "terraform_address",
-              "scope": {
-                "unit": "root"
-              },
-              "value": "aws_s3_bucket.logs"
-            },
-            "engine": "opa",
-            "exception_id": "exc_0002"
-          }
-        ]
-      },
-      "/subject/environment/production": true
+        "engine": "opa",
+        "exception_id": "exc_0002",
+        "resource": {
+          "scheme": "terraform_address",
+          "scope": {
+            "unit": "root"
+          },
+          "value": "aws_s3_bucket.logs"
+        }
+      }
     },
     "remove": [],
     "message": "a stage counts no more failed checks as excepted than it has failed checks"
@@ -9250,38 +8805,12 @@
   },
   {
     "name": "iac_record_of_a_run_the_server_opened_applying_the_shipped_scanner_check_mapping",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/evidence_refs": [
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "terraform_plan",
             "version": "0.1.0"
@@ -9305,7 +8834,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9326,112 +8855,129 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "digest": "sha256:4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "path": "units/root/plan/contexts/sha256-4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "ref_id": "sha256-4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "retention_until": null,
-          "size_bytes": 13393,
+          "size_bytes": 13333,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "digest": "sha256:d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "path": "units/root/plan/contexts/sha256-d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "ref_id": "sha256-d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "retention_until": null,
-          "size_bytes": 13387,
+          "size_bytes": 13327,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "digest": "sha256:0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "path": "units/root/plan/contexts/sha256-0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "ref_id": "sha256-0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "retention_until": null,
-          "size_bytes": 13396,
+          "size_bytes": 13336,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "digest": "sha256:be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "path": "units/root/plan/contexts/sha256-be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "ref_id": "sha256-be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "retention_until": null,
-          "size_bytes": 13394,
+          "size_bytes": 13334,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "digest": "sha256:f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "path": "units/root/plan/contexts/sha256-f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "ref_id": "sha256-f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "retention_until": null,
-          "size_bytes": 15332,
+          "size_bytes": 15272,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
+          "collector": {
+            "tool": "iltero",
+            "version": "0.1.0"
+          },
+          "digest": "sha256:05a9909a746fa74ed55dbe60a6310eb12712425224dc6b388feddf78b7afd107",
+          "media_type": "application/vnd.openpolicyagent.bundle",
+          "path": "units/root/plan/bundle.tar.gz",
+          "redaction_policy": null,
+          "ref_id": "plan/bundle.tar.gz",
+          "retention_until": null,
+          "size_bytes": 7223,
+          "source": null,
+          "storage_uri": null
+        },
+        {
+          "canonicalization": null,
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9448,7 +8994,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9465,7 +9011,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9482,7 +9028,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9499,7 +9045,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9516,7 +9062,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9533,7 +9079,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9550,7 +9096,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9567,7 +9113,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9584,7 +9130,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9601,7 +9147,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9618,7 +9164,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9635,7 +9181,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9652,7 +9198,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9669,7 +9215,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9686,7 +9232,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9703,46 +9249,46 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:5284c1a338769c6e692a945222009b6b67bb09699a0c793c4b76581fd848d2f1",
+          "digest": "sha256:7b35653d980e9f4ab02cf3336a05a5ee4618722c2eac637c06154398d9356496",
           "media_type": "application/json",
           "path": "units/root/plan/assertions/compiled.json",
           "redaction_policy": null,
           "ref_id": "plan/compiled.json",
           "retention_until": null,
-          "size_bytes": 5175,
+          "size_bytes": 5256,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
+          "digest": "sha256:960639f588a360a4f1853d22e0cc139d50fb76c7fc8ce1f89f2768b35feeb804",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 12102,
+          "size_bytes": 12429,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+          "digest": "sha256:f9c5db21d30fae556a00dcd04ab923cb7ed9c643003d940fde082d444b7a9005",
           "media_type": "application/json",
           "path": "units/root/plan/served-exceptions.json",
           "redaction_policy": null,
@@ -9754,7 +9300,7 @@
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9765,13 +9311,13 @@
           "redaction_policy": null,
           "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "checkov",
             "version": "0.1.0"
@@ -9786,7 +9332,7 @@
           },
           "ref_id": "sha256-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": {
             "name": "scanner-report.json",
             "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
@@ -9795,7 +9341,7 @@
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero-observations",
             "version": "0.1.0"
@@ -9810,7 +9356,7 @@
           },
           "ref_id": "sha256-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": {
             "name": "scanner-report.json",
             "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
@@ -9818,14 +9364,6 @@
           "storage_uri": null
         }
       ],
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
       "/stages/plan/scanners": {
         "scanner_check_mappings": [
           {
@@ -9860,51 +9398,19 @@
           }
         ],
         "local_exceptions": null
-      },
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/subject/environment/production": true
+      }
     },
     "remove": [],
     "message": "a record of a run the server opened applies only the scanner check mapping it served"
   },
   {
     "name": "iac_record_of_a_run_the_server_opened_applying_a_project_mapping_beside_the_shipped_one",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run.json",
     "set": {
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/evidence_refs": [
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "terraform_plan",
             "version": "0.1.0"
@@ -9928,7 +9434,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -9949,112 +9455,129 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "digest": "sha256:4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "path": "units/root/plan/contexts/sha256-4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-d2ef3c1f47df733425bddeb581012a07b0830ae2b4c7094eda10a81a3224f556",
+          "ref_id": "sha256-4f148647b5a0e7f72bd886ca769f5bc260bf4c434f32701fe398d841755a9710",
           "retention_until": null,
-          "size_bytes": 13393,
+          "size_bytes": 13333,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "digest": "sha256:d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "path": "units/root/plan/contexts/sha256-d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-96051286858610b062ef967309489754b9528169a0ccc3bd7ac3096f457fa9fc",
+          "ref_id": "sha256-d56155f343f8c966cd3a685df5523fff8523f543cee8d2f0f16638503bde49c7",
           "retention_until": null,
-          "size_bytes": 13387,
+          "size_bytes": 13327,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "digest": "sha256:0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "path": "units/root/plan/contexts/sha256-0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-fe149e6a3c28de86acd41730ab7eec64262f7820e04cb77cffaffdf78ceb57fb",
+          "ref_id": "sha256-0140dcd43d775f1443b97c06e9dbaac85a8d6807eba53d49bd984a73597ed394",
           "retention_until": null,
-          "size_bytes": 13396,
+          "size_bytes": 13336,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "digest": "sha256:be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "path": "units/root/plan/contexts/sha256-be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-34ff3d079ae457e8e4a078205da6afb715ad80327df728e14b54ae984e23295e",
+          "ref_id": "sha256-be2712e65e4fa0ab5fe37e4b1f9602177b904215c68355b31f1a8c7585e87d14",
           "retention_until": null,
-          "size_bytes": 13394,
+          "size_bytes": 13334,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "digest": "sha256:f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "path": "units/root/plan/contexts/sha256-f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "redaction_policy": {
             "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
-          "ref_id": "sha256-8ab33fe1597bf8afd259c05f4af4ee6bc5485b069401df11e81e56db20d05aba",
+          "ref_id": "sha256-f60e26114058cbbadae7e7ea3d2bacb79fad9e125ab371da655c7ca9e2168b14",
           "retention_until": null,
-          "size_bytes": 15332,
+          "size_bytes": 15272,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
+          "collector": {
+            "tool": "iltero",
+            "version": "0.1.0"
+          },
+          "digest": "sha256:05a9909a746fa74ed55dbe60a6310eb12712425224dc6b388feddf78b7afd107",
+          "media_type": "application/vnd.openpolicyagent.bundle",
+          "path": "units/root/plan/bundle.tar.gz",
+          "redaction_policy": null,
+          "ref_id": "plan/bundle.tar.gz",
+          "retention_until": null,
+          "size_bytes": 7223,
+          "source": null,
+          "storage_uri": null
+        },
+        {
+          "canonicalization": null,
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10071,7 +9594,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10088,7 +9611,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10105,7 +9628,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10122,7 +9645,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10139,7 +9662,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10156,7 +9679,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10173,7 +9696,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10190,7 +9713,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10207,7 +9730,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10224,7 +9747,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10241,7 +9764,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10258,7 +9781,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10275,7 +9798,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10292,7 +9815,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10309,7 +9832,7 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10326,46 +9849,46 @@
         },
         {
           "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:5284c1a338769c6e692a945222009b6b67bb09699a0c793c4b76581fd848d2f1",
+          "digest": "sha256:7b35653d980e9f4ab02cf3336a05a5ee4618722c2eac637c06154398d9356496",
           "media_type": "application/json",
           "path": "units/root/plan/assertions/compiled.json",
           "redaction_policy": null,
           "ref_id": "plan/compiled.json",
           "retention_until": null,
-          "size_bytes": 5175,
+          "size_bytes": 5256,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
+          "digest": "sha256:960639f588a360a4f1853d22e0cc139d50fb76c7fc8ce1f89f2768b35feeb804",
           "media_type": "application/json",
           "path": "units/root/plan/events.json",
           "redaction_policy": null,
           "ref_id": "plan/events.json",
           "retention_until": null,
-          "size_bytes": 12102,
+          "size_bytes": 12429,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
           },
-          "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+          "digest": "sha256:f9c5db21d30fae556a00dcd04ab923cb7ed9c643003d940fde082d444b7a9005",
           "media_type": "application/json",
           "path": "units/root/plan/served-exceptions.json",
           "redaction_policy": null,
@@ -10377,7 +9900,7 @@
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10388,7 +9911,7 @@
           "redaction_policy": null,
           "ref_id": "scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": {
             "name": "scanner-check-mapping.yaml",
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
@@ -10397,7 +9920,7 @@
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero",
             "version": "0.1.0"
@@ -10408,13 +9931,13 @@
           "redaction_policy": null,
           "ref_id": "shipped-scanner-check-mapping.json",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": null,
           "storage_uri": null
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "checkov",
             "version": "0.1.0"
@@ -10429,7 +9952,7 @@
           },
           "ref_id": "sha256-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": {
             "name": "scanner-report.json",
             "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
@@ -10438,7 +9961,7 @@
         },
         {
           "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
+          "collected_at": "2026-09-22T00:00:00.000Z",
           "collector": {
             "tool": "iltero-observations",
             "version": "0.1.0"
@@ -10453,7 +9976,7 @@
           },
           "ref_id": "sha256-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
           "retention_until": null,
-          "size_bytes": 61075,
+          "size_bytes": 61317,
           "source": {
             "name": "scanner-report.json",
             "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
@@ -10461,14 +9984,6 @@
           "storage_uri": null
         }
       ],
-      "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
-      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
-      "/stages/plan/execution/bundle/kind": "server",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/reference_time/source": "server",
       "/stages/plan/scanners": {
         "scanner_check_mappings": [
           {
@@ -10514,13 +10029,7 @@
           }
         ],
         "local_exceptions": null
-      },
-      "/stages/plan/served_exceptions": {
-        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
-        "copy_path": "units/root/plan/served-exceptions.json",
-        "excepted_failures": []
-      },
-      "/subject/environment/production": true
+      }
     },
     "remove": [],
     "message": "a record of a run the server opened applies only the scanner check mapping it served"

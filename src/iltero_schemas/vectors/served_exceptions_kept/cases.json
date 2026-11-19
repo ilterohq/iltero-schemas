@@ -5,7 +5,9 @@
     "set_record": {},
     "kept": {
       "vector": "plan.json",
-      "set": {},
+      "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+      },
       "form": "canonical"
     },
     "problems": []
@@ -28,7 +30,9 @@
     "set_record": {},
     "kept": {
       "vector": "plan.json",
-      "set": {},
+      "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+      },
       "form": "indented"
     },
     "problems": [
@@ -45,6 +49,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/spec/exceptions/0/requester_and_run_starter": 1152921504606846976
       },
       "form": "compact"
@@ -63,6 +68,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/kind": "LocalExceptions"
       },
       "form": "canonical"
@@ -99,6 +105,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/metadata/stage": "pre_deploy"
       },
       "form": "canonical"
@@ -117,6 +124,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/spec/exceptions/1/scope/environment": "staging"
       },
       "form": "canonical"
@@ -136,7 +144,9 @@
     },
     "kept": {
       "vector": "plan.json",
-      "set": {},
+      "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+      },
       "form": "canonical"
     },
     "problems": [
@@ -154,7 +164,9 @@
     },
     "kept": {
       "vector": "plan.json",
-      "set": {},
+      "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+      },
       "form": "canonical"
     },
     "problems": [
@@ -171,6 +183,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/spec/exceptions/1/approved_at": "2026-09-23T00:00:00Z"
       },
       "form": "canonical"
@@ -189,6 +202,7 @@
     "kept": {
       "vector": "plan.json",
       "set": {
+        "/metadata/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
         "/spec/exceptions/1/scope/assertion/digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       },
       "form": "canonical"

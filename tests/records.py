@@ -219,6 +219,7 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
         for part in ("approvals", "commit_review"):
             if isinstance(stage.get(part), dict) and stage[part].get("reason") == NOT_READ_BY_THE_STAGE["reason"]:
                 stage[part] = copy.deepcopy(UNKNOWN)
+    from_the_servers_bundle(served_document)
     applying = ACTIVITIES[served_document["change"]["activity"]].stage_that_applies_served_exceptions
     kept = served_document["stages"].get(applying.value) if applying is not None else None
     if kept is not None and kept.get("served_exceptions") is None:
@@ -242,6 +243,65 @@ def ran_by_the_cli(document: dict[str, Any]) -> None:
             evaluator.update(digest=CLI_RAN_DIGEST, platform="linux-x86_64")
             evaluator["python_version"] = "cp312" if evaluator["engine"] in INSTALLED_AS_PYTHON_PACKAGES else None
     keep_events_files(document)
+
+
+# The bundle and the scanner check mapping the server serves a run it opened, as the vectors' records of such runs name
+# them.
+SERVER_BUNDLE: dict[str, Any] = {
+    "kind": "server",
+    "tarball_digest": "sha256:" + "5" * 64,
+    "content_digest": "sha256:" + "6" * 64,
+    "key_id": "iltero-bundle-2026-09",
+}
+SERVED_MAPPING_DESCRIPTOR_DIGEST = "sha256:" + "7" * 64
+# The scanner check mapping the server serves: one catalog holding the project's entries and the shipped ones.
+SERVED_MAPPING: dict[str, Any] = json.loads(
+    (VECTORS / "scanner_check_mappings" / "iac" / "served_catalog.json").read_text(encoding="utf-8")
+)
+SERVED_MAPPING_USED: dict[str, Any] = {
+    "id": SERVED_MAPPING["metadata"]["id"],
+    "version": SERVED_MAPPING["metadata"]["version"],
+    "origin": "served",
+    "file_path": None,
+    "digest": encoding.digest_of(SERVED_MAPPING),
+    "copy_path": "units/root/plan/served-scanner-check-mapping.json",
+    "assertions_mapped": len(SERVED_MAPPING["spec"]["assertion_mappings"]),
+    "descriptor_digest": SERVED_MAPPING_DESCRIPTOR_DIGEST,
+    "key_id": SERVER_BUNDLE["key_id"],
+}
+
+
+def from_the_servers_bundle(document: dict[str, Any]) -> None:
+    """Make every assertion ``document`` evaluates one from the server's bundle, as a run the server opened requires:
+    each evaluation names the server's bundle, and each stage evaluates over it and applies only the scanner check
+    mapping the server served, whose copy the register lists in place of the copies it no longer applies."""
+    for stage in document["stages"].values():
+        bundle = stage["execution"].get("bundle")
+        if bundle is not None:
+            bundle.update(SERVER_BUNDLE)
+        scanners = stage.get("scanners")
+        if scanners is None:
+            continue
+        applied = {used["copy_path"] for used in scanners["scanner_check_mappings"]}
+        scanners["scanner_check_mappings"] = [dict(SERVED_MAPPING_USED)]
+        refs = document["evidence_refs"]
+        # The served copy takes the place of the last copy it replaces, so the register entries before it keep theirs.
+        at = max(i for i, ref in enumerate(refs) if ref["path"] in applied)
+        served_ref = {
+            **copy.deepcopy(refs[at]),
+            "ref_id": SERVED_MAPPING_USED["copy_path"].rsplit("/", 1)[-1],
+            "path": SERVED_MAPPING_USED["copy_path"],
+            "digest": SERVED_MAPPING_USED["digest"],
+            "size_bytes": len(canonical_bytes(SERVED_MAPPING)),
+            "source": None,
+        }
+        refs[at] = served_ref
+        document["evidence_refs"] = [ref for ref in refs if ref is served_ref or ref["path"] not in applied]
+    for event in document["events"]:
+        provenance = event["provenance"]
+        provenance["assertion_source"] = "server_bundle"
+        if provenance.get("bundle") is not None:
+            provenance["bundle"] = dict(SERVER_BUNDLE)
 
 
 def keep_no_served_exceptions(document: dict[str, Any]) -> None:
@@ -312,6 +372,8 @@ SHIPPED_MAPPING_USED: dict[str, Any] = {
     "digest": SHIPPED_MAPPING_DIGEST,
     "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
     "assertions_mapped": len(SHIPPED_MAPPING.spec.assertion_mappings),
+    "descriptor_digest": None,
+    "key_id": None,
 }
 
 # A plan stage's scanners block: one Checkov report read under a project's scanner checks entries and the shipped
@@ -326,6 +388,8 @@ SCANNERS: dict[str, Any] = {
             "digest": "sha256:" + "b" * 64,
             "copy_path": "units/root/plan/scanner-check-mapping.json",
             "assertions_mapped": 2,
+            "descriptor_digest": None,
+            "key_id": None,
         },
         SHIPPED_MAPPING_USED,
     ],
@@ -375,6 +439,14 @@ def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> Non
         document["evidence_refs"].append({**entry, "redaction_policy": redaction_policy})
 
 
+def remove_pointer(document: Any, pointer: str) -> None:
+    """Remove the value at the JSON Pointer ``pointer`` of ``document``."""
+    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
+    for token in parents:
+        document = document[int(token)] if isinstance(document, list) else document[token]
+    del document[int(last) if isinstance(document, list) else last]
+
+
 def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
     """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
     cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
@@ -382,6 +454,8 @@ def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
     document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
     for pointer, value in case["set"].items():
         set_pointer(document, pointer, copy.deepcopy(value))
+    for pointer in case["remove"]:
+        remove_pointer(document, pointer)
     return document
 
 

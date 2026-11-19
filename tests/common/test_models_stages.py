@@ -22,6 +22,7 @@ from tests.records import (
     UNKNOWN,
     VERIFIED,
     add_built_in,
+    from_the_servers_bundle,
     keep_events_files,
     keep_no_served_exceptions,
     served,
@@ -401,6 +402,8 @@ def test_the_environment_policy_of_a_run_the_server_opened_can_leave_out_post_ve
     for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
     keep_no_served_exceptions(scoped)
+    from_the_servers_bundle(scoped)
+    keep_events_files(scoped)
     (left_out,) = CAR.model_validate(scoped, context=_READER).out_of_scope
     assert left_out.reason == "environment_policy"
 

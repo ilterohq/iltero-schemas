@@ -263,18 +263,27 @@ class ScannerCheckMappingUsed(StrictModel):
 
     id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
     version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    origin: Literal["shipped", "file"]
-    # The path, in the project, of the file it was read from; absent for the shipped mapping.
+    # ``shipped``: the mapping this package ships; ``file``: the project's own; ``served``: the mapping the server that
+    # opened the run served it, signed (``ScannerCheckMappingDescriptor``).
+    origin: Literal["shipped", "file", "served"]
+    # The path, in the project, of the file it was read from; absent for the shipped and the served mapping.
     file_path: ProjectPath | None
     digest: Digest
     copy_path: MemberPath
     assertions_mapped: Count
+    # The digest of the signed descriptor the server served the mapping in, and the key that signed it: present exactly
+    # for a served mapping, so the server compares the three values with the ones it pinned when it opened the run.
+    descriptor_digest: Digest | None
+    key_id: Identifier | None
 
     @model_validator(mode="after")
     def _a_file_is_named(self) -> ScannerCheckMappingUsed:
-        if (self.file_path is None) != (self.origin == "shipped"):
-            raise ValueError("a scanner check mapping read from a file names it, and the shipped mapping names none")
-        if self.origin == "file" and self.id == STARTER_MAPPING_ID:
+        if (self.file_path is not None) != (self.origin == "file"):
+            raise ValueError("a scanner check mapping read from a file names it, and no other mapping names one")
+        served = self.origin == "served"
+        if (self.descriptor_digest is not None) != served or (self.key_id is not None) != served:
+            raise ValueError("a scanner check mapping names its descriptor and signing key exactly when it was served")
+        if self.origin != "shipped" and self.id == STARTER_MAPPING_ID:
             raise ValueError(f"only the shipped scanner check mapping is {STARTER_MAPPING_ID}")
         if self.origin == "file":
             check_project_id(self.id)
@@ -309,10 +318,10 @@ class Scanners(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> Scanners:
-        if [used.origin for used in self.scanner_check_mappings] not in (["shipped"], ["file", "shipped"]):
+        if [used.origin for used in self.scanner_check_mappings] not in (["shipped"], ["file", "shipped"], ["served"]):
             raise ValueError(
-                "a stage always applies the scanner check mapping Iltero ships, and at most one of the project's own, "
-                "listed first"
+                "a stage applies the scanner check mapping Iltero ships, with at most one of the project's own listed "
+                "first, or only the one the server served"
             )
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")

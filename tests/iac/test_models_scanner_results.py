@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+from collections.abc import Callable
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -17,6 +18,7 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.coverage import EvaluatorDidNotDecideGap
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
+from iltero_schemas.models.common.scanners import ILTERO_CLI
 from iltero_schemas.models.common.verdicts import stage_scanner_requirements, stage_verdicts
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
@@ -37,9 +39,13 @@ CASES: list[tuple[str, dict[str, Any]]] = [
 ]
 
 
-# The vector each scanner check mapping the scanned record applies is a copy of: the project's own, then the shipped
-# one.
-_SCANNER_CHECK_MAPPING_FILES = {"file": "iac/payments.json", "shipped": "iac/starter.json"}
+# The vector each scanner check mapping a scanned record applies is a copy of: the project's own, the shipped one, or
+# the one the server served.
+_SCANNER_CHECK_MAPPING_FILES = {
+    "file": "iac/payments.json",
+    "shipped": "iac/starter.json",
+    "served": "iac/served_catalog.json",
+}
 
 
 def _record(name: str) -> dict[str, Any]:
@@ -451,3 +457,73 @@ def test_a_report_whose_kept_observations_name_another_runner_is_listed() -> Non
     ran_by_the_cli(record)
     problems = _problems(record, kept_files(record))
     assert any(what == "names observations of another report" for _, what in problems)
+
+
+def _governed_scanned() -> tuple[dict[str, Any], dict[str, Any]]:
+    """The scanned record as a record of a run the server opened, and the files its plan stage kept: the server's
+    scanner check mapping, and observations of reports the Iltero CLI ran."""
+    record = served(copy.deepcopy(SCANNED))
+    ran_by_the_cli(record)
+    files = kept_files(record)
+    for observations in files["observations"].values():
+        observations["ran_by"] = ILTERO_CLI
+    return record, files
+
+
+def test_a_scanner_verdict_of_a_run_the_server_opened_follows_from_the_served_mapping_its_stage_kept() -> None:
+    record, files = _governed_scanned()
+    assert [used["origin"] for used in record["stages"]["plan"]["scanners"]["scanner_check_mappings"]] == ["served"]
+    assert _problems(record, files) == []
+
+
+def _with_served_copy(
+    record: dict[str, Any],
+    files: dict[str, Any],
+    change: Callable[[list[dict[str, Any]]], list[dict[str, Any]]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """``record`` and ``files`` with the served mapping's assertion mappings changed by ``change``, the stage and its
+    register naming the changed copy."""
+    used = record["stages"]["plan"]["scanners"]["scanner_check_mappings"][0]
+    served_copy = copy.deepcopy(files["scanner_check_mappings"][used["copy_path"]])
+    served_copy["spec"]["assertion_mappings"] = change(served_copy["spec"]["assertion_mappings"])
+    used["digest"] = digest_of(served_copy)
+    used["assertions_mapped"] = len(served_copy["spec"]["assertion_mappings"])
+    files["scanner_check_mappings"][used["copy_path"]] = served_copy
+    for ref in record["evidence_refs"]:
+        if ref["path"] == used["copy_path"]:
+            ref["digest"] = used["digest"]
+    return record, files
+
+
+def test_a_served_mapping_copy_that_does_not_hold_the_entry_a_verdict_names_is_listed() -> None:
+    record, files = _governed_scanned()
+    at, event = next((i, e) for i, e in enumerate(record["events"]) if e["provenance"]["scanner_checks"] is not None)
+    record, files = _with_served_copy(
+        record,
+        files,
+        lambda mappings: [entry for entry in mappings if entry["assertion"] != event["assertion"]],
+    )
+    assert [
+        f"events.{at}.provenance.scanner_checks",
+        "names no scanner checks entry of its stage's scanner check mappings",
+    ] in _problems(record, files)
+
+
+def test_a_served_mapping_entry_of_another_assertion_document_is_listed() -> None:
+    record, files = _governed_scanned()
+    at, event = next((i, e) for i, e in enumerate(record["events"]) if e["provenance"]["scanner_checks"] is not None)
+
+    def _other_version(mappings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {**entry, "assertion": {**entry["assertion"], "version": "9.9.9"}}
+            if entry["assertion"] == event["assertion"]
+            else entry
+            for entry in mappings
+        ]
+
+    record, files = _with_served_copy(record, files, _other_version)
+    # An entry is named by a digest over the assertion it decides as well, so it names no entry the copy holds.
+    assert [
+        f"events.{at}.provenance.scanner_checks",
+        "names no scanner checks entry of its stage's scanner check mappings",
+    ] in _problems(record, files)

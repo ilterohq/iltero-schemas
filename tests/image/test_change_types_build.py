@@ -34,7 +34,7 @@ from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.checked_content import CheckedImage
 from iltero_schemas.models.common.server_facts import AttestationNotSent, VerifiedAttestation
 from tests.conftest import VECTORS
-from tests.records import RECORD
+from tests.records import RECORD, from_the_servers_bundle, keep_events_files
 
 BUILD: dict[str, Any] = json.loads((VECTORS / "records" / "image" / "local_run_build.json").read_text(encoding="utf-8"))
 # The evaluation input the record's report check read, as its evidence register keeps it.
@@ -167,6 +167,8 @@ def _opened_by_server(record: dict[str, Any]) -> dict[str, Any]:
         coverage["assertions_required"]["origin"] = "server_pinned"
     for event in record["events"]:
         event["provenance"]["facts_source"] = "server"
+    from_the_servers_bundle(record)
+    keep_events_files(record)
     return record
 
 

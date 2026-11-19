@@ -2079,7 +2079,9 @@
             "file_path": null,
             "digest": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df",
             "copy_path": "units/root/plan/scanner-check-mapping.json",
-            "assertions_mapped": 9
+            "assertions_mapped": 9,
+            "descriptor_digest": null,
+            "key_id": null
           }
         ],
         "scanner_requirements": [

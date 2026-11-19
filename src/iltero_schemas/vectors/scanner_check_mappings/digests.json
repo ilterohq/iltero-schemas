@@ -1,4 +1,5 @@
 {
   "iac/payments.json": "sha256:2b9f1298134dedf6cba699372ee1645256cf1e9356a3cb23401e821dd19509cb",
+  "iac/served_catalog.json": "sha256:46bf8fbf1f3e35aec51e8b20d72f545d24d2c31647452ebb518123b80ba63e16",
   "iac/starter.json": "sha256:9f09063db70161e38f539f088082f4169c71512379dd43a8795bf660760ff4df"
 }

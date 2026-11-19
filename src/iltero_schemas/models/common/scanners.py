@@ -20,6 +20,8 @@ SCANNER_TOOLS: tuple[str, ...] = get_args(ScannerTool)
 # Who ran a scanner: the pipeline, which gave the stage the report, or the Iltero CLI, which ran the pinned scanner
 # itself on the runner. Either way the record says so; nothing in it shows which program ran.
 RanBy = Literal["pipeline", "iltero_cli"]
+# Who ran a scanner when the pipeline ran it and gave the stage its report.
+PIPELINE: Final[RanBy] = "pipeline"
 # Who ran a scanner when the Iltero CLI ran the pinned scanner itself.
 ILTERO_CLI: Final[RanBy] = "iltero_cli"
 # The scanners installed as Python packages, whose evaluation names the Python interpreter they ran under.

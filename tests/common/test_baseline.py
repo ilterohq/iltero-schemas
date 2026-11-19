@@ -155,6 +155,11 @@ REBUILT_CASES = {
     "pre_deploy_stage_of_a_forged_change_digest",
     # A declared unit names its directory, so the case's unit names one and still leaves out its dependencies.
     "units_file_unit_named_without_its_dependencies",
+    # A record of a run the server opened evaluates only assertions from the server's bundle, so these cases carry the
+    # server's bundle on every evaluation and stage.
+    "record_of_a_run_the_server_opened",
+    "record_of_a_run_the_server_opened_from_a_served_bundle",
+    "record_says_the_server_opened_a_run_without_pins",
 }
 # What a case of a run the server opened sets since the baseline so its plan stage applies the exceptions served to it:
 # their copy and the failed results they cover, the server's time, and the copy's entry of the register.

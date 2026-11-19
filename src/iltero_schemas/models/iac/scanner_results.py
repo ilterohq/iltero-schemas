@@ -33,9 +33,8 @@ from pydantic import ValidationError
 
 from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.assertion import Stage, TechnicalAssertion, ToolSelector
-from iltero_schemas.models.common.assertion_id import ILTERO_NAMESPACE
 from iltero_schemas.models.common.checked_content import CheckedPlan
-from iltero_schemas.models.common.event import PROJECT_ASSERTION_SOURCES, AssuranceEvent
+from iltero_schemas.models.common.event import AssuranceEvent
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
 from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES, RanBy
 from iltero_schemas.models.common.subjects import local_identity
@@ -67,7 +66,9 @@ def _check_shipped(stage: Stage, record: StageRecord) -> None:
     """The scanner check mapping a stage names as shipped is the one this package ships."""
     if record.scanners is None:
         return
-    used = next(used for used in record.scanners.scanner_check_mappings if used.origin == "shipped")
+    used = next((used for used in record.scanners.scanner_check_mappings if used.origin == "shipped"), None)
+    if used is None:
+        return
     shipped = (
         SHIPPED_MAPPING.metadata.id,
         SHIPPED_MAPPING.metadata.version,
@@ -81,11 +82,20 @@ def _check_shipped(stage: Stage, record: StageRecord) -> None:
 
 
 def _check_mapping_of(event: AssuranceEvent, record: StageRecord) -> None:
-    """A scanner verdict comes from the scanner check mapping allowed to decide its assertion: a verdict on an Iltero
-    starter assertion from the mapping Iltero ships, a verdict on one of the project's own assertions from the project's
-    own mapping."""
+    """A scanner verdict comes from the scanner check mapping allowed to decide its assertion: a verdict on an assertion
+    from the server's bundle from the mapping the server served, a verdict on an Iltero starter assertion from the
+    mapping Iltero ships, a verdict on one of the project's own assertions from the project's own mapping."""
     source = event.provenance.assertion_source
     entry = event.provenance.scanner_checks
+    origins = {used.origin for used in record.scanners.scanner_check_mappings} if record.scanners else set()
+    if source == "server_bundle":
+        # Which entry of the served mapping decided it, a reader works out from the stage's kept copy.
+        if "served" not in origins:
+            raise ValueError(
+                "a scanner verdict on an assertion from the server's bundle comes from the scanner check mapping the "
+                "server served"
+            )
+        return
     if source == "contract_starter":
         if entry not in SHIPPED_SCANNER_CHECKS or event.assertion.id not in SHIPPED_MAPPING_ASSERTIONS:
             raise ValueError(
@@ -93,11 +103,7 @@ def _check_mapping_of(event: AssuranceEvent, record: StageRecord) -> None:
                 "Iltero ships"
             )
         return
-    if source not in PROJECT_ASSERTION_SOURCES or event.assertion.id.split(".")[0].startswith(ILTERO_NAMESPACE):
-        raise ValueError(
-            "a scanner verdict is about an Iltero starter assertion or one of the project's own assertions"
-        )
-    origins = {used.origin for used in record.scanners.scanner_check_mappings} if record.scanners else set()
+    # What is left is one of the project's own assertions: an event refuses one of those in Iltero's namespace.
     if "file" not in origins or entry in SHIPPED_SCANNER_CHECKS:
         raise ValueError(
             "a scanner verdict on one of the project's own assertions comes from a scanner checks entry in the "

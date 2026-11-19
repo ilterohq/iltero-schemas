@@ -65,8 +65,17 @@ def check_provenance(car: CAR) -> None:
             for report in record.scanners.reports
         ):
             raise ValueError("a record of a run the server opened keeps only scanner reports the Iltero CLI ran")
-        if any(event.provenance.assertion_source == "custom_rego" for event in car.events):
-            raise ValueError("a record of a run the server opened evaluates no hand-written Rego")
+        if any(event.provenance.assertion_source != "server_bundle" for event in car.events):
+            raise ValueError(
+                "a record of a run the server opened evaluates only assertions from the server's bundle: no "
+                "hand-written Rego, no project's own assertion and no copy of this package's"
+            )
+        if any(
+            [used.origin for used in record.scanners.scanner_check_mappings] != ["served"]
+            for record in car.stages.values()
+            if record.scanners is not None
+        ):
+            raise ValueError("a record of a run the server opened applies only the scanner check mapping it served")
         if any(record.values_known_after_deployment == "postpone" for record in car.stages.values()):
             raise ValueError(
                 "a record of a run the server opened postpones no check until after the deployment: its plan stage "
@@ -77,6 +86,13 @@ def check_provenance(car: CAR) -> None:
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]
     if "server" in bundles:
         raise ValueError("a record of a run the tool opened names no server bundle")
+    if any(
+        used.origin == "served"
+        for record in car.stages.values()
+        if record.scanners is not None
+        for used in record.scanners.scanner_check_mappings
+    ):
+        raise ValueError("a record of a run the tool opened applies no scanner check mapping the server served")
     provenance = [event.provenance for event in car.events]
     if any(p.assertion_source == "server_bundle" for p in provenance):
         raise ValueError("a record of a run the tool opened has no evaluations from a server bundle")

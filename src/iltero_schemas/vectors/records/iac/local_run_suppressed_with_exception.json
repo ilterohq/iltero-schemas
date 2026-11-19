@@ -3832,7 +3832,9 @@
             "file_path": null,
             "id": "ILT.SCANNER_CHECKS.STARTER",
             "origin": "shipped",
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "descriptor_digest": null,
+            "key_id": null
           }
         ],
         "local_exceptions": {

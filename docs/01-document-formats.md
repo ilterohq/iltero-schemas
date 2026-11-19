@@ -801,7 +801,7 @@ who produced it and to reproduce it.
 | `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov` or `trivy`): the `version` the scanner wrote into its report (`null` for a member of a scanner requirement that gave no report), the `digest`, `platform` and `python_version` of what the Iltero CLI ran, `null` unless it ran the scanner itself (see below), and what its verdict rests on (see [Evaluations from a scanner's results](#evaluations-from-a-scanners-results)). |
 | `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`), `tarball_digest`, the SHA-256 of the bytes of the bundle tarball the evaluator loaded, `content_digest` and `key_id`. For `server`, they are the served [descriptor](#assertionbundledescriptor)'s `tarball_digest`, `content_digest` and `key_id`. For `local_bundle`, `tarball_digest` is the digest of the tarball the tool built, and `content_digest` and `key_id` are `null`, because a bundle the tool built has no descriptor. Any other combination is refused: "a bundle names its content digest and signing key exactly when its kind is server". The writer's claim: nothing compares these values with a descriptor. Present exactly when the evaluator is `opa`. An evaluation whose `assertion_source` is `server_bundle` and that ran over a bundle names a bundle of kind `server`; otherwise it is refused: "an assertion from the server's bundle is evaluated over the server's bundle". |
 | `scanner_checks` | The scanner checks entry of a [scanner check mapping](#scannercheckmapping) whose checks decided the evaluation, by its `digest` alone (`ScannerChecksRef`). Present exactly when the evaluator is a scanner; otherwise it is refused: "a scanner checks entry is named exactly when a scanner's result was read for this evaluation". |
-| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego, never in a record of a run Iltero Platform opened. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
+| `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. A record of a run Iltero Platform opened has only `server_bundle`. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
 | `compiled_digest`, `compiler` | The compiled program's digest, and the compiler's `version`, `contract_version`, `contract_digest` and `install` (`wheel` or `editable`). Absent for a scanner. |
 | `executor` | Who ran the evaluation: `type` (`human` or `workload`), `provider` (`local`, `ci` or a CI system such as `github_actions`) and the CI system's run id (`ci_run_id`). |
 | `facts_source` | For an evaluation whose input may carry Iltero Platform facts (approvals, earlier evaluations, the commit review, the verified source, the verified attestation: an `iac_change` input at `pre_deploy`, an `image_build` input at `plan`, and an `image_deploy` input at `pre_deploy`), where they came from: `server` or `none`. `null` for every other input (`iltero_schemas.profiles.reads_server_facts`). It names where the facts document came from: the parts only Iltero Platform holds (`SERVER_FACTS`: `evaluations`, `approvals`, `commit_review`, `verified_source`, `attestation_outcome`). A value Iltero Platform supplies inside another part is not counted: the environment's production flag (`organization_scope.environment.production`) in every input, and the accepted build (`change.build`) in an `image_deploy` input. In a run the tool opened, such a value holds the unknown marker (`server_facts_unavailable`), so it follows `governance.run_opened_by`. The `post_deploy` and `post_verify` inputs of an `image_deploy` name no `facts_source`. |
@@ -1119,16 +1119,22 @@ still goes ahead, and the record shows that check as not evaluated unless anothe
 | "names no scanner whose checks are mapped to any assertion of the run, so it requires nothing" (`MAPS_NOTHING`) | No member's checks are mapped to any assertion of the run. |
 | "can never be met for `<assertion>` at the `<stage>` stage: every member mapped to it names resources only when they fail" | The assertion only scanners decide (`assert: null`), and every member mapped to it at that stage names resources only when they fail (`trivy`, `REPORTS_ONLY_FAILURES`), so it never gives a pass. One pair for each such assertion and stage. |
 
-A scanner check mapping says which scanner checks decide which assertion. A stage that reads scanner reports always
-applies the mapping Iltero ships (`origin: shipped`). It may also apply one mapping read from the project's own file
-(`origin: file`), which is then listed first. The list therefore holds either the shipped mapping alone, or the
-project's mapping followed by the shipped mapping. Any other list is refused: "a stage always applies the scanner
-check mapping Iltero ships, and at most one of the project's own, listed first".
+A scanner check mapping says which scanner checks decide which assertion. A stage that reads scanner reports applies
+one of three lists:
+
+| `origin` of each entry, in order | When |
+| --- | --- |
+| `[shipped]` | The mapping Iltero ships alone. |
+| `[file, shipped]` | One mapping read from the project's own file, then the mapping Iltero ships. |
+| `[served]` | The mapping Iltero Platform served the run alone. |
+
+Any other list is refused: "a stage applies the scanner check mapping Iltero ships, with at most one of the project's
+own listed first, or only the one the server served".
 
 The project's mapping can decide only the project's own assertions, and the shipped mapping can decide only Iltero's
-starter assertions, so no assertion is decided by both. As a result, the `provenance.scanner_checks.digest` of each
-scanner verdict matches exactly one scanner checks entry across the stage's mappings. That is how a reader finds the
-entry, and the mapping, that decided a verdict.
+starter assertions, so no assertion is decided by both. A served mapping is applied alone. As a result, the
+`provenance.scanner_checks.digest` of each scanner verdict matches exactly one scanner checks entry across the stage's
+mappings. That is how a reader finds the entry, and the mapping, that decided a verdict.
 
 Each entry of `scanner_check_mappings` (`ScannerCheckMappingUsed`) names one scanner check mapping by:
 
@@ -1136,11 +1142,20 @@ Each entry of `scanner_check_mappings` (`ScannerCheckMappingUsed`) names one sca
 | --- | --- | --- |
 | `id` | string | The scanner check mapping's `metadata.id`: upper-case segments joined by dots, at least two, at most 96 characters. A mapping read from a file (`origin: file`) has an id of its own namespace, not `ILT` or one starting `ILT` (`check_project_id`): "a project's own id has a namespace of its own, not ILT or one starting so". |
 | `version` | string | The scanner check mapping's `metadata.version`: a semantic version `X.Y.Z`. |
-| `origin` | string | `shipped` for the mapping this package ships, `file` for one read from a file. The writer sets it, not the scanner check mapping; in a self-attested record it is the writer's claim. Only the shipped mapping has the id `ILT.SCANNER_CHECKS.STARTER`: "only the shipped scanner check mapping is ILT.SCANNER_CHECKS.STARTER". |
-| `file_path` | string or null | The path, in the project, of the file the mapping was read from, relative to the record's `subject.project_directory`, such as `payments.json` or `config/scanner-check-mapping.yaml`. It follows the project path rule, so a path outside the project, such as `../config/scanner-check-mapping.yaml`, is refused. Present exactly when `origin` is `file`: "a scanner check mapping read from a file names it, and the shipped mapping names none". |
+| `origin` | string | `shipped` for the mapping this package ships, `file` for one read from a file, `served` for the mapping Iltero Platform served the run it opened. The writer sets it, not the scanner check mapping; in a self-attested record it is the writer's claim. No mapping but the shipped one has the id `ILT.SCANNER_CHECKS.STARTER`: "only the shipped scanner check mapping is ILT.SCANNER_CHECKS.STARTER". |
+| `file_path` | string or null | The path, in the project, of the file the mapping was read from, relative to the record's `subject.project_directory`, such as `payments.json` or `config/scanner-check-mapping.yaml`. It follows the project path rule, so a path outside the project, such as `../config/scanner-check-mapping.yaml`, is refused. Present exactly when `origin` is `file`: "a scanner check mapping read from a file names it, and no other mapping names one". |
 | `digest` | digest | The digest of the scanner check mapping's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. |
 | `copy_path` | string | Where the stage kept its copy of the scanner check mapping's canonical JSON, in the record's directory. The copy is an entry of the evidence register by this path and `digest`. |
 | `assertions_mapped` | integer | How many assertions the mapping maps, the length of its `spec.assertion_mappings`, for every scanner and stage, from 0. |
+| `descriptor_digest` | digest or null | The digest of the signed descriptor Iltero Platform served the mapping in. |
+| `key_id` | identifier or null | The key that signed that descriptor. |
+
+`descriptor_digest` and `key_id` are present exactly when `origin` is `served`: "a scanner check mapping names its
+descriptor and signing key exactly when it was served". Iltero Platform compares the mapping's `digest`,
+`descriptor_digest` and `key_id` with the values it pinned when it opened the run.
+For a served mapping, a reader with the kept files checks only that each scanner verdict's entry is in the stage's
+copy of it. The contract does not compare its `key_id` with the stage bundle's, or check that its id is in Iltero's
+namespace: Iltero Platform's comparison with the pinned values covers the served mapping.
 
 Each `reports` entry (`ScannerReport`):
 
@@ -1148,7 +1163,7 @@ Each `reports` entry (`ScannerReport`):
 | --- | --- | --- |
 | `tool` | string | `checkov` or `trivy`. |
 | `tool_version` | identifier | The version the scanner wrote into its report. |
-| `ran_by` | string | Who ran the scanner: `pipeline`, which gave the stage the report, or `iltero_cli`, the Iltero CLI, which ran the scanner itself on the runner. It is the record's own claim: nothing in the record shows which program ran. A record of a run Iltero Platform opened keeps only reports the Iltero CLI ran: "a record of a run the server opened keeps only scanner reports the Iltero CLI ran". |
+| `ran_by` | string | Who ran the scanner: `pipeline`, which gave the stage the report, or `iltero_cli`, the Iltero CLI, which ran the scanner itself on the runner (`iltero_schemas.models.common.scanners.PIPELINE` and `ILTERO_CLI`). It is the record's own claim: nothing in the record shows which program ran. A record of a run Iltero Platform opened keeps only reports the Iltero CLI ran: "a record of a run the server opened keeps only scanner reports the Iltero CLI ran". |
 | `input_kinds` | list | What the scanner read, in the contract's words (`plan`, `deployed_resources`): sorted, each once ("input_kinds is sorted, each kind once"), at most 16 (`iltero_schemas.models.common.car.MAX_INPUT_KINDS`). |
 | `report_digest` | digest | The digest of the report as the stage kept it, redacted and canonical, the digest of an entry of the evidence register. That entry's `source` is the report as the pipeline gave it. Every evaluation from the report names it as its `input_digest`. |
 | `observations` | string | Where the stage kept the [ScannerObservations](#scannerobservations) it read from the report, in the record's directory, the path of an entry of the evidence register. |
@@ -1397,7 +1412,7 @@ Key rules:
 
   | Rule | Refused with |
   | --- | --- |
-  | The register entry of the copy of a project's scanner check mapping names the file the mapping was read from as its `source`, with `source.name` equal to the last part of that entry's `file_path`, the file's name. The register entry of the copy of the shipped mapping has no `source`. | "in the evidence register, the copy of a project's scanner check mapping names the file it was read from, and the copy of the shipped mapping names no file" |
+  | The register entry of the copy of a project's scanner check mapping names the file the mapping was read from as its `source`, with `source.name` equal to the last part of that entry's `file_path`, the file's name. The register entry of the copy of the shipped or the served mapping has no `source`. | "in the evidence register, the copy of a project's scanner check mapping names the file it was read from, and the copy of the shipped or the served mapping names no file" |
   | Each scanner file a stage keeps (each scanner check mapping copy, its observations, the entry of each kept report, and the copy of the project's exceptions file) is an entry of its own: never another scanner file, nor any stage's events file or assertion index. The digest of a kept report or of its observations is never the `input_digest` of an evaluation that stands on no scanner's result. | "each scanner file a stage keeps is an entry of its own, not a file the record names for another part" |
   | The observations were read from the file the report was kept from: the `source.digest` of the observations entry is that of the kept report. | "the observations the plan stage read from its checkov report were read from the file that report was kept from" |
 
@@ -1513,7 +1528,9 @@ Key rules:
   [`kept_file_problems`](#checking-a-record-against-its-kept-files), which makes these checks and the checks of the
   files the stages kept: the model alone does not check those files.
 - A record of a run the tool opened (`governance.run_opened_by: local`) names no Iltero Platform bundle, no
-  evaluation from one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). Every
+  evaluation from one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). It
+  applies no scanner check mapping Iltero Platform served (`origin: served`): "a record of a run the tool opened
+  applies no scanner check mapping the server served". Every
   stage's `coverage.assertions_required.origin` is `server_pinned` exactly when Iltero Platform opened the run
   (`governance.run_opened_by: server`): "stages.plan: counts its assertions as server_pinned exactly when the server
   opened the run". In a record of a run Iltero Platform opened for an activity whose run is a change
@@ -1528,8 +1545,14 @@ Key rules:
 - In a record of a run Iltero Platform opened, an `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` event that is `pass` or
   `fail` read its facts from Iltero Platform (`provenance.facts_source: server`):
   "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED passes or fails only on facts read from the server".
-- A record of a run Iltero Platform opened evaluates no hand-written policy: no event's `provenance.assertion_source`
-  is `custom_rego`, or the record is refused: "a record of a run the server opened evaluates no hand-written Rego".
+- A record of a run Iltero Platform opened evaluates only assertions from Iltero Platform's bundle: every event's
+  `provenance.assertion_source` is `server_bundle`, so it evaluates no hand-written Rego, no assertion of the
+  project's own and no copy of this package's starter assertions. Otherwise the record is refused: "a record of a run
+  the server opened evaluates only assertions from the server's bundle: no hand-written Rego, no project's own
+  assertion and no copy of this package's".
+- Every stage of a record of a run Iltero Platform opened that reads scanner reports applies only the scanner check
+  mapping Iltero Platform served (`[served]`): "a record of a run the server opened applies only the scanner check
+  mapping it served".
 - A record of a run Iltero Platform opened postpones no check until after the deployment: no stage's
   `values_known_after_deployment` is `postpone`, so its plan stage blocks on a value the plan knows only after the
   deployment. Otherwise the record is refused: "a record of a run the server opened postpones no check until after the
@@ -1949,9 +1972,9 @@ The model refuses a record that breaks one of these rules
 | The evaluation names that report's `report_digest` as its `input_digest`. | "an evaluation from trivy's results names as its input the trivy report the plan stage kept" |
 | The evaluator's `version` is the report's `tool_version`. | "an evaluation from trivy's results names the version of trivy that wrote the report the plan stage kept" |
 | The evaluator names `digest` and `platform` exactly when its report's `ran_by` is `iltero_cli`, and `python_version` as well exactly when that scanner is installed as Python packages (`INSTALLED_AS_PYTHON_PACKAGES`: Checkov). | "an evaluation from a scanner's results names the digest and platform of what ran exactly when the Iltero CLI ran the scanner, and the Python version only for a scanner installed as Python packages" |
-| The mapping named as shipped (`origin: shipped`) is the one this package ships, `iltero_schemas.scanner_check_mappings.SHIPPED_MAPPING`: the same `id`, `version`, `digest` (`SHIPPED_MAPPING_DIGEST`) and `assertions_mapped`. | "the plan stage's scanner check mapping named as shipped is the one this package ships" |
+| The mapping named as shipped (`origin: shipped`), when the stage applies it, is the one this package ships, `iltero_schemas.scanner_check_mappings.SHIPPED_MAPPING`: the same `id`, `version`, `digest` (`SHIPPED_MAPPING_DIGEST`) and `assertions_mapped`. | "the plan stage's scanner check mapping named as shipped is the one this package ships" |
+| A scanner verdict on an assertion from Iltero Platform's bundle (`assertion_source: server_bundle`) needs the served mapping among the stage's scanner check mappings. A reader with the kept files works out the entry that decided it from the stage's kept copy of that mapping. | "a scanner verdict on an assertion from the server's bundle comes from the scanner check mapping the server served" |
 | A scanner verdict on an Iltero starter assertion (`assertion_source: contract_starter`) names a scanner checks entry of the shipped mapping (`SHIPPED_SCANNER_CHECKS`), and the shipped mapping maps that assertion (`SHIPPED_MAPPING_ASSERTIONS`). | "a scanner verdict on an Iltero starter assertion comes from a scanner checks entry in the mapping Iltero ships" |
-| Every other scanner verdict is on one of the project's own assertions: its `assertion_source` is `local` or `custom_rego`, and its id's namespace does not start with `ILT`. | "a scanner verdict is about an Iltero starter assertion or one of the project's own assertions" |
 | A scanner verdict on one of the project's own assertions needs a project's mapping among the stage's scanner check mappings, and names no scanner checks entry of the shipped mapping. | "a scanner verdict on one of the project's own assertions comes from a scanner checks entry in the project's own mapping" |
 
 #### The check a reader runs

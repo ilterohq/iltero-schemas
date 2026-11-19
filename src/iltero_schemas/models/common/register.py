@@ -56,7 +56,7 @@ def check_register(car: CAR) -> None:
             ):
                 raise ValueError(
                     "in the evidence register, the copy of a project's scanner check mapping names the file it was "
-                    "read from, and the copy of the shipped mapping names no file"
+                    "read from, and the copy of the shipped or the served mapping names no file"
                 )
             scanner_files.append(used.copy_path)
         for report in record.scanners.reports:

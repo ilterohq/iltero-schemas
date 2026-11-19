@@ -4146,7 +4146,9 @@
             "file_path": "payments.json",
             "id": "ACME.SCANNER_CHECKS.PAYMENTS",
             "origin": "file",
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "descriptor_digest": null,
+            "key_id": null
           },
           {
             "assertions_mapped": 9,
@@ -4155,7 +4157,9 @@
             "file_path": null,
             "id": "ILT.SCANNER_CHECKS.STARTER",
             "origin": "shipped",
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "descriptor_digest": null,
+            "key_id": null
           }
         ],
         "local_exceptions": null,

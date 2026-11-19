@@ -14,13 +14,18 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IMAGE_BUILD_ACTIVITY, IMAGE_DEPLOY_ACTIVITY
 from iltero_schemas.models.common.fields import Identity
+from iltero_schemas.models.common.scanners import ILTERO_CLI
 from iltero_schemas.models.common.subjects import subject_key
 from tests.conftest import VECTORS
 from tests.records import (
     DEPLOYED,
+    SCANNERS,
+    SERVED_MAPPING_USED,
     UNKNOWN,
+    from_the_servers_bundle,
     keep_events_files,
     keep_no_served_exceptions,
+    keep_the_scanner_files,
     ran_by_the_cli,
     record,
     served,
@@ -48,6 +53,8 @@ def _opened_by_the_server() -> dict[str, Any]:
         }
     )
     keep_no_served_exceptions(document)
+    from_the_servers_bundle(document)
+    keep_events_files(document)
     return document
 
 
@@ -220,17 +227,19 @@ def _vector(name: str) -> dict[str, Any]:
     return document
 
 
-def test_a_record_of_a_run_the_server_opened_evaluates_no_hand_written_rego() -> None:
+@pytest.mark.parametrize("source", ["custom_rego", "local", "contract_starter"])
+def test_a_record_of_a_run_the_server_opened_evaluates_only_assertions_from_the_servers_bundle(source: str) -> None:
     document = served(_vector("local_run_scanned_project"))
     ran_by_the_cli(document)
     event = next(
         e
         for e in document["events"]
-        if e["provenance"]["assertion_source"] == "local" and e["provenance"]["evaluator"]["engine"] == "opa"
+        if e["assertion"]["id"].startswith("ILT" if source == "contract_starter" else "ACME")
+        and (e["provenance"]["evaluator"] or {}).get("engine") == "opa"
     )
-    event["provenance"]["assertion_source"] = "custom_rego"
+    event["provenance"]["assertion_source"] = source
     keep_events_files(document)
-    with pytest.raises(ValidationError, match="evaluates no hand-written Rego"):
+    with pytest.raises(ValidationError, match="evaluates only assertions from the server's bundle"):
         CAR.model_validate(document, context=_READER)
 
 
@@ -239,8 +248,26 @@ def test_a_record_of_a_run_the_server_opened_postpones_no_check() -> None:
         CAR.model_validate(served(_vector("local_run_postponed")), context=_READER)
 
 
-def test_a_record_of_a_run_the_server_opened_may_evaluate_the_projects_own_assertions() -> None:
-    document = served(_vector("local_run_scanned_project"))
-    ran_by_the_cli(document)
-    assert any(event["provenance"]["assertion_source"] == "local" for event in document["events"])
-    CAR.model_validate(document, context=_READER)
+@pytest.mark.parametrize("origins", [["shipped"], ["file", "shipped"]], ids=["shipped", "project_and_shipped"])
+def test_a_record_of_a_run_the_server_opened_applies_only_the_scanner_check_mapping_it_served(
+    origins: list[str],
+) -> None:
+    # The stage reads a report that decided nothing, so the scanner verdicts' own rules have nothing to refuse.
+    document = _opened_by_the_server()
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["reports"][0]["ran_by"] = ILTERO_CLI
+    scanners["scanner_check_mappings"] = [m for m in scanners["scanner_check_mappings"] if m["origin"] in origins]
+    document["stages"]["plan"]["scanners"] = scanners
+    keep_the_scanner_files(document)
+    with pytest.raises(ValidationError, match="applies only the scanner check mapping it served"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_record_of_a_run_the_tool_opened_applies_no_scanner_check_mapping_the_server_served() -> None:
+    document = record()
+    scanners = copy.deepcopy(SCANNERS)
+    scanners["scanner_check_mappings"] = [dict(SERVED_MAPPING_USED)]
+    document["stages"]["plan"]["scanners"] = scanners
+    keep_the_scanner_files(document)
+    with pytest.raises(ValidationError, match="applies no scanner check mapping the server served"):
+        CAR.model_validate(document, context=_READER)

@@ -1138,8 +1138,20 @@ keep, so any two tools agree on what a record means.
     Platform names the engines that reached its verdict (`decided_by`).
   - A record's `scanners` names the scanner check mappings the stage applied
     (`scanner_check_mappings`), the groups of scanners the run requires
-    (`scanner_requirements`), and each report. A stage always applies the mapping Iltero ships, and may also
-    apply one mapping from the project's own file, listed first. The
+    (`scanner_requirements`), and each report. A stage applies the mapping
+    Iltero ships, with at most one mapping from the project's own file listed
+    first, or only the mapping Iltero Platform served the run
+    (`origin: served`). A served mapping names the digest of the signed
+    descriptor it was served in (`descriptor_digest`) and the key that signed
+    it (`key_id`); no other mapping names them, and no mapping but the shipped
+    one has the id `ILT.SCANNER_CHECKS.STARTER`. Iltero Platform compares the
+    mapping's digest, descriptor digest and key with the values it pinned
+    when it opened the run. A reader with the kept files checks only that
+    each verdict's entry is in the stage's copy of the served mapping. Every
+    scanner check mapping entry in the vectors of runs the tool opened has
+    `descriptor_digest: null` and `key_id: null`.
+    `vectors/scanner_check_mappings/iac/served_catalog.json`
+    (`ILT.SCANNER_CHECKS.CATALOG`) is a sample of a served mapping. The
     project's mapping decides only the project's own assertions and the
     shipped mapping only Iltero's starter assertions, so each scanner
     verdict's `provenance.scanner_checks.digest` matches exactly one scanner
@@ -1342,12 +1354,26 @@ keep, so any two tools agree on what a record means.
     `iac_record_of_a_run_the_server_opened_keeping_a_scanner_report_the_pipeline_ran`
     refuses a record of a run Iltero Platform opened that keeps a report the
     pipeline ran.
-  - A record of a run Iltero Platform opened evaluates no hand-written
-    policy (no event's `assertion_source` is `custom_rego`) and postpones no
-    check until after the deployment (no stage's
+  - A record of a run Iltero Platform opened evaluates only assertions from
+    Iltero Platform's bundle: every event's `assertion_source` is
+    `server_bundle`, so it evaluates no hand-written Rego, no assertion of
+    the project's own and no copy of this package's starter assertions. Each
+    of its stages that reads scanner reports applies only the scanner check
+    mapping Iltero Platform served, and a scanner verdict on an assertion
+    from the bundle comes from that mapping. A record of a run the tool
+    opened applies no served mapping. A record of a run Iltero Platform
+    opened also postpones no check until after the deployment (no stage's
     `values_known_after_deployment` is `postpone`): its plan stage blocks on
     a value the plan knows only after the deployment
-    (`iltero_schemas.models.common.provenance.check_provenance`).
+    (`iltero_schemas.models.common.provenance.check_provenance`). Every case
+    of a run Iltero Platform opened in `records_valid/`, `records_invalid/`
+    and `records_integrity_failed/` names Iltero Platform's bundle on every
+    evaluation and stage, with `server_bundle` sources, and each stage that
+    reads scanner reports applies that served mapping. New
+    `records_invalid/iac/` cases refuse such a record that evaluates this
+    package's copy of a starter assertion or one of the project's own, or
+    applies the shipped mapping, alone or beside a project's, and a record of
+    a run the tool opened that applies the served mapping.
   - Names and shapes that changed:
 
     | Before | Now |

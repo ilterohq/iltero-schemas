@@ -1743,11 +1743,60 @@
           "repository_id": "712400318"
         }
       },
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/pre_deploy/commit_review": null,
+      "/stages/pre_deploy/events/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
       "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
       "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -1757,121 +1806,41 @@
       },
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
       "/events/1/provenance/facts_source": "server",
-      "/stages/pre_deploy/commit_review": null,
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
-      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/evidence_refs/25/size_bytes": 4602
     },
     "remove": [],
     "message": "the pre_deploy stage keeps a commit review, or the unknown marker, exactly where its input carries one"
@@ -1896,21 +1865,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 2,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -1944,119 +1902,99 @@
         ],
         "commits_not_reviewed_list_complete": true
       },
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
+      "/stages/pre_deploy/events/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
         }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+      },
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/evidence_refs/25/size_bytes": 4602
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check passed"
@@ -2081,21 +2019,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -2122,122 +2049,95 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "unknown",
-      "/events/0/evaluation/status_reason": "server_facts_unavailable",
-      "/events/0/evaluation/policy_reason": "commit_review.outcome: server_facts_unavailable",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": null,
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "unknown"
-          }
-        ],
-        "unknown": {
-          "path": "commit_review.outcome",
-          "reason": "server_facts_unavailable"
-        },
-        "when": null
-      },
+      "/stages/pre_deploy/events/digest": "sha256:249fd8209926d1c8e22814ad1f80188b68b1b87711b40156bfbf2632a1df4837",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "undecided",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 3,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/policy_reason": "commit_review.outcome: server_facts_unavailable",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": null,
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "unknown"
         }
-      },
-      "/verdict": {
-        "value": "undecided",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
+      ],
+      "/events/0/evaluation/observations/unknown/path": "commit_review.outcome",
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:8ec761ee27a98dea6e3c00cb357706a922f3a33d44e2b35d902acc8baa9ce61b",
-      "/evidence_refs/25/digest": "sha256:8ec761ee27a98dea6e3c00cb357706a922f3a33d44e2b35d902acc8baa9ce61b",
-      "/evidence_refs/25/size_bytes": 4565,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 1,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+      },
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:249fd8209926d1c8e22814ad1f80188b68b1b87711b40156bfbf2632a1df4837",
+      "/evidence_refs/25/size_bytes": 4723
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the unknown marker when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check could not read a commit review"
@@ -2262,12 +2162,59 @@
           "repository_id": "712400318"
         }
       },
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/pre_deploy/events/digest": "sha256:81d1fa832f164a271e876c3cfb6ee7c95c35a00465e8a464742a3d751734d1b4",
       "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
       "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "none",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
       "/events/1/evaluation/policy_reason": "assert: true",
@@ -2276,120 +2223,40 @@
       },
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "none",
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
-      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:5239879958fd7de1219d4eec87210578c975b48926e4c83fdcff8ea263d90d9e",
-      "/evidence_refs/25/digest": "sha256:5239879958fd7de1219d4eec87210578c975b48926e4c83fdcff8ea263d90d9e",
-      "/evidence_refs/25/size_bytes": 4440,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:81d1fa832f164a271e876c3cfb6ee7c95c35a00465e8a464742a3d751734d1b4",
+      "/evidence_refs/25/size_bytes": 4598
     },
     "remove": [],
     "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED passes or fails only on facts read from the server"
@@ -2414,24 +2281,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -2458,29 +2311,65 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/size_bytes": 4881,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 1,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
+      "/stages/pre_deploy/events/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
       },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
+      "/evidence_refs/25/size_bytes": 5039
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the accepted build's verified commit and repository"
@@ -2505,24 +2394,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -2535,29 +2410,65 @@
         "head_commit": "9d1f00a000000000000000000000000000000000",
         "outcome": "source_commit_not_verified_commit"
       },
-      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/size_bytes": 4881,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 1,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
+      "/stages/pre_deploy/events/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
       },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/status_counts/pass": 3,
+      "/coverage/status_counts/unknown": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
+      "/evidence_refs/25/size_bytes": 5039
     },
     "remove": [],
     "message": "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit"
@@ -2582,21 +2493,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 2,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -2623,119 +2523,99 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
+      "/stages/pre_deploy/events/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
         }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+      },
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/evidence_refs/25/size_bytes": 4602
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
@@ -2760,11 +2640,59 @@
           "repository_id": "712400318"
         }
       },
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/pre_deploy/events/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
       "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+      },
       "/stages/pre_deploy/coverage/status_counts/pass": 2,
       "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
       "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
+        }
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
+      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/events/0/provenance/facts_source": "server",
       "/events/1/evaluation/status": "pass",
       "/events/1/evaluation/status_reason": null,
@@ -2774,120 +2702,41 @@
       },
       "/events/1/evaluation/observations/predicates/0/status": "true",
       "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
       "/events/1/provenance/facts_source": "server",
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
-      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/evidence_refs/25/size_bytes": 4602
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the commit review its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check decided from"
@@ -2912,21 +2761,10 @@
           "repository_id": "712400318"
         }
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 2,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
+      "/stages/pre_deploy/execution/bundle/kind": "server",
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -2944,119 +2782,99 @@
         "commits_counted": 3,
         "outcome": "reviewed"
       },
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
+      "/stages/pre_deploy/events/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
       "/stages/pre_deploy/coverage/subjects_per_assertion": {
         "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
         "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e5333db734afef8cb4f7971b2031b884040d8eb3ad64b40d4e5d36206705ed84",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "failed_checks_excepted": 0,
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/pre_deploy/verdict/value": "met",
+      "/stages/post_deploy/execution/bundle/kind": "server",
+      "/stages/post_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_deploy/events/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
+      "/stages/post_verify/execution/bundle/kind": "server",
+      "/stages/post_verify/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/post_verify/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/post_verify/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/post_verify/events/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/assertion/id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
+      "/events/0/assertion/digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb",
+      "/events/0/evaluation/status": "pass",
+      "/events/0/evaluation/status_reason": null,
+      "/events/0/evaluation/policy_reason": "assert: true",
+      "/events/0/evaluation/observations/predicates": [
+        {
+          "actual": "reviewed",
+          "clause": "assert",
+          "expected": "reviewed",
+          "index": 0,
+          "op": "equal",
+          "path": "commit_review.outcome",
+          "status": "true"
         }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
+      ],
+      "/events/0/evaluation/observations/unknown": null,
+      "/events/0/evaluation/observations/when": null,
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/assertion_source": "server_bundle",
       "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
       "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/events/1/evaluation/policy_reason": "assert: true",
+      "/events/1/evaluation/observations/predicates/0/actual": {
+        "type": "object"
+      },
+      "/events/1/evaluation/observations/predicates/0/status": "true",
+      "/events/1/evaluation/observations/unknown": null,
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/required_assertion_digest": "sha256:8f3b7b85fd3607df7b7f8d7a3adea46d3c36c8102ccc88544cca7bfbdb5ce68f",
+      "/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
+      },
+      "/coverage/status_counts/pass": 4,
+      "/coverage/status_counts/unknown": 0,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/verdict/value": "met",
+      "/evidence_refs/5/digest": "sha256:4ff87aaf524aaa8e6c08824b14f013b539547669b2c4c3b196846badb51d6639",
+      "/evidence_refs/5/size_bytes": 2711,
+      "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
+      "/evidence_refs/11/size_bytes": 3015,
+      "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
+      "/evidence_refs/25/size_bytes": 4602
     },
     "remove": [],
     "message": "Field required"

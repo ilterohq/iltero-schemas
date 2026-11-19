@@ -50,6 +50,7 @@ from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
 from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, STARTER_ASSERTIONS, VECTORS, documents, visible
+from tests.records import names_the_servers_bundle, valid_case_record
 
 COMPILER = VECTORS / "compiler"
 ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
@@ -231,18 +232,41 @@ def test_document_vector_is_written_as_its_model_dumps_it(folder: str, path: str
     assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
-@pytest.mark.parametrize(
-    ("report", "vector"),
-    [
-        ("image/verification_report_build.json", "image/local_run_build.json"),
-        ("iac/verification_report.json", "iac/local_run.json"),
-    ],
-)
-def test_a_report_vector_names_its_record_by_id_and_digest(report: str, vector: str) -> None:
+def _report_record(source: str) -> dict[str, Any]:
+    """The record a report vector is about: a ``records/`` document by its path, or the record of a ``records_valid``
+    case by ``<change type>:<case name>``."""
+    if ":" in source:
+        change_type, name = source.split(":")
+        return valid_case_record(change_type, name)
+    document: dict[str, Any] = json.loads((VECTORS / "records" / source).read_text(encoding="utf-8"))
+    return document
+
+
+# Each report vector and the record it is about.
+REPORT_RECORDS = [
+    ("image/verification_report_build.json", "image/local_run_build.json"),
+    ("iac/verification_report.json", "iac/local_run.json"),
+    (
+        "iac/verification_report_commit_not_reviewed.json",
+        "iac:iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check",
+    ),
+]
+# The bundle provenance a verifier gives a record that names the server's bundle, and one that does not.
+BUNDLE_PROVENANCE = {True: ("claimed_by_record", "server_bundle_named"), False: ("not_performed", "local_assertions")}
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vector_names_its_record_by_id_and_digest(report: str, source: str) -> None:
     named = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
-    record = json.loads((VECTORS / "records" / vector).read_text(encoding="utf-8"))
-    digests = json.loads((VECTORS / "records" / DIGESTS_FILE).read_text(encoding="utf-8"))
-    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digests[vector]}
+    record = _report_record(source)
+    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digest_of(record)}
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vectors_bundle_provenance_is_the_one_its_record_gives(report: str, source: str) -> None:
+    result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["bundle_provenance"]
+    car = CAR.model_validate(_report_record(source))
+    assert (result["state"], result["reason"]) == BUNDLE_PROVENANCE[names_the_servers_bundle(car)]
 
 
 @pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)

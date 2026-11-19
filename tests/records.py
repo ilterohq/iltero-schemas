@@ -447,6 +447,13 @@ def remove_pointer(document: Any, pointer: str) -> None:
     del document[int(last) if isinstance(document, list) else last]
 
 
+def names_the_servers_bundle(car: CAR) -> bool:
+    """Whether a stage of ``car`` evaluated over the server's bundle: the fact a report's bundle provenance rests on."""
+    return any(
+        stage.execution.bundle is not None and stage.execution.bundle.kind == "server" for stage in car.stages.values()
+    )
+
+
 def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
     """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
     cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))

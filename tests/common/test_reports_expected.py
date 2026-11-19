@@ -22,7 +22,7 @@ from iltero_schemas.models.common.verification import (
     first_that_holds,
 )
 from tests.conftest import VECTORS
-from tests.records import valid_case_record
+from tests.records import names_the_servers_bundle, valid_case_record
 
 # Each case with the change type of the folder it is in.
 CASES: list[dict[str, Any]] = [
@@ -51,7 +51,7 @@ def test_an_expected_result_is_one_a_verifier_gives_its_property_for_a_record_th
 
 
 def _the_fact_its_reason_rests_on_holds(car: CAR, reason: str | None) -> None:
-    """The fact in the record a pre-deploy result rests on, so a later edit of the record leaves no stale case."""
+    """The fact in the record a result's reason rests on, so a later edit of the record leaves no stale case."""
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
     if reason == "pre_deploy_pending":
         assert pre_deploy is None and Stage.PRE_DEPLOY in car.expected_stages
@@ -67,6 +67,10 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, reason: str | None) -> None:
         assert all(stage.scanners is None or stage.scanners.local_exceptions is None for stage in car.stages.values())
     if reason == "server_facts_unavailable":
         assert pre_deploy is not None and isinstance(pre_deploy.approvals, ServerFactsUnavailable)
+    if reason == "server_bundle_named":
+        assert names_the_servers_bundle(car)
+    if reason == "local_assertions":
+        assert not names_the_servers_bundle(car)
 
 
 @pytest.mark.parametrize("case", [c for c in CASES if c["property"] == "reference_time"], ids=lambda c: c["name"])

@@ -1604,7 +1604,13 @@ keep, so any two tools agree on what a record means.
   run on Iltero Platform's time, a pre-deploy stage that read no fact
   from Iltero Platform, and a record relying on a project exception whose
   pre-deploy stage is out of scope. The report vectors carry the new
-  results.
+  results. Two more cases give `bundle_provenance`: `not_performed` with
+  `local_assertions` for a run the tool opened, and `claimed_by_record`
+  with `server_bundle_named` for a run Iltero Platform opened. Each sample
+  report's `bundle_provenance` is checked against the record it names:
+  `reports/iac/verification_report_commit_not_reviewed.json`, whose record
+  is of a run Iltero Platform opened that names its bundle at every stage,
+  gives `claimed_by_record` with `server_bundle_named`.
 - A reference time states only its value and its source; the verification
   report judges how far it can be trusted. The record and the evaluation
   input change in place:

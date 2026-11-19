@@ -29,8 +29,8 @@
       "detail": null
     },
     "bundle_provenance": {
-      "state": "not_performed",
-      "reason": "local_assertions",
+      "state": "claimed_by_record",
+      "reason": "server_bundle_named",
       "detail": null
     },
     "stage_completeness": {

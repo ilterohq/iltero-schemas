@@ -118,5 +118,25 @@
     "state": "claimed_by_record",
     "reason": "project_exception_relied_on",
     "why": "The plan stage relied on an exception from the project's own exceptions file; it comes before pre_deploy_out_of_scope, which would otherwise hide it."
+  },
+  {
+    "name": "bundle_provenance_of_a_run_the_tool_opened",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "bundle_provenance",
+    "state": "not_performed",
+    "reason": "local_assertions",
+    "why": "The run the tool opened evaluated the assertions it was given locally, so no stage names the server's bundle."
+  },
+  {
+    "name": "bundle_provenance_of_a_server_opened_run",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+    },
+    "property": "bundle_provenance",
+    "state": "claimed_by_record",
+    "reason": "server_bundle_named",
+    "why": "A run the server opened evaluates only assertions from the server's bundle, and each stage names it."
   }
 ]

@@ -252,10 +252,18 @@ def ran_by_the_cli(document: dict[str, Any]) -> None:
     for stage in document["stages"].values():
         for report in (stage.get("scanners") or {}).get("reports", []):
             report["ran_by"] = ILTERO_CLI
+    # The platform each stage's policy evaluator ran on, which the scanners of the stage ran on too.
+    platforms = {
+        event["evaluation"]["stage"]: event["provenance"]["evaluator"]["limits"]["platform"]
+        for event in document["events"]
+        if (event["provenance"].get("evaluator") or {}).get("engine") == "opa"
+    }
     for event in document["events"]:
         evaluator = event["provenance"].get("evaluator") or {}
         if evaluator.get("engine") in SCANNER_TOOLS and evaluator.get("version") is not None:
-            evaluator.update(digest=CLI_RAN_DIGEST, platform="linux-x86_64")
+            evaluator.update(
+                digest=CLI_RAN_DIGEST, platform=platforms.get(event["evaluation"]["stage"], "linux-x86_64")
+            )
             evaluator["python_version"] = "cp312" if evaluator["engine"] in INSTALLED_AS_PYTHON_PACKAGES else None
     keep_events_files(document)
 

@@ -36,6 +36,7 @@ from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.common.event import AssuranceEvent
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
 from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES, RanBy
+from iltero_schemas.models.common.stage_platform import check_one_platform_per_stage
 from iltero_schemas.models.common.subjects import local_identity
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_check_mapping import (
@@ -115,10 +116,10 @@ def _report_of(record: StageRecord, tool: str) -> ScannerReport | None:
 
 def check_scanner_results(car: CAR) -> None:
     """Raise ``ValueError`` unless only a stage that reads scanner reports keeps one, every evaluation from a
-    scanner's results names, as its input and by its version, a report of that scanner its stage kept, and only a
-    scanner its stage requires and kept no report of gives ``scanner_not_run``. The scanner check mapping a stage calls
-    the shipped one is the mapping this package ships, and each scanner verdict comes from the mapping allowed to decide
-    its assertion."""
+    scanner's results names, as its input and by its version, a report of that scanner its stage kept, only a scanner
+    its stage requires and kept no report of gives ``scanner_not_run``, and a stage's scanners name the platform its
+    other evaluations name. The scanner check mapping a stage calls the shipped one is the mapping this package ships,
+    and each scanner verdict comes from the mapping allowed to decide its assertion."""
     activity = ACTIVITIES[car.change.activity]
     for stage, record in car.stages.items():
         if record.scanners is not None and stage not in activity.stages_that_read_scanner_reports:
@@ -160,6 +161,7 @@ def check_scanner_results(car: CAR) -> None:
                 "and Python version of what ran"
             )
         from_scanner.setdefault(at, []).append(event)
+    check_one_platform_per_stage(car.events)
     for stage, record in car.stages.items():
         _check_shipped(stage, record)
         for event in from_scanner.get(stage, []):

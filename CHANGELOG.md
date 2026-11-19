@@ -2168,12 +2168,23 @@ keep, so any two tools agree on what a record means.
     `records_invalid/` case
     `iac_record_whose_evaluations_from_one_scanner_report_name_different_scanners`.
   - `scripts/refresh_scanner_pin.py` writes the pin from the upstream
-    releases, checking each one, and `scripts/validate_scanner_pin.py`,
-    which a new workflow runs on each platform and Python version when
-    the pin, the script or its sample plan changes, installs both
-    scanners from the pin and compares their results on a sample plan
-    with the expected ones. The workflow pins its container images by
-    digest.
+    releases, checking each one. `scripts/validate_scanner_pin.py`
+    installs both scanners from the pin and compares their results on a
+    sample plan with the expected ones. A new workflow runs it on each
+    platform and Python version when the pin, the script, its expected
+    results, the sample plan or the workflow changes. The workflow runs on
+    every pull request to `main` and every push to `dev` and skips the
+    installs otherwise, so its summary can be a required check; it pins its
+    container images by digest.
+  - A record is refused when, in a stage where a scanner's evaluation names
+    the platform it ran on, another evaluation names another platform, a
+    scanner's or the policy evaluator's: "every evaluation of the `<stage>`
+    stage that names the platform it ran on names the same one"
+    (`iltero_schemas.models.common.stage_platform.check_one_platform_per_stage`),
+    with the new `records_invalid/` case
+    `iac_record_whose_scanner_ran_on_another_platform_than_its_stages_policy_evaluator`.
+  - A change to the scanner pin raises the version, as a change to the OPA
+    pin does.
 - The tests refuse every network connection, and a layout test refuses
   imports of `http`, `socket`, `ssl`, `subprocess` and `urllib` in the
   package.

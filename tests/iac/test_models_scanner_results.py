@@ -479,6 +479,20 @@ def test_evaluations_from_one_report_that_name_different_scanners_are_refused() 
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
+def test_a_scanner_that_names_another_platform_than_its_stages_other_evaluations_is_refused() -> None:
+    record = copy.deepcopy(SCANNED)
+    ran_by_the_cli(record)
+    trivy = next(e for e in record["events"] if (e["provenance"].get("evaluator") or {}).get("engine") == "trivy")
+    for event in record["events"]:
+        evaluator = event["provenance"].get("evaluator") or {}
+        if evaluator.get("engine") == "trivy":
+            evaluator["platform"] = "windows-x86_64"
+    assert trivy["provenance"]["evaluator"]["platform"] == "windows-x86_64"
+    keep_events_files(record)
+    with pytest.raises(ValidationError, match="names the platform it ran on names the same one"):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
 def _governed_scanned() -> tuple[dict[str, Any], dict[str, Any]]:
     """The scanned record as a record of a run the server opened, and the files its plan stage kept: the server's
     scanner check mapping, and observations of reports the Iltero CLI ran."""

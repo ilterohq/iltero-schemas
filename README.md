@@ -30,8 +30,8 @@ Python 3.11 or later is required.
 
 Every consumer pins one exact version. A record checked with a different version of the contract may give different
 digests or a different compiled program. Before 1.0, any change to a computed result (a digest, a canonical form, a
-compiled program or the OPA pin) raises the minor version. To upgrade, a consumer moves its exact pin and reproduces
-the conformance vectors of the new version.
+compiled program, the OPA pin or the scanner pin) raises the minor version. To upgrade, a consumer moves its exact pin
+and reproduces the conformance vectors of the new version.
 
 ## Documentation
 

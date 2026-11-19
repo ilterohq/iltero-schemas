@@ -25,8 +25,8 @@ from iltero_schemas.scanner_check_mappings.iac.descriptor import (
     signing_input,
 )
 from iltero_schemas.signing import P256_ORDER, SCANNER_CHECK_MAPPING_SIGNING_SCOPE, base64url
-from iltero_schemas.trust import parse_bundle_keys
-from iltero_schemas.trust.keys import BundleKey
+from iltero_schemas.trust import parse_signing_keys
+from iltero_schemas.trust.keys import SigningKey
 from tests.conftest import VECTORS
 from tests.records import remove_pointer, set_pointer
 
@@ -36,7 +36,7 @@ MAPPING: dict[str, Any] = json.loads(
     (VECTORS / "scanner_check_mappings" / "iac" / "served_catalog.json").read_text(encoding="utf-8")
 )
 # The vectors' trust set: the one development key that signed the sample descriptor.
-KEYS = parse_bundle_keys((VECTORS / "bundle_keys" / "development.json").read_bytes(), development=True)
+KEYS = parse_signing_keys((VECTORS / "signing_keys" / "development.json").read_bytes(), development=True)
 CASES: list[dict[str, Any]] = json.loads(
     (VECTORS / "scanner_check_mapping_descriptors_invalid" / "iac" / "cases.json").read_text(encoding="utf-8")
 )
@@ -48,7 +48,7 @@ def _raw(der: bytes) -> bytes:
     return r.to_bytes(32, "big") + s.to_bytes(32, "big")
 
 
-def _verifies(key: BundleKey, signed: bytes, signature: bytes) -> bool:
+def _verifies(key: SigningKey, signed: bytes, signature: bytes) -> bool:
     public = load_der_public_key(key.public_key_der)
     assert isinstance(public, ec.EllipticCurvePublicKey)
     der = encode_dss_signature(int.from_bytes(signature[:32], "big"), int.from_bytes(signature[32:], "big"))

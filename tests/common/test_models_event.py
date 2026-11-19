@@ -296,7 +296,7 @@ SERVED = {
     "kind": "server",
     "tarball_digest": "sha256:" + "5" * 64,
     "content_digest": "sha256:" + "6" * 64,
-    "key_id": "iltero-bundle-2026-09",
+    "key_id": "iltero-signing-test",
 }
 
 
@@ -360,9 +360,9 @@ def test_a_resource_only_the_cloud_knows_is_a_subject_only_at_runtime() -> None:
     [
         ("server", None, None),
         ("server", "sha256:" + "6" * 64, None),
-        ("server", None, "iltero-bundle-2026-09"),
+        ("server", None, "iltero-signing-test"),
         ("local_bundle", "sha256:" + "6" * 64, None),
-        ("local_bundle", None, "iltero-bundle-2026-09"),
+        ("local_bundle", None, "iltero-signing-test"),
     ],
     ids=[
         "server naming neither",
@@ -391,7 +391,7 @@ def test_a_served_bundle_with_its_content_digest_and_key_is_accepted() -> None:
             "kind": "server",
             "tarball_digest": "sha256:" + "5" * 64,
             "content_digest": "sha256:" + "6" * 64,
-            "key_id": "iltero-bundle-2026-09",
+            "key_id": "iltero-signing-test",
         }
     )
 

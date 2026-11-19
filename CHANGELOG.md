@@ -40,7 +40,7 @@ keep, so any two tools agree on what a record means.
   | `AssertionBundleDescriptor` | How Iltero Platform serves a signed assertion bundle |
   | `ScannerCheckMappingDescriptor` | How Iltero Platform serves a signed scanner check mapping |
   | `AssertionBundle` | The bundle's own description in its `.manifest` file |
-  | `BundleSigningKeys` | The trusted bundle keys file |
+  | `SigningKeys` | The trusted signing keys file |
 
   Documents take one of two shapes. A document Iltero writes as evidence keeps
   its content at the top level, with facts about the document itself in a
@@ -163,7 +163,7 @@ keep, so any two tools agree on what a record means.
   (`EVENTS_FILE_KIND` is the `kind`). The stage's `events.digest` is the
   digest of those bytes, and its evidence register entry has
   `canonicalization: RFC8785`.
-- The `kind` of the trusted bundle keys file is
+- The `kind` of the trusted signing keys file is
   `iltero_schemas.trust.TRUST_FILE_KIND`. The `kind` of a bundle's own
   description, `iltero_schemas.models.common.bundle.BUNDLE_KIND`, sits beside the
   descriptor's `KIND`.
@@ -562,9 +562,25 @@ keep, so any two tools agree on what a record means.
   `runtime` reads no fact only Iltero Platform holds, so its event's
   `provenance.facts_source` is `null`, and an event with `server` or `none`
   there is refused.
-- The trusted bundle keys: the public keys an assertion bundle may be signed
-  with, shipped in the package with their status (active, retired or
-  revoked), and a reader that refuses development keys and every broken rule.
+- The trusted signing keys: the public keys that sign what Iltero Platform
+  serves, assertion bundles and scanner check mappings, shipped in the
+  package as `iltero_schemas/trust/signing-keys.json` (`kind: SigningKeys`)
+  with their status (active, retired or revoked), and a reader,
+  `iltero_schemas.trust.parse_signing_keys`, that refuses development keys
+  and every broken rule. The shipped keys are
+  `iltero_schemas.trust.SIGNING_KEYS`, each a `SigningKey`. The renamed
+  names:
+
+  | Before | Now |
+  | --- | --- |
+  | `BundleKey` | `SigningKey` |
+  | `BUNDLE_KEYS` | `SIGNING_KEYS` |
+  | `parse_bundle_keys` | `parse_signing_keys` |
+  | `kind: BundleSigningKeys` | `kind: SigningKeys` |
+  | `trust/bundle-keys.json` | `trust/signing-keys.json` |
+  | `vectors/bundle_keys/` | `vectors/signing_keys/` |
+  | test key ids `iltero-bundle-test`, `iltero-bundle-2026-09` | `iltero-signing-test`, a throwaway key no trust file holds |
+
   The shipped set is empty.
   CI refuses a change to the set that does not raise the version, and a
   release that changes it raises the major or minor version.
@@ -602,10 +618,10 @@ keep, so any two tools agree on what a record means.
   signed once with a development key),
   `scanner_check_mapping_descriptors_invalid/` (10 refusals, each naming
   whether the model or the check refuses it in `refused_by`) and
-  `bundle_keys/development.json`, the trust file holding that one
+  `signing_keys/development.json`, the trust file holding that one
   development key. `scripts/sign_descriptor_vectors.py` signs the sample
   again with a new throwaway development key, since a signature cannot be
-  rebuilt from its input. The trusted bundle keys verify both assertion
+  rebuilt from its input. The trusted signing keys verify both assertion
   bundles and served scanner check mappings.
   - `iltero_schemas.bundle.normalized_signature` now raises
     `SignatureError`, from `iltero_schemas.signing`, instead of

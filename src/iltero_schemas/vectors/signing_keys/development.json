@@ -1,6 +1,6 @@
 {
   "apiVersion": "iltero.com/v1",
-  "kind": "BundleSigningKeys",
+  "kind": "SigningKeys",
   "keys": [
     {
       "key_id": "dev-scanner-check-mapping-vectors",

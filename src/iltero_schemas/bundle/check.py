@@ -51,7 +51,7 @@ from iltero_schemas.compiler import COMPILER_VERSION
 from iltero_schemas.models.common.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 from iltero_schemas.signing import SIGNATURE_BYTES
-from iltero_schemas.trust import BundleKey
+from iltero_schemas.trust import SigningKey
 
 # The tar entry types OPA loads as files; it skips every other type, so no other is accepted here either.
 _PLAIN_FILE = (tarfile.REGTYPE, tarfile.AREGTYPE)
@@ -68,7 +68,7 @@ class UnverifiedBundle:
     Nothing in it may be evaluated until the signature is verified with ``key``.
     """
 
-    key: BundleKey
+    key: SigningKey
     files: Mapping[str, bytes]
 
 
@@ -145,10 +145,10 @@ def signature_of(descriptor: BundleDescriptor) -> tuple[bytes, bytes]:
     return _signature(read_tarball(base64.b64decode(descriptor.tarball)))
 
 
-def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]) -> UnverifiedBundle:
+def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, SigningKey]) -> UnverifiedBundle:
     """Check everything about ``descriptor`` but the signature's mathematics.
 
-    ``keys`` is the trust set: ``iltero_schemas.trust.BUNDLE_KEYS``, or a
+    ``keys`` is the trust set: ``iltero_schemas.trust.SIGNING_KEYS``, or a
     development tool's own set. Raises ``BundleError`` naming the first rule
     that fails; returns the key and the files that passed.
     """

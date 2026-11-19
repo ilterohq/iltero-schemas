@@ -310,7 +310,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "scanner_check_mappings_project_invalid",
         "scanner_check_mapping_descriptors",
         "scanner_check_mapping_descriptors_invalid",
-        "bundle_keys",
+        "signing_keys",
         "buildx",
         "canonical",
         "compiler",

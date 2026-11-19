@@ -43,7 +43,7 @@ SERVER_BUNDLE = {
     "kind": "server",
     "tarball_digest": "sha256:" + "5" * 64,
     "content_digest": "sha256:" + "6" * 64,
-    "key_id": "iltero-bundle-2026-09",
+    "key_id": "iltero-signing-test",
 }
 
 

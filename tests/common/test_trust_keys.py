@@ -1,4 +1,4 @@
-"""The trusted bundle keys: the shipped file holds, and every rule of a trust file refuses what breaks it."""
+"""The trusted signing keys: the shipped file holds, and every rule of a trust file refuses what breaks it."""
 
 from __future__ import annotations
 
@@ -11,16 +11,16 @@ import pytest
 from iltero_schemas.canonical import digest
 from iltero_schemas.trust import (
     API_VERSION,
-    BUNDLE_KEYS,
     DEVELOPMENT_KEY_PREFIX,
+    SIGNING_KEYS,
     TRUST_FILE_DIGEST,
     TRUST_FILE_KIND,
     TrustFileError,
-    parse_bundle_keys,
+    parse_signing_keys,
 )
 from tests.conftest import ROOT
 
-TRUST_FILE = ROOT / "src" / "iltero_schemas" / "trust" / "bundle-keys.json"
+TRUST_FILE = ROOT / "src" / "iltero_schemas" / "trust" / "signing-keys.json"
 # Two P-256 public keys made for these tests; their private halves were never kept.
 KEY_A = (
     "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEi9AB0NG9vP6rFJMlTsN6H0ZeJoH8"
@@ -63,20 +63,20 @@ def _file(*entries: dict[str, Any], **top: Any) -> bytes:
 
 def test_the_shipped_file_is_valid_and_its_digest_is_of_its_bytes() -> None:
     raw = TRUST_FILE.read_bytes()
-    assert parse_bundle_keys(raw, development=False) == BUNDLE_KEYS
+    assert parse_signing_keys(raw, development=False) == SIGNING_KEYS
     assert TRUST_FILE_DIGEST == digest(raw)
 
 
 def test_the_shipped_file_holds_no_development_key() -> None:
-    assert not any(key_id.startswith(DEVELOPMENT_KEY_PREFIX) for key_id in BUNDLE_KEYS)
+    assert not any(key_id.startswith(DEVELOPMENT_KEY_PREFIX) for key_id in SIGNING_KEYS)
 
 
 def test_an_empty_set_is_allowed() -> None:
-    assert parse_bundle_keys(_file(), development=False) == {}
+    assert parse_signing_keys(_file(), development=False) == {}
 
 
 def test_a_valid_key_is_read_with_its_der_bytes() -> None:
-    key = parse_bundle_keys(_file(_entry("iltero-bundle-2026-09")), development=False)["iltero-bundle-2026-09"]
+    key = parse_signing_keys(_file(_entry("iltero-signing-test")), development=False)["iltero-signing-test"]
     assert key.public_key_der == base64.b64decode(KEY_A)
     assert key.algorithm == "ES256" and key.status == "active"
 
@@ -105,12 +105,12 @@ def test_a_valid_key_is_read_with_its_der_bytes() -> None:
     ids=["active", "retired", "revoked", "revoked after retiring"],
 )
 def test_the_status_decides_what_a_key_may_do(fields: dict[str, Any], can_sign: bool, can_verify: bool) -> None:
-    key = parse_bundle_keys(_file(_entry("k1", **fields)), development=False)["k1"]
+    key = parse_signing_keys(_file(_entry("k1", **fields)), development=False)["k1"]
     assert (key.can_sign, key.can_verify) == (can_sign, can_verify)
 
 
 def test_the_keys_are_read_only() -> None:
-    keys = parse_bundle_keys(_file(_entry("k1")), development=False)
+    keys = parse_signing_keys(_file(_entry("k1")), development=False)
     with pytest.raises(TypeError):
         keys["k2"] = keys["k1"]  # type: ignore[index]
 
@@ -119,17 +119,17 @@ def test_the_keys_are_read_only() -> None:
     ("development", "key_id", "message"),
     [
         (False, "dev-0a1b2c3d", "is not trusted here"),
-        (True, "iltero-bundle-2026-09", "only a development key"),
+        (True, "iltero-signing-test", "only a development key"),
     ],
     ids=["a development key in the shipped set", "a real key in a development file"],
 )
 def test_development_keys_and_real_keys_never_mix(development: bool, key_id: str, message: str) -> None:
     with pytest.raises(TrustFileError, match=message):
-        parse_bundle_keys(_file(_entry(key_id)), development=development)
+        parse_signing_keys(_file(_entry(key_id)), development=development)
 
 
 def test_a_development_tool_reads_its_own_development_keys() -> None:
-    assert list(parse_bundle_keys(_file(_entry("dev-0a1b2c3d")), development=True)) == ["dev-0a1b2c3d"]
+    assert list(parse_signing_keys(_file(_entry("dev-0a1b2c3d")), development=True)) == ["dev-0a1b2c3d"]
 
 
 @pytest.mark.parametrize(
@@ -220,7 +220,7 @@ def test_a_development_tool_reads_its_own_development_keys() -> None:
 )
 def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str) -> None:
     with pytest.raises(TrustFileError, match=message):
-        parse_bundle_keys(_file(entry), development=False)
+        parse_signing_keys(_file(entry), development=False)
 
 
 @pytest.mark.parametrize(
@@ -229,7 +229,7 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
         (_file(_entry("k2"), _entry("k1", KEY_B)), "key-id order"),
         (_file(_entry("k1"), _entry("k1", KEY_B)), "no key id twice"),
         (_file(_entry("k1"), _entry("k2")), "two key ids"),
-        (_file(apiVersion="iltero.io/bundle-keys/v1"), "apiVersion"),
+        (_file(apiVersion="iltero.io/signing-keys/v1"), "apiVersion"),
         (_file(apiVersion=API_VERSION + "1"), "apiVersion"),
         (_file(kind="AssertionBundleDescriptor"), "kind"),
         (_file(kind=TRUST_FILE_KIND.lower()), "kind"),
@@ -270,4 +270,4 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
 )
 def test_a_file_that_breaks_a_rule_is_refused(raw: bytes, message: str) -> None:
     with pytest.raises(TrustFileError, match=message):
-        parse_bundle_keys(raw, development=False)
+        parse_signing_keys(raw, development=False)

@@ -1,16 +1,16 @@
-"""The trusted bundle keys: which public keys may sign what the server serves, and which no longer may.
+"""The trusted signing keys: which public keys may sign what the server serves, and which no longer may.
 
 The server signs every assertion bundle and every scanner check mapping it serves, with the same keys; each
 signature names the kind of document it is over, so one is never accepted for the other. A tool checks the
 signature against the keys listed in
-``bundle-keys.json`` next to this module. The list ships inside the package,
+``signing-keys.json`` next to this module. The list ships inside the package,
 so a tool that pins one exact package version also pins which keys it trusts,
 and never fetches trust over the network.
 
 A key has one of three statuses:
 
-- ``active``: bundles may be signed with it, and its signatures verify;
-- ``retired``: nothing new is signed with it, but bundles it signed still verify;
+- ``active``: documents may be signed with it, and its signatures verify;
+- ``retired``: nothing new is signed with it, but what it signed still verifies;
 - ``revoked``: its signatures never verify again, whenever they were made.
 
 A signature carries no trusted time, so revocation applies to every signature
@@ -45,7 +45,7 @@ from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
 
-TRUST_FILE_KIND = "BundleSigningKeys"
+TRUST_FILE_KIND = "SigningKeys"
 # Local development keys carry this prefix, and only a development tool accepts them.
 DEVELOPMENT_KEY_PREFIX = "dev-"
 KeyStatus = Literal["active", "retired", "revoked"]
@@ -78,7 +78,7 @@ class TrustFileError(ValueError):
 
 
 @dataclass(frozen=True)
-class BundleKey:
+class SigningKey:
     """One public key, its status, and when that status began."""
 
     key_id: str
@@ -94,7 +94,7 @@ class BundleKey:
 
     @property
     def can_sign(self) -> bool:
-        """Whether a new bundle may be signed with this key."""
+        """Whether a new bundle or scanner check mapping may be signed with this key."""
         return self.status == "active"
 
     @property
@@ -140,7 +140,7 @@ def _public_key(entry: dict[str, Any], where: str) -> bytes:
     return der
 
 
-def _status_dates(key: BundleKey, where: str) -> None:
+def _status_dates(key: SigningKey, where: str) -> None:
     """The dates a status needs are present, the others absent, and in the order the statuses were reached."""
     if key.status == "retired" and key.retired_at is None:
         raise TrustFileError(f"{where}: a retired key has a retired_at")
@@ -158,7 +158,7 @@ def _status_dates(key: BundleKey, where: str) -> None:
         raise TrustFileError(f"{where}: valid_from, retired_at and revoked_at must be in that order")
 
 
-def _key(entry: Any, where: str, *, development: bool) -> BundleKey:
+def _key(entry: Any, where: str, *, development: bool) -> SigningKey:
     if not isinstance(entry, dict) or set(entry) != _FIELDS:
         raise TrustFileError(f"{where}: must have exactly the fields {', '.join(sorted(_FIELDS))}")
     key_id = entry["key_id"]
@@ -175,7 +175,7 @@ def _key(entry: Any, where: str, *, development: bool) -> BundleKey:
         raise TrustFileError(f"{where}.algorithm: must be ES256")
     if not isinstance(entry["status"], str) or entry["status"] not in _STATUSES:
         raise TrustFileError(f"{where}.status: must be one of {', '.join(sorted(_STATUSES))}")
-    key = BundleKey(
+    key = SigningKey(
         key_id=key_id,
         algorithm="ES256",
         public_key_der=_public_key(entry, where),
@@ -190,7 +190,7 @@ def _key(entry: Any, where: str, *, development: bool) -> BundleKey:
     return key
 
 
-def parse_bundle_keys(raw: bytes, *, development: bool) -> Mapping[str, BundleKey]:
+def parse_signing_keys(raw: bytes, *, development: bool) -> Mapping[str, SigningKey]:
     """The keys of a trust file, by key id, read-only; raises ``TrustFileError`` on any broken rule.
 
     ``development`` is true only for a development tool reading its own local file:
@@ -218,6 +218,6 @@ def parse_bundle_keys(raw: bytes, *, development: bool) -> Mapping[str, BundleKe
     return MappingProxyType({key.key_id: key for key in keys})
 
 
-_TRUST_FILE: bytes = resources.files("iltero_schemas.trust").joinpath("bundle-keys.json").read_bytes()
+_TRUST_FILE: bytes = resources.files("iltero_schemas.trust").joinpath("signing-keys.json").read_bytes()
 TRUST_FILE_DIGEST: str = digest(_TRUST_FILE)
-BUNDLE_KEYS: Mapping[str, BundleKey] = parse_bundle_keys(_TRUST_FILE, development=False)
+SIGNING_KEYS: Mapping[str, SigningKey] = parse_signing_keys(_TRUST_FILE, development=False)

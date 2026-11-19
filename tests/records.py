@@ -266,7 +266,7 @@ SERVER_BUNDLE: dict[str, Any] = {
     "kind": "server",
     "tarball_digest": "sha256:" + "5" * 64,
     "content_digest": "sha256:" + "6" * 64,
-    "key_id": "iltero-bundle-2026-09",
+    "key_id": "iltero-signing-test",
 }
 SERVED_MAPPING_DESCRIPTOR_DIGEST = "sha256:" + "7" * 64
 # The scanner check mapping the server serves: one catalog holding the project's entries and the shipped ones.

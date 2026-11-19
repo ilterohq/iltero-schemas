@@ -21,7 +21,7 @@ from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
 from iltero_schemas.models.iac.scanner_check_mapping_descriptor import DESCRIPTOR_KIND, ScannerCheckMappingDescriptor
 from iltero_schemas.scanner_check_mappings.iac.paths import STARTER_MAPPING_ID
-from iltero_schemas.trust import BundleKey
+from iltero_schemas.trust import SigningKey
 
 # A served mapping is one of Iltero's: its id is in Iltero's namespace, under this name.
 SERVED_MAPPING_ID_PREFIX = f"{ILTERO_ID_PREFIX}SCANNER_CHECKS."
@@ -37,7 +37,7 @@ class UnverifiedScannerCheckMapping:
     mapping. No scanner result may be read with the mapping until the signature over ``signed`` verifies with ``key``.
     """
 
-    key: BundleKey
+    key: SigningKey
     signed: bytes
     signature: bytes
     mapping: ScannerCheckMapping
@@ -93,11 +93,11 @@ def descriptor(mapping: Mapping[str, Any], *, key_id: str, signature: bytes) -> 
 
 
 def check_scanner_check_mapping_descriptor(
-    served: ScannerCheckMappingDescriptor, keys: Mapping[str, BundleKey]
+    served: ScannerCheckMappingDescriptor, keys: Mapping[str, SigningKey]
 ) -> UnverifiedScannerCheckMapping:
     """Check everything about ``served`` but the signature's mathematics.
 
-    ``keys`` is the trust set: ``iltero_schemas.trust.BUNDLE_KEYS``, or a development tool's own set. Raises
+    ``keys`` is the trust set: ``iltero_schemas.trust.SIGNING_KEYS``, or a development tool's own set. Raises
     ``ScannerCheckMappingDescriptorError`` naming the first rule that fails, in this order: the key, the mapping, its
     digest, the signature's form.
     """

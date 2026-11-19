@@ -3,7 +3,7 @@
 An ES256 signature is not a pure function of its input, so ``refresh_vectors.py`` cannot rebuild a signed vector.
 This script makes a throwaway development key (its id starts ``dev-``), signs
 ``vectors/scanner_check_mappings/iac/served_catalog.json`` with it and then forgets the private key. It writes the key's
-public half to the trust file ``vectors/bundle_keys/development.json``, the signed descriptor to
+public half to the trust file ``vectors/signing_keys/development.json``, the signed descriptor to
 ``vectors/scanner_check_mapping_descriptors/iac/served_catalog.json``, and every refusal case whose value is derived
 from the signature. Run ``refresh_vectors.py`` afterwards to update the digests.
 
@@ -30,13 +30,13 @@ from iltero_schemas.scanner_check_mappings.iac.descriptor import (
     signing_input,
 )
 from iltero_schemas.signing import P256_ORDER, SIGNATURE_BYTES, base64url, from_base64url
-from iltero_schemas.trust import parse_bundle_keys
+from iltero_schemas.trust import parse_signing_keys
 from iltero_schemas.trust.keys import TRUST_FILE_KIND
 
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
 MAPPING = VECTORS / "scanner_check_mappings" / "iac" / "served_catalog.json"
-TRUST_FILE = VECTORS / "bundle_keys" / "development.json"
+TRUST_FILE = VECTORS / "signing_keys" / "development.json"
 DESCRIPTOR = VECTORS / "scanner_check_mapping_descriptors" / "iac" / "served_catalog.json"
 CASES = VECTORS / "scanner_check_mapping_descriptors_invalid" / "iac" / "cases.json"
 KEY_ID = "dev-scanner-check-mapping-vectors"
@@ -87,7 +87,7 @@ def main() -> int:
     }
     trust_file = {"apiVersion": API_VERSION, "kind": TRUST_FILE_KIND, "keys": [entry]}
     # The signer checks its own output, as a server does before it serves a descriptor.
-    keys = parse_bundle_keys(json.dumps(trust_file).encode("utf-8"), development=True)
+    keys = parse_signing_keys(json.dumps(trust_file).encode("utf-8"), development=True)
     checked = check_scanner_check_mapping_descriptor(signed, keys)
     raw = checked.signature
     key.public_key().verify(

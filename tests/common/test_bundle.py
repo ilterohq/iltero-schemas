@@ -36,17 +36,17 @@ from iltero_schemas.compiler import COMPILER_VERSION, package_of
 from iltero_schemas.models.common.bundle import BundleDescriptor
 from iltero_schemas.opa import CAPABILITIES, CAPABILITIES_DIGEST
 from iltero_schemas.signing import P256_ORDER, SignatureError
-from iltero_schemas.trust import BundleKey, parse_bundle_keys
+from iltero_schemas.trust import SigningKey, parse_signing_keys
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
 SOURCES = [path.read_text(encoding="utf-8") for path in sorted(STARTER_ASSERTIONS.glob("*.yaml"))]
-KEY_ID = "iltero-bundle-test"
+KEY_ID = "iltero-signing-test"
 MINIMUM_CLI_VERSION = "0.2.0"
 # One key for the whole module: nothing here depends on which key it is.
 PRIVATE_KEY = ec.generate_private_key(ec.SECP256R1())
 
 
-def _keys(status: str = "active") -> Mapping[str, BundleKey]:
+def _keys(status: str = "active") -> Mapping[str, SigningKey]:
     der = PRIVATE_KEY.public_key().public_bytes(
         serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo
     )
@@ -67,8 +67,8 @@ def _keys(status: str = "active") -> Mapping[str, BundleKey]:
         "revocation_reason": None,
         **dates,
     }
-    return parse_bundle_keys(
-        json.dumps({"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": [entry]}).encode(),
+    return parse_signing_keys(
+        json.dumps({"apiVersion": "iltero.com/v1", "kind": "SigningKeys", "keys": [entry]}).encode(),
         development=False,
     )
 

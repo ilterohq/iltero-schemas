@@ -44,7 +44,7 @@ DESCRIPTOR: dict[str, Any] = {
     "kind": KIND,
     "content_digest": "sha256:" + "3" * 64,
     "tarball_digest": "sha256:" + "4" * 64,
-    "key_id": "iltero-bundle-2026-09",
+    "key_id": "iltero-signing-test",
     "algorithm": "ES256",
     "compiler_version": "1",
     "capabilities_digest": "sha256:" + "5" * 64,

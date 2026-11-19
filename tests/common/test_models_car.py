@@ -629,7 +629,7 @@ def test_a_clock_time_written_another_way_is_the_same_instant() -> None:
 
 def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
     document = _record()
-    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-bundle-2026-09"
+    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-signing-test"
     with pytest.raises(ValidationError, match="exactly when its kind is server"):
         CAR.model_validate(document)
 

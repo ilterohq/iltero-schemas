@@ -159,7 +159,7 @@ def test_a_served_mapping_names_its_descriptor_and_key_no_file_and_never_the_sta
 def test_only_a_served_mapping_names_a_descriptor_and_signing_key(origin: str) -> None:
     used = _mappings(copy.deepcopy(SCANNED))[0 if origin == "file" else 1]
     with pytest.raises(ValidationError, match="exactly when it was served"):
-        ScannerCheckMappingUsed.model_validate({**used, "key_id": "iltero-bundle-2026-09"})
+        ScannerCheckMappingUsed.model_validate({**used, "key_id": "iltero-signing-test"})
 
 
 def test_the_copy_of_a_project_mapping_names_the_file_it_was_read_from() -> None:

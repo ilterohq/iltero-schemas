@@ -17,7 +17,7 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [PolicySource](#policysource)
 - [AssertionBundleDescriptor](#assertionbundledescriptor)
 - [ScannerCheckMappingDescriptor](#scannercheckmappingdescriptor)
-- [BundleSigningKeys](#bundlesigningkeys)
+- [SigningKeys](#signingkeys)
 
 ## Conventions
 
@@ -43,7 +43,7 @@ its parent.
 | `AssertionBundleDescriptor` | [How Iltero Platform serves a signed assertion bundle](#assertionbundledescriptor) | `iltero_schemas.models.common.bundle.BundleDescriptor` |
 | `ScannerCheckMappingDescriptor` | [How Iltero Platform serves a signed scanner check mapping](#scannercheckmappingdescriptor) | `iltero_schemas.models.iac.scanner_check_mapping_descriptor.ScannerCheckMappingDescriptor` |
 | `AssertionBundle` | The assertion bundle's own description, in its `.manifest` file (`iltero_schemas.models.common.bundle.BUNDLE_KIND`) | `iltero_schemas.bundle.check_descriptor`, which rebuilds it |
-| `BundleSigningKeys` | [The trusted bundle keys](#bundlesigningkeys) | `iltero_schemas.trust.parse_bundle_keys` |
+| `SigningKeys` | [The trusted signing keys](#signingkeys) | `iltero_schemas.trust.parse_signing_keys` |
 
 Documents take one of two shapes:
 
@@ -4055,7 +4055,7 @@ low-S form whichever form the signer returned.
 ### Checking a served descriptor
 
 `check_scanner_check_mapping_descriptor(served, keys)` takes the descriptor, read with its model, and the trust set:
-`iltero_schemas.trust.BUNDLE_KEYS`, or a development tool's own set. It checks everything but the signature's
+`iltero_schemas.trust.SIGNING_KEYS`, or a development tool's own set. It checks everything but the signature's
 mathematics and raises `ScannerCheckMappingDescriptorError` naming the first rule that fails, in this order:
 
 | Rule | Refused with |
@@ -4084,27 +4084,27 @@ The check returns an `UnverifiedScannerCheckMapping`:
 The tool then verifies the ES256 signature over `signed` with `key`. No scanner result is read with the mapping until
 it verifies.
 
-## BundleSigningKeys
+## SigningKeys
 
-The trusted bundle keys file lists the public keys that may sign an assertion bundle or a [scanner check
-mapping Iltero Platform serves](#scannercheckmappingdescriptor). It ships inside the package
-as `iltero_schemas/trust/bundle-keys.json`, so a tool that pins one package version also pins the keys it trusts.
+The trusted signing keys file lists the public keys that sign what Iltero Platform serves: assertion bundles and
+[scanner check mappings](#scannercheckmappingdescriptor). It ships inside the package
+as `iltero_schemas/trust/signing-keys.json`, so a tool that pins one package version also pins the keys it trusts.
 
-- **apiVersion:** `iltero.com/v1`, with `kind: BundleSigningKeys`
-- **Reader:** `iltero_schemas.trust.parse_bundle_keys`, with the shipped mapping in `iltero_schemas.trust.BUNDLE_KEYS`,
+- **apiVersion:** `iltero.com/v1`, with `kind: SigningKeys`
+- **Reader:** `iltero_schemas.trust.parse_signing_keys`, with the shipped mapping in `iltero_schemas.trust.SIGNING_KEYS`,
   the digest of the file's bytes in `iltero_schemas.trust.TRUST_FILE_DIGEST` and its `kind` in
   `iltero_schemas.trust.TRUST_FILE_KIND`
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `apiVersion`, `kind` | string | `iltero.com/v1` and `BundleSigningKeys`. |
+| `apiVersion`, `kind` | string | `iltero.com/v1` and `SigningKeys`. |
 | `keys` | list | Each key's `key_id`, `algorithm` (`ES256`), `public_key` (an uncompressed P-256 SubjectPublicKeyInfo, base64), `spki_sha256`, `status`, `valid_from`, `retired_at`, `revoked_at` and `revocation_reason`. |
 
 Key rules:
 
 - The file has exactly the fields `apiVersion`, `kind` and `keys` ("must have exactly the fields apiVersion, kind
   and keys"), with this `apiVersion` ("apiVersion: must be iltero.com/v1") and this `kind` ("kind: must be
-  BundleSigningKeys").
+  SigningKeys").
 - `active` keys sign and verify. `retired` keys only verify. `revoked` keys never verify again, whenever the
   signature was made.
 - Keys are never removed. A status only moves forward: `active` to `retired` or `revoked`, `retired` to `revoked`.

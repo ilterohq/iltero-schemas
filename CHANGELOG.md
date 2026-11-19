@@ -501,8 +501,9 @@ keep, so any two tools agree on what a record means.
   unit, the environment key and the checked content (its kind, digest,
   digest rule version and tool), so an
   approval of a change counts only for that content, in that unit and
-  environment. A record's environment key is its `subject.environment`, null
-  for a change made outside any environment, and a record of a run Iltero
+  environment. A record's environment key is the name of its
+  `subject.environment`, null for a change made outside any environment,
+  and a record of a run Iltero
   Platform opened always names one; an evaluation input's is
   `organization_scope.environment.name`. A record names
   its project's units file as the writer read it (`units_file`: path, digest
@@ -1904,3 +1905,18 @@ keep, so any two tools agree on what a record means.
   observations and record vector gains `results_not_listed`, with three new
   `--quiet` captures from Checkov 3.3.8, four new verdict cases and one new
   integrity case.
+- A record's `subject.environment` is no longer only a name. It has the
+  shape of an evaluation input's `organization_scope.environment`: its
+  `name`, and `production`, whether Iltero Platform's environment policy
+  treats it as production. It is still `null` when the change is for no
+  environment, such as an image build. A record names whether its
+  environment is production, as `true` or `false`, exactly when Iltero
+  Platform opened its run, and holds the unknown marker
+  `{"__unknown": true, "reason": "server_facts_unavailable"}` when the tool
+  did, since a tool cannot know Iltero Platform's policy; any other record is
+  refused with "a record names whether its environment is production
+  exactly when the server opened its run, and holds the unknown marker
+  when the tool opened it". The environment's name still decides which
+  exceptions are in force and enters the change digest;
+  `RecordSubject.environment_name` gives it. Every record vector and case writes the new shape, with two new
+  invalid record cases.

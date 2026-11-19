@@ -81,6 +81,20 @@ def record(**changes: Any) -> dict[str, Any]:
     return document
 
 
+# The production value a test gives the environment of a run the server opened when the test is not about it: the
+# sample records' environment is called production, and a server's policy is the test's to choose.
+SERVED_PRODUCTION = True
+
+
+def with_the_servers_production(document: dict[str, Any], *, production: bool) -> dict[str, Any]:
+    """``document`` naming ``production`` as whether its environment is production, as a record of a run the server
+    opened does; a record of a change for no environment is left as it is."""
+    environment = document["subject"].get("environment")
+    if isinstance(environment, dict):
+        environment["production"] = production
+    return document
+
+
 def stage(name: str, **changes: Any) -> dict[str, Any]:
     """The plan stage copied under another name, counting its one subject (its change or deployment) and no check, and
     redacting what that stage reads, or nothing where the record keeps that part as it is."""
@@ -209,6 +223,7 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
     that read facts reading them from the server."""
     served_document = copy.deepcopy(document)
     served_document["governance"]["run_opened_by"] = "server"
+    with_the_servers_production(served_document, production=SERVED_PRODUCTION)
     for coverage in [served_document["coverage"], *(s["coverage"] for s in served_document["stages"].values())]:
         coverage["assertions_required"]["origin"] = "server_pinned"
     for event in served_document["events"]:

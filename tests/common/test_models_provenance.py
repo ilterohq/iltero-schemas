@@ -13,6 +13,7 @@ from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IMAGE_BUILD_ACTIVITY, IMAGE_DEPLOY_ACTIVITY
+from iltero_schemas.models.common.facts import ServerFactsUnavailable
 from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.scanners import ILTERO_CLI
 from iltero_schemas.models.common.subjects import subject_key
@@ -21,6 +22,7 @@ from tests.records import (
     DEPLOYED,
     SCANNERS,
     SERVED_MAPPING_USED,
+    SERVED_PRODUCTION,
     UNKNOWN,
     from_the_servers_bundle,
     keep_events_files,
@@ -33,6 +35,7 @@ from tests.records import (
     stage,
     valid_case_record,
     with_commit_review_check,
+    with_the_servers_production,
 )
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
@@ -52,6 +55,7 @@ def _opened_by_the_server() -> dict[str, Any]:
             "coverage.assertions_required.origin": "server_pinned",
         }
     )
+    with_the_servers_production(document, production=SERVED_PRODUCTION)
     keep_no_served_exceptions(document)
     from_the_servers_bundle(document)
     keep_events_files(document)
@@ -270,4 +274,25 @@ def test_a_record_of_a_run_the_tool_opened_applies_no_scanner_check_mapping_the_
     document["stages"]["plan"]["scanners"] = scanners
     keep_the_scanner_files(document)
     with pytest.raises(ValidationError, match="applies no scanner check mapping the server served"):
+        CAR.model_validate(document, context=_READER)
+
+
+PRODUCTION_RULE = "names whether its environment is production exactly when the server opened its run"
+
+
+def test_a_record_of_a_run_the_tool_opened_keeps_the_unknown_marker_for_whether_its_environment_is_production() -> None:
+    document = record()
+    environment = CAR.model_validate(document, context=_READER).subject.environment
+    assert environment is not None and isinstance(environment.production, ServerFactsUnavailable)
+    document["subject"]["environment"]["production"] = True
+    with pytest.raises(ValidationError, match=PRODUCTION_RULE):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_record_of_a_run_the_server_opened_names_whether_its_environment_is_production() -> None:
+    document = _opened_by_the_server()
+    environment = CAR.model_validate(document, context=_READER).subject.environment
+    assert environment is not None and environment.production is SERVED_PRODUCTION
+    document["subject"]["environment"]["production"] = dict(UNKNOWN)
+    with pytest.raises(ValidationError, match=PRODUCTION_RULE):
         CAR.model_validate(document, context=_READER)

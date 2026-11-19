@@ -278,7 +278,7 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     change = _body(car)
     problems: list[tuple[str, str]] = []
     checked = _checked_content(car).model_dump(mode="json")
-    if change.digest != change_digest(IAC_CHANGE_TYPE, car.unit, car.subject.environment, checked):
+    if change.digest != change_digest(IAC_CHANGE_TYPE, car.unit, car.subject.environment_name, checked):
         problems.append(("change.digest", "is not the digest of the change type, unit, environment and plan"))
     if change.drift_check is not None and change.drift_check.change_digest != change.digest:
         problems.append(("change.drift_check.change_digest", "is not change.digest"))

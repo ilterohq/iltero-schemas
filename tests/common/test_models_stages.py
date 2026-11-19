@@ -19,6 +19,7 @@ from tests.records import (
     DEPLOYED,
     NOT_READ_BY_THE_STAGE,
     RECORD,
+    SERVED_PRODUCTION,
     UNKNOWN,
     VERIFIED,
     add_built_in,
@@ -27,6 +28,7 @@ from tests.records import (
     keep_no_served_exceptions,
     served,
     top_level,
+    with_the_servers_production,
 )
 from tests.records import set_path as _set
 from tests.records import stage as _stage
@@ -398,7 +400,10 @@ POLICY_LEAVES_OUT_POST_VERIFY = {
 
 
 def test_the_environment_policy_of_a_run_the_server_opened_can_leave_out_post_verify() -> None:
-    scoped = _record(**POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server"})
+    scoped = with_the_servers_production(
+        _record(**POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server"}),
+        production=SERVED_PRODUCTION,
+    )
     for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
     keep_no_served_exceptions(scoped)

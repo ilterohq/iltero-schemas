@@ -109,7 +109,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -193,7 +194,8 @@
         ]
       },
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/failed_checks_excepted": 1
+      "/stages/plan/coverage/failed_checks_excepted": 1,
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -295,7 +297,8 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/coverage/failed_checks_excepted": 2,
       "/stages/plan/verdict/value": "undecided",
-      "/verdict/value": "undecided"
+      "/verdict/value": "undecided",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -412,7 +415,8 @@
       "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
       "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1,
       "/stages/plan/verdict/reason": "every_failure_excepted",
-      "/verdict/reason": "every_failure_excepted"
+      "/verdict/reason": "every_failure_excepted",
+      "/subject/environment/production": false
     },
     "remove": []
   },
@@ -1360,7 +1364,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -1435,7 +1440,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -2000,7 +2006,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -2115,7 +2122,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": []
   },
@@ -2910,7 +2918,8 @@
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
       "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/pre_deploy/reference_time/source": "server"
+      "/stages/pre_deploy/reference_time/source": "server",
+      "/subject/environment/production": true
     },
     "remove": []
   },

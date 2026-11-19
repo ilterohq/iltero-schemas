@@ -997,7 +997,7 @@ with a regulatory framework.
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `governance` | object | `run_opened_by`: `server` when the writer says Iltero Platform opened the run, `local` when the tool opened it on its own. Only Iltero Platform confirms that it opened a run, by its `run.id`. |
-| `subject` | object | What the record is about (`iltero_schemas.models.common.record_subject.RecordSubject`): `kind: change`, the `environment`, the `unit`, the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`, the `project_directory`: the project's directory relative to the repository's root, `.` for the root (`iltero_schemas.models.common.fields.DirectoryPath`), and the `project_tree`: that directory's git tree at the record's commit (see the project tree rule below). Every project path the record names is relative to it, and a reader can follow one to the repository only with the record's repository and commit; a record of a local run may name no repository. `project_directory` and `project_tree` are not part of `source`, which an evaluation reads, so they change no evaluation input. `project_tree` is `{"id": <git object id>}` (`ProjectTree`), required: git's id of the names, file modes and contents of every file git tracks under the project directory at the commit, the commit's root tree for `.`. It covers no uncommitted, untracked or ignored file, no file outside the directory, a submodule only by the commit it points at, and no variable, state or tool version. Its `id` uses the same hash as `source.commit.sha`, both 40 characters or both 64: "the project tree's id and the commit's id use the same hash: both are 40 or both 64 characters long". `project_directory` follows the directory rule below: a bad value is refused with "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'", or "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon". |
+| `subject` | object | What the record is about (`iltero_schemas.models.common.record_subject.RecordSubject`): `kind: change`, the `environment`: the environment the change is for, in the shape of an [AssuranceContext](#assurancecontext)'s `organization_scope.environment` (`iltero_schemas.models.common.context.Environment`), with its `name` and `production`, whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run the tool opened (see the rules below); `null` when the change is for no environment, such as an image build (`RecordSubject.environment_name` gives the name, or `null`), the `unit`, the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`, the `project_directory`: the project's directory relative to the repository's root, `.` for the root (`iltero_schemas.models.common.fields.DirectoryPath`), and the `project_tree`: that directory's git tree at the record's commit (see the project tree rule below). Every project path the record names is relative to it, and a reader can follow one to the repository only with the record's repository and commit; a record of a local run may name no repository. `project_directory` and `project_tree` are not part of `source`, which an evaluation reads, so they change no evaluation input. `project_tree` is `{"id": <git object id>}` (`ProjectTree`), required: git's id of the names, file modes and contents of every file git tracks under the project directory at the commit, the commit's root tree for `.`. It covers no uncommitted, untracked or ignored file, no file outside the directory, a submodule only by the commit it points at, and no variable, state or tool version. Its `id` uses the same hash as `source.commit.sha`, both 40 characters or both 64: "the project tree's id and the commit's id use the same hash: both are 40 or both 64 characters long". `project_directory` follows the directory rule below: a bad value is refused with "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'", or "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon". |
 | `change` | object | The change the record is about: the body of its [activity](#change-types-and-activities), named by `change.activity` (see [The `iac_change` body](#the-iac_change-body), [The `image_build` body](#the-image_build-body) and [The `image_deploy` body](#the-image_deploy-body)). |
 | `units_file` | object or null | The project's [units file](#units-file) as the writer read it. `null` for a project that declares none. |
 | `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
@@ -1540,6 +1540,12 @@ Key rules:
   run (`run_type: change`), `subject.environment` names the environment the run was opened for. A build run belongs
   to no environment, whoever opened it. Either way the record is the writer's own: only Iltero Platform can confirm a
   run it opened, by its `run.id`.
+- A record that names an environment says whether it is production, as `true` or `false`, exactly when Iltero
+  Platform opened its run, and holds the unknown marker `{"__unknown": true, "reason": "server_facts_unavailable"}`
+  when the tool opened it: a tool cannot know Iltero Platform's environment policy. Otherwise the record is refused:
+  "a record names whether its environment is production exactly when the server opened its run, and holds the
+  unknown marker when the tool opened it". In a record of a run Iltero Platform opened, the value can be compared
+  with the production flag of the environment Iltero Platform opened the run for.
 - In a record of a run the tool opened, an `ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED` event is never `pass`, `fail` or
   `not_applicable`, and when it is `unknown` its `status_reason` is `server_facts_unavailable`. An event that was not
   evaluated or that ended in `error` is accepted. Otherwise the record is refused:
@@ -1564,7 +1570,8 @@ Key rules:
   the content the record's change checked". Every event's `evaluation.activity` is the record's `change.activity`:
   "every event names the record's activity".
 - In an `iac_change` or `image_deploy` record, `change.digest` is the [change digest](#the-change-digest) of the
-  record's change type, its `unit`, its `subject.environment` and its checked content. Approvals bind to it. An
+  record's change type, its `unit`, its environment's name (`subject.environment.name`, `null` when
+  `subject.environment` is `null`) and its checked content. Approvals bind to it. An
   `image_build` record has no change digest.
 - A record's `subject.unit` is its `unit`. When `units_file` is set, the record's `unit` is one of its units' names:
   "the record's unit is one of the units its units file declares".
@@ -2991,7 +2998,7 @@ every evaluation names it:
 | --- | --- | --- | --- | --- |
 | `change_type` | `iac_change` | `iac_change` | `image_release` | `image_release` |
 | `unit` | `unit` | The subject's unit | `unit` | The subject's unit |
-| `environment_key` | `subject.environment` | `organization_scope.environment.name` | `subject.environment` | `organization_scope.environment.name` |
+| `environment_key` | `subject.environment.name` | `organization_scope.environment.name` | `subject.environment.name` | `organization_scope.environment.name` |
 | `checked_content` | `change.plan`'s `digest`, `digest_version` and `tool`, with `kind: plan` | `plan`'s `digest`, `digest_version` and `tool`, with `kind: plan` | `change.image`'s `repository` and `digest`, with `kind: container_image` | `change.image`'s `repository` and `digest`, with `kind: container_image` |
 
 `environment_key` is `null` for a change made outside any environment; a record of a run Iltero Platform opened
@@ -3576,8 +3583,8 @@ An exception covers it when all of these hold:
 - its `scope.assertion.id` is the assertion's id, at any version;
 - one of its `resources` is the result's subject: the same `scheme`, `value` and `scope`, the subject's identity in
   the address scheme of the plan's IaC tool;
-- its `scope.environment` is the record's `subject.environment`. A run that names no environment has no exception in
-  force;
+- its `scope.environment` is the name of the record's `subject.environment`. A run that names no environment has no
+  exception in force;
 - it is in force at the stage's `reference_time.value`: from `valid_from` up to and including `expires_at`, compared
   to the nanosecond (`iltero_schemas.models.common.exception_terms.in_force`).
 
@@ -3812,7 +3819,7 @@ whose `served_exceptions` holds the bytes of each copy. For each such stage it c
   `SERVED_NOT_READABLE`;
 - the copy is canonical JSON and a valid `ServedExceptions` document;
 - its `metadata.run_id` is the record's `run.id`, its `metadata.stage` is the stage, and every exception's
-  `scope.environment` is the record's `subject.environment`;
+  `scope.environment` is the name of the record's `subject.environment`;
 - `excepted_failures` is exactly what `served_exception_for` gives each `fail` event of the stage whose subject has an
   identity in the address scheme of the plan's IaC tool, at the stage's reference time.
 

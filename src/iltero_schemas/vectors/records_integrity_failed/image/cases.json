@@ -408,7 +408,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:ccdde45c000067b2d7805d31aecffbc20d1fc3f54ef58bd63aae81af022fed7e",
-      "/evidence_refs/25/size_bytes": 5061
+      "/evidence_refs/25/size_bytes": 5061,
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [
@@ -502,7 +503,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:1e705340c3eabe3432302059c93c9a59b6a0f94d262a597e983e4755af6d7981",
-      "/evidence_refs/25/size_bytes": 5039
+      "/evidence_refs/25/size_bytes": 5039,
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [
@@ -563,7 +565,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:45d82ccea129a8d5c48de98f57a06d46207082d61070b8dfaa7b24cb448056cc",
-      "/evidence_refs/25/size_bytes": 5135
+      "/evidence_refs/25/size_bytes": 5135,
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [

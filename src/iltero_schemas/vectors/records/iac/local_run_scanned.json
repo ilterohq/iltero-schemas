@@ -2290,7 +2290,13 @@
     }
   },
   "subject": {
-    "environment": "production",
+    "environment": {
+      "name": "production",
+      "production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
     "kind": "change",
     "source": {
       "commit": {

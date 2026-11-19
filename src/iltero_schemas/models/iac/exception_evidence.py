@@ -65,7 +65,7 @@ def _given(car: CAR, event: AssuranceEvent, exceptions: list[LocalException]) ->
     if identity is None:
         return None
     at = car.stages[event.evaluation.stage].reference_time.value
-    return exception_in_force(exceptions, event.assertion.id, identity, car.subject.environment, at)
+    return exception_in_force(exceptions, event.assertion.id, identity, car.subject.environment_name, at)
 
 
 def local_exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]]:
@@ -155,7 +155,7 @@ def served_exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
         if (
             served.metadata.run_id != car.run.id
             or served.metadata.stage is not stage
-            or any(exception.scope.environment != car.subject.environment for exception in exceptions)
+            or any(exception.scope.environment != car.subject.environment_name for exception in exceptions)
         ):
             problems.append((where, SERVED_ELSEWHERE))
             continue
@@ -167,7 +167,7 @@ def served_exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
             if event.evaluation.stage is not stage or event.evaluation.status != "fail" or identity is None:
                 continue
             candidates = about.get((event.assertion.id, resource_key(identity)), [])
-            found = served_exception_for(candidates, event.assertion, identity, car.subject.environment, at)
+            found = served_exception_for(candidates, event.assertion, identity, car.subject.environment_name, at)
             if isinstance(found, ServedException):
                 given[(event.assertion, resource_key(identity), event.engine)] = found.id
         named = {

@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING
 from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.exception_terms import resource_key
+from iltero_schemas.models.common.facts import ServerFactsUnavailable
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 from iltero_schemas.models.common.scanners import ILTERO_CLI
 
@@ -38,8 +39,14 @@ def check_provenance(car: CAR) -> None:
                 f"stages.{stage.value}: counts its assertions as server_pinned exactly when the server opened the run"
             )
     _check_served_exceptions(car, issued)
+    environment = car.subject.environment
+    if environment is not None and isinstance(environment.production, ServerFactsUnavailable) == issued:
+        raise ValueError(
+            "a record names whether its environment is production exactly when the server opened its run, and holds "
+            "the unknown marker when the tool opened it"
+        )
     if issued:
-        if car.subject.environment is None and ACTIVITIES[car.change.activity].run_type == "change":
+        if environment is None and ACTIVITIES[car.change.activity].run_type == "change":
             raise ValueError("a record of a run the server opened names the environment the run was opened for")
         if any(
             event.assertion.id == COMMITS_REVIEWED_ID

@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import model_validator
 
 from iltero_schemas.models.common.base import StrictModel
-from iltero_schemas.models.common.context import Source
+from iltero_schemas.models.common.context import Environment, Source
 from iltero_schemas.models.common.fields import DirectoryPath, GitObjectId, Identifier
 
 
@@ -33,14 +33,23 @@ class RecordSubject(StrictModel):
     commits whose project files are the same. That says nothing about the files on disk when each run ran, and does
     not make their changes the same.
 
-    Neither is part of ``source``, which an evaluation reads."""
+    Neither is part of ``source``, which an evaluation reads.
+
+    ``environment`` is the environment the change is for: its name, and whether the environment's policy treats it
+    as production, the same shape an evaluation input states it in. It is null when the change is for no environment,
+    such as an image build."""
 
     kind: Literal["change"]
-    environment: Identifier | None
+    environment: Environment | None
     unit: Identifier
     project_directory: DirectoryPath
     project_tree: ProjectTree
     source: Source
+
+    @property
+    def environment_name(self) -> str | None:
+        """The name of the environment the change is for, or None when it is for none."""
+        return None if self.environment is None else self.environment.name
 
     @model_validator(mode="after")
     def _one_hash(self) -> RecordSubject:

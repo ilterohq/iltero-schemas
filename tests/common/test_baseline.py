@@ -447,6 +447,11 @@ def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
         record["events"]["digest"] = digest(data)
     # A record's id is now derived from its run and unit.
     moved["metadata"]["uuid"] = record_uuid(moved["run"]["id"], moved["unit"])
+    # A record's environment is now its name and whether its policy treats it as production, which a run the tool
+    # opened cannot know.
+    environment = moved["subject"]["environment"]
+    if isinstance(environment, str):
+        moved["subject"]["environment"] = {"name": environment, "production": dict(UNKNOWN)}
     return moved
 
 

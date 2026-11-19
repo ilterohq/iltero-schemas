@@ -173,7 +173,13 @@
     "name": "image_build_in_an_environment",
     "vector": "image/local_run_build.json",
     "set": {
-      "/subject/environment": "production"
+      "/subject/environment": {
+        "name": "production",
+        "production": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      }
     },
     "remove": [],
     "message": "a build belongs to no environment"
@@ -1840,7 +1846,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
-      "/evidence_refs/25/size_bytes": 4602
+      "/evidence_refs/25/size_bytes": 4602,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage keeps a commit review, or the unknown marker, exactly where its input carries one"
@@ -1994,7 +2001,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
-      "/evidence_refs/25/size_bytes": 4602
+      "/evidence_refs/25/size_bytes": 4602,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is reviewed exactly when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check passed"
@@ -2137,7 +2145,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:249fd8209926d1c8e22814ad1f80188b68b1b87711b40156bfbf2632a1df4837",
-      "/evidence_refs/25/size_bytes": 4723
+      "/evidence_refs/25/size_bytes": 4723,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the unknown marker when its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check could not read a commit review"
@@ -2256,7 +2265,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:81d1fa832f164a271e876c3cfb6ee7c95c35a00465e8a464742a3d751734d1b4",
-      "/evidence_refs/25/size_bytes": 4598
+      "/evidence_refs/25/size_bytes": 4598,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED passes or fails only on facts read from the server"
@@ -2369,7 +2379,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
-      "/evidence_refs/25/size_bytes": 5039
+      "/evidence_refs/25/size_bytes": 5039,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the accepted build's verified commit and repository"
@@ -2468,7 +2479,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:3d028e7e4e2be096ec7dc10306a1bfacd35518023dc38abc21f93f5fe3fb9cdb",
-      "/evidence_refs/25/size_bytes": 5039
+      "/evidence_refs/25/size_bytes": 5039,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of image_deploy keeps no commit review that is source_commit_not_verified_commit"
@@ -2615,7 +2627,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
-      "/evidence_refs/25/size_bytes": 4602
+      "/evidence_refs/25/size_bytes": 4602,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is build_commit_not_verified_commit exactly when the accepted build's build_commit is not its verified_commit"
@@ -2736,7 +2749,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
-      "/evidence_refs/25/size_bytes": 4602
+      "/evidence_refs/25/size_bytes": 4602,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage keeps the commit review its ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED check decided from"
@@ -2874,7 +2888,8 @@
       "/evidence_refs/11/digest": "sha256:105cfcc920fc0b38fc77e24330c8ec38d00a6d1fa4530ff2d66200d766dd80d8",
       "/evidence_refs/11/size_bytes": 3015,
       "/evidence_refs/25/digest": "sha256:a155f906da0d96ac81adef8db41c787bc134cb01b5a0950f72d2e72639c20dbd",
-      "/evidence_refs/25/size_bytes": 4602
+      "/evidence_refs/25/size_bytes": 4602,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "Field required"

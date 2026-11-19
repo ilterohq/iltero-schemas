@@ -60,7 +60,7 @@ def test_the_change_digest_of_a_deploy_is_of_its_image_in_its_unit_and_environme
     assert isinstance(car.change, ImageDeploy)
     checked = IMAGE_DEPLOY.checked_content(car)
     assert isinstance(checked, CheckedImage) and checked.digest == car.change.image.digest
-    expected = change_digest("image_release", car.unit, car.subject.environment, checked.model_dump(mode="json"))
+    expected = change_digest("image_release", car.unit, car.subject.environment_name, checked.model_dump(mode="json"))
     assert car.change.digest == expected
     assert IMAGE_DEPLOY.change_digest_problems(car) == []
 

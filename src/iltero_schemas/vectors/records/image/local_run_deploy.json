@@ -19,7 +19,13 @@
   },
   "subject": {
     "kind": "change",
-    "environment": "production",
+    "environment": {
+      "name": "production",
+      "production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
     "unit": "api",
     "source": {
       "vcs": "git",

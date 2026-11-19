@@ -94,7 +94,8 @@
         "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
-      }
+      },
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "exactly when the server opened the run"
@@ -3971,7 +3972,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage lists only approvals of a change or of this record's run"
@@ -5211,7 +5213,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of iac_change keeps no commit review that is build_commit_not_verified_commit"
@@ -5323,7 +5326,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "commit_review counts no commits exactly when the head commit is the one it counts since"
@@ -5459,7 +5463,8 @@
       "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/verdict/value": "incomplete",
       "/verdict/reason": "not_evaluated",
-      "/verdict/stage": "plan"
+      "/verdict/stage": "plan",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage evaluates ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED at most once, so it keeps one reading"
@@ -7435,7 +7440,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review was decided no later than the stage observed it"
@@ -7547,7 +7553,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the pre_deploy stage's commit review is of the record's source commit, unless it is source_commit_not_verified_commit, which names the verified commit"
@@ -7655,7 +7662,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "Field required"
@@ -9994,7 +10002,8 @@
       "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/plan/reference_time/source": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "the served exceptions a run the server opened applies are named at the stage its activity applies them at, and only there"
@@ -10059,7 +10068,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a stage that applies served exceptions reads its time from the server"
@@ -10142,7 +10152,8 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "each failed result a served exception covers is a failed result of the stage, by its assertion, resource and engine"
@@ -10241,7 +10252,8 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "excepted_failures is sorted by assertion id, resource and engine, each once"
@@ -10310,7 +10322,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "copy of the exceptions the server served it is an entry of the evidence register of its own"
@@ -10395,7 +10408,8 @@
         ]
       },
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/failed_checks_excepted": 3
+      "/stages/plan/coverage/failed_checks_excepted": 3,
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a stage counts no more failed checks as excepted than it has failed checks"
@@ -10473,7 +10487,8 @@
       },
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/verdict/value": "met",
-      "/stages/plan/verdict/reason": "every_failure_excepted"
+      "/stages/plan/verdict/reason": "every_failure_excepted",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted"
@@ -10618,7 +10633,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of a run the server opened keeps only scanner reports the Iltero CLI ran"
@@ -10761,7 +10777,8 @@
         "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
-      }
+      },
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of a run the server opened evaluates only assertions from the server's bundle"
@@ -10827,7 +10844,8 @@
         "size_bytes": 157,
         "source": null,
         "storage_uri": null
-      }
+      },
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of a run the server opened postpones no check until after the deployment"
@@ -11449,7 +11467,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of a run the server opened applies only the scanner check mapping it served"
@@ -12102,7 +12121,8 @@
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "message": "a record of a run the server opened applies only the scanner check mapping it served"
@@ -12814,7 +12834,8 @@
         "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
-      }
+      },
+      "/subject/environment/production": true
     },
     "remove": [
       "/evidence_refs/60"
@@ -12962,11 +12983,91 @@
         "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": []
-      }
+      },
+      "/subject/environment/production": true
     },
     "remove": [
       "/evidence_refs/60"
     ],
     "message": "a record of a run the server opened evaluates only assertions from the server's bundle"
+  },
+  {
+    "name": "iac_record_of_a_run_the_tool_opened_naming_whether_its_environment_is_production",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/subject/environment/production": true
+    },
+    "remove": [],
+    "message": "a record names whether its environment is production exactly when the server opened its run, and holds the unknown marker when the tool opened it"
+  },
+  {
+    "name": "iac_record_of_a_run_the_server_opened_keeping_the_unknown_marker_for_its_environment",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/assertion_source": "server_bundle",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/4/provenance/assertion_source": "server_bundle",
+      "/events/4/provenance/bundle/kind": "server",
+      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/evidence_refs/24/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
+      "/evidence_refs/24/size_bytes": 12092,
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "iltero",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      },
+      "/governance/run_opened_by": "server",
+      "/stages/plan/events/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/plan/reference_time/source": "server",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      }
+    },
+    "remove": [],
+    "message": "a record names whether its environment is production exactly when the server opened its run, and holds the unknown marker when the tool opened it"
   }
 ]

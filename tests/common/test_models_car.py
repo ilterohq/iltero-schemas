@@ -496,7 +496,7 @@ def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
 
 def test_a_change_digest_names_the_records_environment() -> None:
     plan = _checked(RECORD["change"]["plan"]["digest"])
-    document = _record(**{"subject.environment": "staging"})
+    document = _record(**{"subject.environment.name": "staging"})
     with pytest.raises(
         ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
     ):

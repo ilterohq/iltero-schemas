@@ -1203,7 +1203,8 @@
       "/stages/pre_deploy/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
-      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [
@@ -1370,7 +1371,10 @@
       "/stages/pre_deploy/execution/bundle/key_id": "iltero-bundle-2026-09",
       "/stages/pre_deploy/execution/bundle/kind": "server",
       "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/subject/environment": "staging"
+      "/subject/environment": {
+        "name": "staging",
+        "production": false
+      }
     },
     "remove": [],
     "problems": [
@@ -2019,7 +2023,8 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/coverage/failed_checks_excepted": 1,
       "/stages/plan/verdict/reason": "every_failure_excepted",
-      "/verdict/reason": "every_failure_excepted"
+      "/verdict/reason": "every_failure_excepted",
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [
@@ -2107,7 +2112,8 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned"
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [
@@ -2228,7 +2234,8 @@
       "/stages/plan/coverage/status_counts/unknown": 0,
       "/stages/plan/coverage/failed_checks_excepted": 2,
       "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
-      "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1
+      "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1,
+      "/subject/environment/production": false
     },
     "remove": [],
     "problems": [
@@ -2336,7 +2343,8 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/coverage/failed_checks_excepted": 2,
       "/stages/plan/verdict/reason": "every_failure_excepted",
-      "/verdict/reason": "every_failure_excepted"
+      "/verdict/reason": "every_failure_excepted",
+      "/subject/environment/production": true
     },
     "remove": [],
     "problems": [

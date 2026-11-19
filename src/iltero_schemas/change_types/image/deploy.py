@@ -178,7 +178,7 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     deploy = _body(car)
     problems: list[tuple[str, str]] = []
     checked = _checked_content(car).model_dump(mode="json")
-    if deploy.digest != change_digest(IMAGE_RELEASE_TYPE, car.unit, car.subject.environment, checked):
+    if deploy.digest != change_digest(IMAGE_RELEASE_TYPE, car.unit, car.subject.environment_name, checked):
         problems.append(("change.digest", "is not the digest of the change type, unit, environment and image"))
     if deploy.drift_check is not None and deploy.drift_check.change_digest != deploy.digest:
         problems.append(("change.drift_check.change_digest", "is not change.digest"))

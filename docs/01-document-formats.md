@@ -383,7 +383,9 @@ check mapping's id, such as `ILT.SCANNER_CHECKS.STARTER`, is not an assertion id
 ## AssuranceContext
 
 The assurance context is the evaluation input: the one JSON document OPA receives for one assertion about one
-subject. The tool that runs OPA records the context's digest in the event as `input_digest`.
+subject. The tool that runs OPA records the context's digest in the event as `input_digest`, and the stage keeps the
+context, as canonical JSON, for a reader to check against the record (see [Checking the kept evaluation
+inputs](#checking-the-kept-evaluation-inputs)).
 
 - **apiVersion:** `iltero.com/v1`, with `kind: AssuranceContext`
 - **Model:** `iltero_schemas.models.common.context.AssuranceContext`.
@@ -997,7 +999,7 @@ with a regulatory framework.
 | `trust_level` | string | How far the record's facts were established (see below). Always `self_attested` in this version. |
 | `compliance_determination` | null | Always `null`. |
 | `governance` | object | `run_opened_by`: `server` when the writer says Iltero Platform opened the run, `local` when the tool opened it on its own. Only Iltero Platform confirms that it opened a run, by its `run.id`. |
-| `subject` | object | What the record is about (`iltero_schemas.models.common.record_subject.RecordSubject`): `kind: change`, the `environment`: the environment the change is for, in the shape of an [AssuranceContext](#assurancecontext)'s `organization_scope.environment` (`iltero_schemas.models.common.context.Environment`), with its `name` and `production`, whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run the tool opened (see the rules below); `null` when the change is for no environment, such as an image build (`RecordSubject.environment_name` gives the name, or `null`), the `unit`, the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`, the `project_directory`: the project's directory relative to the repository's root, `.` for the root (`iltero_schemas.models.common.fields.DirectoryPath`), and the `project_tree`: that directory's git tree at the record's commit (see the project tree rule below). Every project path the record names is relative to it, and a reader can follow one to the repository only with the record's repository and commit; a record of a local run may name no repository. `project_directory` and `project_tree` are not part of `source`, which an evaluation reads, so they change no evaluation input. `project_tree` is `{"id": <git object id>}` (`ProjectTree`), required: git's id of the names, file modes and contents of every file git tracks under the project directory at the commit, the commit's root tree for `.`. It covers no uncommitted, untracked or ignored file, no file outside the directory, a submodule only by the commit it points at, and no variable, state or tool version. Its `id` uses the same hash as `source.commit.sha`, both 40 characters or both 64: "the project tree's id and the commit's id use the same hash: both are 40 or both 64 characters long". `project_directory` follows the directory rule below: a bad value is refused with "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'", or "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon". |
+| `subject` | object | What the record is about (`iltero_schemas.models.common.record_subject.RecordSubject`): `kind: change`, the `environment`: the environment the change is for, in the shape of an [AssuranceContext](#assurancecontext)'s `organization_scope.environment` (`iltero_schemas.models.common.context.Environment`), with its `name` and `production`, whether Iltero Platform's environment policy treats it as production, or the unknown marker in a run the tool opened (see the rules below), and every evaluation input a stage kept names the same environment, name and `production` value (see [Checking the kept evaluation inputs](#checking-the-kept-evaluation-inputs)); `null` when the change is for no environment, such as an image build (`RecordSubject.environment_name` gives the name, or `null`), the `unit`, the `source`: the code the change comes from, in the shape of an [AssuranceContext](#assurancecontext)'s `source`, the `project_directory`: the project's directory relative to the repository's root, `.` for the root (`iltero_schemas.models.common.fields.DirectoryPath`), and the `project_tree`: that directory's git tree at the record's commit (see the project tree rule below). Every project path the record names is relative to it, and a reader can follow one to the repository only with the record's repository and commit; a record of a local run may name no repository. `project_directory` and `project_tree` are not part of `source`, which an evaluation reads, so they change no evaluation input. `project_tree` is `{"id": <git object id>}` (`ProjectTree`), required: git's id of the names, file modes and contents of every file git tracks under the project directory at the commit, the commit's root tree for `.`. It covers no uncommitted, untracked or ignored file, no file outside the directory, a submodule only by the commit it points at, and no variable, state or tool version. Its `id` uses the same hash as `source.commit.sha`, both 40 characters or both 64: "the project tree's id and the commit's id use the same hash: both are 40 or both 64 characters long". `project_directory` follows the directory rule below: a bad value is refused with "must be '.' or a relative path with no '..', '.', empty part, ':' or leading '/'", or "must name each part plainly: not only dots and spaces, and with no character that looks like a separator or a colon". |
 | `change` | object | The change the record is about: the body of its [activity](#change-types-and-activities), named by `change.activity` (see [The `iac_change` body](#the-iac_change-body), [The `image_build` body](#the-image_build-body) and [The `image_deploy` body](#the-image_deploy-body)). |
 | `units_file` | object or null | The project's [units file](#units-file) as the writer read it. `null` for a project that declares none. |
 | `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
@@ -1994,8 +1996,8 @@ keeps, not part of the record, so the model cannot check them alone.
 `iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` does, on a record whose structure
 holds; a reader calls it through [`kept_file_problems`](#checking-a-record-against-its-kept-files). `files` is a
 `KeptFiles` (`iltero_schemas.models.iac.kept_files`), each file as read from its JSON or YAML, except the exceptions
-files, which are given as their bytes, unparsed, so the contract checks their digest and reads them one way for every
-reader:
+files and the evaluation inputs, which are given as their bytes, unparsed, so the contract checks their digest and
+reads them one way for every reader:
 
 | Field | Keyed by |
 | --- | --- |
@@ -2006,6 +2008,7 @@ reader:
 | `assertions` | The digest of each assertion document (`AssertionRef.digest`). |
 | `local_exceptions` | The `digest` of each stage's `scanners.local_exceptions`; each value is the bytes of the stage's copy. |
 | `served_exceptions` | The `digest` of each stage's `served_exceptions`; each value is the bytes of the stage's copy. Read by [`served_exception_problems`](#checking-the-kept-copy). |
+| `inputs` | The digest each evaluation names its input by (`provenance.input_digest`); each value is the bytes of the stage's copy. Read by [`kept_input_problems`](#checking-the-kept-evaluation-inputs). |
 
 For each stage that keeps `scanners`, it reads the copy of each scanner check mapping, then each report's
 observations, rebuilt from the kept report and plan by the tool's reader, then every evaluation the mappings and those
@@ -2120,6 +2123,43 @@ not hold"), and each whose path the kept plan does not leave unknown on the subj
 value the plan it kept does not leave unknown"). It needs the one plan the evidence register keeps: without it, it
 returns "names checks of a plan the record does not keep" at `stages.plan.postponed_checks`.
 
+### Checking the kept evaluation inputs
+
+An evaluation input is the [AssuranceContext](#assurancecontext) the policy evaluator read for one evaluation. Each
+stage keeps every input it evaluated, and each evaluation names its input by `provenance.input_digest`. The model does
+not read the inputs. `kept_input_problems(car, inputs)` (`iltero_schemas.models.common.kept_inputs`) does: `inputs`
+holds the bytes of each kept input, unparsed, keyed by its digest (`KeptFiles.inputs`). A reader of an `iac_change`
+record calls it through [`kept_file_problems`](#checking-a-record-against-its-kept-files). A reader of an
+`image_build` or `image_deploy` record calls it directly with the inputs its stages kept, as well as
+`iltero_schemas.models.common.stages.integrity_problems`.
+
+For every evaluation that names an input and is not a scanner's (`provenance.scanner_checks` is `null`), it checks that
+the input:
+
+- is at most 16 MiB (`MAX_INPUT_BYTES`, 16,777,216 bytes), checked before its digest;
+- is kept: given by its digest, and its bytes have that digest;
+- is canonical JSON;
+- is a valid `AssuranceContext`;
+- is about the record's environment: its `organization_scope.environment` equals the record's `subject.environment`,
+  the same name and `production` value, or `null` for both;
+- is about the record's change: where the input's `change` carries a `digest`, it is the record's `change.digest`.
+
+It reads each distinct input once, and returns one `(where, what)` pair at `events.<index>.provenance.input_digest`
+for each evaluation whose input fails a check, with the message of the first check it fails:
+
+| What | Constant |
+| --- | --- |
+| "names an evaluation input larger than an input may be (16777216 bytes)" | `INPUT_TOO_LARGE` |
+| "names an evaluation input the stage did not keep, or one whose bytes have another digest" | `INPUT_NOT_GIVEN` |
+| "names an evaluation input not kept as canonical JSON" | `INPUT_NOT_CANONICAL` |
+| "names a kept file that is not an evaluation input" | `NOT_AN_INPUT` |
+| "names an evaluation input about another environment than the record's" | `ANOTHER_ENVIRONMENT` |
+| "names an evaluation input about another change than the record's" | `ANOTHER_CHANGE` |
+
+For example, a record of a run Iltero Platform opened whose `subject.environment` is
+`{"name": "production", "production": false}` fails `ANOTHER_ENVIRONMENT` at every evaluation whose kept input holds
+`{"name": "production", "production": true}`.
+
 ### Checking a record against its kept files
 
 The model checks a record's structure and, unless `SKIP_INTEGRITY_CHECKS` is set, every value it can recompute from
@@ -2133,6 +2173,7 @@ such a record, and returns the `(where, what)` pairs of each, in this order:
 | `iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` | Each scanner verdict, and each project exception a suppressed result names (see [The check a reader runs](#the-check-a-reader-runs)). |
 | `iltero_schemas.models.iac.exception_evidence.served_exception_problems(car, files)` | The failed results the exceptions Iltero Platform served cover (see [Checking the kept copy](#checking-the-kept-copy)). |
 | `iltero_schemas.models.iac.postponed_checks.postponed_check_problems(car, files)` | The checks the plan stage postponed (see [Checks postponed until after the deployment](#checks-postponed-until-after-the-deployment)). |
+| `iltero_schemas.models.common.kept_inputs.kept_input_problems(car, files.inputs)` | Each evaluation input, against the record's environment and change (see [Checking the kept evaluation inputs](#checking-the-kept-evaluation-inputs)). |
 
 Every reader of an `iac_change` record calls it, on a record whose structure holds
 (`iltero_schemas.models.common.stages.check_structure`), read with or without `SKIP_INTEGRITY_CHECKS`, with the

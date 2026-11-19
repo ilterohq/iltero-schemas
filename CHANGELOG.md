@@ -1672,7 +1672,7 @@ keep, so any two tools agree on what a record means.
   turns them into the report's `evaluator_binary` result. A scanner's
   evaluation, and one no evaluator ran, is not compared. The check compares
   what the record states with this contract release's pin; it cannot show
-  which binary ran. Reading a record does not run it. Seven record vectors
+  which binary ran. Reading a record does not run it. Six record vectors
   name placeholder OPA digests, and their `evaluator_binary` is `failed`;
   the others name the pinned binaries.
 - A stage counts subjects only for the assertions it was required to
@@ -1920,3 +1920,45 @@ keep, so any two tools agree on what a record means.
   exceptions are in force and enters the change digest;
   `RecordSubject.environment_name` gives it. Every record vector and case writes the new shape, with two new
   invalid record cases.
+- A reader checks each evaluation input a record's stages kept against the
+  record. An evaluation input is the `AssuranceContext` the policy evaluator
+  read for one evaluation; a stage keeps each one, and each evaluation names
+  it by `provenance.input_digest`.
+  `iltero_schemas.models.common.kept_inputs.kept_input_problems(car, inputs)`,
+  given the bytes of each kept input by its digest, checks, for every
+  evaluation that names an input and is not a scanner's, that the input is
+  at most `MAX_INPUT_BYTES` (checked first), is kept (given, its bytes having
+  the digest), is
+  canonical JSON, is an `AssuranceContext`, names the record's
+  `subject.environment` (the same name and production value), and, where it
+  carries a change digest, names the record's change digest. It reads each
+  distinct input once and lists each failing evaluation at
+  `events.<index>.provenance.input_digest`, with one of "names an evaluation
+  input larger than an input may be (16777216 bytes)", "names an evaluation
+  input the stage did not keep, or one whose bytes have another digest",
+  "names an evaluation input not kept as canonical JSON", "names a kept file
+  that is not an evaluation input", "names an evaluation input about another
+  environment than the record's" or "names an evaluation input about another
+  change than the record's". `KeptFiles` gains `inputs`, and
+  `kept_file_problems` makes this check too; a reader of an image record calls
+  it directly, beside `integrity_problems`.
+- New conformance vectors for the kept inputs. `kept_inputs/`, split into
+  `iac/` and `image/`, holds each record's kept evaluation inputs in a folder
+  named after the record (`iac/local_run/`,
+  `image/local_run_deploy_rolled_out/`), at the paths its evidence register
+  names them by, and, under `iac/cases/`, the inputs of the `records_valid/`
+  case `iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers`,
+  whose production value is `false`. `records/iac/local_run.json` is the
+  record the Iltero CLI writes, run with the pinned evaluator: it names the
+  pinned OPA binary for `darwin-aarch64` and the digest of the bundle it
+  evaluated. `records/image/local_run_deploy_rolled_out.json` is an image
+  deploy the Iltero CLI wrote from a captured rollout of
+  `docker.io/library/nginx`. Every record names the redaction policy digest
+  `sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f`.
+  The sample report `reports/iac/verification_report.json` gives
+  `evaluator_binary` as `claimed_by_record` with `pinned_binary_named`, the
+  `reports_expected/` case of a record on a placeholder binary names
+  `iac/local_run_declared_units.json`, and each sample report's
+  `evaluator_binary` is checked against its record. A record case's evidence
+  register entry that names a file of its base record, by the same path and
+  digest, has that file's size.

@@ -87,7 +87,8 @@ KIND = "ChangeAssuranceRecord"
 # change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
 # trust the record while it returns any problem. Every reader of a record of a change made with an IaC tool, with or
 # without this key, calls ``kept_file_problems.kept_file_problems`` with the files its stages kept, which makes every
-# check, and refuses to trust the record while it returns any problem.
+# check, and refuses to trust the record while it returns any problem. A reader of a record of an image change calls
+# ``kept_inputs.kept_input_problems`` with the evaluation inputs its stages kept, as well as ``integrity_problems``.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 # A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.

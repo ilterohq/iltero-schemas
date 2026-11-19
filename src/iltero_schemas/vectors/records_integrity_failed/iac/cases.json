@@ -46,13 +46,34 @@
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_required/value": 5,
       "/coverage/assertions_required/required_assertion_digest": "sha256:ad53a89ec1899d73526afc4c4d0fcdfa8446cd71543442630354fe41445dd8b7",
-      "/coverage/assertions_evaluated": 5,
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "iltero",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
+        "media_type": "application/json",
+        "path": "units/root/pre_deploy/events.json",
+        "redaction_policy": null,
+        "ref_id": "pre_deploy/events.json",
+        "retention_until": null,
+        "size_bytes": 67,
+        "source": null,
+        "storage_uri": null
+      },
+      "/evidence_status/reasons/-": {
+        "reason": "no_assertion_required",
+        "stage": "pre_deploy",
+        "detail": "the stage was required to evaluate no assertion"
+      },
+      "/evidence_status/value": "has_gaps",
       "/stages/pre_deploy": {
         "assertions": {
           "count": 0,
-          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
+          "digest": "sha256:5284c1a338769c6e692a945222009b6b67bb09699a0c793c4b76581fd848d2f1",
           "index": "units/root/plan/assertions/compiled.json"
         },
         "compiler": {
@@ -70,14 +91,14 @@
         "execution": {
           "bundle": {
             "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "tarball_digest": "sha256:d6496d5c9a37bd7340d405e0133a47e0cb69a51070f94874ea06e2c3762952c9",
             "kind": "local_bundle",
             "content_digest": null,
             "key_id": null
           },
           "detail": null,
           "evaluator": {
-            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "digest": "sha256:54e7008e696d39e8e4f96594e2b71bcbe45fd9a4f838102bcf1240638bf3fbe1",
             "engine": "opa",
             "version": "1.20.2"
           },
@@ -87,7 +108,7 @@
         "redaction": {
           "allowed": [],
           "policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+            "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
             "id": "iltero.redaction",
             "version": "1"
           },
@@ -186,7 +207,7 @@
             }
           ],
           "input": {
-            "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
+            "digest": "sha256:fc56ad8e66f6e21f5efb7d292fd9c7a37469f6141ce7e70a0c068d8394de2ae8",
             "kind": "facts"
           },
           "unknown": [
@@ -607,497 +628,6 @@
           "__unknown": true,
           "reason": "not_read_by_the_stage"
         }
-      },
-      "/evidence_refs": [
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "terraform_plan",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "media_type": "application/json",
-          "path": "units/root/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "retention_until": null,
-          "size_bytes": 61075,
-          "source": {
-            "digest": "sha256:62372246774ac5e1c1622ab1d2ba32dc509fc378eefbe369a61f4a3b4148f6f4",
-            "name": "plan-create.json"
-          },
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "media_type": "application/json",
-          "path": "units/root/plan/sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "retention_until": null,
-          "size_bytes": 52817,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "retention_until": null,
-          "size_bytes": 12981,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "retention_until": null,
-          "size_bytes": 12975,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "retention_until": null,
-          "size_bytes": 12984,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "retention_until": null,
-          "size_bytes": 12982,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "retention_until": null,
-          "size_bytes": 14920,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-          "media_type": "application/json",
-          "path": "units/root/plan/redaction-policy.json",
-          "redaction_policy": null,
-          "ref_id": "plan/redaction-policy.json",
-          "retention_until": null,
-          "size_bytes": 1972,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:5cb05875496703b1561ca5bf08405438c3221061d24986bc20360d6b58b5a9a8",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 505,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12679,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ff547a831f11e08a299e771dd27928112df1f4d5788e0173f1e8999bea466982",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 545,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a5b85f37e880b10638391694c2e8a1b6ec4cac978b28cfb2550f1085a8f01e46",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 467,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12651,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c26857373bdb1fcb06aaeb71df6f72bb7eae71d6959871aeca8d44c9717a7138",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 523,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ce37958ef872daa0df756c1a57998c1981598482adbaba63c944bf352d62cfc2",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 993,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 13046,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:f5552c7e1eda4ba0f7ff8ebee9192a856cdeafe9ca3f148e16d39439d5125018",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 1259,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:9d84f6cd820c2c7c7e818d32825a306a253496985cf2a649034eacaaaaeaf735",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 462,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12662,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:d89bd4f78a915620528265682d85001e2de02d1fd151e12432152522cddc24b2",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 527,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:df1f968a05bac6609d45f3815276fa8791de1aa68b066a10a20d4f7922a3dc20",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 1007,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 13295,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:96eb8a93f2f806fbb0d5e3fdfef6e4123de724c326bb8c5067fd0eca420c058e",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 1639,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/compiled.json",
-          "redaction_policy": null,
-          "ref_id": "plan/compiled.json",
-          "retention_until": null,
-          "size_bytes": 4720,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
-          "media_type": "application/json",
-          "path": "units/root/plan/events.json",
-          "redaction_policy": null,
-          "ref_id": "plan/events.json",
-          "retention_until": null,
-          "size_bytes": 11697,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
-          "media_type": "application/json",
-          "path": "units/root/pre_deploy/events.json",
-          "redaction_policy": null,
-          "ref_id": "pre_deploy/events.json",
-          "retention_until": null,
-          "size_bytes": 67,
-          "source": null,
-          "storage_uri": null
-        }
-      ],
-      "/verdict": {
-        "value": "not_met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/evidence_status": {
-        "value": "has_gaps",
-        "reasons": [
-          {
-            "reason": "no_assertion_required",
-            "stage": "pre_deploy",
-            "detail": "the stage was required to evaluate no assertion"
-          }
-        ]
       }
     },
     "remove": [],
@@ -1218,8 +748,7 @@
     "name": "edited_plan_verdict",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/verdict/value": "met",
-      "/stages/plan/verdict/reason": null
+      "/stages/plan/verdict/value": "met"
     },
     "remove": [],
     "problems": [
@@ -1238,8 +767,7 @@
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/stages/plan/verdict/value": "met",
-      "/stages/plan/verdict/reason": null
+      "/stages/plan/verdict/value": "met"
     },
     "remove": [],
     "problems": [
@@ -1484,8 +1012,8 @@
     "vector": "iac/local_run.json",
     "remove": [],
     "set": {
-      "/stages/plan/coverage/assertions_required/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_required/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945"
+      "/coverage/assertions_required/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945",
+      "/stages/plan/coverage/assertions_required/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     },
     "problems": [
       [
@@ -1837,13 +1365,11 @@
     "name": "plan_stage_counting_no_subject_for_assertions_its_events_evaluated",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/coverage/subjects_per_assertion": {
-        "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
-      }
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
     },
     "remove": [],
     "problems": [
@@ -1930,8 +1456,8 @@
     "name": "record_whose_evaluator_status_counts_are_not_its_stages_combined",
     "vector": "iac/local_run.json",
     "set": {
-      "/coverage/evaluator_status_counts/opa/pass": 3,
-      "/coverage/evaluator_status_counts/opa/fail": 1
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 3
     },
     "remove": [],
     "problems": [
@@ -1948,32 +1474,32 @@
       "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/failed_checks_excepted": 1,
       "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/24/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/evidence_refs/24/size_bytes": 12092,
+      "/events/4/provenance/bundle/kind": "server",
+      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
+      "/evidence_refs/24/size_bytes": 12102,
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
@@ -1992,11 +1518,13 @@
         "storage_uri": null
       },
       "/governance/run_opened_by": "server",
-      "/stages/plan/events/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/failed_checks_excepted": 1,
+      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
       "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/stages/plan/reference_time/source": "server",
       "/stages/plan/served_exceptions": {
         "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
@@ -2020,11 +1548,9 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/failed_checks_excepted": 1,
       "/stages/plan/verdict/reason": "every_failure_excepted",
-      "/verdict/reason": "every_failure_excepted",
-      "/subject/environment/production": true
+      "/subject/environment/production": true,
+      "/verdict/reason": "every_failure_excepted"
     },
     "remove": [],
     "problems": [
@@ -2040,32 +1566,32 @@
     "set": {
       "/coverage/assertions_required/origin": "server_pinned",
       "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/24/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/evidence_refs/24/size_bytes": 12092,
+      "/events/4/provenance/bundle/kind": "server",
+      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
+      "/evidence_refs/24/size_bytes": 12102,
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
@@ -2084,11 +1610,12 @@
         "storage_uri": null
       },
       "/governance/run_opened_by": "server",
-      "/stages/plan/events/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
       "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/stages/plan/reference_time/source": "server",
       "/stages/plan/served_exceptions": {
         "digest": "sha256:06158c1add6e4cdfdfb57208146ba610ad6d7560612e97ea6aedd45aedf28d7d",
@@ -2112,7 +1639,6 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/subject/environment/production": true
     },
     "remove": [],
@@ -2128,21 +1654,21 @@
     "vector": "iac/local_run.json",
     "set": {
       "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/status_counts/unknown": 0,
-      "/coverage/status_counts/not_applicable": 1,
-      "/coverage/failed_checks_excepted": 2,
-      "/coverage/evaluator_status_counts/opa/unknown": 0,
       "/coverage/evaluator_status_counts/opa/not_applicable": 1,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/coverage/failed_checks_excepted": 2,
+      "/coverage/status_counts/not_applicable": 1,
+      "/coverage/status_counts/unknown": 0,
       "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/evaluation/observations/predicates/0/actual": false,
       "/events/2/evaluation/observations/predicates/0/status": "false",
       "/events/2/evaluation/observations/unknown": null,
@@ -2151,22 +1677,22 @@
       "/events/2/evaluation/status": "not_applicable",
       "/events/2/evaluation/status_reason": "when_guard_excluded",
       "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/24/digest": "sha256:4665a308fed2527037927229d9d20c63f1d0ffe5cd9d7f9b26c90a6629fad27b",
-      "/evidence_refs/24/size_bytes": 11951,
+      "/events/4/provenance/bundle/kind": "server",
+      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/evidence_refs/24/digest": "sha256:9fe5401198fe001da31e5435c90a63753463acf18bf9355dfc14d9af6298c911",
+      "/evidence_refs/24/size_bytes": 11961,
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
@@ -2185,11 +1711,17 @@
         "storage_uri": null
       },
       "/governance/run_opened_by": "server",
-      "/stages/plan/events/digest": "sha256:4665a308fed2527037927229d9d20c63f1d0ffe5cd9d7f9b26c90a6629fad27b",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1,
+      "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/plan/coverage/failed_checks_excepted": 2,
+      "/stages/plan/coverage/status_counts/not_applicable": 1,
+      "/stages/plan/coverage/status_counts/unknown": 0,
+      "/stages/plan/events/digest": "sha256:9fe5401198fe001da31e5435c90a63753463acf18bf9355dfc14d9af6298c911",
       "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/stages/plan/reference_time/source": "server",
       "/stages/plan/served_exceptions": {
         "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
@@ -2229,12 +1761,6 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/status_counts/not_applicable": 1,
-      "/stages/plan/coverage/status_counts/unknown": 0,
-      "/stages/plan/coverage/failed_checks_excepted": 2,
-      "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
-      "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1,
       "/subject/environment/production": false
     },
     "remove": [],
@@ -2252,32 +1778,32 @@
       "/coverage/assertions_required/origin": "server_pinned",
       "/coverage/failed_checks_excepted": 2,
       "/events/0/provenance/assertion_source": "server_bundle",
-      "/events/0/provenance/bundle/kind": "server",
-      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/0/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/assertion_source": "server_bundle",
-      "/events/1/provenance/bundle/kind": "server",
-      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/1/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/assertion_source": "server_bundle",
-      "/events/2/provenance/bundle/kind": "server",
-      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/2/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/assertion_source": "server_bundle",
-      "/events/3/provenance/bundle/kind": "server",
-      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/3/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/3/provenance/bundle/key_id": "iltero-bundle-2026-09",
+      "/events/3/provenance/bundle/kind": "server",
+      "/events/3/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/assertion_source": "server_bundle",
-      "/events/4/provenance/bundle/kind": "server",
-      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/events/4/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/events/4/provenance/bundle/key_id": "iltero-bundle-2026-09",
-      "/evidence_refs/24/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/evidence_refs/24/size_bytes": 12092,
+      "/events/4/provenance/bundle/kind": "server",
+      "/events/4/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/evidence_refs/24/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
+      "/evidence_refs/24/size_bytes": 12102,
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
@@ -2296,11 +1822,13 @@
         "storage_uri": null
       },
       "/governance/run_opened_by": "server",
-      "/stages/plan/events/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/coverage/failed_checks_excepted": 2,
+      "/stages/plan/events/digest": "sha256:6c838128bf736fe145a1bb44d2f693a5bcd589c0760e742fa8e538685329058f",
       "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
       "/stages/plan/execution/bundle/key_id": "iltero-bundle-2026-09",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
       "/stages/plan/reference_time/source": "server",
       "/stages/plan/served_exceptions": {
         "digest": "sha256:69f69beaeb0026ae2b9e4e6e97df54319099a654808634a5d8ef92ad00de5860",
@@ -2340,11 +1868,9 @@
           }
         ]
       },
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/failed_checks_excepted": 2,
       "/stages/plan/verdict/reason": "every_failure_excepted",
-      "/verdict/reason": "every_failure_excepted",
-      "/subject/environment/production": true
+      "/subject/environment/production": true,
+      "/verdict/reason": "every_failure_excepted"
     },
     "remove": [],
     "problems": [

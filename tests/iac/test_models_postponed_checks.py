@@ -128,6 +128,7 @@ def _files(car: CAR, plan: dict[str, Any], assertions: dict[str, Any]) -> KeptFi
         assertions=assertions,
         local_exceptions={},
         served_exceptions={},
+        inputs={},
     )
 
 

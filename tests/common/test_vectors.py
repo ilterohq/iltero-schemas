@@ -38,6 +38,8 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, pac
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import AssuranceEvent, events_file_bytes
+from iltero_schemas.models.common.kept_inputs import kept_input_problems
+from iltero_schemas.models.common.pinned_evaluator import evaluator_binary_result
 from iltero_schemas.models.common.reference_time import ReferenceTime
 from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
@@ -51,7 +53,7 @@ from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
 from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, STARTER_ASSERTIONS, VECTORS, documents, visible
-from tests.records import names_the_servers_bundle, valid_case_record
+from tests.records import case_record, names_the_servers_bundle, valid_case_record
 
 COMPILER = VECTORS / "compiler"
 ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
@@ -80,7 +82,9 @@ DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
 # Every document folder but scanner check mappings and identities, and every folder of their cases, holds one subfolder
 # per change type it has documents of; events are of IaC changes only. A document folder also holds its one
 # digests.json.
-SPLIT_FOLDERS = {folder: set(CHANGE_TYPES) for folder in ("contexts", "records", "reports", *SPLIT_CASE_FOLDERS)} | {
+SPLIT_FOLDERS = {
+    folder: set(CHANGE_TYPES) for folder in ("contexts", "kept_inputs", "records", "reports", *SPLIT_CASE_FOLDERS)
+} | {
     folder: {"iac"}
     for folder in (
         "events",
@@ -267,6 +271,13 @@ def test_a_report_vector_names_its_record_by_id_and_digest(report: str, source: 
 
 
 @pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vectors_evaluator_binary_is_the_one_its_record_gives(report: str, source: str) -> None:
+    result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["evaluator_binary"]
+    events = [AssuranceEvent.model_validate(event) for event in _report_record(source)["events"]]
+    assert result == evaluator_binary_result(events).model_dump(mode="json")
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
 def test_a_report_vectors_bundle_provenance_is_the_one_its_record_gives(report: str, source: str) -> None:
     result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["bundle_provenance"]
     car = CAR.model_validate(_report_record(source))
@@ -318,6 +329,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "reports_expected",
         "reports_invalid",
         "scan_coverage",
+        "kept_inputs",
         "scanner_evidence",
         "scanner_reports",
         "scanner_verdicts",
@@ -664,3 +676,61 @@ def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> N
     observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
     expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))
     assert observed == expected
+
+
+# Each record whose kept evaluation inputs the vectors hold, in the folder named after it, at the paths its register
+# names them by; a case's kept inputs sit in this folder instead, in one named after the case.
+KEPT_INPUT_CASES = "cases"
+KEPT_INPUT_RECORDS = sorted(
+    path.relative_to(VECTORS / "kept_inputs").as_posix()
+    for change_type in CHANGE_TYPES
+    for path in (VECTORS / "kept_inputs" / change_type).iterdir()
+    if path.is_dir() and path.name != KEPT_INPUT_CASES
+)
+
+
+def kept_inputs(name: str) -> dict[str, bytes]:
+    """The evaluation inputs the record ``name`` (``iac/local_run``) kept, by the digest its register names each by."""
+    record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
+    folder = VECTORS / "kept_inputs" / name
+    return {
+        ref["digest"]: (folder / ref["path"]).read_bytes()
+        for ref in record["evidence_refs"]
+        if (folder / ref["path"]).is_file()
+    }
+
+
+@pytest.mark.parametrize("name", KEPT_INPUT_RECORDS)
+def test_every_evaluation_input_a_record_kept_is_about_its_environment_and_change(name: str) -> None:
+    record = CAR.model_validate(json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8")))
+    inputs = kept_inputs(name)
+    named = {
+        event.provenance.input_digest
+        for event in record.events
+        if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
+    }
+    assert named and named == set(inputs)
+    assert all(digest(data) == named_digest for named_digest, data in inputs.items())
+    assert kept_input_problems(record, inputs) == []
+
+
+def _case_records() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
+    """Every record case's name, base record and record, its values set and removed."""
+    out = []
+    for folder in ("records_valid", "records_invalid", "records_integrity_failed"):
+        for change_type in CHANGE_TYPES:
+            path = VECTORS / folder / change_type / "cases.json"
+            for case in json.loads(path.read_text(encoding="utf-8")):
+                base = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
+                out.append((case["name"], base, case_record(case)))
+    return out
+
+
+def test_a_cases_register_entry_for_a_file_of_its_record_names_that_files_size() -> None:
+    stale = []
+    for name, base, record in _case_records():
+        sizes = {(ref["path"], ref["digest"]): ref["size_bytes"] for ref in base["evidence_refs"]}
+        for ref in record.get("evidence_refs", []):
+            if sizes.get((ref["path"], ref["digest"]), ref["size_bytes"]) != ref["size_bytes"]:
+                stale.append(f"{name}: {ref['path']}")
+    assert stale == []

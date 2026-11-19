@@ -469,16 +469,20 @@ def names_the_servers_bundle(car: CAR) -> bool:
     )
 
 
-def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
-    """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
-    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
-    case = next(c for c in cases if c["name"] == name)
+def case_record(case: dict[str, Any]) -> dict[str, Any]:
+    """The record a record case names, its values set and then removed."""
     document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
     for pointer, value in case["set"].items():
         set_pointer(document, pointer, copy.deepcopy(value))
     for pointer in case["remove"]:
         remove_pointer(document, pointer)
     return document
+
+
+def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
+    """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
+    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
+    return case_record(next(c for c in cases if c["name"] == name))
 
 
 # The last token of a JSON Pointer that names the place after a list's last item (RFC 6901): setting it appends.

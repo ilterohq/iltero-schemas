@@ -84,6 +84,7 @@ def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
         "assertions": {digest_of(document): document for document in documents},
         "local_exceptions": exceptions,
         "served_exceptions": {},
+        "inputs": {},
     }
 
 

@@ -92,7 +92,7 @@
   {
     "name": "evaluator_binary_of_a_record_on_a_placeholder_binary",
     "record": {
-      "vector": "iac/local_run.json"
+      "vector": "iac/local_run_declared_units.json"
     },
     "property": "evaluator_binary",
     "state": "failed",

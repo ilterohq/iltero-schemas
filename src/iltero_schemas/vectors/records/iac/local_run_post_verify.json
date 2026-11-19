@@ -932,7 +932,7 @@
       "media_type": "application/json",
       "path": "units/root/artifacts/sha256-ca550b18dcb4a37fc90faf7738337bc310dc387ebb9686d4c987260b64a08bd5",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -956,7 +956,7 @@
       "media_type": "application/json",
       "path": "units/root/plan/sha256-542655f99097af73932265f53f659c0f3799748c210c1bc8491ca64a5b3a6862",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -973,7 +973,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+      "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
       "media_type": "application/json",
       "path": "units/root/plan/redaction-policy.json",
       "redaction_policy": null,
@@ -1096,7 +1096,7 @@
       "media_type": "application/json",
       "path": "units/root/pre_deploy/contexts/sha256-0ff77172f40bbf45031d14d4c54f7fe0b804deec8bce6a1eec3f0296a96ee364",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -1117,7 +1117,7 @@
       "media_type": "application/json",
       "path": "units/root/pre_deploy/contexts/sha256-edc256d9425dbd1dd4d81c6dd26cde4eaec2d74532f54eaa08f3e4401225522a",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -1274,7 +1274,7 @@
       "media_type": "application/json",
       "path": "units/root/artifacts/sha256-d651d89baeb821945483ac4b86f40b4dede3e93bb71c51342dcf78ec476ea2d0",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -1298,7 +1298,7 @@
       "media_type": "application/json",
       "path": "units/root/post_deploy/contexts/sha256-db8ef574baa976d2727a63a7bbe07d586aa1825baf93129f437ab605a9b846cb",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -1404,7 +1404,7 @@
       "media_type": "application/json",
       "path": "units/root/post_verify/contexts/sha256-fe3a8fb6c6cd16c32ea913c2c32640466ba6f6337860b05ffecca5297484c13d",
       "redaction_policy": {
-        "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+        "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
         "id": "iltero.redaction",
         "version": "1"
       },
@@ -1645,7 +1645,7 @@
           "kind": "observation"
         },
         "policy": {
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+          "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
           "id": "iltero.redaction",
           "version": "1"
         },
@@ -1865,7 +1865,7 @@
           "kind": "deployment"
         },
         "policy": {
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+          "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
           "id": "iltero.redaction",
           "version": "1"
         },
@@ -1984,7 +1984,7 @@
           "kind": "drift_check"
         },
         "policy": {
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+          "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
           "id": "iltero.redaction",
           "version": "1"
         },
@@ -2110,7 +2110,7 @@
           "kind": "facts"
         },
         "policy": {
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
+          "digest": "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f",
           "id": "iltero.redaction",
           "version": "1"
         },

@@ -41,6 +41,7 @@ def _problems(record: dict[str, Any], exceptions: dict[str, bytes]) -> list[tupl
         assertions={},
         local_exceptions=exceptions,
         served_exceptions={},
+        inputs={},
     )
     return local_exception_problems(car, files)
 
@@ -155,6 +156,7 @@ def test_a_result_whose_subject_has_no_address_is_given_no_exception() -> None:
         assertions={},
         local_exceptions={FILE_DIGEST: FILE_BYTES},
         served_exceptions={},
+        inputs={},
     )
     assert local_exception_problems(car.model_copy(update={"events": events}), files) == [(_at(record), NOT_GIVEN)]
 
@@ -180,6 +182,7 @@ def _served_problems(record: dict[str, Any], kept: dict[str, bytes]) -> list[tup
         assertions={},
         local_exceptions={},
         served_exceptions=kept,
+        inputs={},
     )
     return served_exception_problems(car, files)
 

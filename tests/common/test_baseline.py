@@ -273,6 +273,15 @@ REMOVED_TESTS = {
 # The starter assertions gained ``spec.change_type``, so each digest of theirs the baseline cites, and each digest of a
 # set of them, maps to its value now; ``sizes`` gives the size of each retained file now.
 STARTER_DIGESTS: dict[str, Any] = json.loads((BASELINE / "starter_assertion_digests.json").read_text(encoding="utf-8"))
+# The Iltero CLI's redaction policy changed since the baseline, and every record names the policy it now writes.
+REDACTION_POLICY_DIGESTS = {
+    "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b": (
+        "sha256:a0ae1edd716af5f441d9bb028494eb0be3468dd618c3a693c06d9c7ccad46f5f"
+    )
+}
+# Records the Iltero CLI's writer now writes, kept as it wrote them rather than edited by hand: they are compared with
+# no baseline, and the cases of each still refuse it for the reason they did.
+WRITTEN_BY_THE_CLI = {"local_run.json"}
 DOCUMENT_FOLDERS = ("records", "identities")
 # The baseline is older than the image change types: its records and their cases are now those of the IaC change type,
 # in that type's subfolder of their folder.
@@ -425,7 +434,7 @@ def _reworded_reason(reason: str | None) -> str | None:
 def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
     """The baseline record ``name`` in the change-type envelope, with the change digest the new rule gives and every
     value bound to it, and each stage's events file digested from its events."""
-    digests = STARTER_DIGESTS["digests"] | _new_change_digest(document)
+    digests = STARTER_DIGESTS["digests"] | REDACTION_POLICY_DIGESTS | _new_change_digest(document)
     moved: dict[str, Any] = _renamed(_replaced(_with_activity(_checked_content(document)), digests))
     for ref in moved["evidence_refs"]:
         ref["size_bytes"] = STARTER_DIGESTS["sizes"].get(ref["digest"], ref["size_bytes"])
@@ -540,7 +549,7 @@ def _moved_case(case: dict[str, Any], folder: str) -> dict[str, Any]:
     now."""
     moved = {**case}
     record = _new_change_digest(_read(BASELINE / folder / case["vector"])) if folder == "records" else {}
-    digests = STARTER_DIGESTS["digests"] | record
+    digests = STARTER_DIGESTS["digests"] | REDACTION_POLICY_DIGESTS | record
     moved["set"] = {
         _renamed_pointer(_moved_pointer(pointer), case["vector"]): _renamed(
             _replaced(_with_activity(_checked_content(value)), digests), pointer.rsplit("/", 1)[-1]
@@ -630,7 +639,10 @@ def _with_changes(folder: str, name: str) -> Any:
 
 
 BASELINE_DOCUMENTS = [
-    (folder, path) for folder in DOCUMENT_FOLDERS for path in sorted((BASELINE / folder).glob("*.json"))
+    (folder, path)
+    for folder in DOCUMENT_FOLDERS
+    for path in sorted((BASELINE / folder).glob("*.json"))
+    if not (folder == "records" and path.name in WRITTEN_BY_THE_CLI)
 ]
 
 
@@ -704,6 +716,7 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
         for case in baseline
         if case["name"] in shipped
         and case["name"] not in REBUILT_CASES
+        and case["vector"] not in WRITTEN_BY_THE_CLI
         and _without_events_file_values(
             shipped[case["name"]], applies_served_exceptions=_applies(shipped[case["name"]])
         )
@@ -715,7 +728,7 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
     refused_otherwise = [
         case["name"]
         for case in baseline
-        if case["name"] in REBUILT_CASES
+        if (case["name"] in REBUILT_CASES or case["vector"] in WRITTEN_BY_THE_CLI)
         and case["name"] in shipped
         and {key: shipped[case["name"]].get(key) for key in ("message", "problems")}
         != {key: _moved_case(case, BASELINE_CASE_FOLDERS[folder]).get(key) for key in ("message", "problems")}

@@ -15,7 +15,8 @@ class KeptFiles:
     ``ScannerObservations.plan_digest``), each an entry of the record's evidence register; ``assertions`` by the digest
     of the assertion's document (``AssertionRef.digest``); ``local_exceptions`` by the digest of the project's
     exceptions file a stage applied (``LocalExceptionsUsed.digest``), and ``served_exceptions`` by the digest of the
-    exceptions the server served a stage (``ServedExceptionsUsed.digest``), each the bytes of the stage's copy,
+    exceptions the server served a stage (``ServedExceptionsUsed.digest``), and ``inputs`` by the digest each
+    evaluation names its evaluation input by (``Provenance.input_digest``), each the bytes of the stage's copy,
     unparsed, so the contract checks the digest and reads the file one way for every reader.
     """
 
@@ -26,3 +27,4 @@ class KeptFiles:
     assertions: Mapping[str, object]
     local_exceptions: Mapping[str, bytes]
     served_exceptions: Mapping[str, bytes]
+    inputs: Mapping[str, bytes]

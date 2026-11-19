@@ -10,7 +10,7 @@
   },
   "record": {
     "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
-    "digest": "sha256:3e8859cf0fe00b854bf6ba07817a9dd7a63734076706183ea2df50140a89802b"
+    "digest": "sha256:a2ae86553cb836417c8c1423711cf80ab969185ba46063712061f1bfe0877e34"
   },
   "properties": {
     "integrity": {
@@ -69,9 +69,9 @@
       "detail": null
     },
     "evaluator_binary": {
-      "state": "failed",
-      "reason": "other_binary_named",
-      "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (4 more problems)"
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
     }
   }
 }

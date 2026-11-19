@@ -73,7 +73,7 @@
       "reason": "other_binary_named",
       "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (2 more problems)"
     },
-    "scanner_evidence": {
+    "scanner_reports": {
       "state": "not_assessed",
       "reason": "not_in_activity",
       "detail": null

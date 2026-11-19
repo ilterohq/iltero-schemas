@@ -56,7 +56,7 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, reason: st
     activity = ACTIVITIES[car.change.activity]
     if reason == "pre_deploy_pending":
         assert pre_deploy is None and Stage.PRE_DEPLOY in car.expected_stages
-    if reason == "not_in_activity" and property_name == "scanner_evidence":
+    if reason == "not_in_activity" and property_name == "scanner_reports":
         assert not activity.stages_that_read_scanner_reports
     elif reason == "not_in_activity" and property_name == "exceptions":
         assert activity.stage_that_applies_served_exceptions is None and not activity.stages_that_read_scanner_reports

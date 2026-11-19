@@ -150,31 +150,31 @@
     "why": "The plan stage names failed results exceptions the server served cover, and the kept copy says the person who approved one of them started the run. The exception results come before the pre-deploy stage's pending one, so the pending stage does not hide them."
   },
   {
-    "name": "scanner_evidence_of_a_record_with_no_scanner_report",
+    "name": "scanner_reports_of_a_record_with_no_scanner_report",
     "record": {
       "vector": "iac/local_run.json"
     },
-    "property": "scanner_evidence",
+    "property": "scanner_reports",
     "state": "not_assessed",
     "reason": "no_scanner_report",
     "why": "No stage read a scanner report and none requires one."
   },
   {
-    "name": "scanner_evidence_of_a_record_whose_reports_the_pipeline_ran",
+    "name": "scanner_reports_of_a_record_whose_reports_the_pipeline_ran",
     "record": {
       "vector": "iac/local_run_scanned.json"
     },
-    "property": "scanner_evidence",
+    "property": "scanner_reports",
     "state": "claimed_by_record",
     "reason": "ran_by_pipeline",
     "why": "The plan stage read reports the pipeline ran, and its scanner verdicts follow from the files it kept: the pipeline's word."
   },
   {
-    "name": "scanner_evidence_of_a_record_whose_required_scanner_group_gave_only_gaps",
+    "name": "scanner_reports_of_a_record_whose_required_scanner_group_gave_only_gaps",
     "record": {
       "vector": "iac/local_run_scanned_project_required.json"
     },
-    "property": "scanner_evidence",
+    "property": "scanner_reports",
     "state": "not_performed",
     "reason": "scanner_requirement_not_met",
     "why": "A group of scanners the plan stage requires gave only gaps for a check and subject, so the scan the run required did not happen for it."
@@ -200,11 +200,11 @@
     "why": "The plan stage names failed results exceptions the server served cover, the kept copy gives them, and no one who approved them started the run."
   },
   {
-    "name": "scanner_evidence_of_a_governed_run_with_no_scanner_report",
+    "name": "scanner_reports_of_a_governed_run_with_no_scanner_report",
     "record": {
       "vector": "iac/governed_run.json"
     },
-    "property": "scanner_evidence",
+    "property": "scanner_reports",
     "state": "not_assessed",
     "reason": "no_scanner_report",
     "why": "No stage of the run the server opened read a scanner report, and none requires one; only the server confirms that."

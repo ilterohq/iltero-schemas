@@ -1,4 +1,5 @@
-"""The results a verifier gives a record's exceptions and its scanner evidence, worked out from the kept files."""
+"""The results a verifier gives a record's exceptions and its ``scanner_reports`` property, worked out from the kept
+files."""
 
 from __future__ import annotations
 
@@ -16,7 +17,7 @@ from iltero_schemas.models.iac.report_results import (
     APPROVED_BY_RUN_STARTER,
     SERVED_EXCEPTION_RELIED_ON,
     exception_results,
-    scanner_evidence_result,
+    scanner_reports_result,
 )
 from tests.conftest import VECTORS, documents
 from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _governed_scanned, _record, kept_files
@@ -55,30 +56,28 @@ def _result(state: str, reason: str) -> PropertyResult:
 
 def test_a_record_whose_stages_read_no_scanner_report_has_none() -> None:
     record = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
-    assert scanner_evidence_result(_car(record), _served_files()) == _result("not_assessed", "no_scanner_report")
+    assert scanner_reports_result(_car(record), _served_files()) == _result("not_assessed", "no_scanner_report")
 
 
 def test_a_build_reads_no_scanner_report() -> None:
     record = json.loads((VECTORS / "records" / "image" / "local_run_build.json").read_text(encoding="utf-8"))
-    assert scanner_evidence_result(_car(record), _served_files()) == _result("not_assessed", "not_in_activity")
+    assert scanner_reports_result(_car(record), _served_files()) == _result("not_assessed", "not_in_activity")
 
 
 def test_reports_the_pipeline_ran_are_the_pipelines_word() -> None:
     files = KeptFiles(**kept_files(SCANNED, KEPT))
-    assert scanner_evidence_result(_car(SCANNED), files) == _result("claimed_by_record", "ran_by_pipeline")
+    assert scanner_reports_result(_car(SCANNED), files) == _result("claimed_by_record", "ran_by_pipeline")
 
 
 def test_reports_the_iltero_cli_ran_are_the_records_word() -> None:
     record, files = _governed_scanned()
-    assert scanner_evidence_result(_car(record), KeptFiles(**files)) == _result(
-        "claimed_by_record", "ran_by_iltero_cli"
-    )
+    assert scanner_reports_result(_car(record), KeptFiles(**files)) == _result("claimed_by_record", "ran_by_iltero_cli")
 
 
 def test_a_required_group_of_scanners_that_gave_only_gaps_is_not_performed() -> None:
     name = "local_run_scanned_project_required"
     record = _record(name)
-    result = scanner_evidence_result(_car(record), KeptFiles(**kept_files(record, EVIDENCE / name)))
+    result = scanner_reports_result(_car(record), KeptFiles(**kept_files(record, EVIDENCE / name)))
     assert (result.state, result.reason) == ("not_performed", "scanner_requirement_not_met")
     groups = record["stages"]["plan"]["scanners"]["scanner_requirements"]
     named = next(", ".join(sorted(group["any_of"])) for group in groups)
@@ -88,7 +87,7 @@ def test_a_required_group_of_scanners_that_gave_only_gaps_is_not_performed() -> 
 def test_a_scanner_verdict_its_kept_files_do_not_give_fails_and_names_the_first_problem() -> None:
     files = kept_files(SCANNED, KEPT)
     files["scanner_check_mappings"] = {}
-    result = scanner_evidence_result(_car(SCANNED), KeptFiles(**files))
+    result = scanner_reports_result(_car(SCANNED), KeptFiles(**files))
     assert (result.state, result.reason) == ("failed", "kept_files_do_not_give_the_verdicts")
     assert result.detail is not None and "more problem" in result.detail
 
@@ -142,18 +141,19 @@ def test_a_record_that_relied_on_a_project_exception_says_so() -> None:
     assert exception_results(_car(record), files) == {("claimed_by_record", "project_exception_relied_on"): None}
 
 
-# The expected results of the exceptions and the scanner evidence, each worked out from its record and kept files.
+# The expected results of the ``exceptions`` and ``scanner_reports`` properties, each worked out from its record and
+# kept files.
 EXPECTED = [
     {**case, "change_type": change_type}
     for change_type in ("iac", "image")
     for case in json.loads((VECTORS / "reports_expected" / change_type / "cases.json").read_text(encoding="utf-8"))
-    if case["property"] in ("exceptions", "scanner_evidence")
+    if case["property"] in ("exceptions", "scanner_reports")
 ]
 
 
 def _expected_record(case: dict[str, Any]) -> tuple[dict[str, Any], KeptFiles]:
-    """The record a case names, with the files it kept: the scanner evidence folder of the record it is built on when
-    that record read scanner reports, and the served exceptions documents otherwise."""
+    """The record a case names, with the files it kept: the scanner_evidence vector folder of the record it is built on
+    when that record read scanner reports, and the served exceptions documents otherwise."""
     change_type = case["change_type"]
     if "case" in case["record"]:
         cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
@@ -182,11 +182,11 @@ def _expected_record(case: dict[str, Any]) -> tuple[dict[str, Any], KeptFiles]:
 
 
 @pytest.mark.parametrize("case", EXPECTED, ids=[case["name"] for case in EXPECTED])
-def test_each_expected_exception_and_scanner_evidence_result_is_the_one_its_record_gives(case: dict[str, Any]) -> None:
+def test_each_expected_exception_and_scanner_reports_result_is_the_one_its_record_gives(case: dict[str, Any]) -> None:
     record, files = _expected_record(case)
     car = _car(record)
-    if case["property"] == "scanner_evidence":
-        result = scanner_evidence_result(car, files)
+    if case["property"] == "scanner_reports":
+        result = scanner_reports_result(car, files)
         assert (result.state, result.reason) == (case["state"], case["reason"])
         return
     holding = set(exception_results(car, files))

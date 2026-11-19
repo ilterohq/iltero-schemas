@@ -1,11 +1,12 @@
-"""The results a verifier gives a record's exceptions and its scanner evidence, from the record and its kept files.
+"""The results a verifier gives a record's exceptions and its ``scanner_reports`` property, from the record and its kept
+files.
 
 Every verifier that reads the same record and files gives the same results: ``exception_results`` gives the
 exception results that hold, which a verifier passes with the pre-deploy results that hold to
-``verification.first_that_holds``; ``scanner_evidence_result`` gives the scanner evidence's one result, the first of
-``verification.SCANNER_EVIDENCE_RESULT_ORDER`` that holds. A detail names the first problem a check lists and how many
-more there are, never a value from a kept file. A verifier calls ``scanner_evidence_result`` for every record, an
-image change's too, whose activity reads no scanner report. Call both on a record whose integrity holds: a verifier
+``verification.first_that_holds``; ``scanner_reports_result`` gives the ``scanner_reports`` property's one result, the
+first of ``verification.SCANNER_REPORTS_RESULT_ORDER`` that holds. A detail names the first problem a check lists and
+how many more there are, never a value from a kept file. A verifier calls ``scanner_reports_result`` for every record,
+an image change's too, whose activity reads no scanner report. Call both on a record whose integrity holds: a verifier
 that could not establish it gives every other property ``could_not_decide``.
 """
 
@@ -93,9 +94,9 @@ def exception_results(car: CAR, files: KeptFiles) -> dict[ExceptionResult, str |
     return holding
 
 
-def scanner_evidence_result(car: CAR, files: KeptFiles) -> PropertyResult:
-    """The scanner evidence's result for ``car``: whether its scanner verdicts follow from the files its stages kept,
-    whether a required group of scanners gave only gaps, and who ran the reports its stages read."""
+def scanner_reports_result(car: CAR, files: KeptFiles) -> PropertyResult:
+    """The ``scanner_reports`` property's result for ``car``: whether its scanner verdicts follow from the files its
+    stages kept, whether a required group of scanners gave only gaps, and who ran the reports its stages read."""
     problems = scanner_evidence_problems(car, files)
     if problems:
         return PropertyResult(state="failed", reason="kept_files_do_not_give_the_verdicts", detail=_detail(problems))

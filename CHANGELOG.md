@@ -1987,7 +1987,7 @@ keep, so any two tools agree on what a record means.
   digest, has that file's size.
 - A verification report's `exceptions` property now judges the exceptions
   Iltero Platform served, and the report has a thirteenth property,
-  `scanner_evidence`. Both results are worked out from the record and the
+  `scanner_reports`. Both results are worked out from the record and the
   files its stages kept, so every verifier gives the same one.
   `iltero_schemas.models.iac.report_results.exception_results(car, files)`
   gives each exception result that holds, which a verifier passes with the
@@ -2014,10 +2014,11 @@ keep, so any two tools agree on what a record means.
   so a pre-deploy stage that is not in the activity, out of scope or still
   pending does not hide an exception the record relied on.
 
-  `scanner_evidence` means that every scanner verdict comes from a report of
-  the pinned scanner Iltero Platform required, run on the plan the record
-  evaluated. `report_results.scanner_evidence_result(car, files)` gives the
-  first result of `SCANNER_EVIDENCE_RESULT_ORDER` that holds:
+  `scanner_reports` means that every scanner result the record states comes
+  from a report of the pinned scanner Iltero Platform required, run on the
+  plan the record evaluated. `report_results.scanner_reports_result(car,
+  files)` gives the first result of `SCANNER_REPORTS_RESULT_ORDER` that
+  holds:
 
   | State | Reason | When |
   | --- | --- | --- |
@@ -2034,21 +2035,21 @@ keep, so any two tools agree on what a record means.
   `APPROVED_BY_RUN_STARTER`, only beside kept copies that hold; the
   `scanner_requirement_not_met` detail names the stage and the group's
   scanners. No detail holds a value from a kept file. An image record gets
-  `scanner_evidence_result` too, as `not_in_activity`. `kept_file_problems`
+  `scanner_reports_result` too, as `not_in_activity`. `kept_file_problems`
   now calls `local_exception_problems` itself, and
   `scanner_evidence_problems` checks only the scanner verdicts. The three
-  sample reports gain `scanner_evidence`, and
+  sample reports gain `scanner_reports`, and
   `reports/iac/verification_report_commit_not_reviewed.json` gives
   `exceptions` as `claimed_by_record` with `served_exceptions_not_relied_on`.
   Two new `reports_invalid/` cases refuse an `exceptions` result the
-  contract does not give and a `scanner_evidence` reason of another
+  contract does not give and a `scanner_reports` reason of another
   property.
   New `reports_expected/` cases cover a server-opened run relying on an
   exception its run's starter approved while its pre-deploy stage is
-  pending, and the scanner evidence of a record with no scanner report, of
+  pending, and the scanner reports of a record with no scanner report, of
   one whose reports the pipeline ran, of one whose required group of
   scanners gave only gaps, and of a build. A test works out every `iac/`
-  expected `exceptions` and `scanner_evidence` result from its record and
+  expected `exceptions` and `scanner_reports` result from its record and
   kept files.
 - Six new records of runs Iltero Platform opened, which the Iltero CLI wrote
   with the pinned evaluator. Each evaluates a bundle Iltero Platform served,

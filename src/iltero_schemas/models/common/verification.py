@@ -142,14 +142,14 @@ EVALUATOR_BINARY_RESULTS: frozenset[tuple[VerificationState, str | None]] = froz
         ("not_assessed", "no_opa_evaluation"),
     }
 )
-# The results a verifier gives the scanner evidence (``models.iac.report_results.scanner_evidence_result``), the first
-# that holds in this order. kept_files_do_not_give_the_verdicts: a scanner evaluation does not follow from the files its
-# stage kept. scanner_requirement_not_met: a group of scanners the stage requires gave only gaps for a check and
-# subject. ran_by_pipeline: a kept report the pipeline ran, the pipeline's word. ran_by_iltero_cli: every kept report
-# the Iltero CLI ran, the record's word. not_in_activity: the record's activity reads no scanner report.
+# The results a verifier gives the ``scanner_reports`` property (``models.iac.report_results.scanner_reports_result``),
+# the first that holds in this order. kept_files_do_not_give_the_verdicts: a scanner evaluation does not follow from the
+# files its stage kept. scanner_requirement_not_met: a group of scanners the stage requires gave only gaps for a check
+# and subject. ran_by_pipeline: a kept report the pipeline ran, the pipeline's word. ran_by_iltero_cli: every kept
+# report the Iltero CLI ran, the record's word. not_in_activity: the record's activity reads no scanner report.
 # no_scanner_report: no stage read a scanner report and none requires one; in a run the server opened, only that server
 # confirms its stages required none.
-SCANNER_EVIDENCE_RESULT_ORDER: tuple[tuple[VerificationState, str], ...] = (
+SCANNER_REPORTS_RESULT_ORDER: tuple[tuple[VerificationState, str], ...] = (
     ("failed", "kept_files_do_not_give_the_verdicts"),
     ("not_performed", "scanner_requirement_not_met"),
     ("claimed_by_record", "ran_by_pipeline"),
@@ -176,13 +176,13 @@ COMMIT_REVIEW_RESULTS: MappingProxyType[str, tuple[VerificationState, str]] = Ma
 # file_digests: the files the record cites hold the digests it names, which anyone who can edit them can recompute.
 # ci_job_held_by_server: only the server that opened the run verified its CI jobs. run_opened_locally: the tool opened
 # the run, so no CI job was verified. approvals_listed: the record lists approvals, its writer's claim.
-# no_approval_served: the server opened the run and the stage keeps an empty list of approvals.
-# The exception and scanner evidence results are described where they are listed. server_bundle_named: a stage names
-# the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage the record
-# expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
-# and a stage it expects was never reported. no_post_deploy_stage: no stage compared the applied plan.
-# plan_files_supplied: the plan files given to the verifier were compared. binding_undecided: they could not be.
-# deployment_coverage has no reason: no reader of one record knows of a deployment that left no record.
+# no_approval_served: the server opened the run and the stage keeps an empty list of approvals. The ``exceptions`` and
+# ``scanner_reports`` results are described where they are listed. server_bundle_named: a stage names the server's
+# bundle. local_assertions: the checks were the project's own. expected_stages: every stage the record expects reported.
+# stages_pending: the run is still in progress. stage_not_reported: the record is finished and a stage it expects was
+# never reported. no_post_deploy_stage: no stage compared the applied plan. plan_files_supplied: the plan files given to
+# the verifier were compared. binding_undecided: they could not be. deployment_coverage has no reason: no reader of one
+# record knows of a deployment that left no record.
 PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str | None]]] = MappingProxyType(
     {
         "integrity": frozenset({("claimed_by_record", "file_digests")}),
@@ -217,7 +217,7 @@ PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str |
         "commit_review": _PRE_DEPLOY_RESULTS | {_NOT_READ_BY_THE_STAGE} | frozenset(COMMIT_REVIEW_RESULTS.values()),
         "reference_time": REFERENCE_TIME_RESULTS,
         "evaluator_binary": EVALUATOR_BINARY_RESULTS,
-        "scanner_evidence": frozenset(SCANNER_EVIDENCE_RESULT_ORDER),
+        "scanner_reports": frozenset(SCANNER_REPORTS_RESULT_ORDER),
     }
 )
 # A record whose integrity is not established: its integrity failed on the files it cites, and the verifier could not
@@ -265,7 +265,7 @@ class Properties(StrictModel):
     evaluator_binary: PropertyResult
     # Every scanner verdict comes from a report of the pinned scanner the server that opened the run required, run on
     # the plan the record evaluated.
-    scanner_evidence: PropertyResult
+    scanner_reports: PropertyResult
 
 
 class Verifier(StrictModel):

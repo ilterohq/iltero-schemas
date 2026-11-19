@@ -73,7 +73,7 @@
       "reason": "pinned_binary_named",
       "detail": null
     },
-    "scanner_evidence": {
+    "scanner_reports": {
       "state": "not_assessed",
       "reason": "no_scanner_report",
       "detail": null

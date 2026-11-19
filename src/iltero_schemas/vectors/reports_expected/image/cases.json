@@ -10,11 +10,11 @@
     "why": "An image build applies no exception at any stage, the server's or the project's own."
   },
   {
-    "name": "scanner_evidence_of_a_build",
+    "name": "scanner_reports_of_a_build",
     "record": {
       "vector": "image/local_run_build.json"
     },
-    "property": "scanner_evidence",
+    "property": "scanner_reports",
     "state": "not_assessed",
     "reason": "not_in_activity",
     "why": "An image build reads no scanner report."

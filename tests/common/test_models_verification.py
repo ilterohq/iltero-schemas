@@ -54,7 +54,7 @@ def test_a_report_names_the_thirteen_properties_and_no_overall_verdict() -> None
         "commit_review",
         "reference_time",
         "evaluator_binary",
-        "scanner_evidence",
+        "scanner_reports",
     ]
     assert set(VerificationReport.model_fields) == {"api_version", "kind", "metadata", "record", "properties"}
 

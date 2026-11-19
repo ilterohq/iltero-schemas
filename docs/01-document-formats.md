@@ -3131,7 +3131,7 @@ a reader must not parse it.
 | `commit_review` | Every commit the change ships was reviewed. |
 | `reference_time` | Every stage took its reference time, which every expiry and ordering comparison uses, from a source a verifier can trust. |
 | `evaluator_binary` | Every evaluation ran on the binary of the Open Policy Agent (OPA) release this contract pins, for its platform. |
-| `scanner_evidence` | Every scanner verdict comes from a report of the pinned scanner Iltero Platform required, run on the plan the record evaluated. |
+| `scanner_reports` | Every scanner result the record states comes from a report of the pinned scanner Iltero Platform required, run on the plan the record evaluated. |
 
 | State | Meaning |
 | --- | --- |
@@ -3202,12 +3202,12 @@ Key rules:
   | `evaluator_binary` | `claimed_by_record` | `pinned_binary_named` | Every OPA evaluation names the pinned binary for its platform. |
   | `evaluator_binary` | `failed` | `other_binary_named` | An OPA evaluation names another release, a platform the pin has no binary for, or another binary. |
   | `evaluator_binary` | `not_assessed` | `no_opa_evaluation` | No evaluation of the record ran on OPA. |
-  | `scanner_evidence` | `failed` | `kept_files_do_not_give_the_verdicts` | A scanner evaluation does not follow from the files its stage kept. |
-  | `scanner_evidence` | `not_performed` | `scanner_requirement_not_met` | A group of scanners a stage requires is [unmet](#how-evaluators-combine) for a check and subject: each member that evaluated it gave a gap. |
-  | `scanner_evidence` | `claimed_by_record` | `ran_by_pipeline` | A kept scanner report says the pipeline ran it: the pipeline's word. |
-  | `scanner_evidence` | `claimed_by_record` | `ran_by_iltero_cli` | Every kept scanner report says the Iltero CLI ran it: the record's word. |
-  | `scanner_evidence` | `not_assessed` | `not_in_activity` | The record's activity reads no scanner report, as an image build reads none. |
-  | `scanner_evidence` | `not_assessed` | `no_scanner_report` | No stage read a scanner report, and none requires one. In a run Iltero Platform opened, only Iltero Platform confirms that its stages required none. |
+  | `scanner_reports` | `failed` | `kept_files_do_not_give_the_verdicts` | A scanner evaluation does not follow from the files its stage kept. |
+  | `scanner_reports` | `not_performed` | `scanner_requirement_not_met` | A group of scanners a stage requires is [unmet](#how-evaluators-combine) for a check and subject: each member that evaluated it gave a gap. |
+  | `scanner_reports` | `claimed_by_record` | `ran_by_pipeline` | A kept scanner report says the pipeline ran it: the pipeline's word. |
+  | `scanner_reports` | `claimed_by_record` | `ran_by_iltero_cli` | Every kept scanner report says the Iltero CLI ran it: the record's word. |
+  | `scanner_reports` | `not_assessed` | `not_in_activity` | The record's activity reads no scanner report, as an image build reads none. |
+  | `scanner_reports` | `not_assessed` | `no_scanner_report` | No stage read a scanner report, and none requires one. In a run Iltero Platform opened, only Iltero Platform confirms that its stages required none. |
 
 - One record gives one report. For `approval_identity`, `exceptions` and `commit_review`, a verifier takes the first
   result in this order that holds for the record
@@ -3251,8 +3251,8 @@ Key rules:
   "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform". When the
   evaluations have more problems, the detail ends with their count, such as " (4 more problems)". The property
   compares the binary the record states with this contract release's pin; it cannot show which binary ran.
-- `iltero_schemas.models.iac.report_results.scanner_evidence_result(car, files)` gives the `scanner_evidence` result:
-  the first of `iltero_schemas.models.common.verification.SCANNER_EVIDENCE_RESULT_ORDER` that holds, in the order of
+- `iltero_schemas.models.iac.report_results.scanner_reports_result(car, files)` gives the `scanner_reports` result:
+  the first of `iltero_schemas.models.common.verification.SCANNER_REPORTS_RESULT_ORDER` that holds, in the order of
   the table above. It applies to a record of any change type: an image record gets `not_in_activity`. Who ran the
   reports is judged per kept report: any kept report the pipeline ran gives `ran_by_pipeline`, even beside reports the
   Iltero CLI ran.

@@ -19,13 +19,13 @@
     "message": "exceptions is one of the results a verifier gives that property"
   },
   {
-    "name": "scanner_evidence_with_a_reason_of_another_property",
+    "name": "scanner_reports_with_a_reason_of_another_property",
     "vector": "iac/verification_report.json",
     "set": {
-      "/properties/scanner_evidence/state": "claimed_by_record",
-      "/properties/scanner_evidence/reason": "server_bundle_named"
+      "/properties/scanner_reports/state": "claimed_by_record",
+      "/properties/scanner_reports/reason": "server_bundle_named"
     },
     "remove": [],
-    "message": "scanner_evidence is one of the results a verifier gives that property"
+    "message": "scanner_reports is one of the results a verifier gives that property"
   }
 ]

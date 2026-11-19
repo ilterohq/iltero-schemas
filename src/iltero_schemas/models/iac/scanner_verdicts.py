@@ -43,9 +43,10 @@ it reads, says nothing about any subject of the entry, so every subject is not
 evaluated (``no_result_of_the_mapped_checks``). For a tool that reports passes,
 a report the stage read in full that holds no result at all, and counts none it
 does not list, shows the tool checked nothing, so every subject is not evaluated
-(``no_result_in_the_report``). Either report from a scanner the run requires
+(``no_result_in_the_report``). Either report, from a member of a scanner
+requirement whose every member that evaluated the subject gave such a gap,
 cancels every other evaluator's pass and ``not_applicable`` of the subject
-(``verdicts.REQUIRED_SCANNER_GAP_REASONS``). Its silence about one subject in a
+(``verdicts.SCANNER_REQUIREMENT_GAP_REASONS``). Its silence about one subject in a
 report that holds other results leaves the subject unknown by the rules above,
 as does a report the stage could not read in full.
 """

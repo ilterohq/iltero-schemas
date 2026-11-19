@@ -289,8 +289,8 @@ class Coverage(StrictModel):
     failed_checks_excepted: Count
     # Each evaluator's own results before they combine, by engine (``none`` for evaluations no evaluator ran): one per
     # assertion and subject it evaluated, so they add up to the events, not to ``evaluations``. The verdict reads only
-    # ``status_counts``, where a required scanner's gap can cancel another evaluator's pass. A scanner's counts are its
-    # report's own results, as the pipeline supplied it.
+    # ``status_counts``, where a scanner requirement's gap can cancel another evaluator's pass. A scanner's counts are
+    # its report's own results, as the pipeline supplied it.
     evaluator_status_counts: dict[Engine, dict[Status, Count]]
     evaluations: Count
     gaps: Annotated[list[Gap], Field(max_length=MAX_GAPS)]

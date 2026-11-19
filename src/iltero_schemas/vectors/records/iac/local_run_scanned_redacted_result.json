@@ -4186,7 +4186,7 @@
             "written_configuration_results": 0
           }
         ],
-        "required_scanners": []
+        "scanner_requirements": []
       },
       "served_exceptions": null,
       "stage": "plan",

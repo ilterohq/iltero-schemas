@@ -119,7 +119,7 @@ def recount(document: dict[str, Any], name: str) -> None:
     assert name != "post_verify" and document["stages"][name].get("scanners") is None, "recount counts simple stages"
     events = [AssuranceEvent.model_validate(e) for e in document["events"] if e["evaluation"]["stage"] == name]
     required = {f"{e.assertion.id}@{e.assertion.version}" for e in events}
-    assertions, subjects, per_assertion = evaluated_counts(events, required, required_scanners=frozenset())
+    assertions, subjects, per_assertion = evaluated_counts(events, required, scanner_requirements=())
     document["stages"][name]["coverage"].update(
         assertions_evaluated=assertions,
         subjects_evaluated=subjects,
@@ -310,7 +310,7 @@ SCANNERS: dict[str, Any] = {
         },
         SHIPPED_MAPPING_USED,
     ],
-    "required_scanners": [],
+    "scanner_requirements": [],
     "reports": [
         {
             "tool": "checkov",

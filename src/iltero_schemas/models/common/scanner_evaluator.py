@@ -33,7 +33,7 @@ SCANNER_RESULT_UNRESOLVED = "scanner_result_unresolved"
 SCANNER_REPORT_INCOMPLETE = "scanner_report_incomplete"
 # Why an assertion that only scanners decide was not evaluated: no report the stage was given has checks mapped to it.
 NO_SCANNER_REPORT = "no_scanner_report"
-# A scanner the run requires gave no report, so it decided nothing about a subject its checks are mapped to.
+# A member of a scanner requirement gave no report, so it decided nothing about a subject its checks are mapped to.
 SCANNER_NOT_RUN = "scanner_not_run"
 # The report of a tool that names resources only when they fail holds no result, passed, failed or skipped, of any
 # check a scanner checks entry names, of the input the entry reads, so it says nothing about a subject of the entry.
@@ -45,7 +45,7 @@ NO_RESULT_IN_THE_REPORT = "no_result_in_the_report"
 # unknown where a passing check read a value the plan knows only after the deployment, where a tool that reports
 # passes reported nothing for the subject, or where a failure could be about it; or not evaluated, for the scanner's
 # version, a check the source suppressed, a tool that names resources only when they fail, a report with no result of
-# the checks or no result at all, or a required scanner that gave no report.
+# the checks or no result at all, or a member of a scanner requirement that gave no report.
 SCANNER_OUTCOMES = frozenset(
     {
         ("pass", None),
@@ -83,8 +83,8 @@ MAX_UNKNOWN_PATHS = 512
 
 class ScannerEvaluator(StrictModel):
     """A scanner that ran elsewhere, whose results decided the assertion through a scanner checks entry
-    (``models.iac.scanner_check_mapping``), or a scanner the run requires that gave no report (``scanner_not_run``),
-    which decided nothing.
+    (``models.iac.scanner_check_mapping``), or a member of a scanner requirement that gave no report
+    (``scanner_not_run``), which decided nothing.
 
     Nothing was executed here, so there are no limits to record and no digest: the version is the one the tool wrote
     into its own report. The evaluator names the checks its entry maps, how their results found the subject, the
@@ -92,7 +92,7 @@ class ScannerEvaluator(StrictModel):
     """
 
     engine: ScannerTool
-    # The version the tool wrote into its report; null exactly when a required scanner gave no report.
+    # The version the tool wrote into its report; null exactly when a member of a scanner requirement gave no report.
     version: Identifier | None
     # Always null: the record names the version the tool wrote, and nothing it keeps could verify a digest.
     digest: Digest | None

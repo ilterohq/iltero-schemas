@@ -38,7 +38,7 @@ from iltero_schemas.models.common.record_coverage import combine_in_order, recor
 from iltero_schemas.models.common.redaction import RedactedKind
 from iltero_schemas.models.common.register import check_register
 from iltero_schemas.models.common.stage_counts import count_problems
-from iltero_schemas.models.common.verdicts import stage_required_scanners
+from iltero_schemas.models.common.verdicts import stage_scanner_requirements
 from iltero_schemas.models.iac.postponed_checks import check_postponed_checks, open_postponed_checks
 from iltero_schemas.models.iac.scanner_results import check_scanner_results
 from iltero_schemas.profiles import reads_part
@@ -448,7 +448,7 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
                 coverage,
                 events,
                 required=required,
-                required_scanners=stage_required_scanners(record),
+                scanner_requirements=stage_scanner_requirements(record),
                 excepted_failures=record.served_exceptions.excepted_failures if record.served_exceptions else [],
             )
         )

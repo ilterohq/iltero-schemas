@@ -4202,8 +4202,12 @@
             "written_configuration_results": 0
           }
         ],
-        "required_scanners": [
-          "checkov"
+        "scanner_requirements": [
+          {
+            "any_of": [
+              "checkov"
+            ]
+          }
         ]
       },
       "served_exceptions": null,

@@ -484,7 +484,7 @@ def test_only_an_evaluation_from_a_scanners_result_is_not_evaluated_for_the_scan
         AssuranceEvent.model_validate(_event(**changes))
 
 
-def test_a_required_scanner_that_gave_no_report_names_its_bound_checks_and_nothing_it_read() -> None:
+def test_a_member_of_a_scanner_requirement_that_gave_no_report_names_its_bound_checks_and_nothing_it_read() -> None:
     AssuranceEvent.model_validate(
         _from_scanner(**{"evaluation.status": "not_evaluated", "evaluation.status_reason": SCANNER_NOT_RUN})
     )
@@ -500,7 +500,7 @@ def test_a_required_scanner_that_gave_no_report_names_its_bound_checks_and_nothi
     ],
     ids=["a version", "an input", "a resource read", "a check decided"],
 )
-def test_a_required_scanner_that_gave_no_report_names_nothing_it_did_not_do(
+def test_a_member_of_a_scanner_requirement_that_gave_no_report_names_nothing_it_did_not_do(
     changes: dict[str, Any], message: str
 ) -> None:
     not_run = {"evaluation.status": "not_evaluated", "evaluation.status_reason": SCANNER_NOT_RUN}

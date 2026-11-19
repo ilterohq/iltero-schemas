@@ -180,16 +180,26 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     assert scanners.scanner_check_mappings[0].id == "ACME.SCANNER_CHECKS.PAYMENTS"
 
 
-def test_a_scanner_block_keeps_a_report_or_names_a_required_scanner() -> None:
-    with pytest.raises(ValidationError, match="keep a report or name a required scanner"):
+def test_a_scanner_block_keeps_a_report_or_names_a_scanner_requirement() -> None:
+    with pytest.raises(ValidationError, match="keep a report or name a scanner requirement"):
         CAR.model_validate(_record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "reports": []}}))
 
 
-@pytest.mark.parametrize("required", [["trivy", "checkov"], ["checkov", "checkov"]], ids=["unsorted", "repeated"])
-def test_the_required_scanners_are_sorted_each_once(required: list[str]) -> None:
-    with pytest.raises(ValidationError, match="required_scanners is sorted, each once"):
+@pytest.mark.parametrize(
+    ("groups", "message"),
+    [
+        ([{"any_of": ["trivy"]}, {"any_of": ["checkov"]}], "the scanner requirements are sorted by their members"),
+        ([{"any_of": ["checkov"]}, {"any_of": ["checkov", "trivy"]}], "a member of one scanner requirement at most"),
+        ([{"any_of": ["trivy", "checkov"]}], "names its scanners sorted, each once"),
+        ([{"any_of": ["checkov", "checkov"]}], "names its scanners sorted, each once"),
+        ([{"any_of": []}], "at least 1 item"),
+    ],
+    ids=["groups unsorted", "a scanner in two groups", "members unsorted", "member repeated", "empty group"],
+)
+def test_the_scanner_requirements_are_canonical(groups: list[dict[str, list[str]]], message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
         CAR.model_validate(
-            _record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "required_scanners": required}})
+            _record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "scanner_requirements": groups}})
         )
 
 

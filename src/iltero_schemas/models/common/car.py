@@ -70,7 +70,7 @@ from iltero_schemas.models.common.provenance import check_provenance
 from iltero_schemas.models.common.record_subject import RecordSubject
 from iltero_schemas.models.common.redaction import RedactedValueCounts, RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.common.reference_time import ReferenceTime
-from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.common.scanners import ScannerRequirement, ScannerTool
 from iltero_schemas.models.common.served_exceptions import ServedExceptionsUsed
 from iltero_schemas.models.common.server_facts import Approval, Approvals
 from iltero_schemas.models.common.stages import change_digest_problems, check_structure, integrity_problems
@@ -293,13 +293,14 @@ class Scanners(StrictModel):
     # The scanner check mappings the stage applied: the one Iltero ships, with the project's own mapping (if any) listed
     # before it.
     scanner_check_mappings: Annotated[list[ScannerCheckMappingUsed], Field(min_length=1)]
-    # The scanners whose report the run requires, sorted, each once, as the record states them: a reader does not check
-    # them against any configuration. A required scanner that gave no report gives every subject its checks are mapped
-    # to an evaluation that is not evaluated with ``scanner_not_run``. That, a required scanner's report from a version
-    # its scanner checks entry does not allow (``scanner_version_not_allowed``), a required Trivy report that holds no
-    # result of the entry's checks (``no_result_of_the_mapped_checks``), or a required Checkov report that holds no
-    # result at all (``no_result_in_the_report``), is a gap no other evaluator's pass fills.
-    required_scanners: Annotated[list[ScannerTool], Field(max_length=MAX_SCANNER_REPORTS)]
+    # The groups of scanners the run requires, one scanner of each, sorted, each scanner in one group at most, as the
+    # record states them: a reader does not check them against any configuration. A member of a group that gave no
+    # report gives every subject its checks are mapped to an evaluation that is not evaluated with ``scanner_not_run``.
+    # When at least one member evaluated an assertion and subject and each one that did gave a gap (no report, a report
+    # from a version its scanner checks entry does not allow: ``scanner_version_not_allowed``, a Trivy report that holds
+    # no result of the entry's checks: ``no_result_of_the_mapped_checks``, or a Checkov report that holds no result at
+    # all: ``no_result_in_the_report``), the group is a gap no other evaluator's pass fills.
+    scanner_requirements: Annotated[list[ScannerRequirement], Field(max_length=MAX_SCANNER_REPORTS)]
     reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
     # The project's own exceptions file the stage applied to the results the scanned source suppressed; null when the
     # project gave none.
@@ -314,11 +315,20 @@ class Scanners(StrictModel):
             )
         if len({report.tool for report in self.reports}) != len(self.reports):
             raise ValueError("one report per tool per stage")
-        if self.required_scanners != sorted(set(self.required_scanners)):
-            raise ValueError("required_scanners is sorted, each once")
-        if not self.reports and not self.required_scanners:
-            raise ValueError("a stage's scanners keep a report or name a required scanner")
+        groups = [requirement.any_of for requirement in self.scanner_requirements]
+        if groups != sorted(groups):
+            raise ValueError("the scanner requirements are sorted by their members")
+        members = [tool for group in groups for tool in group]
+        if len(set(members)) != len(members):
+            raise ValueError("a scanner is a member of one scanner requirement at most")
+        if not self.reports and not self.scanner_requirements:
+            raise ValueError("a stage's scanners keep a report or name a scanner requirement")
         return self
+
+    @property
+    def required_members(self) -> frozenset[str]:
+        """Every scanner a scanner requirement names: each one that gave no report gives ``scanner_not_run``."""
+        return frozenset(tool for requirement in self.scanner_requirements for tool in requirement.any_of)
 
 
 class StageRecord(StrictModel):

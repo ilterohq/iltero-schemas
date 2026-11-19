@@ -2077,9 +2077,17 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [
-          "checkov",
-          "trivy"
+        "scanner_requirements": [
+          {
+            "any_of": [
+              "checkov"
+            ]
+          },
+          {
+            "any_of": [
+              "trivy"
+            ]
+          }
         ],
         "reports": [
           {

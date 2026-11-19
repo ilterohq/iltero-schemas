@@ -17,11 +17,11 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.coverage import EvaluatorDidNotDecideGap
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
-from iltero_schemas.models.common.verdicts import stage_required_scanners, stage_verdicts
+from iltero_schemas.models.common.verdicts import stage_scanner_requirements, stage_verdicts
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 from tests.conftest import VECTORS
-from tests.records import set_pointer, valid_case_record
+from tests.records import keep_events_files, set_pointer, valid_case_record
 
 SCANNED: dict[str, Any] = json.loads(
     (VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")
@@ -120,14 +120,14 @@ def test_every_scanner_evaluation_of_each_scanned_record_follows_from_what_its_s
     assert _problems(record, kept_files(record, EVIDENCE / name)) == []
 
 
-def test_a_required_scanners_version_its_scanner_checks_entry_does_not_allow_cancels_a_pass_in_a_sample_record() -> (
+def test_a_scanner_requirements_version_its_scanner_checks_entry_does_not_allow_cancels_a_pass_in_a_sample_record() -> (
     None
 ):
     car = CAR.model_validate(_record("local_run_scanned_project_required"))
     plan = car.stages[next(iter(car.stages))]
-    assert plan.scanners is not None and plan.scanners.required_scanners == ["checkov"]
+    assert plan.scanners is not None and plan.scanners.required_members == {"checkov"}
     refused = [e for e in car.events if e.evaluation.status_reason == "scanner_version_not_allowed"]
-    verdicts = stage_verdicts(car.events, required_scanners=stage_required_scanners(plan))
+    verdicts = stage_verdicts(car.events, scanner_requirements=stage_scanner_requirements(plan))
     assert refused and any(verdicts[(e.assertion.id, e.subject.key)].status == "not_evaluated" for e in refused)
 
 
@@ -179,7 +179,8 @@ def test_the_stage_counts_one_combined_verdict_per_assertion_and_subject() -> No
     car = CAR.model_validate(SCANNED)
     plan = car.stages[next(iter(car.stages))]
     verdicts = stage_verdicts(
-        (e for e in car.events if e.evaluation.stage.value == "plan"), required_scanners=stage_required_scanners(plan)
+        (e for e in car.events if e.evaluation.stage.value == "plan"),
+        scanner_requirements=stage_scanner_requirements(plan),
     )
     assert car.stages[next(iter(car.stages))].coverage.evaluations == len(verdicts) == 5
     assert car.stages[next(iter(car.stages))].events.count == len(car.events) == 10
@@ -194,35 +195,38 @@ def _not_run_indexes(record: dict[str, Any]) -> list[int]:
     return [i for i, e in enumerate(record["events"]) if e["evaluation"]["status_reason"] == "scanner_not_run"]
 
 
-def test_a_required_scanner_that_gave_no_report_gives_each_bound_subject_a_gap() -> None:
+def test_a_member_of_a_scanner_requirement_that_gave_no_report_gives_each_bound_subject_a_gap() -> None:
     car = CAR.model_validate(REQUIRED)
     assert _problems(REQUIRED, kept_files(REQUIRED)) == []
     not_run = [car.events[i] for i in _not_run_indexes(REQUIRED)]
     assert not_run and {e.engine for e in not_run} == {"trivy"}
-    verdicts = stage_verdicts(car.events, required_scanners=frozenset({"trivy"}))
+    verdicts = stage_verdicts(car.events, scanner_requirements=(frozenset({"trivy"}),))
     assert all(verdicts[(e.assertion.id, e.subject.key)].status == "not_evaluated" for e in not_run)
 
 
-def test_a_required_scanners_missing_gap_is_listed_when_the_record_drops_it() -> None:
+def test_a_scanner_requirements_missing_gap_is_listed_when_the_record_drops_it() -> None:
     record = copy.deepcopy(REQUIRED)
     record["events"].pop(_not_run_indexes(record)[0])
-    assert ["stages.plan.scanners", "requires trivy, whose missing report gives an evaluation the record lacks"] in (
-        _problems(record, kept_files(REQUIRED))
-    )
+    assert [
+        "stages.plan.scanners",
+        "names trivy in a scanner requirement, and trivy's missing report gives an evaluation the record lacks",
+    ] in (_problems(record, kept_files(REQUIRED)))
 
 
-def test_only_a_required_scanner_the_stage_kept_no_report_of_is_not_run() -> None:
+def test_only_a_member_of_a_scanner_requirement_the_stage_kept_no_report_of_is_not_run() -> None:
     record = copy.deepcopy(REQUIRED)
-    record["stages"]["plan"]["scanners"]["required_scanners"] = ["checkov"]
-    with pytest.raises(ValidationError, match="only a scanner the plan stage requires and kept no report of"):
+    record["stages"]["plan"]["scanners"]["scanner_requirements"] = [{"any_of": ["checkov"]}]
+    with pytest.raises(
+        ValidationError, match="only a member of a scanner requirement of the plan stage that kept no report of it"
+    ):
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
-def test_a_required_scanner_with_no_report_needs_the_plan_the_stage_kept() -> None:
+def test_a_member_of_a_scanner_requirement_with_no_report_needs_the_plan_the_stage_kept() -> None:
     files = kept_files(REQUIRED)
     record = copy.deepcopy(REQUIRED)
     record["stages"]["plan"]["scanners"]["reports"] = []
-    record["stages"]["plan"]["scanners"]["required_scanners"] = ["checkov", "trivy"]
+    record["stages"]["plan"]["scanners"]["scanner_requirements"] = [{"any_of": ["checkov"]}, {"any_of": ["trivy"]}]
     record["events"] = [
         e
         for e in record["events"]
@@ -230,7 +234,10 @@ def test_a_required_scanner_with_no_report_needs_the_plan_the_stage_kept() -> No
     ]
     files["plans"] = {}
     assert _problems(record, files) == [
-        ["stages.plan.scanners", "requires a scanner but the plan it kept is not given"]
+        [
+            "stages.plan.scanners",
+            "names in a scanner requirement a scanner that gave no report, but the plan it kept is not given",
+        ]
     ]
 
 
@@ -254,7 +261,9 @@ def _checkov_indexes(record: dict[str, Any]) -> list[int]:
 def test_a_scanner_whose_report_the_stage_kept_is_never_not_run() -> None:
     record = copy.deepcopy(REQUIRED)
     _as_not_run(record["events"][_checkov_indexes(record)[0]])
-    with pytest.raises(ValidationError, match="only a scanner the plan stage requires and kept no report of"):
+    with pytest.raises(
+        ValidationError, match="only a member of a scanner requirement of the plan stage that kept no report of it"
+    ):
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
@@ -262,11 +271,13 @@ def test_a_stage_with_no_scanners_has_no_scanner_that_did_not_run() -> None:
     record = copy.deepcopy(REQUIRED)
     record["stages"]["plan"]["scanners"] = None
     record["events"] = [e for i, e in enumerate(record["events"]) if i not in _checkov_indexes(record)]
-    with pytest.raises(ValidationError, match="only a scanner the plan stage requires and kept no report of"):
+    with pytest.raises(
+        ValidationError, match="only a member of a scanner requirement of the plan stage that kept no report of it"
+    ):
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
 
 
-def test_a_stage_that_kept_no_report_reads_its_required_scanners_gaps_against_the_plan_it_kept() -> None:
+def test_a_stage_that_kept_no_report_reads_its_scanner_requirements_gaps_against_the_plan_it_kept() -> None:
     record = copy.deepcopy(REQUIRED)
     record["stages"]["plan"]["scanners"]["reports"] = []
     for i in _checkov_indexes(record):
@@ -274,7 +285,7 @@ def test_a_stage_that_kept_no_report_reads_its_required_scanners_gaps_against_th
     assert _problems(record, kept_files(REQUIRED)) == []
 
 
-def test_no_scanner_report_is_never_given_beside_a_required_scanners_gap() -> None:
+def test_no_scanner_report_is_never_given_beside_a_scanner_requirements_gap() -> None:
     record = copy.deepcopy(REQUIRED)
     gap = record["events"][_not_run_indexes(record)[0]]
     explained = copy.deepcopy(gap)
@@ -284,7 +295,7 @@ def test_no_scanner_report_is_never_given_beside_a_required_scanners_gap() -> No
     problems = _problems(record, kept_files(REQUIRED))
     assert [
         f"events.{len(record['events']) - 1}.evaluation",
-        "is no_scanner_report although its stage requires trivy",
+        "is no_scanner_report although its stage names trivy in a scanner requirement",
     ] in (problems)
 
 
@@ -309,7 +320,9 @@ def test_a_resource_left_out_for_a_reason_the_kept_plan_does_not_give_is_listed(
     ] in _problems(record, kept_files(SCANNED))
 
 
-def test_a_required_trivy_whose_report_holds_no_result_of_its_checks_leaves_them_not_evaluated() -> None:
+def test_a_trivy_in_a_scanner_requirement_whose_report_holds_no_result_of_its_checks_leaves_them_not_evaluated() -> (
+    None
+):
     """Trivy, given no ``--include-non-failures``, shows no checked resource: required, it cancels every pass it was
     needed for, and the record says required checks were not evaluated."""
     optional = CAR.model_validate(SCANNED)
@@ -337,7 +350,7 @@ def _checkov_reasons(record: CAR) -> set[str | None]:
     }
 
 
-def test_a_required_checkov_whose_report_holds_no_result_at_all_cancels_the_passes_beside_it() -> None:
+def test_a_checkov_in_a_scanner_requirement_whose_report_holds_no_result_at_all_cancels_the_passes_beside_it() -> None:
     """Checkov reports passes, so a report with no result at all shows it read nothing: required, it cancels every
     pass it was needed for, and the record says required checks were not evaluated."""
     required = CAR.model_validate(
@@ -363,3 +376,24 @@ def test_an_optional_checkov_whose_report_holds_no_result_at_all_leaves_the_pass
         ("checkov", "no_result_in_the_report", 3),
         ("trivy", "no_result_of_the_mapped_checks", 2),
     ]
+
+
+GROUP_OF_TWO = "iac_record_whose_group_of_two_scanners_is_met_by_the_one_that_read_the_plan"
+
+
+def test_a_group_of_two_scanners_met_by_the_one_that_read_the_plan_follows_from_what_its_stage_kept() -> None:
+    record = valid_case_record("iac", GROUP_OF_TWO)
+    assert _problems(record, kept_files(record)) == []
+
+
+def test_a_group_member_whose_not_run_evaluations_a_record_leaves_out_is_listed() -> None:
+    """A group counts the members that evaluated a check, so a record that leaves a member's evaluations out would
+    drop that member from the group: the reader works out every evaluation the member's entry calls for."""
+    record = valid_case_record("iac", GROUP_OF_TWO)
+    record["events"] = [e for e in record["events"] if e["evaluation"]["status_reason"] != "scanner_not_run"]
+    keep_events_files(record)
+    problems = _problems(record, kept_files(record))
+    assert [
+        "stages.plan.scanners",
+        "names trivy in a scanner requirement, and trivy's missing report gives an evaluation the record lacks",
+    ] in problems

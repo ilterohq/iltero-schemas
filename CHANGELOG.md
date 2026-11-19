@@ -980,17 +980,58 @@ keep, so any two tools agree on what a record means.
     counted (`written_configuration_results`) and left out.
     `check_project_mapping` refuses a project's own mapping that takes an
     `ILT.` id or decides an assertion Iltero ships.
-  - A run can require scanners (`required_scanners`, as the record states
-    them; a reader does not check them against any configuration). A required scanner that gave
-    no report gives every subject its mapped checks cover an evaluation that
-    is `not_evaluated` with `scanner_not_run`, naming no version and no input.
-    That, or a required scanner's report from a version its scanner checks
-    entry does not allow (`scanner_version_not_allowed`), is a gap no pass fills: it cancels
-    every pass and not applicable verdict, and a failure, an unknown result or
-    another evaluator's error still stands. A scanner the run does not
-    require cancels nothing. `combined_verdict`, `stage_verdicts` and the
-    stage counts take the scanners the run requires
-    (`stage_required_scanners`).
+  - A run can require groups of scanners, one scanner of each group
+    (`scanner_requirements`, as the record states them; a reader does not
+    check them against any configuration). Each group is a
+    `ScannerRequirement` whose `any_of` names its members, sorted, each once.
+    The groups are sorted, and a scanner is a member of one group at most
+    (`Scanners.required_members` is every member). A group of one requires
+    that scanner. Every member that gave no report gives every subject its
+    mapped checks cover an evaluation that is `not_evaluated` with
+    `scanner_not_run`, naming no version and no input, even when another
+    member met the group. A member gives a gap when it gave no report, when
+    its report came from a version its scanner checks entry does not allow
+    (`scanner_version_not_allowed`), or when its report holds no result of the
+    entry's checks or no result at all (`SCANNER_REQUIREMENT_GAP_REASONS`). Only
+    members whose checks are mapped to the assertion count. A group where at
+    least one member that counts evaluated the assertion and subject, and each
+    one that did gave a gap, is a gap no pass fills: it cancels every pass and
+    not applicable verdict (`CANCELLED_BY_AN_UNMET_SCANNER_REQUIREMENT`), and a
+    failure, an unknown result or another evaluator's error still stands. A
+    group one of whose members read the input cancels nothing, and neither does
+    a scanner no group names. The members need not check the same things, so a
+    group is only as strong as its weakest member. `combined_verdict`,
+    `stage_verdicts` and the stage counts take the groups
+    (`stage_scanner_requirements`).
+  - `scanner_requirement_problems` (`iltero_schemas.models.iac.scanner_requirements`)
+    lists every group that can never be met, given the run's assertions and
+    the scanner check mappings it applies, counting only the mapping entries
+    of the run's assertions: a group none of whose members is mapped to any
+    assertion of the run, and, for each assertion only scanners decide
+    (`assert: null`) at each stage, a group whose every member mapped to it
+    names resources only when they fail, such as Trivy alone, which never
+    gives a pass. It is written for a server to apply when it saves an
+    environment's policy and when it opens a run, and for a tool to apply
+    when it reads a project's settings. A record is not refused for such a
+    group.
+  - Names that changed for scanner requirements:
+
+    | Before | Now |
+    | --- | --- |
+    | `Scanners.required_scanners`, a list of scanner names | `Scanners.scanner_requirements`, a list of `ScannerRequirement` groups |
+    | `stage_required_scanners` | `stage_scanner_requirements` |
+    | `REQUIRED_SCANNER_GAP_REASONS` | `SCANNER_REQUIREMENT_GAP_REASONS` |
+    | `CANCELLED_BY_A_REQUIRED_SCANNERS_GAP` | `CANCELLED_BY_AN_UNMET_SCANNER_REQUIREMENT` |
+    | The `required_scanners` keyword of `combined_verdict`, `stage_verdicts` and the stage counts | `scanner_requirements` |
+    | The `records_integrity_failed/iac/` cases `required_scanners_gap_left_out_of_the_coverage` and `required_scanners_gap_miscounted` | `scanner_requirement_gap_left_out_of_the_coverage` and `scanner_requirement_gap_miscounted` |
+
+    Every record vector's `scanners` has `scanner_requirements`, each former
+    required scanner a group of one. The `records_valid/iac/` case
+    `iac_record_whose_group_of_two_scanners_is_met_by_the_one_that_read_the_plan`
+    names one group of Checkov and Trivy: Checkov read the plan, so its passes
+    stand and the evidence is whole. New `records_invalid/iac/` cases refuse a
+    scanner named in two groups, groups out of order, and a group whose
+    members are out of order.
   - Each stage lists, for each reason an evaluation was not evaluated or
     ended in error, a count gap of the combined verdicts that reason left
     without a decision (`no_decision_reason_counts`). The integrity checks recompute
@@ -1062,7 +1103,7 @@ keep, so any two tools agree on what a record means.
     a tool that reports passes, an ambiguous failure, a failure tied to no
     resource of the plan, or an incomplete report) or `not_evaluated` (a version outside the range, a check the
     source suppressed, no result from a tool that names only failures, or a
-    required scanner that gave no report). A report that holds results the
+    member of a scanner requirement that gave no report). A report that holds results the
     stage could not read, or files the tool could not parse, makes every
     subject that no failure decides `unknown` with
     `scanner_report_incomplete`, for every tool, before a check with no
@@ -1096,8 +1137,8 @@ keep, so any two tools agree on what a record means.
     these combined verdicts, and an earlier evaluation served by Iltero
     Platform names the engines that reached its verdict (`decided_by`).
   - A record's `scanners` names the scanner check mappings the stage applied
-    (`scanner_check_mappings`), the scanners the run requires, and each
-    report. A stage always applies the mapping Iltero ships, and may also
+    (`scanner_check_mappings`), the groups of scanners the run requires
+    (`scanner_requirements`), and each report. A stage always applies the mapping Iltero ships, and may also
     apply one mapping from the project's own file, listed first. The
     project's mapping decides only the project's own assertions and the
     shipped mapping only Iltero's starter assertions, so each scanner
@@ -1264,9 +1305,9 @@ keep, so any two tools agree on what a record means.
     They do not show that the scanner ran, that the report is what it wrote,
     that it read the plan the record names, or that its version is genuine.
     In a self-attested record, all of it is the writer's claim, and so is
-    `required_scanners`: a record that leaves a scanner out of the list,
-    with its evaluations and gaps, still holds together, so a reader
-    compares the list with the scanners its own policy requires.
+    `scanner_requirements`: a record that leaves a group out, with its
+    evaluations and gaps, still holds together, so a reader compares the
+    groups with the ones its own policy requires.
   - Names and shapes that changed:
 
     | Before | Now |
@@ -1288,8 +1329,8 @@ keep, so any two tools agree on what a record means.
     `vectors/records/iac/local_run_scanned_project.json`,
     `vectors/records/iac/local_run_scanner_required.json`,
     `vectors/records/iac/local_run_scanned_project_required.json` (a
-    required scanner's version that its scanner checks entry does not allow cancels a
-    pass), `vectors/records/iac/local_run_scanned_redacted_result.json` (a
+    version that the scanner checks entry of a group of one does not allow
+    cancels a pass), `vectors/records/iac/local_run_scanned_redacted_result.json` (a
     redacted Trivy result leaves the subjects Trivy is silent about
     `unknown`), `vectors/records/iac/local_run_suppressed_with_exception.json`
     (a suppressed result names the exception the kept exceptions file gives
@@ -1564,12 +1605,13 @@ keep, so any two tools agree on what a record means.
 
   Without `--include-non-failures` Trivy lists only failures, so a clean
   plan leaves no result even when Trivy checked every resource; the report
-  then says nothing about any subject of the entry. For a required Trivy,
-  `no_result_of_the_mapped_checks` cancels every pass and `not_applicable`,
-  as `scanner_not_run` does (`REQUIRED_SCANNER_GAP_REASONS`), so the stage's
-  evidence lists `required_checks_not_evaluated`; for an optional one it
-  cancels nothing. `no_result_in_the_report` does the same for a required
-  Checkov; for an optional one another evaluator's pass stands, and the
+  then says nothing about any subject of the entry. When it leaves Trivy's
+  scanner requirement unmet, `no_result_of_the_mapped_checks` cancels every
+  pass and `not_applicable`, as `scanner_not_run` does
+  (`SCANNER_REQUIREMENT_GAP_REASONS`), so the stage's evidence lists
+  `required_checks_not_evaluated`; otherwise it cancels nothing.
+  `no_result_in_the_report` does the same for Checkov; for a Checkov no group
+  names, or whose group another member met, another evaluator's pass stands, and the
   stage lists an `evaluator_did_not_decide` gap for `checkov`. Trivy's
   silence about one subject in a report that holds any result of the entry's
   checks, even a pass about no resource, stays
@@ -1590,8 +1632,8 @@ keep, so any two tools agree on what a record means.
   are `AWS-0014`, `AWS-0016`, `AWS-0080`, `AWS-0107` and `AWS-0180`. An
   entry that names one of those always-listed checks never gets
   `no_result_of_the_mapped_checks`: for it the rule shows nothing about what
-  Trivy read, and a required Trivy then leaves another evaluator's pass
-  standing. For the shipped mapping, a result of an entry's checks shows
+  Trivy read, and a scanner requirement of Trivy then leaves another
+  evaluator's pass standing. For the shipped mapping, a result of an entry's checks shows
   Trivy read a plan with resources those checks cover, not that it read
   this plan.
 
@@ -1667,13 +1709,13 @@ keep, so any two tools agree on what a record means.
   by engine: `opa`, `checkov`, `trivy`, or `none` for evaluations no
   evaluator ran. Each value names every status with a count, one per
   assertion and subject the evaluator evaluated, so the counts add up to the
-  stage's events, not to `evaluations`. A required scanner that gave no
-  report is counted under its own name, as `not_evaluated`. An engine that
+  stage's events, not to `evaluations`. A member of a scanner requirement
+  that gave no report is counted under its own name, as `not_evaluated`. An engine that
   gave no evaluation is not listed, so a stage with no events has `{}`. The
   record's coverage sums each evaluator over the stages that name it.
 
-  The verdict reads only `status_counts`: these counts decide nothing. A
-  required scanner's gap cancels other evaluators' passes, so an
+  The verdict reads only `status_counts`: these counts decide nothing. An
+  unmet scanner requirement cancels other evaluators' passes, so an
   evaluator's passes can sit beside a combined `pass` count of 0. A
   scanner's counts are the results of its report as the pipeline supplied
   it, not Iltero's own finding.
@@ -1746,9 +1788,9 @@ keep, so any two tools agree on what a record means.
   quiet report whose checks all passed no longer reads as one that checked
   nothing (`no_result_in_the_report`), and a skip it does not list no longer
   gives `suppressed_in_source`. A listed failure still fails its subject. For a
-  required Checkov, a quiet report whose checks all passed now leaves the
-  stage `undecided`, not `incomplete` with a required check not made, and an
-  optional Checkov's quiet report makes a subject `unknown` even when the
+  Checkov a scanner requirement names, a quiet report whose checks all passed
+  leaves the stage `undecided`, not `incomplete` with a required check not
+  made, and the quiet report of a Checkov no group names makes a subject `unknown` even when the
   assertion's own rule passed. The count is Checkov's own: a check left out
   of the run by a command-line filter, such as `--skip-check`, is in neither
   the counts nor the lists. Checkov is meant to run without `--quiet`: a

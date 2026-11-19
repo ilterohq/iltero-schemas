@@ -127,9 +127,10 @@ def check_scanner_results(car: CAR) -> None:
         report = _report_of(car.stages[at], tool)
         if event.evaluation.status_reason == SCANNER_NOT_RUN:
             scanners = car.stages[at].scanners
-            if report is not None or scanners is None or tool not in scanners.required_scanners:
+            if report is not None or scanners is None or tool not in scanners.required_members:
                 raise ValueError(
-                    f"only a scanner the {at.value} stage requires and kept no report of is {SCANNER_NOT_RUN}"
+                    f"only a member of a scanner requirement of the {at.value} stage that kept no report of it is "
+                    f"{SCANNER_NOT_RUN}"
                 )
             from_scanner.setdefault(at, []).append(event)
             continue
@@ -212,7 +213,8 @@ def _subject(event: AssuranceEvent) -> str | None:
 
 
 def _not_run(checks: ScannerChecks) -> ScannerVerdict:
-    """The verdict a required scanner that gave no report gives every subject its checks are mapped to."""
+    """The verdict a member of a scanner requirement that gave no report gives every subject its checks are mapped
+    to."""
     return ScannerVerdict("not_evaluated", SCANNER_NOT_RUN, (), (), (), tuple(checks.rule_ids))
 
 
@@ -290,12 +292,17 @@ def _stage_problems(
     if len(plans) > 1:
         problems.append((where, "keeps reports of more than one plan"))
         return
-    not_run = set(scanners.required_scanners) - {report.tool for report in scanners.reports}
+    not_run = set(scanners.required_members) - {report.tool for report in scanners.reports}
     if not plans and not_run:
         (digest,) = register
         given_plan = files.plans.get(digest)
         if not isinstance(given_plan, dict) or digest_or_none(given_plan) != digest:
-            problems.append((where, "requires a scanner but the plan it kept is not given"))
+            problems.append(
+                (
+                    where,
+                    "names in a scanner requirement a scanner that gave no report, but the plan it kept is not given",
+                )
+            )
             return
         plans[digest] = given_plan
     excluded = car.stages[stage].coverage.subjects_in_scope.excluded
@@ -373,7 +380,7 @@ def _stage_problems(
                     problems.append(
                         (
                             f"events.{i}.evaluation",
-                            f"is {NO_SCANNER_REPORT} although its stage requires {checks.tool}"
+                            f"is {NO_SCANNER_REPORT} although its stage names {checks.tool} in a scanner requirement"
                             if missing
                             else "is not evaluated although a kept report decides it",
                         )
@@ -381,7 +388,8 @@ def _stage_problems(
             for subject in sorted(subjects):
                 if subject not in given:
                     lacking = (
-                        f"requires {checks.tool}, whose missing report gives an evaluation the record lacks"
+                        f"names {checks.tool} in a scanner requirement, and {checks.tool}'s missing report gives an "
+                        "evaluation the record lacks"
                         if missing
                         else f"keeps a {checks.tool} report that gives an evaluation the record lacks"
                     )

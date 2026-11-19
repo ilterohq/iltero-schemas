@@ -2150,7 +2150,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",

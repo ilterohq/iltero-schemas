@@ -3834,7 +3834,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [],
         "local_exceptions": null
       }
@@ -5373,7 +5373,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -5946,7 +5946,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -6515,7 +6515,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -7474,7 +7474,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -8061,7 +8061,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -8650,7 +8650,7 @@
             "assertions_mapped": 9
           }
         ],
-        "required_scanners": [],
+        "scanner_requirements": [],
         "reports": [
           {
             "tool": "checkov",
@@ -10012,5 +10012,62 @@
     },
     "remove": [],
     "message": "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted"
+  },
+  {
+    "name": "iac_record_naming_a_scanner_in_two_scanner_requirements",
+    "vector": "iac/local_run_scanner_required.json",
+    "set": {
+      "/stages/plan/scanners/scanner_requirements": [
+        {
+          "any_of": [
+            "checkov"
+          ]
+        },
+        {
+          "any_of": [
+            "checkov",
+            "trivy"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a scanner is a member of one scanner requirement at most"
+  },
+  {
+    "name": "iac_record_whose_scanner_requirements_are_out_of_order",
+    "vector": "iac/local_run_scanner_required.json",
+    "set": {
+      "/stages/plan/scanners/scanner_requirements": [
+        {
+          "any_of": [
+            "trivy"
+          ]
+        },
+        {
+          "any_of": [
+            "checkov"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "the scanner requirements are sorted by their members"
+  },
+  {
+    "name": "iac_record_whose_scanner_requirement_names_its_scanners_out_of_order",
+    "vector": "iac/local_run_scanner_required.json",
+    "set": {
+      "/stages/plan/scanners/scanner_requirements": [
+        {
+          "any_of": [
+            "trivy",
+            "checkov"
+          ]
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a scanner requirement names its scanners sorted, each once"
   }
 ]

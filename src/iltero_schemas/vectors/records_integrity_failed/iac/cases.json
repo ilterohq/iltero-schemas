@@ -1692,7 +1692,7 @@
     ]
   },
   {
-    "name": "required_scanners_gap_left_out_of_the_coverage",
+    "name": "scanner_requirement_gap_left_out_of_the_coverage",
     "vector": "iac/local_run_scanner_required.json",
     "set": {
       "/stages/plan/coverage/gaps": [],
@@ -1707,7 +1707,7 @@
     ]
   },
   {
-    "name": "required_scanners_gap_miscounted",
+    "name": "scanner_requirement_gap_miscounted",
     "vector": "iac/local_run_scanner_required.json",
     "set": {
       "/stages/plan/coverage/gaps": [

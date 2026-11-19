@@ -1342,6 +1342,12 @@ keep, so any two tools agree on what a record means.
     `iac_record_of_a_run_the_server_opened_keeping_a_scanner_report_the_pipeline_ran`
     refuses a record of a run Iltero Platform opened that keeps a report the
     pipeline ran.
+  - A record of a run Iltero Platform opened evaluates no hand-written
+    policy (no event's `assertion_source` is `custom_rego`) and postpones no
+    check until after the deployment (no stage's
+    `values_known_after_deployment` is `postpone`): its plan stage blocks on
+    a value the plan knows only after the deployment
+    (`iltero_schemas.models.common.provenance.check_provenance`).
   - Names and shapes that changed:
 
     | Before | Now |

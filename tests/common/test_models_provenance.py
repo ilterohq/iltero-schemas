@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from typing import Any
 
 import pytest
@@ -14,10 +15,13 @@ from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IMAGE_BUILD_ACTIVITY, IMAGE_DEPLOY_ACTIVITY
 from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.subjects import subject_key
+from tests.conftest import VECTORS
 from tests.records import (
     DEPLOYED,
     UNKNOWN,
+    keep_events_files,
     keep_no_served_exceptions,
+    ran_by_the_cli,
     record,
     served,
     set_path,
@@ -209,3 +213,34 @@ def test_each_failed_result_a_served_exception_covers_is_a_failed_result_of_the_
         failure["assertion"] = {**failure["assertion"], "digest": "sha256:" + "a" * 64}
     with pytest.raises(ValidationError, match="is a failed result of the stage, by its assertion, resource and engine"):
         CAR.model_validate(record, context=_READER)
+
+
+def _vector(name: str) -> dict[str, Any]:
+    document: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / f"{name}.json").read_text(encoding="utf-8"))
+    return document
+
+
+def test_a_record_of_a_run_the_server_opened_evaluates_no_hand_written_rego() -> None:
+    document = served(_vector("local_run_scanned_project"))
+    ran_by_the_cli(document)
+    event = next(
+        e
+        for e in document["events"]
+        if e["provenance"]["assertion_source"] == "local" and e["provenance"]["evaluator"]["engine"] == "opa"
+    )
+    event["provenance"]["assertion_source"] = "custom_rego"
+    keep_events_files(document)
+    with pytest.raises(ValidationError, match="evaluates no hand-written Rego"):
+        CAR.model_validate(document, context=_READER)
+
+
+def test_a_record_of_a_run_the_server_opened_postpones_no_check() -> None:
+    with pytest.raises(ValidationError, match="postpones no check until after the deployment"):
+        CAR.model_validate(served(_vector("local_run_postponed")), context=_READER)
+
+
+def test_a_record_of_a_run_the_server_opened_may_evaluate_the_projects_own_assertions() -> None:
+    document = served(_vector("local_run_scanned_project"))
+    ran_by_the_cli(document)
+    assert any(event["provenance"]["assertion_source"] == "local" for event in document["events"])
+    CAR.model_validate(document, context=_READER)

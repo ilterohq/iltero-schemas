@@ -65,6 +65,13 @@ def check_provenance(car: CAR) -> None:
             for report in record.scanners.reports
         ):
             raise ValueError("a record of a run the server opened keeps only scanner reports the Iltero CLI ran")
+        if any(event.provenance.assertion_source == "custom_rego" for event in car.events):
+            raise ValueError("a record of a run the server opened evaluates no hand-written Rego")
+        if any(record.values_known_after_deployment == "postpone" for record in car.stages.values()):
+            raise ValueError(
+                "a record of a run the server opened postpones no check until after the deployment: its plan stage "
+                "blocks on a value known only after the deployment"
+            )
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]

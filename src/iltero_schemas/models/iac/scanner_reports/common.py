@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pydantic import ValidationError
 
 from iltero_schemas.models.common.redaction import is_redaction_marker
+from iltero_schemas.models.common.scanners import RanBy
 from iltero_schemas.models.iac.scanner_addresses import resolve
 from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS
 from iltero_schemas.models.iac.scanner_observations import (
@@ -49,6 +50,7 @@ class Source:
     plan_digest: str
     rules_digest: str | None
     configuration_digest: str | None
+    ran_by: RanBy
 
 
 # The type a redaction marker names for a hidden null: the one hidden value a reader reads the same as the value.
@@ -224,7 +226,7 @@ def observations(
                 "kind": KIND,
                 "tool": tool,
                 "tool_version": tool_version,
-                "supplied_by": "pipeline",
+                "ran_by": source.ran_by,
                 "rules_digest": source.rules_digest,
                 "configuration_digest": source.configuration_digest,
                 "report_digest": source.report_digest,

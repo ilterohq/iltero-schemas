@@ -8,7 +8,7 @@ scanner is a change in one place.
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Final, Literal, get_args
 
 from pydantic import Field, model_validator
 
@@ -17,6 +17,13 @@ from iltero_schemas.models.common.base import StrictModel
 ScannerTool = Literal["checkov", "trivy"]
 # The same names as a tuple, in the order the type lists them.
 SCANNER_TOOLS: tuple[str, ...] = get_args(ScannerTool)
+# Who ran a scanner: the pipeline, which gave the stage the report, or the Iltero CLI, which ran the pinned scanner
+# itself on the runner. Either way the record says so; nothing in it shows which program ran.
+RanBy = Literal["pipeline", "iltero_cli"]
+# Who ran a scanner when the Iltero CLI ran the pinned scanner itself.
+ILTERO_CLI: Final[RanBy] = "iltero_cli"
+# The scanners installed as Python packages, whose evaluation names the Python interpreter they ran under.
+INSTALLED_AS_PYTHON_PACKAGES: frozenset[ScannerTool] = frozenset({"checkov"})
 
 
 class ScannerRequirement(StrictModel):

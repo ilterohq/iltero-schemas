@@ -576,7 +576,8 @@
               "engine": "checkov",
               "version": "3.3.8",
               "digest": null,
-              "reason": "not_executed_by_cli",
+              "platform": null,
+              "python_version": null,
               "rule_ids": [
                 "CKV_AWS_17"
               ],
@@ -651,7 +652,8 @@
               "engine": "trivy",
               "version": "0.72.0",
               "digest": null,
-              "reason": "not_executed_by_cli",
+              "platform": null,
+              "python_version": null,
               "rule_ids": [
                 "AWS-0180"
               ],
@@ -726,7 +728,8 @@
               "engine": "checkov",
               "version": "3.3.8",
               "digest": null,
-              "reason": "not_executed_by_cli",
+              "platform": null,
+              "python_version": null,
               "rule_ids": [
                 "CKV_AWS_16"
               ],
@@ -801,7 +804,8 @@
               "engine": "trivy",
               "version": "0.72.0",
               "digest": null,
-              "reason": "not_executed_by_cli",
+              "platform": null,
+              "python_version": null,
               "rule_ids": [
                 "AWS-0080"
               ],
@@ -1171,6 +1175,35 @@
       ],
       [
         "events.8.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ],
+      [
+        "events.9.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ]
+    ]
+  },
+  {
+    "name": "record_whose_report_and_its_kept_observations_name_different_runners",
+    "edit_file": [
+      [
+        "observations",
+        "units/root/plan/checkov-observations.json",
+        "/ran_by",
+        "iltero_cli"
+      ]
+    ],
+    "problems": [
+      [
+        "stages.plan.scanners.reports.0",
+        "names observations of another report"
+      ],
+      [
+        "events.5.provenance.input_digest",
+        "names a report whose observations do not hold"
+      ],
+      [
+        "events.7.provenance.input_digest",
         "names a report whose observations do not hold"
       ],
       [

@@ -798,7 +798,7 @@ who produced it and to reproduce it.
 | `run` | The run `id` and the `unit`. A unit is the part of a project the IaC tool plans and applies as one. |
 | `source_commit`, `checked_content` | The commit and the [checked content](#checked-content) the evaluation is about. |
 | `input_digest` | The digest of the assurance context the evaluator received. |
-| `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov` or `trivy`): the `version` the scanner wrote into its report (`null` for a member of a scanner requirement that gave no report), `digest: null`, `reason: not_executed_by_cli`, and what its verdict rests on (see [Evaluations from a scanner's results](#evaluations-from-a-scanners-results)). A scanner digest is refused: "a scanner's version is named, not its digest". |
+| `evaluator` | The engine that produced the verdict. For `opa`: its `version`, binary `digest` and the `limits` applied: `timeout_seconds`, `memory_limit`, `max_output_bytes`, `evaluations_per_process`, `capabilities_digest` and `platform`. For a scanner (`checkov` or `trivy`): the `version` the scanner wrote into its report (`null` for a member of a scanner requirement that gave no report), the `digest`, `platform` and `python_version` of what the Iltero CLI ran, `null` unless it ran the scanner itself (see below), and what its verdict rests on (see [Evaluations from a scanner's results](#evaluations-from-a-scanners-results)). |
 | `bundle` | The bundle the program came from: `kind` (`server` or `local_bundle`), `tarball_digest`, the SHA-256 of the bytes of the bundle tarball the evaluator loaded, `content_digest` and `key_id`. For `server`, they are the served [descriptor](#assertionbundledescriptor)'s `tarball_digest`, `content_digest` and `key_id`. For `local_bundle`, `tarball_digest` is the digest of the tarball the tool built, and `content_digest` and `key_id` are `null`, because a bundle the tool built has no descriptor. Any other combination is refused: "a bundle names its content digest and signing key exactly when its kind is server". The writer's claim: nothing compares these values with a descriptor. Present exactly when the evaluator is `opa`. An evaluation whose `assertion_source` is `server_bundle` and that ran over a bundle names a bundle of kind `server`; otherwise it is refused: "an assertion from the server's bundle is evaluated over the server's bundle". |
 | `scanner_checks` | The scanner checks entry of a [scanner check mapping](#scannercheckmapping) whose checks decided the evaluation, by its `digest` alone (`ScannerChecksRef`). Present exactly when the evaluator is a scanner; otherwise it is refused: "a scanner checks entry is named exactly when a scanner's result was read for this evaluation". |
 | `assertion_source`, `assertion_source_digest` | Where the assertion came from, and its source digest. `server_bundle`: an assertion bundle Iltero Platform served. `local`: the project's own files; `custom_rego` when hand-written in Rego. `contract_starter`: a starter assertion this package ships, added to a local run. The writer's claim. |
@@ -865,6 +865,7 @@ Key rules:
   | It names a project's exception (`local_exception`) only when it is `suppressed_in_source`. | "a scanner's evaluation names a project's exception only for a suppressed check" |
   | It names no compiled module and no compiler. | "a scanner's result was not compiled here, so it names no module and no compiler" |
   | Its evaluator's `version` and its `provenance.input_digest` are `null` exactly when it is `scanner_not_run`. | "a scanner's evaluation names no version and no input exactly when the scanner gave no report" |
+  | A `scanner_not_run` evaluation names no `digest`, `platform` or `python_version`. | "a scanner that gave no report names no digest or platform of a program that ran, since none did" |
   | A `scanner_not_run` evaluation has empty `result_addresses`, `unknown_paths` and `failed_rule_ids`, and its `undecided_rule_ids` are its `rule_ids`. | "a scanner that gave no report decided none of its mapped checks and read no resource" |
   | A `no_result_of_the_mapped_checks` evaluation has the same empty lists, and its `undecided_rule_ids` are its `rule_ids`. Unlike `scanner_not_run`, it names its scanner's `version` and its `provenance.input_digest`. | "a scanner whose report holds no result of its mapped checks decided none of them and read no resource" |
   | A `no_result_in_the_report` evaluation has the same empty lists, and its `undecided_rule_ids` are its `rule_ids`; it also names its scanner's `version` and its `provenance.input_digest`. | "a scanner whose report holds no result at all decided none of its checks and read no resource" |
@@ -874,6 +875,7 @@ Key rules:
 
   | Field | Meaning |
   | --- | --- |
+  | `digest`, `platform`, `python_version` | What the Iltero CLI ran, when it ran the scanner itself (its report's `ran_by: iltero_cli`); otherwise each is `null`. `digest` is the digest of the scanner's program, or of the hash lock of its Python packages. `platform` is in the words of the OPA evaluator's `limits.platform`, such as `linux-x86_64` or `linux-aarch64`. `python_version` is the interpreter tag the packages were locked for: `cp`, the major and minor version, and `t` for a free-threaded build, such as `cp312` or `cp313t`. `digest` and `platform` are named together, and `python_version` only with them: "a scanner's digest and platform are named together, and its Python version only with them". |
   | `rule_ids` | The checks its scanner checks entry lists, 1 to 16. |
   | `subject_match` | How their results found the subject: `exact_address` or `plan_configures`. |
   | `result_addresses` | The plan addresses of the resources the results it rests on were about, at most 16. Empty when no result of a mapped check was about the subject. |
@@ -1108,6 +1110,10 @@ mapping entries of the run's assertions count), as
 environment's policy and when it opens a run, and for a tool to apply when it reads a project's settings. A record is
 not refused for a group it lists, such as a group of Trivy alone.
 
+The two problems weigh differently. A group mapped to nothing (`MAPS_NOTHING`) is a reason to refuse the policy or the
+settings. A group that can never be met for an assertion is a warning for whoever sets the policy to confirm: the run
+still goes ahead, and the record shows that check as not evaluated unless another scanner decides it.
+
 | What | When |
 | --- | --- |
 | "names no scanner whose checks are mapped to any assertion of the run, so it requires nothing" (`MAPS_NOTHING`) | No member's checks are mapped to any assertion of the run. |
@@ -1142,7 +1148,7 @@ Each `reports` entry (`ScannerReport`):
 | --- | --- | --- |
 | `tool` | string | `checkov` or `trivy`. |
 | `tool_version` | identifier | The version the scanner wrote into its report. |
-| `supplied_by` | string | Who ran the scanner: always `pipeline`, which supplied the report. |
+| `ran_by` | string | Who ran the scanner: `pipeline`, which gave the stage the report, or `iltero_cli`, the Iltero CLI, which ran the scanner itself on the runner. It is the record's own claim: nothing in the record shows which program ran. A record of a run Iltero Platform opened keeps only reports the Iltero CLI ran: "a record of a run the server opened keeps only scanner reports the Iltero CLI ran". |
 | `input_kinds` | list | What the scanner read, in the contract's words (`plan`, `deployed_resources`): sorted, each once ("input_kinds is sorted, each kind once"), at most 16 (`iltero_schemas.models.common.car.MAX_INPUT_KINDS`). |
 | `report_digest` | digest | The digest of the report as the stage kept it, redacted and canonical, the digest of an entry of the evidence register. That entry's `source` is the report as the pipeline gave it. Every evaluation from the report names it as its `input_digest`. |
 | `observations` | string | Where the stage kept the [ScannerObservations](#scannerobservations) it read from the report, in the record's directory, the path of an entry of the evidence register. |
@@ -1736,7 +1742,7 @@ Read these counts with care:
 - The verdict reads only `status_counts`. These counts decide nothing.
 - An unmet scanner requirement cancels other evaluators' passes, so an evaluator's own passes can sit beside a combined
   `pass` count of 0 (see the example in [How evaluators combine](#how-evaluators-combine)).
-- A scanner's counts are the results of its report as the pipeline supplied it, not Iltero's own finding.
+- A scanner's counts are the results of its report as the stage kept it, not Iltero's own finding.
 - In a stage whose list of evaluations was cut short (`truncated.value: true`), an evaluator that is not listed may
   still have run.
 - The `not_evaluated` and `error` counts include the evaluations behind the stage's `evaluator_did_not_decide` gaps.
@@ -1752,7 +1758,8 @@ Read these counts with care:
 
 ### Evaluations from a scanner's results
 
-A scanner, such as Checkov or Trivy, runs in the pipeline, outside the tool that writes the record. The plan stage of
+A scanner, such as Checkov or Trivy, is a program of its own: the pipeline runs it, or the Iltero CLI runs it on the
+runner (the report's `ran_by`). The plan stage of
 an `iac_change` keeps, for each scanner report it was given, the report in the contract's kept form (see [The report a
 stage keeps](#the-report-a-stage-keeps)), the [ScannerObservations](#scannerobservations) it read from it, and the plan
 it evaluated, and it keeps a copy of each [scanner check mapping](#scannercheckmapping) it applied. For each assertion a
@@ -1935,6 +1942,7 @@ The model refuses a record that breaks one of these rules
 | Only a member of one of the stage's scanner requirements that the stage kept no report of is `scanner_not_run`. | "only a member of a scanner requirement of the plan stage that kept no report of it is scanner_not_run" |
 | The evaluation names that report's `report_digest` as its `input_digest`. | "an evaluation from trivy's results names as its input the trivy report the plan stage kept" |
 | The evaluator's `version` is the report's `tool_version`. | "an evaluation from trivy's results names the version of trivy that wrote the report the plan stage kept" |
+| The evaluator names `digest` and `platform` exactly when its report's `ran_by` is `iltero_cli`, and `python_version` as well exactly when that scanner is installed as Python packages (`INSTALLED_AS_PYTHON_PACKAGES`: Checkov). | "an evaluation from a scanner's results names the digest and platform of what ran exactly when the Iltero CLI ran the scanner, and the Python version only for a scanner installed as Python packages" |
 | The mapping named as shipped (`origin: shipped`) is the one this package ships, `iltero_schemas.scanner_check_mappings.SHIPPED_MAPPING`: the same `id`, `version`, `digest` (`SHIPPED_MAPPING_DIGEST`) and `assertions_mapped`. | "the plan stage's scanner check mapping named as shipped is the one this package ships" |
 | A scanner verdict on an Iltero starter assertion (`assertion_source: contract_starter`) names a scanner checks entry of the shipped mapping (`SHIPPED_SCANNER_CHECKS`), and the shipped mapping maps that assertion (`SHIPPED_MAPPING_ASSERTIONS`). | "a scanner verdict on an Iltero starter assertion comes from a scanner checks entry in the mapping Iltero ships" |
 | Every other scanner verdict is on one of the project's own assertions: its `assertion_source` is `local` or `custom_rego`, and its id's namespace does not start with `ILT`. | "a scanner verdict is about an Iltero starter assertion or one of the project's own assertions" |
@@ -1971,6 +1979,7 @@ When the stage kept no report, it reads the subjects in scope from the one plan 
 | `stages.<stage>.scanners.scanner_check_mappings.<n>` | "is not given", "is not a scanner check mapping", "does not name its copy's digest", "does not name the copy's id, version and number of assertions mapped", "is a project's mapping in Iltero's namespace, or one that decides an assertion of it" | The copy of the mapping at position `<n>` of the list, counted from 0, does not hold. Every copy that does not hold is listed, and no other problem of the stage. |
 | `stages.<stage>.scanners` | "keeps no one plan its scanner reports can be read against" | The evidence register does not hold exactly one plan collected for the stage's IaC tool (`collector.tool: terraform_plan`, `iltero_schemas.models.iac.tool_names.PLAN_COLLECTORS`). |
 | `stages.<stage>.scanners.reports.<index>` | "names observations that are not the ones its report and plan give", "does not count what its observations hold" (`results_read`, `unreadable_results`, `written_configuration_results`, `tool_parsing_errors` or `results_not_listed`), and the other report problems | The observations, the report or the plan do not hold. The report's evaluations are not checked further. |
+| `stages.<stage>.scanners.reports.<index>` | "names observations of another report" | The kept observations name another `tool`, `tool_version`, `ran_by`, `report_digest` or `input_kinds` than the report entry. The report's evaluations are not checked further. |
 | `stages.<stage>.scanners.reports.<index>` | "keeps more of its scanner's report than the contract keeps" | The kept report is not its own [kept form](#the-report-a-stage-keeps): the canonical bytes of what `kept_report` gives for it are not the report's. |
 | `stages.<stage>.scanners.reports.<index>` | "does not count, for each reason, the redacted values the report the stage kept holds" | `redacted_values` is not what `redacted_value_counts` gives for the kept report. It is checked wherever the kept report is checked, after its kept form. |
 | `stages.<stage>.coverage.subjects_in_scope.excluded.<n>` | "leaves out a resource for a reason the plan the stage kept does not give" | The plan does not say of the resource at the exclusion's `plan_index` what the exclusion says (`iltero_schemas.models.iac.scanner_scope.exclusion_holds`): the plan has no resource there; the exclusion's `id` is not the address the plan wrote there, when that address is text, or is not `null`, when it is not; or the exclusion's `reason` is not exactly the one the plan gives for that resource (see the order of reasons under `coverage.subjects_in_scope.excluded` in [Change Assurance Record (CAR)](#change-assurance-record-car)). Every exclusion is checked, against the plan the stage kept, for a stage that keeps a scanner report or names a scanner requirement. |
@@ -1998,9 +2007,13 @@ Together, the record's rules and `scanner_evidence_problems` establish that each
 is the verdict the kept report, read against the kept plan, gives the subject under the scanner checks entry its stage
 kept, and that every subject in scope has one. They do not establish:
 
-- that the scanner ran, or that the kept report is what the scanner wrote: the pipeline supplies the report
-  (`supplied_by: pipeline`), and the writer redacts and keeps it;
-- that the scanner read the plan the record names: a report the pipeline supplied is its own claim. Under the shipped
+- that the scanner ran, or that the kept report is what the scanner wrote: the record says who ran it (`ran_by`), and
+  the writer redacts and keeps the report;
+- that the Iltero CLI ran the scanner, or which program it ran: `ran_by` and the evaluator's `digest` and `platform`
+  are the record's own claim, and copying the pinned values into a record is all it takes. Like the OPA evaluator's
+  pinned binary, they are at best claimed by the record, never verified. In a run the tool opened, `iltero_cli` claims
+  no more than `pipeline`;
+- that the scanner read the plan the record names: the report is the record's own claim. Under the shipped
   mapping, a Trivy report with a result of an entry's checks shows only that Trivy read some plan with resources those
   checks cover; for an entry that names a check Trivy lists whatever it read, it shows nothing (see
   [Trivy](#trivy));
@@ -3316,7 +3329,7 @@ address it resolves to, or why it resolves to none. Titles, severities and sourc
 | --- | --- | --- |
 | `apiVersion`, `kind` | string | `iltero.com/v1` and `ScannerObservations`. |
 | `tool`, `tool_version` | string, identifier | The scanner and the version it wrote into its report. |
-| `supplied_by` | string | Always `pipeline`, which supplied the report. |
+| `ran_by` | string | Who ran the tool: `pipeline` or `iltero_cli`, as the report entry's `ran_by` says. |
 | `rules_digest`, `configuration_digest` | digest or null | The digests of the tool's separately downloaded checks (Trivy's checks bundle) and of its configuration and ignore files. `null` means the stage was not given them, never that none was used. |
 | `report_digest` | digest | The report as the stage kept it, in the contract's [kept form](#the-report-a-stage-keeps). |
 | `plan_digest` | digest | The plan the stage evaluated, as it kept it, redacted. |
@@ -3434,8 +3447,8 @@ Key rules:
 | Its input kind is one the observations name. | "a result is of an input kind the observations name" |
 | Results are sorted, each once. | "results are sorted by check, input kind and address, each once" |
 
-A report the pipeline supplied is the pipeline's own claim: nothing in the observations shows that the tool read the
-plan they name.
+Whoever ran the tool (`ran_by`), the report is the record's own claim: nothing in the observations shows that the tool
+read the plan they name.
 
 ## LocalExceptions
 

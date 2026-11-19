@@ -23,6 +23,7 @@ from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.exception_terms import resource_key
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
+from iltero_schemas.models.common.scanners import ILTERO_CLI
 
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import CAR
@@ -57,6 +58,13 @@ def check_provenance(car: CAR) -> None:
             for record in car.stages.values()
         ):
             raise ValueError("a record of a run the server opened applies no exceptions file of the project's own")
+        if any(
+            report.ran_by != ILTERO_CLI
+            for record in car.stages.values()
+            if record.scanners is not None
+            for report in record.scanners.reports
+        ):
+            raise ValueError("a record of a run the server opened keeps only scanner reports the Iltero CLI ran")
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]

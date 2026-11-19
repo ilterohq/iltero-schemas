@@ -1310,6 +1310,27 @@ keep, so any two tools agree on what a record means.
     `scanner_requirements`: a record that leaves a group out, with its
     evaluations and gaps, still holds together, so a reader compares the
     groups with the ones its own policy requires.
+  - Each scanner report, and the observations read from it, says who ran
+    the scanner (`ran_by`): `pipeline`, which gave the stage the report, or
+    `iltero_cli`, the Iltero CLI, which ran the scanner itself on the runner.
+    An evaluation from the results of a scanner the Iltero CLI ran names the
+    `digest` of what ran and the `platform` it ran on, in the OPA evaluator's
+    words (`linux-x86_64`), and, for a scanner installed as Python packages
+    (Checkov), the `python_version` as an interpreter tag (`cp312`, with `t`
+    for a free-threaded build). These replace `supplied_by` and the evaluator's
+    `reason: not_executed_by_cli`. A record of a run Iltero Platform opened
+    keeps only scanner reports the Iltero CLI ran. A reader refuses kept
+    observations whose `ran_by` differs from their report entry's. `ran_by`,
+    the digest and the platform are the record's own claim: copying the pinned
+    values into a record is all it takes, so, like the OPA evaluator's pinned
+    binary, they are at best claimed by the record, never verified. In a run
+    the tool opened, `iltero_cli` claims no more than `pipeline`. Every record
+    and observations vector has `ran_by: pipeline`, and every scanner
+    evaluator `platform: null` and `python_version: null`. The new
+    `records_invalid/iac/` case
+    `iac_record_of_a_run_the_server_opened_keeping_a_scanner_report_the_pipeline_ran`
+    refuses a record of a run Iltero Platform opened that keeps a report the
+    pipeline ran.
   - Names and shapes that changed:
 
     | Before | Now |

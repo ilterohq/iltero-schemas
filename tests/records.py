@@ -20,6 +20,7 @@ from iltero_schemas.models.common.coverage import Coverage, StageOutcome, stage_
 from iltero_schemas.models.common.event import EVENTS_FILE_KIND, AssuranceEvent
 from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.record_coverage import combine_in_order, record_evidence_status
+from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES, SCANNER_TOOLS
 from iltero_schemas.models.common.stage_counts import evaluated_counts, evaluator_status_counts
 from iltero_schemas.models.common.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
 from iltero_schemas.models.common.subjects import subject_key
@@ -225,6 +226,24 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
     return keep_events_files(served_document)
 
 
+# The digest of what the Iltero CLI ran, in records of scanners it ran: a placeholder no pin names.
+CLI_RAN_DIGEST = "sha256:" + "c" * 64
+
+
+def ran_by_the_cli(document: dict[str, Any]) -> None:
+    """Make every scanner report of ``document`` one the Iltero CLI ran, as a run the server opened requires: each
+    report and its evaluations name it, and each evaluation the platform and, for Checkov, the Python version."""
+    for stage in document["stages"].values():
+        for report in (stage.get("scanners") or {}).get("reports", []):
+            report["ran_by"] = ILTERO_CLI
+    for event in document["events"]:
+        evaluator = event["provenance"].get("evaluator") or {}
+        if evaluator.get("engine") in SCANNER_TOOLS and evaluator.get("version") is not None:
+            evaluator.update(digest=CLI_RAN_DIGEST, platform="linux-x86_64")
+            evaluator["python_version"] = "cp312" if evaluator["engine"] in INSTALLED_AS_PYTHON_PACKAGES else None
+    keep_events_files(document)
+
+
 def keep_no_served_exceptions(document: dict[str, Any]) -> None:
     """Make ``document`` apply, at the stage its activity names, the exceptions the server serves its run when none is
     in force."""
@@ -315,7 +334,7 @@ SCANNERS: dict[str, Any] = {
         {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "input_kinds": ["plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,

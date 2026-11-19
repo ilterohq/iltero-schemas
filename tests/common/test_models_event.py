@@ -526,9 +526,18 @@ def test_a_scanners_result_reads_no_facts_from_the_server() -> None:
         AssuranceEvent.model_validate(_from_scanner(**{"provenance.facts_source": "server"}))
 
 
-def test_a_scanners_result_names_the_scanners_version_not_its_digest() -> None:
-    with pytest.raises(ValidationError, match="a scanner's version is named, not its digest"):
-        AssuranceEvent.model_validate(_from_scanner(**{"provenance.evaluator.digest": "sha256:" + "a" * 64}))
+def test_a_scanners_digest_and_platform_are_named_together_and_its_python_version_only_with_them() -> None:
+    digest = "sha256:" + "a" * 64
+    AssuranceEvent.model_validate(
+        _from_scanner(**{"provenance.evaluator.digest": digest, "provenance.evaluator.platform": "linux-x86_64"})
+    )
+    for changes in (
+        {"provenance.evaluator.digest": digest},
+        {"provenance.evaluator.platform": "linux-x86_64"},
+        {"provenance.evaluator.python_version": "cp312"},
+    ):
+        with pytest.raises(ValidationError, match="digest and platform are named together"):
+            AssuranceEvent.model_validate(_from_scanner(**changes))
 
 
 @pytest.mark.parametrize("assertion_id", sorted(NOT_DECIDED_BY_SCANNERS))
@@ -596,3 +605,29 @@ def test_a_scanner_whose_report_holds_no_result_at_all_decided_none_of_its_check
     AssuranceEvent.model_validate(_from_scanner(**reason))
     with pytest.raises(ValidationError, match="holds no result at all decided none of its checks"):
         AssuranceEvent.model_validate(_from_scanner(**reason, **{"provenance.evaluator.undecided_rule_ids": []}))
+
+
+@pytest.mark.parametrize("tag", ["3.12", "py312", "cp312x"])
+def test_a_scanners_python_version_is_the_interpreter_tag_its_packages_were_locked_for(tag: str) -> None:
+    changes = {
+        "provenance.evaluator.digest": "sha256:" + "a" * 64,
+        "provenance.evaluator.platform": "linux-x86_64",
+        "provenance.evaluator.python_version": tag,
+    }
+    with pytest.raises(ValidationError, match="String should match pattern"):
+        AssuranceEvent.model_validate(_from_scanner(**changes))
+
+
+def test_a_scanner_that_gave_no_report_names_no_digest_or_platform_of_a_program_that_ran() -> None:
+    not_run = _from_scanner(
+        **{
+            "evaluation.status": "not_evaluated",
+            "evaluation.status_reason": "scanner_not_run",
+            "provenance.evaluator.version": None,
+            "provenance.input_digest": None,
+            "provenance.evaluator.digest": "sha256:" + "a" * 64,
+            "provenance.evaluator.platform": "linux-x86_64",
+        }
+    )
+    with pytest.raises(ValidationError, match="names no digest or platform of a program that ran"):
+        AssuranceEvent.model_validate(not_run)

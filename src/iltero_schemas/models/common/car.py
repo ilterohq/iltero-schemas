@@ -70,7 +70,7 @@ from iltero_schemas.models.common.provenance import check_provenance
 from iltero_schemas.models.common.record_subject import RecordSubject
 from iltero_schemas.models.common.redaction import RedactedValueCounts, RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.common.reference_time import ReferenceTime
-from iltero_schemas.models.common.scanners import ScannerRequirement, ScannerTool
+from iltero_schemas.models.common.scanners import RanBy, ScannerRequirement, ScannerTool
 from iltero_schemas.models.common.served_exceptions import ServedExceptionsUsed
 from iltero_schemas.models.common.server_facts import Approval, Approvals
 from iltero_schemas.models.common.stages import change_digest_problems, check_structure, integrity_problems
@@ -218,8 +218,9 @@ class ScannerReport(StrictModel):
     tool: ScannerTool
     # The version the scanner wrote in its own report; nothing checks it against the scanner that ran.
     tool_version: Identifier
-    # Who ran the tool: in this version always the pipeline, which supplied the report.
-    supplied_by: Literal["pipeline"]
+    # Who ran the tool: the pipeline, which gave the stage the report, or the Iltero CLI on the runner. It is the
+    # record's own word: copying the pinned version and digest into a record is all it takes to claim ``iltero_cli``.
+    ran_by: RanBy
     # What the tool was reading, in the contract's words (``models.iac.scanner_observations.TOOL_INPUT_KINDS``). A tool
     # that reads a configuration and one that reads a plan answer different questions about the same resource, so a
     # reader must be able to tell which produced a verdict.

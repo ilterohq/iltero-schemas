@@ -673,7 +673,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_17"
           ],
@@ -748,7 +749,8 @@
           "engine": "trivy",
           "version": "0.72.0",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "AWS-0180"
           ],
@@ -823,7 +825,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_16"
           ],
@@ -898,7 +901,8 @@
           "engine": "trivy",
           "version": "0.72.0",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "AWS-0080"
           ],
@@ -973,7 +977,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_53",
             "CKV_AWS_54",
@@ -1471,13 +1476,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:ec24fab7a30c9e7d49e1444e7525c8d6d80eec42e19b82ae405d737445e36ce2",
+      "digest": "sha256:091137c257ed1239749613e10bbc38eb53b54a797776036b35f52580cefa4844",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 19923,
+      "size_bytes": 19958,
       "source": null,
       "storage_uri": null
     },
@@ -1549,7 +1554,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d41997affc62f715db8a1aee51e55ba300dbb3aa178c47a540e31f93e9e98de1",
+      "digest": "sha256:b2624b06bdf3c611946747d2ff138216ab970c7d6999aca7af316a566c11832d",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -1559,7 +1564,7 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 25713,
+      "size_bytes": 25708,
       "source": {
         "name": "checkov.json",
         "digest": "sha256:8a571721c05216b5985e58df7347af0a423adf3ad3067d6d301fca0503daf9f3"
@@ -1597,7 +1602,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:b57b35f90c960a9ddb96c17f6ca1046389c4fd417436ee16436cac12c74a000e",
+      "digest": "sha256:d5746340ccb240dfbb7e5ac00b9aab350cfa29d622d7615c9353c659c80b4d04",
       "media_type": "application/json",
       "path": "units/root/plan/trivy-observations.json",
       "redaction_policy": {
@@ -1607,7 +1612,7 @@
       },
       "ref_id": "trivy-observations.json",
       "retention_until": null,
-      "size_bytes": 5106,
+      "size_bytes": 5101,
       "source": {
         "name": "trivy.json",
         "digest": "sha256:8c9fb8d0fc25eeb535e3deeac5afcf179658f7192646cfcbeb4a036955f5fa5a"
@@ -1650,7 +1655,7 @@
       },
       "events": {
         "count": 10,
-        "digest": "sha256:ec24fab7a30c9e7d49e1444e7525c8d6d80eec42e19b82ae405d737445e36ce2",
+        "digest": "sha256:091137c257ed1239749613e10bbc38eb53b54a797776036b35f52580cefa4844",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -2155,7 +2160,7 @@
           {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "input_kinds": [
               "plan"
             ],
@@ -2171,7 +2176,7 @@
           {
             "tool": "trivy",
             "tool_version": "0.72.0",
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "input_kinds": [
               "plan"
             ],

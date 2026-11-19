@@ -20,7 +20,11 @@ OBSERVED: dict[str, Any] = json.loads(
     (VECTORS / "scanner_observations" / "iac" / "rds_checkov.json").read_text(encoding="utf-8")
 )
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
 )
 
 
@@ -51,7 +55,7 @@ def test_every_tool_names_what_it_read_in_its_own_words() -> None:
         ("results.0.unresolved_reason", "ambiguous", "names why it resolves to none"),
         ("results.0.evaluated_keys", ["b", "a"], "evaluated_keys is sorted"),
         ("input_kinds", ["plan", "plan"], "input_kinds is sorted"),
-        ("supplied_by", "iltero_cli", "Input should be"),
+        ("ran_by", "the_scanner_vendor", "Input should be"),
         ("results.0.title", "Ensure", "Extra inputs are not permitted"),
     ],
 )
@@ -171,7 +175,7 @@ def test_a_result_of_an_input_no_scanner_checks_entry_reads_is_counted_and_left_
 
 def test_the_observations_name_the_report_and_the_plan_they_were_read_from() -> None:
     observed = read_checkov(_checkov(_failed("aws_db_instance.a")), ["aws_db_instance.a"], SOURCE)
-    assert (observed.report_digest, observed.plan_digest, observed.supplied_by) == (
+    assert (observed.report_digest, observed.plan_digest, observed.ran_by) == (
         SOURCE.report_digest,
         SOURCE.plan_digest,
         "pipeline",

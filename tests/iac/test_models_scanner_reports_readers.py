@@ -16,7 +16,11 @@ from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from tests.conftest import VECTORS
 
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
 )
 
 

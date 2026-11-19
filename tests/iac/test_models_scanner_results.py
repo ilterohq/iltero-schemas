@@ -21,7 +21,7 @@ from iltero_schemas.models.common.verdicts import stage_scanner_requirements, st
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 from tests.conftest import VECTORS
-from tests.records import keep_events_files, set_pointer, valid_case_record
+from tests.records import keep_events_files, ran_by_the_cli, served, set_pointer, valid_case_record
 
 SCANNED: dict[str, Any] = json.loads(
     (VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")
@@ -397,3 +397,57 @@ def test_a_group_member_whose_not_run_evaluations_a_record_leaves_out_is_listed(
         "stages.plan.scanners",
         "names trivy in a scanner requirement, and trivy's missing report gives an evaluation the record lacks",
     ] in problems
+
+
+WHO_RAN_IT = "names the digest and platform of what ran exactly when the Iltero CLI ran the scanner"
+
+
+def test_a_scanner_the_iltero_cli_ran_names_the_digest_platform_and_for_checkov_python_version_of_what_ran() -> None:
+    record = copy.deepcopy(SCANNED)
+    ran_by_the_cli(record)
+    CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "the CLI ran it but no digest is named",
+        "the pipeline ran it but a digest is named",
+        "trivy names a Python version",
+        "checkov the CLI ran names no Python version",
+    ],
+)
+def test_who_ran_a_scanner_decides_what_its_evaluation_names(change: str) -> None:
+    record = copy.deepcopy(SCANNED)
+    if change == "the pipeline ran it but a digest is named":
+        ran_by_the_cli(record)
+        for stage in record["stages"].values():
+            for report in (stage.get("scanners") or {}).get("reports", []):
+                report["ran_by"] = "pipeline"
+    elif change == "the CLI ran it but no digest is named":
+        for stage in record["stages"].values():
+            for report in (stage.get("scanners") or {}).get("reports", []):
+                report["ran_by"] = "iltero_cli"
+    else:
+        ran_by_the_cli(record)
+        engine, value = ("trivy", "cp312") if change == "trivy names a Python version" else ("checkov", None)
+        event = next(e for e in record["events"] if (e["provenance"].get("evaluator") or {}).get("engine") == engine)
+        event["provenance"]["evaluator"]["python_version"] = value
+        keep_events_files(record)
+    with pytest.raises(ValidationError, match=WHO_RAN_IT):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_a_record_of_a_run_the_server_opened_keeps_only_scanner_reports_the_iltero_cli_ran() -> None:
+    record = served(copy.deepcopy(SCANNED))
+    with pytest.raises(ValidationError, match="keeps only scanner reports the Iltero CLI ran"):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+    ran_by_the_cli(record)
+    CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_a_report_whose_kept_observations_name_another_runner_is_listed() -> None:
+    record = copy.deepcopy(SCANNED)
+    ran_by_the_cli(record)
+    problems = _problems(record, kept_files(record))
+    assert any(what == "names observations of another report" for _, what in problems)

@@ -247,12 +247,13 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "trivy",
           "failed_rule_ids": [
             "AWS-0177"
           ],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.payments"
           ],
@@ -421,10 +422,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "CKV_AWS_17"
@@ -593,10 +595,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.payments"
           ],
@@ -1158,10 +1161,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "trivy",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "AWS-0107"
@@ -1481,10 +1485,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.payments"
           ],
@@ -1556,10 +1561,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "trivy",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "AWS-0180"
@@ -1867,10 +1873,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.payments"
           ],
@@ -1942,10 +1949,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "trivy",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "AWS-0080"
@@ -2245,12 +2253,13 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [
             "CKV_AWS_56"
           ],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_s3_bucket_public_access_block.logs"
           ],
@@ -3358,13 +3367,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:3ad466e8af3f2e11d404fa7ed6566231f3d584bcd87ec1950f152d37a88d801e",
+      "digest": "sha256:4666dd34cf4efb36324d8329ed896412377cf1d3a7c23dbeec8ce2ea3472600c",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 47498,
+      "size_bytes": 47561,
       "source": null,
       "storage_uri": null
     },
@@ -3436,7 +3445,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:09ccfde58cab6397dffae960abd3fd5d005f45bcbbd63a8f5b4df755b7ad9a65",
+      "digest": "sha256:877f7afd053043eecabb6bdd04f7d9bfb6f652f3c4b10a5f7f3fe90e4f1c1a05",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -3446,7 +3455,7 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 25713,
+      "size_bytes": 25708,
       "source": {
         "digest": "sha256:3cebac85bbd14f6034bf08d3f29203f50d3616c7777c119ab02e187b8e060ca4",
         "name": "checkov_report.json"
@@ -3484,7 +3493,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d8268cfcbedbf8c95b5e41962a32297f9331f49b47d9015031995b3469a04de9",
+      "digest": "sha256:f6261566e613036367a8988659531e21ca21c76d395639ed848f58c534523709",
       "media_type": "application/json",
       "path": "units/root/plan/trivy-observations.json",
       "redaction_policy": {
@@ -3494,7 +3503,7 @@
       },
       "ref_id": "trivy-observations.json",
       "retention_until": null,
-      "size_bytes": 4818,
+      "size_bytes": 4813,
       "source": {
         "digest": "sha256:b8a621040aa154f3ba54a5255f1681d8c2c80091d0bb49681dc61388e0a69233",
         "name": "trivy_report.json"
@@ -3645,7 +3654,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 24,
-        "digest": "sha256:3ad466e8af3f2e11d404fa7ed6566231f3d584bcd87ec1950f152d37a88d801e",
+        "digest": "sha256:4666dd34cf4efb36324d8329ed896412377cf1d3a7c23dbeec8ce2ea3472600c",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -4160,7 +4169,7 @@
             "report_digest": "sha256:537aff4b21bee6e55a92e6ddffb7b7281d6c1fb6645e6474d2ad4aa0bdb0db53",
             "results_not_listed": 0,
             "results_read": 74,
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "tool": "checkov",
             "tool_parsing_errors": 0,
             "tool_version": "3.3.8",
@@ -4178,7 +4187,7 @@
             "report_digest": "sha256:54b1403bb2c01bd5ad2baa4dbbb94acaeedd8a06d8b3027b40a91aa2859eff43",
             "results_not_listed": null,
             "results_read": 14,
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "tool": "trivy",
             "tool_parsing_errors": null,
             "tool_version": "0.72.0",

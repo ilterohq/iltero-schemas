@@ -624,7 +624,11 @@ def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> N
     report = json.loads((folder / case["report"]).read_text(encoding="utf-8"))
     addresses = json.loads((folder / case["plan_addresses"]).read_text(encoding="utf-8"))
     source = Source(
-        report_digest=digest_of(report), plan_digest=case["plan_digest"], rules_digest=None, configuration_digest=None
+        report_digest=digest_of(report),
+        plan_digest=case["plan_digest"],
+        rules_digest=None,
+        configuration_digest=None,
+        ran_by="pipeline",
     )
     observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
     expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))

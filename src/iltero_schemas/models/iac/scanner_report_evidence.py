@@ -40,8 +40,8 @@ def observations_problem(
         observed = ScannerObservations.model_validate(files.observations.get(report.observations))
     except ValidationError:
         return None, None, "names observations that are not given or are not observations"
-    named = (report.tool, report.tool_version, report.report_digest, report.input_kinds)
-    if (observed.tool, observed.tool_version, observed.report_digest, observed.input_kinds) != named:
+    named = (report.tool, report.tool_version, report.ran_by, report.report_digest, report.input_kinds)
+    if (observed.tool, observed.tool_version, observed.ran_by, observed.report_digest, observed.input_kinds) != named:
         return None, None, "names observations of another report"
     counts = (
         report.results_read,
@@ -72,7 +72,13 @@ def observations_problem(
         return None, None, "keeps more of its scanner's report than the contract keeps"
     if redacted_value_counts(report_document) != report.redacted_values:
         return None, None, "does not count, for each reason, the redacted values the report the stage kept holds"
-    source = Source(observed.report_digest, observed.plan_digest, observed.rules_digest, observed.configuration_digest)
+    source = Source(
+        observed.report_digest,
+        observed.plan_digest,
+        observed.rules_digest,
+        observed.configuration_digest,
+        observed.ran_by,
+    )
     try:
         rebuilt = reader.read(report_document, plan_resource_addresses(plan), source)
     except UNREADABLE:

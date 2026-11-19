@@ -37,6 +37,7 @@ from iltero_schemas.models.common.assertion_id import ILTERO_NAMESPACE
 from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.common.event import PROJECT_ASSERTION_SOURCES, AssuranceEvent
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
+from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES, RanBy
 from iltero_schemas.models.common.subjects import local_identity
 from iltero_schemas.models.iac.exception_evidence import local_exception_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
@@ -145,6 +146,7 @@ def check_scanner_results(car: CAR) -> None:
                 f"an evaluation from {tool}'s results names the version of {tool} that wrote the report the "
                 f"{at.value} stage kept"
             )
+        _check_who_ran_it(evaluator, report.ran_by)
         from_scanner.setdefault(at, []).append(event)
     for stage, record in car.stages.items():
         _check_shipped(stage, record)
@@ -210,6 +212,18 @@ def _assertion(event: AssuranceEvent, files: KeptFiles) -> TechnicalAssertion | 
 
 def _subject(event: AssuranceEvent) -> str | None:
     return local_identity(event.subject.kind, event.subject.identities).value if event.subject.key else None
+
+
+def _check_who_ran_it(evaluator: ScannerEvaluator, ran_by: RanBy) -> None:
+    """Raise ``ValueError`` unless the evaluation names the digest and platform of what ran exactly when the Iltero CLI
+    ran the scanner, and the Python version as well only for a scanner installed as Python packages."""
+    ran_by_cli = ran_by == ILTERO_CLI
+    python = ran_by_cli and evaluator.engine in INSTALLED_AS_PYTHON_PACKAGES
+    if (evaluator.digest is not None) != ran_by_cli or (evaluator.python_version is not None) != python:
+        raise ValueError(
+            "an evaluation from a scanner's results names the digest and platform of what ran exactly when the Iltero "
+            "CLI ran the scanner, and the Python version only for a scanner installed as Python packages"
+        )
 
 
 def _not_run(checks: ScannerChecks) -> ScannerVerdict:

@@ -355,6 +355,10 @@ class AssuranceEvent(StrictModel):
             raise ValueError(
                 "a scanner's evaluation names no version and no input exactly when the scanner gave no report"
             )
+        if not_run and scanner.digest is not None:
+            raise ValueError(
+                "a scanner that gave no report names no digest or platform of a program that ran, since none did"
+            )
         if not_run and not _decided_nothing(scanner):
             raise ValueError("a scanner that gave no report decided none of its mapped checks and read no resource")
         if evaluation.status_reason == NO_RESULT_OF_THE_MAPPED_CHECKS and not _decided_nothing(scanner):

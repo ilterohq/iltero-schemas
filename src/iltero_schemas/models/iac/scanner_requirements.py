@@ -6,6 +6,10 @@ read the input. For an assertion only scanners decide (one with no condition of 
 that names resources only when they fail (``scanner_verdicts.REPORTS_ONLY_FAILURES``) never gives a pass, so a group
 whose every member mapped to that assertion is such a tool can never be met there. A group none of whose members is
 mapped to any assertion places no requirement at all, which is never what a policy means.
+
+The two problems weigh differently. A group mapped to nothing (``MAPS_NOTHING``) is a reason to refuse the policy or
+the settings. A group that can never be met for some assertion is a warning for whoever sets the policy to confirm:
+the run still goes ahead, and the record shows that check as not evaluated unless another scanner decides it.
 """
 
 from __future__ import annotations

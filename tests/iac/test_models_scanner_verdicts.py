@@ -21,7 +21,11 @@ from iltero_schemas.models.iac.scanner_verdicts import (
 from tests.conftest import VECTORS
 
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
 )
 DB = "aws_db_instance.a"
 PLAN = [DB, "aws_db_instance.b", "aws_db_instance.n[0]", "aws_db_instance.n[1]"]

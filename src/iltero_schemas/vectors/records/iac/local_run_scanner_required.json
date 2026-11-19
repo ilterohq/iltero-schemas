@@ -677,7 +677,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_17"
           ],
@@ -752,7 +753,8 @@
           "engine": "trivy",
           "version": null,
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "AWS-0180"
           ],
@@ -827,7 +829,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_16"
           ],
@@ -902,7 +905,8 @@
           "engine": "trivy",
           "version": null,
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "AWS-0080"
           ],
@@ -977,7 +981,8 @@
           "engine": "checkov",
           "version": "3.3.8",
           "digest": null,
-          "reason": "not_executed_by_cli",
+          "platform": null,
+          "python_version": null,
           "rule_ids": [
             "CKV_AWS_53",
             "CKV_AWS_54",
@@ -1475,13 +1480,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:5fb984d68f097b6f77dfc442654a5babeb0439d6492837645e1d97fc6db248eb",
+      "digest": "sha256:81267a195ded4944557ca84603dfc4cba7bbab7e0733891305b17501649965a6",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 19747,
+      "size_bytes": 19782,
       "source": null,
       "storage_uri": null
     },
@@ -1533,7 +1538,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:d41997affc62f715db8a1aee51e55ba300dbb3aa178c47a540e31f93e9e98de1",
+      "digest": "sha256:b2624b06bdf3c611946747d2ff138216ab970c7d6999aca7af316a566c11832d",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -1543,7 +1548,7 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 25713,
+      "size_bytes": 25708,
       "source": {
         "name": "checkov.json",
         "digest": "sha256:8a571721c05216b5985e58df7347af0a423adf3ad3067d6d301fca0503daf9f3"
@@ -1586,7 +1591,7 @@
       },
       "events": {
         "count": 10,
-        "digest": "sha256:5fb984d68f097b6f77dfc442654a5babeb0439d6492837645e1d97fc6db248eb",
+        "digest": "sha256:81267a195ded4944557ca84603dfc4cba7bbab7e0733891305b17501649965a6",
         "path": "units/root/plan/events.json"
       },
       "observed_at": "2026-09-22T13:00:13.568Z",
@@ -2093,7 +2098,7 @@
           {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "input_kinds": [
               "plan"
             ],

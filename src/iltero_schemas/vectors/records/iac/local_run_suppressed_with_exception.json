@@ -1071,12 +1071,13 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [
             "CKV_AWS_17"
           ],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.noncompliant"
           ],
@@ -1148,10 +1149,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "CKV_AWS_17"
@@ -1695,13 +1697,14 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": {
             "file_digest": "sha256:855047e2ee6b5aa5101a95ff7720f23e04c84e51d41d548d18ddd4ff60f43c6d",
             "id": "ex-1"
           },
-          "reason": "not_executed_by_cli",
           "result_addresses": [
             "aws_db_instance.noncompliant"
           ],
@@ -1775,10 +1778,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "CKV_AWS_16"
@@ -2078,10 +2082,11 @@
         "compiler": null,
         "evaluator": {
           "digest": null,
+          "platform": null,
+          "python_version": null,
           "engine": "checkov",
           "failed_rule_ids": [],
           "local_exception": null,
-          "reason": "not_executed_by_cli",
           "result_addresses": [],
           "rule_ids": [
             "CKV_AWS_53",
@@ -3060,13 +3065,13 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:39acad9138ef0752161ecb53e3549ee1b3757da6579184423d7cec27a0e8df8f",
+      "digest": "sha256:c049dc15c55cb4712d3ab7b81855040229b3d92785daf76f716178a26d37d8df",
       "media_type": "application/json",
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
       "retention_until": null,
-      "size_bytes": 44210,
+      "size_bytes": 44245,
       "source": null,
       "storage_uri": null
     },
@@ -3118,7 +3123,7 @@
         "tool": "iltero",
         "version": "0.1.0"
       },
-      "digest": "sha256:b21c000b3a650f5a48a94542275eaf2877b7deb40eb475159bc32d9d1ed4e15d",
+      "digest": "sha256:7e6a5c5267753c755b15eff46e4fa8df679a8b73fdc7fc1d1a4b987b252728ea",
       "media_type": "application/json",
       "path": "units/root/plan/checkov-observations.json",
       "redaction_policy": {
@@ -3128,7 +3133,7 @@
       },
       "ref_id": "checkov-observations.json",
       "retention_until": null,
-      "size_bytes": 1143,
+      "size_bytes": 1138,
       "source": {
         "digest": "sha256:ab007e2d89803bb2f045ccbd2b503426545a20f5311fdd20c89132e8c2f85148",
         "name": "checkov_report.json"
@@ -3288,7 +3293,7 @@
       "enforcement_mode": "enforcing",
       "events": {
         "count": 21,
-        "digest": "sha256:39acad9138ef0752161ecb53e3549ee1b3757da6579184423d7cec27a0e8df8f",
+        "digest": "sha256:c049dc15c55cb4712d3ab7b81855040229b3d92785daf76f716178a26d37d8df",
         "path": "units/root/plan/events.json"
       },
       "execution": {
@@ -3845,7 +3850,7 @@
             "report_digest": "sha256:3d7f07dfd2a59d0634ffe38fbe47d56f7c7410ecee14aa1fe762e444351e0aed",
             "results_not_listed": 0,
             "results_read": 2,
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
             "tool": "checkov",
             "tool_parsing_errors": 0,
             "tool_version": "3.3.8",

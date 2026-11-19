@@ -10,8 +10,9 @@ severities and source locations are not kept: no verdict rests on them.
 
 The document names the report it was read from (``report_digest``, the digest
 of the report as the stage kept it) and the plan the stage evaluated
-(``plan_digest``). A report the pipeline supplied (``supplied_by: pipeline``) is
-the pipeline's own claim: nothing in it shows that the tool read that plan.
+(``plan_digest``), and who ran the tool (``ran_by``: the pipeline, or the Iltero
+CLI on the runner). Either way the report is the record's own claim: nothing in
+it shows that the tool read that plan.
 """
 
 from __future__ import annotations
@@ -25,7 +26,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
 from iltero_schemas.models.common.fields import Address, Count, Digest, Identifier
-from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.common.scanners import RanBy, ScannerTool
 from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS, AcceptedStatus, InputKind, RuleId
 
 KIND = "ScannerObservations"
@@ -112,8 +113,9 @@ class ScannerObservations(StrictModel):
     tool: ScannerTool
     # The version the scanner wrote in its own report; nothing checks it against the scanner that ran.
     tool_version: Identifier
-    # Who ran the tool: in this version always the pipeline, which supplied the report.
-    supplied_by: Literal["pipeline"]
+    # Who ran the tool: the pipeline, which gave the stage the report, or the Iltero CLI on the runner; the record's
+    # own word, as on the report this was read from.
+    ran_by: RanBy
     # The digests of what fixes the tool's checks and how it ran: its separately downloaded checks (Trivy's checks
     # bundle) and its configuration and ignore files. Null means the stage was not given them, never that none was
     # used.

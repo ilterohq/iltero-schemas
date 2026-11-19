@@ -26,7 +26,7 @@ from iltero_schemas.models.iac.exception_evidence import (
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from tests.conftest import VECTORS, documents
 from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
-from tests.records import served, set_pointer, valid_case_record
+from tests.records import ran_by_the_cli, served, set_pointer, valid_case_record
 
 WHERE = "stages.plan.scanners.local_exceptions"
 
@@ -250,6 +250,7 @@ def test_a_copy_larger_than_a_document_may_be_is_listed_unread() -> None:
 
 def test_a_check_two_evaluators_failed_with_one_named_as_excepted_is_listed_as_left_out() -> None:
     record = served(json.loads((VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")))
+    ran_by_the_cli(record)
     opa = next(
         event
         for event in record["events"]

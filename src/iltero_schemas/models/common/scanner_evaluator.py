@@ -8,7 +8,7 @@ checks its scanner checks entry maps and what their results rest on
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import Field, model_validator
 
@@ -81,22 +81,34 @@ MAX_RESULT_ADDRESSES = 16
 MAX_UNKNOWN_PATHS = 512
 
 
+# The interpreter a scanner installed as Python packages ran under, by the tag its packages were locked for: ``cp``,
+# the major and minor version, and ``t`` for a free-threaded build, so ``cp313t`` is never read as ``cp313``.
+InterpreterTag = Annotated[str, Field(pattern=r"^cp3[0-9]{1,2}t?$")]
+
+
 class ScannerEvaluator(StrictModel):
     """A scanner that ran elsewhere, whose results decided the assertion through a scanner checks entry
     (``models.iac.scanner_check_mapping``), or a member of a scanner requirement that gave no report
     (``scanner_not_run``), which decided nothing.
 
-    Nothing was executed here, so there are no limits to record and no digest: the version is the one the tool wrote
-    into its own report. The evaluator names the checks its entry maps, how their results found the subject, the
-    plan addresses of the resources those results were about, and the paths the plan leaves unknown on them.
+    The version is the one the tool wrote into its own report. When the Iltero CLI ran the pinned scanner itself
+    (its report's ``ran_by``), the evaluator also names the platform it ran on, the Python version for a scanner
+    installed as Python packages, and the digest of what the CLI ran; a reader compares them with the scanner pin.
+    That is the record's own claim, as for the policy evaluator's pin. The evaluator names the checks its entry maps,
+    how their results found the subject, the plan addresses of the resources those results were about, and the paths
+    the plan leaves unknown on them.
     """
 
     engine: ScannerTool
     # The version the tool wrote into its report; null exactly when a member of a scanner requirement gave no report.
     version: Identifier | None
-    # Always null: the record names the version the tool wrote, and nothing it keeps could verify a digest.
+    # The digest of what the Iltero CLI ran (the scanner's program, or the hash lock of its Python packages), the
+    # platform it ran on, in the policy evaluator's words (``EvaluationLimits.platform``), and the Python version it
+    # ran under for a scanner installed as Python packages, as the interpreter tag its packages were locked for
+    # (``cp312``): each set only when the CLI ran the scanner (``check_scanner_results``).
     digest: Digest | None
-    reason: Literal["not_executed_by_cli"]
+    platform: Identifier | None
+    python_version: InterpreterTag | None
     rule_ids: Annotated[list[RuleId], Field(min_length=1, max_length=MAX_RULE_IDS)]
     subject_match: SubjectMatch
     # Sorted, each once; empty when no result of a mapped check was about the subject.
@@ -114,8 +126,12 @@ class ScannerEvaluator(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> ScannerEvaluator:
-        if self.digest is not None:
-            raise ValueError("a scanner's version is named, not its digest")
+        if (self.digest is None) != (self.platform is None) or (
+            self.python_version is not None and self.digest is None
+        ):
+            raise ValueError(
+                "a scanner's digest and platform are named together, and its Python version only with them"
+            )
         for name in ("rule_ids", "result_addresses", "unknown_paths", "failed_rule_ids", "undecided_rule_ids"):
             if not sorted_unique(getattr(self, name)):
                 raise ValueError(f"{name} is sorted, each once")

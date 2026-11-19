@@ -28,8 +28,9 @@
     "compiler": null,
     "evaluator": {
       "digest": null,
+      "platform": null,
+      "python_version": null,
       "engine": "checkov",
-      "reason": "not_executed_by_cli",
       "version": "3.3.8",
       "rule_ids": [
         "CKV_AWS_16"

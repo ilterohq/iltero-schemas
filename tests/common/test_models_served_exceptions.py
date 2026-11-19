@@ -10,12 +10,16 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.assertions import BUILT_IN_IDS
+from iltero_schemas.models.common.car import MAX_EVENTS
 from iltero_schemas.models.common.fields import AssertionRef, Identity
 from iltero_schemas.models.common.served_exceptions import (
+    MAX_EXCEPTED_FAILURES,
+    ExceptedFailure,
     ServedException,
     ServedExceptions,
     ServedExceptionsUsed,
     served_exception_for,
+    sorted_excepted_failures,
 )
 from tests.conftest import VECTORS
 
@@ -171,3 +175,13 @@ def test_one_requester_is_found_to_have_started_the_run_or_not_in_every_exceptio
     second = {**DOCUMENT["spec"]["exceptions"][1], "requested_by": EXCEPTION["requested_by"]}
     with pytest.raises(ValidationError, match="a run has one starter"):
         ServedExceptions.model_validate({**DOCUMENT, "spec": {"exceptions": [EXCEPTION, second]}})
+
+
+def test_a_stage_may_name_as_many_excepted_failures_as_a_record_holds_events() -> None:
+    assert MAX_EXCEPTED_FAILURES == MAX_EVENTS
+
+
+def test_the_order_a_stage_lists_its_excepted_failures_in_is_one_function() -> None:
+    later = {**FAILURE, "engine": "trivy"}
+    failures = [ExceptedFailure.model_validate(item) for item in (later, FAILURE)]
+    assert [failure.engine for failure in sorted_excepted_failures(failures)] == ["opa", "trivy"]

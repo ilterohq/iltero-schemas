@@ -55,6 +55,9 @@ from iltero_schemas.models.common.fields import (
 from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, Engine, Text
 
 KIND = "ServedExceptions"
+# The most failed results a stage names as excepted: each is one failed event of the stage, so no more than a record
+# holds events (``car.MAX_EVENTS``, which cannot be imported here).
+MAX_EXCEPTED_FAILURES = 100_000
 # The largest served exceptions document, in canonical JSON bytes: far more than the exceptions in force for one stage
 # need, and bounded because a reader reads the stage's copy whole. The server serves none larger.
 MAX_SERVED_EXCEPTIONS_BYTES = 16 * 1024 * 1024
@@ -204,7 +207,7 @@ class ServedExceptionsUsed(StrictModel):
 
     digest: Digest
     copy_path: MemberPath
-    excepted_failures: Annotated[list[ExceptedFailure], Field(max_length=MAX_FACT_ITEMS)]
+    excepted_failures: Annotated[list[ExceptedFailure], Field(max_length=MAX_EXCEPTED_FAILURES)]
 
     @model_validator(mode="after")
     def _sorted_each_once(self) -> ServedExceptionsUsed:
@@ -212,6 +215,12 @@ class ServedExceptionsUsed(StrictModel):
         if keys != sorted(set(keys)):
             raise ValueError("excepted_failures is sorted by assertion id, resource and engine, each once")
         return self
+
+
+def sorted_excepted_failures(failures: Iterable[ExceptedFailure]) -> list[ExceptedFailure]:
+    """``failures`` in the order a stage lists them: by assertion id, then the resource by scheme, value and unit,
+    then engine, each string by Unicode code point."""
+    return sorted(failures, key=_failure_key)
 
 
 def _failure_key(failure: ExceptedFailure) -> tuple[str, tuple[str, str, tuple[tuple[str, str], ...]], str]:

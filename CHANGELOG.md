@@ -1249,7 +1249,9 @@ keep, so any two tools agree on what a record means.
     the `copy_path` of its copy in the evidence register (canonical, with
     no `source` and no redaction policy), and `excepted_failures`, each
     failed result an exception covers (`ExceptedFailure`: `assertion`,
-    `resource`, `engine` and `exception_id`), sorted and each once, empty
+    `resource`, `engine` and `exception_id`), at most 100,000
+    (`MAX_EXCEPTED_FAILURES`, one per failed event of the stage), sorted
+    and each once, in the order `sorted_excepted_failures` gives, empty
     when none is. An excepted failure names its resource by its address,
     scoped by its unit, as an exception does. The field is set at that stage even when nothing was
     served, takes the stage's time from Iltero Platform, and is `null` at

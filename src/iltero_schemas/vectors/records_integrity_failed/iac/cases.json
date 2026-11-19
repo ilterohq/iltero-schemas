@@ -1157,7 +1157,7 @@
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T00:00:00.000Z",
         "collector": {
-          "tool": "served_exceptions",
+          "tool": "iltero",
           "version": "0.1.0"
         },
         "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
@@ -1290,7 +1290,7 @@
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T00:00:00.000Z",
         "collector": {
-          "tool": "served_exceptions",
+          "tool": "iltero",
           "version": "0.1.0"
         },
         "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
@@ -1903,7 +1903,7 @@
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
         "collector": {
-          "tool": "served_exceptions",
+          "tool": "iltero",
           "version": "0.1.0"
         },
         "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
@@ -1963,7 +1963,7 @@
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
         "collector": {
-          "tool": "served_exceptions",
+          "tool": "iltero",
           "version": "0.1.0"
         },
         "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
@@ -3033,7 +3033,7 @@
           "canonicalization": "RFC8785",
           "collected_at": "2026-09-22T13:00:13.568Z",
           "collector": {
-            "tool": "served_exceptions",
+            "tool": "iltero",
             "version": "0.1.0"
           },
           "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
@@ -3676,7 +3676,7 @@
         "canonicalization": "RFC8785",
         "collected_at": "2026-09-22T13:00:13.568Z",
         "collector": {
-          "tool": "served_exceptions",
+          "tool": "iltero",
           "version": "0.1.0"
         },
         "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",

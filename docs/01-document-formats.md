@@ -3699,7 +3699,7 @@ The stage that applies served exceptions is the `plan` stage of an `iac_change`
 | --- | --- | --- |
 | `digest` | digest | The digest of the served exceptions document's canonical JSON (RFC 8785). |
 | `copy_path` | string | Where the stage kept those canonical bytes, in the record's directory. The copy is an entry of the evidence register (see the register rules in [Change Assurance Record (CAR)](#change-assurance-record-car)). |
-| `excepted_failures` | list | Each failed result of the stage a served exception covers (`ExceptedFailure`), each once, at most 256, sorted by assertion `id`, then the resource by `scheme`, `value` and unit, then `engine`, each string compared by Unicode code point. Empty when none is covered. |
+| `excepted_failures` | list | Each failed result of the stage a served exception covers (`ExceptedFailure`), each once, at most 100,000 (`MAX_EXCEPTED_FAILURES`), one per failed event of the stage, so no more than a record holds events. Sorted by assertion `id`, then the resource by `scheme`, `value` and unit, then `engine`, each string compared by Unicode code point: a writer orders them with `iltero_schemas.models.common.served_exceptions.sorted_excepted_failures(failures)` rather than repeating the order. Empty when none is covered. |
 
 | Excepted failure field | Type | Meaning |
 | --- | --- | --- |

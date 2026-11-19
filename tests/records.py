@@ -247,7 +247,7 @@ def keep_served_exceptions(document: dict[str, Any], served: dict[str, Any], exc
         {
             "canonicalization": CANONICALIZATION,
             "collected_at": plan["observed_at"],
-            "collector": {"tool": "served_exceptions", "version": "0.1.0"},
+            "collector": {"tool": "iltero", "version": "0.1.0"},
             "digest": encoding.digest(data),
             "media_type": "application/json",
             "path": path,

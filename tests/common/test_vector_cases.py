@@ -32,6 +32,7 @@ from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping, check_project_mapping
 from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, VECTORS, documents
+from tests.records import set_pointer
 
 
 def _read(path: Any) -> Any:
@@ -82,15 +83,14 @@ def _step(document: Any, token: str) -> Any:
 
 
 def _changed(document: Any, pointer: str, value: Any, *, remove: bool) -> None:
-    """Set or remove the value at a JSON Pointer (RFC 6901) whose parent exists."""
+    """Set (``set_pointer``) or remove the value at a JSON Pointer (RFC 6901) whose parent exists."""
+    if not remove:
+        set_pointer(document, pointer, value)
+        return
     *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
     for token in parents:
         document = _step(document, token)
-    key: int | str = int(last) if isinstance(document, list) else last
-    if remove:
-        del document[key]
-    else:
-        document[key] = value
+    del document[int(last) if isinstance(document, list) else last]
 
 
 def _patched(case: dict[str, Any], folder: str) -> Any:

@@ -1021,6 +1021,7 @@ Each `stages` entry says what one stage did:
 | `events` | object | The file of the stage's events: its `path`, `digest` and `count`, the number of the stage's events. The file is `{"apiVersion": "iltero.com/v1", "kind": "AssuranceEvents", "events": [...]}` (`iltero_schemas.models.common.event.EVENTS_FILE_KIND`), with the stage's events in the order the record lists them, written as its RFC 8785 canonical JSON (`iltero_schemas.models.common.event.events_file_bytes(events)`); `digest` is the digest of those bytes. Its evidence register entry has that digest, the bytes' `size_bytes` and `canonicalization: RFC8785`. `coverage.evaluations` counts their [combined verdicts](#how-evaluators-combine), one per assertion and subject, so it is at most `count`. |
 | `assertions` | object | The index of the assertions the stage compiled: its path (`index`), `digest` and `count`. |
 | `scanners` | object or null | The scanner reports the stage was given, and the scanner check mappings it read their results with (see below). `null` for a stage given no scanner report. |
+| `served_exceptions` | object or null | The exceptions Iltero Platform served the stage, and the failed results they cover (see [A stage that applies served exceptions](#a-stage-that-applies-served-exceptions)). Set exactly at the `plan` stage of an `iac_change` run Iltero Platform opened, even when it served none; `null` at every other stage and in a run the tool opened. |
 | `values_known_after_deployment` | string or null | What the plan stage's gate does with a check that read a value the plan knows only after the deployment: `block` on it, or `postpone` it (see [Checks postponed until after the deployment](#checks-postponed-until-after-the-deployment)). `null` at every other stage. |
 | `postponed_checks` | list or null | The checks the plan stage postponed: a list exactly when it postpones, `null` otherwise. |
 | `resource_redaction` | object or null | A redaction report, of kind `post_apply_resources`, of the values after the apply that the post-verify stage's settling checks read. `null` at every other stage, and at a post-verify stage that settles none. |
@@ -1342,6 +1343,7 @@ Key rules:
   | The input every event was evaluated over | Its `provenance.input_digest` | "the input every event was evaluated over is an entry of the evidence register" |
   | What the plan stage redacted | Its `redaction.input.digest`, on an entry that names a `redaction_policy` | "what the plan stage redacted is an entry of the evidence register that names the redaction policy" |
   | Each stage's copy of the project's exceptions file | `scanners.local_exceptions.copy_path` and `digest`, on an entry that names the file as its `source` (`source.name` is the file name of `file_path`, without its directories, and `source.digest` is `digest`) and have no `redaction_policy` and no `canonicalization`: the copy is the file's bytes, unredacted and as the project wrote them | "the plan stage's copy of the project's exceptions file is an entry of the evidence register, copied byte for byte from the file it names" |
+  | Each stage's copy of the exceptions Iltero Platform served it | `served_exceptions.copy_path` and `digest`, on an entry of its own (no events file, assertion index or scanner file) with `canonicalization: RFC8785`, `source: null` and no `redaction_policy` | "the plan stage's copy of the exceptions the server served it is an entry of the evidence register of its own, kept as canonical JSON (RFC8785) and not copied from a file the pipeline gave" |
 
   The scanner files are tied to where they came from:
 
@@ -1458,7 +1460,8 @@ Key rules:
   validation context (any other value is ignored), then calls `iltero_schemas.models.common.stages.integrity_problems`,
   which returns every problem as a `(where, what)` pair. An approval of another run is refused whatever the context. A
   reader must also call [`scanner_evidence_problems`](#the-check-a-reader-runs) on every record that holds an evaluation
-  from a scanner's results: the model alone does not check these evaluations.
+  from a scanner's results, and [`served_exception_problems`](#checking-the-kept-copy) on every record a stage of
+  which applied served exceptions: the model alone does not check these.
 - A record of a run the tool opened (`governance.run_opened_by: local`) names no Iltero Platform bundle, no
   evaluation from one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). Every
   stage's `coverage.assertions_required.origin` is `server_pinned` exactly when Iltero Platform opened the run
@@ -1871,7 +1874,8 @@ their digest and reads them one way for every reader:
 | `reports` | Each report's `report_digest`. |
 | `plans` | The digest of the plan as the stage kept it, redacted (`ScannerObservations.plan_digest`, the digest of the one plan of the evidence register). |
 | `assertions` | The digest of each assertion document (`AssertionRef.digest`). |
-| `exceptions` | The `digest` of each stage's `scanners.local_exceptions`; each value is the bytes of the stage's copy. |
+| `local_exceptions` | The `digest` of each stage's `scanners.local_exceptions`; each value is the bytes of the stage's copy. |
+| `served_exceptions` | The `digest` of each stage's `served_exceptions`; each value is the bytes of the stage's copy. Read by [`served_exception_problems`](#checking-the-kept-copy). |
 
 For each stage that keeps `scanners`, it reads the copy of each scanner check mapping, then each report's
 observations, rebuilt from the kept report and plan by the tool's reader, then every evaluation the mappings and those
@@ -2972,7 +2976,7 @@ Key rules:
   | `approval_identity`, `commit_review` | `not_assessed` | `not_read_by_the_stage` | None of the pre-deploy stage's results read the fact, so the stage kept the `not_read_by_the_stage` marker. |
   | `exceptions` | `claimed_by_record` | `project_exception_relied_on` | An event names an exception from the [project's own exceptions file](#localexceptions): the project's own word. |
   | `exceptions` | `claimed_by_record` | `project_exceptions_file_not_relied_on` | A stage applied the project's own exceptions file, and no event relied on an exception from it. |
-  | `exceptions` | `not_assessed` | `exceptions_not_listed` | Iltero Platform opened the run, and the record lists no exception, so the exceptions it may have served are not assessed. |
+  | `exceptions` | `not_assessed` | `served_exceptions_not_assessed` | Iltero Platform opened the run, the record relies on no exception of the project's own, and a verifier does not assess the exceptions Iltero Platform served. |
   | `bundle_provenance` | `claimed_by_record` | `server_bundle_named` | A stage names an assertion bundle Iltero Platform served. |
   | `bundle_provenance` | `not_performed` | `local_assertions` | The checks were the project's own. |
   | `stage_completeness` | `claimed_by_record` | `expected_stages` | Every stage the record expects reported. |
@@ -3003,7 +3007,7 @@ Key rules:
   result in this order that holds for the record
   (`iltero_schemas.models.common.verification.PRE_DEPLOY_RESULT_ORDER`, with `first_that_holds`). When none holds,
   the result is the pre-deploy stage's own: `approvals_listed`, `no_approval_served`, `not_read_by_the_stage`,
-  `server_facts_unavailable` or `exceptions_not_listed`, or, for a commit review the stage kept, the result
+  `server_facts_unavailable` or `served_exceptions_not_assessed`, or, for a commit review the stage kept, the result
   `iltero_schemas.models.common.verification.COMMIT_REVIEW_RESULTS` names for its outcome, with the outcome as the
   reason.
 
@@ -3021,8 +3025,8 @@ Key rules:
   pre-deploy stage has not reported gets `run_opened_locally`, not `pre_deploy_pending`: no server will serve that run
   its approvals. A verifier passes `first_that_holds` only results the property can take: an exception result given
   for `approval_identity` is refused when the report is read.
-- `server_facts_unavailable` and `exceptions_not_listed` apply only to a run Iltero Platform opened. A stage keeps no
-  exceptions, so neither `server_facts_unavailable` nor `not_read_by_the_stage` is ever an `exceptions` result.
+- `server_facts_unavailable` and `served_exceptions_not_assessed` apply only to a run Iltero Platform opened. Neither
+  `server_facts_unavailable` nor `not_read_by_the_stage` is ever an `exceptions` result.
 - The `reference_time` result follows the weakest source any stage took its time from.
 - `iltero_schemas.models.common.pinned_evaluator.evaluator_binary_result(events)` gives the `evaluator_binary` result.
   For `other_binary_named`, its `detail` is the first problem
@@ -3462,7 +3466,7 @@ refuses a record that breaks one of these rules:
 | A record of a run Iltero Platform opened applies no exceptions file: every stage's `scanners.local_exceptions` is `null`. | "a record of a run the server opened applies no exceptions file of the project's own" |
 
 The model does not read the copy. A reader does, with
-[`scanner_evidence_problems`](#the-check-a-reader-runs), given the copy's bytes in `KeptFiles.exceptions`: for each
+[`scanner_evidence_problems`](#the-check-a-reader-runs), given the copy's bytes in `KeptFiles.local_exceptions`: for each
 suppressed result of the stage it works out again which exception covers it, and the record must name that one, or
 none when none covers it.
 
@@ -3471,11 +3475,12 @@ none when none covers it.
 A served exceptions document holds the exceptions Iltero Platform serves one stage of a run it opened: those in force
 for that stage. Each exception (`ServedException`) says that an assertion does not have to hold for an environment and
 the resources it names, between two times, why, who asked for it, who approved it in Iltero Platform, and when. It names
-the assertion document it was approved for by its digest. The list is empty when no exception is in force.
+the assertion document it was approved for by its id, version and digest. The list is empty when no exception is in
+force.
 
-`version` and `digest` are carried as approved. A result is matched by the assertion's id only, as for a project's
-exception, whatever version or digest the result's assertion has (see
-[When an exception covers a result](#when-an-exception-covers-a-result)).
+A served exception covers a failed result only of the assertion document it was approved for: the same id, version
+and digest (see [When a served exception covers a failed result](#when-a-served-exception-covers-a-failed-result)).
+The result stays `fail`: the exception is recorded beside it, never in its place.
 
 - **apiVersion:** `iltero.com/v1`, with `kind: ServedExceptions`
 - **Model:** `iltero_schemas.models.common.served_exceptions.ServedExceptions`
@@ -3486,7 +3491,7 @@ exception, whatever version or digest the result's assertion has (see
   "kind": "ServedExceptions",
   "metadata": {
     "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-    "stage": "pre_deploy"
+    "stage": "plan"
   },
   "spec": {
     "exceptions": [
@@ -3529,6 +3534,10 @@ exception, whatever version or digest the result's assertion has (see
 | `metadata.stage` | stage | The stage they were served to. |
 | `spec.exceptions` | list | 0 to 256 exceptions (`ServedException`), each with the fields below. |
 
+Iltero Platform serves no document larger than 16 MiB (16,777,216 bytes) of canonical JSON
+(`iltero_schemas.models.common.served_exceptions.MAX_SERVED_EXCEPTIONS_BYTES`). The model does not check the size; a
+reader of a kept copy does (see [Checking the kept copy](#checking-the-kept-copy)).
+
 | Exception field | Type | Meaning |
 | --- | --- | --- |
 | `id` | identifier | The exception's id, unique in the document. |
@@ -3559,6 +3568,89 @@ identity provider. They do not show that two accounts belong to two different pe
 requester and the approver as Iltero users, and states in `requester_is_run_actor` whether the requester's Iltero user
 started the run or triggered the attempt the exception is served to. The model reads that field as Iltero Platform's
 claim and does not check it.
+
+### A stage that applies served exceptions
+
+The stage that applies served exceptions is the `plan` stage of an `iac_change`
+(`iltero_schemas.change_types.common.activity.Activity.stage_that_applies_served_exceptions`). An `image_build` or an
+`image_deploy` applies none. In a record of a run Iltero Platform opened, that stage names what it applied in
+`served_exceptions` (`ServedExceptionsUsed`), even when no exception was served:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `digest` | digest | The digest of the served exceptions document's canonical JSON (RFC 8785). |
+| `copy_path` | string | Where the stage kept those canonical bytes, in the record's directory. The copy is an entry of the evidence register (see the register rules in [Change Assurance Record (CAR)](#change-assurance-record-car)). |
+| `excepted_failures` | list | Each failed result of the stage a served exception covers (`ExceptedFailure`), each once, at most 256, sorted by assertion `id`, then the resource by `scheme`, `value` and unit, then `engine`, each string compared by Unicode code point. Empty when none is covered. |
+
+| Excepted failure field | Type | Meaning |
+| --- | --- | --- |
+| `assertion` | object | The failed result's assertion: `id`, `version` and `digest`. |
+| `resource` | object | The resource, by its address in the IaC tool's configuration (`scheme: terraform_address`), with `scope` exactly `{"unit": <its unit>}`, as an exception names it. |
+| `engine` | string | The evaluator that gave the result, such as `opa` or `checkov`. |
+| `exception_id` | identifier | The `id` of the served exception that covers it. |
+
+The copy names the requester and the approver of each exception, by identity provider and id, so a record of a run
+Iltero Platform opened keeps the identifiers of those people among its files.
+
+The model refuses a record that breaks one of these rules (`iltero_schemas.models.common.provenance`,
+`ServedExceptionsUsed`):
+
+| Rule | Refused with |
+| --- | --- |
+| A record of a run the tool opened applies no served exceptions: every stage's `served_exceptions` is `null`. | "a record of a run the tool opened applies no exceptions the server served" |
+| In a record of a run Iltero Platform opened, `served_exceptions` is set at the stage that applies served exceptions, and at no other stage. | "the served exceptions a run the server opened applies are named at the stage its activity applies them at, and only there" |
+| That stage's `reference_time.source` is `server`. | "a stage that applies served exceptions reads its time from the server" |
+| Each excepted failure is a `fail` event of the stage with that assertion, an identity of its subject equal to `resource`, and that `engine`. | "each failed result a served exception covers is a failed result of the stage, by its assertion, resource and engine" |
+| `excepted_failures` is sorted by assertion id, resource and engine, each once. | "excepted_failures is sorted by assertion id, resource and engine, each once" |
+| An excepted failure names its resource by its address, scoped by its unit and nothing else (`ExceptedFailure`). | "an excepted failed result names its resource by its address, scoped by its unit" |
+
+### When a served exception covers a failed result
+
+`served_exception_for(exceptions, assertion, identity, environment, at)`
+(`iltero_schemas.models.common.served_exceptions`) gives the served exception that covers one failed result, or the
+reason none does. A served exception covers it when it covers the result as any exception does, by the assertion's
+id, the resource, the environment and the stage's reference time (see
+[When an exception covers a result](#when-an-exception-covers-a-result)), and also:
+
+- its `scope.assertion` is the result's assertion: the same `id`, `version` and `digest`;
+- its `approved_at` is no later than the stage's `reference_time.value`.
+
+The reason is the first that holds: one of the reasons `why_no_exception` gives, then these
+(`NoServedExceptionReason`):
+
+| Reason | When |
+| --- | --- |
+| `approved_for_another_document_of_the_assertion` | The exception in force was approved for another version or digest of the assertion. |
+| `approved_after_the_reference_time` | The exception in force was approved after the stage's reference time. |
+
+### Checking the kept copy
+
+The model does not read the copy. Every reader of a record whose stage applied served exceptions must call
+`served_exception_problems(car, files)` (`iltero_schemas.models.iac.exception_evidence`), on a record whose structure
+holds, and must not trust the record while it returns any problem. `files` is a [`KeptFiles`](#the-check-a-reader-runs)
+whose `served_exceptions` holds the bytes of each copy. For each such stage it checks that:
+
+- the copy is kept and has the stage's `digest`;
+- the copy is at most 16 MiB (`MAX_SERVED_EXCEPTIONS_BYTES`), checked before it is parsed: a larger copy is
+  `SERVED_NOT_READABLE`;
+- the copy is canonical JSON and a valid `ServedExceptions` document;
+- its `metadata.run_id` is the record's `run.id`, its `metadata.stage` is the stage, and every exception's
+  `scope.environment` is the record's `subject.environment`;
+- `excepted_failures` is exactly what `served_exception_for` gives each `fail` event of the stage whose subject has an
+  identity in the address scheme of the plan's IaC tool, at the stage's reference time.
+
+It returns `(where, what)` pairs:
+
+| Where | What |
+| --- | --- |
+| `stages.<stage>.served_exceptions` | "the record does not keep, as canonical JSON, the served exceptions with the digest the stage names" (`SERVED_NOT_KEPT`) |
+| `stages.<stage>.served_exceptions` | "is not a served exceptions document the contract can read" (`SERVED_NOT_READABLE`) |
+| `stages.<stage>.served_exceptions` | "holds exceptions served to another run or stage, or for another environment" (`SERVED_ELSEWHERE`) |
+| `stages.<stage>.served_exceptions.excepted_failures` | "names a failed result the kept served exceptions do not cover, or not with that exception" (`SERVED_NOT_GIVEN`) |
+| `stages.<stage>.served_exceptions.excepted_failures` | "leaves out a failed result the kept served exceptions cover" (`SERVED_LEFT_OUT`) |
+
+This shows that the record agrees with the copy it kept. It does not show that Iltero Platform served that copy, or
+that Iltero approved the exceptions in it: only Iltero Platform can check that.
 
 ## PolicySource
 

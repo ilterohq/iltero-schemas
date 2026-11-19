@@ -1,0 +1,203 @@
+[
+  {
+    "name": "record_whose_plan_stage_names_exactly_what_its_kept_copy_gives",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {},
+      "form": "canonical"
+    },
+    "problems": []
+  },
+  {
+    "name": "record_whose_copy_the_reader_is_not_given",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": null,
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "the record does not keep, as canonical JSON, the served exceptions with the digest the stage names"
+      ]
+    ]
+  },
+  {
+    "name": "copy_not_kept_as_canonical_json",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {},
+      "form": "indented"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "the record does not keep, as canonical JSON, the served exceptions with the digest the stage names"
+      ]
+    ]
+  },
+  {
+    "name": "copy_with_a_number_that_has_no_canonical_form",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/spec/exceptions/0/requester_is_run_actor": 1152921504606846976
+      },
+      "form": "compact"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "is not a served exceptions document the contract can read"
+      ]
+    ]
+  },
+  {
+    "name": "copy_that_is_not_a_served_exceptions_document",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/kind": "LocalExceptions"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "is not a served exceptions document the contract can read"
+      ]
+    ]
+  },
+  {
+    "name": "copy_served_to_another_run",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/metadata/run_id": "ed418752-c2b1-5f3a-9d4e-6a7b8c9d0e1f"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "holds exceptions served to another run or stage, or for another environment"
+      ]
+    ]
+  },
+  {
+    "name": "copy_served_to_another_stage",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/metadata/stage": "pre_deploy"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "holds exceptions served to another run or stage, or for another environment"
+      ]
+    ]
+  },
+  {
+    "name": "copy_holding_an_exception_for_another_environment",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/spec/exceptions/1/scope/environment": "staging"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions",
+        "holds exceptions served to another run or stage, or for another environment"
+      ]
+    ]
+  },
+  {
+    "name": "record_naming_an_exception_that_does_not_cover_the_failed_result",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {
+      "/stages/plan/served_exceptions/excepted_failures/0/exception_id": "exc_0001"
+    },
+    "kept": {
+      "vector": "plan.json",
+      "set": {},
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions.excepted_failures",
+        "names a failed result the kept served exceptions do not cover, or not with that exception"
+      ]
+    ]
+  },
+  {
+    "name": "record_leaving_out_a_failed_result_its_copy_covers",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {
+      "/stages/plan/served_exceptions/excepted_failures": []
+    },
+    "kept": {
+      "vector": "plan.json",
+      "set": {},
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions.excepted_failures",
+        "leaves out a failed result the kept served exceptions cover"
+      ]
+    ]
+  },
+  {
+    "name": "exception_approved_after_the_stages_time",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/spec/exceptions/1/approved_at": "2026-09-23T00:00:00Z"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions.excepted_failures",
+        "names a failed result the kept served exceptions do not cover, or not with that exception"
+      ]
+    ]
+  },
+  {
+    "name": "exception_approved_for_another_document_of_the_assertion",
+    "record": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "set_record": {},
+    "kept": {
+      "vector": "plan.json",
+      "set": {
+        "/spec/exceptions/1/scope/assertion/digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "form": "canonical"
+    },
+    "problems": [
+      [
+        "stages.plan.served_exceptions.excepted_failures",
+        "names a failed result the kept served exceptions do not cover, or not with that exception"
+      ]
+    ]
+  }
+]

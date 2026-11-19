@@ -11,6 +11,7 @@ from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes
 from iltero_schemas.canonical.common import encoding
 from iltero_schemas.canonical.common.assertion_set import required_assertion_digest
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
+from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.models.common.car import CAR
@@ -196,6 +197,12 @@ def keep_events_files(document: dict[str, Any]) -> dict[str, Any]:
     return document
 
 
+# The exceptions the server serves a run's plan stage when none is in force, for the conformance vectors' run.
+SERVED_NONE: dict[str, Any] = json.loads(
+    (VECTORS / "served_exceptions" / "plan_without_exceptions.json").read_text(encoding="utf-8")
+)
+
+
 def served(document: dict[str, Any]) -> dict[str, Any]:
     """``document`` as the record of a run the server opened: its assertion sets pinned by the server, and every check
     that read facts reading them from the server."""
@@ -211,7 +218,47 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
         for part in ("approvals", "commit_review"):
             if isinstance(stage.get(part), dict) and stage[part].get("reason") == NOT_READ_BY_THE_STAGE["reason"]:
                 stage[part] = copy.deepcopy(UNKNOWN)
+    applying = ACTIVITIES[served_document["change"]["activity"]].stage_that_applies_served_exceptions
+    kept = served_document["stages"].get(applying.value) if applying is not None else None
+    if kept is not None and kept.get("served_exceptions") is None:
+        keep_no_served_exceptions(served_document)
     return keep_events_files(served_document)
+
+
+def keep_no_served_exceptions(document: dict[str, Any]) -> None:
+    """Make ``document`` apply, at the stage its activity names, the exceptions the server serves its run when none is
+    in force."""
+    none_served = {**SERVED_NONE, "metadata": {**SERVED_NONE["metadata"], "run_id": document["run"]["id"]}}
+    keep_served_exceptions(document, none_served, [])
+
+
+def keep_served_exceptions(document: dict[str, Any], served: dict[str, Any], excepted: list[dict[str, Any]]) -> None:
+    """Make the stage of ``document`` that its activity applies served exceptions at apply those ``served`` serves it,
+    naming ``excepted`` as the failed results they cover: on the server's time, with the canonical copy an entry of the
+    register of its own."""
+    data = canonical_bytes(served)
+    stage = ACTIVITIES[document["change"]["activity"]].stage_that_applies_served_exceptions
+    assert stage is not None, "the record's activity applies no served exceptions"
+    plan = document["stages"][stage.value]
+    path = f"units/{document['unit']}/{stage.value}/served-exceptions.json"
+    plan["served_exceptions"] = {"digest": encoding.digest(data), "copy_path": path, "excepted_failures": excepted}
+    plan["reference_time"]["source"] = "server"
+    document["evidence_refs"].append(
+        {
+            "canonicalization": CANONICALIZATION,
+            "collected_at": plan["observed_at"],
+            "collector": {"tool": "served_exceptions", "version": "0.1.0"},
+            "digest": encoding.digest(data),
+            "media_type": "application/json",
+            "path": path,
+            "redaction_policy": None,
+            "ref_id": f"{stage.value}/served-exceptions.json",
+            "retention_until": None,
+            "size_bytes": len(data),
+            "source": None,
+            "storage_uri": None,
+        }
+    )
 
 
 def keep_the_apply_log(document: dict[str, Any]) -> None:
@@ -319,9 +366,16 @@ def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
     return document
 
 
+# The last token of a JSON Pointer that names the place after a list's last item (RFC 6901): setting it appends.
+APPEND = "-"
+
+
 def set_pointer(document: Any, pointer: str, value: Any) -> None:
-    """Set the value at a JSON Pointer (RFC 6901) whose parent exists."""
+    """Set the value at a JSON Pointer (RFC 6901) whose parent exists; ``-`` as the last token of a list appends."""
     *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
     for token in parents:
         document = document[int(token)] if isinstance(document, list) else document[token]
-    document[int(last) if isinstance(document, list) else last] = value
+    if isinstance(document, list) and last == APPEND:
+        document.append(value)
+    else:
+        document[int(last) if isinstance(document, list) else last] = value

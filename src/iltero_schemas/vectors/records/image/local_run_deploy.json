@@ -192,6 +192,7 @@
         "count": 2
       },
       "scanners": null,
+      "served_exceptions": null,
       "values_known_after_deployment": null,
       "postponed_checks": null,
       "resource_redaction": null,
@@ -310,6 +311,7 @@
         "count": 1
       },
       "scanners": null,
+      "served_exceptions": null,
       "values_known_after_deployment": null,
       "postponed_checks": null,
       "resource_redaction": null,
@@ -427,6 +429,7 @@
         "count": 1
       },
       "scanners": null,
+      "served_exceptions": null,
       "values_known_after_deployment": null,
       "postponed_checks": null,
       "resource_redaction": null,

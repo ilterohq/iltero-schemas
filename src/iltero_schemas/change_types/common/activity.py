@@ -77,6 +77,9 @@ class Activity:
     # The stages that read scanner reports: only they keep one, and only their evaluations may stand on a scanner's
     # result.
     stages_that_read_scanner_reports: frozenset[Stage]
+    # The stage that applies the exceptions the server serves a run it opened to its failed results
+    # (``models.common.served_exceptions``); None for an activity that applies none.
+    stage_that_applies_served_exceptions: Stage | None
 
 
 @dataclass(frozen=True)

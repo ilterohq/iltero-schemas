@@ -62,7 +62,8 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, reason: str | None) -> None:
             isinstance(event.provenance.evaluator, ScannerEvaluator) and event.provenance.evaluator.local_exception
             for event in car.events
         )
-    if reason == "exceptions_not_listed":
+    if reason == "served_exceptions_not_assessed":
+        assert car.governance.run_opened_by == "server"
         assert all(stage.scanners is None or stage.scanners.local_exceptions is None for stage in car.stages.values())
     if reason == "server_facts_unavailable":
         assert pre_deploy is not None and isinstance(pre_deploy.approvals, ServerFactsUnavailable)

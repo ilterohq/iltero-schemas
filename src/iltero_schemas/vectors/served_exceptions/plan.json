@@ -3,7 +3,7 @@
   "kind": "ServedExceptions",
   "metadata": {
     "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
-    "stage": "pre_deploy"
+    "stage": "plan"
   },
   "spec": {
     "exceptions": [
@@ -59,12 +59,12 @@
               "scope": {
                 "unit": "root"
               },
-              "value": "aws_s3_bucket.website"
+              "value": "aws_s3_bucket.logs"
             }
           ]
         },
-        "valid_from": "2026-11-01T00:00:00Z",
-        "expires_at": "2027-02-01T00:00:00Z",
+        "valid_from": "2026-09-01T00:00:00Z",
+        "expires_at": "2026-12-01T00:00:00Z",
         "requested_by": {
           "provider": "iltero",
           "id": "user_7"
@@ -73,9 +73,9 @@
           "provider": "iltero",
           "id": "user_3"
         },
-        "approved_at": "2026-10-30T14:12:00Z",
+        "approved_at": "2026-08-31T09:30:00Z",
         "requester_is_run_actor": true,
-        "reason": "The bucket serves a public website until the move to a content delivery network."
+        "reason": "The access logs are shared with an outside auditor until the next change moves them."
       }
     ]
   }

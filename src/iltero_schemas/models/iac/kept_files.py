@@ -13,9 +13,10 @@ class KeptFiles:
     ``scanner_check_mappings`` and ``observations`` are keyed by the path the stage names them at; ``reports`` and
     ``plans`` by the digest of the file as the stage kept it, redacted (``ScannerReport.report_digest``,
     ``ScannerObservations.plan_digest``), each an entry of the record's evidence register; ``assertions`` by the digest
-    of the assertion's document (``AssertionRef.digest``); ``exceptions`` by the digest of the project's exceptions file
-    a stage applied (``LocalExceptionsUsed.digest``), each the bytes of the stage's copy, unparsed, so the contract
-    checks the digest and reads the file one way for every reader.
+    of the assertion's document (``AssertionRef.digest``); ``local_exceptions`` by the digest of the project's
+    exceptions file a stage applied (``LocalExceptionsUsed.digest``), and ``served_exceptions`` by the digest of the
+    exceptions the server served a stage (``ServedExceptionsUsed.digest``), each the bytes of the stage's copy,
+    unparsed, so the contract checks the digest and reads the file one way for every reader.
     """
 
     scanner_check_mappings: Mapping[str, object]
@@ -23,4 +24,5 @@ class KeptFiles:
     reports: Mapping[str, object]
     plans: Mapping[str, object]
     assertions: Mapping[str, object]
-    exceptions: Mapping[str, bytes]
+    local_exceptions: Mapping[str, bytes]
+    served_exceptions: Mapping[str, bytes]

@@ -38,7 +38,7 @@ from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.common.event import PROJECT_ASSERTION_SOURCES, AssuranceEvent
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
 from iltero_schemas.models.common.subjects import local_identity
-from iltero_schemas.models.iac.exception_evidence import exception_problems
+from iltero_schemas.models.iac.exception_evidence import local_exception_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_check_mapping import (
     AssertionMapping,
@@ -430,7 +430,7 @@ def scanner_evidence_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
     in scope must have that tool's evaluation: the one the kept results give it, or ``scanner_not_run`` for a required
     tool that gave no report. A stage with a scanner check mapping copy that does not hold lists each such copy and no
     other problem; a report whose observations do not hold is listed, and its evaluations are not checked further.
-    Each suppressed result names the exception the stage's kept exceptions file gives it (``exception_problems``).
+    Each suppressed result names the exception the stage's kept exceptions file gives it (``local_exception_problems``).
     """
     problems: list[tuple[str, str]] = []
     for stage, record in car.stages.items():
@@ -440,4 +440,4 @@ def scanner_evidence_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
         scanners = car.stages[event.evaluation.stage].scanners
         if isinstance(event.provenance.evaluator, ScannerEvaluator) and scanners is None:
             problems.append((f"events.{index}.provenance.evaluator", "names a scanner its stage kept no report of"))
-    return problems + exception_problems(car, files)
+    return problems + local_exception_problems(car, files)

@@ -77,16 +77,21 @@ class ExceptionTerms(Protocol):
 AnyException = TypeVar("AnyException", bound=ExceptionTerms)
 
 
+def named_by_its_address(identity: Identity) -> bool:
+    """Whether ``identity`` names a resource by its address in the IaC tool's configuration, scoped by its unit and
+    nothing else: the identity an exception names a resource by."""
+    return (
+        identity.scheme in ADDRESS_IDENTITY_SCHEMES and identity.scope is not None and set(identity.scope) == {"unit"}
+    )
+
+
 def check_exception(exception: ExceptionTerms) -> None:
     """Raise ``ValueError`` unless ``exception`` follows the rules every exception follows: it never covers a built-in
     assertion, it names each resource by its address scoped by its unit, and it ends after it starts and at most
     ``MAX_EXCEPTION_DAYS`` later."""
     if exception.scope.assertion.id in BUILT_IN_IDS:
         raise ValueError("an exception never covers a built-in assertion: what it records is never waived")
-    if any(
-        r.scheme not in ADDRESS_IDENTITY_SCHEMES or r.scope is None or set(r.scope) != {"unit"}
-        for r in exception.scope.resources
-    ):
+    if not all(named_by_its_address(resource) for resource in exception.scope.resources):
         raise ValueError("an exception names each resource by its address, scoped by its unit and nothing else")
     ends, starts = parse_timestamp(exception.expires_at), parse_timestamp(exception.valid_from)
     if ends <= starts:
@@ -106,7 +111,8 @@ def check_exception_list(exceptions: Sequence[ExceptionTerms]) -> None:
             raise ValueError("no two exceptions cover the same assertion, environment and resource at the same time")
 
 
-def _resource_key(identity: Identity) -> tuple[str, str, tuple[tuple[str, str], ...] | None]:
+def resource_key(identity: Identity) -> tuple[str, str, tuple[tuple[str, str], ...] | None]:
+    """What tells one resource from another: the scheme, value and scope of the identity naming it."""
     scope = None if identity.scope is None else tuple(sorted(identity.scope.items()))
     return (identity.scheme, identity.value, scope)
 
@@ -115,7 +121,7 @@ def _overlap(first: ExceptionTerms, second: ExceptionTerms) -> bool:
     """Whether two exceptions cover one assertion, environment and resource at some same time."""
     if (first.scope.assertion.id, first.scope.environment) != (second.scope.assertion.id, second.scope.environment):
         return False
-    if not {_resource_key(r) for r in first.scope.resources} & {_resource_key(r) for r in second.scope.resources}:
+    if not {resource_key(r) for r in first.scope.resources} & {resource_key(r) for r in second.scope.resources}:
         return False
     return parse_timestamp(first.valid_from) <= parse_timestamp(second.expires_at) and parse_timestamp(
         second.valid_from
@@ -131,7 +137,7 @@ def covers(exception: ExceptionTerms, assertion_id: str, identity: Identity) -> 
     """Whether ``exception`` is about ``assertion_id`` and names the resource ``identity`` names: the same scheme, value
     and scope."""
     return exception.scope.assertion.id == assertion_id and any(
-        _resource_key(resource) == _resource_key(identity) for resource in exception.scope.resources
+        resource_key(resource) == resource_key(identity) for resource in exception.scope.resources
     )
 
 

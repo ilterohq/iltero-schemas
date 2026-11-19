@@ -10,7 +10,7 @@
   },
   "record": {
     "uuid": "935c0eaf-dad5-597c-b2e8-37afafd9577a",
-    "digest": "sha256:4e29819e9b5d9f4fc57cabbe8775fef939dcff4c9be13544d0f71663de4682d6"
+    "digest": "sha256:bef5d733b327179a62cace160182920b9192d407d7f1f03388f8732fa19e9ddd"
   },
   "properties": {
     "integrity": {
@@ -55,7 +55,7 @@
     },
     "exceptions": {
       "state": "not_assessed",
-      "reason": "exceptions_not_listed",
+      "reason": "served_exceptions_not_assessed",
       "detail": null
     },
     "commit_review": {

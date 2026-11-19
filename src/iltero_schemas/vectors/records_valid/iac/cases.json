@@ -54,7 +54,80 @@
     "set": {
       "/governance/run_opened_by": "server",
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/assertions_required/origin": "server_pinned"
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
+    },
+    "remove": []
+  },
+  {
+    "name": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": [
+          {
+            "assertion": {
+              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+              "version": "1.0.0"
+            },
+            "resource": {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            },
+            "engine": "opa",
+            "exception_id": "exc_0002"
+          }
+        ]
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 1533,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": []
   },
@@ -990,7 +1063,30 @@
       "/events/4/provenance/assertion_source": "server_bundle",
       "/stages/plan/events/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
       "/evidence_refs/24/digest": "sha256:bf03b411379267ade898fcc44f01223189927e9663d57d53e5b49b0d7bb850e2",
-      "/evidence_refs/24/size_bytes": 12092
+      "/evidence_refs/24/size_bytes": 12092,
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": []
   },
@@ -1012,7 +1108,30 @@
         "plan",
         "pre_deploy",
         "post_deploy"
-      ]
+      ],
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": []
   },
@@ -1520,6 +1639,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": []
@@ -1578,6 +1720,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": []
@@ -2313,7 +2478,29 @@
       },
       "/stages/plan/reference_time/source": "server",
       "/stages/post_deploy/reference_time/source": "server",
-      "/stages/pre_deploy/reference_time/source": "server"
+      "/stages/pre_deploy/reference_time/source": "server",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": []
   },
@@ -2818,6 +3005,7 @@
         },
         "stage": "pre_deploy",
         "scanners": null,
+        "served_exceptions": null,
         "values_known_after_deployment": null,
         "postponed_checks": null,
         "resource_redaction": null,

@@ -60,14 +60,14 @@
     "why": "An event names an exception from the project's own exceptions file; it comes before run_opened_locally and pre_deploy_pending."
   },
   {
-    "name": "exceptions_of_a_server_opened_run_that_lists_none",
+    "name": "exceptions_of_a_server_opened_run_relying_on_no_project_exception",
     "record": {
       "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
     },
     "property": "exceptions",
     "state": "not_assessed",
-    "reason": "exceptions_not_listed",
-    "why": "The server opened the run and the record lists no exception, so a verifier cannot assess any the server may have served."
+    "reason": "served_exceptions_not_assessed",
+    "why": "The server opened the run and the record relies on no exception of the project's own; a verifier does not assess the exceptions the server served."
   },
   {
     "name": "reference_time_of_a_run_on_the_runners_clock",

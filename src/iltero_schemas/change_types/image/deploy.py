@@ -253,6 +253,7 @@ IMAGE_DEPLOY = Activity(
     integrity_problems=_integrity_problems,
     reads_a_state_after_the_apply=False,
     stages_that_read_scanner_reports=frozenset(),
+    stage_that_applies_served_exceptions=None,
     carried_out_matches_checked=(REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
         {

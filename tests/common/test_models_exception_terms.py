@@ -15,7 +15,7 @@ from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from tests.conftest import VECTORS
 from tests.exceptions import EXCEPTION, FILE
 
-SERVED: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "pre_deploy.json").read_text(encoding="utf-8"))
+SERVED: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "plan.json").read_text(encoding="utf-8"))
 
 
 def _with(**changes: Any) -> dict[str, Any]:

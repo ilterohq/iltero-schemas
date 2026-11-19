@@ -62,7 +62,7 @@ DOCUMENTS: list[tuple[type[BaseModel], dict[str, Any], str]] = [
     (BundleDescriptor, DESCRIPTOR, "iltero.io/assertion-bundle/v1"),
     (LocalExceptions, FILE, "iltero.io/local-exceptions/v1"),
     (PolicySource, _source(CHANGE), "iltero.io/v1"),
-    (ServedExceptions, _vector("served_exceptions/pre_deploy.json"), "iltero.io/v1"),
+    (ServedExceptions, _vector("served_exceptions/plan.json"), "iltero.io/v1"),
 ]
 IDS = [model.__name__ for model, _, _ in DOCUMENTS]
 # Every kind of the contract, the documents without a model of their own too: the bundle's description inside its

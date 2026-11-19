@@ -2031,6 +2031,7 @@
       },
       "resource_redaction": null,
       "scanners": null,
+      "served_exceptions": null,
       "stage": "plan",
       "values_known_after_deployment": "postpone",
       "verdict": {
@@ -2148,6 +2149,7 @@
       },
       "resource_redaction": null,
       "scanners": null,
+      "served_exceptions": null,
       "stage": "post_deploy",
       "values_known_after_deployment": null,
       "verdict": {
@@ -2278,6 +2280,7 @@
         "unknown": []
       },
       "scanners": null,
+      "served_exceptions": null,
       "stage": "post_verify",
       "values_known_after_deployment": null,
       "verdict": {

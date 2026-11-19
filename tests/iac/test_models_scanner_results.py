@@ -76,7 +76,8 @@ def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
         "reports": {reports[tool]["report_digest"]: _json(f"{tool}_report.json") for tool in reports},
         "plans": {digest_of(_json("plan.json")): _json("plan.json")},
         "assertions": {digest_of(document): document for document in documents},
-        "exceptions": exceptions,
+        "local_exceptions": exceptions,
+        "served_exceptions": {},
     }
 
 

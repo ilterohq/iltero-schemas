@@ -4194,6 +4194,7 @@
         ],
         "required_scanners": []
       },
+      "served_exceptions": null,
       "stage": "plan",
       "values_known_after_deployment": "block",
       "verdict": {

@@ -1,7 +1,7 @@
 [
   {
     "name": "exception_approved_by_who_asked_for_it",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/approved_by": {
         "provider": "iltero",
@@ -13,7 +13,7 @@
   },
   {
     "name": "exception_naming_its_people_by_two_identity_providers",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/approved_by": {
         "provider": "github",
@@ -25,7 +25,7 @@
   },
   {
     "name": "exception_approved_after_it_expires",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/approved_at": "2027-02-02T00:00:00Z"
     },
@@ -34,7 +34,7 @@
   },
   {
     "name": "exception_covering_a_built_in",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/scope/assertion/id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"
     },
@@ -43,7 +43,7 @@
   },
   {
     "name": "exception_lasting_more_than_a_year",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/expires_at": "2027-11-02T00:00:00Z"
     },
@@ -52,7 +52,7 @@
   },
   {
     "name": "exception_ending_before_it_starts",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/expires_at": "2026-10-31T00:00:00Z"
     },
@@ -61,7 +61,7 @@
   },
   {
     "name": "exception_naming_a_resource_by_its_unit",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/scope/resources/0": {
         "scheme": "iltero_unit",
@@ -74,7 +74,7 @@
   },
   {
     "name": "exceptions_sharing_an_id",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/1/id": "exc_0001"
     },
@@ -83,7 +83,7 @@
   },
   {
     "name": "exceptions_covering_one_resource_at_the_same_time",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/1": {
         "id": "exc_0002",
@@ -126,7 +126,7 @@
   },
   {
     "name": "exception_without_the_digest_of_its_assertion",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "remove": [
       "/spec/exceptions/0/scope/assertion/digest"
     ],
@@ -135,7 +135,7 @@
   },
   {
     "name": "exception_with_a_scope_of_another_kind",
-    "vector": "pre_deploy.json",
+    "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/scope/kind": "vulnerabilities"
     },

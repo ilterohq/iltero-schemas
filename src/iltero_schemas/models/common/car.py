@@ -71,6 +71,7 @@ from iltero_schemas.models.common.record_subject import RecordSubject
 from iltero_schemas.models.common.redaction import RedactedValueCounts, RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.common.reference_time import ReferenceTime
 from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.common.served_exceptions import ServedExceptionsUsed
 from iltero_schemas.models.common.server_facts import Approval, Approvals
 from iltero_schemas.models.common.stages import change_digest_problems, check_structure, integrity_problems
 from iltero_schemas.models.common.units_file import UnitsFile
@@ -86,7 +87,8 @@ KIND = "ChangeAssuranceRecord"
 # change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
 # trust the record while it returns any problem. Every reader of a record holding an evaluation from a scanner's
 # results, with or without this key, also calls ``scanner_results.scanner_evidence_problems`` with the files its stages
-# kept, and refuses to trust the record while it returns any problem.
+# kept, and every reader of a record whose stage applied served exceptions calls
+# ``exception_evidence.served_exception_problems``; each refuses to trust the record while it returns any problem.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 # A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
@@ -343,6 +345,10 @@ class StageRecord(StrictModel):
     assertions: AssertionIndex
     # Null for a stage that was given no scanner report and requires none.
     scanners: Scanners | None
+    # The exceptions the server served the stage and the failed results they cover, at the stage of a run the server
+    # opened that its activity applies served exceptions at (``Activity.stage_that_applies_served_exceptions``), even
+    # when it served none; null at every other stage and in a run the tool opened.
+    served_exceptions: ServedExceptionsUsed | None
     # What the plan stage's gate does with a check that read a value the plan knows only after the deployment: block
     # on it, or postpone it until after the deployment (``models.iac.postponed_checks``); null at every other stage.
     values_known_after_deployment: Literal["block", "postpone"] | None

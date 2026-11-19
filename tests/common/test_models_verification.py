@@ -206,9 +206,13 @@ def test_a_finished_record_missing_a_stage_it_expects_failed_its_stage_completen
     VerificationReport.model_validate(document)
 
 
-def test_a_record_that_lists_no_exception_has_its_exceptions_not_assessed() -> None:
+def test_the_exceptions_the_server_served_are_not_assessed_rather_than_not_performed() -> None:
     document = copy.deepcopy(REPORT)
-    document["properties"]["exceptions"] = {"state": "not_performed", "reason": "exceptions_not_listed", "detail": None}
+    document["properties"]["exceptions"] = {
+        "state": "not_performed",
+        "reason": "served_exceptions_not_assessed",
+        "detail": None,
+    }
     with pytest.raises(ValidationError, match="exceptions is one of the results"):
         VerificationReport.model_validate(document)
 

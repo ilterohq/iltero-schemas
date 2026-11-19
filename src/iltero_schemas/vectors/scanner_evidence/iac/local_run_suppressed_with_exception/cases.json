@@ -36,7 +36,7 @@
     "name": "record_whose_exceptions_file_the_reader_is_not_given",
     "drop_file": [
       [
-        "exceptions",
+        "local_exceptions",
         "sha256:855047e2ee6b5aa5101a95ff7720f23e04c84e51d41d548d18ddd4ff60f43c6d"
       ]
     ],

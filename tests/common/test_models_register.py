@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.models.common.car import CAR, MAX_EVIDENCE_REFS, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.vectors.paths import VECTORS
-from tests.records import RECORD, SCANNERS, keep_the_scanner_files
+from tests.records import RECORD, SCANNERS, keep_the_scanner_files, valid_case_record
 
 
 def _without_ref(digest: str) -> dict[str, Any]:
@@ -201,3 +201,34 @@ def test_only_the_shipped_scanner_check_mapping_takes_the_starter_mappings_id() 
     document["stages"]["plan"]["scanners"]["scanner_check_mappings"][0]["id"] = "ILT.SCANNER_CHECKS.STARTER"
     with pytest.raises(ValidationError, match="only the shipped scanner check mapping is ILT.SCANNER_CHECKS.STARTER"):
         CAR.model_validate(document)
+
+
+SERVED_CASE = "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers"
+SERVED_COPY_REFUSED = "copy of the exceptions the server served it is an entry of the evidence register of its own"
+
+
+def _served_copy(record: dict[str, Any]) -> dict[str, Any]:
+    path = record["stages"]["plan"]["served_exceptions"]["copy_path"]
+    return next(ref for ref in record["evidence_refs"] if ref["path"] == path)
+
+
+@pytest.mark.parametrize(
+    "change",
+    ["no entry", "another digest", "a redaction policy", "not canonical JSON", "the events file's path"],
+)
+def test_a_stages_copy_of_the_served_exceptions_is_a_canonical_entry_of_its_own(change: str) -> None:
+    record = valid_case_record("iac", SERVED_CASE)
+    entry = _served_copy(record)
+    if change == "no entry":
+        record["evidence_refs"].remove(entry)
+    elif change == "another digest":
+        entry["digest"] = "sha256:" + "c" * 64
+    elif change == "a redaction policy":
+        entry["redaction_policy"] = copy.deepcopy(record["evidence_refs"][0]["redaction_policy"])
+    elif change == "not canonical JSON":
+        entry["canonicalization"] = None
+    else:
+        events = record["stages"]["plan"]["events"]
+        record["stages"]["plan"]["served_exceptions"].update(copy_path=events["path"], digest=events["digest"])
+    with pytest.raises(ValidationError, match=SERVED_COPY_REFUSED):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})

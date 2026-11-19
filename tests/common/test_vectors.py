@@ -279,6 +279,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "identities_valid",
         "local_exceptions_invalid",
         "served_exceptions_invalid",
+        "served_exceptions_kept",
         "opa",
         "records_integrity_failed",
         "records_invalid",

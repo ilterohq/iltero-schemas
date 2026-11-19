@@ -1153,7 +1153,7 @@ keep, so any two tools agree on what a record means.
     such exception. An exception is in force from `valid_from` up to and
     including `expires_at`, judged at the stage's reference time
     (`exception_in_force`); `why_no_exception` says why none covers a result.
-    `scanner_evidence_problems`, given the copy in `KeptFiles.exceptions`,
+    `scanner_evidence_problems`, given the copy in `KeptFiles.local_exceptions`,
     works out again which exception covers each suppressed result and lists
     a record that names another, or leaves one out.
     `vectors/local_exceptions_invalid/cases.json` changes the kept exceptions
@@ -1163,7 +1163,8 @@ keep, so any two tools agree on what a record means.
     than its address.
   - The exceptions Iltero Platform serves one stage of a run it opened
     (`ServedExceptions` v1, `metadata.run_id` and `metadata.stage`, 0 to 256
-    exceptions). A served exception names the assertion document it was
+    exceptions, at most 16 MiB of canonical JSON,
+    `MAX_SERVED_EXCEPTIONS_BYTES`). A served exception names the assertion document it was
     approved for by `id`, `version` and `digest` (`scope.kind: resources`),
     who asked for it (`requested_by`), who approved it and when
     (`approved_by`, `approved_at`), and whether the requester's Iltero user
@@ -1173,12 +1174,45 @@ keep, so any two tools agree on what a record means.
     different accounts of one identity provider; that check does not show
     the two accounts belong to two people. Every exception, a project's or a served one,
     follows the same rules (`iltero_schemas.models.common.exception_terms`),
-    the 365-day limit included, and is matched to a result by the same
-    functions. `version` and `digest` are carried as approved: a result is
-    matched by the assertion's id only, whatever version or digest the
-    result's assertion has. A project's exception is `LocalException`. Vectors:
-    `served_exceptions/pre_deploy.json` and
+    the 365-day limit included. A project's exception is `LocalException`.
+    Vectors: `served_exceptions/plan.json`,
+    `served_exceptions/plan_without_exceptions.json`,
+    `served_exceptions/deployed_run_plan_without_exceptions.json` and
     `served_exceptions_invalid/cases.json`.
+  - The `plan` stage of an `iac_change` run Iltero Platform opened applies
+    the exceptions served it
+    (`Activity.stage_that_applies_served_exceptions`; an image build or
+    deploy applies none). The stage names them in `served_exceptions`
+    (`ServedExceptionsUsed`): the `digest` of the document's canonical JSON,
+    the `copy_path` of its copy in the evidence register (canonical, with
+    no `source` and no redaction policy), and `excepted_failures`, each
+    failed result an exception covers (`ExceptedFailure`: `assertion`,
+    `resource`, `engine` and `exception_id`), sorted and each once, empty
+    when none is. An excepted failure names its resource by its address,
+    scoped by its unit, as an exception does. The field is set at that stage even when nothing was
+    served, takes the stage's time from Iltero Platform, and is `null` at
+    every other stage and in a run the tool opened. Each excepted failure is
+    one of the stage's `fail` events. The result stays `fail`.
+    `served_exception_for` gives the exception that covers a failed result:
+    one in force for the assertion's id, the resource and the environment,
+    approved for the result's exact assertion document (`id`, `version` and
+    `digest`), and approved no later than the stage's reference time; or the
+    reason none does, the reasons of any exception first, then
+    `approved_for_another_document_of_the_assertion` and
+    `approved_after_the_reference_time`. Every reader of such a record must
+    call `served_exception_problems` with the copy in
+    `KeptFiles.served_exceptions`: it checks the copy's digest, that it is
+    canonical and valid, that it was served to the record's run, stage and
+    environment, and that `excepted_failures` is exactly what
+    `served_exception_for` gives. That shows the record agrees with the copy
+    it kept, not that Iltero Platform served it or that Iltero approved the
+    exceptions in it: only Iltero Platform can check that. The copy names
+    the requester and the approver of each exception, by identity provider
+    and id, so records now name people.
+    `served_exceptions_kept/cases.json` checks copies a reader is given
+    against a record. Every record vector has
+    `served_exceptions: null` at each stage, and a `set` pointer in a case
+    file may end in `-` to append to a list.
   - These checks show that each verdict follows from what the stage kept.
     They do not show that the scanner ran, that the report is what it wrote,
     that it read the plan the record names, or that its version is genuine.
@@ -1396,7 +1430,7 @@ keep, so any two tools agree on what a record means.
   `project_exception_relied_on` when an event names an exception from the
   project's own exceptions file, and with
   `project_exceptions_file_not_relied_on` when a stage applied such a file
-  and no event relied on one. `exceptions_not_listed` is given only for a
+  and no event relied on one. `served_exceptions_not_assessed` is given only for a
   run Iltero Platform opened.
 
   For approvals, exceptions and the commit review, a verifier takes the

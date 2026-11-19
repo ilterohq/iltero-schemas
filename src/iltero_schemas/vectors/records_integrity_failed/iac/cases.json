@@ -543,6 +543,7 @@
         },
         "stage": "pre_deploy",
         "scanners": null,
+        "served_exceptions": null,
         "values_known_after_deployment": null,
         "postponed_checks": null,
         "resource_redaction": null,
@@ -1144,6 +1145,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -1254,6 +1278,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],

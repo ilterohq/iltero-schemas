@@ -121,7 +121,13 @@ def _files(car: CAR, plan: dict[str, Any], assertions: dict[str, Any]) -> KeptFi
     """The kept files, the plan keyed by the digest of the record's own plan entry."""
     kept = next(ref.digest for ref in car.evidence_refs if ref.collector.tool == "terraform_plan")
     return KeptFiles(
-        scanner_check_mappings={}, observations={}, reports={}, plans={kept: plan}, assertions=assertions, exceptions={}
+        scanner_check_mappings={},
+        observations={},
+        reports={},
+        plans={kept: plan},
+        assertions=assertions,
+        local_exceptions={},
+        served_exceptions={},
     )
 
 

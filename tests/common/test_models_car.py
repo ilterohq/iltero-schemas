@@ -24,6 +24,7 @@ from tests.records import (
     count_by_digest,
     iac_change,
     keep_events_files,
+    keep_no_served_exceptions,
     keep_the_apply_log,
     keep_the_scanner_files,
     require_its_events,
@@ -478,6 +479,7 @@ def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
     document = _record(**{"governance.run_opened_by": "server", "subject.environment": None})
     for coverage in (document["coverage"], document["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
+    keep_no_served_exceptions(document)
     with pytest.raises(ValidationError, match="a record of a run the server opened names the environment"):
         CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
 

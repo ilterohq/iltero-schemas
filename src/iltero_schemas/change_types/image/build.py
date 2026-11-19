@@ -393,4 +393,5 @@ IMAGE_BUILD = Activity(
     integrity_problems=_no_problems,
     reads_a_state_after_the_apply=False,
     stages_that_read_scanner_reports=frozenset(),
+    stage_that_applies_served_exceptions=None,
 )

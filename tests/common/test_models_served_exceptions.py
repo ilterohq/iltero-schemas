@@ -10,18 +10,23 @@ import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.assertions import BUILT_IN_IDS
-from iltero_schemas.models.common.fields import Identity
-from iltero_schemas.models.common.served_exceptions import ServedException, ServedExceptions
+from iltero_schemas.models.common.fields import AssertionRef, Identity
+from iltero_schemas.models.common.served_exceptions import (
+    ServedException,
+    ServedExceptions,
+    ServedExceptionsUsed,
+    served_exception_for,
+)
 from tests.conftest import VECTORS
 
-DOCUMENT: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "pre_deploy.json").read_text(encoding="utf-8"))
+DOCUMENT: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "plan.json").read_text(encoding="utf-8"))
 EXCEPTION: dict[str, Any] = DOCUMENT["spec"]["exceptions"][0]
 IDENTITY = Identity(scheme="terraform_address", value="aws_db_instance.payments", scope={"unit": "root"})
 
 
 def test_the_server_serves_a_stage_the_exceptions_in_force_for_it() -> None:
     served = ServedExceptions.model_validate(DOCUMENT)
-    assert (served.metadata.stage, len(served.spec.exceptions)) == ("pre_deploy", 2)
+    assert (served.metadata.stage, len(served.spec.exceptions)) == ("plan", 2)
     ServedExceptions.model_validate({**DOCUMENT, "spec": {"exceptions": []}})
 
 
@@ -70,3 +75,82 @@ def test_a_served_exception_lasts_at_most_a_year() -> None:
     ServedException.model_validate({**EXCEPTION, "expires_at": "2027-11-01T00:00:00Z"})
     with pytest.raises(ValidationError, match="lasts at most 365 days"):
         ServedException.model_validate({**EXCEPTION, "expires_at": "2027-11-01T00:00:00.000000001Z"})
+
+
+SERVED_TO_THE_PLAN = ServedExceptions.model_validate(DOCUMENT).spec.exceptions
+COVERED = SERVED_TO_THE_PLAN[1]
+LOGS = COVERED.scope.resources[0]
+IN_FORCE = "2026-09-22T13:00:13.568Z"
+
+
+def _for(
+    assertion: AssertionRef = COVERED.scope.assertion, environment: str | None = "production", at: str = IN_FORCE
+) -> ServedException | str:
+    return served_exception_for(SERVED_TO_THE_PLAN, assertion, LOGS, environment, at)
+
+
+def test_a_served_exception_covers_a_failed_result_of_the_assertion_document_it_was_approved_for() -> None:
+    assert _for() == COVERED
+
+
+@pytest.mark.parametrize(
+    ("change", "reason"),
+    [
+        (
+            {"assertion": COVERED.scope.assertion.model_copy(update={"id": "ACME.IAC.RESOURCE.AWS.S3.OTHER"})},
+            "no_exception_for_the_assertion_and_resource",
+        ),
+        ({"environment": None}, "run_names_no_environment"),
+        ({"environment": "staging"}, "for_another_environment"),
+        ({"at": "2026-08-31T23:59:59Z"}, "not_yet_in_force"),
+        ({"at": "2026-12-01T00:00:01Z"}, "expired"),
+        (
+            {"assertion": COVERED.scope.assertion.model_copy(update={"digest": "sha256:" + "a" * 64})},
+            "approved_for_another_document_of_the_assertion",
+        ),
+        (
+            {"assertion": COVERED.scope.assertion.model_copy(update={"version": "1.0.1"})},
+            "approved_for_another_document_of_the_assertion",
+        ),
+    ],
+    ids=["another assertion", "no environment", "another environment", "not yet", "expired", "digest", "version"],
+)
+def test_no_served_exception_covers_a_failed_result_and_says_why(change: dict[str, Any], reason: str) -> None:
+    assert _for(**change) == reason
+
+
+def test_a_served_exception_approved_after_the_stages_time_covers_nothing() -> None:
+    late = {**DOCUMENT["spec"]["exceptions"][1], "approved_at": "2026-09-23T00:00:00Z"}
+    exceptions = [ServedException.model_validate(late)]
+    found = served_exception_for(exceptions, COVERED.scope.assertion, LOGS, "production", IN_FORCE)
+    assert found == "approved_after_the_reference_time"
+
+
+def test_the_reasons_any_exception_gives_come_before_those_only_a_served_one_gives() -> None:
+    other = COVERED.scope.assertion.model_copy(update={"digest": "sha256:" + "a" * 64})
+    assert _for(assertion=other, environment="staging") == "for_another_environment"
+
+
+FAILURE = {
+    "assertion": EXCEPTION["scope"]["assertion"],
+    "resource": EXCEPTION["scope"]["resources"][0],
+    "engine": "opa",
+    "exception_id": EXCEPTION["id"],
+}
+USED = {"digest": "sha256:" + "b" * 64, "copy_path": "units/root/plan/served-exceptions.json"}
+
+
+def test_a_stage_names_each_failed_result_a_served_exception_covers_once_in_order() -> None:
+    later = {**FAILURE, "engine": "trivy"}
+    ServedExceptionsUsed.model_validate({**USED, "excepted_failures": [FAILURE, later]})
+    for failures in ([later, FAILURE], [FAILURE, FAILURE]):
+        with pytest.raises(ValidationError, match="sorted by assertion id, resource and engine, each once"):
+            ServedExceptionsUsed.model_validate({**USED, "excepted_failures": failures})
+
+
+def test_an_excepted_failed_result_names_its_resource_by_its_address_scoped_by_its_unit() -> None:
+    by_name = {"scheme": "bucket_name", "value": "logs", "scope": None}
+    unscoped = {**FAILURE["resource"], "scope": None}
+    for resource in (by_name, unscoped):
+        with pytest.raises(ValidationError, match="names its resource by its address, scoped by its unit"):
+            ServedExceptionsUsed.model_validate({**USED, "excepted_failures": [{**FAILURE, "resource": resource}]})

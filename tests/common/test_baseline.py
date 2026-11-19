@@ -44,6 +44,8 @@ CHANGED: list[tuple[str, str, Any]] = [
     ("records", "/stages/plan/values_known_after_deployment", "block"),
     ("records", "/stages/plan/postponed_checks", None),
     ("records", "/stages/plan/resource_redaction", None),
+    # The exceptions the server served a stage, which a run the tool opened never applies.
+    ("records", "/stages/plan/served_exceptions", None),
     (
         "records",
         "/units_file/units",
@@ -151,6 +153,11 @@ REBUILT_CASES = {
     # A declared unit names its directory, so the case's unit names one and still leaves out its dependencies.
     "units_file_unit_named_without_its_dependencies",
 }
+# What a case of a run the server opened sets since the baseline so its plan stage applies the exceptions served to it:
+# their copy and the failed results they cover, the server's time, and the copy's entry of the register.
+SERVED_EXCEPTIONS_POINTERS = frozenset(
+    {"/stages/plan/served_exceptions", "/stages/plan/reference_time/source", "/evidence_refs/-"}
+)
 # Cases renamed since the baseline, by their old name: none is left renamed.
 RENAMED_CASES: dict[str, str] = {}
 # Where the baseline's cases added a stage, its events file: a stage now names an entry of the record's register, so
@@ -653,16 +660,24 @@ def test_no_baseline_vector_was_removed(folder: str) -> None:
 _EVENTS_FILE_VALUE = re.compile(r"^/(stages/[a-z_]+/events/digest|evidence_refs/[0-9]+/(digest|size_bytes))$")
 
 
-def _without_events_file_values(case: dict[str, Any]) -> dict[str, Any]:
-    """``case`` without the events-file digests and sizes it sets for the events it edits, and, for a case whose
-    evidence status now lists more than the one reason it named (``LISTED_REASONS_CASES``), without its statuses."""
+def _without_events_file_values(case: dict[str, Any], *, applies_served_exceptions: bool) -> dict[str, Any]:
+    """``case`` without the events-file digests and sizes it sets for the events it edits; for a case whose plan stage
+    now applies the exceptions served to it, without what that sets (``SERVED_EXCEPTIONS_POINTERS``); and, for a case
+    whose evidence status now lists more than the one reason it named (``LISTED_REASONS_CASES``), without its
+    statuses."""
     listed = case["name"] in LISTED_REASONS_CASES
+    served = SERVED_EXCEPTIONS_POINTERS if applies_served_exceptions else frozenset()
     kept = {
         k: v
         for k, v in case["set"].items()
-        if not _EVENTS_FILE_VALUE.match(k) and not (listed and "/evidence_status" in k)
+        if not _EVENTS_FILE_VALUE.match(k) and k not in served and not (listed and "/evidence_status" in k)
     }
     return {**case, "set": kept}
+
+
+def _applies(case: dict[str, Any]) -> bool:
+    """Whether ``case``'s plan stage now applies the exceptions served to it."""
+    return "/stages/plan/served_exceptions" in case.get("set", {})
 
 
 @pytest.mark.parametrize("folder", tuple(BASELINE_CASE_FOLDERS))
@@ -676,8 +691,12 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
         for case in baseline
         if case["name"] in shipped
         and case["name"] not in REBUILT_CASES
-        and _without_events_file_values(shipped[case["name"]])
-        != _without_events_file_values(_moved_case(case, BASELINE_CASE_FOLDERS[folder]))
+        and _without_events_file_values(
+            shipped[case["name"]], applies_served_exceptions=_applies(shipped[case["name"]])
+        )
+        != _without_events_file_values(
+            _moved_case(case, BASELINE_CASE_FOLDERS[folder]), applies_served_exceptions=_applies(shipped[case["name"]])
+        )
     ]
     # A rebuilt case is built anew, but still refuses its record for the reason it did.
     refused_otherwise = [

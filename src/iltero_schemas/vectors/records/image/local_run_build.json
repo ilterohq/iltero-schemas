@@ -139,6 +139,7 @@
         "count": 3
       },
       "scanners": null,
+      "served_exceptions": null,
       "values_known_after_deployment": "block",
       "postponed_checks": null,
       "resource_redaction": null,

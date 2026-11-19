@@ -74,18 +74,19 @@ _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset
     }
 )
 # not_read_by_the_stage: the stage's results read no such fact, so it kept the marker that says so (an approval or the
-# commit review; a stage keeps no exceptions, so this result is never an exception's).
+# commit review; this result is never an exception's).
 _NOT_READ_BY_THE_STAGE: tuple[VerificationState, str | None] = ("not_assessed", "not_read_by_the_stage")
 # The results a verifier gives the exceptions a record relied on. project_exception_relied_on: an event names an
 # exception from the project's own exceptions file, the project's own word. project_exceptions_file_not_relied_on: a
-# stage applied a project exceptions file and no event relied on an exception from it. exceptions_not_listed: the
-# record lists no exception, so a verifier cannot assess the exceptions a server may have served (a run the server
-# opened). Their order with the pre-deploy results is ``PRE_DEPLOY_RESULT_ORDER``.
+# stage applied a project exceptions file and no event relied on an exception from it.
+# served_exceptions_not_assessed: the record relies on no exception of the project's own, and a verifier does not
+# assess the exceptions the server served (a run the server opened). Their order with the pre-deploy results is
+# ``PRE_DEPLOY_RESULT_ORDER``.
 _EXCEPTION_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("claimed_by_record", "project_exception_relied_on"),
         ("claimed_by_record", "project_exceptions_file_not_relied_on"),
-        ("not_assessed", "exceptions_not_listed"),
+        ("not_assessed", "served_exceptions_not_assessed"),
     }
 )
 # The order a verifier takes the results of an approval, an exception or the commit review in: the first that holds for
@@ -145,9 +146,10 @@ COMMIT_REVIEW_RESULTS: MappingProxyType[str, tuple[VerificationState, str]] = Ma
 # file_digests: the files the record cites hold the digests it names, which anyone who can edit them can recompute.
 # ci_job_held_by_server: only the server that opened the run verified its CI jobs. run_opened_locally: the tool opened
 # the run, so no CI job was verified. approvals_listed: the record lists approvals, its writer's claim.
-# no_approval_served: the server opened the run and the stage keeps an empty list of approvals. exceptions_not_listed: a
-# record lists no exception, so a verifier cannot assess the exceptions the server may have served. server_bundle_named:
-# a stage names the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage
+# no_approval_served: the server opened the run and the stage keeps an empty list of approvals.
+# served_exceptions_not_assessed: a record relies on no exception of the project's own, and a verifier does not
+# assess the exceptions the server served. server_bundle_named: a stage names the server's bundle. local_assertions: the
+# checks were the project's own. expected_stages: every stage
 # the record expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
 # and a stage it expects was never reported. no_post_deploy_stage: no stage compared the applied plan.
 # plan_files_supplied: the plan files given to the verifier were compared. binding_undecided: they could not be.
@@ -181,7 +183,7 @@ PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str |
         ),
         "runtime_verification": RUNTIME_VERIFICATION_RESULTS,
         "deployment_coverage": frozenset({("not_assessed", None)}),
-        # A stage keeps no exceptions, so no stage keeps the unknown marker in their place.
+        # No stage keeps an unknown marker for exceptions: the served ones come with the run token answer.
         "exceptions": (_PRE_DEPLOY_RESULTS - {("could_not_decide", "server_facts_unavailable")}) | _EXCEPTION_RESULTS,
         "commit_review": _PRE_DEPLOY_RESULTS | {_NOT_READ_BY_THE_STAGE} | frozenset(COMMIT_REVIEW_RESULTS.values()),
         "reference_time": REFERENCE_TIME_RESULTS,

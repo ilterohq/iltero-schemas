@@ -39,7 +39,30 @@
     "name": "record_says_the_server_opened_a_run_without_pins",
     "vector": "iac/local_run.json",
     "set": {
-      "/governance/run_opened_by": "server"
+      "/governance/run_opened_by": "server",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": [],
     "message": "exactly when the server opened the run"
@@ -1432,6 +1455,7 @@
           },
           "stage": "plan",
           "scanners": null,
+          "served_exceptions": null,
           "values_known_after_deployment": "block",
           "postponed_checks": null,
           "resource_redaction": null,
@@ -1997,6 +2021,7 @@
           },
           "stage": "pre_deploy",
           "scanners": null,
+          "served_exceptions": null,
           "values_known_after_deployment": null,
           "postponed_checks": null,
           "resource_redaction": null,
@@ -3061,6 +3086,7 @@
         },
         "stage": "pre_deploy",
         "scanners": null,
+        "served_exceptions": null,
         "values_known_after_deployment": null,
         "postponed_checks": null,
         "resource_redaction": null,
@@ -3847,6 +3873,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -5030,6 +5079,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -5085,6 +5157,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -5219,7 +5314,30 @@
       "/events/1/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
       "/stages/pre_deploy/events/digest": "sha256:548f28fa5aaf2acaae78060e3e9b7e5f0862afdeed2358458639122b5a751895",
       "/evidence_refs/18/digest": "sha256:548f28fa5aaf2acaae78060e3e9b7e5f0862afdeed2358458639122b5a751895",
-      "/evidence_refs/18/size_bytes": 5171
+      "/evidence_refs/18/size_bytes": 5171,
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
     },
     "remove": [],
     "message": "the pre_deploy stage evaluates ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED at most once, so it keeps one reading"
@@ -7126,6 +7244,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -7181,6 +7322,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -7232,6 +7396,29 @@
         "count": 2,
         "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
         "path": "units/root/pre_deploy/events.json"
+      },
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T00:00:00.000Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:bd4cb8cc65fd9a784e7a1647c39763cf33808744927456a26d092f3691080302",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
       }
     },
     "remove": [],
@@ -9489,5 +9676,236 @@
     },
     "remove": [],
     "message": "String should match pattern"
+  },
+  {
+    "name": "iac_record_of_a_run_the_tool_opened_applying_served_exceptions",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
+    },
+    "remove": [],
+    "message": "a record of a run the tool opened applies no exceptions the server served"
+  },
+  {
+    "name": "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_no_served_exceptions",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/reference_time/source": "server"
+    },
+    "remove": [],
+    "message": "the served exceptions a run the server opened applies are named at the stage its activity applies them at, and only there"
+  },
+  {
+    "name": "iac_record_applying_served_exceptions_on_the_runners_clock",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "runner_clock",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      }
+    },
+    "remove": [],
+    "message": "a stage that applies served exceptions reads its time from the server"
+  },
+  {
+    "name": "iac_record_naming_a_failed_result_of_another_evaluator_as_excepted",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": [
+          {
+            "assertion": {
+              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+              "version": "1.0.0"
+            },
+            "resource": {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            },
+            "engine": "checkov",
+            "exception_id": "exc_0002"
+          }
+        ]
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 1533,
+        "source": null,
+        "storage_uri": null
+      }
+    },
+    "remove": [],
+    "message": "each failed result a served exception covers is a failed result of the stage, by its assertion, resource and engine"
+  },
+  {
+    "name": "iac_record_naming_an_excepted_failed_result_twice",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": [
+          {
+            "assertion": {
+              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+              "version": "1.0.0"
+            },
+            "resource": {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            },
+            "engine": "opa",
+            "exception_id": "exc_0002"
+          },
+          {
+            "assertion": {
+              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+              "version": "1.0.0"
+            },
+            "resource": {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            },
+            "engine": "opa",
+            "exception_id": "exc_0002"
+          }
+        ]
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 1533,
+        "source": null,
+        "storage_uri": null
+      }
+    },
+    "remove": [],
+    "message": "excepted_failures is sorted by assertion id, resource and engine, each once"
+  },
+  {
+    "name": "iac_record_whose_copy_of_the_served_exceptions_names_a_file_the_pipeline_gave",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": {
+          "name": "served-exceptions.json",
+          "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9"
+        },
+        "storage_uri": null
+      }
+    },
+    "remove": [],
+    "message": "copy of the exceptions the server served it is an entry of the evidence register of its own"
   }
 ]

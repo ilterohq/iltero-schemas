@@ -556,6 +556,7 @@
         "count": 5
       },
       "scanners": null,
+      "served_exceptions": null,
       "values_known_after_deployment": "postpone",
       "postponed_checks": [
         {

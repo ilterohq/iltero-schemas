@@ -19,10 +19,10 @@ def check_register(car: CAR) -> None:
     and assertion index, by path and digest; each stage's copy of each scanner check mapping it used, by path and
     digest, naming the file it was read from; the observations it read from each scanner report, by path, read from
     the file that report was kept from, and each report as it kept it, by digest, collected as that scanner's report
-    and redacted from one file the pipeline gave; every input an event was evaluated over; and what the plan stage
-    redacted, kept as an entry the redaction policy ran over. Each scanner file is an entry of its own: neither another
-    scanner file, nor a stage's events file or assertion index, nor the input of an evaluation that stands on no
-    scanner's result."""
+    and redacted from one file the pipeline gave; every input an event was evaluated over; what the plan stage
+    redacted, kept as an entry the redaction policy ran over; and each stage's canonical copy of the exceptions the
+    server served it. Each scanner file is an entry of its own: neither another scanner file, nor a stage's events file
+    or assertion index, nor the input of an evaluation that stands on no scanner's result."""
     kept = {(ref.path, ref.digest) for ref in car.evidence_refs}
     paths = {ref.path for ref in car.evidence_refs}
     digests = {ref.digest for ref in car.evidence_refs}
@@ -102,6 +102,7 @@ def check_register(car: CAR) -> None:
             f"the observations the {stage.value} stage read from its {scanner} report were read from the file that "
             "report was kept from"
         )
+    _check_served_exceptions_copy(car, stage_files | set(scanner_files))
     _check_exceptions_named(car)
     inputs = {e.provenance.input_digest for e in car.events} - {None}
     if not inputs <= digests:
@@ -113,6 +114,32 @@ def check_register(car: CAR) -> None:
         raise ValueError(
             "what the plan stage redacted is an entry of the evidence register that names the redaction policy"
         )
+
+
+def _check_served_exceptions_copy(car: CAR, other_files: set[str]) -> None:
+    """Each stage's copy of the served exceptions it applied is an entry of the register of its own, kept as canonical
+    JSON, from no file the pipeline gave and with nothing redacted."""
+    for stage, record in car.stages.items():
+        used = record.served_exceptions
+        if used is None:
+            continue
+        entries = [ref for ref in car.evidence_refs if ref.path == used.copy_path]
+        if (
+            not entries
+            or used.copy_path in other_files
+            or any(
+                ref.digest != used.digest
+                or ref.source is not None
+                or ref.redaction_policy is not None
+                or ref.canonicalization != CANONICALIZATION
+                for ref in entries
+            )
+        ):
+            raise ValueError(
+                f"the {stage.value} stage's copy of the exceptions the server served it is an entry of the evidence "
+                f"register of its own, kept as canonical JSON ({CANONICALIZATION}) and not copied from a file the "
+                "pipeline gave"
+            )
 
 
 def _exceptions_copy(car: CAR, stage: Stage, used: LocalExceptionsUsed) -> str:

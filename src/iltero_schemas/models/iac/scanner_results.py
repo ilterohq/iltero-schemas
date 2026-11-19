@@ -124,6 +124,8 @@ def check_scanner_results(car: CAR) -> None:
         if record.scanners is not None and stage not in activity.stages_that_read_scanner_reports:
             raise ValueError(f"the {stage.value} stage of an {activity.name} record keeps no scanner report")
     from_scanner: dict[Stage, list[AssuranceEvent]] = {}
+    # What each kept report's evaluations name of the scanner that ran: one report, one claim.
+    claims: dict[tuple[Stage, str], tuple[str | None, str | None, str | None]] = {}
     for event in car.events:
         evaluator = event.provenance.evaluator
         if not isinstance(evaluator, ScannerEvaluator):
@@ -151,6 +153,12 @@ def check_scanner_results(car: CAR) -> None:
                 f"{at.value} stage kept"
             )
         _check_who_ran_it(evaluator, report.ran_by)
+        claim = (evaluator.digest, evaluator.platform, evaluator.python_version)
+        if claims.setdefault((at, tool), claim) != claim:
+            raise ValueError(
+                f"every evaluation from the {tool} report the {at.value} stage kept names the same digest, platform "
+                "and Python version of what ran"
+            )
         from_scanner.setdefault(at, []).append(event)
     for stage, record in car.stages.items():
         _check_shipped(stage, record)

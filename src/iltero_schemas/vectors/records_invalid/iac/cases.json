@@ -10918,5 +10918,31 @@
     },
     "remove": [],
     "message": "a record names whether its environment is production exactly when the server opened its run, and holds the unknown marker when the tool opened it"
+  },
+  {
+    "name": "iac_record_whose_evaluations_from_one_scanner_report_name_different_scanners",
+    "vector": "iac/local_run_scanned.json",
+    "set": {
+      "/events/5/provenance/evaluator/digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "/events/5/provenance/evaluator/platform": "linux-x86_64",
+      "/events/5/provenance/evaluator/python_version": "cp312",
+      "/events/6/provenance/evaluator/digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "/events/6/provenance/evaluator/platform": "linux-x86_64",
+      "/events/7/provenance/evaluator/digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "/events/7/provenance/evaluator/platform": "linux-x86_64",
+      "/events/7/provenance/evaluator/python_version": "cp312",
+      "/events/8/provenance/evaluator/digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "/events/8/provenance/evaluator/platform": "linux-x86_64",
+      "/events/9/provenance/evaluator/digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "/events/9/provenance/evaluator/platform": "linux-x86_64",
+      "/events/9/provenance/evaluator/python_version": "cp313",
+      "/evidence_refs/24/digest": "sha256:96e1abf4b528a349da89f254f1685312489e01e6bed66720ad65602a8e2a4364",
+      "/evidence_refs/24/size_bytes": 20362,
+      "/stages/plan/events/digest": "sha256:96e1abf4b528a349da89f254f1685312489e01e6bed66720ad65602a8e2a4364",
+      "/stages/plan/scanners/reports/0/ran_by": "iltero_cli",
+      "/stages/plan/scanners/reports/1/ran_by": "iltero_cli"
+    },
+    "remove": [],
+    "message": "every evaluation from the checkov report the plan stage kept names the same digest, platform and Python version of what ran"
   }
 ]

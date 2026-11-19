@@ -913,6 +913,19 @@ Key rules:
 
   `iltero_schemas.models.common.pinned_evaluator.evaluator_binary_result(events)` turns these problems into a
   verification report's [`evaluator_binary`](#verificationreport) result.
+- In the same way, a verifier compares each evaluation from a scanner the Iltero CLI ran with the [pinned scanner
+  releases](02-conformance-vectors.md#the-pinned-scanner-releases), using
+  `iltero_schemas.models.common.pinned_scanner.pinned_scanner_problems(events)`. It returns `(where, what)` pairs and
+  refuses nothing. Only an evaluation that names a `digest` is compared: one from a report the pipeline ran, or a
+  `scanner_not_run` one, names none. The check compares what the record states with the pin; it cannot show which
+  program ran, and in a run the tool opened a report the Iltero CLI ran claims no more than one the pipeline ran.
+
+  | `where` | `what` |
+  | --- | --- |
+  | `events.<index>.provenance.evaluator.version` | "is not the pinned `<tool>` release `<version>`" |
+  | `events.<index>.provenance.evaluator.platform` | "is not a platform the pinned trivy release covers", or for Checkov "is not a platform and Python version the pinned checkov release covers" |
+  | `events.<index>.provenance.evaluator.digest` | "is not a digest the pinned trivy release gives for its platform", or for Checkov "is not a digest the pinned checkov release gives for its platform and Python version" |
+
 - From worst to best, statuses rank `not_evaluated`, `error`, `unknown`, `fail`, `not_applicable`, `pass`
   (`iltero_schemas.models.common.event.STATUS_SEVERITY`).
 - A policy's `policy_reason` is at most 2 KiB. Its `observations` are at most 512 KiB of canonical JSON, nested at
@@ -1984,6 +1997,7 @@ The model refuses a record that breaks one of these rules
 | The evaluation names that report's `report_digest` as its `input_digest`. | "an evaluation from trivy's results names as its input the trivy report the plan stage kept" |
 | The evaluator's `version` is the report's `tool_version`. | "an evaluation from trivy's results names the version of trivy that wrote the report the plan stage kept" |
 | The evaluator names `digest` and `platform` exactly when its report's `ran_by` is `iltero_cli`, and `python_version` as well exactly when that scanner is installed as Python packages (`INSTALLED_AS_PYTHON_PACKAGES`: Checkov). | "an evaluation from a scanner's results names the digest and platform of what ran exactly when the Iltero CLI ran the scanner, and the Python version only for a scanner installed as Python packages" |
+| Every evaluation from one report a stage kept names the same `digest`, `platform` and `python_version`. | "every evaluation from the trivy report the plan stage kept names the same digest, platform and Python version of what ran" |
 | The mapping named as shipped (`origin: shipped`), when the stage applies it, is the one this package ships, `iltero_schemas.scanner_check_mappings.SHIPPED_MAPPING`: the same `id`, `version`, `digest` (`SHIPPED_MAPPING_DIGEST`) and `assertions_mapped`. | "the plan stage's scanner check mapping named as shipped is the one this package ships" |
 | A scanner verdict on an assertion from Iltero Platform's bundle (`assertion_source: server_bundle`) needs the served mapping among the stage's scanner check mappings. A reader with the kept files works out the entry that decided it from the stage's kept copy of that mapping. | "a scanner verdict on an assertion from the server's bundle comes from the scanner check mapping the server served" |
 | A scanner verdict on an Iltero starter assertion (`assertion_source: contract_starter`) names a scanner checks entry of the shipped mapping (`SHIPPED_SCANNER_CHECKS`), and the shipped mapping maps that assertion (`SHIPPED_MAPPING_ASSERTIONS`). | "a scanner verdict on an Iltero starter assertion comes from a scanner checks entry in the mapping Iltero ships" |
@@ -3203,9 +3217,10 @@ Key rules:
   | `evaluator_binary` | `failed` | `other_binary_named` | An OPA evaluation names another release, a platform the pin has no binary for, or another binary. |
   | `evaluator_binary` | `not_assessed` | `no_opa_evaluation` | No evaluation of the record ran on OPA. |
   | `scanner_reports` | `failed` | `kept_files_do_not_give_the_verdicts` | A scanner evaluation does not follow from the files its stage kept. |
+  | `scanner_reports` | `failed` | `other_scanner_named` | An evaluation from a scanner the Iltero CLI ran names a release, platform or digest the [scanner pin](02-conformance-vectors.md#the-pinned-scanner-releases) does not give. |
   | `scanner_reports` | `not_performed` | `scanner_requirement_not_met` | A group of scanners a stage requires is [unmet](#how-evaluators-combine) for a check and subject: each member that evaluated it gave a gap. |
   | `scanner_reports` | `claimed_by_record` | `ran_by_pipeline` | A kept scanner report says the pipeline ran it: the pipeline's word. |
-  | `scanner_reports` | `claimed_by_record` | `ran_by_iltero_cli` | Every kept scanner report says the Iltero CLI ran it: the record's word. |
+  | `scanner_reports` | `claimed_by_record` | `ran_by_iltero_cli` | Every kept scanner report says the Iltero CLI ran it, each naming the pinned release: the record's word. |
   | `scanner_reports` | `not_assessed` | `not_in_activity` | The record's activity reads no scanner report, as an image build reads none. |
   | `scanner_reports` | `not_assessed` | `no_scanner_report` | No stage read a scanner report, and none requires one. In a run Iltero Platform opened, only Iltero Platform confirms that its stages required none. |
 
@@ -3255,7 +3270,8 @@ Key rules:
   the first of `iltero_schemas.models.common.verification.SCANNER_REPORTS_RESULT_ORDER` that holds, in the order of
   the table above. It applies to a record of any change type: an image record gets `not_in_activity`. Who ran the
   reports is judged per kept report: any kept report the pipeline ran gives `ran_by_pipeline`, even beside reports the
-  Iltero CLI ran.
+  Iltero CLI ran. The `other_scanner_named` detail is the first problem `pinned_scanner_problems` lists, as
+  `<where> <what>`, followed by the count of the rest, as for `kept_files_do_not_give_the_verdicts`.
 - The `kept_exceptions_do_not_hold` detail is the first problem
   [`local_exception_problems`](#a-stage-that-applies-the-file) and
   [`served_exception_problems`](#checking-the-kept-copy) list, and the `kept_files_do_not_give_the_verdicts` detail the

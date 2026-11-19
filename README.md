@@ -13,6 +13,9 @@ The package contains:
   YAML, into a policy program for Open Policy Agent (OPA). The same assertion always compiles to the same bytes.
 - **The OPA pin.** The one OPA release every Iltero component runs, with the SHA-256 digest of its binary for each
   supported platform, and the allowlist of OPA functions a program may call.
+- **The scanner pin.** The one Trivy release and the one Checkov release the Iltero CLI runs itself, with the
+  SHA-256 digest of Trivy's program for each platform and a hash lock of Checkov's packages for each platform and
+  Python version.
 - **Conformance vectors.** Known inputs with their exact expected outputs.
 
 ## Install

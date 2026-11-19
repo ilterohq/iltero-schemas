@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from iltero_schemas.change_types import ACTIVITIES
+from iltero_schemas.models.common.pinned_scanner import pinned_scanner_problems
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 from iltero_schemas.models.common.scanners import PIPELINE
 from iltero_schemas.models.common.verdicts import stage_scanner_requirements, unmet_scanner_requirement
@@ -100,6 +101,9 @@ def scanner_reports_result(car: CAR, files: KeptFiles) -> PropertyResult:
     problems = scanner_evidence_problems(car, files)
     if problems:
         return PropertyResult(state="failed", reason="kept_files_do_not_give_the_verdicts", detail=_detail(problems))
+    named = pinned_scanner_problems(car.events)
+    if named:
+        return PropertyResult(state="failed", reason="other_scanner_named", detail=_detail(named))
     for stage, record in car.stages.items():
         events = [event for event in car.events if event.evaluation.stage == stage]
         unmet = unmet_scanner_requirement(events, scanner_requirements=stage_scanner_requirements(record))

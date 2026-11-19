@@ -2124,3 +2124,56 @@ keep, so any two tools agree on what a record means.
   `not_assessed` with `not_in_activity`, not `not_performed` with
   `run_opened_locally`, since `not_in_activity` comes first in
   `PRE_DEPLOY_RESULT_ORDER`.
+- The scanner pin: the only scanner releases the Iltero CLI runs itself in
+  a run Iltero Platform opens, Trivy 0.76.2 and Checkov 3.4.3, in
+  `src/iltero_schemas/scanners/PIN.json`, loaded as
+  `iltero_schemas.scanners.SCANNER_PIN`. For Trivy it gives each platform's
+  release archive and the program inside it, each with its SHA-256 digest
+  and size, beside Trivy's checksums file and its Sigstore signature bundle;
+  the pin records the release workflow's certificate identity at the tag,
+  its issuer, the release commit and the transparency log index. For
+  Checkov it gives 28 hash locks under `scanners/locks/`, one for each
+  platform, wheel platform and Python version from `cp311` to `cp314`
+  (macOS on Apple silicon and Intel, Linux on glibc and musl, Windows on
+  x86_64), with the Checkov wheel, the publisher its PyPI provenance names
+  and the time its packages were resolved before. Loading the pin refuses
+  a pin of other scanners than `checkov` and `trivy`, a malformed checksums
+  line or one naming a file twice, an archive digest the signed checksums
+  file does not give, a lock whose file name does not match its release,
+  wheel platform and Python version, whose `python_version` is not an
+  interpreter tag or whose wheel platform is not of its platform's
+  architecture, a lock whose file digest differs, a lock line that names no
+  wheel, lines out of order and a target locked twice. An evaluation names
+  the program's digest for Trivy and the lock file's digest for Checkov;
+  `SCANNER_PIN.digests(tool, platform, python_version)` and
+  `SCANNER_PIN.version(tool)` give what the pin allows, and raise
+  `KeyError` for a scanner it does not name. The files under
+  `src/iltero_schemas/scanners/` are kept byte for byte (`-text` in
+  `.gitattributes`).
+  - `iltero_schemas.models.common.pinned_scanner.pinned_scanner_problems(events)`
+    lists, as `(where, what)` pairs, each evaluation from a scanner the
+    Iltero CLI ran that names another release ("is not the pinned
+    `<tool>` release `<version>`"), a platform the pin does not cover, or
+    another digest ("is not a digest the pinned trivy release gives for
+    its platform", or for Checkov "… for its platform and Python
+    version"). It refuses nothing.
+  - The `scanner_reports` property gains `failed` with
+    `other_scanner_named`, second in `SCANNER_REPORTS_RESULT_ORDER`, after
+    `kept_files_do_not_give_the_verdicts`. `ran_by_iltero_cli` now means
+    every kept report the Iltero CLI ran, each naming the pinned release.
+  - A record is refused when the evaluations from one kept report name
+    different digests, platforms or Python versions: "every evaluation
+    from the `<tool>` report the `<stage>` stage kept names the same
+    digest, platform and Python version of what ran", with the new
+    `records_invalid/` case
+    `iac_record_whose_evaluations_from_one_scanner_report_name_different_scanners`.
+  - `scripts/refresh_scanner_pin.py` writes the pin from the upstream
+    releases, checking each one, and `scripts/validate_scanner_pin.py`,
+    which a new workflow runs on each platform and Python version when
+    the pin, the script or its sample plan changes, installs both
+    scanners from the pin and compares their results on a sample plan
+    with the expected ones. The workflow pins its container images by
+    digest.
+- The tests refuse every network connection, and a layout test refuses
+  imports of `http`, `socket`, `ssl`, `subprocess` and `urllib` in the
+  package.

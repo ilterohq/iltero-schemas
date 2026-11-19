@@ -14,6 +14,7 @@ import os
 import platform
 import re
 import shutil
+import socket
 from pathlib import Path
 from typing import Any, cast, get_args
 
@@ -37,6 +38,20 @@ SPLIT_CASE_FOLDERS = {
     "contexts_invalid": "contexts",
     "reports_invalid": "reports",
 }
+
+
+@pytest.fixture(autouse=True)
+def no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every test runs without the network: a test that tries to connect fails."""
+
+    def _refuse(*args: Any, **kwargs: Any) -> None:
+        raise AssertionError("a test tried to reach the network")
+
+    monkeypatch.setattr(socket.socket, "connect", _refuse)
+    monkeypatch.setattr(socket.socket, "connect_ex", _refuse)
+    monkeypatch.setattr(socket, "create_connection", _refuse)
+    monkeypatch.setattr(socket, "getaddrinfo", _refuse)
+    monkeypatch.setattr(socket.socket, "sendto", _refuse)
 
 
 def visible(folder: Path) -> list[Path]:

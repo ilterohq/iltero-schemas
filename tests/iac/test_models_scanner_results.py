@@ -468,6 +468,17 @@ def test_a_report_whose_kept_observations_name_another_runner_is_listed() -> Non
     assert any(what == "names observations of another report" for _, what in problems)
 
 
+def test_evaluations_from_one_report_that_name_different_scanners_are_refused() -> None:
+    record = copy.deepcopy(SCANNED)
+    ran_by_the_cli(record)
+    from_checkov = [e for e in record["events"] if (e["provenance"].get("evaluator") or {}).get("engine") == "checkov"]
+    assert len(from_checkov) > 1
+    from_checkov[-1]["provenance"]["evaluator"]["python_version"] = "cp313"
+    keep_events_files(record)
+    with pytest.raises(ValidationError, match="names the same digest, platform and Python version of what ran"):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
 def _governed_scanned() -> tuple[dict[str, Any], dict[str, Any]]:
     """The scanned record as a record of a run the server opened, and the files its plan stage kept: the server's
     scanner check mapping, and observations of reports the Iltero CLI ran."""

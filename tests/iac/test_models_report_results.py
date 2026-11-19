@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from iltero_schemas.canonical import canonical_bytes, digest
+from iltero_schemas.models.common import pinned_scanner
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.verification import PRE_DEPLOY_RESULT_ORDER, PropertyResult
 from iltero_schemas.models.iac.kept_files import KeptFiles
@@ -19,6 +20,7 @@ from iltero_schemas.models.iac.report_results import (
     exception_results,
     scanner_reports_result,
 )
+from iltero_schemas.scanners.pin import SCANNER_PIN
 from tests.conftest import VECTORS, documents
 from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _governed_scanned, _record, kept_files
 from tests.records import kept_files_of, valid_case_record
@@ -69,8 +71,38 @@ def test_reports_the_pipeline_ran_are_the_pipelines_word() -> None:
     assert scanner_reports_result(_car(SCANNED), files) == _result("claimed_by_record", "ran_by_pipeline")
 
 
-def test_reports_the_iltero_cli_ran_are_the_records_word() -> None:
+def test_reports_the_iltero_cli_ran_of_a_scanner_the_pin_does_not_give_fail() -> None:
     record, files = _governed_scanned()
+    result = scanner_reports_result(_car(record), KeptFiles(**files))
+    assert (result.state, result.reason) == ("failed", "other_scanner_named")
+    assert result.detail is not None and "is not the pinned" in result.detail
+
+
+def test_reports_the_iltero_cli_ran_of_the_pinned_scanners_are_its_word(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """With a pin that gives what the sample record names, the record's reports are its own claim."""
+    record, files = _governed_scanned()
+    evaluators = [
+        e["provenance"]["evaluator"] for e in record["events"] if (e["provenance"].get("evaluator") or {}).get("digest")
+    ]
+    named = {evaluator["engine"]: evaluator for evaluator in evaluators}
+    trivy, checkov = SCANNER_PIN.trivy, SCANNER_PIN.checkov
+    program = dataclasses.replace(
+        trivy.programs["linux-x86_64"], program_sha256=named["trivy"]["digest"].removeprefix("sha256:")
+    )
+    lock = dataclasses.replace(
+        checkov.locks[0],
+        platform="linux-x86_64",
+        python_version=named["checkov"]["python_version"],
+        sha256=named["checkov"]["digest"].removeprefix("sha256:"),
+    )
+    matching = dataclasses.replace(
+        SCANNER_PIN,
+        trivy=dataclasses.replace(trivy, version=named["trivy"]["version"], programs={"linux-x86_64": program}),
+        checkov=dataclasses.replace(checkov, version=named["checkov"]["version"], locks=(lock,)),
+    )
+    monkeypatch.setattr(pinned_scanner, "SCANNER_PIN", matching)
     assert scanner_reports_result(_car(record), KeptFiles(**files)) == _result("claimed_by_record", "ran_by_iltero_cli")
 
 

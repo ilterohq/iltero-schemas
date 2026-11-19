@@ -144,13 +144,16 @@ EVALUATOR_BINARY_RESULTS: frozenset[tuple[VerificationState, str | None]] = froz
 )
 # The results a verifier gives the ``scanner_reports`` property (``models.iac.report_results.scanner_reports_result``),
 # the first that holds in this order. kept_files_do_not_give_the_verdicts: a scanner evaluation does not follow from the
-# files its stage kept. scanner_requirement_not_met: a group of scanners the stage requires gave only gaps for a check
-# and subject. ran_by_pipeline: a kept report the pipeline ran, the pipeline's word. ran_by_iltero_cli: every kept
-# report the Iltero CLI ran, the record's word. not_in_activity: the record's activity reads no scanner report.
+# files its stage kept. other_scanner_named: an evaluation from a scanner the Iltero CLI ran names a release, platform
+# or digest the scanner pin does not give (``models.common.pinned_scanner``). scanner_requirement_not_met: a group of
+# scanners the stage requires gave only gaps for a check and subject. ran_by_pipeline: a kept report the pipeline ran,
+# the pipeline's word. ran_by_iltero_cli: every kept report the Iltero CLI ran, the record's word, each naming the
+# pinned release. not_in_activity: the record's activity reads no scanner report.
 # no_scanner_report: no stage read a scanner report and none requires one; in a run the server opened, only that server
 # confirms its stages required none.
 SCANNER_REPORTS_RESULT_ORDER: tuple[tuple[VerificationState, str], ...] = (
     ("failed", "kept_files_do_not_give_the_verdicts"),
+    ("failed", "other_scanner_named"),
     ("not_performed", "scanner_requirement_not_met"),
     ("claimed_by_record", "ran_by_pipeline"),
     ("claimed_by_record", "ran_by_iltero_cli"),

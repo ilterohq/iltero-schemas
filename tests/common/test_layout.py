@@ -96,3 +96,45 @@ def test_no_file_tells_change_types_apart_by_its_name(root: Path) -> None:
         and _names_a_change_type(path)
     ]
     assert named == []
+
+
+# The modules that reach the network or start a program, and the ``os`` functions that start one: the package does
+# neither.
+NETWORK_OR_PROCESS_MODULES = {
+    "aiohttp", "asyncio", "ftplib", "http", "httpx", "multiprocessing", "requests", "smtplib", "socket", "ssl",
+    "subprocess", "urllib", "urllib3", "xmlrpc",
+}  # fmt: skip
+PROCESS_FUNCTIONS = re.compile(r"(system|popen|exec\w*|\w*spawn\w*|fork\w*)")
+
+
+@pytest.mark.parametrize("path", sorted(PACKAGE.rglob("*.py")), ids=lambda p: str(p.relative_to(PACKAGE)))
+def test_no_module_of_the_package_reaches_the_network_or_starts_a_program(path: Path) -> None:
+    module = ast.parse(path.read_text(encoding="utf-8"))
+    imported = [
+        *(node.module for node in ast.walk(module) if isinstance(node, ast.ImportFrom) and node.module),
+        *(alias.name for node in ast.walk(module) if isinstance(node, ast.Import) for alias in node.names),
+    ]
+    assert not [name for name in imported if name.split(".")[0] in NETWORK_OR_PROCESS_MODULES]
+    imported_from_os = [
+        alias.name
+        for node in ast.walk(module)
+        if isinstance(node, ast.ImportFrom) and node.module == "os"
+        for alias in node.names
+    ]
+    assert not [name for name in imported_from_os if PROCESS_FUNCTIONS.fullmatch(name)]
+    called = [
+        node.attr
+        for node in ast.walk(module)
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "os"
+    ]
+    assert not [name for name in called if PROCESS_FUNCTIONS.fullmatch(name)]
+    dynamic = [
+        node
+        for node in ast.walk(module)
+        if isinstance(node, ast.Call)
+        and (
+            (isinstance(node.func, ast.Name) and node.func.id == "__import__")
+            or (isinstance(node.func, ast.Attribute) and node.func.attr == "import_module")
+        )
+    ]
+    assert not dynamic

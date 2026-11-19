@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import copy
+import dataclasses
 import json
+from pathlib import Path
 
 import pytest
 
-from iltero_schemas.canonical import digest
+from iltero_schemas.ast.document import load_document
+from iltero_schemas.canonical import digest, digest_of
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY
@@ -24,9 +27,7 @@ from tests.records import kept_files_of, valid_case_record
 # folder instead, in one named after the case.
 KEPT_FILE_CASES = "cases"
 # Records whose evaluation inputs the vectors do not hold; only the scanner files they kept are here.
-KEPT_WITHOUT_INPUTS = frozenset(
-    {"iac/local_run_scanned", "iac/local_run_scanned_project_required", "iac/local_run_suppressed_with_exception"}
-)
+KEPT_WITHOUT_INPUTS = frozenset({"iac/local_run_scanned", "iac/local_run_scanned_project_required"})
 KEPT_FILE_RECORDS = sorted(
     path.relative_to(VECTORS / "kept_files").as_posix()
     for change_type in CHANGE_TYPES
@@ -45,22 +46,59 @@ def test_every_check_a_reader_makes_holds_for_a_record_whose_kept_files_the_vect
         if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
     }
     served = {stage.served_exceptions.digest for stage in record.stages.values() if stage.served_exceptions is not None}
-    assert named and set(kept) == named | served
+    # A folder that holds every file its record's register names holds the inputs and served copies among them; any
+    # other folder holds exactly the inputs and the served copy.
+    every_file = {str(ref.digest) for ref in record.evidence_refs}
+    if set(kept) == every_file:
+        assert named and named | served <= set(kept)
+    else:
+        assert named and set(kept) == named | served
     assert all(digest(data) == named_digest for named_digest, data in kept.items())
     inputs = {named_digest: kept[named_digest] for named_digest in named}
     assert kept_input_problems(record, inputs) == []
     if record.change.activity == IAC_CHANGE_ACTIVITY:
-        files = KeptFiles(
+        files = dataclasses.replace(
+            _scanner_files(record, VECTORS / "kept_files" / name, kept),
+            served_exceptions={served_digest: kept[served_digest] for served_digest in served},
+            inputs=inputs,
+        )
+        assert kept_file_problems(record, files) == []
+
+
+def _scanner_files(record: CAR, root: Path, kept: dict[str, bytes]) -> KeptFiles:
+    """The scanner files a record's plan stage kept, read from its kept-files folder ``root``: its scanner check
+    mapping copies and observations by path, its reports and plan by digest, its exceptions file's bytes, and the
+    assertion documents it kept; none when the stage read no scanner report."""
+    scanners = record.stages[Stage.PLAN].scanners
+    if scanners is None:
+        return KeptFiles(
             scanner_check_mappings={},
             observations={},
             reports={},
             plans={},
             assertions={},
             local_exceptions={},
-            served_exceptions={served_digest: kept[served_digest] for served_digest in served},
-            inputs=inputs,
+            served_exceptions={},
+            inputs={},
         )
-        assert kept_file_problems(record, files) == []
+    observations = {
+        report.observations: json.loads((root / report.observations).read_bytes()) for report in scanners.reports
+    }
+    documents = [load_document(path.read_text(encoding="utf-8")) for path in root.rglob("assertions/*.yaml")]
+    used = scanners.local_exceptions
+    return KeptFiles(
+        scanner_check_mappings={
+            mapping.copy_path: json.loads((root / mapping.copy_path).read_bytes())
+            for mapping in scanners.scanner_check_mappings
+        },
+        observations=observations,
+        reports={report.report_digest: json.loads(kept[report.report_digest]) for report in scanners.reports},
+        plans={str(o["plan_digest"]): json.loads(kept[str(o["plan_digest"])]) for o in observations.values()},
+        assertions={digest_of(document): document for document in documents},
+        local_exceptions={} if used is None else {used.digest: kept[used.digest]},
+        served_exceptions={},
+        inputs={},
+    )
 
 
 def _register(folder: str) -> list[dict[str, object]]:

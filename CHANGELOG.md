@@ -2085,14 +2085,24 @@ keep, so any two tools agree on what a record means.
   `reports/iac/verification_report_commit_not_reviewed.json` gives
   `approval_identity` as `claimed_by_record` with `approvals_listed`.
 - `kept_files/` also holds the files the hand-kept records
-  `iac/local_run_scanned.json`, `iac/local_run_scanned_project_required.json`
-  and `iac/local_run_suppressed_with_exception.json` kept to decide their
-  scanner verdicts: their assertion documents, scanner check mapping copies,
-  reports, observations, redacted plan and, for the last, its
-  `local-exceptions.yaml`. Their evaluation inputs were never written, so
-  the test of every reader check leaves the three out, and their assertion
-  index (`compiled.json`) is not shipped. A test checks that their scanner
-  verdicts follow from those files.
+  `iac/local_run_scanned.json` and
+  `iac/local_run_scanned_project_required.json` kept to decide their scanner
+  verdicts: their assertion documents, scanner check mapping copies,
+  reports, observations and redacted plan. Their evaluation inputs were
+  never written, so the test of every reader check leaves the two out, and
+  their assertion index (`compiled.json`) is not shipped. A test checks
+  that their scanner verdicts follow from those files.
+- `records/iac/local_run_suppressed_with_exception.json` is now the record
+  the Iltero CLI writes, with the pinned evaluator: a plan of one RDS
+  instance, `aws_db_instance.noncompliant`, with 14 events, whose Checkov
+  result `CKV_AWS_16` is reported as suppressed and is covered by `ex-1` in
+  the project's exceptions file. Its scanner report is the kept form of
+  `scanner_reports/iac/rds_skipped_checkov.json`.
+  `kept_files/iac/local_run_suppressed_with_exception/` holds every file its
+  register names, its evaluation inputs and assertion index included, so
+  the test of every reader check runs on it, scanner checks included.
+  `scanner_evidence/iac/local_run_suppressed_with_exception/` holds the new
+  record's files, and its cases name its event 11.
 - The `exceptions` result of an image deploy the tool opened is now
   `not_assessed` with `not_in_activity`, not `not_performed` with
   `run_opened_locally`, since `not_in_activity` comes first in

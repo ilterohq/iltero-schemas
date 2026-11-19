@@ -449,6 +449,7 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
                 events,
                 required=required,
                 required_scanners=stage_required_scanners(record),
+                excepted_failures=record.served_exceptions.excepted_failures if record.served_exceptions else [],
             )
         )
         problems.extend(_required_set_problems(car, stage, record))

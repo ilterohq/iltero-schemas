@@ -44,10 +44,12 @@ def test_a_served_exception_is_approved_by_someone_other_than_who_asked_for_it()
         ServedException.model_validate({**EXCEPTION, "approved_by": EXCEPTION["requested_by"]})
 
 
-def test_a_served_exception_names_its_requester_and_approver_by_one_identity_provider() -> None:
-    other = {"provider": "github", "id": EXCEPTION["requested_by"]["id"]}
-    with pytest.raises(ValidationError, match="by one identity provider"):
-        ServedException.model_validate({**EXCEPTION, "approved_by": other})
+def test_a_served_exception_names_its_people_by_the_pseudonyms_iltero_issued_them() -> None:
+    account = {"provider": "github", "id": EXCEPTION["approved_by"]["id"]}
+    with pytest.raises(ValidationError, match="Input should be 'iltero_pseudonym'"):
+        ServedException.model_validate({**EXCEPTION, "approved_by": account})
+    with pytest.raises(ValidationError, match="String should match pattern"):
+        ServedException.model_validate({**EXCEPTION, "approved_by": {"provider": "iltero_pseudonym", "id": "user_3"}})
 
 
 def test_a_served_exception_is_approved_no_later_than_it_expires() -> None:
@@ -56,12 +58,21 @@ def test_a_served_exception_is_approved_no_later_than_it_expires() -> None:
         ServedException.model_validate({**EXCEPTION, "approved_at": "2027-02-01T00:00:01Z"})
 
 
-def test_a_served_exception_says_whether_its_requester_runs_the_stage() -> None:
-    assert ServedException.model_validate({**EXCEPTION, "requester_is_run_actor": True}).requester_is_run_actor
+@pytest.mark.parametrize("finding", ["same_user", "different_users", "could_not_tell"])
+def test_a_served_exception_says_whether_its_requester_started_the_run_or_that_the_server_could_not_tell(
+    finding: str,
+) -> None:
+    exception = ServedException.model_validate({**EXCEPTION, "requester_and_run_starter": finding})
+    assert exception.requester_and_run_starter == finding
     without = copy.deepcopy(EXCEPTION)
-    del without["requester_is_run_actor"]
+    del without["requester_and_run_starter"]
     with pytest.raises(ValidationError, match="Field required"):
         ServedException.model_validate(without)
+
+
+def test_a_served_exception_never_says_true_or_false_about_who_started_the_run() -> None:
+    with pytest.raises(ValidationError, match="Input should be 'same_user', 'different_users' or 'could_not_tell'"):
+        ServedException.model_validate({**EXCEPTION, "requester_and_run_starter": False})
 
 
 @pytest.mark.parametrize("assertion_id", sorted(BUILT_IN_IDS))
@@ -154,3 +165,9 @@ def test_an_excepted_failed_result_names_its_resource_by_its_address_scoped_by_i
     for resource in (by_name, unscoped):
         with pytest.raises(ValidationError, match="names its resource by its address, scoped by its unit"):
             ServedExceptionsUsed.model_validate({**USED, "excepted_failures": [{**FAILURE, "resource": resource}]})
+
+
+def test_one_requester_is_found_to_have_started_the_run_or_not_in_every_exception_of_a_document() -> None:
+    second = {**DOCUMENT["spec"]["exceptions"][1], "requested_by": EXCEPTION["requested_by"]}
+    with pytest.raises(ValidationError, match="a run has one starter"):
+        ServedExceptions.model_validate({**DOCUMENT, "spec": {"exceptions": [EXCEPTION, second]}})

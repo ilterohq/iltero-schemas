@@ -983,8 +983,8 @@ with a regulatory framework.
 | `units_file` | object or null | The project's [units file](#units-file) as the writer read it. `null` for a project that declares none. |
 | `stages` | object | One entry per stage that reported, keyed by stage (see below). Every stage is one the record expects. |
 | `events` | list | Every [event](#assuranceevent), grouped in stage order. At most 100,000. |
-| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions required and evaluated, the subjects each required assertion was evaluated about (`subjects_per_assertion`), counts per status, each evaluator's own counts per status summed over the stages that name it (`evaluator_status_counts`), the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
-| `verdict` | object | What the stages' required checks came to: `value` (`met`, `not_met`, `undecided` or `incomplete`), `reason` (`not_evaluated` or `evaluator_failed` for an `incomplete` verdict, `null` otherwise), `computed_from` (`stage_precedence`) and the deciding `stage`. See [Verdict and evidence status](#verdict-and-evidence-status). |
+| `coverage` | object | The stages' coverage combined: subjects in scope and evaluated, assertions required and evaluated, the subjects each required assertion was evaluated about (`subjects_per_assertion`), counts per status, the failed checks served exceptions cover in full summed over the stages (`failed_checks_excepted`), each evaluator's own counts per status summed over the stages that name it (`evaluator_status_counts`), the number of `evaluations`, gaps, truncation and sampling, and the inputs replaced with placeholders (`substituted_inputs`), each naming its stage. |
+| `verdict` | object | What the stages' required checks came to: `value` (`met`, `not_met`, `undecided` or `incomplete`), `reason` (`not_evaluated` or `evaluator_failed` for an `incomplete` verdict, `every_failure_excepted` for a `not_met` verdict whose every failure a served exception covers, `null` otherwise), `computed_from` (`stage_precedence`) and the deciding `stage`. See [Verdict and evidence status](#verdict-and-evidence-status). |
 | `evidence_status` | object | Whether the evidence behind the verdict is whole: `value` (`whole` or `has_gaps`) and `reasons`, every reason it has gaps, each with its `stage` and a `detail`, empty when it is whole. See [Verdict and evidence status](#verdict-and-evidence-status). |
 | `all_expected_stages_reported` | boolean | Whether every expected stage has reported: "all_expected_stages_reported is true exactly when every expected stage has reported". |
 | `expected_stages` | list | The stages the record expects. |
@@ -1441,10 +1441,12 @@ Key rules:
   every other. A stage's `coverage.evaluations` is the number of its [combined verdicts](#how-evaluators-combine), or
   "does not count one evaluation per assertion and subject of the stage", and its `coverage.status_counts` count their
   statuses, or "does not count the combined statuses of the stage's evaluations", and its
-  `coverage.evaluator_status_counts` count each evaluator's own statuses, or "does not count, for each evaluator, the
-  statuses of the evaluations it gave", and its count gaps of the reasons verdicts were left without a decision and its
-  `evaluator_did_not_decide` gaps (see the gaps above), all at `stages.<stage>.coverage`. An event's
-  `status_reason` is `state_not_read` only in an `iac_change` record whose state was not read, at `post_deploy`;
+  `coverage.failed_checks_excepted` counts the failed checks its served exceptions cover in full (see [Verdict and
+  evidence status](#verdict-and-evidence-status)), or "does not count the failed checks the exceptions the stage names
+  cover in full", and its `coverage.evaluator_status_counts` count each evaluator's own statuses, or "does not count,
+  for each evaluator, the statuses of the evaluations it gave", and its count gaps of the reasons verdicts were left
+  without a decision and its `evaluator_did_not_decide` gaps (see the gaps above), all at `stages.<stage>.coverage`. An
+  event's `status_reason` is `state_not_read` only in an `iac_change` record whose state was not read, at `post_deploy`;
   otherwise it is an integrity failure at `events.<index>.evaluation.status_reason`: "names a state not read the record
   does not". In an `iac_change` record, `ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN` must be `pass`
   exactly when `change.deployment.plan` has the evaluated plan's `digest`, `artifact_digest` and
@@ -1458,10 +1460,10 @@ Key rules:
   refused as `change.digest is not the digest of the change type, unit, environment and plan`. A reader that reports
   integrity failures itself sets `SKIP_INTEGRITY_CHECKS` (`iltero_schemas.models.common.car`) to `True` in the
   validation context (any other value is ignored), then calls `iltero_schemas.models.common.stages.integrity_problems`,
-  which returns every problem as a `(where, what)` pair. An approval of another run is refused whatever the context. A
-  reader must also call [`scanner_evidence_problems`](#the-check-a-reader-runs) on every record that holds an evaluation
-  from a scanner's results, and [`served_exception_problems`](#checking-the-kept-copy) on every record a stage of
-  which applied served exceptions: the model alone does not check these.
+  which returns every problem as a `(where, what)` pair. An approval of another run is refused whatever the context.
+  Every reader of an `iac_change` record, with or without that key, calls
+  [`kept_file_problems`](#checking-a-record-against-its-kept-files), which makes these checks and the checks of the
+  files the stages kept: the model alone does not check those files.
 - A record of a run the tool opened (`governance.run_opened_by: local`) names no Iltero Platform bundle, no
   evaluation from one, no facts from Iltero Platform, and no stage `reference_time` from it (`source: server`). Every
   stage's `coverage.assertions_required.origin` is `server_pinned` exactly when Iltero Platform opened the run
@@ -1538,6 +1540,7 @@ The rule reads these coverage counts. A combined verdict reached a result when i
 | `assertions_evaluated` | integer | How many required assertions reached a result, including one that ran and found no subject in scope (`not_applicable`). |
 | `subjects_evaluated` | integer | How many distinct subjects some required assertion reached a result about. |
 | `subjects_per_assertion` | object | For each required assertion the stage has events for, keyed `<id>@<version>`, how many distinct subjects it was evaluated about: 0 when it found no subject in scope. A required assertion with no event has no entry. A stage counts subjects only for the assertions it was required to evaluate, so a post-verify stage counts none for the checks it settles: "the plan stage counts subjects only for the assertions it was required to evaluate" (with the stage). |
+| `failed_checks_excepted` | integer | How many failed checks, each one assertion about one subject, a [served exception](#a-stage-that-applies-served-exceptions) covers in full: every `fail` event of the check is one of the stage's `served_exceptions.excepted_failures`, and every other event of it is `pass` or `not_applicable`. At most the `fail` count of `status_counts`. 0 at a stage that applies no served exceptions. |
 
 The integrity checks recompute the three counts from the stage's events, where a stage's required assertions are its
 assertions less those a `post_verify` stage evaluates to settle [postponed
@@ -1550,7 +1553,7 @@ A verdict has these fields:
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `value` | string | `met`, `not_met`, `undecided` or `incomplete` (see the table below). |
-| `reason` | string or null | Why the stage could not make every required check: `not_evaluated` or `evaluator_failed`. Present exactly when `value` is `incomplete`, `null` otherwise. |
+| `reason` | string or null | For an `incomplete` verdict, why the stage could not make every required check: `not_evaluated` or `evaluator_failed`. For a `not_met` verdict whose every failed check a served exception covers in full, `every_failure_excepted`. `null` otherwise. |
 | `computed_from` | string | `status_counts` for a stage's verdict, taken from its own counts. `stage_precedence` for the record's, taken from one of its stages. |
 | `stage` | stage or null | The stage the record's verdict was taken from. `null` for a stage's own verdict. |
 
@@ -1558,10 +1561,11 @@ A stage's verdict follows from its own coverage. The first row that holds gives 
 
 | `value` | `reason` | When |
 | --- | --- | --- |
-| `not_met` | `null` | A required check failed: `status_counts` counts at least one `fail`. |
+| `not_met` | `null` | A required check failed that no served exception covers in full: the `fail` count of `status_counts` is more than `failed_checks_excepted`. |
 | `incomplete` | `not_evaluated` | The stage did not make every required check: a required assertion has no evaluation, a required check is `not_evaluated`, or the list of evaluations was cut short (`truncated.value` is `true`). Or it lists the `state_not_read` gap. |
 | `incomplete` | `evaluator_failed` | An evaluation ended in an evaluator error: `status_counts` counts at least one `error`. |
 | `undecided` | `null` | A required check could not be decided: the stage left more checks `unknown` than its `checked_after_deployment` gaps count. |
+| `not_met` | `every_failure_excepted` | Required checks failed, and served exceptions cover every one in full: `status_counts` counts at least one `fail`, and `failed_checks_excepted` counts them all. |
 | `met` | `null` | Every required check passed, did not apply, or was postponed until after the deployment. |
 
 A `met` stage includes three cases a reader should know about. A stage none of whose required assertions found a subject
@@ -1571,18 +1575,44 @@ found a subject: one assertion that does not apply to the plan, beside others th
 until after the deployment counts as decided later, not undecided: the plan stage lists it in `postponed_checks`, and
 the record lists `checks_postponed_until_after_the_deployment` until a `post_verify` stage settles it.
 
-The record's verdict is the stage verdict that comes first in the order `not_met`, `incomplete`, `undecided`, `met`
-(`VERDICT_ORDER`). Between two `incomplete` verdicts, `not_evaluated` comes before `evaluator_failed`
-(`INCOMPLETE_ORDER`). On a tie, the earliest stage in `expected_stages` wins. The record's verdict keeps that stage's
+A `not_met` verdict with `every_failure_excepted` means the failed checks did not pass: their events stay `fail`, and
+the stage names each failed result in `served_exceptions.excepted_failures`. A stage gives this reason only when
+nothing else is open, so a stage whose failures are all excepted but which left a check undecided, or did not make
+every required check, is `undecided` or `incomplete`. These failures are never excepted:
+
+- a failure about a subject with no resource address in the plan, or of a [built-in assertion](#assuranceevent): no
+  served exception covers it;
+- a failed check that another evaluator left `unknown`, ended in `error` or did not evaluate: it is not covered in
+  full, so the stage stays `not_met` with no reason;
+- a check postponed until after the deployment that fails at `post_verify`: only the plan stage applies served
+  exceptions.
+
+A project's own exception never gives this reason: the result it names stays `not_evaluated` with
+`suppressed_in_source` (see [LocalExceptions](#localexceptions)). The reason says nothing about whether an exception
+was justified, or about compliance. A tool may let a gate proceed on it; that is the tool's own policy, not a pass.
+
+The record's verdict is the stage verdict that comes first in this ranking (`VERDICT_RANKING`):
+
+1. `not_met`, with no reason;
+2. `incomplete`, `not_evaluated`;
+3. `incomplete`, `evaluator_failed`;
+4. `undecided`;
+5. `not_met`, `every_failure_excepted`;
+6. `met`.
+
+A failure no exception covers, a check not made and a check not decided, at any stage, are never hidden by another
+stage's excepted failures. On a tie, the earliest stage in `expected_stages` wins. The record's verdict keeps that stage's
 `value` and `reason`, with `computed_from: stage_precedence` and the stage's name in `stage`. For example, a record
 whose plan stage is `met`, whose `pre_deploy` stage is `undecided` and whose `post_deploy` stage is `incomplete` is
 `incomplete`, naming `post_deploy`.
 
-A failed check is never hidden by a check that was not made, and a check that was not made is never hidden by a
-failure. A plan stage with three failures and one required check not evaluated is `not_met`, and its evidence lists
-`required_checks_not_evaluated` with the detail `1 of 15 required checks were not evaluated`.
+A failed check no exception covers is never hidden by a check that was not made, and a check that was not made is
+never hidden by a failure. Failures served exceptions cover stay visible whatever the verdict: in the `fail` count of
+`status_counts`, in `coverage.failed_checks_excepted` and in `served_exceptions.excepted_failures`. A plan stage with
+three failures and one required check not evaluated is `not_met`, and its evidence lists `required_checks_not_evaluated`
+with the detail `1 of 15 required checks were not evaluated`.
 
-`INCOMPLETE_ORDER` puts a missing check before an evaluator error, while `GAP_REASON_PRECEDENCE` puts an evaluator
+`VERDICT_RANKING` puts a missing check before an evaluator error, while `GAP_REASON_PRECEDENCE` puts an evaluator
 error first. They do different jobs: the first picks the one reason an `incomplete` verdict carries, and the second
 only orders the reasons the evidence status lists. Both causes stay visible.
 
@@ -1632,7 +1662,10 @@ record whose evidence is `whole` can still be waiting for later stages (`all_exp
 
 | Rule | Refused with |
 | --- | --- |
-| A verdict names a `reason` exactly when its `value` is `incomplete`. | "a verdict names its reason exactly when it is incomplete" |
+| A verdict names a `reason` exactly when its `value` is `incomplete`, or `not_met` with every failure excepted: its `value` and `reason` are one row of `VERDICT_RANKING`. | "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted" |
+| `failed_checks_excepted` is at most the `fail` count of `status_counts`. | "a stage counts no more failed checks as excepted than it has failed checks" |
+| A stage that applies no served exceptions (`served_exceptions: null`) counts no failure as excepted. | "a stage that applies no served exceptions counts no failure as excepted" |
+| A stage's `failed_checks_excepted` is what `iltero_schemas.models.common.verdicts.excepted_failure_count` gives for its events and its `excepted_failures`, an integrity check. | "does not count the failed checks the exceptions the stage names cover in full" at `stages.<stage>.coverage` |
 | A verdict names a `stage` exactly when `computed_from` is `stage_precedence`. | "a verdict names its stage exactly when it was taken from a stage" |
 | The evidence `has_gaps` exactly when `reasons` is not empty. | "the evidence has gaps exactly when the status lists a reason" |
 | `reasons` follow `GAP_REASON_PRECEDENCE`. | "the reasons are in the order of GAP_REASON_PRECEDENCE" |
@@ -1861,11 +1894,11 @@ The model refuses a record that breaks one of these rules
 
 The scanner check mappings, the observations, the report, the plan and the assertion documents are files the record
 keeps, not part of the record, so the model cannot check them alone.
-`iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` does. Every reader of a record that
-holds an evaluation from a scanner's results must call it, on a record whose structure holds, and must not trust the
-record while it returns any problem. `files` is a `KeptFiles` (`iltero_schemas.models.iac.kept_files`), each file as
-read from its JSON or YAML, except the exceptions files, which are given as their bytes, unparsed, so the contract checks
-their digest and reads them one way for every reader:
+`iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` does, on a record whose structure
+holds; a reader calls it through [`kept_file_problems`](#checking-a-record-against-its-kept-files). `files` is a
+`KeptFiles` (`iltero_schemas.models.iac.kept_files`), each file as read from its JSON or YAML, except the exceptions
+files, which are given as their bytes, unparsed, so the contract checks their digest and reads them one way for every
+reader:
 
 | Field | Keyed by |
 | --- | --- |
@@ -1976,13 +2009,34 @@ The rules (`check_postponed_checks`):
 | Only `post_verify` keeps a `resource_redaction`, and it keeps one exactly when it settles a check. | "only the post-verify stage redacts values after the apply" and "the post-verify stage reports what it redacted of the values its settling checks read" |
 
 The plan stage's verdict treats its postponed checks as decided later (see [Verdict and evidence
-status](#verdict-and-evidence-status)): a postponed check does not make the stage `undecided`. A reader
-that holds the files the plan stage kept calls `postponed_check_problems(car, files)`, with a `KeptFiles`: it lists, at
+status](#verdict-and-evidence-status)): a postponed check does not make the stage `undecided`.
+`postponed_check_problems(car, files)`, with a `KeptFiles`, checks the list against the files the plan stage kept; a
+reader calls it through [`kept_file_problems`](#checking-a-record-against-its-kept-files). It lists, at
 `stages.plan.postponed_checks.<index>`, each postponed check whose assertion document is not given ("names an assertion
 document that is not given") or may not be postponed ("postpones a check whose condition reads what post-verify does
 not hold"), and each whose path the kept plan does not leave unknown on the subject's resource ("postpones a check on a
 value the plan it kept does not leave unknown"). It needs the one plan the evidence register keeps: without it, it
 returns "names checks of a plan the record does not keep" at `stages.plan.postponed_checks`.
+
+### Checking a record against its kept files
+
+The model checks a record's structure and, unless `SKIP_INTEGRITY_CHECKS` is set, every value it can recompute from
+the record alone. The rest of what an `iac_change` record claims rests on the files its stages kept.
+`kept_file_problems(car, files)` (`iltero_schemas.models.iac.kept_file_problems`) makes every check a reader makes of
+such a record, and returns the `(where, what)` pairs of each, in this order:
+
+| Function | What it works out again |
+| --- | --- |
+| `iltero_schemas.models.common.stages.integrity_problems(car)` | Every value the record can recompute from itself, such as its digests, counts, verdicts and evidence statuses. |
+| `iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` | Each scanner verdict, and each project exception a suppressed result names (see [The check a reader runs](#the-check-a-reader-runs)). |
+| `iltero_schemas.models.iac.exception_evidence.served_exception_problems(car, files)` | The failed results the exceptions Iltero Platform served cover (see [Checking the kept copy](#checking-the-kept-copy)). |
+| `iltero_schemas.models.iac.postponed_checks.postponed_check_problems(car, files)` | The checks the plan stage postponed (see [Checks postponed until after the deployment](#checks-postponed-until-after-the-deployment)). |
+
+Every reader of an `iac_change` record calls it, on a record whose structure holds
+(`iltero_schemas.models.common.stages.check_structure`), read with or without `SKIP_INTEGRITY_CHECKS`, with the
+[`KeptFiles`](#the-check-a-reader-runs) its stages kept. It must not trust the record while the list holds any problem.
+An empty list means every check a reader can make holds, a verdict whose every failure is excepted included. What only
+Iltero Platform can check, such as whether a kept copy is what it served, stays unchecked.
 
 ### Change types and activities
 
@@ -3376,7 +3430,7 @@ spec:
 | --- | --- | --- |
 | `apiVersion`, `kind` | string | `iltero.com/v1` and `LocalExceptions`. |
 | `metadata.name` | string | The name the project gives the document: 1 to 63 lowercase letters, digits and hyphens, starting and ending with a letter or a digit. |
-| `spec.exceptions` | list | 1 to 256 exceptions (`LocalException`), each with the fields below. |
+| `spec.exceptions` | list | 0 to 256 exceptions (`LocalException`), each with the fields below. An empty list is valid: a project with no exception keeps `exceptions: []`. |
 
 | Exception field | Type | Meaning |
 | --- | --- | --- |
@@ -3466,9 +3520,10 @@ refuses a record that breaks one of these rules:
 | A record of a run Iltero Platform opened applies no exceptions file: every stage's `scanners.local_exceptions` is `null`. | "a record of a run the server opened applies no exceptions file of the project's own" |
 
 The model does not read the copy. A reader does, with
-[`scanner_evidence_problems`](#the-check-a-reader-runs), given the copy's bytes in `KeptFiles.local_exceptions`: for each
-suppressed result of the stage it works out again which exception covers it, and the record must name that one, or
-none when none covers it.
+[`scanner_evidence_problems`](#the-check-a-reader-runs) (through
+[`kept_file_problems`](#checking-a-record-against-its-kept-files)), given the copy's bytes in
+`KeptFiles.local_exceptions`: for each suppressed result of the stage it works out again which exception covers it,
+and the record must name that one, or none when none covers it.
 
 ## ServedExceptions
 
@@ -3478,9 +3533,15 @@ the resources it names, between two times, why, who asked for it, who approved i
 the assertion document it was approved for by its id, version and digest. The list is empty when no exception is in
 force.
 
+Iltero Platform reads the exceptions in force when it opens a run, and serves that one document to every plan stage of
+the run; a run opened later reads them again, so an exception approved after a run opened applies only from a later
+run. Each plan stage still holds an exception to its own reference time.
+
 A served exception covers a failed result only of the assertion document it was approved for: the same id, version
 and digest (see [When a served exception covers a failed result](#when-a-served-exception-covers-a-failed-result)).
-The result stays `fail`: the exception is recorded beside it, never in its place.
+The result stays `fail`: the exception is recorded beside it, never in its place. A stage whose every failed check
+served exceptions cover in full, with nothing else open, is `not_met` with the reason `every_failure_excepted` (see
+[Verdict and evidence status](#verdict-and-evidence-status)).
 
 - **apiVersion:** `iltero.com/v1`, with `kind: ServedExceptions`
 - **Model:** `iltero_schemas.models.common.served_exceptions.ServedExceptions`
@@ -3516,10 +3577,10 @@ The result stays `fail`: the exception is recorded beside it, never in its place
         },
         "valid_from": "2026-11-01T00:00:00Z",
         "expires_at": "2027-02-01T00:00:00Z",
-        "requested_by": {"provider": "iltero", "id": "user_7"},
-        "approved_by": {"provider": "iltero", "id": "user_3"},
+        "requested_by": {"provider": "iltero_pseudonym", "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"},
+        "approved_by": {"provider": "iltero_pseudonym", "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"},
         "approved_at": "2026-10-30T14:12:00Z",
-        "requester_is_run_actor": false,
+        "requester_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       }
     ]
@@ -3547,10 +3608,10 @@ reader of a kept copy does (see [Checking the kept copy](#checking-the-kept-copy
 | `scope.environment` | identifier | The Iltero environment the exception holds in. |
 | `scope.resources` | list | 1 to 256 resources, each by its identity (`scheme`, `value`, `scope`). |
 | `valid_from`, `expires_at` | timestamp | When the exception starts and when it expires. |
-| `requested_by` | object | Who asked for the exception: `provider` and `id`, each an identifier. |
+| `requested_by` | object | Who asked for the exception, by the pseudonym Iltero issued their Iltero user for the organization (`Pseudonym`): `provider`, always `iltero_pseudonym`, and `id`, a UUID. |
 | `approved_by` | object | Who approved it, in the same form. |
 | `approved_at` | timestamp | When it was approved. |
-| `requester_is_run_actor` | boolean | Whether the requester's Iltero user started the run or triggered the attempt the exception is served to, as Iltero Platform found. |
+| `requester_and_run_starter` | string | Whether the requester is the person who started the run, as Iltero Platform found: `same_user`; `different_users`, only when Iltero Platform linked both to Iltero users and they differ, which shows two Iltero users, not two people; or `could_not_tell`, when it could not link them. `could_not_tell` never means they are different people, so no reader treats it as a sign that the two are independent. Any other value, `true` and `false` included, is refused: "Input should be 'same_user', 'different_users' or 'could_not_tell'". |
 | `reason` | string | Why the exception was granted: 1 to 1,024 characters. |
 
 A served exception follows every rule of a [project's exception](#localexceptions): an id of its own, each resource by
@@ -3560,14 +3621,22 @@ its address scoped by its unit, no two covering the same assertion, environment 
 | Rule | Refused with |
 | --- | --- |
 | An exception is approved no later than it expires. | "an exception is approved no later than it expires" |
-| `requested_by` and `approved_by` name the same `provider`. | "an exception names who asked for it and who approved it by one identity provider" |
+| `requested_by` and `approved_by` are pseudonyms: `provider` is `iltero_pseudonym`. An account at an identity provider is refused. | "Input should be 'iltero_pseudonym'" |
 | `requested_by` and `approved_by` name different `id`s. | "an exception is approved by someone other than who asked for it" |
+| In one document, every exception of one requester (`requested_by.id`) has the same `requester_and_run_starter`. | "a run has one starter, so one requester is found to be them, or not, in every exception" |
 
-These two checks on people are the least the model can check from the document alone: two different accounts of one
-identity provider. They do not show that two accounts belong to two different people. Iltero Platform compares the
-requester and the approver as Iltero users, and states in `requester_is_run_actor` whether the requester's Iltero user
-started the run or triggered the attempt the exception is served to. The model reads that field as Iltero Platform's
-claim and does not check it.
+A pseudonym is the one Iltero issued the user for the organization: the same for one Iltero user in every exception of
+that organization, and unrelated to the same person's pseudonym in another, so records of two organizations cannot be
+linked through their pseudonyms. Iltero keeps which user each pseudonym stands for, and erasing that removes Iltero's
+link only. The person may still be identified without it: a pseudonym stays the same across the organization's
+exceptions, and the record names the run's own CI facts. The free-text `reason` can name a person too, and erasing the
+link does not remove that.
+
+Two different pseudonyms show two Iltero users, not two people; the model checks only that they differ. Iltero
+Platform states in `requester_and_run_starter` whether the requester is the person who started the run, or that it
+could not tell. The field says nothing of who triggered a later attempt of the run. A requester who started the run
+(`same_user`) is recorded, not refused, so separation of duties rests on Iltero Platform and on a reader that checks
+this field. The model reads the field as Iltero Platform's claim and does not check it.
 
 ### A stage that applies served exceptions
 
@@ -3589,8 +3658,10 @@ The stage that applies served exceptions is the `plan` stage of an `iac_change`
 | `engine` | string | The evaluator that gave the result, such as `opa` or `checkov`. |
 | `exception_id` | identifier | The `id` of the served exception that covers it. |
 
-The copy names the requester and the approver of each exception, by identity provider and id, so a record of a run
-Iltero Platform opened keeps the identifiers of those people among its files.
+The copy names the requester and the approver of each exception by the pseudonym Iltero issued their Iltero users for
+the organization, and gives each exception's `reason`, so a record of a run Iltero Platform opened keeps those
+pseudonyms and reasons among its files. Erasing which user a pseudonym stands for removes Iltero's link only (see
+[ServedExceptions](#servedexceptions)).
 
 The model refuses a record that breaks one of these rules (`iltero_schemas.models.common.provenance`,
 `ServedExceptionsUsed`):
@@ -3625,9 +3696,9 @@ The reason is the first that holds: one of the reasons `why_no_exception` gives,
 
 ### Checking the kept copy
 
-The model does not read the copy. Every reader of a record whose stage applied served exceptions must call
-`served_exception_problems(car, files)` (`iltero_schemas.models.iac.exception_evidence`), on a record whose structure
-holds, and must not trust the record while it returns any problem. `files` is a [`KeptFiles`](#the-check-a-reader-runs)
+The model does not read the copy. `served_exception_problems(car, files)`
+(`iltero_schemas.models.iac.exception_evidence`) does, on a record whose structure holds; a reader calls it through
+[`kept_file_problems`](#checking-a-record-against-its-kept-files). `files` is a [`KeptFiles`](#the-check-a-reader-runs)
 whose `served_exceptions` holds the bytes of each copy. For each such stage it checks that:
 
 - the copy is kept and has the stage's `digest`;

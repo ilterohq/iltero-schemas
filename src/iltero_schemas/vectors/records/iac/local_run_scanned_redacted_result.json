@@ -66,6 +66,7 @@
       "not_evaluated": 0,
       "error": 0
     },
+    "failed_checks_excepted": 0,
     "evaluations": 15,
     "gaps": [
       {
@@ -3574,6 +3575,7 @@
           "pass": 2,
           "unknown": 5
         },
+        "failed_checks_excepted": 0,
         "subjects_evaluated": 3,
         "subjects_in_scope": {
           "counted_from": "plan_resource_enumeration",

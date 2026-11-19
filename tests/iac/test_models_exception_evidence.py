@@ -18,6 +18,7 @@ from iltero_schemas.models.iac.exception_evidence import (
     NOT_GIVEN,
     NOT_KEPT,
     NOT_READABLE,
+    SERVED_LEFT_OUT,
     SERVED_NOT_READABLE,
     local_exception_problems,
     served_exception_problems,
@@ -25,7 +26,7 @@ from iltero_schemas.models.iac.exception_evidence import (
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from tests.conftest import VECTORS, documents
 from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
-from tests.records import set_pointer, valid_case_record
+from tests.records import served, set_pointer, valid_case_record
 
 WHERE = "stages.plan.scanners.local_exceptions"
 
@@ -194,7 +195,11 @@ def _keeping(record: dict[str, Any], data: bytes) -> dict[str, Any]:
 
 def test_every_failed_result_a_record_names_as_excepted_is_one_its_kept_served_exceptions_cover() -> None:
     cases = json.loads((VECTORS / "records_valid" / "iac" / "cases.json").read_text(encoding="utf-8"))
-    served = [case["name"] for case in cases if "/stages/plan/served_exceptions" in case["set"]]
+    served = [
+        case["name"]
+        for case in cases
+        if valid_case_record("iac", case["name"])["stages"].get("plan", {}).get("served_exceptions") is not None
+    ]
     assert SERVED_CASE in served
     for name in served:
         assert _served_problems(valid_case_record("iac", name), _kept_by_digest()) == [], name
@@ -241,3 +246,23 @@ def test_a_copy_larger_than_a_document_may_be_is_listed_unread() -> None:
     data = canonical_bytes({**SERVED_DOCUMENT, "padding": "x" * MAX_SERVED_EXCEPTIONS_BYTES})
     record = _keeping(valid_case_record("iac", SERVED_CASE), data)
     assert _served_problems(record, {digest(data): data}) == [(SERVED, SERVED_NOT_READABLE)]
+
+
+def test_a_check_two_evaluators_failed_with_one_named_as_excepted_is_listed_as_left_out() -> None:
+    record = served(json.loads((VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")))
+    opa = next(
+        event
+        for event in record["events"]
+        if event["assertion"]["id"].endswith("S3.PUBLIC_ACCESS_BLOCKED")
+        and event["provenance"]["evaluator"]["engine"] == "opa"
+    )
+    failure = {
+        "assertion": opa["assertion"],
+        "resource": opa["subject"]["identities"][0],
+        "engine": "opa",
+        "exception_id": "exc_0002",
+    }
+    data = canonical_bytes(SERVED_DOCUMENT)
+    record["stages"]["plan"]["served_exceptions"]["excepted_failures"] = [failure]
+    record = _keeping(record, data)
+    assert _served_problems(record, {digest(data): data}) == [(f"{SERVED}.excepted_failures", SERVED_LEFT_OUT)]

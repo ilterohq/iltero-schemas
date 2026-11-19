@@ -9,7 +9,7 @@ stage found can never be cured by another stage's checks.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Final, Literal, get_args
 
 from pydantic import AfterValidator, Field, model_validator
 
@@ -50,15 +50,26 @@ STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "no
 # required check could not be decided (``undecided``); or the stage could not make every required check
 # (``incomplete``). A required check is an assertion the stage was required to evaluate, about a subject in scope.
 VerdictValue = Literal["met", "not_met", "undecided", "incomplete"]
-# The verdicts from the one that wins to the one that loses, when several stages fold into one: a failed check is
-# never hidden by a gap, and the evidence status still says when a required check was not made
-# (``REQUIRED_CHECKS_REASON``).
-VERDICT_ORDER: tuple[VerdictValue, ...] = ("not_met", "incomplete", "undecided", "met")
-# Why a verdict is incomplete, the one that wins first: a required check was not evaluated (a required assertion with no
-# evaluation, a check not evaluated, a truncated list, a state not read: ``every_required_check_made``), or an
-# evaluator ended in an error.
+# Why a verdict is incomplete: a required check was not evaluated (a required assertion with no evaluation, a check
+# not evaluated, a truncated list, a state not read: ``every_required_check_made``), or an evaluator ended in an error.
 IncompleteReason = Literal["not_evaluated", "evaluator_failed"]
-INCOMPLETE_ORDER: tuple[IncompleteReason, ...] = ("not_evaluated", "evaluator_failed")
+# Why a verdict is ``not_met`` although nothing else is open: every failed check is one an exception the server served
+# covers in full (``Coverage.failed_checks_excepted``). The checks did not pass: their results stay ``fail``.
+ExceptedReason = Literal["every_failure_excepted"]
+EVERY_FAILURE_EXCEPTED: Final[ExceptedReason] = "every_failure_excepted"
+VerdictReason = IncompleteReason | ExceptedReason
+# Every verdict a stage or a record may give, with its reason, from the one that wins to the one that loses when
+# several stages fold into one: a failure no exception covers is never hidden by a gap, a gap or an undecided check is
+# never hidden by failures exceptions cover, and the evidence status still says when a required check was not made
+# (``REQUIRED_CHECKS_REASON``).
+VERDICT_RANKING: tuple[tuple[VerdictValue, VerdictReason | None], ...] = (
+    ("not_met", None),
+    ("incomplete", "not_evaluated"),
+    ("incomplete", "evaluator_failed"),
+    ("undecided", None),
+    ("not_met", EVERY_FAILURE_EXCEPTED),
+    ("met", None),
+)
 
 
 # More inputs than a configuration reads from other units, and few enough that a record stays small.
@@ -69,29 +80,31 @@ class Verdict(StrictModel):
     """A verdict, why it is incomplete when it is, and where it came from.
 
     A stage's verdict follows from that stage's own counts (``status_counts``).
-    A record's is the verdict of the stage that wins by ``VERDICT_ORDER``
+    A record's is the verdict of the stage that wins by ``VERDICT_RANKING``
     (``stage_precedence``), and names that stage.
     """
 
     value: VerdictValue
-    # Present exactly when the verdict is incomplete.
-    reason: IncompleteReason | None
+    # Why the verdict is incomplete, or why it is ``not_met`` with every failure excepted; null otherwise
+    # (``VERDICT_RANKING``).
+    reason: VerdictReason | None
     computed_from: Literal["status_counts", "stage_precedence"]
     stage: StageValue | None
 
     @model_validator(mode="after")
     def _one_meaning(self) -> Verdict:
-        if (self.reason is None) != (self.value != "incomplete"):
-            raise ValueError("a verdict names its reason exactly when it is incomplete")
+        if (self.value, self.reason) not in VERDICT_RANKING:
+            raise ValueError(
+                "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted"
+            )
         if (self.stage is None) != (self.computed_from == "status_counts"):
             raise ValueError("a verdict names its stage exactly when it was taken from a stage")
         return self
 
     @property
-    def rank(self) -> tuple[int, int]:
-        """Where the verdict comes in ``VERDICT_ORDER``, and an incomplete one's reason in ``INCOMPLETE_ORDER``."""
-        reason = INCOMPLETE_ORDER.index(self.reason) if self.reason is not None else 0
-        return VERDICT_ORDER.index(self.value), reason
+    def rank(self) -> int:
+        """Where the verdict, with its reason, comes in ``VERDICT_RANKING``."""
+        return VERDICT_RANKING.index((self.value, self.reason))
 
 
 # Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
@@ -271,6 +284,9 @@ class Coverage(StrictModel):
     assertions_evaluated: Count
     subjects_per_assertion: dict[str, Count]
     status_counts: dict[Status, Count]
+    # The failed checks, of those ``status_counts`` counts, that an exception the server served covers in full
+    # (``verdicts.excepted_failure_count``); 0 at a stage that applies no served exceptions.
+    failed_checks_excepted: Count
     # Each evaluator's own results before they combine, by engine (``none`` for evaluations no evaluator ran): one per
     # assertion and subject it evaluated, so they add up to the events, not to ``evaluations``. The verdict reads only
     # ``status_counts``, where a required scanner's gap can cancel another evaluator's pass. A scanner's counts are its
@@ -296,6 +312,8 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        if self.failed_checks_excepted > self.status_counts["fail"]:
+            raise ValueError("a stage counts no more failed checks as excepted than it has failed checks")
         self._check_evaluator_status_counts()
         if postponed_count(self.gaps) > self.status_counts["unknown"]:
             raise ValueError(f"a stage counts no more checks as {CHECKED_AFTER_DEPLOYMENT} than it left unknown")
@@ -365,10 +383,10 @@ def every_required_check_made(coverage: Coverage) -> bool:
     )
 
 
-def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, IncompleteReason | None]:
+def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, VerdictReason | None]:
     """The verdict the stage's counts call for."""
     counts = coverage.status_counts
-    if counts["fail"]:
+    if counts["fail"] > coverage.failed_checks_excepted:
         return "not_met", None
     if not every_required_check_made(coverage):
         return "incomplete", "not_evaluated"
@@ -377,15 +395,17 @@ def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, IncompleteReason |
     # A check postponed until after the deployment is decided later, not undecided.
     if counts["unknown"] > postponed_count(coverage.gaps):
         return "undecided", None
-    return "met", None
+    return ("not_met", EVERY_FAILURE_EXCEPTED) if counts["fail"] else ("met", None)
 
 
 def stage_outcome(coverage: Coverage) -> StageOutcome:
     """A stage's verdict and evidence status, from its own counts by the one rule every reader can recompute.
 
-    The verdict: ``not_met`` whenever a required check failed; otherwise ``incomplete`` when it could not make every
-    required check (``not_evaluated``, which a state after the apply that was not read also gives) or an evaluator
-    ended in an error (``evaluator_failed``); then ``undecided`` for a check it could not decide; otherwise ``met``.
+    The verdict: ``not_met`` whenever a required check failed that no exception the server served covers in full;
+    otherwise ``incomplete`` when it could not make every required check (``not_evaluated``, which a state after the
+    apply that was not read also gives) or an evaluator ended in an error (``evaluator_failed``); then ``undecided``
+    for a check it could not decide; then ``not_met`` with ``every_failure_excepted`` when checks failed and served
+    exceptions cover every one; otherwise ``met``.
 
     The evidence has gaps for every reason that holds, listed in the order of ``GAP_REASON_PRECEDENCE``: an evaluator
     ended in an error, even one another evaluator's verdict on the same assertion and subject outweighed; the state

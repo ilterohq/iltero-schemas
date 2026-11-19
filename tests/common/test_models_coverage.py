@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from iltero_schemas.models.common.coverage import (
     MAX_GAPS,
     MAX_SUBSTITUTED_INPUTS,
-    VERDICT_ORDER,
+    VERDICT_RANKING,
     CountGap,
     Coverage,
     StageOutcome,
@@ -27,6 +27,7 @@ from iltero_schemas.models.common.evidence_status import (
     SUBSTITUTED_REASON,
 )
 from iltero_schemas.models.common.fields import MAX_RESOURCES, RAW_TEXT_MAX_BYTES
+from iltero_schemas.models.common.record_coverage import combine
 from tests.conftest import VECTORS
 
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
@@ -67,8 +68,15 @@ DEPLOYED_STAGE: dict[str, Any] = _outcome(
 DEPLOYED = StageOutcome.model_validate(DEPLOYED_STAGE)
 
 
-def test_the_verdict_order_puts_a_failed_check_first() -> None:
-    assert VERDICT_ORDER == ("not_met", "incomplete", "undecided", "met")
+def test_the_verdict_ranking_puts_a_failure_no_exception_covers_first_and_excepted_failures_just_before_met() -> None:
+    assert VERDICT_RANKING == (
+        ("not_met", None),
+        ("incomplete", "not_evaluated"),
+        ("incomplete", "evaluator_failed"),
+        ("undecided", None),
+        ("not_met", "every_failure_excepted"),
+        ("met", None),
+    )
 
 
 @pytest.mark.parametrize(
@@ -352,3 +360,72 @@ def test_a_count_gap_names_a_kind_a_count_can_describe() -> None:
     with pytest.raises(ValidationError, match="kind must be a gap a count can describe: ") as e:
         CountGap.model_validate({"kind": "made_up_kind", "count": 1})
     assert "made_up_kind" not in str(e.value)
+
+
+# The plan stage of the conformance vector without its undecided check: two failed checks and two passed ones.
+DECIDED = {
+    **PLAN_STAGE["coverage"],
+    "status_counts": PLAN_STAGE["coverage"]["status_counts"] | {"unknown": 0, "pass": 3},
+}
+
+
+def _verdict(coverage: dict[str, Any]) -> tuple[str, str | None]:
+    verdict = stage_outcome(Coverage.model_validate(coverage)).verdict
+    return verdict.value, verdict.reason
+
+
+def test_a_stage_whose_every_failure_a_served_exception_covers_and_nothing_else_open_is_not_met_for_that_reason() -> (
+    None
+):
+    assert _verdict({**DECIDED, "failed_checks_excepted": 2}) == ("not_met", "every_failure_excepted")
+
+
+def test_a_stage_with_a_failure_no_exception_covers_is_not_met() -> None:
+    assert _verdict({**DECIDED, "failed_checks_excepted": 1}) == ("not_met", None)
+
+
+def test_a_stage_with_no_failure_is_met_whatever_it_applied() -> None:
+    clean = {**DECIDED, "status_counts": DECIDED["status_counts"] | {"fail": 0, "pass": 5}}
+    assert _verdict(clean) == ("met", None)
+
+
+def test_a_stage_whose_failures_are_excepted_still_shows_a_check_it_could_not_decide() -> None:
+    assert _verdict({**PLAN_STAGE["coverage"], "failed_checks_excepted": 2}) == ("undecided", None)
+
+
+def test_a_stage_counts_no_more_failed_checks_as_excepted_than_it_has_failed_checks() -> None:
+    with pytest.raises(ValidationError, match="no more failed checks as excepted than it has failed checks"):
+        Coverage.model_validate({**DECIDED, "failed_checks_excepted": 3})
+
+
+@pytest.mark.parametrize(
+    ("value", "reason"),
+    [("met", "every_failure_excepted"), ("incomplete", "every_failure_excepted"), ("not_met", "not_evaluated")],
+)
+def test_a_verdict_gives_only_the_reasons_its_value_may_have(value: str, reason: str) -> None:
+    with pytest.raises(ValidationError, match="exactly when it is incomplete, or not_met with every failure excepted"):
+        Verdict.model_validate({"value": value, "reason": reason, "computed_from": "status_counts", "stage": None})
+
+
+def _stage(base: dict[str, Any], value: str, reason: str | None) -> StageOutcome:
+    verdict = {"value": value, "reason": reason, "computed_from": "status_counts", "stage": None}
+    return StageOutcome.model_validate({**base, "verdict": verdict})
+
+
+@pytest.mark.parametrize(
+    ("other", "winner"),
+    [
+        (("not_met", None), ("not_met", None, "post_deploy")),
+        (("incomplete", "not_evaluated"), ("incomplete", "not_evaluated", "post_deploy")),
+        (("undecided", None), ("undecided", None, "post_deploy")),
+        (("met", None), ("not_met", "every_failure_excepted", "plan")),
+    ],
+    ids=["failure no exception covers", "incomplete", "undecided", "met"],
+)
+def test_a_record_shows_excepted_failures_only_when_no_other_stage_is_worse(
+    other: tuple[str, str | None], winner: tuple[str, str | None, str]
+) -> None:
+    plan = _stage(PLAN_STAGE, "not_met", "every_failure_excepted")
+    deployed = _stage(DEPLOYED_STAGE, *other)
+    verdict = combine([("plan", plan), ("post_deploy", deployed)]).verdict
+    assert (verdict.value, verdict.reason, verdict.stage) == winner

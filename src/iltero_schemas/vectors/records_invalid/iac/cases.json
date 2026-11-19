@@ -916,6 +916,7 @@
           "not_evaluated": 0,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 5,
         "gaps": [
           {
@@ -1482,6 +1483,7 @@
               "pass": 2,
               "unknown": 1
             },
+            "failed_checks_excepted": 0,
             "subjects_evaluated": 2,
             "subjects_in_scope": {
               "counted_from": "plan_resource_enumeration",
@@ -2048,6 +2050,7 @@
               "pass": 0,
               "unknown": 0
             },
+            "failed_checks_excepted": 0,
             "subjects_evaluated": 2,
             "subjects_in_scope": {
               "counted_from": "change_unit",
@@ -3108,6 +3111,7 @@
             "pass": 0,
             "unknown": 0
           },
+          "failed_checks_excepted": 0,
           "subjects_evaluated": 0,
           "subjects_in_scope": {
             "counted_from": "change_unit",
@@ -3655,6 +3659,7 @@
           "not_evaluated": 0,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 5,
         "gaps": [],
         "truncated": {
@@ -5274,6 +5279,7 @@
           "not_evaluated": 0,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 4,
         "gaps": [],
         "truncated": {
@@ -9761,7 +9767,7 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/served_exceptions": {
-        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": [
           {
@@ -9790,13 +9796,13 @@
           "tool": "served_exceptions",
           "version": "0.1.0"
         },
-        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
         "media_type": "application/json",
         "path": "units/root/plan/served-exceptions.json",
         "redaction_policy": null,
         "ref_id": "plan/served-exceptions.json",
         "retention_until": null,
-        "size_bytes": 1533,
+        "size_bytes": 1718,
         "source": null,
         "storage_uri": null
       }
@@ -9812,7 +9818,7 @@
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
       "/coverage/assertions_required/origin": "server_pinned",
       "/stages/plan/served_exceptions": {
-        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
         "copy_path": "units/root/plan/served-exceptions.json",
         "excepted_failures": [
           {
@@ -9857,13 +9863,13 @@
           "tool": "served_exceptions",
           "version": "0.1.0"
         },
-        "digest": "sha256:7c49af9650c127776713e6dd7e97262c455e6ffe1285e206aefb17590c9d7f9e",
+        "digest": "sha256:78769e03ddb3d6b5d28df1b64c5806fad2af695b9c5b3e5b68f2370f4fa14c17",
         "media_type": "application/json",
         "path": "units/root/plan/served-exceptions.json",
         "redaction_policy": null,
         "ref_id": "plan/served-exceptions.json",
         "retention_until": null,
-        "size_bytes": 1533,
+        "size_bytes": 1745,
         "source": null,
         "storage_uri": null
       }
@@ -9907,5 +9913,104 @@
     },
     "remove": [],
     "message": "copy of the exceptions the server served it is an entry of the evidence register of its own"
+  },
+  {
+    "name": "iac_record_counting_more_failed_checks_excepted_than_it_has_failed_checks",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": [
+          {
+            "assertion": {
+              "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+              "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+              "version": "1.0.0"
+            },
+            "resource": {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            },
+            "engine": "opa",
+            "exception_id": "exc_0002"
+          }
+        ]
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:ab46ce8c9e731e3943ffdd5fed3bcc368dc42a4600c81e8e661c0671abfcc248",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 1718,
+        "source": null,
+        "storage_uri": null
+      },
+      "/stages/plan/coverage/failed_checks_excepted": 3,
+      "/coverage/failed_checks_excepted": 3
+    },
+    "remove": [],
+    "message": "a stage counts no more failed checks as excepted than it has failed checks"
+  },
+  {
+    "name": "iac_record_of_a_run_the_tool_opened_counting_a_failure_as_excepted",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/stages/plan/coverage/failed_checks_excepted": 1,
+      "/coverage/failed_checks_excepted": 1
+    },
+    "remove": [],
+    "message": "a stage that applies no served exceptions counts no failure as excepted"
+  },
+  {
+    "name": "iac_record_whose_met_verdict_names_the_reason_excepted_failures_give",
+    "vector": "iac/local_run.json",
+    "set": {
+      "/governance/run_opened_by": "server",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/stages/plan/served_exceptions": {
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "copy_path": "units/root/plan/served-exceptions.json",
+        "excepted_failures": []
+      },
+      "/stages/plan/reference_time/source": "server",
+      "/evidence_refs/-": {
+        "canonicalization": "RFC8785",
+        "collected_at": "2026-09-22T13:00:13.568Z",
+        "collector": {
+          "tool": "served_exceptions",
+          "version": "0.1.0"
+        },
+        "digest": "sha256:7c293a757a3460545a0c221961641cbb81597d8bd2d445b1af77da033c6898a9",
+        "media_type": "application/json",
+        "path": "units/root/plan/served-exceptions.json",
+        "redaction_policy": null,
+        "ref_id": "plan/served-exceptions.json",
+        "retention_until": null,
+        "size_bytes": 157,
+        "source": null,
+        "storage_uri": null
+      },
+      "/stages/plan/verdict/reason": "every_failure_excepted",
+      "/stages/plan/verdict/value": "met"
+    },
+    "remove": [],
+    "message": "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted"
   }
 ]

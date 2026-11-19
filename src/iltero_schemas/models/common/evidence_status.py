@@ -28,7 +28,7 @@ STATE_DETAIL: Final = "the state after the apply was not read, so no outcome of 
 # gate that never ran before the deployment. Only a record holds it, never a stage.
 STAGE_NOT_REPORTED_REASON: Final = "expected_stage_not_reported"
 # Why the evidence of a stage that did not make every required check has gaps, whatever its verdict: a failed check
-# makes the verdict ``not_met``, and this reason still says checks are missing.
+# no served exception covers makes the verdict ``not_met``, and this reason still says checks are missing.
 REQUIRED_CHECKS_REASON: Final = "required_checks_not_evaluated"
 # Why a record's evidence has gaps while a check its plan stage postponed has not been settled: it stopped before
 # post-verify (``models.iac.postponed_checks``). Only a record holds it, never a stage.

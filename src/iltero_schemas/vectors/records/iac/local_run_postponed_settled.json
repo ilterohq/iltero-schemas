@@ -358,6 +358,7 @@
       "not_evaluated": 0,
       "error": 0
     },
+    "failed_checks_excepted": 0,
     "evaluations": 8,
     "gaps": [
       {
@@ -1841,6 +1842,7 @@
           "pass": 0,
           "unknown": 1
         },
+        "failed_checks_excepted": 0,
         "subjects_evaluated": 5,
         "subjects_in_scope": {
           "counted_from": "plan_resource_enumeration",
@@ -2077,6 +2079,7 @@
           "pass": 1,
           "unknown": 0
         },
+        "failed_checks_excepted": 0,
         "subjects_evaluated": 1,
         "subjects_in_scope": {
           "counted_from": "deployment_unit",
@@ -2195,6 +2198,7 @@
           "pass": 2,
           "unknown": 0
         },
+        "failed_checks_excepted": 0,
         "subjects_evaluated": 1,
         "subjects_in_scope": {
           "counted_from": "deployment_unit",

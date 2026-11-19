@@ -167,6 +167,7 @@
           "not_evaluated": 3,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -221,6 +222,7 @@
           "not_evaluated": 3,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -325,6 +327,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -379,6 +382,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -806,6 +810,7 @@
           "not_evaluated": 0,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [],
         "truncated": {
@@ -960,6 +965,7 @@
           "not_evaluated": 1,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 2,
         "gaps": [
           {
@@ -1015,6 +1021,7 @@
           "not_evaluated": 1,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 4,
         "gaps": [
           {
@@ -1104,6 +1111,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 2,
         "gaps": [
           {
@@ -1159,6 +1167,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 4,
         "gaps": [
           {
@@ -1316,6 +1325,7 @@
           "not_evaluated": 0,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 4,
         "gaps": [],
         "truncated": {

@@ -31,15 +31,15 @@
         "valid_from": "2026-11-01T00:00:00Z",
         "expires_at": "2027-02-01T00:00:00Z",
         "requested_by": {
-          "provider": "iltero",
-          "id": "user_7"
+          "provider": "iltero_pseudonym",
+          "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
         },
         "approved_by": {
-          "provider": "iltero",
-          "id": "user_3"
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
         },
         "approved_at": "2026-10-30T14:12:00Z",
-        "requester_is_run_actor": false,
+        "requester_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       },
       {
@@ -66,15 +66,15 @@
         "valid_from": "2026-09-01T00:00:00Z",
         "expires_at": "2026-12-01T00:00:00Z",
         "requested_by": {
-          "provider": "iltero",
-          "id": "user_7"
+          "provider": "iltero_pseudonym",
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
         },
         "approved_by": {
-          "provider": "iltero",
-          "id": "user_3"
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
         },
         "approved_at": "2026-08-31T09:30:00Z",
-        "requester_is_run_actor": true,
+        "requester_and_run_starter": "same_user",
         "reason": "The access logs are shared with an outside auditor until the next change moves them."
       }
     ]

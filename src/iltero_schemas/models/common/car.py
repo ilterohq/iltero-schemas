@@ -85,10 +85,9 @@ KIND = "ChangeAssuranceRecord"
 # it recomputes to, so the reader can report an edited value as an integrity failure rather than as a record it cannot
 # read. With it set, the model no longer checks that the change digest is the change's, or that an approval is of this
 # change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
-# trust the record while it returns any problem. Every reader of a record holding an evaluation from a scanner's
-# results, with or without this key, also calls ``scanner_results.scanner_evidence_problems`` with the files its stages
-# kept, and every reader of a record whose stage applied served exceptions calls
-# ``exception_evidence.served_exception_problems``; each refuses to trust the record while it returns any problem.
+# trust the record while it returns any problem. Every reader of a record of a change made with an IaC tool, with or
+# without this key, calls ``kept_file_problems.kept_file_problems`` with the files its stages kept, which makes every
+# check, and refuses to trust the record while it returns any problem.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
 # A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.

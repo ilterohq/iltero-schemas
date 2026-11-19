@@ -46,6 +46,9 @@ CHANGED: list[tuple[str, str, Any]] = [
     ("records", "/stages/plan/resource_redaction", None),
     # The exceptions the server served a stage, which a run the tool opened never applies.
     ("records", "/stages/plan/served_exceptions", None),
+    # The failed checks served exceptions cover in full: none in a run the tool opened.
+    ("records", "/stages/plan/coverage/failed_checks_excepted", 0),
+    ("records", "/coverage/failed_checks_excepted", 0),
     (
         "records",
         "/units_file/units",

@@ -77,9 +77,9 @@ class LocalException(StrictModel):
 
 class LocalExceptionsSpec(StrictModel):
     """The exceptions, each id once, and at most one exception for an assertion, environment and resource at any
-    time, so the one that covers a result is never a choice."""
+    time, so the one that covers a result is never a choice. Empty for a project that has none yet."""
 
-    exceptions: Annotated[list[LocalException], Field(min_length=1, max_length=MAX_FACT_ITEMS)]
+    exceptions: Annotated[list[LocalException], Field(max_length=MAX_FACT_ITEMS)]
 
     @model_validator(mode="after")
     def _one_exception_at_a_time(self) -> LocalExceptionsSpec:

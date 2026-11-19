@@ -18,6 +18,7 @@ from iltero_schemas.models.common.coverage import (
 from iltero_schemas.models.common.verdicts import (
     NO_DECISION_STATUSES,
     evaluator_did_not_decide_counts,
+    excepted_failure_count,
     no_decision_reason_counts,
     stage_verdicts,
 )
@@ -25,6 +26,7 @@ from iltero_schemas.models.common.verdicts import (
 if TYPE_CHECKING:
     from iltero_schemas.models.common.event import AssuranceEvent
     from iltero_schemas.models.common.fields import Status
+    from iltero_schemas.models.common.served_exceptions import ExceptedFailure
     from iltero_schemas.models.common.server_facts import Engine
 
 
@@ -73,10 +75,12 @@ def count_problems(
     *,
     required: Collection[str],
     required_scanners: frozenset[str],
+    excepted_failures: Sequence[ExceptedFailure],
 ) -> list[tuple[str, str]]:
     """Every count of the stage at ``where`` that is not what its ``events`` give, where ``required`` are the
-    assertions the stage was required to evaluate (each ``<id>@<version>``) and ``required_scanners`` the scanners the
-    run requires, as (where, what) pairs."""
+    assertions the stage was required to evaluate (each ``<id>@<version>``), ``required_scanners`` the scanners the
+    run requires and ``excepted_failures`` the failed results the stage names as covered by a served exception, as
+    (where, what) pairs."""
     problems: list[tuple[str, str]] = []
     verdicts = stage_verdicts(events, required_scanners=required_scanners)
     if events_count != len(events):
@@ -99,6 +103,12 @@ def count_problems(
     tally = Counter(verdict.status for verdict in verdicts.values())
     if any(tally[status] != number for status, number in coverage.status_counts.items()):
         problems.append((f"{where}.coverage", "does not count the combined statuses of the stage's evaluations"))
+    if coverage.failed_checks_excepted != excepted_failure_count(
+        events, excepted_failures, required_scanners=required_scanners
+    ):
+        problems.append(
+            (f"{where}.coverage", "does not count the failed checks the exceptions the stage names cover in full")
+        )
     if coverage.evaluator_status_counts != evaluator_status_counts(events):
         problems.append(
             (f"{where}.coverage", "does not count, for each evaluator, the statuses of the evaluations it gave")

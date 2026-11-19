@@ -4,24 +4,24 @@
     "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/approved_by": {
-        "provider": "iltero",
-        "id": "user_7"
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
       }
     },
     "remove": [],
     "message": "an exception is approved by someone other than who asked for it"
   },
   {
-    "name": "exception_naming_its_people_by_two_identity_providers",
+    "name": "exception_naming_a_person_by_an_identity_providers_account",
     "vector": "plan.json",
     "set": {
       "/spec/exceptions/0/approved_by": {
         "provider": "github",
-        "id": "583232"
+        "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
       }
     },
     "remove": [],
-    "message": "an exception names who asked for it and who approved it by one identity provider"
+    "message": "Input should be 'iltero_pseudonym'"
   },
   {
     "name": "exception_approved_after_it_expires",
@@ -109,15 +109,15 @@
         "valid_from": "2026-11-01T00:00:00Z",
         "expires_at": "2027-02-01T00:00:00Z",
         "requested_by": {
-          "provider": "iltero",
-          "id": "user_7"
+          "provider": "iltero_pseudonym",
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
         },
         "approved_by": {
-          "provider": "iltero",
-          "id": "user_3"
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
         },
         "approved_at": "2026-10-30T14:12:00Z",
-        "requester_is_run_actor": false,
+        "requester_and_run_starter": "different_users",
         "reason": "The database is reached through a private link added in the next change."
       }
     },
@@ -141,5 +141,17 @@
     },
     "remove": [],
     "message": "Input should be 'resources'"
+  },
+  {
+    "name": "one_requester_found_both_to_have_started_the_run_and_not",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1/requested_by": {
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+      }
+    },
+    "remove": [],
+    "message": "a run has one starter, so one requester is found to be them, or not, in every exception"
   }
 ]

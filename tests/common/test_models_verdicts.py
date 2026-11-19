@@ -7,12 +7,15 @@ import json
 import pytest
 
 from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.event import AssuranceEvent
 from iltero_schemas.models.common.fields import Status
+from iltero_schemas.models.common.served_exceptions import ExceptedFailure
 from iltero_schemas.models.common.verdicts import (
     COMBINING_ORDER,
     CombinedVerdict,
     Evaluated,
     combined_verdict,
+    excepted_failure_count,
     no_decision_reason_counts,
 )
 from tests.conftest import VECTORS
@@ -174,3 +177,43 @@ def test_a_required_checkov_whose_report_counts_results_it_does_not_list_leaves_
         assert combined_verdict([passed, unlisted], required_scanners=required) == CombinedVerdict(
             "unknown", ("checkov",)
         )
+
+
+SCANNED = CAR.model_validate(json.loads((VECTORS / "records" / "iac" / "local_run_scanned.json").read_text("utf-8")))
+LOGS_EVENTS = [
+    event
+    for event in SCANNED.events
+    if event.assertion.id.endswith("S3.PUBLIC_ACCESS_BLOCKED") and event.subject.identities[0].value.endswith(".logs")
+]
+
+
+def _excepted(*events: AssuranceEvent) -> list[ExceptedFailure]:
+    return [
+        ExceptedFailure.model_validate(
+            {
+                "assertion": event.assertion,
+                "resource": event.subject.identities[0],
+                "engine": event.engine,
+                "exception_id": "exc_1",
+            }
+        )
+        for event in events
+    ]
+
+
+def test_a_failed_check_is_excepted_in_full_when_every_evaluator_that_failed_it_is_named() -> None:
+    assert {event.engine for event in LOGS_EVENTS} == {"opa", "checkov"}
+    assert all(event.evaluation.status == "fail" for event in LOGS_EVENTS)
+    assert excepted_failure_count(LOGS_EVENTS, _excepted(*LOGS_EVENTS), required_scanners=NONE) == 1
+
+
+def test_a_failed_check_with_one_failing_evaluator_left_unnamed_is_not_excepted() -> None:
+    opa = next(event for event in LOGS_EVENTS if event.engine == "opa")
+    assert excepted_failure_count(LOGS_EVENTS, _excepted(opa), required_scanners=NONE) == 0
+
+
+@pytest.mark.parametrize("status", ["unknown", "error", "not_evaluated"])
+def test_a_failed_check_another_evaluator_left_open_is_not_excepted(status: str) -> None:
+    opa, checkov = sorted(LOGS_EVENTS, key=lambda event: event.engine != "opa")
+    open_check = checkov.model_copy(update={"evaluation": checkov.evaluation.model_copy(update={"status": status})})
+    assert excepted_failure_count([opa, open_check], _excepted(opa), required_scanners=NONE) == 0

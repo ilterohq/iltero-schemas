@@ -1,0 +1,82 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "ServedExceptions",
+  "metadata": {
+    "run_id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+    "stage": "plan"
+  },
+  "spec": {
+    "exceptions": [
+      {
+        "id": "exc_0001",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "digest": "sha256:ec6df87595883ffe18ae330382951dcb2c13d8df456106d455a2ad02c49f2b14",
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION",
+            "version": "1.0.0"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_db_instance.payments"
+            }
+          ]
+        },
+        "valid_from": "2026-09-01T00:00:00Z",
+        "expires_at": "2026-12-01T00:00:00Z",
+        "requested_by": {
+          "provider": "iltero_pseudonym",
+          "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+        },
+        "approved_by": {
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+        },
+        "approved_at": "2026-08-31T09:30:00Z",
+        "requester_and_run_starter": "could_not_tell",
+        "reason": "Backups are taken by the storage team's own schedule until the next change sets the retention."
+      },
+      {
+        "id": "exc_0002",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+            "version": "1.0.0",
+            "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            }
+          ]
+        },
+        "valid_from": "2026-09-01T00:00:00Z",
+        "expires_at": "2026-12-01T00:00:00Z",
+        "requested_by": {
+          "provider": "iltero_pseudonym",
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
+        },
+        "approved_by": {
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+        },
+        "approved_at": "2026-08-31T09:30:00Z",
+        "requester_and_run_starter": "same_user",
+        "reason": "The access logs are shared with an outside auditor until the next change moves them."
+      }
+    ]
+  }
+}

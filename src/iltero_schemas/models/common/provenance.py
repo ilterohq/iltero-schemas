@@ -95,6 +95,8 @@ def _check_served_exceptions(car: CAR, issued: bool) -> None:
                 "them at, and only there"
             )
         if record.served_exceptions is None:
+            if record.coverage.failed_checks_excepted:
+                raise ValueError("a stage that applies no served exceptions counts no failure as excepted")
             continue
         if record.reference_time.source != "server":
             raise ValueError("a stage that applies served exceptions reads its time from the server")

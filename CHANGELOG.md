@@ -1108,9 +1108,9 @@ keep, so any two tools agree on what a record means.
     was read from. For each report the
     record names who supplied it, what it read, its results,
     unreadable results, results about the configuration and the files the
-    tool could not parse. A reader must call
-    `scanner_evidence_problems` with the files the stage kept (`KeptFiles`):
-    it rebuilds the observations from the kept report and the one plan the
+    tool could not parse. `scanner_evidence_problems`, which a reader calls
+    through `kept_file_problems` with the files the stage kept (`KeptFiles`),
+    rebuilds the observations from the kept report and the one plan the
     stage kept, and checks every evaluation against the verdict they give.
   - A plan stage may postpone a check that read a value the plan knows only
     after the deployment (`values_known_after_deployment: postpone`). It
@@ -1135,8 +1135,9 @@ keep, so any two tools agree on what a record means.
     the `server_facts_unavailable` marker as before. An evaluation input is at most 16 MiB of canonical JSON, and
     the input's `assurance` part has a shape: an assertion's current and
     previous results about one subject, and the deployments in between.
-  - A project's own exceptions file (`LocalExceptions` v1) names, for each
-    exception, an assertion, an environment, resources and a period, and who
+  - A project's own exceptions file (`LocalExceptions` v1) holds 0 to 256
+    exceptions, so a project with none keeps a valid file with
+    `exceptions: []`. It names, for each exception, an assertion, an environment, resources and a period, and who
     the project says approved it: it is the project's own word. Each
     resource is named by its address, scoped by exactly its unit, each
     exception lasts at most 365 days of 24 hours from its `valid_from`
@@ -1167,15 +1168,35 @@ keep, so any two tools agree on what a record means.
     `MAX_SERVED_EXCEPTIONS_BYTES`). A served exception names the assertion document it was
     approved for by `id`, `version` and `digest` (`scope.kind: resources`),
     who asked for it (`requested_by`), who approved it and when
-    (`approved_by`, `approved_at`), and whether the requester's Iltero user
-    started the run or triggered the attempt it is served to
-    (`requester_is_run_actor`, Iltero Platform's finding). It
-    is approved no later than it expires, and the requester and approver are
-    different accounts of one identity provider; that check does not show
-    the two accounts belong to two people. Every exception, a project's or a served one,
+    (`approved_by`, `approved_at`), each by the pseudonym Iltero issued
+    their Iltero user for the organization (`Pseudonym`: `provider:
+    iltero_pseudonym` and a UUID `id`), and
+    whether the requester is the person who started the run
+    (`requester_and_run_starter`, Iltero Platform's finding: `same_user`,
+    `different_users` only when it linked both to Iltero users and they
+    differ, which shows two Iltero users and not two people, or
+    `could_not_tell`, which never means they differ). It says nothing of who
+    triggered a later attempt. `same_user` is recorded, not refused, so
+    separation of duties rests on Iltero Platform and on a reader that checks
+    this field. In one document, one requester has one
+    `requester_and_run_starter` ("a run has one starter, so one requester is
+    found to be them, or not, in every exception"). Iltero
+    Platform reads the exceptions in force when it opens a run and serves
+    that one document to every plan stage of the run; each plan stage holds
+    an exception to its own reference time. It
+    is approved no later than it expires, and the requester and the approver
+    have different pseudonyms: two Iltero users, not necessarily two people.
+    A pseudonym is the same for one Iltero user in every exception of the
+    organization, and unrelated to the same person's pseudonym in another
+    organization. Erasing
+    which user it stands for removes Iltero's link only: the pseudonym stays
+    the same across the organization's exceptions, the record names the run's own CI facts, and
+    the free-text `reason` can name a person, so the person may still be
+    identified. Every exception, a project's or a served one,
     follows the same rules (`iltero_schemas.models.common.exception_terms`),
     the 365-day limit included. A project's exception is `LocalException`.
     Vectors: `served_exceptions/plan.json`,
+    `served_exceptions/plan_covering_every_failure.json`,
     `served_exceptions/plan_without_exceptions.json`,
     `served_exceptions/deployed_run_plan_without_exceptions.json` and
     `served_exceptions_invalid/cases.json`.
@@ -1199,20 +1220,46 @@ keep, so any two tools agree on what a record means.
     `digest`), and approved no later than the stage's reference time; or the
     reason none does, the reasons of any exception first, then
     `approved_for_another_document_of_the_assertion` and
-    `approved_after_the_reference_time`. Every reader of such a record must
-    call `served_exception_problems` with the copy in
-    `KeptFiles.served_exceptions`: it checks the copy's digest, that it is
+    `approved_after_the_reference_time`. `served_exception_problems`, which
+    every reader calls through `kept_file_problems` with the copy in
+    `KeptFiles.served_exceptions`, checks the copy's digest, that it is
     canonical and valid, that it was served to the record's run, stage and
     environment, and that `excepted_failures` is exactly what
     `served_exception_for` gives. That shows the record agrees with the copy
     it kept, not that Iltero Platform served it or that Iltero approved the
     exceptions in it: only Iltero Platform can check that. The copy names
-    the requester and the approver of each exception, by identity provider
-    and id, so records now name people.
+    the requester and the approver of each exception by their pseudonyms,
+    with its `reason`, so a record keeps those among its files.
     `served_exceptions_kept/cases.json` checks copies a reader is given
     against a record. Every record vector has
     `served_exceptions: null` at each stage, and a `set` pointer in a case
     file may end in `-` to append to a list.
+  - A stage counts the failed checks served exceptions cover in full
+    (`Coverage.failed_checks_excepted`, recomputed by
+    `verdicts.excepted_failure_count`): every `fail` event of the check is
+    one of the stage's `excepted_failures`, and every other event of it is
+    `pass` or `not_applicable`. The count is at most the stage's failed
+    checks ("a stage counts no more failed checks as excepted than it has
+    failed checks"), 0 at a stage that applies no served exceptions ("a stage that applies no
+    served exceptions counts no failure as excepted"), and summed in the
+    record's coverage. A stage whose every failed check is covered in full,
+    with nothing else open, is `not_met` with the reason
+    `every_failure_excepted`. The checks did not pass: their events stay
+    `fail`. A stage that also left a check undecided or not made shows that
+    instead. A failure with no resource address, a built-in's failure, a
+    check another evaluator could not decide and a postponed check that
+    fails at post-verify are never excepted. A project's exception never
+    gives this reason. The reason says nothing about whether an exception
+    was justified, or about compliance; a tool that lets a gate proceed on it
+    applies its own policy, not a pass.
+  - `kept_file_problems(car, files)`
+    (`iltero_schemas.models.iac.kept_file_problems`) makes, in one call, every
+    check a reader makes of an `iac_change` record: `integrity_problems`,
+    `scanner_evidence_problems`, `served_exception_problems` and
+    `postponed_check_problems`. Every reader of such a record calls it, with
+    or without `SKIP_INTEGRITY_CHECKS`, and does not trust the record while
+    it returns any problem. An empty list means every check a reader can make
+    holds; what only Iltero Platform can check stays unchecked.
   - These checks show that each verdict follows from what the stage kept.
     They do not show that the scanner ran, that the report is what it wrote,
     that it read the plan the record names, or that its version is genuine.
@@ -1309,19 +1356,22 @@ keep, so any two tools agree on what a record means.
   | `value` | Meaning |
   | --- | --- |
   | `met` | Every required check passed, did not apply, or was postponed until after the deployment. A stage none of whose required assertions found a subject, or that was required to evaluate none, is `met`, and its evidence says so. A check postponed until after the deployment counts as decided later. |
-  | `not_met` | A required check failed. |
+  | `not_met` | A required check failed. `reason` is `every_failure_excepted` when served exceptions cover every failed check in full and nothing else is open; the checks still did not pass. |
   | `undecided` | A required check could not be decided: it is `unknown`, and not a check postponed until after the deployment. |
   | `incomplete` | The stage could not make every required check. `reason` says why: `not_evaluated` (a required assertion has no evaluation, a required check was not evaluated, the list of evaluations was cut short, or the state after the apply was not read) or `evaluator_failed` (an evaluator ended in an error). |
 
-  `reason` is present exactly when the value is `incomplete`, or the record
-  is refused with "a verdict names its reason exactly when it is
-  incomplete". A record holds no exit code: the Iltero CLI turns a verdict
+  `reason` is present exactly when the value is `incomplete`, or `not_met`
+  with every failure excepted, or the record is refused with "a verdict
+  names its reason exactly when it is incomplete, or not_met with every
+  failure excepted". A record holds no exit code: the Iltero CLI turns a verdict
   into its own process exit code.
 
-  A stage's verdict is `not_met` whenever a required check failed. Otherwise
-  it is `incomplete` (with `not_evaluated` before `evaluator_failed`), then
-  `undecided`, and otherwise `met` (`VERDICT_ORDER`, `INCOMPLETE_ORDER`). A
-  record's verdict is the stage verdict that comes first in the same order,
+  A stage's verdict is `not_met` whenever a required check failed that no
+  served exception covers in full. Otherwise it is `incomplete` (with
+  `not_evaluated` before `evaluator_failed`), then `undecided`, then
+  `not_met` with `every_failure_excepted`, and otherwise `met`
+  (`VERDICT_RANKING`). A record's verdict is the stage verdict that comes
+  first in the same ranking,
   from the earliest such stage on a tie, and names that stage
   (`computed_from: stage_precedence`). Before, a check that was not made
   outranked a failure, so a stage with five failures and one missing check
@@ -1375,7 +1425,7 @@ keep, so any two tools agree on what a record means.
   | --- | --- |
   | A verdict's `value`: `pass`, `fail`, `indeterminate` | `met`, `not_met`, `undecided`, `incomplete` |
   | A verdict's `exit_code` | Removed; an `incomplete` verdict names its `reason` |
-  | `VERDICT_PRECEDENCE` (exit codes), `VERDICT_WORDS` | `VERDICT_ORDER`, `INCOMPLETE_ORDER` |
+  | `VERDICT_PRECEDENCE` (exit codes), `VERDICT_WORDS` | `VERDICT_RANKING` |
   | `assurance_status` (`AssuranceStatus`), on a stage and on a record | `evidence_status` (`EvidenceStatus`) |
   | An assurance status's `complete`, `incomplete` | An evidence status's `whole`, `has_gaps` |
   | An assurance status's one `reason` and `detail` | `reasons`, every reason with its `stage` and `detail`; `EvidenceStatus.leading_reason` gives the first |

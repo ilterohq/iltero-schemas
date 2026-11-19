@@ -35,6 +35,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from iltero_schemas.models.common.coverage import EvaluatorDidNotDecideGap
+from iltero_schemas.models.common.exception_terms import resource_key
 from iltero_schemas.models.common.fields import Status
 from iltero_schemas.models.common.scanner_evaluator import (
     NO_RESULT_IN_THE_REPORT,
@@ -46,6 +47,7 @@ from iltero_schemas.models.common.scanner_evaluator import (
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import StageRecord
     from iltero_schemas.models.common.event import AssuranceEvent
+    from iltero_schemas.models.common.served_exceptions import ExceptedFailure
 
 # Every status, the one that wins first.
 COMBINING_ORDER: tuple[Status, ...] = ("fail", "unknown", "pass", "not_applicable", "error", "not_evaluated")
@@ -180,3 +182,35 @@ def stage_verdicts(
             Evaluated(engine=event.engine, status=event.evaluation.status, status_reason=event.evaluation.status_reason)
         )
     return {key: combined_verdict(verdicts, required_scanners=required_scanners) for key, verdicts in grouped.items()}
+
+
+# The statuses another evaluator may give a check whose failure an exception covers and still leave nothing open.
+DECIDED_BESIDE_AN_EXCEPTED_FAILURE: frozenset[Status] = frozenset({"pass", "not_applicable"})
+
+
+def excepted_failure_count(
+    events: Iterable[AssuranceEvent], excepted_failures: Iterable[ExceptedFailure], *, required_scanners: frozenset[str]
+) -> int:
+    """How many of one stage's failed checks, by assertion and subject, a served exception covers in full: every
+    ``fail`` event of the check is one of ``excepted_failures`` (by its assertion, resource and engine), and every other
+    event of the check gave ``pass`` or ``not_applicable``. A check where another evaluator decided nothing, or could
+    not settle the value, is not covered in full."""
+    listed = {(failure.assertion, resource_key(failure.resource), failure.engine) for failure in excepted_failures}
+    events = list(events)
+    grouped: dict[tuple[str, str | None], list[AssuranceEvent]] = {}
+    for event in events:
+        grouped.setdefault((event.assertion.id, event.subject.key), []).append(event)
+    verdicts = stage_verdicts(events, required_scanners=required_scanners)
+
+    def covered(event: AssuranceEvent) -> bool:
+        if event.evaluation.status in DECIDED_BESIDE_AN_EXCEPTED_FAILURE:
+            return True
+        return event.evaluation.status == "fail" and any(
+            (event.assertion, resource_key(identity), event.engine) in listed for identity in event.subject.identities
+        )
+
+    return sum(
+        1
+        for key, checks in grouped.items()
+        if verdicts[key].status == "fail" and all(covered(event) for event in checks)
+    )

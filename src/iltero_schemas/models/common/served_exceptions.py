@@ -11,9 +11,16 @@ exception covers each failed result (``served_exception_for``) from the copy the
 agrees with the copy it kept, not that the server served it: only the server can check that. The rules every exception
 follows are in ``models.common.exception_terms``.
 
-The contract checks that the requester and the approver are different accounts of one identity provider. That is the
-least it can check: the server compares them as Iltero users, and records whether the requester's Iltero user is
-whoever started the run or triggered the attempt the exception is served to (``requester_is_run_actor``).
+The exception names who asked for it and who approved it by the pseudonym Iltero issued each one's Iltero user
+(``Pseudonym``), not by an account at an identity provider. Iltero keeps which user each pseudonym stands for; erasing
+that removes Iltero's link only. A pseudonym is the same in every exception of that user, and the record also names the
+run's own continuous integration (CI) facts, so the person may still be identified without it. The contract checks
+that the two pseudonyms differ: two Iltero users, which does not show they are two people. The server says whether
+the requester is the person who started the run (``requester_and_run_starter``), or that it could not tell; it says
+nothing of who triggered a later attempt of the run.
+
+The server reads the exceptions in force when it opens a run and serves that one document to every plan stage of the
+run; a run opened later reads them again. Each plan stage still holds an exception to its own reference time.
 """
 
 from __future__ import annotations
@@ -45,7 +52,7 @@ from iltero_schemas.models.common.fields import (
     Uuid,
     parse_timestamp,
 )
-from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, Actor, Engine, Text
+from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, Engine, Text
 
 KIND = "ServedExceptions"
 # The largest served exceptions document, in canonical JSON bytes: far more than the exceptions in force for one stage
@@ -58,6 +65,19 @@ MAX_SERVED_EXCEPTIONS_BYTES = 16 * 1024 * 1024
 NoServedExceptionReason = (
     NoExceptionReason | Literal["approved_for_another_document_of_the_assertion", "approved_after_the_reference_time"]
 )
+
+
+# Whether the person who asked for an exception started the run it is served to (``ServedException``).
+RequesterAndRunStarter = Literal["same_user", "different_users", "could_not_tell"]
+
+
+class Pseudonym(StrictModel):
+    """An Iltero user, by the pseudonym Iltero issued them for the organization: the same for one user in every
+    exception of that organization, and unrelated to the same person's pseudonym in another. Iltero keeps which user it
+    stands for."""
+
+    provider: Literal["iltero_pseudonym"]
+    id: Uuid
 
 
 class ResourcesScope(StrictModel):
@@ -81,11 +101,14 @@ class ServedException(StrictModel):
     scope: ResourcesScope
     valid_from: Timestamp
     expires_at: Timestamp
-    requested_by: Actor
-    approved_by: Actor
+    requested_by: Pseudonym
+    approved_by: Pseudonym
     approved_at: Timestamp
-    # Whether the requester's Iltero user started the run or triggered the attempt it is served to, as the server found.
-    requester_is_run_actor: bool
+    # Whether the requester is the person who started the run, as the server found: ``same_user``; ``different_users``,
+    # only when the server linked both to Iltero users and they differ, which shows two Iltero users, not two people;
+    # or ``could_not_tell``, when it could not link them, which never means they differ. A requester who started the
+    # run is recorded, not refused: a reader judges it.
+    requester_and_run_starter: RequesterAndRunStarter
     reason: Text
 
     @model_validator(mode="after")
@@ -93,8 +116,6 @@ class ServedException(StrictModel):
         check_exception(self)
         if parse_timestamp(self.approved_at) > parse_timestamp(self.expires_at):
             raise ValueError("an exception is approved no later than it expires")
-        if self.requested_by.provider != self.approved_by.provider:
-            raise ValueError("an exception names who asked for it and who approved it by one identity provider")
         if self.requested_by.id == self.approved_by.id:
             raise ValueError("an exception is approved by someone other than who asked for it")
         return self
@@ -116,6 +137,14 @@ class ServedExceptionsSpec(StrictModel):
     @model_validator(mode="after")
     def _one_exception_at_a_time(self) -> ServedExceptionsSpec:
         check_exception_list(self.exceptions)
+        found: dict[str, str] = {}
+        for exception in self.exceptions:
+            if found.setdefault(exception.requested_by.id, exception.requester_and_run_starter) != (
+                exception.requester_and_run_starter
+            ):
+                raise ValueError(
+                    "a run has one starter, so one requester is found to be them, or not, in every exception"
+                )
         return self
 
 

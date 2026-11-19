@@ -173,3 +173,8 @@ def test_a_yaml_time_written_without_quotes_is_not_a_time_the_contract_reads() -
     assert unquoted != FILE_BYTES
     with pytest.raises(ValueError):
         read_local_exceptions(unquoted, "exceptions.yaml")
+
+
+def test_a_projects_exceptions_file_may_hold_no_exception_yet() -> None:
+    empty = b"apiVersion: iltero.com/v1\nkind: LocalExceptions\nmetadata:\n  name: payments\nspec:\n  exceptions: []\n"
+    assert read_local_exceptions(empty, ".iltero/exceptions.yml").spec.exceptions == []

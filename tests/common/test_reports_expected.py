@@ -58,6 +58,8 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, reason: st
         assert pre_deploy is None and Stage.PRE_DEPLOY in car.expected_stages
     if reason == "not_in_activity" and property_name == "scanner_evidence":
         assert not activity.stages_that_read_scanner_reports
+    elif reason == "not_in_activity" and property_name == "exceptions":
+        assert activity.stage_that_applies_served_exceptions is None and not activity.stages_that_read_scanner_reports
     elif reason == "not_in_activity":
         assert Stage.PRE_DEPLOY not in activity.stages
     if reason == "project_exception_relied_on":
@@ -74,7 +76,12 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, reason: st
             stage.served_exceptions and stage.served_exceptions.excepted_failures for stage in car.stages.values()
         )
     if reason == "server_facts_unavailable":
-        assert pre_deploy is not None and isinstance(pre_deploy.approvals, ServerFactsUnavailable)
+        read = {"approval_identity": "approvals", "commit_review": "commit_review"}[property_name]
+        assert pre_deploy is not None and isinstance(getattr(pre_deploy, read), ServerFactsUnavailable)
+    if reason == "approvals_listed":
+        assert pre_deploy is not None and isinstance(pre_deploy.approvals, list) and pre_deploy.approvals
+    if reason == "reviewed":
+        assert pre_deploy is not None and getattr(pre_deploy.commit_review, "outcome", None) == "reviewed"
     if reason == "server_bundle_named":
         assert names_the_servers_bundle(car)
     if reason == "local_assertions":

@@ -38,7 +38,6 @@ from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, pac
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import AssuranceEvent, events_file_bytes
-from iltero_schemas.models.common.kept_inputs import kept_input_problems
 from iltero_schemas.models.common.pinned_evaluator import evaluator_binary_result
 from iltero_schemas.models.common.reference_time import ReferenceTime
 from iltero_schemas.models.common.served_exceptions import ServedExceptions
@@ -83,7 +82,7 @@ DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
 # per change type it has documents of; events are of IaC changes only. A document folder also holds its one
 # digests.json.
 SPLIT_FOLDERS = {
-    folder: set(CHANGE_TYPES) for folder in ("contexts", "kept_inputs", "records", "reports", *SPLIT_CASE_FOLDERS)
+    folder: set(CHANGE_TYPES) for folder in ("contexts", "kept_files", "records", "reports", *SPLIT_CASE_FOLDERS)
 } | {
     folder: {"iac"}
     for folder in (
@@ -329,7 +328,7 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "reports_expected",
         "reports_invalid",
         "scan_coverage",
-        "kept_inputs",
+        "kept_files",
         "scanner_evidence",
         "scanner_reports",
         "scanner_verdicts",
@@ -676,42 +675,6 @@ def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> N
     observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
     expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))
     assert observed == expected
-
-
-# Each record whose kept evaluation inputs the vectors hold, in the folder named after it, at the paths its register
-# names them by; a case's kept inputs sit in this folder instead, in one named after the case.
-KEPT_INPUT_CASES = "cases"
-KEPT_INPUT_RECORDS = sorted(
-    path.relative_to(VECTORS / "kept_inputs").as_posix()
-    for change_type in CHANGE_TYPES
-    for path in (VECTORS / "kept_inputs" / change_type).iterdir()
-    if path.is_dir() and path.name != KEPT_INPUT_CASES
-)
-
-
-def kept_inputs(name: str) -> dict[str, bytes]:
-    """The evaluation inputs the record ``name`` (``iac/local_run``) kept, by the digest its register names each by."""
-    record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
-    folder = VECTORS / "kept_inputs" / name
-    return {
-        ref["digest"]: (folder / ref["path"]).read_bytes()
-        for ref in record["evidence_refs"]
-        if (folder / ref["path"]).is_file()
-    }
-
-
-@pytest.mark.parametrize("name", KEPT_INPUT_RECORDS)
-def test_every_evaluation_input_a_record_kept_is_about_its_environment_and_change(name: str) -> None:
-    record = CAR.model_validate(json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8")))
-    inputs = kept_inputs(name)
-    named = {
-        event.provenance.input_digest
-        for event in record.events
-        if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
-    }
-    assert named and named == set(inputs)
-    assert all(digest(data) == named_digest for named_digest, data in inputs.items())
-    assert kept_input_problems(record, inputs) == []
 
 
 def _case_records() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:

@@ -3164,7 +3164,8 @@ Key rules:
   | `source_identity` | `not_performed` | `run_opened_locally` | The tool opened the run, so no CI job was verified. |
   | `approval_identity` | `claimed_by_record` | `approvals_listed` | The pre-deploy stage lists approvals: its writer's claim. |
   | `approval_identity` | `not_performed` | `no_approval_served` | Iltero Platform opened the run, and the pre-deploy stage keeps an empty list of approvals. |
-  | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `not_in_activity` | The record's activity has no pre-deploy stage, as an image build has none. |
+  | `approval_identity`, `commit_review` | `not_assessed` | `not_in_activity` | The record's activity has no pre-deploy stage, as an image build has none. |
+  | `exceptions` | `not_assessed` | `not_in_activity` | The record's activity applies no exception at any stage, Iltero Platform's or the project's own, as an image build or deploy applies none. |
   | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `pre_deploy_out_of_scope` | The record leaves the pre-deploy stage out of scope. |
   | `approval_identity`, `exceptions`, `commit_review` | `not_performed` | `run_opened_locally` | The tool opened the run, so Iltero Platform served no approval, exception or commit review, and no check of one happened. |
   | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `pre_deploy_pending` | The record expects the pre-deploy stage, and the run that would report it is still in progress. |
@@ -3238,7 +3239,9 @@ Key rules:
 - `iltero_schemas.models.iac.report_results.exception_results(car, files)` gives each exception result that holds for
   a record, with its detail, from the record and the files its stages kept (a
   [`KeptFiles`](#the-check-a-reader-runs)). A verifier passes these, with the pre-deploy results that hold, to
-  `first_that_holds`. The served results apply only to a run Iltero Platform opened.
+  `first_that_holds`. The served results apply only to a run Iltero Platform opened. `not_in_activity` holds when
+  the record's activity applies no exception at any stage, as for an image build or deploy, whoever opened the run;
+  it comes before `run_opened_locally`.
 - `server_facts_unavailable` applies only to a run Iltero Platform opened. Neither `server_facts_unavailable` nor
   `not_read_by_the_stage` is ever an `exceptions` result.
 - The `reference_time` result follows the weakest source any stage took its time from.

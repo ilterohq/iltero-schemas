@@ -1944,13 +1944,18 @@ keep, so any two tools agree on what a record means.
   change than the record's". `KeptFiles` gains `inputs`, and
   `kept_file_problems` makes this check too; a reader of an image record calls
   it directly, beside `integrity_problems`.
-- New conformance vectors for the kept inputs. `kept_inputs/`, split into
-  `iac/` and `image/`, holds each record's kept evaluation inputs in a folder
-  named after the record (`iac/local_run/`,
+- New conformance vectors for the files a record kept that a reader checks.
+  `kept_files/`, split into `iac/` and `image/`, holds each record's kept
+  evaluation inputs and, for a run Iltero Platform opened, the plan stage's
+  copy of the exceptions it was served (`served-exceptions.json`), in a
+  folder named after the record (`iac/local_run/`,
   `image/local_run_deploy_rolled_out/`), at the paths its evidence register
   names them by, and, under `iac/cases/`, the inputs of the `records_valid/`
   case `iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers`,
-  whose production value is `false`. `records/iac/local_run.json` is the
+  whose production value is `false`, and the served exceptions copy of the
+  case
+  `iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check`.
+  `records/iac/local_run.json` is the
   record the Iltero CLI writes, run with the pinned evaluator: it names the
   pinned OPA binary for `darwin-aarch64` and the digest of the bundle it
   evaluated. `records/image/local_run_deploy_rolled_out.json` is an image
@@ -1979,6 +1984,7 @@ keep, so any two tools agree on what a record means.
   | `claimed_by_record` | `served_exception_approved_by_run_starter` | The plan stage relies on a served exception, and the kept copy says the person who approved it started the run. |
   | `claimed_by_record` | `served_exception_relied_on` | The plan stage names a failed result a served exception covers, and the kept copy gives that exception. Only Iltero Platform confirms that it served that copy, who approved each exception and whether one was revoked later; whether an exception was in force rests on the stage's reference time, itself the record's claim. |
   | `claimed_by_record` | `served_exceptions_not_relied_on` | The plan stage applied the served exceptions and names no failed result they cover. |
+  | `not_assessed` | `not_in_activity` | The record's activity applies no exception at any stage, Iltero Platform's or the project's own, as an image build or deploy applies none. |
 
   | Case | Before | Now |
   | --- | --- | --- |
@@ -2028,3 +2034,39 @@ keep, so any two tools agree on what a record means.
   scanners gave only gaps, and of a build. A test works out every `iac/`
   expected `exceptions` and `scanner_evidence` result from its record and
   kept files.
+- Six new records of runs Iltero Platform opened, which the Iltero CLI wrote
+  with the pinned evaluator. Each evaluates a bundle Iltero Platform served,
+  signed by the development key `dev-bundle-test-vectors`, which no shipped
+  trust set accepts.
+
+  | Record | What it shows |
+  | --- | --- |
+  | `iac/governed_run.json` | A plan stage in a production environment, with no exception served; `not_met`. |
+  | `iac/governed_run_every_failure_excepted.json` | A plan stage outside production whose every failure a served exception covers; `not_met` with `every_failure_excepted`. |
+  | `iac/governed_run_every_failure_excepted_one_check_undecided.json` | A plan with a value known only after the deployment, in production, whose every failure is excepted and one check is undecided; `undecided`. |
+  | `iac/governed_run_deployed.json` | Plan, pre-deploy and post-deploy stages, with an independent approval with the `security` role and a reviewed commit review served; `met`. |
+  | `iac/governed_run_deployed_without_server_facts.json` | The same run with the unknown marker for every fact Iltero Platform serves the pre-deploy stage; `undecided`. |
+  | `image/governed_run_deploy_rolled_out.json` | An image deploy through pre-deploy, post-deploy and post-verify on a captured rollout, with an accepted build served; `met`. |
+
+  Their kept files are in `kept_files/`, and a test runs every check a
+  reader makes over each record whose kept files the vectors hold:
+  `kept_input_problems`, and `kept_file_problems` for an `iac_change`
+  record; the two hand-kept records `iac/local_run_scanned` and
+  `iac/local_run_scanned_project_required`, whose `kept_files/` folders
+  hold the scanner files their plan stage kept (scanner check mapping
+  copies, reports, observations and the redacted plan) and no evaluation
+  input, are left out. Another test checks that every file in every
+  `kept_files/` folder, a case's included, has the digest and size its
+  evidence register entry names. New `reports_expected/` cases cover the
+  exceptions of a run Iltero Platform opened that relies on no served
+  exception and of one that relies on served exceptions, the scanner
+  evidence of such a run with no scanner report, the approvals and commit
+  review Iltero Platform served (`approvals_listed`, `reviewed`) or that
+  stayed unknown (`could_not_decide`, `server_facts_unavailable`), the
+  reference time of a plan stage that left a check undecided (`server`),
+  and the exceptions of an image deploy, opened by Iltero Platform or by
+  the tool (`not_in_activity`).
+- The `exceptions` result of an image deploy the tool opened is now
+  `not_assessed` with `not_in_activity`, not `not_performed` with
+  `run_opened_locally`, since `not_in_activity` comes first in
+  `PRE_DEPLOY_RESULT_ORDER`.

@@ -1,0 +1,123 @@
+"""Every record whose kept files the vectors hold passes every check a reader makes with them."""
+
+from __future__ import annotations
+
+import copy
+import json
+
+import pytest
+
+from iltero_schemas.canonical import digest
+from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY
+from iltero_schemas.models.common.kept_inputs import kept_input_problems
+from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
+from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
+from tests.conftest import CHANGE_TYPES, VECTORS
+from tests.iac.test_models_scanner_results import ASSERTION_DOCUMENTS
+from tests.records import kept_files_of, valid_case_record
+
+# Each record whose kept files a reader checks the vectors hold, its evaluation inputs and the exceptions the server
+# served it, in the folder named after it, at the paths its register names them by; a case's kept files sit in this
+# folder instead, in one named after the case.
+KEPT_FILE_CASES = "cases"
+# Records whose evaluation inputs the vectors do not hold; only the scanner files they kept are here.
+KEPT_WITHOUT_INPUTS = frozenset({"iac/local_run_scanned", "iac/local_run_scanned_project_required"})
+KEPT_FILE_RECORDS = sorted(
+    path.relative_to(VECTORS / "kept_files").as_posix()
+    for change_type in CHANGE_TYPES
+    for path in (VECTORS / "kept_files" / change_type).iterdir()
+    if path.is_dir() and path.name != KEPT_FILE_CASES
+)
+
+
+@pytest.mark.parametrize("name", [name for name in KEPT_FILE_RECORDS if name not in KEPT_WITHOUT_INPUTS])
+def test_every_check_a_reader_makes_holds_for_a_record_whose_kept_files_the_vectors_hold(name: str) -> None:
+    record = CAR.model_validate(json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8")))
+    kept = kept_files_of(name)
+    named = {
+        event.provenance.input_digest
+        for event in record.events
+        if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
+    }
+    served = {stage.served_exceptions.digest for stage in record.stages.values() if stage.served_exceptions is not None}
+    assert named and set(kept) == named | served
+    assert all(digest(data) == named_digest for named_digest, data in kept.items())
+    inputs = {named_digest: kept[named_digest] for named_digest in named}
+    assert kept_input_problems(record, inputs) == []
+    if record.change.activity == IAC_CHANGE_ACTIVITY:
+        files = KeptFiles(
+            scanner_check_mappings={},
+            observations={},
+            reports={},
+            plans={},
+            assertions={},
+            local_exceptions={},
+            served_exceptions={served_digest: kept[served_digest] for served_digest in served},
+            inputs=inputs,
+        )
+        assert kept_file_problems(record, files) == []
+
+
+def _register(folder: str) -> list[dict[str, object]]:
+    """The register of the record a kept-files folder (``iac/local_run``, ``iac/cases/<case>``) belongs to."""
+    change_type, *rest = folder.split("/")
+    if rest[0] == KEPT_FILE_CASES:
+        document = valid_case_record(change_type, f"{change_type}_{rest[1]}")
+    else:
+        document = json.loads((VECTORS / "records" / f"{folder}.json").read_text(encoding="utf-8"))
+    refs: list[dict[str, object]] = document["evidence_refs"]
+    return refs
+
+
+KEPT_FILE_FOLDERS = sorted(
+    [*KEPT_FILE_RECORDS]
+    + [
+        path.relative_to(VECTORS / "kept_files").as_posix()
+        for change_type in CHANGE_TYPES
+        if (VECTORS / "kept_files" / change_type / KEPT_FILE_CASES).is_dir()
+        for path in (VECTORS / "kept_files" / change_type / KEPT_FILE_CASES).iterdir()
+        if path.is_dir()
+    ]
+)
+
+
+@pytest.mark.parametrize("folder", KEPT_FILE_FOLDERS)
+def test_every_kept_file_holds_the_bytes_its_register_entry_names(folder: str) -> None:
+    root = VECTORS / "kept_files" / folder
+    by_path = {str(ref["path"]): ref for ref in _register(folder)}
+    held = [path for path in root.rglob("*") if path.is_file()]
+    assert held
+    for path in held:
+        relative = path.relative_to(root).as_posix()
+        assert relative in by_path, relative
+        ref = by_path[relative]
+        assert (digest(path.read_bytes()), len(path.read_bytes())) == (ref["digest"], ref["size_bytes"])
+
+
+@pytest.mark.parametrize("name", sorted(KEPT_WITHOUT_INPUTS))
+def test_the_scanner_verdicts_of_a_record_follow_from_the_scanner_files_its_folder_holds(name: str) -> None:
+    record = CAR.model_validate(json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8")))
+    root = VECTORS / "kept_files" / name
+    kept = kept_files_of(name)
+    scanners = record.stages[Stage.PLAN].scanners
+    assert scanners is not None
+    observations = {
+        report.observations: json.loads((root / report.observations).read_bytes()) for report in scanners.reports
+    }
+    plans = {str(observed["plan_digest"]) for observed in observations.values()}
+    files = KeptFiles(
+        scanner_check_mappings={
+            used.copy_path: json.loads((root / used.copy_path).read_bytes()) for used in scanners.scanner_check_mappings
+        },
+        observations=observations,
+        reports={report.report_digest: json.loads(kept[report.report_digest]) for report in scanners.reports},
+        plans={plan: json.loads(kept[plan]) for plan in plans},
+        assertions=copy.deepcopy(ASSERTION_DOCUMENTS),
+        local_exceptions={},
+        served_exceptions={},
+        inputs={},
+    )
+    assert scanner_evidence_problems(record, files) == []

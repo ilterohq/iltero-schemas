@@ -54,6 +54,18 @@ def _record(name: str) -> dict[str, Any]:
     return document
 
 
+# The shipped starters, and the project's own assertions the conformance vectors hold, by the digest of each document.
+ASSERTION_DOCUMENTS: dict[str, Any] = {
+    digest_of(document): document
+    for document in (
+        load_document(path.read_text(encoding="utf-8"))
+        for directory in (ASSERTIONS, VECTORS / "assertions")
+        for path in directory.iterdir()
+        if path.name.endswith(".yaml")
+    )
+}
+
+
 def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
     """The files a scanned record's plan stage kept, read from ``folder``, keyed as ``KeptFiles`` keys them: the
     exceptions file as its bytes."""
@@ -65,13 +77,6 @@ def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
     used = scanners["local_exceptions"]
     exceptions = {} if used is None else {used["digest"]: (folder / PurePosixPath(used["copy_path"]).name).read_bytes()}
     reports = {report["tool"]: report for report in scanners["reports"]}
-    # The shipped starters, and the project's own assertions the conformance vectors hold.
-    documents = [
-        load_document(path.read_text(encoding="utf-8"))
-        for directory in (ASSERTIONS, VECTORS / "assertions")
-        for path in directory.iterdir()
-        if path.name.endswith(".yaml")
-    ]
     return {
         "scanner_check_mappings": {
             used["copy_path"]: json.loads(
@@ -82,7 +87,7 @@ def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
         "observations": {reports[tool]["observations"]: _json(f"{tool}_observations.json") for tool in reports},
         "reports": {reports[tool]["report_digest"]: _json(f"{tool}_report.json") for tool in reports},
         "plans": {digest_of(_json("plan.json")): _json("plan.json")},
-        "assertions": {digest_of(document): document for document in documents},
+        "assertions": copy.deepcopy(ASSERTION_DOCUMENTS),
         "local_exceptions": exceptions,
         "served_exceptions": {},
         "inputs": {},

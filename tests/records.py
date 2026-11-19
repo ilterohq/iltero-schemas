@@ -498,3 +498,15 @@ def set_pointer(document: Any, pointer: str, value: Any) -> None:
         document.append(value)
     else:
         document[int(last) if isinstance(document, list) else last] = value
+
+
+def kept_files_of(name: str) -> dict[str, bytes]:
+    """The files the record ``name`` (``iac/local_run``) kept that the vectors hold, by the digest its register names
+    each by."""
+    record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
+    folder = VECTORS / "kept_files" / name
+    return {
+        ref["digest"]: (folder / ref["path"]).read_bytes()
+        for ref in record["evidence_refs"]
+        if (folder / ref["path"]).is_file()
+    }

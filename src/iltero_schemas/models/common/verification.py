@@ -60,10 +60,11 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str | None]] = 
 )
 # The results a verifier gives the approvals and the commit review the pre-deploy stage reads, and the exceptions a
 # record relied on.
-# not_in_activity: the record's activity has no pre-deploy stage. run_opened_locally: the tool opened the run, so no
-# server served the fact and no check of it happened. server_facts_unavailable: the server opened the run, a check
-# needed the fact, and the stage kept the unknown marker in its place. pre_deploy_pending: the run that would report the
-# stage is still in progress. pre_deploy_out_of_scope: the record leaves the stage out of scope.
+# not_in_activity: the record's activity has no pre-deploy stage, or, for the exceptions, applies no exception at any
+# stage, as an image build or deploy does. run_opened_locally: the tool opened the run, so no server served the fact
+# and no check of it happened. server_facts_unavailable: the server opened the run, a check needed the fact, and the
+# stage kept the unknown marker in its place. pre_deploy_pending: the run that would report the stage is still in
+# progress. pre_deploy_out_of_scope: the record leaves the stage out of scope.
 _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("not_assessed", "not_in_activity"),
@@ -86,7 +87,8 @@ _NOT_READ_BY_THE_STAGE: tuple[VerificationState, str | None] = ("not_assessed", 
 # served_exceptions_not_relied_on: the plan stage applied the exceptions the server served and names no failed result
 # they cover. project_exception_relied_on: an event names an exception from the project's own exceptions file, the
 # project's own word. project_exceptions_file_not_relied_on: a stage applied a project exceptions file and no event
-# relied on an exception from it. Their order with the pre-deploy results is ``PRE_DEPLOY_RESULT_ORDER``.
+# relied on an exception from it. ``exception_results`` also gives the pre-deploy result not_in_activity for an activity
+# that applies no exception at any stage. Their order with the pre-deploy results is ``PRE_DEPLOY_RESULT_ORDER``.
 _EXCEPTION_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("failed", "kept_exceptions_do_not_hold"),

@@ -20,7 +20,7 @@ from iltero_schemas.models.iac.report_results import (
 )
 from tests.conftest import VECTORS, documents
 from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _governed_scanned, _record, kept_files
-from tests.records import valid_case_record
+from tests.records import kept_files_of, valid_case_record
 
 # A run the server opened whose plan stage relies on the exceptions the server served, and one that applies them and
 # relies on none.
@@ -142,8 +142,9 @@ def test_a_record_that_relied_on_a_project_exception_says_so() -> None:
 
 # The expected results of the exceptions and the scanner evidence, each worked out from its record and kept files.
 EXPECTED = [
-    case
-    for case in json.loads((VECTORS / "reports_expected" / "iac" / "cases.json").read_text(encoding="utf-8"))
+    {**case, "change_type": change_type}
+    for change_type in ("iac", "image")
+    for case in json.loads((VECTORS / "reports_expected" / change_type / "cases.json").read_text(encoding="utf-8"))
     if case["property"] in ("exceptions", "scanner_evidence")
 ]
 
@@ -151,16 +152,30 @@ EXPECTED = [
 def _expected_record(case: dict[str, Any]) -> tuple[dict[str, Any], KeptFiles]:
     """The record a case names, with the files it kept: the scanner evidence folder of the record it is built on when
     that record read scanner reports, and the served exceptions documents otherwise."""
+    change_type = case["change_type"]
     if "case" in case["record"]:
-        cases = json.loads((VECTORS / "records_valid" / "iac" / "cases.json").read_text(encoding="utf-8"))
+        cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
         vector = next(c["vector"] for c in cases if c["name"] == case["record"]["case"])
-        record = valid_case_record("iac", case["record"]["case"])
+        record = valid_case_record(change_type, case["record"]["case"])
     else:
         vector = case["record"]["vector"]
         record = json.loads((VECTORS / "records" / vector).read_text(encoding="utf-8"))
-    name = vector.removeprefix("iac/").removesuffix(".json")
-    if record["stages"]["plan"]["scanners"] is None:
-        return record, _served_files()
+    name = vector.removeprefix(f"{change_type}/").removesuffix(".json")
+    scanners = record["stages"].get("plan", {}).get("scanners")
+    if scanners is None:
+        # The files the record kept that the vectors hold, by its register, beside the served exceptions documents the
+        # cases built on it keep.
+        files = _served_files()
+        kept = (
+            kept_files_of(vector.removesuffix(".json"))
+            if (VECTORS / "kept_files" / change_type / name).is_dir()
+            else {}
+        )
+        named = {
+            stage["served_exceptions"]["digest"] for stage in record["stages"].values() if stage["served_exceptions"]
+        }
+        served = {copy: data for copy, data in kept.items() if copy in named}
+        return record, dataclasses.replace(files, served_exceptions={**files.served_exceptions, **served})
     return record, KeptFiles(**kept_files(record, KEPT if name == "local_run_scanned" else EVIDENCE / name))
 
 

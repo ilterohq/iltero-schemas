@@ -54,8 +54,9 @@ def _detail(problems: list[tuple[str, str]]) -> str:
 
 def exception_results(car: CAR, files: KeptFiles) -> dict[ExceptionResult, str | None]:
     """Every exception result that holds for ``car``, with its detail: whether the exceptions files its stages kept
-    give what it names, whether it relied on an exception the server served or one of the project's own, and whether
-    one of those served exceptions was approved by the person who started the run."""
+    give what it names, whether it relied on an exception the server served or one of the project's own, whether one
+    of those served exceptions was approved by the person who started the run, and whether its activity applies no
+    exception at any stage."""
     holding: dict[ExceptionResult, str | None] = {}
     problems = local_exception_problems(car, files) + served_exception_problems(car, files)
     if problems:
@@ -85,6 +86,10 @@ def exception_results(car: CAR, files: KeptFiles) -> dict[ExceptionResult, str |
         holding[("claimed_by_record", "project_exception_relied_on")] = None
     elif any(record.scanners is not None and record.scanners.local_exceptions for record in car.stages.values()):
         holding[("claimed_by_record", "project_exceptions_file_not_relied_on")] = None
+    activity = ACTIVITIES[car.change.activity]
+    # An activity whose stages apply no exception, the server's or the project's own, such as an image deploy.
+    if activity.stage_that_applies_served_exceptions is None and not activity.stages_that_read_scanner_reports:
+        holding[("not_assessed", "not_in_activity")] = None
     return holding
 
 

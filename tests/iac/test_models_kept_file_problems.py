@@ -26,7 +26,7 @@ def _files(case: str | None = None) -> KeptFiles:
     """The served exceptions every case's plan stage may have kept, and the evaluation inputs ``case`` kept."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
     # A case's kept inputs sit in the folder named after it, without its change type's prefix.
-    folder = VECTORS / "kept_inputs" / "iac" / "cases" / case.removeprefix("iac_") if case is not None else None
+    folder = VECTORS / "kept_files" / "iac" / "cases" / case.removeprefix("iac_") if case is not None else None
     inputs = (
         {}
         if folder is None

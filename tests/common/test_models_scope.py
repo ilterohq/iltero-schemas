@@ -28,6 +28,7 @@ DOCUMENT_KINDS = frozenset(
         "AssuranceContext",
         "ChangeAssuranceRecord",
         "ScannerCheckMapping",
+        "ScannerCheckMappingDescriptor",
         "LocalExceptions",
         "PolicySource",
         "ResourceIdentities",

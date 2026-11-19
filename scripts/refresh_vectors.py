@@ -52,6 +52,7 @@ from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
+from iltero_schemas.models.iac.scanner_check_mapping_descriptor import ScannerCheckMappingDescriptor
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -63,6 +64,7 @@ CANONICAL_VECTORS = VECTORS / "canonical"
 # Each folder holds one kind of document, and one digests.json that lists them all.
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     VECTORS / "scanner_check_mappings": ScannerCheckMapping,
+    VECTORS / "scanner_check_mapping_descriptors": ScannerCheckMappingDescriptor,
     VECTORS / "contexts": AssuranceContext,
     VECTORS / "events": AssuranceEvent,
     VECTORS / "identities": ResourceIdentities,

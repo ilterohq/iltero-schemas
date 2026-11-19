@@ -16,6 +16,7 @@ Pydantic model in `iltero_schemas.models`. A consumer validates a document with 
 - [ServedExceptions](#servedexceptions)
 - [PolicySource](#policysource)
 - [AssertionBundleDescriptor](#assertionbundledescriptor)
+- [ScannerCheckMappingDescriptor](#scannercheckmappingdescriptor)
 - [BundleSigningKeys](#bundlesigningkeys)
 
 ## Conventions
@@ -40,6 +41,7 @@ its parent.
 | `ServedExceptions` | [The exceptions Iltero Platform serves one stage of a run](#servedexceptions) | `iltero_schemas.models.common.served_exceptions.ServedExceptions` |
 | `PolicySource` | [A directory of hand-written policies](#policysource) | `iltero_schemas.models.common.policy_source.PolicySource` |
 | `AssertionBundleDescriptor` | [How Iltero Platform serves a signed assertion bundle](#assertionbundledescriptor) | `iltero_schemas.models.common.bundle.BundleDescriptor` |
+| `ScannerCheckMappingDescriptor` | [How Iltero Platform serves a signed scanner check mapping](#scannercheckmappingdescriptor) | `iltero_schemas.models.iac.scanner_check_mapping_descriptor.ScannerCheckMappingDescriptor` |
 | `AssertionBundle` | The assertion bundle's own description, in its `.manifest` file (`iltero_schemas.models.common.bundle.BUNDLE_KIND`) | `iltero_schemas.bundle.check_descriptor`, which rebuilds it |
 | `BundleSigningKeys` | [The trusted bundle keys](#bundlesigningkeys) | `iltero_schemas.trust.parse_bundle_keys` |
 
@@ -48,7 +50,8 @@ Documents take one of two shapes:
 - A document Iltero writes as evidence keeps its content at the top level. Facts about the document itself sit in a
   `metadata` object where the document has any: a record's `metadata` holds its `uuid` and `issuer`, a verification
   report's its `verifier` and `verified_at`, and a resource identities document's its `generator`. An evaluation input,
-  a bundle descriptor, scanner observations and the trust file have no `metadata`.
+  a bundle descriptor, a scanner check mapping descriptor, scanner observations and the trust file have no
+  `metadata`.
 - A document a person writes has four top-level fields: `apiVersion`, `kind`, `metadata`, which says which document
   it is, and `spec`, which holds what it says. A TechnicalAssertion and a ScannerCheckMapping name themselves by
   `metadata.id` and `metadata.version`. LocalExceptions and PolicySource name themselves by `metadata.name`, a
@@ -1147,8 +1150,8 @@ Each entry of `scanner_check_mappings` (`ScannerCheckMappingUsed`) names one sca
 | `digest` | digest | The digest of the scanner check mapping's canonical JSON as parsed, not of the file's bytes. A reader recomputes it from the copy at `copy_path`. |
 | `copy_path` | string | Where the stage kept its copy of the scanner check mapping's canonical JSON, in the record's directory. The copy is an entry of the evidence register by this path and `digest`. |
 | `assertions_mapped` | integer | How many assertions the mapping maps, the length of its `spec.assertion_mappings`, for every scanner and stage, from 0. |
-| `descriptor_digest` | digest or null | The digest of the signed descriptor Iltero Platform served the mapping in. |
-| `key_id` | identifier or null | The key that signed that descriptor. |
+| `descriptor_digest` | digest or null | The digest of the [signed descriptor](#scannercheckmappingdescriptor) Iltero Platform served the mapping in. |
+| `key_id` | identifier or null | The key that signed that descriptor: its [`key_id`](#scannercheckmappingdescriptor). |
 
 `descriptor_digest` and `key_id` are present exactly when `origin` is `served`: "a scanner check mapping names its
 descriptor and signing key exactly when it was served". Iltero Platform compares the mapping's `digest`,
@@ -3907,9 +3910,87 @@ Key rules:
 - A descriptor is at most 64 MiB as canonical JSON (`iltero_schemas.models.common.bundle.MAX_DESCRIPTOR_BYTES`); a larger
   one is refused. The limit is applied to the parsed descriptor, so a tool also caps the bytes it reads before parsing.
 
+## ScannerCheckMappingDescriptor
+
+A scanner check mapping descriptor is how Iltero Platform serves a signed [scanner check
+mapping](#scannercheckmapping). In a run Iltero Platform opens, a stage applies only the mapping served this way. The
+descriptor carries the mapping, its digest, the key that signed it and the signature. A tool checks the descriptor and
+verifies the signature before it reads any scanner result with the mapping.
+
+- **apiVersion:** `iltero.com/v1`, with `kind: ScannerCheckMappingDescriptor`
+- **Model:** `iltero_schemas.models.iac.scanner_check_mapping_descriptor.ScannerCheckMappingDescriptor`
+- **Check:** `iltero_schemas.scanner_check_mappings.check_scanner_check_mapping_descriptor`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `apiVersion`, `kind` | string | `iltero.com/v1` and `ScannerCheckMappingDescriptor`. |
+| `mapping` | object | The ScannerCheckMapping document, as a JSON object. At most 8 MiB of canonical JSON (see below). |
+| `digest` | digest | The digest of `mapping`'s canonical JSON. |
+| `key_id` | identifier | The key that signed the mapping. |
+| `algorithm` | string | `ES256`. |
+| `signature` | string | The ES256 signature over the signing input: the raw 64 bytes `r` then `s`, in base64url with no padding (86 characters), in its low-S form. |
+
+ES256 is ECDSA (the Elliptic Curve Digital Signature Algorithm) on the P-256 curve with SHA-256. The signature form
+and the bytes a key signs are shared with assertion bundles (`iltero_schemas.signing`).
+
+The model refuses a `mapping` larger than 8 MiB as canonical JSON (`MAX_SERVED_SCANNER_CHECK_MAPPING_BYTES`): "the
+mapping is at most 8388608 bytes of canonical JSON". It refuses a mapping that has no canonical form, such as one
+nested too deeply to encode: "the mapping is a JSON object that has a canonical form". The limit is applied to the
+parsed descriptor, so a tool also caps the bytes it reads before parsing.
+
+### What the key signs
+
+The signing input (`iltero_schemas.scanner_check_mappings.iac.descriptor.signing_input(mapping, key_id=...)`) is a
+JSON Web Signature (JWS) header and payload, each written as canonical JSON in base64url with no padding, joined by a
+dot:
+
+| Part | Value |
+| --- | --- |
+| Header | `{"alg": "ES256", "kid": <key_id>, "typ": "JWT"}` |
+| Payload | `{"digest": <the mapping's digest>, "keyid": <key_id>, "scope": "iltero-scanner-check-mappings"}` |
+
+The signer computes SHA-256 over these bytes and signs that digest. The scope names the kind of document signed: a
+verifier asks for exactly the scope of the document it checks, `iltero-scanner-check-mappings` for a mapping and
+`iltero-assertions` for a bundle, so a signature over one is never accepted for the other.
+`iltero_schemas.scanner_check_mappings.iac.descriptor.descriptor` writes the descriptor, with the signature in its
+low-S form whichever form the signer returned.
+
+### Checking a served descriptor
+
+`check_scanner_check_mapping_descriptor(served, keys)` takes the descriptor, read with its model, and the trust set:
+`iltero_schemas.trust.BUNDLE_KEYS`, or a development tool's own set. It checks everything but the signature's
+mathematics and raises `ScannerCheckMappingDescriptorError` naming the first rule that fails, in this order:
+
+| Rule | Refused with |
+| --- | --- |
+| `key_id` names a key in the trust set that is not revoked. | "the descriptor's key_id names a key that is not trusted, or is revoked" |
+| `mapping` is a valid ScannerCheckMapping. | "the descriptor's mapping is not a scanner check mapping" |
+| The mapping's id starts `ILT.SCANNER_CHECKS.` and is not `ILT.SCANNER_CHECKS.STARTER`, the mapping the package ships. | "a served scanner check mapping's id starts ILT.SCANNER_CHECKS. and is not ILT.SCANNER_CHECKS.STARTER" |
+| `digest` is the digest of `mapping`. | "the descriptor's digest is not the digest of its mapping" |
+| `signature` decodes as base64url with no padding. | "a signature is base64url text with no padding" |
+| `signature` is spelled the one way this package writes its bytes: no padding, and the unused bits of its last character zero. A last character with an unused bit set spells the same bytes another way. | "a signature is written in its one base64url spelling: no padding, and the unused bits of its last character zero" |
+| `signature` is 64 bytes, its `r` and `s` each between 0 and the curve order, in its low-S form (`s` at most half the curve order). | "an ES256 signature's r and s each lie between 0 and the curve order", "an ES256 signature is written in its low-S form: s at most half the curve order" |
+
+The model refuses a `signature` that is not 86 characters long or holds a character outside base64url, such as the
+padding `=`. Its message names the field, `signature`.
+
+The check returns an `UnverifiedScannerCheckMapping`:
+
+| Field | Meaning |
+| --- | --- |
+| `key` | The trusted key `key_id` names. |
+| `signed` | The signing input, the bytes the signature is over. |
+| `signature` | The raw 64-byte signature. |
+| `mapping` | The mapping, read with its model. |
+| `descriptor_digest` | The SHA-256 of the RFC 8785 canonical JSON of the descriptor object as served, signature included, written `sha256:<hex>`. A record's `scanners.scanner_check_mappings` entry for the served mapping names this value as its [`descriptor_digest`](#change-assurance-record-car). |
+
+The tool then verifies the ES256 signature over `signed` with `key`. No scanner result is read with the mapping until
+it verifies.
+
 ## BundleSigningKeys
 
-The trusted bundle keys file lists the public keys that may sign an assertion bundle. It ships inside the package
+The trusted bundle keys file lists the public keys that may sign an assertion bundle or a [scanner check
+mapping Iltero Platform serves](#scannercheckmappingdescriptor). It ships inside the package
 as `iltero_schemas/trust/bundle-keys.json`, so a tool that pins one package version also pins the keys it trusts.
 
 - **apiVersion:** `iltero.com/v1`, with `kind: BundleSigningKeys`

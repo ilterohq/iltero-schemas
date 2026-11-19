@@ -1,0 +1,17 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "BundleSigningKeys",
+  "keys": [
+    {
+      "key_id": "dev-scanner-check-mapping-vectors",
+      "algorithm": "ES256",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgLq9t7OWElqzMqaMXv28pwFWSStmtohc/RWcaw3oYAdjgB7TR9oFjK1KcoV3KdqEp2ZkQs0MpPNV2ZG9eeQj0w==",
+      "spki_sha256": "sha256:4e919b56de8448b2a51dd361d5bf394089b6796924246ade0cc65024358dfc58",
+      "status": "active",
+      "valid_from": "2026-11-01T00:00:00Z",
+      "retired_at": null,
+      "revoked_at": null,
+      "revocation_reason": null
+    }
+  ]
+}

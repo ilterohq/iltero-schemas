@@ -1,7 +1,8 @@
-"""The trusted bundle keys: which public keys may sign an assertion bundle, and which no longer may.
+"""The trusted bundle keys: which public keys may sign what the server serves, and which no longer may.
 
-The server signs every assertion bundle it serves. A tool that evaluates
-the bundle checks the signature against the keys listed in
+The server signs every assertion bundle and every scanner check mapping it serves, with the same keys; each
+signature names the kind of document it is over, so one is never accepted for the other. A tool checks the
+signature against the keys listed in
 ``bundle-keys.json`` next to this module. The list ships inside the package,
 so a tool that pins one exact package version also pins which keys it trusts,
 and never fetches trust over the network.

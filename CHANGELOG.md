@@ -38,6 +38,7 @@ keep, so any two tools agree on what a record means.
   | `ServedExceptions` | The exceptions Iltero Platform serves one stage of a run |
   | `PolicySource` | A directory of hand-written policies |
   | `AssertionBundleDescriptor` | How Iltero Platform serves a signed assertion bundle |
+  | `ScannerCheckMappingDescriptor` | How Iltero Platform serves a signed scanner check mapping |
   | `AssertionBundle` | The bundle's own description in its `.manifest` file |
   | `BundleSigningKeys` | The trusted bundle keys file |
 
@@ -579,6 +580,38 @@ keep, so any two tools agree on what a record means.
   (`normalized_signature`), which `descriptor` writes whatever form the
   signer returned, so one signing gives one digest. A run and a bundle each
   hold one version of an assertion.
+- Signed scanner check mappings (`ScannerCheckMappingDescriptor` v1): the
+  document Iltero Platform serves a scanner check mapping in, with the
+  mapping as a JSON object (at most 8 MiB of canonical JSON), its `digest`,
+  the `key_id` that signed it, `algorithm: ES256` and the `signature`, the
+  raw `r` then `s` in base64url with no padding. The key signs a JSON Web
+  Signature (JWS) header and a payload naming the mapping's digest under the
+  scope `iltero-scanner-check-mappings`. ES256 (ECDSA, the Elliptic Curve
+  Digital Signature Algorithm, on P-256 with SHA-256) and its low-S form are
+  shared with assertion bundles (`iltero_schemas.signing`), and a verifier
+  asks for the scope of the document it checks, so a bundle's signature is
+  never accepted for a mapping. `check_scanner_check_mapping_descriptor`
+  checks the key, the mapping and its id (in `ILT.SCANNER_CHECKS.`, not the
+  starter), the digest and the signature's form, in that order, and returns
+  an `UnverifiedScannerCheckMapping`: the tool verifies the signature before
+  it reads any scanner result with the mapping. Its `descriptor_digest` is
+  the value a record names for the served mapping: the SHA-256 of the
+  canonical JSON of the descriptor as served, signature included. New
+  vectors: `scanner_check_mapping_descriptors/` (the sample served mapping,
+  signed once with a development key),
+  `scanner_check_mapping_descriptors_invalid/` (10 refusals, each naming
+  whether the model or the check refuses it in `refused_by`) and
+  `bundle_keys/development.json`, the trust file holding that one
+  development key. `scripts/sign_descriptor_vectors.py` signs the sample
+  again with a new throwaway development key, since a signature cannot be
+  rebuilt from its input. The trusted bundle keys verify both assertion
+  bundles and served scanner check mappings.
+  - `iltero_schemas.bundle.normalized_signature` now raises
+    `SignatureError`, from `iltero_schemas.signing`, instead of
+    `BundleError`. `descriptor` and the bundle check still raise
+    `BundleError`.
+  - `P256_ORDER` moved from `iltero_schemas.bundle.build` to
+    `iltero_schemas.signing`.
 - The verification report (`VerificationReport` v1): what a verifier found
   about one record, property by property, with no overall verdict. No
   property of an unsigned record is verified, and no record carries a

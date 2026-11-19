@@ -40,7 +40,6 @@ from iltero_schemas.ast import AssertionSyntaxError
 from iltero_schemas.ast.document import DocumentError
 from iltero_schemas.bundle.build import (
     MANIFEST,
-    SIGNATURE_BYTES,
     SIGNATURES,
     BundleError,
     signatures_file,
@@ -51,6 +50,7 @@ from iltero_schemas.canonical import CanonicalizationError
 from iltero_schemas.compiler import COMPILER_VERSION
 from iltero_schemas.models.common.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
+from iltero_schemas.signing import SIGNATURE_BYTES
 from iltero_schemas.trust import BundleKey
 
 # The tar entry types OPA loads as files; it skips every other type, so no other is accepted here either.

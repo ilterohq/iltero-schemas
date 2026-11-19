@@ -29,12 +29,13 @@ from iltero_schemas.bundle import (
     signing_input,
     unsigned_bundle,
 )
-from iltero_schemas.bundle.build import MANIFEST, P256_ORDER, SIGNATURES, signatures_file, tarball
+from iltero_schemas.bundle.build import MANIFEST, SIGNATURES, signatures_file, tarball
 from iltero_schemas.bundle.check import MAX_MEMBERS, MAX_UNPACKED_BYTES, read_tarball
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of
 from iltero_schemas.compiler import COMPILER_VERSION, package_of
 from iltero_schemas.models.common.bundle import BundleDescriptor
 from iltero_schemas.opa import CAPABILITIES, CAPABILITIES_DIGEST
+from iltero_schemas.signing import P256_ORDER, SignatureError
 from iltero_schemas.trust import BundleKey, parse_bundle_keys
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
 
@@ -561,7 +562,7 @@ def test_the_file_of_signatures_refuses_a_high_s_signature() -> None:
     ids=["r is zero", "s is zero", "s is the curve order", "r above the curve order"],
 )
 def test_a_signature_outside_the_curve_is_refused_before_it_is_written(signature: bytes) -> None:
-    with pytest.raises(BundleError, match="between 0 and the curve order"):
+    with pytest.raises(SignatureError, match="between 0 and the curve order"):
         normalized_signature(signature)
     with pytest.raises(BundleError, match="between 0 and the curve order"):
         signatures_file(SIGNED, signature)

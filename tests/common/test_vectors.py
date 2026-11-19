@@ -43,6 +43,7 @@ from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
+from iltero_schemas.models.iac.scanner_check_mapping_descriptor import ScannerCheckMappingDescriptor
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
 from iltero_schemas.models.iac.scanner_reports.checkov import read_checkov
 from iltero_schemas.models.iac.scanner_reports.common import Source
@@ -67,6 +68,7 @@ INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json")
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "scanner_check_mappings": ScannerCheckMapping,
+    "scanner_check_mapping_descriptors": ScannerCheckMappingDescriptor,
     "contexts": AssuranceContext,
     "events": AssuranceEvent,
     "identities": ResourceIdentities,
@@ -85,6 +87,8 @@ SPLIT_FOLDERS = {folder: set(CHANGE_TYPES) for folder in ("contexts", "records",
         "scanner_check_mappings",
         "scanner_check_mappings_invalid",
         "scanner_check_mappings_project_invalid",
+        "scanner_check_mapping_descriptors",
+        "scanner_check_mapping_descriptors_invalid",
         "scanner_observations",
         "scanner_reports",
         "scanner_evidence",
@@ -294,6 +298,9 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "attestations",
         "scanner_check_mappings_invalid",
         "scanner_check_mappings_project_invalid",
+        "scanner_check_mapping_descriptors",
+        "scanner_check_mapping_descriptors_invalid",
+        "bundle_keys",
         "buildx",
         "canonical",
         "compiler",

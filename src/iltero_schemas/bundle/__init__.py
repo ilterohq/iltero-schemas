@@ -1,17 +1,14 @@
 """Signed assertion bundles: building one (``build``) and checking a served one before use (``check``)."""
 
 from iltero_schemas.bundle.build import (
-    BUNDLE_SIGNING_SCOPE,
-    SIGNATURE_BYTES,
-    SIGNING_ALGORITHM,
     BundleError,
     UnsignedBundle,
     descriptor,
-    normalized_signature,
     signing_input,
     unsigned_bundle,
 )
 from iltero_schemas.bundle.check import UnverifiedBundle, check_descriptor, signature_of
+from iltero_schemas.signing import BUNDLE_SIGNING_SCOPE, SIGNATURE_BYTES, SIGNING_ALGORITHM, normalized_signature
 
 __all__ = [
     "SIGNING_ALGORITHM",

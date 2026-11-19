@@ -105,6 +105,25 @@ def _unmet(given: list[Evaluated], group: frozenset[str]) -> bool:
     return bool(members) and members == gapped
 
 
+def _by_assertion_and_subject(events: Iterable[AssuranceEvent]) -> dict[tuple[str, str | None], list[Evaluated]]:
+    """One stage's ``events`` as the verdicts each assertion and subject was given, by (assertion id, subject key)."""
+    grouped: dict[tuple[str, str | None], list[Evaluated]] = {}
+    for event in events:
+        grouped.setdefault((event.assertion.id, event.subject.key), []).append(
+            Evaluated(engine=event.engine, status=event.evaluation.status, status_reason=event.evaluation.status_reason)
+        )
+    return grouped
+
+
+def unmet_scanner_requirement(
+    events: Iterable[AssuranceEvent], *, scanner_requirements: ScannerRequirements
+) -> frozenset[str] | None:
+    """The first group of ``scanner_requirements`` that gave only gaps for some assertion and subject of one stage's
+    ``events`` (some member evaluated it, and each one that did gave a gap), or None when every group is met."""
+    grouped = _by_assertion_and_subject(events)
+    return next((group for given in grouped.values() for group in scanner_requirements if _unmet(given, group)), None)
+
+
 def combined_verdict(verdicts: Iterable[Evaluated], *, scanner_requirements: ScannerRequirements) -> CombinedVerdict:
     """The verdict ``verdicts`` combine into (see the module docstring), where ``scanner_requirements`` are the groups
     of scanners the run requires (``stage_scanner_requirements``); ``ValueError`` for none."""
@@ -194,13 +213,9 @@ def stage_verdicts(
 ) -> Mapping[tuple[str, str | None], CombinedVerdict]:
     """The combined verdict of one stage's ``events`` for each assertion and subject, by (assertion id, subject key),
     where ``scanner_requirements`` are the groups of scanners the run requires (``stage_scanner_requirements``)."""
-    grouped: dict[tuple[str, str | None], list[Evaluated]] = {}
-    for event in events:
-        grouped.setdefault((event.assertion.id, event.subject.key), []).append(
-            Evaluated(engine=event.engine, status=event.evaluation.status, status_reason=event.evaluation.status_reason)
-        )
     return {
-        key: combined_verdict(verdicts, scanner_requirements=scanner_requirements) for key, verdicts in grouped.items()
+        key: combined_verdict(verdicts, scanner_requirements=scanner_requirements)
+        for key, verdicts in _by_assertion_and_subject(events).items()
     }
 
 

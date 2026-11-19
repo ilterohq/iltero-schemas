@@ -1,9 +1,10 @@
 """Every check a reader makes of a record of a change made with an IaC tool, in one call.
 
 A record's model checks its structure. What it claims beyond that, a reader works out again: the values it can
-recompute from the record (``stages.integrity_problems``), the scanner verdicts and the project's exceptions from the
-files its stages kept (``scanner_results.scanner_evidence_problems``), the failed results the exceptions the server
-served cover (``exception_evidence.served_exception_problems``), the checks the plan stage postponed
+recompute from the record (``stages.integrity_problems``), the scanner verdicts from the files its stages kept
+(``scanner_results.scanner_evidence_problems``), the project's exceptions
+(``exception_evidence.local_exception_problems``), the failed results the exceptions the server served cover
+(``exception_evidence.served_exception_problems``), the checks the plan stage postponed
 (``postponed_checks.postponed_check_problems``), and each evaluation input against the record's environment and
 change (``kept_inputs.kept_input_problems``). ``kept_file_problems`` makes them all, so no reader trusts a verdict
 the record states, such as one whose every failure is excepted, without working it out again.
@@ -15,7 +16,7 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.models.common.kept_inputs import kept_input_problems
 from iltero_schemas.models.common.stages import integrity_problems
-from iltero_schemas.models.iac.exception_evidence import served_exception_problems
+from iltero_schemas.models.iac.exception_evidence import local_exception_problems, served_exception_problems
 from iltero_schemas.models.iac.postponed_checks import postponed_check_problems
 from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 
@@ -34,6 +35,7 @@ def kept_file_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]]:
     return [
         *integrity_problems(car),
         *scanner_evidence_problems(car, files),
+        *local_exception_problems(car, files),
         *served_exception_problems(car, files),
         *postponed_check_problems(car, files),
         *kept_input_problems(car, files.inputs),

@@ -54,8 +54,8 @@
       "detail": null
     },
     "exceptions": {
-      "state": "not_assessed",
-      "reason": "served_exceptions_not_assessed",
+      "state": "claimed_by_record",
+      "reason": "served_exceptions_not_relied_on",
       "detail": null
     },
     "commit_review": {
@@ -71,6 +71,11 @@
     "evaluator_binary": {
       "state": "claimed_by_record",
       "reason": "pinned_binary_named",
+      "detail": null
+    },
+    "scanner_evidence": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
       "detail": null
     }
   }

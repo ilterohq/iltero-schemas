@@ -1621,18 +1621,20 @@ keep, so any two tools agree on what a record means.
   `project_exception_relied_on` when an event names an exception from the
   project's own exceptions file, and with
   `project_exceptions_file_not_relied_on` when a stage applied such a file
-  and no event relied on one. `served_exceptions_not_assessed` is given only for a
-  run Iltero Platform opened.
+  and no event relied on one.
 
   For approvals, exceptions and the commit review, a verifier takes the
   first result that holds, in the order
   `iltero_schemas.models.common.verification.PRE_DEPLOY_RESULT_ORDER`
-  (`first_that_holds`): `project_exception_relied_on`,
+  (`first_that_holds`): `kept_exceptions_do_not_hold`,
+  `served_exception_approved_by_run_starter`, `served_exception_relied_on`,
+  `project_exception_relied_on`, `served_exceptions_not_relied_on`,
   `project_exceptions_file_not_relied_on`, `not_in_activity`,
   `pre_deploy_out_of_scope`, `run_opened_locally`, `pre_deploy_pending`;
-  when none holds, the stage's own result. The project's own exceptions
-  come first, since a stage other than the pre-deploy stage may rely on
-  one. So one record gives one report. The new
+  when none holds, the stage's own result. The exception results come
+  first, so a pre-deploy stage that is not in the activity, out of scope
+  or still pending does not hide an exception the record relied on. So one
+  record gives one report. The new
   `reports_expected/` vectors name a record, a property and the result
   every verifier must give it, and three new accepted-record cases cover a
   run on Iltero Platform's time, a pre-deploy stage that read no fact
@@ -1962,3 +1964,67 @@ keep, so any two tools agree on what a record means.
   `evaluator_binary` is checked against its record. A record case's evidence
   register entry that names a file of its base record, by the same path and
   digest, has that file's size.
+- A verification report's `exceptions` property now judges the exceptions
+  Iltero Platform served, and the report has a thirteenth property,
+  `scanner_evidence`. Both results are worked out from the record and the
+  files its stages kept, so every verifier gives the same one.
+  `iltero_schemas.models.iac.report_results.exception_results(car, files)`
+  gives each exception result that holds, which a verifier passes with the
+  pre-deploy results that hold to `first_that_holds`. The new `exceptions`
+  results are:
+
+  | State | Reason | When |
+  | --- | --- | --- |
+  | `failed` | `kept_exceptions_do_not_hold` | An exceptions file a stage kept, the project's own or the one Iltero Platform served, does not give the exceptions the record names, or was served to another run, stage or environment. |
+  | `claimed_by_record` | `served_exception_approved_by_run_starter` | The plan stage relies on a served exception, and the kept copy says the person who approved it started the run. |
+  | `claimed_by_record` | `served_exception_relied_on` | The plan stage names a failed result a served exception covers, and the kept copy gives that exception. Only Iltero Platform confirms that it served that copy, who approved each exception and whether one was revoked later; whether an exception was in force rests on the stage's reference time, itself the record's claim. |
+  | `claimed_by_record` | `served_exceptions_not_relied_on` | The plan stage applied the served exceptions and names no failed result they cover. |
+
+  | Case | Before | Now |
+  | --- | --- | --- |
+  | The exceptions of a run Iltero Platform opened | `not_assessed`, `served_exceptions_not_assessed` | `kept_exceptions_do_not_hold`, `served_exception_approved_by_run_starter`, `served_exception_relied_on` or `served_exceptions_not_relied_on` |
+
+  `PRE_DEPLOY_RESULT_ORDER` now takes `kept_exceptions_do_not_hold`,
+  `served_exception_approved_by_run_starter`, `served_exception_relied_on`,
+  `project_exception_relied_on`, `served_exceptions_not_relied_on` and
+  `project_exceptions_file_not_relied_on` first, then `not_in_activity`,
+  `pre_deploy_out_of_scope`, `run_opened_locally` and `pre_deploy_pending`,
+  so a pre-deploy stage that is not in the activity, out of scope or still
+  pending does not hide an exception the record relied on.
+
+  `scanner_evidence` means that every scanner verdict comes from a report of
+  the pinned scanner Iltero Platform required, run on the plan the record
+  evaluated. `report_results.scanner_evidence_result(car, files)` gives the
+  first result of `SCANNER_EVIDENCE_RESULT_ORDER` that holds:
+
+  | State | Reason | When |
+  | --- | --- | --- |
+  | `failed` | `kept_files_do_not_give_the_verdicts` | A scanner evaluation does not follow from the files its stage kept. |
+  | `not_performed` | `scanner_requirement_not_met` | A group of scanners a stage requires gave only gaps for a check and subject. |
+  | `claimed_by_record` | `ran_by_pipeline` | A kept report says the pipeline ran it. |
+  | `claimed_by_record` | `ran_by_iltero_cli` | Every kept report says the Iltero CLI ran it. |
+  | `not_assessed` | `not_in_activity` | The record's activity reads no scanner report. |
+  | `not_assessed` | `no_scanner_report` | No stage read a scanner report and none requires one; in a run Iltero Platform opened, only Iltero Platform confirms that its stages required none. |
+
+  A failed result's detail is the first problem the checks list, then
+  "(and N more problems)"; a served exception result's detail is the fixed
+  sentence `report_results.SERVED_EXCEPTION_RELIED_ON` or
+  `APPROVED_BY_RUN_STARTER`, only beside kept copies that hold; the
+  `scanner_requirement_not_met` detail names the stage and the group's
+  scanners. No detail holds a value from a kept file. An image record gets
+  `scanner_evidence_result` too, as `not_in_activity`. `kept_file_problems`
+  now calls `local_exception_problems` itself, and
+  `scanner_evidence_problems` checks only the scanner verdicts. The three
+  sample reports gain `scanner_evidence`, and
+  `reports/iac/verification_report_commit_not_reviewed.json` gives
+  `exceptions` as `claimed_by_record` with `served_exceptions_not_relied_on`.
+  Two new `reports_invalid/` cases refuse an `exceptions` result the
+  contract does not give and a `scanner_evidence` reason of another
+  property.
+  New `reports_expected/` cases cover a server-opened run relying on an
+  exception its run's starter approved while its pre-deploy stage is
+  pending, and the scanner evidence of a record with no scanner report, of
+  one whose reports the pipeline ran, of one whose required group of
+  scanners gave only gaps, and of a build. A test works out every `iac/`
+  expected `exceptions` and `scanner_evidence` result from its record and
+  kept files.

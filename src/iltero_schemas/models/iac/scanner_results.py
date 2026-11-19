@@ -1,10 +1,9 @@
 """How an evaluation that stands on a scanner's results is tied to what its stage kept.
 
-A scanner, such as Checkov, ran elsewhere; the stage kept its report, the
-observations it read from it (``models.iac.scanner_observations``), the plan it
-evaluated and the scanner check mappings it read the results with. An evaluation from a
-scanner's results (``provenance.evaluator`` is a ``ScannerEvaluator``) names what
-the stage kept.
+A scanner, such as Checkov, ran in the pipeline or, in a run the server opened, was run by the Iltero CLI; the stage
+kept its report, the observations it read from it (``models.iac.scanner_observations``), the plan it evaluated and the
+scanner check mappings it read the results with. An evaluation from a scanner's results (``provenance.evaluator`` is a
+``ScannerEvaluator``) names what the stage kept.
 
 ``check_scanner_results`` holds the rules that need only the record.
 ``scanner_evidence_problems`` needs the kept files themselves and checks every
@@ -12,9 +11,9 @@ evaluation from a scanner's results against them: that the scanner checks entry 
 maps that tool's checks to that assertion at that stage, that the assertion's
 document allows it, that the observations are the ones the kept report and
 plan give, and that the verdict is the one those observations give the subject
-(``models.iac.scanner_verdicts``). Every reader of a record holding such an
-evaluation calls it, and refuses to trust the record while it returns any
-problem.
+(``models.iac.scanner_verdicts``). A reader calls it through
+``kept_file_problems.kept_file_problems``, which also checks the project's exceptions, and refuses to trust the record
+while that returns any problem.
 
 Every file is the one the stage kept, redacted: the report, its observations
 and the plan (by the digest the observations name, an entry of the evidence
@@ -38,7 +37,6 @@ from iltero_schemas.models.common.event import AssuranceEvent
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
 from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES, RanBy
 from iltero_schemas.models.common.subjects import local_identity
-from iltero_schemas.models.iac.exception_evidence import local_exception_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_check_mapping import (
     AssertionMapping,
@@ -458,7 +456,8 @@ def scanner_evidence_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
     in scope must have that tool's evaluation: the one the kept results give it, or ``scanner_not_run`` for a required
     tool that gave no report. A stage with a scanner check mapping copy that does not hold lists each such copy and no
     other problem; a report whose observations do not hold is listed, and its evaluations are not checked further.
-    Each suppressed result names the exception the stage's kept exceptions file gives it (``local_exception_problems``).
+    Whether each suppressed result names the exception the stage's kept exceptions file gives it is a check of its own,
+    ``exception_evidence.local_exception_problems``.
     """
     problems: list[tuple[str, str]] = []
     for stage, record in car.stages.items():
@@ -468,4 +467,4 @@ def scanner_evidence_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str
         scanners = car.stages[event.evaluation.stage].scanners
         if isinstance(event.provenance.evaluator, ScannerEvaluator) and scanners is None:
             problems.append((f"events.{index}.provenance.evaluator", "names a scanner its stage kept no report of"))
-    return problems + local_exception_problems(car, files)
+    return problems

@@ -20,6 +20,7 @@ from iltero_schemas.models.common.coverage import EvaluatorDidNotDecideGap
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 from iltero_schemas.models.common.scanners import ILTERO_CLI
 from iltero_schemas.models.common.verdicts import stage_scanner_requirements, stage_verdicts
+from iltero_schemas.models.iac.exception_evidence import local_exception_problems
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 from tests.conftest import VECTORS
@@ -90,7 +91,9 @@ def kept_files(record: dict[str, Any], folder: Path = KEPT) -> dict[str, Any]:
 
 def _problems(record: dict[str, Any], files: dict[str, Any]) -> list[list[str]]:
     car = CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
-    return [list(problem) for problem in scanner_evidence_problems(car, KeptFiles(**files))]
+    kept = KeptFiles(**files)
+    # A project's exception a scanner result names is checked against the kept exceptions file on its own.
+    return [list(problem) for problem in scanner_evidence_problems(car, kept) + local_exception_problems(car, kept)]
 
 
 def test_every_scanner_evaluation_of_the_scanned_record_follows_from_what_its_stage_kept() -> None:

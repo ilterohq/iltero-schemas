@@ -2006,7 +2006,7 @@ reads them one way for every reader:
 | `reports` | Each report's `report_digest`. |
 | `plans` | The digest of the plan as the stage kept it, redacted (`ScannerObservations.plan_digest`, the digest of the one plan of the evidence register). |
 | `assertions` | The digest of each assertion document (`AssertionRef.digest`). |
-| `local_exceptions` | The `digest` of each stage's `scanners.local_exceptions`; each value is the bytes of the stage's copy. |
+| `local_exceptions` | The `digest` of each stage's `scanners.local_exceptions`; each value is the bytes of the stage's copy. Read by [`local_exception_problems`](#a-stage-that-applies-the-file). |
 | `served_exceptions` | The `digest` of each stage's `served_exceptions`; each value is the bytes of the stage's copy. Read by [`served_exception_problems`](#checking-the-kept-copy). |
 | `inputs` | The digest each evaluation names its input by (`provenance.input_digest`); each value is the bytes of the stage's copy. Read by [`kept_input_problems`](#checking-the-kept-evaluation-inputs). |
 
@@ -2036,18 +2036,15 @@ When the stage kept no report, it reads the subjects in scope from the one plan 
 | `events.<index>.provenance.evaluator` | "names other checks, or another match, than its scanner checks entry" | `rule_ids` or `subject_match` differ from the entry's. |
 | `events.<index>.provenance.scanner_checks` | "names no scanner checks entry of its stage's scanner check mappings", "names a scanner checks entry of another assertion", "names a scanner checks entry of another tool or stage", "names another scanner checks entry than its scanner check mappings give it" | The digest does not lead to the scanner checks entry, in any of the stage's scanner check mappings, that decides this assertion, tool and stage. |
 | `events.<index>.assertion` | "names an assertion document that is not given" | No valid document with the event's digest, id and version was given. |
-| `stages.<stage>.scanners.local_exceptions` | "the record does not keep an exceptions file with the digest the stage names" | No bytes are given under the stage's `digest`, or their SHA-256 is not that digest. The stage's suppressed results are not checked further. |
-| `stages.<stage>.scanners.local_exceptions` | "is not a project's exceptions file the contract can read" | `read_local_exceptions` refuses the copy (see [Reading the file](#reading-the-file)). The stage's suppressed results are not checked further. |
-| `events.<index>.provenance.evaluator.local_exception` | "names an exception the kept exceptions file does not give this result" | A `suppressed_in_source` evaluation names an exception, but the kept file gives the result none, or another one. |
-| `events.<index>.provenance.evaluator.local_exception` | "names no exception, but the kept exceptions file gives this result one" | A `suppressed_in_source` evaluation names no exception, but the kept file gives the result one. |
 
 The vectors in `scanner_evidence/iac/local_run_scanned/` give the complete list of cases.
 
 #### What these checks establish
 
-Together, the record's rules and `scanner_evidence_problems` establish that each evaluation from a scanner's results
-is the verdict the kept report, read against the kept plan, gives the subject under the scanner checks entry its stage
-kept, and that every subject in scope has one. They do not establish:
+Together, the record's rules, `scanner_evidence_problems` and `local_exception_problems` establish that each
+evaluation from a scanner's results is the verdict the kept report, read against the kept plan, gives the subject
+under the scanner checks entry its stage kept, that every subject in scope has one, and that each suppressed result
+names the exception the kept exceptions file gives it. They do not establish:
 
 - that the scanner ran, or that the kept report is what the scanner wrote: the record says who ran it (`ran_by`), and
   the writer redacts and keeps the report;
@@ -2170,7 +2167,8 @@ such a record, and returns the `(where, what)` pairs of each, in this order:
 | Function | What it works out again |
 | --- | --- |
 | `iltero_schemas.models.common.stages.integrity_problems(car)` | Every value the record can recompute from itself, such as its digests, counts, verdicts and evidence statuses. |
-| `iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` | Each scanner verdict, and each project exception a suppressed result names (see [The check a reader runs](#the-check-a-reader-runs)). |
+| `iltero_schemas.models.iac.scanner_results.scanner_evidence_problems(car, files)` | Each scanner verdict (see [The check a reader runs](#the-check-a-reader-runs)). |
+| `iltero_schemas.models.iac.exception_evidence.local_exception_problems(car, files)` | Each project exception a suppressed result names (see [A stage that applies the file](#a-stage-that-applies-the-file)). |
 | `iltero_schemas.models.iac.exception_evidence.served_exception_problems(car, files)` | The failed results the exceptions Iltero Platform served cover (see [Checking the kept copy](#checking-the-kept-copy)). |
 | `iltero_schemas.models.iac.postponed_checks.postponed_check_problems(car, files)` | The checks the plan stage postponed (see [Checks postponed until after the deployment](#checks-postponed-until-after-the-deployment)). |
 | `iltero_schemas.models.common.kept_inputs.kept_input_problems(car, files.inputs)` | Each evaluation input, against the record's environment and change (see [Checking the kept evaluation inputs](#checking-the-kept-evaluation-inputs)). |
@@ -3106,7 +3104,7 @@ never part of the record.
 | `apiVersion`, `kind` | string | `iltero.com/v1` and `VerificationReport`. |
 | `metadata` | object | The `verifier`: `name: iltero` and the verifier's `version`; and `verified_at` (timestamp), when the verifier wrote the report, by its own clock. A result such as a stage still pending holds at that time. |
 | `record` | object | The record's `uuid` (its `metadata.uuid`), and the `digest` of the record's canonical JSON as the verifier read it: its document digest. |
-| `properties` | object | Twelve properties, each a result (`PropertyResult`) with a `state`, a `reason` and a `detail`. |
+| `properties` | object | Thirteen properties, each a result (`PropertyResult`) with a `state`, a `reason` and a `detail`. |
 
 Each result has three fields:
 
@@ -3133,6 +3131,7 @@ a reader must not parse it.
 | `commit_review` | Every commit the change ships was reviewed. |
 | `reference_time` | Every stage took its reference time, which every expiry and ordering comparison uses, from a source a verifier can trust. |
 | `evaluator_binary` | Every evaluation ran on the binary of the Open Policy Agent (OPA) release this contract pins, for its platform. |
+| `scanner_evidence` | Every scanner verdict comes from a report of the pinned scanner Iltero Platform required, run on the plan the record evaluated. |
 
 | State | Meaning |
 | --- | --- |
@@ -3171,9 +3170,12 @@ Key rules:
   | `approval_identity`, `exceptions`, `commit_review` | `not_assessed` | `pre_deploy_pending` | The record expects the pre-deploy stage, and the run that would report it is still in progress. |
   | `approval_identity`, `commit_review` | `could_not_decide` | `server_facts_unavailable` | Iltero Platform opened the run, a check needed the fact, and the pre-deploy stage kept the unknown marker in its place. |
   | `approval_identity`, `commit_review` | `not_assessed` | `not_read_by_the_stage` | None of the pre-deploy stage's results read the fact, so the stage kept the `not_read_by_the_stage` marker. |
+  | `exceptions` | `failed` | `kept_exceptions_do_not_hold` | An exceptions file a stage kept, the project's own or the [one Iltero Platform served](#servedexceptions), does not give the exceptions the record names, or was served to another run, stage or environment. |
+  | `exceptions` | `claimed_by_record` | `served_exception_approved_by_run_starter` | As `served_exception_relied_on`, and the kept copy says the person who approved one of those exceptions [started the run](#the-runs-starter). |
+  | `exceptions` | `claimed_by_record` | `served_exception_relied_on` | The plan stage names a failed result that an exception Iltero Platform served covers, and the kept copy gives that exception. Only Iltero Platform confirms that it served that copy, who approved each exception, and whether one was revoked later. Whether an exception was in force rests on the stage's reference time, itself the record's claim. |
+  | `exceptions` | `claimed_by_record` | `served_exceptions_not_relied_on` | The plan stage applied the exceptions Iltero Platform served, and names no failed result they cover. |
   | `exceptions` | `claimed_by_record` | `project_exception_relied_on` | An event names an exception from the [project's own exceptions file](#localexceptions): the project's own word. |
   | `exceptions` | `claimed_by_record` | `project_exceptions_file_not_relied_on` | A stage applied the project's own exceptions file, and no event relied on an exception from it. |
-  | `exceptions` | `not_assessed` | `served_exceptions_not_assessed` | Iltero Platform opened the run, the record relies on no exception of the project's own, and a verifier does not assess the exceptions Iltero Platform served. |
   | `bundle_provenance` | `claimed_by_record` | `server_bundle_named` | A stage names an assertion bundle Iltero Platform served. |
   | `bundle_provenance` | `not_performed` | `local_assertions` | The checks were the project's own. |
   | `stage_completeness` | `claimed_by_record` | `expected_stages` | Every stage the record expects reported. |
@@ -3199,31 +3201,46 @@ Key rules:
   | `evaluator_binary` | `claimed_by_record` | `pinned_binary_named` | Every OPA evaluation names the pinned binary for its platform. |
   | `evaluator_binary` | `failed` | `other_binary_named` | An OPA evaluation names another release, a platform the pin has no binary for, or another binary. |
   | `evaluator_binary` | `not_assessed` | `no_opa_evaluation` | No evaluation of the record ran on OPA. |
+  | `scanner_evidence` | `failed` | `kept_files_do_not_give_the_verdicts` | A scanner evaluation does not follow from the files its stage kept. |
+  | `scanner_evidence` | `not_performed` | `scanner_requirement_not_met` | A group of scanners a stage requires is [unmet](#how-evaluators-combine) for a check and subject: each member that evaluated it gave a gap. |
+  | `scanner_evidence` | `claimed_by_record` | `ran_by_pipeline` | A kept scanner report says the pipeline ran it: the pipeline's word. |
+  | `scanner_evidence` | `claimed_by_record` | `ran_by_iltero_cli` | Every kept scanner report says the Iltero CLI ran it: the record's word. |
+  | `scanner_evidence` | `not_assessed` | `not_in_activity` | The record's activity reads no scanner report, as an image build reads none. |
+  | `scanner_evidence` | `not_assessed` | `no_scanner_report` | No stage read a scanner report, and none requires one. In a run Iltero Platform opened, only Iltero Platform confirms that its stages required none. |
 
 - One record gives one report. For `approval_identity`, `exceptions` and `commit_review`, a verifier takes the first
   result in this order that holds for the record
   (`iltero_schemas.models.common.verification.PRE_DEPLOY_RESULT_ORDER`, with `first_that_holds`). When none holds,
   the result is the pre-deploy stage's own: `approvals_listed`, `no_approval_served`, `not_read_by_the_stage`,
-  `server_facts_unavailable` or `served_exceptions_not_assessed`, or, for a commit review the stage kept, the result
+  or `server_facts_unavailable`, or, for a commit review the stage kept, the result
   `iltero_schemas.models.common.verification.COMMIT_REVIEW_RESULTS` names for its outcome, with the outcome as the
   reason.
 
   | Order | State | Reason | Properties |
   | --- | --- | --- | --- |
-  | 1 | `claimed_by_record` | `project_exception_relied_on` | `exceptions` |
-  | 2 | `claimed_by_record` | `project_exceptions_file_not_relied_on` | `exceptions` |
-  | 3 | `not_assessed` | `not_in_activity` | `approval_identity`, `exceptions`, `commit_review` |
-  | 4 | `not_assessed` | `pre_deploy_out_of_scope` | `approval_identity`, `exceptions`, `commit_review` |
-  | 5 | `not_performed` | `run_opened_locally` | `approval_identity`, `exceptions`, `commit_review` |
-  | 6 | `not_assessed` | `pre_deploy_pending` | `approval_identity`, `exceptions`, `commit_review` |
+  | 1 | `failed` | `kept_exceptions_do_not_hold` | `exceptions` |
+  | 2 | `claimed_by_record` | `served_exception_approved_by_run_starter` | `exceptions` |
+  | 3 | `claimed_by_record` | `served_exception_relied_on` | `exceptions` |
+  | 4 | `claimed_by_record` | `project_exception_relied_on` | `exceptions` |
+  | 5 | `claimed_by_record` | `served_exceptions_not_relied_on` | `exceptions` |
+  | 6 | `claimed_by_record` | `project_exceptions_file_not_relied_on` | `exceptions` |
+  | 7 | `not_assessed` | `not_in_activity` | `approval_identity`, `exceptions`, `commit_review` |
+  | 8 | `not_assessed` | `pre_deploy_out_of_scope` | `approval_identity`, `exceptions`, `commit_review` |
+  | 9 | `not_performed` | `run_opened_locally` | `approval_identity`, `exceptions`, `commit_review` |
+  | 10 | `not_assessed` | `pre_deploy_pending` | `approval_identity`, `exceptions`, `commit_review` |
 
-  The project's own exceptions come first because a stage other than the pre-deploy stage may rely on one, so a
-  pre-deploy stage that is not in the activity or is out of scope does not hide it. A run the tool opened whose
+  The exception results come first, and a kept exceptions file that does not hold comes before any of them. The plan
+  stage applies exceptions, so a pre-deploy stage that is not in the activity, is out of scope or is still pending
+  does not hide an exception the record relied on. A run the tool opened whose
   pre-deploy stage has not reported gets `run_opened_locally`, not `pre_deploy_pending`: no server will serve that run
   its approvals. A verifier passes `first_that_holds` only results the property can take: an exception result given
   for `approval_identity` is refused when the report is read.
-- `server_facts_unavailable` and `served_exceptions_not_assessed` apply only to a run Iltero Platform opened. Neither
-  `server_facts_unavailable` nor `not_read_by_the_stage` is ever an `exceptions` result.
+- `iltero_schemas.models.iac.report_results.exception_results(car, files)` gives each exception result that holds for
+  a record, with its detail, from the record and the files its stages kept (a
+  [`KeptFiles`](#the-check-a-reader-runs)). A verifier passes these, with the pre-deploy results that hold, to
+  `first_that_holds`. The served results apply only to a run Iltero Platform opened.
+- `server_facts_unavailable` applies only to a run Iltero Platform opened. Neither `server_facts_unavailable` nor
+  `not_read_by_the_stage` is ever an `exceptions` result.
 - The `reference_time` result follows the weakest source any stage took its time from.
 - `iltero_schemas.models.common.pinned_evaluator.evaluator_binary_result(events)` gives the `evaluator_binary` result.
   For `other_binary_named`, its `detail` is the first problem
@@ -3231,6 +3248,27 @@ Key rules:
   "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform". When the
   evaluations have more problems, the detail ends with their count, such as " (4 more problems)". The property
   compares the binary the record states with this contract release's pin; it cannot show which binary ran.
+- `iltero_schemas.models.iac.report_results.scanner_evidence_result(car, files)` gives the `scanner_evidence` result:
+  the first of `iltero_schemas.models.common.verification.SCANNER_EVIDENCE_RESULT_ORDER` that holds, in the order of
+  the table above. It applies to a record of any change type: an image record gets `not_in_activity`. Who ran the
+  reports is judged per kept report: any kept report the pipeline ran gives `ran_by_pipeline`, even beside reports the
+  Iltero CLI ran.
+- The `kept_exceptions_do_not_hold` detail is the first problem
+  [`local_exception_problems`](#a-stage-that-applies-the-file) and
+  [`served_exception_problems`](#checking-the-kept-copy) list, and the `kept_files_do_not_give_the_verdicts` detail the
+  first problem [`scanner_evidence_problems`](#the-check-a-reader-runs) lists, as `<where> <what>`, followed by the
+  count of the rest, such as " (and 1 more problem)" or " (and 2 more problems)". The `served_exception_relied_on`
+  detail is the fixed sentence `report_results.SERVED_EXCEPTION_RELIED_ON`: "the kept copy gives each failure the record
+  names as excepted; only the server that opened the run confirms that it served that copy, who approved each exception
+  and whether one was revoked, and whether an exception was in force rests on the stage's reference time". The
+  `served_exception_approved_by_run_starter` detail is `report_results.APPROVED_BY_RUN_STARTER`: "the kept copy says the
+  person who approved an exception the record relies on started the run; " followed by that sentence. Both stand only
+  beside kept copies that hold: when `local_exception_problems` or `served_exception_problems` list a problem, these
+  results carry no detail, and `kept_exceptions_do_not_hold` comes first anyway. The `scanner_requirement_not_met`
+  detail names the stage and the group's scanners, sorted, such as "in the plan stage, the required group of checkov,
+  trivy gave only gaps for a check". A detail never holds a value from a kept file.
+- Call both functions on a record whose integrity holds: when it does not, every other property is
+  `could_not_decide`.
 - The report has no overall verdict, and no report establishes certification or compliance with a regulatory
   framework.
 
@@ -3663,10 +3701,18 @@ refuses a record that breaks one of these rules:
 | A record of a run Iltero Platform opened applies no exceptions file: every stage's `scanners.local_exceptions` is `null`. | "a record of a run the server opened applies no exceptions file of the project's own" |
 
 The model does not read the copy. A reader does, with
-[`scanner_evidence_problems`](#the-check-a-reader-runs) (through
+`iltero_schemas.models.iac.exception_evidence.local_exception_problems(car, files)` (through
 [`kept_file_problems`](#checking-a-record-against-its-kept-files)), given the copy's bytes in
-`KeptFiles.local_exceptions`: for each suppressed result of the stage it works out again which exception covers it,
-and the record must name that one, or none when none covers it.
+[`KeptFiles`](#the-check-a-reader-runs)`.local_exceptions`: for each suppressed result of the stage it works out again
+which exception covers it, and the record must name that one, or none when none covers it. It returns `(where, what)`
+pairs:
+
+| Where | What | Meaning |
+| --- | --- | --- |
+| `stages.<stage>.scanners.local_exceptions` | "the record does not keep an exceptions file with the digest the stage names" | No bytes are given under the stage's `digest`, or their SHA-256 is not that digest. The stage's suppressed results are not checked further. |
+| `stages.<stage>.scanners.local_exceptions` | "is not a project's exceptions file the contract can read" | `read_local_exceptions` refuses the copy (see [Reading the file](#reading-the-file)). The stage's suppressed results are not checked further. |
+| `events.<index>.provenance.evaluator.local_exception` | "names an exception the kept exceptions file does not give this result" | A `suppressed_in_source` evaluation names an exception, but the kept file gives the result none, or another one. |
+| `events.<index>.provenance.evaluator.local_exception` | "names no exception, but the kept exceptions file gives this result one" | A `suppressed_in_source` evaluation names no exception, but the kept file gives the result one. |
 
 ## ServedExceptions
 

@@ -36,7 +36,7 @@ from iltero_schemas.models.common.strict_json import strict_json
 from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.common.car import CAR
+    from iltero_schemas.models.common.car import CAR, StageRecord
     from iltero_schemas.models.common.event import AssuranceEvent
     from iltero_schemas.models.iac.kept_files import KeptFiles
 
@@ -105,6 +105,16 @@ def local_exception_problems(car: CAR, files: KeptFiles) -> list[tuple[str, str]
             elif named is not None and (given is None or given.id != named.id):
                 problems.append((at, NOT_GIVEN))
     return problems
+
+
+def kept_served_exceptions(record: StageRecord, files: KeptFiles) -> ServedExceptions | None:
+    """The exceptions the server served the stage ``record``, as the copy it kept gives them, or None when it applies
+    none or its copy does not hold (``served_exception_problems`` says why)."""
+    if record.served_exceptions is None:
+        return None
+    named = record.served_exceptions.digest
+    read = _read_served(files.served_exceptions.get(named), named)
+    return None if isinstance(read, str) else read
 
 
 def _read_served(data: bytes | None, named: str) -> ServedExceptions | str:

@@ -47,24 +47,32 @@ def test_an_expected_result_is_one_a_verifier_gives_its_property_for_a_record_th
         assert car.governance.run_opened_by != "server"
     if case["reason"] == "server_facts_unavailable":
         assert car.governance.run_opened_by == "server"
-    _the_fact_its_reason_rests_on_holds(car, case["reason"])
+    _the_fact_its_reason_rests_on_holds(car, case["property"], case["reason"])
 
 
-def _the_fact_its_reason_rests_on_holds(car: CAR, reason: str | None) -> None:
+def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, reason: str | None) -> None:
     """The fact in the record a result's reason rests on, so a later edit of the record leaves no stale case."""
     pre_deploy = car.stages.get(Stage.PRE_DEPLOY)
+    activity = ACTIVITIES[car.change.activity]
     if reason == "pre_deploy_pending":
         assert pre_deploy is None and Stage.PRE_DEPLOY in car.expected_stages
-    if reason == "not_in_activity":
-        assert Stage.PRE_DEPLOY not in ACTIVITIES[car.change.activity].stages
+    if reason == "not_in_activity" and property_name == "scanner_evidence":
+        assert not activity.stages_that_read_scanner_reports
+    elif reason == "not_in_activity":
+        assert Stage.PRE_DEPLOY not in activity.stages
     if reason == "project_exception_relied_on":
         assert any(
             isinstance(event.provenance.evaluator, ScannerEvaluator) and event.provenance.evaluator.local_exception
             for event in car.events
         )
-    if reason == "served_exceptions_not_assessed":
+    if reason == "served_exceptions_not_relied_on":
         assert car.governance.run_opened_by == "server"
-        assert all(stage.scanners is None or stage.scanners.local_exceptions is None for stage in car.stages.values())
+        served = [stage.served_exceptions for stage in car.stages.values() if stage.served_exceptions is not None]
+        assert served and not any(used.excepted_failures for used in served)
+    if reason == "served_exception_relied_on":
+        assert any(
+            stage.served_exceptions and stage.served_exceptions.excepted_failures for stage in car.stages.values()
+        )
     if reason == "server_facts_unavailable":
         assert pre_deploy is not None and isinstance(pre_deploy.approvals, ServerFactsUnavailable)
     if reason == "server_bundle_named":
@@ -90,8 +98,12 @@ def test_the_first_result_that_holds_wins_and_none_leaves_the_stages_own() -> No
     pending: tuple[VerificationState, str] = ("not_assessed", "pre_deploy_pending")
     local: tuple[VerificationState, str] = ("not_performed", "run_opened_locally")
     assert first_that_holds({pending, local}) == local
-    assert first_that_holds({("claimed_by_record", "project_exception_relied_on"), local}) == PRE_DEPLOY_RESULT_ORDER[0]
-    out_of_scope: tuple[VerificationState, str] = ("not_assessed", "pre_deploy_out_of_scope")
     relied_on: tuple[VerificationState, str] = ("claimed_by_record", "project_exception_relied_on")
+    assert first_that_holds({relied_on, local}) == relied_on
+    out_of_scope: tuple[VerificationState, str] = ("not_assessed", "pre_deploy_out_of_scope")
     assert first_that_holds({out_of_scope, relied_on}) == relied_on
+    served: tuple[VerificationState, str] = ("claimed_by_record", "served_exception_relied_on")
+    do_not_hold: tuple[VerificationState, str] = ("failed", "kept_exceptions_do_not_hold")
+    assert first_that_holds({served, pending}) == served
+    assert first_that_holds({do_not_hold, served, pending}) == do_not_hold == PRE_DEPLOY_RESULT_ORDER[0]
     assert first_that_holds(set()) is None

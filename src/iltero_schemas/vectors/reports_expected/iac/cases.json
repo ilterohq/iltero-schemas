@@ -60,14 +60,14 @@
     "why": "An event names an exception from the project's own exceptions file; it comes before run_opened_locally and pre_deploy_pending."
   },
   {
-    "name": "exceptions_of_a_server_opened_run_relying_on_no_project_exception",
+    "name": "exceptions_of_a_server_opened_run_relying_on_no_exception",
     "record": {
       "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
     },
     "property": "exceptions",
-    "state": "not_assessed",
-    "reason": "served_exceptions_not_assessed",
-    "why": "The server opened the run and the record relies on no exception of the project's own; a verifier does not assess the exceptions the server served."
+    "state": "claimed_by_record",
+    "reason": "served_exceptions_not_relied_on",
+    "why": "The server opened the run, its plan stage applied the exceptions the server served, and no failed result relies on one."
   },
   {
     "name": "reference_time_of_a_run_on_the_runners_clock",
@@ -138,5 +138,45 @@
     "state": "claimed_by_record",
     "reason": "server_bundle_named",
     "why": "A run the server opened evaluates only assertions from the server's bundle, and each stage names it."
+  },
+  {
+    "name": "exceptions_of_a_server_opened_run_relying_on_an_exception_its_run_starter_approved_with_pre_deploy_pending",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "served_exception_approved_by_run_starter",
+    "why": "The plan stage names failed results exceptions the server served cover, and the kept copy says the person who approved one of them started the run. The exception results come before the pre-deploy stage's pending one, so the pending stage does not hide them."
+  },
+  {
+    "name": "scanner_evidence_of_a_record_with_no_scanner_report",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "scanner_evidence",
+    "state": "not_assessed",
+    "reason": "no_scanner_report",
+    "why": "No stage read a scanner report and none requires one."
+  },
+  {
+    "name": "scanner_evidence_of_a_record_whose_reports_the_pipeline_ran",
+    "record": {
+      "vector": "iac/local_run_scanned.json"
+    },
+    "property": "scanner_evidence",
+    "state": "claimed_by_record",
+    "reason": "ran_by_pipeline",
+    "why": "The plan stage read reports the pipeline ran, and its scanner verdicts follow from the files it kept: the pipeline's word."
+  },
+  {
+    "name": "scanner_evidence_of_a_record_whose_required_scanner_group_gave_only_gaps",
+    "record": {
+      "vector": "iac/local_run_scanned_project_required.json"
+    },
+    "property": "scanner_evidence",
+    "state": "not_performed",
+    "reason": "scanner_requirement_not_met",
+    "why": "A group of scanners the plan stage requires gave only gaps for a check and subject, so the scan the run required did not happen for it."
   }
 ]

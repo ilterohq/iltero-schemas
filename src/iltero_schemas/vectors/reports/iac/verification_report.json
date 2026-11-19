@@ -72,6 +72,11 @@
       "state": "claimed_by_record",
       "reason": "pinned_binary_named",
       "detail": null
+    },
+    "scanner_evidence": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
+      "detail": null
     }
   }
 }

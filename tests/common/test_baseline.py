@@ -144,6 +144,9 @@ REMOVED_CASES = {
     "record_of_a_local_run_with_attested_clock_time",
     # A project's scanner check mapping is named by its path in the project, so a path is no longer refused.
     "binding_set_file_named_by_its_path",
+    # A record of a run the server opened now builds on the record the Iltero CLI wrote of such a run, which already
+    # names the server's bundle, so this case is record_of_a_run_the_server_opened.
+    "record_of_a_run_the_server_opened_from_a_served_bundle",
 }
 # Cases rebuilt since the baseline, each still a case: a stage lists approvals only when its results read facts from
 # the server, so an approval of another change is now listed in the record of a run the server opened; and a stage's
@@ -155,10 +158,8 @@ REBUILT_CASES = {
     "pre_deploy_stage_of_a_forged_change_digest",
     # A declared unit names its directory, so the case's unit names one and still leaves out its dependencies.
     "units_file_unit_named_without_its_dependencies",
-    # A record of a run the server opened evaluates only assertions from the server's bundle, so these cases carry the
-    # server's bundle on every evaluation and stage.
+    # A record of a run the server opened now builds on the record the Iltero CLI wrote of such a run.
     "record_of_a_run_the_server_opened",
-    "record_of_a_run_the_server_opened_from_a_served_bundle",
     "record_says_the_server_opened_a_run_without_pins",
 }
 # What a case of a run the server opened sets since the baseline so its plan stage applies the exceptions served to it:

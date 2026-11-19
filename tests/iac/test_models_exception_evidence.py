@@ -167,8 +167,10 @@ SERVED_DOCUMENT: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "p
 
 
 def _kept_by_digest() -> dict[str, bytes]:
-    """Every served exceptions vector as a stage keeps it, by its digest: its canonical bytes."""
+    """Every served exceptions vector as a stage keeps it, by its digest: its canonical bytes; and every copy a record
+    of the vectors kept, as it kept it."""
     kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
+    kept += [path.read_bytes() for path in (VECTORS / "kept_files").rglob("served-exceptions.json")]
     return {digest(data): data for data in kept}
 
 

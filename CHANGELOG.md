@@ -2066,6 +2066,12 @@ keep, so any two tools agree on what a record means.
   reference time of a plan stage that left a check undecided (`server`),
   and the exceptions of an image deploy, opened by Iltero Platform or by
   the tool (`not_in_activity`).
+- Fourteen `records_valid/`, `records_invalid/` and
+  `records_integrity_failed/` cases of runs Iltero Platform opened now build
+  on the Iltero CLI's records of such runs (`iac/governed_run.json`,
+  `iac/governed_run_deployed.json` and
+  `image/governed_run_deploy_rolled_out.json`) instead of turning a record
+  of a run the tool opened into one.
 - The `exceptions` result of an image deploy the tool opened is now
   `not_assessed` with `not_in_activity`, not `not_performed` with
   `run_opened_locally`, since `not_in_activity` comes first in

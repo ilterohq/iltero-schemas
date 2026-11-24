@@ -1,0 +1,149 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "AssuranceContext",
+  "evaluation": {
+    "id": "eval_003",
+    "activity": "iac_change",
+    "stage": "post_verify",
+    "timestamp": "2026-09-16T18:43:00Z",
+    "assertion": {
+      "id": "ILT.IAC.DEPLOYMENT.DRIFT.NO_DRIFT_AFTER_APPLY",
+      "version": "1.0.0"
+    }
+  },
+  "organization_scope": {
+    "organization": {
+      "id": "acme"
+    },
+    "workspace": {
+      "id": "production"
+    },
+    "environment": {
+      "name": "production",
+      "production": true
+    }
+  },
+  "reference_time": {
+    "value": "2026-09-16T18:43:00Z",
+    "source": "runner_clock"
+  },
+  "source": {
+    "vcs": "git",
+    "repository": {
+      "name": "acme/platform-infra"
+    },
+    "commit": {
+      "sha": "c84e7a1000000000000000000000000000000000"
+    },
+    "ref": {
+      "type": "branch",
+      "name": "main"
+    },
+    "pull_request": {
+      "id": "842"
+    }
+  },
+  "change": null,
+  "plan": null,
+  "subject": {
+    "kind": "deployment",
+    "key": "sha256:715b868fc180dcacd304ac378f1e1f69749ba9bff3f7be63f7d4ca98ff293ce9",
+    "identities": [
+      {
+        "scheme": "iltero_unit",
+        "value": "root",
+        "scope": null
+      }
+    ]
+  },
+  "deployment": {
+    "plan": {
+      "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digest_version": "1",
+      "artifact_digest": null,
+      "artifact_digest_source": "not_provided"
+    },
+    "apply": {
+      "source": {
+        "digest": "hmac-sha256:25fece87317414f17aa3c4a3006db39e5e11d4a4ed2dd72f51feeb2a69af5e3b",
+        "tool": "terraform",
+        "tool_version": "1.14.0"
+      },
+      "state": {
+        "digest": "hmac-sha256:dc0c8ef672d63e6dd5c829b5b918d65bc0d1257c6928ace709d1177da49dac4c",
+        "digest_version": "1",
+        "tool": "terraform",
+        "tool_version": "1.14.0"
+      },
+      "outcomes_from": "apply_log",
+      "changes": [
+        {
+          "address": "aws_db_instance.payments",
+          "action": "update",
+          "required": [
+            "update"
+          ],
+          "outcome_from": "apply_log",
+          "outcome": "applied",
+          "moved_from": null,
+          "imported": false,
+          "completed": [
+            "update"
+          ]
+        }
+      ],
+      "timing": {
+        "started_at": "2026-09-16T18:38:00Z",
+        "ended_at": "2026-09-16T18:39:30Z",
+        "source": "apply_log",
+        "trust": "asserted"
+      },
+      "tool_data": {
+        "tool": "terraform",
+        "summary": {
+          "added": 0,
+          "changed": 1,
+          "imported": 0,
+          "removed": 0
+        },
+        "errors_reported": 0,
+        "log_lines": {
+          "other_output_lines": 0,
+          "damaged_messages": 0,
+          "interrupted_operations": 0
+        },
+        "deposed": []
+      }
+    },
+    "superseded_by": null
+  },
+  "resource": null,
+  "evaluations": null,
+  "approvals": null,
+  "run": null,
+  "drift_check": {
+    "run_id": "0b6d3c52-5f0e-4b8a-9a40-2f1c7e5d9a11",
+    "change_digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36",
+    "tool": "terraform",
+    "tool_version": "1.14.0",
+    "resources_read": 1,
+    "first_reading_at": "2026-09-16T18:40:30Z",
+    "second_reading_at": "2026-09-16T18:41:30Z",
+    "first_reading_digest": "hmac-sha256:aa2c3bb9815cee269f7aec43983e8653aac39dd806e9b0f0fbd68b8d8c60dbb4",
+    "second_reading_digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012",
+    "minimum_interval_seconds": 60,
+    "differences": [],
+    "differences_count": 0,
+    "first_reading_only_differences": []
+  },
+  "assurance": null,
+  "artifact": null,
+  "tests": null,
+  "scans": null,
+  "verified_source": null,
+  "attestation_outcome": null,
+  "commit_review": null,
+  "apply_job_facts": null,
+  "apply_job_timing": null,
+  "replan_check": null
+}

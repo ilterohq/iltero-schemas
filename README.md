@@ -13,6 +13,9 @@ The package contains:
   YAML, into a policy program for Open Policy Agent (OPA). The same assertion always compiles to the same bytes.
 - **The OPA pin.** The one OPA release every Iltero component runs, with the SHA-256 digest of its binary for each
   supported platform, and the allowlist of OPA functions a program may call.
+- **The scanner pin.** The one Trivy release and the one Checkov release the Iltero CLI runs itself, with the
+  SHA-256 digest of Trivy's program for each platform and a hash lock of Checkov's packages for each platform and
+  Python version, and the reviewed arguments and environment the Iltero CLI runs each one with.
 - **Conformance vectors.** Known inputs with their exact expected outputs.
 
 ## Install
@@ -27,8 +30,8 @@ Python 3.11 or later is required.
 
 Every consumer pins one exact version. A record checked with a different version of the contract may give different
 digests or a different compiled program. Before 1.0, any change to a computed result (a digest, a canonical form, a
-compiled program or the OPA pin) raises the minor version. To upgrade, a consumer moves its exact pin and reproduces
-the conformance vectors of the new version.
+compiled program, the OPA pin or the scanner pin) raises the minor version. To upgrade, a consumer moves its exact pin
+and reproduces the conformance vectors of the new version.
 
 ## Documentation
 

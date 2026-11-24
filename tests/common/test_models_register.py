@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.models.common.car import CAR, MAX_EVIDENCE_REFS, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.vectors.paths import VECTORS
-from tests.records import RECORD, SCANNERS, keep_the_scanner_files
+from tests.records import RECORD, SCANNERS, keep_the_scanner_files, valid_case_record
 
 
 def _without_ref(digest: str) -> dict[str, Any]:
@@ -143,7 +143,7 @@ def test_each_scanner_file_a_stage_keeps_is_an_entry_of_its_own(named: str) -> N
 
 
 def test_a_stage_that_reads_no_scanner_report_keeps_none() -> None:
-    document = json.loads((VECTORS / "records" / "iac" / "local_run_deployed.json").read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))
     scanners = copy.deepcopy(SCANNERS)
     scanners["scanner_check_mappings"][0]["copy_path"] = "units/root/pre_deploy/pre-deploy-scanner-check-mapping.json"
     document["stages"]["pre_deploy"]["scanners"] = scanners
@@ -200,4 +200,104 @@ def test_only_the_shipped_scanner_check_mapping_takes_the_starter_mappings_id() 
     document = _with_scanners()
     document["stages"]["plan"]["scanners"]["scanner_check_mappings"][0]["id"] = "ILT.SCANNER_CHECKS.STARTER"
     with pytest.raises(ValidationError, match="only the shipped scanner check mapping is ILT.SCANNER_CHECKS.STARTER"):
+        CAR.model_validate(document)
+
+
+SERVED_CASE = "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers"
+SERVED_COPY_REFUSED = "copy of the exceptions the server served it is an entry of the evidence register of its own"
+
+
+def _served_copy(record: dict[str, Any]) -> dict[str, Any]:
+    path = record["stages"]["plan"]["served_exceptions"]["copy_path"]
+    return next(ref for ref in record["evidence_refs"] if ref["path"] == path)
+
+
+@pytest.mark.parametrize(
+    "change",
+    ["no entry", "another digest", "a redaction policy", "not canonical JSON", "the events file's path"],
+)
+def test_a_stages_copy_of_the_served_exceptions_is_a_canonical_entry_of_its_own(change: str) -> None:
+    record = valid_case_record("iac", SERVED_CASE)
+    entry = _served_copy(record)
+    if change == "no entry":
+        record["evidence_refs"].remove(entry)
+    elif change == "another digest":
+        entry["digest"] = "sha256:" + "c" * 64
+    elif change == "a redaction policy":
+        entry["redaction_policy"] = copy.deepcopy(record["evidence_refs"][0]["redaction_policy"])
+    elif change == "not canonical JSON":
+        entry["canonicalization"] = None
+    else:
+        events = record["stages"]["plan"]["events"]
+        record["stages"]["plan"]["served_exceptions"].update(copy_path=events["path"], digest=events["digest"])
+    with pytest.raises(ValidationError, match=SERVED_COPY_REFUSED):
+        CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+# A record of a run the server opened whose plan stage read a Checkov report: its register names the file the pipeline
+# gave by its keyed digest, on the report as the stage kept it and on the observations read from it.
+SCANNED_SERVED: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "governed_run_scanned_with_the_served_mapping.json").read_text(encoding="utf-8")
+)
+OTHER_KEYED = "hmac-sha256:" + "0" * 64
+
+
+@pytest.mark.parametrize("value", [None, OTHER_KEYED], ids=["no digest", "another file's digest"])
+def test_in_a_run_the_server_opened_the_observations_name_the_file_their_report_was_kept_from(
+    value: str | None,
+) -> None:
+    CAR.model_validate(SCANNED_SERVED)
+    document = copy.deepcopy(SCANNED_SERVED)
+    observations = next(ref for ref in document["evidence_refs"] if ref["ref_id"] == "checkov-observations.json")
+    observations["source"]["digest"] = value
+    with pytest.raises(ValidationError, match="were read from the file that report was kept from"):
+        CAR.model_validate(document)
+
+
+def test_in_a_run_the_server_opened_a_report_named_by_no_digest_binds_no_observations() -> None:
+    document = copy.deepcopy(SCANNED_SERVED)
+    for ref in document["evidence_refs"]:
+        if ref["source"] is not None and ref["source"]["name"] == "checkov-report.json":
+            ref["source"]["digest"] = None
+    with pytest.raises(ValidationError, match="kept is an entry of the evidence register, redacted from the file"):
+        CAR.model_validate(document)
+
+
+def test_in_a_run_the_tool_opened_the_observations_still_name_the_file_the_pipeline_gave() -> None:
+    document = valid_case_record("iac", "iac_record_keeping_its_scanner_files_in_the_evidence_register")
+    CAR.model_validate(document)
+    (report,) = document["stages"]["plan"]["scanners"]["reports"]
+    observations = next(ref for ref in document["evidence_refs"] if ref["path"] == report["observations"])
+    assert observations["source"]["digest"] is None
+    observations["source"] = None
+    with pytest.raises(ValidationError, match="were read from the file that report was kept from"):
+        CAR.model_validate(document)
+
+
+# A record of a run the tool opened whose plan stage read a Checkov and a Trivy report, each kept redacted.
+SCANNED_LOCAL: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")
+)
+
+
+@pytest.mark.parametrize("document", [SCANNED_LOCAL, SCANNED_SERVED], ids=["tool", "server"])
+def test_a_report_kept_twice_is_kept_from_one_file_by_its_name(document: dict[str, Any]) -> None:
+    document = copy.deepcopy(document)
+    report = document["stages"]["plan"]["scanners"]["reports"][0]
+    kept = next(ref for ref in document["evidence_refs"] if ref["digest"] == report["report_digest"])
+    again = copy.deepcopy(kept)
+    again.update(ref_id="report-kept-again", path="units/root/plan/report-kept-again.json")
+    again["source"]["name"] = "another-report.json"
+    document["evidence_refs"].append(again)
+    with pytest.raises(ValidationError, match="kept is an entry of the evidence register, redacted from the file"):
+        CAR.model_validate(document)
+
+
+@pytest.mark.parametrize("document", [SCANNED_LOCAL, SCANNED_SERVED], ids=["tool", "server"])
+def test_the_observations_name_the_file_their_report_was_kept_from_by_its_name(document: dict[str, Any]) -> None:
+    document = copy.deepcopy(document)
+    report = document["stages"]["plan"]["scanners"]["reports"][0]
+    observations = next(ref for ref in document["evidence_refs"] if ref["path"] == report["observations"])
+    observations["source"]["name"] = "another-report.json"
+    with pytest.raises(ValidationError, match="were read from the file that report was kept from"):
         CAR.model_validate(document)

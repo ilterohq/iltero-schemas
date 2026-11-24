@@ -9,9 +9,13 @@ to (``models.iac.scanner_addresses``), or why it resolves to none. Titles,
 severities and source locations are not kept: no verdict rests on them.
 
 The document names the report it was read from (``report_digest``, the digest
-of the report as the stage kept it) and the plan the stage evaluated
-(``plan_digest``). A report the pipeline supplied (``supplied_by: pipeline``) is
-the pipeline's own claim: nothing in it shows that the tool read that plan.
+of the report as the stage kept it), the redacted plan the stage kept, by the
+digest of the kept copy (``kept_plan_digest``), and who ran the tool
+(``ran_by``: the pipeline, or the Iltero CLI on the runner). Either way the
+report is the record's own claim: nothing in it shows that the tool read that
+plan. In a run the tool opened, the record names no digest of the file the
+pipeline gave, so the observations are tied to that file only through the
+report they name.
 """
 
 from __future__ import annotations
@@ -25,7 +29,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
 from iltero_schemas.models.common.fields import Address, Count, Digest, Identifier
-from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.common.scanners import ILTERO_CLI, RanBy, ScannerTool
 from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS, AcceptedStatus, InputKind, RuleId
 
 KIND = "ScannerObservations"
@@ -112,16 +116,22 @@ class ScannerObservations(StrictModel):
     tool: ScannerTool
     # The version the scanner wrote in its own report; nothing checks it against the scanner that ran.
     tool_version: Identifier
-    # Who ran the tool: in this version always the pipeline, which supplied the report.
-    supplied_by: Literal["pipeline"]
-    # The digests of what fixes the tool's checks and how it ran: its separately downloaded checks (Trivy's checks
-    # bundle) and its configuration and ignore files. Null means the stage was not given them, never that none was
-    # used.
+    # Who ran the tool: the pipeline, which gave the stage the report, or the Iltero CLI on the runner; the record's
+    # own word, as on the report this was read from.
+    ran_by: RanBy
+    # The digests of what fixes the tool's checks and how it ran. When the Iltero CLI ran it, no separately downloaded
+    # checks were used, only those built into the pinned release, so ``rules_digest`` is null, and
+    # ``configuration_digest`` is the digest of the reviewed run it ran the scanner with (``scanners.iac.runs``), the
+    # one its report names. When the pipeline ran it, the report names no configuration, so ``configuration_digest``
+    # is null, and ``rules_digest`` is the digest of its separately downloaded checks (Trivy's checks bundle), where
+    # null means the stage was not given them, never that none was used.
     rules_digest: Digest | None
     configuration_digest: Digest | None
     report_digest: Digest
-    plan_digest: Digest
-    # The tool's words for what it read, translated (``TOOL_INPUT_KINDS``), sorted, each once.
+    kept_plan_digest: Digest
+    # What the tool read, sorted, each once: when the Iltero CLI ran it, the one input it gave the tool, even when the
+    # tool found nothing; when the pipeline ran it, the tool's words for the inputs its results cover, translated
+    # (``TOOL_INPUT_KINDS``).
     input_kinds: Annotated[list[InputKind], Field(max_length=len(get_args(InputKind)))]
     # Results of the report this reader could not read, so that decide nothing; and the files the tool itself says it
     # could not parse, so whose resources it never scanned, or null when the tool does not say.
@@ -146,8 +156,16 @@ class ScannerObservations(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> ScannerObservations:
+        ran_by_cli = self.ran_by == ILTERO_CLI
+        if (self.configuration_digest is not None) != ran_by_cli or (ran_by_cli and self.rules_digest is not None):
+            raise ValueError(
+                "observations name the configuration a scanner ran with exactly when the Iltero CLI ran it, and then "
+                "no separately downloaded checks"
+            )
         if not sorted_unique(self.input_kinds):
             raise ValueError("input_kinds is sorted, each kind once")
+        if ran_by_cli and len(self.input_kinds) != 1:
+            raise ValueError("observations of a scanner the Iltero CLI ran name the one input it gave the scanner")
         without_counts = self.tool in TOOLS_THAT_WRITE_NO_COUNTS
         if any((count is None) != without_counts for count in (self.tool_parsing_errors, self.results_not_listed)):
             raise ValueError(

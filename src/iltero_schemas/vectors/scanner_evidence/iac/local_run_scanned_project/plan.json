@@ -71,7 +71,7 @@
             "smtp_login": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "object"
             }
           },
@@ -153,7 +153,7 @@
                   "tags": {
                     "__redacted": true,
                     "present": true,
-                    "reason": "terraform_sensitive",
+                    "reason": "declared_sensitive",
                     "type": "object"
                   }
                 },
@@ -205,7 +205,7 @@
           "expression": {
             "__redacted": true,
             "present": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "object"
           },
           "sensitive": true
@@ -242,7 +242,7 @@
             "password": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "object"
             },
             "publicly_accessible": {
@@ -440,7 +440,7 @@
             "value": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "object"
             }
           },
@@ -501,7 +501,7 @@
           "default": {
             "__redacted": true,
             "present": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "string"
           },
           "sensitive": true
@@ -529,7 +529,7 @@
       "after": {
         "__redacted": true,
         "present": true,
-        "reason": "terraform_sensitive",
+        "reason": "declared_sensitive",
         "type": "string"
       },
       "after_sensitive": true,
@@ -537,7 +537,7 @@
       "before": {
         "__redacted": true,
         "present": false,
-        "reason": "terraform_sensitive",
+        "reason": "declared_sensitive",
         "type": "null"
       },
       "before_sensitive": true
@@ -556,7 +556,7 @@
         "value": {
           "__redacted": true,
           "present": true,
-          "reason": "terraform_sensitive",
+          "reason": "declared_sensitive",
           "type": "string"
         }
       }
@@ -636,7 +636,7 @@
                   "login": {
                     "__redacted": true,
                     "present": true,
-                    "reason": "terraform_sensitive",
+                    "reason": "declared_sensitive",
                     "type": "string"
                   },
                   "region": "eu-west-1"
@@ -739,7 +739,7 @@
                   "login": {
                     "__redacted": true,
                     "present": true,
-                    "reason": "terraform_sensitive",
+                    "reason": "declared_sensitive",
                     "type": "string"
                   },
                   "region": "eu-central-1"
@@ -822,13 +822,13 @@
             "password": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "string"
             },
             "password_wo": {
               "__redacted": true,
               "present": false,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "null"
             },
             "password_wo_version": null,
@@ -1116,13 +1116,13 @@
             "value": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "string"
             },
             "value_wo": {
               "__redacted": true,
               "present": false,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "null"
             },
             "value_wo_version": null
@@ -1225,7 +1225,7 @@
           "value": {
             "__redacted": true,
             "present": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "string"
           }
         }
@@ -1492,13 +1492,13 @@
           "password": {
             "__redacted": true,
             "present": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "string"
           },
           "password_wo": {
             "__redacted": true,
             "present": false,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "null"
           },
           "password_wo_version": null,
@@ -2686,13 +2686,13 @@
           "value": {
             "__redacted": true,
             "present": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "string"
           },
           "value_wo": {
             "__redacted": true,
             "present": false,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "type": "null"
           },
           "value_wo_version": null,
@@ -3097,7 +3097,7 @@
             "login": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "string"
             },
             "region": "eu-west-1"
@@ -3262,7 +3262,7 @@
             "login": {
               "__redacted": true,
               "present": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "type": "string"
             },
             "region": "eu-central-1"
@@ -3574,7 +3574,7 @@
       "value": {
         "__redacted": true,
         "present": true,
-        "reason": "terraform_sensitive",
+        "reason": "declared_sensitive",
         "type": "string"
       }
     }

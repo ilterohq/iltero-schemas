@@ -1,0 +1,1337 @@
+{
+  "cases": [
+    {
+      "name": "redacted_report_with_nothing_left_to_hide",
+      "description": "A report redaction left nothing the rules would hide.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "check_type": "terraform_plan",
+        "summary": {
+          "checkov_version": "3.3.8",
+          "parsing_errors": 0,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0
+        },
+        "results": {
+          "failed_checks": [
+            {
+              "check_id": "CKV_AWS_16",
+              "resource_address": "aws_db_instance.main",
+              "check_result": {
+                "result": "FAILED",
+                "evaluated_keys": [
+                  "storage_encrypted"
+                ]
+              },
+              "code": {
+                "__redacted": true,
+                "reason": "deny_key",
+                "present": true,
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      "problems": [],
+      "count": 0
+    },
+    {
+      "name": "report_with_values_left_in_place",
+      "description": "A value under a credential key, one shaped like a credential and one at a configured path, each left in place.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "results.failed_checks[*].file_path"
+        ],
+        "exempt_paths": []
+      },
+      "document": {
+        "check_type": "terraform_plan",
+        "summary": {
+          "checkov_version": "3.3.8",
+          "parsing_errors": 0,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0
+        },
+        "results": {
+          "failed_checks": [
+            {
+              "check_id": "CKV_AWS_16",
+              "file_path": "/main.tf",
+              "resource_address": "aws_db_instance.main",
+              "password": "left-in-place",
+              "guideline": "postgres://app:hidden-value@db.internal/app"
+            }
+          ]
+        }
+      },
+      "problems": [
+        {
+          "path": [
+            "results",
+            "failed_checks",
+            0,
+            "file_path"
+          ],
+          "at": "value",
+          "rule": "configured_path"
+        },
+        {
+          "path": [
+            "results",
+            "failed_checks",
+            0,
+            "guideline"
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "results",
+            "failed_checks",
+            0,
+            "password"
+          ],
+          "at": "value",
+          "rule": "deny_key"
+        }
+      ],
+      "count": 3
+    },
+    {
+      "name": "plan_with_a_marked_value_left_in_place",
+      "description": "A plan whose flags mark a value sensitive, and whose provider setting is left in place: the tool's marks are applied again.",
+      "document_name": "redacted_plan",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "resource_changes": [
+          {
+            "address": "aws_db_instance.main",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "password": "left-in-place",
+                "engine": "postgres"
+              },
+              "after_sensitive": {
+                "password": true
+              },
+              "before_sensitive": false
+            }
+          }
+        ],
+        "configuration": {
+          "provider_config": {
+            "aws": {
+              "expressions": {
+                "region": {
+                  "constant_value": "eu-west-1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "problems": [
+        {
+          "path": [
+            "configuration",
+            "provider_config",
+            "aws",
+            "expressions",
+            "region"
+          ],
+          "at": "value",
+          "rule": "provider_configuration"
+        },
+        {
+          "path": [
+            "resource_changes",
+            0,
+            "change",
+            "after",
+            "password"
+          ],
+          "at": "value",
+          "rule": "declared_sensitive"
+        }
+      ],
+      "count": 2
+    },
+    {
+      "name": "object_with_a_key_shaped_like_a_credential",
+      "description": "An object holding a key shaped like a credential is listed once, at the object, and the values under the key are not read.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "results": {
+          "by_name": {
+            "DB_PASSWORD=hunter2": {
+              "guideline": "postgres://app:hidden-value@db.internal/app"
+            },
+            "team": "a"
+          }
+        }
+      },
+      "problems": [
+        {
+          "path": [
+            "results",
+            "by_name"
+          ],
+          "at": "key",
+          "rule": "credential_shaped_key"
+        }
+      ],
+      "count": 1
+    },
+    {
+      "name": "objects_that_only_resemble_markers",
+      "description": "An object with a marker's fields and one more, or with a reason no rule gives, is read like any other object.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "extra": {
+          "__redacted": true,
+          "reason": "deny_key",
+          "present": true,
+          "type": "string",
+          "note": "postgres://app:hidden-value@db.internal/app"
+        },
+        "unlisted": {
+          "__redacted": true,
+          "reason": "postgres://app:hidden-value@db.internal/app",
+          "present": true,
+          "type": "string"
+        }
+      },
+      "problems": [
+        {
+          "path": [
+            "extra",
+            "note"
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "unlisted",
+            "reason"
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        }
+      ],
+      "count": 2
+    },
+    {
+      "name": "observations_read_from_a_redacted_report",
+      "description": "Observations are checked with no anchor: a configured path does not apply to them.",
+      "document_name": "scanner_observations",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "owner"
+        ],
+        "exempt_paths": []
+      },
+      "document": {
+        "owner": "team-a",
+        "results": [
+          {
+            "check_id": "CKV_AWS_16",
+            "address": "aws_db_instance.main"
+          }
+        ]
+      },
+      "problems": [],
+      "count": 0
+    },
+    {
+      "name": "more_problems_than_a_check_lists",
+      "description": "A check lists the first problems in path order and counts them all.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "urls": [
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app"
+        ]
+      },
+      "problems": [
+        {
+          "path": [
+            "urls",
+            0
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            1
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            2
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            3
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            4
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            5
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            6
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            7
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            8
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            9
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            10
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            11
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            12
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            13
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            14
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            15
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            16
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            17
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            18
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            19
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            20
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            21
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            22
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            23
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            24
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            25
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            26
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            27
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            28
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            29
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            30
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            31
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            32
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            33
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            34
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            35
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            36
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            37
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            38
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            39
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            40
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            41
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            42
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            43
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            44
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            45
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            46
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            47
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            48
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            49
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            50
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            51
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            52
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            53
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            54
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            55
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            56
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            57
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            58
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            59
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            60
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            61
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            62
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            63
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            64
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            65
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            66
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            67
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            68
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            69
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            70
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            71
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            72
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            73
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            74
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            75
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            76
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            77
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            78
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            79
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            80
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            81
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            82
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            83
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            84
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            85
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            86
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            87
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            88
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            89
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            90
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            91
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            92
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            93
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            94
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            95
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            96
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            97
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            98
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "urls",
+            99
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        }
+      ],
+      "count": 150
+    },
+    {
+      "name": "plan_with_values_left_where_its_flags_say_they_are_known_only_after_the_deployment",
+      "description": "A value left where the plan's flags say the tool knows a value only after the deployment is read like any value: the unknown marker is what belongs there.",
+      "document_name": "redacted_plan",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "resource_changes": [
+          {
+            "address": "aws_db_instance.a",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "endpoint": "postgres://app:hidden-value@db.internal/app",
+                "arn": {
+                  "__unknown": true,
+                  "reason": "known_after_deploy",
+                  "present": true
+                }
+              },
+              "after_unknown": {
+                "endpoint": true,
+                "arn": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          },
+          {
+            "address": "aws_db_instance.b",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "connection": "postgres://app:hidden-value@db.internal/app"
+              },
+              "after_unknown": true,
+              "before_sensitive": false,
+              "after_sensitive": false
+            }
+          }
+        ]
+      },
+      "problems": [
+        {
+          "path": [
+            "resource_changes",
+            0,
+            "change",
+            "after",
+            "endpoint"
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        },
+        {
+          "path": [
+            "resource_changes",
+            1,
+            "change",
+            "after",
+            "connection"
+          ],
+          "at": "value",
+          "rule": "value_shape"
+        }
+      ],
+      "count": 2
+    }
+  ]
+}

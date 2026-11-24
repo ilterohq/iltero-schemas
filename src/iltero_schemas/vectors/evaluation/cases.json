@@ -146,7 +146,7 @@
         "after": {
           "storage_encrypted": {
             "__redacted": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "present": true,
             "type": "string"
           }
@@ -213,7 +213,7 @@
         "type": "aws_db_instance",
         "after": {
           "__redacted": true,
-          "reason": "terraform_sensitive",
+          "reason": "declared_sensitive",
           "present": true,
           "type": "string"
         }
@@ -900,13 +900,13 @@
         "environment": {
           "name": {
             "__redacted": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "present": true,
             "type": "string"
           },
           "production": {
             "__redacted": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "present": true,
             "type": "boolean"
           }
@@ -1058,7 +1058,7 @@
         "after": {
           "storage_encrypted": {
             "__redacted": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "present": true,
             "type": "string"
           },
@@ -2703,7 +2703,7 @@
         "after": {},
         "related": {
           "__redacted": true,
-          "reason": "terraform_sensitive",
+          "reason": "declared_sensitive",
           "present": true,
           "type": "string"
         }
@@ -2864,7 +2864,7 @@
         "related": [
           {
             "__redacted": true,
-            "reason": "terraform_sensitive",
+            "reason": "declared_sensitive",
             "present": true,
             "type": "string"
           }
@@ -3131,7 +3131,7 @@
           "tags": [
             {
               "__redacted": true,
-              "reason": "terraform_sensitive",
+              "reason": "declared_sensitive",
               "present": true,
               "type": "string"
             }
@@ -3311,7 +3311,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -3358,7 +3359,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -3405,7 +3407,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -3485,7 +3488,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -3646,7 +3650,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -4066,7 +4071,8 @@
           "independence": "independent",
           "policy_version": null,
           "timestamp": "2026-09-21T09:00:00.000Z",
-          "released": null
+          "released": null,
+          "bound_to": null
         }
       ]
     },
@@ -8221,7 +8227,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },
@@ -8321,7 +8326,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },
@@ -8428,10 +8432,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -8945,7 +8945,8 @@
       "deployment": {
         "apply": {
           "state": {
-            "digest": "sha256:c",
+            "digest": "sha256:11ff8faaf41206f43d9cbdc9ecaa1c3b82d1ac2efcf10893b9660ba86cbb7e29",
+            "digest_version": "redacted-1",
             "tool": "terraform",
             "tool_version": "1.14.0"
           }
@@ -9110,10 +9111,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9294,10 +9291,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -9472,10 +9465,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9657,10 +9646,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -9849,10 +9834,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -10236,10 +10217,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10417,10 +10394,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10581,10 +10554,6 @@
         "reason": "server_facts_unavailable"
       },
       "approvals": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
-      "exceptions": {
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
@@ -10760,10 +10729,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -10936,10 +10901,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -11103,10 +11064,6 @@
         "__unknown": true,
         "reason": "server_facts_unavailable"
       },
-      "exceptions": {
-        "__unknown": true,
-        "reason": "server_facts_unavailable"
-      },
       "run": {
         "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
       },
@@ -11224,7 +11181,6 @@
       "deployment": null,
       "evaluations": [],
       "approvals": [],
-      "exceptions": [],
       "run": {
         "id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c"
       },
@@ -12814,6 +12770,180 @@
           "status": "false"
         }
       ]
+    }
+  },
+  {
+    "name": "rendered_plan_of_another_digest_version_fails",
+    "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "plan": {
+        "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
+      },
+      "apply_job_facts": {
+        "flow": "apply_in_a_later_job",
+        "rendered_plan": {
+          "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "digest_version": "2",
+          "tool": "terraform"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; apply_job_facts.rendered_plan.digest_version equal is false",
+      "unknown": null,
+      "when": "true",
+      "predicates": [
+        {
+          "actual": "apply_in_a_later_job",
+          "clause": "when",
+          "expected": "plan_and_apply_in_one_job",
+          "index": 0,
+          "op": "not_equal",
+          "path": "apply_job_facts.flow",
+          "status": "true"
+        },
+        {
+          "actual": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.digest"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest",
+          "resolved": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "true"
+        },
+        {
+          "actual": "2",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.digest_version"
+          },
+          "index": 2,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest_version",
+          "resolved": "1",
+          "status": "false"
+        },
+        {
+          "actual": "terraform",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.tool"
+          },
+          "index": 3,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.tool",
+          "resolved": "terraform",
+          "status": "true"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
+    }
+  },
+  {
+    "name": "rendered_plan_of_another_tool_fails",
+    "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+    "input": {
+      "subject": {
+        "kind": "change",
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "root",
+            "scope": null
+          }
+        ]
+      },
+      "plan": {
+        "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest_version": "1",
+        "tool": "terraform"
+      },
+      "apply_job_facts": {
+        "flow": "apply_in_a_later_job",
+        "rendered_plan": {
+          "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "digest_version": "1",
+          "tool": "another_tool"
+        }
+      }
+    },
+    "expected": {
+      "status": "fail",
+      "reason": "assert: false; apply_job_facts.rendered_plan.tool equal is false",
+      "unknown": null,
+      "when": "true",
+      "predicates": [
+        {
+          "actual": "apply_in_a_later_job",
+          "clause": "when",
+          "expected": "plan_and_apply_in_one_job",
+          "index": 0,
+          "op": "not_equal",
+          "path": "apply_job_facts.flow",
+          "status": "true"
+        },
+        {
+          "actual": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.digest"
+          },
+          "index": 1,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest",
+          "resolved": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "true"
+        },
+        {
+          "actual": "1",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.digest_version"
+          },
+          "index": 2,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest_version",
+          "resolved": "1",
+          "status": "true"
+        },
+        {
+          "actual": "another_tool",
+          "clause": "assert",
+          "expected": {
+            "ref": "plan.tool"
+          },
+          "index": 3,
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.tool",
+          "resolved": "terraform",
+          "status": "false"
+        }
+      ],
+      "subject": {
+        "key": "sha256:194bff519ea09f4f8836189539170bd5d77ac84784ed99c68fc41b1a8e54b3d5",
+        "kind": "change"
+      }
     }
   }
 ]

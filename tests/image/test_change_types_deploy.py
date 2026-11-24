@@ -27,7 +27,7 @@ from tests.conftest import VECTORS
 from tests.records import RECORD
 
 DEPLOY: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "image" / "local_run_deploy.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "image" / "local_run_deploy_rolled_out.json").read_text(encoding="utf-8")
 )
 READING_CASES = [
     case
@@ -49,10 +49,11 @@ def test_a_deploy_keeps_its_record_at_every_stage_and_evaluates_its_three_builti
     }
     assert IMAGE_DEPLOY.carried_out_matches_checked == (REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY)
     assert dict(IMAGE_DEPLOY.always_evaluated) == {
-        Stage.PRE_DEPLOY: BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
-        Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
-        Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+        Stage.PRE_DEPLOY: {BUILD_ACCEPTED_FOR_ENVIRONMENT_ID},
+        Stage.POST_DEPLOY: {REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID},
+        Stage.POST_VERIFY: {RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID},
     }
+    assert IMAGE_DEPLOY.enforced_in_advisory_mode == frozenset()
 
 
 def test_the_change_digest_of_a_deploy_is_of_its_image_in_its_unit_and_environment() -> None:
@@ -60,7 +61,7 @@ def test_the_change_digest_of_a_deploy_is_of_its_image_in_its_unit_and_environme
     assert isinstance(car.change, ImageDeploy)
     checked = IMAGE_DEPLOY.checked_content(car)
     assert isinstance(checked, CheckedImage) and checked.digest == car.change.image.digest
-    expected = change_digest("image_release", car.unit, car.subject.environment, checked.model_dump(mode="json"))
+    expected = change_digest("image_release", car.unit, car.subject.environment_name, checked.model_dump(mode="json"))
     assert car.change.digest == expected
     assert IMAGE_DEPLOY.change_digest_problems(car) == []
 

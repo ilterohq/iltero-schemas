@@ -1,0 +1,102 @@
+[
+  {
+    "name": "descriptor_signed_by_a_key_the_trust_set_does_not_name",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/key_id": "dev-another-key"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "the descriptor's key_id names a key that is not trusted, or is revoked"
+  },
+  {
+    "name": "descriptor_whose_mapping_is_not_a_scanner_check_mapping",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/mapping/kind": "TechnicalAssertion"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "the descriptor's mapping is not a scanner check mapping"
+  },
+  {
+    "name": "descriptor_whose_mapping_is_a_projects",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/mapping/metadata/id": "ACME.SCANNER_CHECKS.PAYMENTS"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "a served scanner check mapping's id starts ILT.SCANNER_CHECKS. and is not ILT.SCANNER_CHECKS.STARTER"
+  },
+  {
+    "name": "descriptor_whose_mapping_is_the_starter",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/mapping/metadata/id": "ILT.SCANNER_CHECKS.STARTER"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "a served scanner check mapping's id starts ILT.SCANNER_CHECKS. and is not ILT.SCANNER_CHECKS.STARTER"
+  },
+  {
+    "name": "descriptor_naming_another_digest",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "the descriptor's digest is not the digest of its mapping"
+  },
+  {
+    "name": "descriptor_whose_mapping_changed_after_signing",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/mapping/metadata/version": "1.0.1"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "the descriptor's digest is not the digest of its mapping"
+  },
+  {
+    "name": "descriptor_with_a_signature_in_its_high_s_form",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/signature": "gQyD9fkEJMMx7AawvvPfxz3F50YGEbxV76SQHa7amL_nDPP4PUjQEe_0Ax9c7ggEx_WIoI5ZGqaSTNtrJsgfTA"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "is written in its low-S form"
+  },
+  {
+    "name": "descriptor_with_a_signature_whose_r_is_zero",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/signature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY8wwGwrcv7xAL_OCjEff69PFyDRi-g95hbO9X1ZsGBQ"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "r and s each lie between 0 and the curve order"
+  },
+  {
+    "name": "descriptor_with_a_signature_spelled_another_way",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/signature": "gQyD9fkEJMMx7AawvvPfxz3F50YGEbxV76SQHa7amL8Y8wwGwrcv7xAL_OCjEff69PFyDRi-g95hbO9X1ZsGBR"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "a signature is written in its one base64url spelling: no padding, and the unused bits of its last character zero"
+  },
+  {
+    "name": "descriptor_with_a_signature_written_with_padding",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/signature": "gQyD9fkEJMMx7AawvvPfxz3F50YGEbxV76SQHa7amL8Y8wwGwrcv7xAL_OCjEff69PFyDRi-g95hbO9X1ZsG=="
+    },
+    "remove": [],
+    "refused_by": "model",
+    "message": "signature"
+  }
+]

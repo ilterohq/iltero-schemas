@@ -9,6 +9,10 @@ that opened the run reviews them. Every record stays self-attested: these
 labels are the writer's claims, and only the server can confirm a run it opened.
 The server opens a change run for one environment, so a record of such a run
 names it; a build run belongs to no environment.
+
+Only a stage of a run the server opened applies the exceptions the server served it, and the stage its activity names
+always says which it applied, even none, reading its time from the server. Each failed result it names as covered is
+one of its own events.
 """
 
 from __future__ import annotations
@@ -17,7 +21,10 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.change_types.common.registry import ACTIVITIES
+from iltero_schemas.models.common.exception_terms import resource_key
+from iltero_schemas.models.common.facts import ServerFactsUnavailable
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
+from iltero_schemas.models.common.scanners import ILTERO_CLI
 
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import CAR
@@ -31,8 +38,15 @@ def check_provenance(car: CAR) -> None:
             raise ValueError(
                 f"stages.{stage.value}: counts its assertions as server_pinned exactly when the server opened the run"
             )
+    _check_served_exceptions(car, issued)
+    environment = car.subject.environment
+    if environment is not None and isinstance(environment.production, ServerFactsUnavailable) == issued:
+        raise ValueError(
+            "a record names whether its environment is production exactly when the server opened its run, and holds "
+            "the unknown marker when the tool opened it"
+        )
     if issued:
-        if car.subject.environment is None and ACTIVITIES[car.change.activity].run_type == "change":
+        if environment is None and ACTIVITIES[car.change.activity].run_type == "change":
             raise ValueError("a record of a run the server opened names the environment the run was opened for")
         if any(
             event.assertion.id == COMMITS_REVIEWED_ID
@@ -51,11 +65,50 @@ def check_provenance(car: CAR) -> None:
             for record in car.stages.values()
         ):
             raise ValueError("a record of a run the server opened applies no exceptions file of the project's own")
+        if car.redaction_policy.exempt_paths:
+            raise ValueError("a record of a run the server opened exempts no path from its redaction policy")
+        if any(
+            report.ran_by != ILTERO_CLI
+            for record in car.stages.values()
+            if record.scanners is not None
+            for report in record.scanners.reports
+        ):
+            raise ValueError("a record of a run the server opened keeps only scanner reports the Iltero CLI ran")
+        if any(event.provenance.assertion_source != "server_bundle" for event in car.events):
+            raise ValueError(
+                "a record of a run the server opened evaluates only assertions from the server's bundle: no "
+                "hand-written Rego, no project's own assertion and no copy of this package's"
+            )
+        if any(
+            [used.origin for used in record.scanners.scanner_check_mappings] != ["served"]
+            for record in car.stages.values()
+            if record.scanners is not None
+        ):
+            raise ValueError("a record of a run the server opened applies only the scanner check mapping it served")
+        if any(
+            used.key_id != (record.execution.bundle.key_id if record.execution.bundle else None)
+            for record in car.stages.values()
+            if record.scanners is not None
+            for used in record.scanners.scanner_check_mappings
+        ):
+            raise ValueError("a served scanner check mapping is signed by the key that signed its stage's bundle")
+        if any(record.values_known_after_deployment == "postpone" for record in car.stages.values()):
+            raise ValueError(
+                "a record of a run the server opened postpones no check until after the deployment: its plan stage "
+                "blocks on a value known only after the deployment"
+            )
         return
     bundles = [e.provenance.bundle.kind for e in car.events if e.provenance.bundle]
     bundles += [r.execution.bundle.kind for r in car.stages.values() if r.execution.bundle]
     if "server" in bundles:
         raise ValueError("a record of a run the tool opened names no server bundle")
+    if any(
+        used.origin == "served"
+        for record in car.stages.values()
+        if record.scanners is not None
+        for used in record.scanners.scanner_check_mappings
+    ):
+        raise ValueError("a record of a run the tool opened applies no scanner check mapping the server served")
     provenance = [event.provenance for event in car.events]
     if any(p.assertion_source == "server_bundle" for p in provenance):
         raise ValueError("a record of a run the tool opened has no evaluations from a server bundle")
@@ -73,3 +126,38 @@ def check_provenance(car: CAR) -> None:
             f"{COMMITS_REVIEWED_ID} is unknown with reason server_facts_unavailable, never pass, fail or "
             "not_applicable, on a run the tool opened: only a server that opened the run reviews its commits"
         )
+
+
+def _check_served_exceptions(car: CAR, issued: bool) -> None:
+    """Raise ``ValueError`` unless the stage of a run the server opened that its activity names, and no other stage,
+    says which served exceptions it applied, with a time from the server, and each failed result it names is one of its
+    own events."""
+    applying = ACTIVITIES[car.change.activity].stage_that_applies_served_exceptions if issued else None
+    for stage, record in car.stages.items():
+        if (record.served_exceptions is not None) != (stage is applying):
+            if not issued:
+                raise ValueError("a record of a run the tool opened applies no exceptions the server served")
+            raise ValueError(
+                "the served exceptions a run the server opened applies are named at the stage its activity applies "
+                "them at, and only there"
+            )
+        if record.served_exceptions is None:
+            if record.coverage.failed_checks_excepted:
+                raise ValueError("a stage that applies no served exceptions counts no failure as excepted")
+            continue
+        if record.reference_time.source != "server":
+            raise ValueError("a stage that applies served exceptions reads its time from the server")
+        failed = {
+            (event.assertion, resource_key(identity), event.engine)
+            for event in car.events
+            if event.evaluation.stage is stage and event.evaluation.status == "fail"
+            for identity in event.subject.identities
+        }
+        if any(
+            (failure.assertion, resource_key(failure.resource), failure.engine) not in failed
+            for failure in record.served_exceptions.excepted_failures
+        ):
+            raise ValueError(
+                "each failed result a served exception covers is a failed result of the stage, by its assertion, "
+                "resource and engine"
+            )

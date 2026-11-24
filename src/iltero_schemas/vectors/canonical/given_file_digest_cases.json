@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "name": "empty_file",
+      "description": "The digest of a file of no bytes, keyed under the vector key.",
+      "plain_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "keyed_digest": "hmac-sha256:ed4509d82ba4ac2b76b1a508bd14545ec21b933a60b6f0610aec9986c228d9de"
+    },
+    {
+      "name": "apply_log",
+      "description": "The digest of the bytes of an apply log, keyed under the vector key.",
+      "plain_digest": "sha256:bef3905d492e5b362aeb6b6e5efc8bbfb10632d2f2ea4706ab052668e9ea3cb2",
+      "keyed_digest": "hmac-sha256:4708cb22e057169745ff0d58e17095c38b7058cfb835e5835f32fdbaf3ea7043"
+    },
+    {
+      "name": "keyed_digest_refused",
+      "description": "A digest that is already keyed is not a plain digest, so it is refused.",
+      "plain_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "refused": "a given file's plain digest is sha256: and 64 lowercase hexadecimal digits"
+    },
+    {
+      "name": "uppercase_hex_refused",
+      "description": "A plain digest is written in lowercase hexadecimal digits, so one in uppercase is refused.",
+      "plain_digest": "sha256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "refused": "a given file's plain digest is sha256: and 64 lowercase hexadecimal digits"
+    }
+  ]
+}

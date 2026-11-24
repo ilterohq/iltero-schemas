@@ -77,6 +77,7 @@ def _combined_coverage(stages: Sequence[tuple[str, StageOutcome]]) -> Coverage:
         assertions_evaluated=sum(c.assertions_evaluated for c in coverages),
         subjects_per_assertion=per_assertion,
         status_counts={status: sum(c.status_counts[status] for c in coverages) for status in STATUSES},
+        failed_checks_excepted=sum(c.failed_checks_excepted for c in coverages),
         evaluator_status_counts=_evaluator_status_counts(coverages),
         evaluations=sum(c.evaluations for c in coverages),
         gaps=[
@@ -109,9 +110,8 @@ def combine(stages: Sequence[tuple[str, StageOutcome]]) -> StageOutcome:
       is ``project_files`` when any stage's is.
     - The gaps and the substituted inputs are kept, each naming its stage; the
       record is truncated or sampled when any stage is.
-    - The verdict is the stage verdict that wins by ``VERDICT_ORDER`` (and an
-      incomplete one's reason by ``INCOMPLETE_ORDER``), the earliest such stage
-      on a tie, naming that stage; the record's evidence lists every reason of
+    - The verdict is the stage verdict that wins by ``VERDICT_RANKING``, with
+      its reason, the earliest such stage on a tie, naming that stage; the record's evidence lists every reason of
       every stage, each naming its stage, in the order of
       ``GAP_REASON_PRECEDENCE`` and, for one reason, in stage order.
     """

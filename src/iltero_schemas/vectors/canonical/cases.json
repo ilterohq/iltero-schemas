@@ -87,7 +87,7 @@
     "value": {
       "master_password": {
         "__redacted": true,
-        "reason": "terraform_sensitive",
+        "reason": "declared_sensitive",
         "present": true,
         "type": "string"
       },
@@ -97,7 +97,7 @@
         "present": true
       }
     },
-    "canonical": "{\"kms_key_id\":{\"__unknown\":true,\"present\":true,\"reason\":\"known_after_deploy\"},\"master_password\":{\"__redacted\":true,\"present\":true,\"reason\":\"terraform_sensitive\",\"type\":\"string\"}}",
-    "digest": "sha256:eeacbcf2d87e314dbe31654ee2f3f62e83ffce78b0bd2c578e67e10adc12512a"
+    "canonical": "{\"kms_key_id\":{\"__unknown\":true,\"present\":true,\"reason\":\"known_after_deploy\"},\"master_password\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"}}",
+    "digest": "sha256:9e57d562b8674562541d0e2fefe94773ad14433f4b339fd1ebad18553bbab7db"
   }
 ]

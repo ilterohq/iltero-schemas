@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "op": "equal",
+      "path": "apply_job_facts.pinned_plan_digest",
+      "ref": "plan.digest"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

@@ -33,50 +33,10 @@
       "/organization_scope/environment/production": true,
       "/reference_time/source": "server",
       "/evaluations": [],
-      "/approvals": [],
-      "/exceptions": []
+      "/approvals": []
     },
     "remove": [],
     "message": "change.build holds the unknown marker exactly when the environment's production flag does: both hold it only in a run no server opened"
-  },
-  {
-    "name": "image_deploy_input_with_an_exception_covering_a_built_in",
-    "vector": "image/pre_deploy_change.json",
-    "set": {
-      "/organization_scope/environment/production": true,
-      "/reference_time/source": "server",
-      "/change/build": null,
-      "/evaluations": [],
-      "/approvals": [],
-      "/exceptions": [
-        {
-          "id": "exc_0001",
-          "status": "approved",
-          "scope": {
-            "assertion": {
-              "id": "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT"
-            },
-            "environment": "production",
-            "resources": [
-              {
-                "scheme": "iltero_unit",
-                "value": "api",
-                "scope": null
-              }
-            ]
-          },
-          "valid_from": "2026-11-01T00:00:00.000Z",
-          "expires_at": "2026-12-01T00:00:00.000Z",
-          "approved_by": {
-            "provider": "iltero",
-            "id": "reviewer_1"
-          },
-          "reason": "waive the accepted build check"
-        }
-      ]
-    },
-    "remove": [],
-    "message": "an exception never covers a built-in assertion: what it records is never waived"
   },
   {
     "name": "commit_review_of_a_deploy_with_no_accepted_build",
@@ -142,7 +102,6 @@
       },
       "/evaluations": [],
       "/approvals": [],
-      "/exceptions": [],
       "/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -178,7 +137,6 @@
       },
       "/evaluations": [],
       "/approvals": [],
-      "/exceptions": [],
       "/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -214,7 +172,6 @@
       },
       "/evaluations": [],
       "/approvals": [],
-      "/exceptions": [],
       "/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -250,7 +207,6 @@
       },
       "/evaluations": [],
       "/approvals": [],
-      "/exceptions": [],
       "/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
@@ -286,7 +242,6 @@
       },
       "/evaluations": [],
       "/approvals": [],
-      "/exceptions": [],
       "/commit_review": {
         "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
         "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",

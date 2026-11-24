@@ -20,29 +20,19 @@
     "why": "The tool opened the run, so no server served its commit review."
   },
   {
-    "name": "approvals_of_a_run_the_tool_opened_whose_pre_deploy_stage_is_pending",
+    "name": "approvals_of_a_run_the_tool_opened_still_in_progress",
     "record": {
       "vector": "iac/local_run.json"
     },
     "property": "approval_identity",
     "state": "not_performed",
     "reason": "run_opened_locally",
-    "why": "run_opened_locally comes before pre_deploy_pending: no server will ever serve approvals to this run."
-  },
-  {
-    "name": "approvals_of_a_run_the_tool_opened_whose_stage_read_none",
-    "record": {
-      "case": "pre_deploy_stage_whose_results_read_no_fact_from_the_server"
-    },
-    "property": "approval_identity",
-    "state": "not_performed",
-    "reason": "run_opened_locally",
-    "why": "run_opened_locally comes before the stage's own result, here the marker that it read no approvals."
+    "why": "The tool opened the run and left its pre-deploy stage out as needing the server, so no server will ever serve approvals to this run."
   },
   {
     "name": "approvals_a_server_opened_run_needed_and_did_not_get",
     "record": {
-      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
     },
     "property": "approval_identity",
     "state": "could_not_decide",
@@ -57,17 +47,17 @@
     "property": "exceptions",
     "state": "claimed_by_record",
     "reason": "project_exception_relied_on",
-    "why": "An event names an exception from the project's own exceptions file; it comes before run_opened_locally and pre_deploy_pending."
+    "why": "An event names an exception from the project's own exceptions file; it comes before run_opened_locally."
   },
   {
-    "name": "exceptions_of_a_server_opened_run_that_lists_none",
+    "name": "exceptions_of_a_server_opened_run_relying_on_no_exception",
     "record": {
       "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
     },
     "property": "exceptions",
-    "state": "not_assessed",
-    "reason": "exceptions_not_listed",
-    "why": "The server opened the run and the record lists no exception, so a verifier cannot assess any the server may have served."
+    "state": "claimed_by_record",
+    "reason": "served_exceptions_not_relied_on",
+    "why": "The server opened the run, its plan stage applied the exceptions the server served, and no failed result relies on one."
   },
   {
     "name": "reference_time_of_a_run_on_the_runners_clock",
@@ -92,7 +82,7 @@
   {
     "name": "evaluator_binary_of_a_record_on_a_placeholder_binary",
     "record": {
-      "vector": "iac/local_run.json"
+      "vector": "iac/local_run_on_placeholders.json"
     },
     "property": "evaluator_binary",
     "state": "failed",
@@ -110,13 +100,733 @@
     "why": "Every OPA evaluation names the pinned binary for its platform."
   },
   {
-    "name": "exceptions_of_a_run_that_relied_on_a_project_exception_with_its_pre_deploy_stage_out_of_scope",
+    "name": "exceptions_of_a_server_opened_run_whose_environment_policy_left_out_its_pre_deploy_stage",
     "record": {
-      "case": "iac_record_relying_on_a_project_exception_with_its_pre_deploy_stage_out_of_scope"
+      "case": "pre_deploy_not_required_by_the_environment_policy"
     },
     "property": "exceptions",
     "state": "claimed_by_record",
-    "reason": "project_exception_relied_on",
-    "why": "The plan stage relied on an exception from the project's own exceptions file; it comes before pre_deploy_out_of_scope, which would otherwise hide it."
+    "reason": "served_exceptions_not_relied_on",
+    "why": "The server opened the run and its plan stage applied the exceptions the server served, relying on none; an exception result comes before pre_deploy_out_of_scope."
+  },
+  {
+    "name": "approvals_of_a_server_opened_run_whose_environment_policy_left_out_its_pre_deploy_stage",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "approval_identity",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy left the pre-deploy stage out of scope, so the record reads no approval."
+  },
+  {
+    "name": "bundle_provenance_of_a_run_the_tool_opened",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "bundle_provenance",
+    "state": "not_performed",
+    "reason": "local_assertions",
+    "why": "The run the tool opened evaluated the assertions it was given locally, so no stage names the server's bundle."
+  },
+  {
+    "name": "bundle_provenance_of_a_server_opened_run",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
+    },
+    "property": "bundle_provenance",
+    "state": "claimed_by_record",
+    "reason": "server_bundle_named",
+    "why": "A run the server opened evaluates only assertions from the server's bundle, and each stage names it."
+  },
+  {
+    "name": "exceptions_of_a_server_opened_run_relying_on_an_exception_its_run_starter_approved_with_pre_deploy_pending",
+    "record": {
+      "case": "iac_record_of_a_run_the_server_opened_whose_every_plan_failure_a_served_exception_covers"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "served_exception_approved_by_run_starter",
+    "why": "The plan stage names failed results exceptions the server served cover, and the kept copy says the person who approved one of them started the run. The exception results come before the pre-deploy stage's pending one, so the pending stage does not hide them."
+  },
+  {
+    "name": "scanner_reports_of_a_record_with_no_scanner_report",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "scanner_reports",
+    "state": "not_assessed",
+    "reason": "no_scanner_report",
+    "why": "No stage read a scanner report and none requires one."
+  },
+  {
+    "name": "scanner_reports_of_a_record_whose_reports_the_pipeline_ran",
+    "record": {
+      "vector": "iac/local_run_scanned.json"
+    },
+    "property": "scanner_reports",
+    "state": "claimed_by_record",
+    "reason": "ran_by_pipeline",
+    "why": "The plan stage read reports the pipeline ran, and its scanner verdicts follow from the files it kept: the pipeline's word."
+  },
+  {
+    "name": "scanner_reports_of_a_record_whose_required_scanner_group_gave_only_gaps",
+    "record": {
+      "vector": "iac/local_run_scanned_project_required.json"
+    },
+    "property": "scanner_reports",
+    "state": "not_performed",
+    "reason": "scanner_requirement_not_met",
+    "why": "A group of scanners the plan stage requires gave only gaps for a check and subject, so the scan the run required did not happen for it."
+  },
+  {
+    "name": "exceptions_of_a_governed_run_relying_on_no_served_exception",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "served_exceptions_not_relied_on",
+    "why": "The server opened the run, its plan stage applied the exceptions the server served it, and no failed result relies on one."
+  },
+  {
+    "name": "exceptions_of_a_governed_run_relying_on_served_exceptions",
+    "record": {
+      "vector": "iac/governed_run_every_failure_excepted.json"
+    },
+    "property": "exceptions",
+    "state": "claimed_by_record",
+    "reason": "served_exception_relied_on",
+    "why": "The plan stage names failed results exceptions the server served cover, the kept copy gives them, and no one who approved them started the run."
+  },
+  {
+    "name": "scanner_reports_of_a_governed_run_with_no_scanner_report",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "scanner_reports",
+    "state": "not_assessed",
+    "reason": "no_scanner_report",
+    "why": "No stage of the run the server opened read a scanner report, and none requires one; only the server confirms that."
+  },
+  {
+    "name": "approvals_of_a_governed_run_the_server_served_an_approval_for",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "approval_identity",
+    "state": "claimed_by_record",
+    "reason": "approvals_listed",
+    "why": "The pre-deploy stage of the run the server opened lists the approval the server served."
+  },
+  {
+    "name": "commit_review_of_a_governed_run_whose_commits_were_reviewed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "commit_review",
+    "state": "claimed_by_record",
+    "reason": "reviewed",
+    "why": "The pre-deploy stage kept the commit review the server served, and every commit it counts was reviewed."
+  },
+  {
+    "name": "approvals_of_a_governed_run_whose_server_facts_were_unavailable",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "approval_identity",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The server opened the run, its approval check needed the approvals, and the stage kept the unknown marker in their place."
+  },
+  {
+    "name": "commit_review_of_a_governed_run_whose_server_facts_were_unavailable",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "commit_review",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The server opened the run, its commit review check needed the review, and the stage kept the unknown marker in its place."
+  },
+  {
+    "name": "reference_time_of_a_governed_plan_with_a_check_undecided",
+    "record": {
+      "vector": "iac/governed_run_every_failure_excepted_one_check_undecided.json"
+    },
+    "property": "reference_time",
+    "state": "claimed_by_record",
+    "reason": "server",
+    "why": "The plan stage, which blocks on a check it left undecided, took its time from the server."
+  },
+  {
+    "name": "plan_match_of_a_run_the_tool_opened_with_no_saved_plan_file",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "plan_apply_match",
+    "state": "claimed_by_record",
+    "reason": "redacted_plan_only",
+    "why": "The tool opened the run and the plan stage was given no saved plan file, so the record compared only the digests of the redacted plans."
+  },
+  {
+    "name": "plan_match_of_a_run_the_tool_opened_with_a_saved_plan_file",
+    "record": {
+      "case": "deployment_of_a_local_plan_read_from_a_saved_plan_file"
+    },
+    "property": "plan_apply_match",
+    "state": "claimed_by_record",
+    "reason": "plan_digests_compared",
+    "why": "The tool opened the run and the plan stage read a saved plan file, so the record compared the plan digests it names, not only those of the redacted plans."
+  },
+  {
+    "name": "plan_match_of_a_run_the_tool_opened_whose_deployment_applied_another_plan",
+    "record": {
+      "vector": "iac/local_run_deployed_another_plan_applied.json"
+    },
+    "property": "plan_apply_match",
+    "state": "failed",
+    "reason": "plan_digests_compared",
+    "why": "The tool opened the run and the deployment applied another plan than the one it evaluated, so the plan match check failed. A failed comparison never says redacted_plan_only."
+  },
+  {
+    "name": "plan_match_of_a_run_the_server_opened",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "plan_apply_match",
+    "state": "claimed_by_record",
+    "reason": "plan_digests_compared",
+    "why": "The server opened the run, so the record compared the keyed digests of the evaluated plan and the applied plan."
+  },
+  {
+    "name": "plan_match_of_a_run_the_server_opened_with_no_saved_plan_file",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "plan_apply_match",
+    "state": "claimed_by_record",
+    "reason": "plan_digests_compared",
+    "why": "The server opened the run, so the record compared the keyed digests of the plans, though the plan stage was given no saved plan file."
+  },
+  {
+    "name": "plan_match_of_a_record_with_no_post_deploy_stage",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "plan_apply_match",
+    "state": "not_performed",
+    "reason": "no_post_deploy_stage",
+    "why": "No post-deploy stage reported, so no stage compared the applied plan."
+  },
+  {
+    "name": "plan_age_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "plan_age",
+    "state": "claimed_by_record",
+    "reason": "plan_age_within_limit",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "apply_job_approval_order_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "apply_job_approval_order",
+    "state": "claimed_by_record",
+    "reason": "approved_after_plan_stage_record_accepted",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "received_plan_file_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "received_plan_file",
+    "state": "claimed_by_record",
+    "reason": "received_plan_file_matches",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "rendered_plan_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "rendered_plan",
+    "state": "claimed_by_record",
+    "reason": "rendered_plan_matches",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "pinned_plan_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "pinned_plan",
+    "state": "claimed_by_record",
+    "reason": "evaluated_plan_is_pinned_plan",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "replan_resource_actions_of_governed_run_deployed",
+    "record": {
+      "vector": "iac/governed_run_deployed.json"
+    },
+    "property": "replan_resource_actions",
+    "state": "claimed_by_record",
+    "reason": "same_resource_actions",
+    "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
+  },
+  {
+    "name": "plan_age_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "plan_age",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "apply_job_approval_order_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "apply_job_approval_order",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "received_plan_file_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "received_plan_file",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "rendered_plan_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "rendered_plan",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "pinned_plan_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "pinned_plan",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "replan_resource_actions_of_governed_run_deployed_without_server_facts",
+    "record": {
+      "vector": "iac/governed_run_deployed_without_server_facts.json"
+    },
+    "property": "replan_resource_actions",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
+  },
+  {
+    "name": "plan_age_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "plan_age",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "apply_job_approval_order_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "received_plan_file_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "received_plan_file",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "rendered_plan_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "rendered_plan",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "pinned_plan_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "pinned_plan",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "replan_resource_actions_of_local_run_deployed",
+    "record": {
+      "vector": "iac/local_run_deployed.json"
+    },
+    "property": "replan_resource_actions",
+    "state": "not_performed",
+    "reason": "run_opened_locally",
+    "why": "The tool opened the run, so no server gave apply job facts."
+  },
+  {
+    "name": "plan_age_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "plan_age",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "apply_job_approval_order_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "received_plan_file_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "received_plan_file",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "rendered_plan_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "rendered_plan",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "pinned_plan_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "pinned_plan",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "replan_resource_actions_of_governed_run",
+    "record": {
+      "vector": "iac/governed_run.json"
+    },
+    "property": "replan_resource_actions",
+    "state": "not_assessed",
+    "reason": "pre_deploy_pending",
+    "why": "The run that would report the pre-deploy stage is still in progress."
+  },
+  {
+    "name": "plan_age_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "plan_age",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "apply_job_approval_order_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "received_plan_file_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "received_plan_file",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "rendered_plan_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "rendered_plan",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "pinned_plan_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "pinned_plan",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "replan_resource_actions_of_pre_deploy_not_required_by_the_environment_policy",
+    "record": {
+      "case": "pre_deploy_not_required_by_the_environment_policy"
+    },
+    "property": "replan_resource_actions",
+    "state": "not_assessed",
+    "reason": "pre_deploy_out_of_scope",
+    "why": "The environment's policy leaves the pre-deploy stage out of scope."
+  },
+  {
+    "name": "apply_job_approval_order_of_plan_and_apply_in_one_job",
+    "record": {
+      "case": "plan_and_apply_in_one_job"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_performed",
+    "reason": "plan_and_apply_in_one_job",
+    "why": "The run plans and applies in one job, so there is no later apply job to compare."
+  },
+  {
+    "name": "received_plan_file_of_plan_and_apply_in_one_job",
+    "record": {
+      "case": "plan_and_apply_in_one_job"
+    },
+    "property": "received_plan_file",
+    "state": "not_performed",
+    "reason": "plan_and_apply_in_one_job",
+    "why": "The run plans and applies in one job, so there is no later apply job to compare."
+  },
+  {
+    "name": "rendered_plan_of_plan_and_apply_in_one_job",
+    "record": {
+      "case": "plan_and_apply_in_one_job"
+    },
+    "property": "rendered_plan",
+    "state": "not_performed",
+    "reason": "plan_and_apply_in_one_job",
+    "why": "The run plans and applies in one job, so there is no later apply job to compare."
+  },
+  {
+    "name": "replan_resource_actions_of_plan_and_apply_in_one_job",
+    "record": {
+      "case": "plan_and_apply_in_one_job"
+    },
+    "property": "replan_resource_actions",
+    "state": "not_performed",
+    "reason": "plan_and_apply_in_one_job",
+    "why": "The run plans and applies in one job, so there is no later apply job to compare."
+  },
+  {
+    "name": "apply_job_approval_order_of_apply_job_of_an_environment_requiring_no_approval_leaves_its_order_check_not_applicable",
+    "record": {
+      "case": "apply_job_of_an_environment_requiring_no_approval_leaves_its_order_check_not_applicable"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_performed",
+    "reason": "approval_not_required",
+    "why": "The environment's policy requires no approval of the apply job."
+  },
+  {
+    "name": "apply_job_approval_order_of_apply_job_approvals_the_server_could_not_supply_beside_an_environment_requiring_no_approval",
+    "record": {
+      "case": "apply_job_approvals_the_server_could_not_supply_beside_an_environment_requiring_no_approval"
+    },
+    "property": "apply_job_approval_order",
+    "state": "not_performed",
+    "reason": "approval_not_required",
+    "why": "The approvals are the unknown marker, and the environment's policy requires no approval of the apply job: the order is not performed."
+  },
+  {
+    "name": "plan_age_of_plan_older_than_its_limit_fails_its_plan_age_check",
+    "record": {
+      "case": "plan_older_than_its_limit_fails_its_plan_age_check"
+    },
+    "property": "plan_age",
+    "state": "failed",
+    "reason": "plan_older_than_limit",
+    "why": "The plan was older than its limit when the server issued the facts."
+  },
+  {
+    "name": "apply_job_approval_order_of_apply_job_approved_before_the_plan_stage_record_was_accepted_fails_its_order_check",
+    "record": {
+      "case": "apply_job_approved_before_the_plan_stage_record_was_accepted_fails_its_order_check"
+    },
+    "property": "apply_job_approval_order",
+    "state": "failed",
+    "reason": "approved_before_plan_stage_record_accepted",
+    "why": "The apply job was approved before the plan-stage record was received, and not after: both order failures hold, and the result is the first, its detail naming the other."
+  },
+  {
+    "name": "apply_job_approval_order_of_apply_job_with_no_approval_bound_to_it_fails_its_order_check",
+    "record": {
+      "case": "apply_job_with_no_approval_bound_to_it_fails_its_order_check"
+    },
+    "property": "apply_job_approval_order",
+    "state": "failed",
+    "reason": "no_approval_after_plan_stage_record_accepted",
+    "why": "No approval of the apply job was given at or after the plan-stage record was received."
+  },
+  {
+    "name": "apply_job_approval_order_of_apply_job_approvals_the_server_could_not_supply_leave_its_order_check_unknown",
+    "record": {
+      "case": "apply_job_approvals_the_server_could_not_supply_leave_its_order_check_unknown"
+    },
+    "property": "apply_job_approval_order",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The pre-deploy stage kept the unknown marker for its approvals."
+  },
+  {
+    "name": "received_plan_file_of_apply_in_a_later_job_that_sent_no_plan_file",
+    "record": {
+      "case": "apply_in_a_later_job_that_sent_no_plan_file"
+    },
+    "property": "received_plan_file",
+    "state": "failed",
+    "reason": "plan_file_not_sent",
+    "why": "The later apply job sent no saved plan file."
+  },
+  {
+    "name": "received_plan_file_of_apply_job_holding_another_saved_plan_file_fails_its_saved_plan_file_check",
+    "record": {
+      "case": "apply_job_holding_another_saved_plan_file_fails_its_saved_plan_file_check"
+    },
+    "property": "received_plan_file",
+    "state": "failed",
+    "reason": "received_plan_file_differs",
+    "why": "The apply job reported another saved plan file than the plan stage evaluated."
+  },
+  {
+    "name": "rendered_plan_of_rendered_plan_other_than_the_evaluated_one_fails_its_rendered_plan_check",
+    "record": {
+      "case": "rendered_plan_other_than_the_evaluated_one_fails_its_rendered_plan_check"
+    },
+    "property": "rendered_plan",
+    "state": "failed",
+    "reason": "rendered_plan_differs",
+    "why": "The plan the apply job reports it rendered is not the evaluated plan, which decides the re-plan property first."
+  },
+  {
+    "name": "replan_resource_actions_of_rendered_plan_other_than_the_evaluated_one_fails_its_rendered_plan_check",
+    "record": {
+      "case": "rendered_plan_other_than_the_evaluated_one_fails_its_rendered_plan_check"
+    },
+    "property": "replan_resource_actions",
+    "state": "failed",
+    "reason": "rendered_plan_differs",
+    "why": "The plan the apply job reports it rendered is not the evaluated plan, which decides the re-plan property first."
+  },
+  {
+    "name": "rendered_plan_of_rendered_plan_not_sent_leaves_its_rendered_plan_check_unknown",
+    "record": {
+      "case": "rendered_plan_not_sent_leaves_its_rendered_plan_check_unknown"
+    },
+    "property": "rendered_plan",
+    "state": "could_not_decide",
+    "reason": "rendered_plan_not_sent",
+    "why": "The apply job reported no rendered plan, so no re-plan was compared."
+  },
+  {
+    "name": "replan_resource_actions_of_rendered_plan_not_sent_leaves_its_rendered_plan_check_unknown",
+    "record": {
+      "case": "rendered_plan_not_sent_leaves_its_rendered_plan_check_unknown"
+    },
+    "property": "replan_resource_actions",
+    "state": "could_not_decide",
+    "reason": "replan_not_compared",
+    "why": "The apply job reported no rendered plan, so no re-plan was compared."
+  },
+  {
+    "name": "pinned_plan_of_plan_other_than_the_one_the_run_is_held_to_fails_its_pinned_plan_check",
+    "record": {
+      "case": "plan_other_than_the_one_the_run_is_held_to_fails_its_pinned_plan_check"
+    },
+    "property": "pinned_plan",
+    "state": "failed",
+    "reason": "plan_differs_from_pinned_plan",
+    "why": "The evaluated plan is not the plan the server holds the run to."
+  },
+  {
+    "name": "replan_resource_actions_of_replan_acting_otherwise_than_the_evaluated_plan_fails_its_replan_check",
+    "record": {
+      "case": "replan_acting_otherwise_than_the_evaluated_plan_fails_its_replan_check"
+    },
+    "property": "replan_resource_actions",
+    "state": "failed",
+    "reason": "resource_actions_differ",
+    "why": "The re-plan acts otherwise than the evaluated plan on a resource."
+  },
+  {
+    "name": "replan_resource_actions_of_replan_not_compared_leaves_its_replan_check_unknown",
+    "record": {
+      "case": "replan_not_compared_leaves_its_replan_check_unknown"
+    },
+    "property": "replan_resource_actions",
+    "state": "could_not_decide",
+    "reason": "replan_not_compared",
+    "why": "The later apply job compared no re-plan."
+  },
+  {
+    "name": "replan_resource_actions_of_replan_check_beside_apply_job_facts_the_server_could_not_supply",
+    "record": {
+      "case": "replan_check_beside_apply_job_facts_the_server_could_not_supply"
+    },
+    "property": "replan_resource_actions",
+    "state": "could_not_decide",
+    "reason": "server_facts_unavailable",
+    "why": "The facts are the unknown marker, so the re-plan comparison the record keeps decides nothing."
+  },
+  {
+    "name": "plan_age_of_pre_deploy_plan_age_evaluation_that_ended_in_an_evaluator_error",
+    "record": {
+      "case": "pre_deploy_plan_age_evaluation_that_ended_in_an_evaluator_error"
+    },
+    "property": "plan_age",
+    "state": "claimed_by_record",
+    "reason": "plan_age_within_limit",
+    "why": "The plan-age evaluation ended in an error, which decides nothing: the result is read from the facts kept, and its detail says so."
   }
 ]

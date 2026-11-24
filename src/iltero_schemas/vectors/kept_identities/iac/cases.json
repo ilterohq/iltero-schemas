@@ -1,0 +1,210 @@
+[
+  {
+    "name": "identities_of_a_run_the_tool_opened_as_the_stage_kept_them",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {},
+      "register_follows": false
+    },
+    "problems": []
+  },
+  {
+    "name": "identities_of_a_run_the_tool_opened_that_settled_a_postponed_check",
+    "vector": "iac/local_run_postponed_settled.json",
+    "identities": {
+      "set": {},
+      "register_follows": false
+    },
+    "problems": []
+  },
+  {
+    "name": "identities_not_given",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": null,
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and the files given do not hold it with the digest the entry names"
+      ]
+    ]
+  },
+  {
+    "name": "identities_whose_bytes_have_another_digest",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/metadata/generator/version": "0.2.0"
+      },
+      "register_follows": false
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and the files given do not hold it with the digest the entry names"
+      ]
+    ]
+  },
+  {
+    "name": "kept_file_that_is_not_a_resource_identities_document",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/kind": "AssuranceEvent"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it is not a resource identities document the contract can read"
+      ]
+    ]
+  },
+  {
+    "name": "identities_about_a_unit_other_than_the_records",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/unit": "another_unit"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it is about a unit other than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "identities_read_from_the_state_file",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/read_from": "state_file"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it does not say it was read from a refresh-only plan"
+      ]
+    ]
+  },
+  {
+    "name": "identities_read_from_the_state_file_naming_an_applied_plan",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/read_from": "state_file",
+        "/sources/plan": {
+          "digest": "sha256:673e29d6cbc8255f766244b4226b7f3422ca4121e2eedab780ccfff0734aba19",
+          "digest_version": "redacted-1"
+        },
+        "/removed": [],
+        "/removed_unresolved": [],
+        "/tool_data/deposed_deleted": 0
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it does not say it was read from a refresh-only plan"
+      ],
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it names an applied plan, which identities read from a refresh-only plan never name"
+      ]
+    ]
+  },
+  {
+    "name": "identities_of_a_run_the_tool_opened_naming_the_state_by_no_digest",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/state/digest": null
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it is not a resource identities document the contract can read"
+      ]
+    ]
+  },
+  {
+    "name": "identities_of_a_run_the_tool_opened_naming_the_state_by_a_keyed_digest",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/state/digest": "hmac-sha256:ec65ab780c7a2f16a8f417a5085a9fcdd3e8183ec416ff377ca35fa463edd4d6",
+        "/sources/state/digest_version": "1"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.16",
+        "is the post-verify stage's resource identities document, and it names the state it read by a keyed digest, where a record of a run the tool opened names it by the digest of the state as its redaction policy leaves it"
+      ]
+    ]
+  },
+  {
+    "name": "identities_of_a_run_the_tool_opened_naming_another_redacted_state_digest",
+    "vector": "iac/local_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/state/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "/sources/state/digest_version": "redacted-1"
+      },
+      "register_follows": true
+    },
+    "problems": []
+  },
+  {
+    "name": "identities_of_a_run_the_server_opened_as_the_stage_kept_them",
+    "vector": "iac/governed_run_post_verify.json",
+    "identities": {
+      "set": {},
+      "register_follows": false
+    },
+    "problems": []
+  },
+  {
+    "name": "identities_of_a_run_the_server_opened_naming_the_state_by_a_plain_digest",
+    "vector": "iac/governed_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/state/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "/sources/state/digest_version": "redacted-1"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.59",
+        "is the post-verify stage's resource identities document, and it does not name the refresh-only plan it was read from by its keyed digest, as a record of a run the server opened does"
+      ]
+    ]
+  },
+  {
+    "name": "identities_of_a_run_the_server_opened_naming_another_reading_than_the_second",
+    "vector": "iac/governed_run_post_verify.json",
+    "identities": {
+      "set": {
+        "/sources/state/digest": "hmac-sha256:c65f83e6cbae2b1687f473e12f5c017d8bb8fb9dcc99f5a633bd5b885375687d",
+        "/sources/state/digest_version": "1"
+      },
+      "register_follows": true
+    },
+    "problems": [
+      [
+        "evidence_refs.59",
+        "is the post-verify stage's resource identities document, and the refresh-only plan it names is not the drift check's second reading"
+      ]
+    ]
+  }
+]

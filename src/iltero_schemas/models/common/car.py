@@ -43,8 +43,7 @@ from pydantic import Field, ValidationInfo, model_validator
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.change_types.image.build import ImageBuild
 from iltero_schemas.change_types.image.deploy import ImageDeploy
-from iltero_schemas.models.common.assertion import ID_MAX_LENGTH, ID_PATTERN, VERSION_MAX_LENGTH, VERSION_PATTERN, Stage
-from iltero_schemas.models.common.assertion_id import check_project_id
+from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StageValue, StrictModel
 from iltero_schemas.models.common.commit_review import CommitReview
@@ -57,26 +56,28 @@ from iltero_schemas.models.common.fields import (
     Digest,
     EnforcementMode,
     FileName,
+    GivenFileDigest,
     Identifier,
     MemberPath,
     ProjectPath,
+    RunOpenedBy,
     RunStage,
     Timestamp,
     Uuid,
     parse_timestamp,
 )
-from iltero_schemas.models.common.local_exceptions import LocalExceptionsUsed
+from iltero_schemas.models.common.given_file_digests import check_given_file_digest_form
 from iltero_schemas.models.common.provenance import check_provenance
 from iltero_schemas.models.common.record_subject import RecordSubject
-from iltero_schemas.models.common.redaction import RedactedValueCounts, RedactionPolicyRef, RedactionReport
+from iltero_schemas.models.common.redaction import RedactionPolicyDocument, RedactionPolicyRef, RedactionReport
 from iltero_schemas.models.common.reference_time import ReferenceTime
-from iltero_schemas.models.common.scanners import ScannerTool
+from iltero_schemas.models.common.served_exceptions import ServedExceptionsUsed
 from iltero_schemas.models.common.server_facts import Approval, Approvals
+from iltero_schemas.models.common.stage_scanners import Scanners
 from iltero_schemas.models.common.stages import change_digest_problems, check_structure, integrity_problems
 from iltero_schemas.models.common.units_file import UnitsFile
+from iltero_schemas.models.iac.apply_job_facts import ApplyJobFacts
 from iltero_schemas.models.iac.postponed_checks import PostponedChecks
-from iltero_schemas.models.iac.scanner_check_mapping import InputKind
-from iltero_schemas.scanner_check_mappings.iac.paths import STARTER_MAPPING_ID
 
 KIND = "ChangeAssuranceRecord"
 # Validation context key, set to True (any other value is ignored): the model skips the integrity checks, which compare
@@ -84,17 +85,19 @@ KIND = "ChangeAssuranceRecord"
 # it recomputes to, so the reader can report an edited value as an integrity failure rather than as a record it cannot
 # read. With it set, the model no longer checks that the change digest is the change's, or that an approval is of this
 # change. A reader that sets it must call ``integrity_problems`` (not only ``change_digest_problems``) and refuse to
-# trust the record while it returns any problem. Every reader of a record holding an evaluation from a scanner's
-# results, with or without this key, also calls ``scanner_results.scanner_evidence_problems`` with the files its stages
-# kept, and refuses to trust the record while it returns any problem.
+# trust the record while it returns any problem. Every reader of a record, with or without this key, calls
+# ``kept_file_problems.kept_file_problems`` with the files its stages kept, its trust set and its signature check, which
+# makes every check, and trusts the record only when it returns no problem.
 SKIP_INTEGRITY_CHECKS = "skip_integrity_checks"
+# Why a record is refused when two entries of its evidence register name one file but different digests.
+PATH_OF_TWO_DIGESTS = "no two entries of the evidence register name one file by different digests"
+# Why a record is refused when two entries of its evidence register name one file of one digest but describe it apart.
+PATH_OF_TWO_FILES = (
+    "two entries of the evidence register that name one file name it by the same size, media type and canonicalization"
+)
 # A run of one unit: far more evaluations than a plan of a few thousand resources needs, and bounded,
 # because a reader of a record re-reads a file per entry.
 MAX_EVENTS = 100_000
-# More reports than a stage is ever given; one per tool is the rule the model enforces.
-MAX_SCANNER_REPORTS = 16
-# More kinds of input than one scanner report reads; the bound keeps the list a reader compares small.
-MAX_INPUT_KINDS = 16
 # The files a record keeps for each event, at most: the input it was evaluated over, and the four files its assertion
 # was compiled into (its document, its syntax tree, its Rego module and its compiled policy), since every assertion a
 # stage was required to evaluate has an event.
@@ -120,7 +123,7 @@ class Issuer(StrictModel):
 class Governance(StrictModel):
     """Who opened the run the record belongs to: the server, or the tool on its own."""
 
-    run_opened_by: Literal["server", "local"]
+    run_opened_by: RunOpenedBy
 
 
 # How far a record's facts were established, from the weakest level to the strongest.
@@ -139,10 +142,15 @@ class Collector(StrictModel):
 
 
 class EvidenceSource(StrictModel):
-    """The file as the pipeline gave it, before the record kept it: its name and its digest."""
+    """The file as the pipeline gave it, before the record kept it: its name and, where the record names one, its
+    digest.
+
+    For a file kept as the pipeline gave it, the digest is the kept file's own. For a file kept redacted, it is keyed
+    in a run the server opened and null in a run the tool opened (``models.common.given_file_digests``).
+    """
 
     name: FileName
-    digest: Digest
+    digest: GivenFileDigest | None
 
 
 class EvidenceRef(StrictModel):
@@ -211,115 +219,6 @@ class Execution(StrictModel):
         return self
 
 
-class ScannerReport(StrictModel):
-    """One scanner report a stage was given, and what it did with it."""
-
-    tool: ScannerTool
-    # The version the scanner wrote in its own report; nothing checks it against the scanner that ran.
-    tool_version: Identifier
-    # Who ran the tool: in this version always the pipeline, which supplied the report.
-    supplied_by: Literal["pipeline"]
-    # What the tool was reading, in the contract's words (``models.iac.scanner_observations.TOOL_INPUT_KINDS``). A tool
-    # that reads a configuration and one that reads a plan answer different questions about the same resource, so a
-    # reader must be able to tell which produced a verdict.
-    input_kinds: Annotated[list[InputKind], Field(max_length=MAX_INPUT_KINDS)]
-    # The digest of the report as the stage kept it, redacted and canonical, which is the ``input_digest`` of any
-    # verdict it stands behind; the report as the pipeline gave it is that register entry's source.
-    report_digest: Digest
-    # The stage's observations of the report (``models.iac.scanner_observations``), and what they count: the results
-    # read, the results not readable, the results about the configuration left out, the files the tool says it could
-    # not parse (null when it does not say), and the results the tool's summary counts that its report does not list
-    # (null when the tool writes no counts).
-    observations: MemberPath
-    results_read: Count
-    unreadable_results: Count
-    written_configuration_results: Count
-    tool_parsing_errors: Count | None
-    results_not_listed: Count | None
-    # How many values redaction hid in the report as the stage kept it, for each reason; {} when none. It counts what
-    # the kept file holds, not what the redaction policy did: a value hidden in a field the kept form drops is not
-    # counted.
-    redacted_values: RedactedValueCounts
-
-    @model_validator(mode="after")
-    def _kinds_once_in_order(self) -> ScannerReport:
-        if self.input_kinds != sorted(set(self.input_kinds)):
-            raise ValueError("input_kinds is sorted, each kind once")
-        return self
-
-
-class ScannerCheckMappingUsed(StrictModel):
-    """A scanner check mapping in force, so a reader can say which entries applied.
-
-    ``origin`` is set by the tool, never by the scanner check mapping: a file cannot claim
-    to be the mapping the contract package ships. ``digest`` is over the scanner check mapping's
-    canonical JSON as it was parsed, not the file's bytes. The stage keeps that
-    canonical copy at ``copy_path``, an entry of the evidence register under the
-    same digest, so an event's ``scanner_checks.digest`` resolves to an entry a
-    reader can see.
-    """
-
-    id: Annotated[str, Field(pattern=ID_PATTERN, max_length=ID_MAX_LENGTH)]
-    version: Annotated[str, Field(pattern=VERSION_PATTERN, max_length=VERSION_MAX_LENGTH)]
-    origin: Literal["shipped", "file"]
-    # The path, in the project, of the file it was read from; absent for the shipped mapping.
-    file_path: ProjectPath | None
-    digest: Digest
-    copy_path: MemberPath
-    assertions_mapped: Count
-
-    @model_validator(mode="after")
-    def _a_file_is_named(self) -> ScannerCheckMappingUsed:
-        if (self.file_path is None) != (self.origin == "shipped"):
-            raise ValueError("a scanner check mapping read from a file names it, and the shipped mapping names none")
-        if self.origin == "file" and self.id == STARTER_MAPPING_ID:
-            raise ValueError(f"only the shipped scanner check mapping is {STARTER_MAPPING_ID}")
-        if self.origin == "file":
-            check_project_id(self.id)
-        return self
-
-
-class Scanners(StrictModel):
-    """The scanner reports a stage was given, and the scanner check mappings it read their results with. Each verdict a
-    scanner's results gave is an event of the stage (``models.iac.scanner_verdicts``).
-
-    A stage always applies the scanner check mapping Iltero ships, so adding a project's own mapping never takes away
-    the scanner verdicts on Iltero's starter assertions. The project's mapping can only decide the project's own
-    assertions, and the shipped mapping only the starters, so no assertion is decided by both, and each scanner verdict
-    comes from a scanner checks entry in exactly one of the two mappings.
-    """
-
-    # The scanner check mappings the stage applied: the one Iltero ships, with the project's own mapping (if any) listed
-    # before it.
-    scanner_check_mappings: Annotated[list[ScannerCheckMappingUsed], Field(min_length=1)]
-    # The scanners whose report the run requires, sorted, each once, as the record states them: a reader does not check
-    # them against any configuration. A required scanner that gave no report gives every subject its checks are mapped
-    # to an evaluation that is not evaluated with ``scanner_not_run``. That, a required scanner's report from a version
-    # its scanner checks entry does not allow (``scanner_version_not_allowed``), a required Trivy report that holds no
-    # result of the entry's checks (``no_result_of_the_mapped_checks``), or a required Checkov report that holds no
-    # result at all (``no_result_in_the_report``), is a gap no other evaluator's pass fills.
-    required_scanners: Annotated[list[ScannerTool], Field(max_length=MAX_SCANNER_REPORTS)]
-    reports: Annotated[list[ScannerReport], Field(max_length=MAX_SCANNER_REPORTS)]
-    # The project's own exceptions file the stage applied to the results the scanned source suppressed; null when the
-    # project gave none.
-    local_exceptions: LocalExceptionsUsed | None
-
-    @model_validator(mode="after")
-    def _consistent(self) -> Scanners:
-        if [used.origin for used in self.scanner_check_mappings] not in (["shipped"], ["file", "shipped"]):
-            raise ValueError(
-                "a stage always applies the scanner check mapping Iltero ships, and at most one of the project's own, "
-                "listed first"
-            )
-        if len({report.tool for report in self.reports}) != len(self.reports):
-            raise ValueError("one report per tool per stage")
-        if self.required_scanners != sorted(set(self.required_scanners)):
-            raise ValueError("required_scanners is sorted, each once")
-        if not self.reports and not self.required_scanners:
-            raise ValueError("a stage's scanners keep a report or name a required scanner")
-        return self
-
-
 class StageRecord(StrictModel):
     """What one stage did: what ran it, under which limits, what it hid, what it wrote, and its own verdict."""
 
@@ -328,8 +227,9 @@ class StageRecord(StrictModel):
     reference_time: ReferenceTime
     execution: Execution
     # The mode the stage's gate ran in. With advisory enforcement, a failed or undecided check does not stop the
-    # pipeline; a missing check, or a check whose evaluator failed, always does. A stage after the deployment is always
-    # enforcing.
+    # pipeline; a missing check, or a check whose evaluator failed, always does. The Iltero CLI also stops on any result
+    # other than pass or not_applicable of a check the activity enforces in advisory mode
+    # (``Activity.enforced_in_advisory_mode``). A stage after the deployment is always enforcing.
     enforcement_mode: EnforcementMode
     # The approvals the stage's evaluations read, whatever their source, each of this record's change or run, or the
     # unknown marker the input held in their place; null at a stage whose input carries no approvals.
@@ -337,12 +237,20 @@ class StageRecord(StrictModel):
     # The commit review the stage's evaluations read from the server, or the unknown marker the input held in its
     # place; null at a stage whose input carries no commit review.
     commit_review: CommitReview | ServerFactsUnavailable | NotReadByTheStage | None
+    # What the server said about the job that applies an infrastructure change (``models.iac.apply_job_facts``), as
+    # the stage's input carried it, or the unknown marker in its place: at the pre-deploy stage of an infrastructure
+    # change in a run the server opened; null at every other stage.
+    apply_job_facts: ApplyJobFacts | ServerFactsUnavailable | None
     compiler: Compiler
     redaction: RedactionReport
     events: EventsFile
     assertions: AssertionIndex
     # Null for a stage that was given no scanner report and requires none.
     scanners: Scanners | None
+    # The exceptions the server served the stage and the failed results they cover, at the stage of a run the server
+    # opened that its activity applies served exceptions at (``Activity.stage_that_applies_served_exceptions``), even
+    # when it served none; null at every other stage and in a run the tool opened.
+    served_exceptions: ServedExceptionsUsed | None
     # What the plan stage's gate does with a check that read a value the plan knows only after the deployment: block
     # on it, or postpone it until after the deployment (``models.iac.postponed_checks``); null at every other stage.
     values_known_after_deployment: Literal["block", "postpone"] | None
@@ -381,7 +289,7 @@ class Integrity(StrictModel):
 
 
 # Why a stage of the lifecycle is not in a record's scope.
-OutOfScopeReason = Literal["project_config", "environment_policy", "not_supported"]
+OutOfScopeReason = Literal["project_config", "environment_policy", "not_supported", "needs_the_server"]
 
 
 class DeclaredIn(StrictModel):
@@ -400,6 +308,8 @@ class OutOfScope(StrictModel):
     run for does not require it, so only a record of a run the server opened
     says so; the record does not name the policy, which the server holds.
     ``not_supported``: the tool that wrote the record cannot run that stage yet.
+    ``needs_the_server``: the stage reads what only the server that opens a run supplies, and the tool opened this run
+    on its own.
 
     Which stages each reason may leave out is the record's activity's
     declaration (``change_types``).
@@ -441,6 +351,8 @@ class CAR(StrictModel):
     change: Annotated[IacChange | ImageBuild | ImageDeploy, Field(discriminator="activity")]
     # The project's units file; null for a project that declares none.
     units_file: UnitsFile | None
+    # The redaction policy every stage ran, written out so a reader rebuilds it; each stage names it by digest.
+    redaction_policy: RedactionPolicyDocument
     stages: dict[StageValue, StageRecord]
     events: Annotated[list[AssuranceEvent], Field(max_length=MAX_EVENTS)]
     coverage: Coverage
@@ -464,9 +376,15 @@ class CAR(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self, info: ValidationInfo) -> CAR:
-        paths = [ref.path for ref in self.evidence_refs]
-        if len(set(paths)) != len(paths):
-            raise ValueError("no two entries of the evidence register name the same file")
+        # A record package keeps a file by its digest, so two entries may name one path: then they name one file.
+        by_path: dict[str, tuple[object, ...]] = {}
+        for ref in self.evidence_refs:
+            file = (ref.digest, ref.size_bytes, ref.media_type, ref.canonicalization)
+            known = by_path.setdefault(ref.path, file)
+            if known[0] != file[0]:
+                raise ValueError(PATH_OF_TWO_DIGESTS)
+            if known != file:
+                raise ValueError(PATH_OF_TWO_FILES)
         ref_ids = [ref.ref_id for ref in self.evidence_refs]
         if len(set(ref_ids)) != len(ref_ids):
             raise ValueError("no two entries of the evidence register share a name")
@@ -484,6 +402,7 @@ class CAR(StrictModel):
         if self.subject.unit != self.unit:
             raise ValueError("the record's subject is its own unit")
         check_provenance(self)
+        check_given_file_digest_form(self)
         if checks_integrity:
             _raise_first(integrity_problems(self))
         return self

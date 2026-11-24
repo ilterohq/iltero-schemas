@@ -15,7 +15,7 @@ index the pipeline gave, and an attestation is kept as a file, not verified.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Annotated, Literal, NamedTuple
 
@@ -24,7 +24,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.assertions.paths import BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, SIGNED_PROVENANCE_MATCHES_RUN_ID
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.change_types.common.activity import Activity, DocumentName
-from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_digest
+from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_file_digest
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
 from iltero_schemas.models.common.change_type import IMAGE_BUILD_ACTIVITY, IMAGE_RELEASE_TYPE
@@ -37,6 +37,8 @@ from iltero_schemas.models.image.build_reports import (
     SCAN_FORMATS,
     ImageDigestSource,
     ReportFormat,
+    ScanReport,
+    TestReport,
     check_scans_name_their_platform,
 )
 from iltero_schemas.models.image.buildx import build_metadata_of
@@ -207,30 +209,50 @@ def _check_evidence(car: CAR, build: ImageBuild) -> None:
             raise ValueError(f"the {what} is a file of type {' or '.join(sorted(media_types))}")
     if build.index_evidence_ref is not None and refs[build.index_evidence_ref].digest != build.image.digest:
         raise ValueError("the raw index's digest is the image's digest")
+    if build.index_evidence_ref is not None and refs[build.index_evidence_ref].redaction_policy is not None:
+        raise ValueError("the raw index is kept as the pipeline gave it, so its digest is the image's own")
     for ref_id in metadata:
         ref = refs[ref_id]
-        if ref.redaction_policy is not None or given_digest(ref, "the build tool's metadata file") != ref.digest:
+        if ref.redaction_policy is not None or given_file_digest(ref, "the build tool's metadata file") != ref.digest:
             raise ValueError("the build tool's metadata file is kept as the pipeline gave it")
     if build.attestation is not None:
         ref = refs[build.attestation.evidence_ref]
-        if ref.redaction_policy is not None or given_digest(ref, "the attestation") != ref.digest:
+        if ref.redaction_policy is not None or given_file_digest(ref, "the attestation") != ref.digest:
             raise ValueError("the attestation is kept as the pipeline gave it, so its signature can be checked again")
     _check_reports(build, refs)
 
 
 def _check_reports(build: ImageBuild, refs: Mapping[str, EvidenceRef]) -> None:
-    """Each report is a file of its format's type that names the digest of the file as the pipeline gave it: the
-    stored file's own digest when nothing redacted it, and no other report's."""
-    read: set[str] = set()
+    """Each report is a file of its format's type, kept as the pipeline gave it, so named by the stored file's own
+    digest, and no other report's."""
+    read: set[str | None] = set()
     for report in build.reports:
         ref = refs[report.evidence_ref]
-        source = given_digest(ref, "a report")
+        if ref.redaction_policy is not None:
+            raise ValueError("a test or scan report is kept as the pipeline gave it, with nothing redacted")
+        source = given_file_digest(ref, "a report")
         media_types = REPORT_MEDIA_TYPES_OF[report.format]
         if ref.media_type not in media_types:
             raise ValueError(f"a {report.format} report is a file of type {' or '.join(sorted(media_types))}")
         if source in read:
             raise ValueError("each report is a different file as the pipeline gave it")
         read.add(source)
+
+
+def reports_named_by_the_build(car: CAR, build: ImageBuild, reports: Sequence[TestReport | ScanReport]) -> bool:
+    """Whether every one of ``reports``, as an evaluation input carries them, is a report ``build`` names: the same
+    file as the pipeline gave it (``file_digest``, the ``source.digest`` of the report's entry), of the same format,
+    about the same image, known the same way."""
+    refs = {ref.ref_id: ref for ref in car.evidence_refs}
+    named: set[tuple[str | None, str, str, str]] = set()
+    for report in build.reports:
+        ref = refs.get(report.evidence_ref)
+        if ref is not None and ref.source is not None:
+            named.add((ref.source.digest, report.format, report.image_digest, report.image_digest_source))
+    return all(
+        (report.file_digest, report.format, report.image_digest, report.image_digest_source) in named
+        for report in reports
+    )
 
 
 def _check_facts_source(car: CAR, build: ImageBuild) -> None:
@@ -382,15 +404,21 @@ IMAGE_BUILD = Activity(
     stages=(Stage.PLAN,),
     project_may_leave_out=frozenset(),
     environment_policy_may_leave_out=frozenset(),
+    stages_that_need_the_server=frozenset(),
     not_supported=lambda _car: frozenset(),
     required_documents=MappingProxyType({Stage.PLAN: ("record",)}),
     named_documents=_named_documents,
     carried_out_matches_checked=(BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID, Stage.PLAN),
-    always_evaluated=MappingProxyType({Stage.PLAN: BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID}),
+    always_evaluated=MappingProxyType({Stage.PLAN: frozenset({BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID})}),
+    # The build's commit check is held to its status by the build's own rules, not by an expected status.
+    expected_statuses=lambda _car: MappingProxyType({}),
+    enforced_in_advisory_mode=frozenset(),
     checked_content=_checked_content,
+    input_parts_of_the_record=lambda _car, _stage: MappingProxyType({}),
     check_record=_check_record,
     change_digest_problems=_no_problems,
     integrity_problems=_no_problems,
     reads_a_state_after_the_apply=False,
     stages_that_read_scanner_reports=frozenset(),
+    stage_that_applies_served_exceptions=None,
 )

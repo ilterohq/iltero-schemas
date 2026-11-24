@@ -60,13 +60,13 @@
         "kind": "iam_policy"
       }
     ],
-    "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+    "digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740"
   },
   "plan": {
     "tool": "terraform",
     "format_version": "1.2",
     "tool_version": "1.14.0",
-    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "digest_version": "1",
     "artifact_digest": null,
     "artifact_digest_source": "not_provided",
@@ -108,10 +108,6 @@
     "reason": "server_facts_unavailable"
   },
   "approvals": {
-    "__unknown": true,
-    "reason": "server_facts_unavailable"
-  },
-  "exceptions": {
     "__unknown": true,
     "reason": "server_facts_unavailable"
   },
@@ -163,5 +159,24 @@
       }
     ],
     "commits_not_reviewed_list_complete": true
-  }
+  },
+  "apply_job_facts": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "apply_job_timing": {
+    "plan_age_seconds": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    },
+    "approvals_given_before_plan_stage_record_accepted": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    },
+    "approvals_given_after_plan_stage_record_accepted": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    }
+  },
+  "replan_check": null
 }

@@ -1,7 +1,7 @@
 """``VerificationReport`` v1: what a verifier found about one record, one property at a time.
 
 A verifier, such as ``iltero record verify``, reads a Change Assurance Record
-and the files it cites. It reports on twelve properties, one at a time. Each
+and the files it cites. It reports on nineteen properties, one at a time. Each
 property gets a state and, where it helps, the reason for it and a detail.
 There is no overall "verified". A reader looks at each property it needs.
 
@@ -58,11 +58,14 @@ RUNTIME_VERIFICATION_RESULTS: frozenset[tuple[VerificationState, str | None]] = 
         ("not_assessed", "not_in_activity"),
     }
 )
-# The results a verifier gives an approval, an exception or the commit review that the pre-deploy stage reads.
-# not_in_activity: the record's activity has no pre-deploy stage. run_opened_locally: the tool opened the run, so no
-# server served the fact and no check of it happened. server_facts_unavailable: the server opened the run, a check
-# needed the fact, and the stage kept the unknown marker in its place. pre_deploy_pending: the run that would report the
-# stage is still in progress. pre_deploy_out_of_scope: the record leaves the stage out of scope.
+# The results a verifier gives the approvals and the commit review the pre-deploy stage reads, and the exceptions a
+# record relied on.
+# not_in_activity: the record's activity has no pre-deploy stage, or, for the exceptions, applies no exception at any
+# stage, as an image build or deploy does. run_opened_locally: the tool opened the run, so no server served the fact
+# and no check of it happened. server_facts_unavailable: the server opened the run, a check needed the fact, and the
+# stage kept the unknown marker in its place. pre_deploy_pending: the run that would report the stage is still in
+# progress. pre_deploy_out_of_scope: the record leaves the stage out of scope for a reason other than needs_the_server;
+# a run the tool opened that leaves it out as needing the server gets run_opened_locally.
 _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
         ("not_assessed", "not_in_activity"),
@@ -73,26 +76,41 @@ _PRE_DEPLOY_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset
     }
 )
 # not_read_by_the_stage: the stage's results read no such fact, so it kept the marker that says so (an approval or the
-# commit review; a stage keeps no exceptions, so this result is never an exception's).
+# commit review; this result is never an exception's).
 _NOT_READ_BY_THE_STAGE: tuple[VerificationState, str | None] = ("not_assessed", "not_read_by_the_stage")
-# The results a verifier gives the exceptions a record relied on. project_exception_relied_on: an event names an
-# exception from the project's own exceptions file, the project's own word. project_exceptions_file_not_relied_on: a
-# stage applied a project exceptions file and no event relied on an exception from it. exceptions_not_listed: the
-# record lists no exception, so a verifier cannot assess the exceptions a server may have served (a run the server
-# opened). Their order with the pre-deploy results is ``PRE_DEPLOY_RESULT_ORDER``.
+# The results a verifier gives the exceptions a record relied on (``models.iac.report_results.exception_results``).
+# kept_exceptions_do_not_hold: an exceptions file a stage kept, the project's own or the one the server served, does not
+# give the exceptions the record names, or was served to another run, stage or environment. served_exception_relied_on:
+# the plan stage names a failed result an exception the server served covers, and the kept copy gives it; only the
+# server that opened the run confirms that it served that copy, who approved each exception and whether one was revoked
+# later, and whether an exception was in force rests on the stage's reference time. served_exception_approved_by_run_
+# starter: the same, and the copy says the person who approved one of those exceptions started the run.
+# served_exceptions_not_relied_on: the plan stage applied the exceptions the server served and names no failed result
+# they cover. project_exception_relied_on: an event names an exception from the project's own exceptions file, the
+# project's own word. project_exceptions_file_not_relied_on: a stage applied a project exceptions file and no event
+# relied on an exception from it. ``exception_results`` also gives the pre-deploy result not_in_activity for an activity
+# that applies no exception at any stage. Their order with the pre-deploy results is ``PRE_DEPLOY_RESULT_ORDER``.
 _EXCEPTION_RESULTS: frozenset[tuple[VerificationState, str | None]] = frozenset(
     {
+        ("failed", "kept_exceptions_do_not_hold"),
+        ("claimed_by_record", "served_exception_approved_by_run_starter"),
+        ("claimed_by_record", "served_exception_relied_on"),
+        ("claimed_by_record", "served_exceptions_not_relied_on"),
         ("claimed_by_record", "project_exception_relied_on"),
         ("claimed_by_record", "project_exceptions_file_not_relied_on"),
-        ("not_assessed", "exceptions_not_listed"),
     }
 )
 # The order a verifier takes the results of an approval, an exception or the commit review in: the first that holds for
 # the record is its result, and the stage's own result (such as approvals_listed or a commit review outcome) comes only
-# when none of these holds. So one record gives one report. The project's own exceptions come first: a stage other than
-# pre-deploy may rely on one, so a pre-deploy stage that is not in the activity or out of scope does not hide it.
+# when none of these holds. So one record gives one report. The exception results come first, and a kept file that does
+# not hold before any: the plan stage applies exceptions, so a pre-deploy stage that is not in the activity, out of
+# scope or still pending does not hide one the record relied on.
 PRE_DEPLOY_RESULT_ORDER: tuple[tuple[VerificationState, str], ...] = (
+    ("failed", "kept_exceptions_do_not_hold"),
+    ("claimed_by_record", "served_exception_approved_by_run_starter"),
+    ("claimed_by_record", "served_exception_relied_on"),
     ("claimed_by_record", "project_exception_relied_on"),
+    ("claimed_by_record", "served_exceptions_not_relied_on"),
     ("claimed_by_record", "project_exceptions_file_not_relied_on"),
     ("not_assessed", "not_in_activity"),
     ("not_assessed", "pre_deploy_out_of_scope"),
@@ -107,6 +125,54 @@ def first_that_holds(holding: Collection[tuple[VerificationState, str]]) -> tupl
     property can take (``PROPERTY_RESULTS``): an exception result given for an approval is refused when the report is
     read."""
     return next((result for result in PRE_DEPLOY_RESULT_ORDER if result in holding), None)
+
+
+# The results a verifier gives the six properties about the job that applies an infrastructure change, beyond the
+# pre-deploy results, in the order a verifier takes them (``models.iac.apply_job_results``): the first that holds is
+# the property's result. plan_and_apply_in_one_job: the run plans and applies in one job, so the step the property is
+# about does not happen. approval_not_required: the environment's policy requires no approval of the apply job.
+# rendered_plan_not_sent and replan_not_compared: the apply job reported no rendered plan, or compared no re-plan. The
+# order results keep the name of the field plan_stage_record_accepted_at, the time the server received the plan-stage
+# record that counts. The failed and
+# claimed_by_record results name what the facts the pre-deploy stage kept, or change.replan_check, say; none reaches
+# verified, as the facts are the server's word and the re-plan is the pipeline's. A rendered plan that differs decides
+# replan_resource_actions before the comparison does.
+_ONE_JOB_FLOW: tuple[VerificationState, str] = ("not_performed", "plan_and_apply_in_one_job")
+APPLY_JOB_RESULT_ORDER: MappingProxyType[str, tuple[tuple[VerificationState, str], ...]] = MappingProxyType(
+    {
+        "plan_age": (("failed", "plan_older_than_limit"), ("claimed_by_record", "plan_age_within_limit")),
+        "apply_job_approval_order": (
+            _ONE_JOB_FLOW,
+            ("not_performed", "approval_not_required"),
+            ("failed", "approved_before_plan_stage_record_accepted"),
+            ("failed", "no_approval_after_plan_stage_record_accepted"),
+            ("claimed_by_record", "approved_after_plan_stage_record_accepted"),
+        ),
+        "received_plan_file": (
+            _ONE_JOB_FLOW,
+            ("failed", "plan_file_not_sent"),
+            ("failed", "received_plan_file_differs"),
+            ("claimed_by_record", "received_plan_file_matches"),
+        ),
+        "rendered_plan": (
+            _ONE_JOB_FLOW,
+            ("failed", "rendered_plan_differs"),
+            ("could_not_decide", "rendered_plan_not_sent"),
+            ("claimed_by_record", "rendered_plan_matches"),
+        ),
+        "pinned_plan": (
+            ("failed", "plan_differs_from_pinned_plan"),
+            ("claimed_by_record", "evaluated_plan_is_pinned_plan"),
+        ),
+        "replan_resource_actions": (
+            _ONE_JOB_FLOW,
+            ("failed", "rendered_plan_differs"),
+            ("failed", "resource_actions_differ"),
+            ("could_not_decide", "replan_not_compared"),
+            ("claimed_by_record", "same_resource_actions"),
+        ),
+    }
+)
 
 
 # The results a verifier gives the reference time, by the weakest source any stage of the record took its time from:
@@ -124,6 +190,24 @@ EVALUATOR_BINARY_RESULTS: frozenset[tuple[VerificationState, str | None]] = froz
         ("failed", "other_binary_named"),
         ("not_assessed", "no_opa_evaluation"),
     }
+)
+# The results a verifier gives the ``scanner_reports`` property (``models.iac.report_results.scanner_reports_result``),
+# the first that holds in this order. kept_files_do_not_give_the_verdicts: a scanner evaluation does not follow from the
+# files its stage kept. other_scanner_named: a report of a scanner the Iltero CLI ran names a release, platform
+# or digest the scanner pin does not give (``models.common.pinned_scanner``). scanner_requirement_not_met: a group of
+# scanners the stage requires gave only gaps for a check and subject. ran_by_pipeline: a kept report the pipeline ran,
+# the pipeline's word. ran_by_iltero_cli: every kept report the Iltero CLI ran, the record's word, each naming the
+# pinned release. not_in_activity: the record's activity reads no scanner report.
+# no_scanner_report: no stage read a scanner report and none requires one; in a run the server opened, only that server
+# confirms its stages required none.
+SCANNER_REPORTS_RESULT_ORDER: tuple[tuple[VerificationState, str], ...] = (
+    ("failed", "kept_files_do_not_give_the_verdicts"),
+    ("failed", "other_scanner_named"),
+    ("not_performed", "scanner_requirement_not_met"),
+    ("claimed_by_record", "ran_by_pipeline"),
+    ("claimed_by_record", "ran_by_iltero_cli"),
+    ("not_assessed", "not_in_activity"),
+    ("not_assessed", "no_scanner_report"),
 )
 # The result a verifier gives the commit review for the outcome the pre-deploy stage kept, by that outcome; the reason
 # is the outcome. reviewed is the record's claim. The outcomes that show a commit the change ships was not reviewed
@@ -144,12 +228,17 @@ COMMIT_REVIEW_RESULTS: MappingProxyType[str, tuple[VerificationState, str]] = Ma
 # file_digests: the files the record cites hold the digests it names, which anyone who can edit them can recompute.
 # ci_job_held_by_server: only the server that opened the run verified its CI jobs. run_opened_locally: the tool opened
 # the run, so no CI job was verified. approvals_listed: the record lists approvals, its writer's claim.
-# no_approval_served: the server opened the run and the stage keeps an empty list of approvals. exceptions_not_listed: a
-# record lists no exception, so a verifier cannot assess the exceptions the server may have served. server_bundle_named:
-# a stage names the server's bundle. local_assertions: the checks were the project's own. expected_stages: every stage
-# the record expects reported. stages_pending: the run is still in progress. stage_not_reported: the record is finished
-# and a stage it expects was never reported. no_post_deploy_stage: no stage compared the applied plan.
-# plan_files_supplied: the plan files given to the verifier were compared. binding_undecided: they could not be.
+# no_approval_served: the server opened the run and the stage keeps an empty list of approvals. The ``exceptions`` and
+# ``scanner_reports`` results are described where they are listed. server_bundle_named: a stage names the server's
+# bundle. local_assertions: the checks were the project's own. expected_stages: every stage the record expects reported.
+# stages_pending: the run is still in progress. stage_not_reported: the record is finished and a stage it expects was
+# never reported. no_post_deploy_stage: no stage compared the applied plan. plan_digests_compared: the record
+# compared the digests it names of the evaluated plan and the applied plan. redacted_plan_only: in a run the tool opened
+# that names no saved plan file, the record compared only the digests of the redacted plans, so hidden values were not
+# compared; of a comparison that held, a verifier gives it exactly when the tool opened the run and
+# change.plan.artifact_digest_source is not_provided, and plan_digests_compared otherwise. A comparison that failed
+# gives plan_digests_compared: redacted plans that differ already show the plans differ. binding_undecided: the
+# record could not compare them.
 # deployment_coverage has no reason: no reader of one record knows of a deployment that left no record.
 PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str | None]]] = MappingProxyType(
     {
@@ -173,18 +262,21 @@ PROPERTY_RESULTS: MappingProxyType[str, frozenset[tuple[VerificationState, str |
             {
                 ("not_assessed", "not_in_activity"),
                 ("not_performed", "no_post_deploy_stage"),
-                ("claimed_by_record", "plan_files_supplied"),
-                ("failed", "plan_files_supplied"),
+                ("claimed_by_record", "plan_digests_compared"),
+                ("claimed_by_record", "redacted_plan_only"),
+                ("failed", "plan_digests_compared"),
                 ("could_not_decide", "binding_undecided"),
             }
         ),
         "runtime_verification": RUNTIME_VERIFICATION_RESULTS,
         "deployment_coverage": frozenset({("not_assessed", None)}),
-        # A stage keeps no exceptions, so no stage keeps the unknown marker in their place.
+        # No stage keeps an unknown marker for exceptions: a stage of a run the server opened is always served them.
         "exceptions": (_PRE_DEPLOY_RESULTS - {("could_not_decide", "server_facts_unavailable")}) | _EXCEPTION_RESULTS,
         "commit_review": _PRE_DEPLOY_RESULTS | {_NOT_READ_BY_THE_STAGE} | frozenset(COMMIT_REVIEW_RESULTS.values()),
         "reference_time": REFERENCE_TIME_RESULTS,
         "evaluator_binary": EVALUATOR_BINARY_RESULTS,
+        "scanner_reports": frozenset(SCANNER_REPORTS_RESULT_ORDER),
+        **{name: _PRE_DEPLOY_RESULTS | frozenset(order) for name, order in APPLY_JOB_RESULT_ORDER.items()},
     }
 )
 # A record whose integrity is not established: its integrity failed on the files it cites, and the verifier could not
@@ -203,7 +295,8 @@ class PropertyResult(StrictModel):
 
 
 class Properties(StrictModel):
-    """The twelve properties a verifier reports on. Each says what ``verified`` would mean."""
+    """The nineteen properties a verifier reports on. Each says what ``verified`` would mean; for the six about the
+    job that applies an infrastructure change, which no verifier can verify, what its best result claims."""
 
     # The record's structure is valid, and the evidence it cites has not changed.
     integrity: PropertyResult
@@ -215,7 +308,7 @@ class Properties(StrictModel):
     bundle_provenance: PropertyResult
     # Every required stage is present, and every required assertion has a result or is listed as not evaluated.
     stage_completeness: PropertyResult
-    # The plan that was approved is the plan that was applied.
+    # The plan the record says was evaluated is the plan it says was applied.
     plan_apply_match: PropertyResult
     # A verification after deployment ran.
     runtime_verification: PropertyResult
@@ -230,6 +323,24 @@ class Properties(StrictModel):
     reference_time: PropertyResult
     # Every evaluation ran on the binary of the Open Policy Agent (OPA) release this contract pins, for its platform.
     evaluator_binary: PropertyResult
+    # Every scanner verdict comes from a report of the pinned scanner the server that opened the run required, run on
+    # the plan the record evaluated.
+    scanner_reports: PropertyResult
+    # No more than the limit passed between the server receiving the plan-stage record that counts and issuing the apply
+    # job's facts.
+    plan_age: PropertyResult
+    # The apply job was approved at or after plan_stage_record_accepted_at, when the server received the plan-stage
+    # record that counts, and not before.
+    apply_job_approval_order: PropertyResult
+    # The apply job reported, by its digest, the saved plan file the plan stage evaluated.
+    received_plan_file: PropertyResult
+    # The plan the apply job reports it rendered from its saved plan file is the evaluated plan.
+    rendered_plan: PropertyResult
+    # The evaluated plan is the plan the server holds the run to.
+    pinned_plan: PropertyResult
+    # The re-plan the pipeline reports from the apply job acts on the same resources, with the same actions, as the
+    # evaluated plan.
+    replan_resource_actions: PropertyResult
 
 
 class Verifier(StrictModel):

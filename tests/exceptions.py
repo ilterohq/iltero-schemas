@@ -10,7 +10,7 @@ from iltero_schemas.canonical.common.encoding import digest
 from tests.conftest import VECTORS
 from tests.records import keep_events_files
 
-GRANT: dict[str, Any] = {
+EXCEPTION: dict[str, Any] = {
     "id": "exc_0001",
     "status": "approved",
     "scope": {
@@ -27,7 +27,7 @@ FILE: dict[str, Any] = {
     "apiVersion": "iltero.com/v1",
     "kind": "LocalExceptions",
     "metadata": {"name": "payments-exceptions"},
-    "spec": {"exceptions": [GRANT]},
+    "spec": {"exceptions": [EXCEPTION]},
 }
 # The file as the project wrote it, a comment and all.
 FILE_BYTES = b"""# Exceptions the payments team approved.
@@ -69,7 +69,7 @@ def suppressed(record: dict[str, Any]) -> dict[str, Any]:
         for event in record["events"]
         if event["provenance"]["evaluator"]
         and event["provenance"]["evaluator"]["engine"] == "trivy"
-        and event["assertion"]["id"] == GRANT["scope"]["assertion"]["id"]
+        and event["assertion"]["id"] == EXCEPTION["scope"]["assertion"]["id"]
     )
 
 
@@ -101,5 +101,5 @@ def applying_exceptions(named: bool = True) -> dict[str, Any]:
     event = suppressed(record)
     event["evaluation"].update(status="not_evaluated", status_reason="suppressed_in_source")
     if named:
-        event["provenance"]["evaluator"]["local_exception"] = {"id": GRANT["id"], "file_digest": FILE_DIGEST}
+        event["provenance"]["evaluator"]["local_exception"] = {"id": EXCEPTION["id"], "file_digest": FILE_DIGEST}
     return keep_events_files(record)

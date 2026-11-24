@@ -1,0 +1,541 @@
+{
+  "cases": [
+    {
+      "name": "terraform_plan_with_each_kind_of_mark",
+      "description": "A plan with a declared sensitive attribute, a value known only after the deployment, a sensitive variable and output, provider settings, a provisioner and a configured resource with no instance: the marks and anchors its reader gives, and the plan redacted with them under a policy that hides tags.owner.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "tags.owner"
+        ],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "variables": {
+          "db_password": {
+            "value": "s3cret-value-long"
+          }
+        },
+        "planned_values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "aws_db_instance.main",
+                "mode": "managed",
+                "type": "aws_db_instance",
+                "name": "main",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "values": {
+                  "password": "s3cret-value-long",
+                  "engine": "postgres"
+                },
+                "sensitive_values": {
+                  "password": true
+                }
+              }
+            ]
+          },
+          "outputs": {
+            "connection": {
+              "sensitive": true,
+              "value": "postgres://app:hidden-value@db.internal/app"
+            }
+          }
+        },
+        "resource_changes": [
+          {
+            "address": "aws_db_instance.main",
+            "mode": "managed",
+            "type": "aws_db_instance",
+            "name": "main",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "password": "s3cret-value-long",
+                "engine": "postgres",
+                "tags": {
+                  "owner": "team-a"
+                }
+              },
+              "after_unknown": {
+                "arn": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {
+                "password": true
+              }
+            }
+          }
+        ],
+        "output_changes": {
+          "connection": {
+            "actions": [
+              "create"
+            ],
+            "before": null,
+            "after": "postgres://app:hidden-value@db.internal/app",
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": true
+          }
+        },
+        "configuration": {
+          "provider_config": {
+            "aws": {
+              "name": "aws",
+              "expressions": {
+                "region": {
+                  "constant_value": "eu-west-1"
+                },
+                "secret_key": {
+                  "constant_value": "placeholder-value"
+                }
+              }
+            }
+          },
+          "root_module": {
+            "variables": {
+              "db_password": {
+                "sensitive": true
+              }
+            },
+            "outputs": {
+              "connection": {
+                "sensitive": true,
+                "expression": {
+                  "references": [
+                    "aws_db_instance.main.endpoint"
+                  ]
+                }
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_db_instance.main",
+                "mode": "managed",
+                "type": "aws_db_instance",
+                "name": "main",
+                "expressions": {
+                  "password": {
+                    "references": [
+                      "var.db_password"
+                    ]
+                  },
+                  "engine": {
+                    "constant_value": "postgres"
+                  }
+                },
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "constant_value": "echo done"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "address": "aws_s3_bucket.unplanned",
+                "mode": "managed",
+                "type": "aws_s3_bucket",
+                "name": "unplanned",
+                "expressions": {
+                  "bucket": {
+                    "constant_value": "logs"
+                  }
+                },
+                "count_expression": {
+                  "constant_value": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_plan_with_rendering_metadata_and_a_sensitive_value_copied_where_it_is_not_marked",
+      "description": "A plan rendered at a time, from a prior state, whose declared sensitive variable the provider also copied into tags_all, which the plan does not mark sensitive: the kept plan hides that copy as a reuse of a sensitive value, and its digest drops the rendering metadata.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "timestamp": "2026-09-22T13:00:00Z",
+        "prior_state": {
+          "format_version": "1.0",
+          "values": {
+            "root_module": {}
+          }
+        },
+        "variables": {
+          "deploy_token": {
+            "value": "copied-secret-value"
+          }
+        },
+        "resource_changes": [
+          {
+            "address": "aws_s3_bucket.logs",
+            "mode": "managed",
+            "type": "aws_s3_bucket",
+            "name": "logs",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "bucket": "acme-logs",
+                "tags": {
+                  "token": "copied-secret-value"
+                },
+                "tags_all": {
+                  "token": "copied-secret-value"
+                }
+              },
+              "after_unknown": {
+                "arn": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {
+                "tags": {
+                  "token": true
+                }
+              }
+            }
+          }
+        ],
+        "configuration": {
+          "root_module": {
+            "variables": {
+              "deploy_token": {
+                "sensitive": true
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_s3_bucket.logs",
+                "mode": "managed",
+                "type": "aws_s3_bucket",
+                "name": "logs",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "var.deploy_token"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_plan_with_a_sensitive_object_output_copied_unmarked",
+      "description": "A plan whose sensitive object output holds a string a planned resource also holds unmarked: every string inside the output's value, in planned_values and in output_changes, is hidden wherever it appears.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "planned_values": {
+          "outputs": {
+            "connection": {
+              "sensitive": true,
+              "value": {
+                "phrase": "fake-member-value-0009"
+              }
+            }
+          },
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.copy",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "copy",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "input": "fake-member-value-0009"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        },
+        "resource_changes": [
+          {
+            "address": "terraform_data.copy",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "copy",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "input": "fake-member-value-0009"
+              },
+              "after_unknown": {
+                "id": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          }
+        ],
+        "output_changes": {
+          "connection": {
+            "actions": [
+              "create"
+            ],
+            "before": null,
+            "after": {
+              "phrase": "fake-member-value-0009"
+            },
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": true
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_plan_with_a_planned_resource_that_names_no_sensitive_values",
+      "description": "Refused: a resource of planned_values with no sensitive_values key, which the tool writes for every resource.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "planned_values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.bare",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "bare",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "input": "v1"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_plan_with_a_sensitive_object_variable_copied_unmarked",
+      "description": "A plan whose sensitive root variable is an object holding a string a planned resource also holds unmarked: every string inside the variable's value is hidden wherever it appears.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "variables": {
+          "settings": {
+            "value": {
+              "phrase": "fake-variable-member-0010"
+            }
+          }
+        },
+        "resource_changes": [
+          {
+            "address": "terraform_data.copy",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "copy",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "input": "fake-variable-member-0010"
+              },
+              "after_unknown": {
+                "id": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          }
+        ],
+        "configuration": {
+          "root_module": {
+            "variables": {
+              "settings": {
+                "sensitive": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_plan_holding_a_planted_redaction_marker",
+      "description": "Refused: a plan that already holds a whole redaction marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "resource_changes": [
+          {
+            "address": "terraform_data.planted",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "planted",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "input": {
+                  "__redacted": true,
+                  "reason": "declared_sensitive",
+                  "present": true,
+                  "type": "string"
+                }
+              },
+              "after_unknown": {
+                "id": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "terraform_plan_holding_a_planted_unknown_marker",
+      "description": "Refused: a plan that already holds a whole unknown marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "resource_changes": [
+          {
+            "address": "terraform_data.planted",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "planted",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "input": {
+                  "__unknown": true,
+                  "reason": "known_after_deploy",
+                  "present": true
+                }
+              },
+              "after_unknown": {
+                "id": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "terraform_plan_holding_a_marker_lookalike",
+      "description": "Refused: a plan that already holds an object with the redaction marker's key and other keys in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "plan": {
+        "format_version": "1.2",
+        "terraform_version": "1.14.0",
+        "resource_changes": [
+          {
+            "address": "terraform_data.planted",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "planted",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "input": {
+                  "__redacted": "yes",
+                  "note": "fake-lookalike-0015"
+                }
+              },
+              "after_unknown": {
+                "id": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

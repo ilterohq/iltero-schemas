@@ -1,0 +1,455 @@
+{
+  "cases": [
+    {
+      "name": "declared_sensitive_value_and_value_known_after_the_deployment",
+      "description": "A value the tool declared sensitive becomes a marker; one it knows only after the deployment, absent from the tree, is added as the unknown marker.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "after",
+            "password"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "after",
+            "arn"
+          ],
+          "reason": "known_after_deploy",
+          "declared_sensitive": false
+        }
+      ],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "after": {
+          "password": "p",
+          "name": "n"
+        }
+      }
+    },
+    {
+      "name": "settings_hidden_whatever_they_look_like",
+      "description": "Provider, provisioner and unplanned configuration, and a field the reading of a workload does not use, are hidden by their marks alone.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "provider",
+            "region"
+          ],
+          "reason": "provider_configuration",
+          "declared_sensitive": false
+        },
+        {
+          "path": [
+            "provisioner",
+            "command"
+          ],
+          "reason": "provisioner_configuration",
+          "declared_sensitive": false
+        },
+        {
+          "path": [
+            "unplanned",
+            "size"
+          ],
+          "reason": "unplanned_configuration",
+          "declared_sensitive": false
+        },
+        {
+          "path": [
+            "pod",
+            "env"
+          ],
+          "reason": "field_not_read",
+          "declared_sensitive": false
+        }
+      ],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "provider": {
+          "region": "eu-west-1"
+        },
+        "provisioner": {
+          "command": "echo"
+        },
+        "unplanned": {
+          "size": 3
+        },
+        "pod": {
+          "env": [
+            {
+              "name": "MODE",
+              "value": "fast"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "copy_of_a_declared_sensitive_value",
+      "description": "A string the tool declared sensitive is hidden wherever it appears again, whole or inside a longer string; a short one is not.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "r",
+            "after",
+            "tags",
+            "login"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "r",
+            "after",
+            "port"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "r",
+          "after"
+        ]
+      ],
+      "known_sensitive": [
+        "value-from-a-variable"
+      ],
+      "tree": {
+        "r": {
+          "after": {
+            "tags": {
+              "login": "copied-login-value"
+            },
+            "tags_all": {
+              "login": "copied-login-value"
+            },
+            "port": "5432",
+            "note": "login copied-login-value here",
+            "other_port": "5432",
+            "copy": "value-from-a-variable"
+          }
+        }
+      }
+    },
+    {
+      "name": "configured_and_exempt_paths_under_each_anchor",
+      "description": "A configured path is hidden under every anchor and nowhere else; an exempt path keeps its value, with its reason, even when its key looks like a credential's.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "tags.owner"
+        ],
+        "exempt_paths": [
+          {
+            "path": "access_key",
+            "reason": "needed to check the key id format"
+          }
+        ]
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "after"
+        ],
+        [
+          "resources",
+          1,
+          "before"
+        ]
+      ],
+      "known_sensitive": [],
+      "tree": {
+        "resources": [
+          {
+            "after": {
+              "tags": {
+                "owner": "x"
+              },
+              "access_key": "AK-visible",
+              "secret_key": "s"
+            }
+          },
+          {
+            "before": {
+              "tags": {
+                "owner": "y"
+              }
+            },
+            "tags": {
+              "owner": "not under an anchor"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "keys_that_look_like_a_credential_s",
+      "description": "A key that looks like a credential's hides a string or a container holding one, never a number, a boolean or null; a key that names something about a credential hides nothing.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "db_password": {
+          "nested": "p"
+        },
+        "tokens": [
+          "t"
+        ],
+        "user_data": null,
+        "password_length": 16,
+        "secret": true,
+        "kms_key_id": "k",
+        "secret_name": "n"
+      }
+    },
+    {
+      "name": "names_written_beside_a_value",
+      "description": "A value is judged by the name written beside it, and by the name before an equals sign inside it.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "env": [
+          {
+            "name": "API_TOKEN",
+            "value": "plain-text-1"
+          },
+          {
+            "name": "LOG_LEVEL",
+            "value": "debug"
+          },
+          {
+            "ParameterKey": "DbPassword",
+            "ParameterValue": "plain-text-2"
+          }
+        ],
+        "args": [
+          "DB_PASS=plain",
+          "PATH=/usr/bin",
+          "--db-password=plain"
+        ]
+      }
+    },
+    {
+      "name": "values_shaped_like_a_credential",
+      "description": "A value shaped like a credential is hidden whatever its key.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "url": "postgres://app:hidden-value@db.internal/app",
+        "header": "Authorization: Bearer abcdefghijklmnop.qrstuvwxyz",
+        "plain": "https://db.internal/app",
+        "items": [
+          "token = abc"
+        ]
+      }
+    },
+    {
+      "name": "precedence_of_the_rules",
+      "description": "A tool's mark outranks an exempt path, an exempt path outranks a configured path, a configured path outranks a credential key, and a credential key outranks a credential shape.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "configured",
+          "kept"
+        ],
+        "exempt_paths": [
+          {
+            "path": "kept",
+            "reason": "exempt and configured"
+          },
+          {
+            "path": "marked",
+            "reason": "exempt but marked"
+          }
+        ]
+      },
+      "marks": [
+        {
+          "path": [
+            "after",
+            "marked"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "after"
+        ]
+      ],
+      "known_sensitive": [],
+      "tree": {
+        "after": {
+          "marked": "m",
+          "kept": "k",
+          "configured": "c",
+          "password": "postgres://app:hidden-value@db.internal/app"
+        }
+      }
+    },
+    {
+      "name": "overlapping_exempt_paths",
+      "description": "Where two exempt paths match one value, the first in code-point order gives the reason.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": [
+          {
+            "path": "rules[*]",
+            "reason": "every rule"
+          },
+          {
+            "path": "rules[0]",
+            "reason": "the first rule"
+          }
+        ]
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "after"
+        ]
+      ],
+      "known_sensitive": [],
+      "tree": {
+        "after": {
+          "rules": [
+            "DB_PASS=kept",
+            "DB_PASS=also-kept"
+          ]
+        }
+      }
+    },
+    {
+      "name": "markers_already_in_the_tree",
+      "description": "A whole marker is kept as it is; an object that only resembles one is redacted like any other object.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "hidden": {
+          "__redacted": true,
+          "reason": "deny_key",
+          "present": true,
+          "type": "string"
+        },
+        "unknown": {
+          "__unknown": true,
+          "reason": "known_after_deploy",
+          "present": true
+        },
+        "resembling": {
+          "__redacted": true,
+          "reason": "made_up",
+          "present": true,
+          "type": "string",
+          "note": "postgres://app:hidden-value@db.internal/app"
+        }
+      }
+    },
+    {
+      "name": "mark_under_a_hidden_parent",
+      "description": "A parent hidden by a credential key still reports the tool's marks on the values under it.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "user_data",
+            "password"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "user_data": {
+          "password": "p"
+        }
+      }
+    },
+    {
+      "name": "key_shaped_like_a_credential",
+      "description": "A tree with an object key shaped like a credential is refused, naming only the path to the object that holds it.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [],
+      "anchors": [],
+      "known_sensitive": [],
+      "tree": {
+        "tags": {
+          "DB_PASSWORD=hunter2": "x",
+          "team": "a"
+        }
+      }
+    }
+  ]
+}

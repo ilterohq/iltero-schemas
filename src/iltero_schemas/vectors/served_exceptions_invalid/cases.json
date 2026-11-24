@@ -1,0 +1,180 @@
+[
+  {
+    "name": "exception_approved_by_who_asked_for_it",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/approved_by": {
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+      }
+    },
+    "remove": [],
+    "message": "an exception is approved by someone other than who asked for it"
+  },
+  {
+    "name": "exception_naming_a_person_by_an_identity_providers_account",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/approved_by": {
+        "provider": "github",
+        "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+      }
+    },
+    "remove": [],
+    "message": "Input should be 'iltero_pseudonym'"
+  },
+  {
+    "name": "exception_approved_after_it_expires",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/approved_at": "2027-02-02T00:00:00Z"
+    },
+    "remove": [],
+    "message": "an exception is approved no later than it expires"
+  },
+  {
+    "name": "exception_covering_a_built_in",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/scope/assertion/id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"
+    },
+    "remove": [],
+    "message": "an exception never covers a built-in assertion: what it records is never waived"
+  },
+  {
+    "name": "exception_lasting_more_than_a_year",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/expires_at": "2027-11-02T00:00:00Z"
+    },
+    "remove": [],
+    "message": "an exception lasts at most 365 days from when it starts"
+  },
+  {
+    "name": "exception_ending_before_it_starts",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/expires_at": "2026-10-31T00:00:00Z"
+    },
+    "remove": [],
+    "message": "an exception expires after it starts"
+  },
+  {
+    "name": "exception_naming_a_resource_by_its_unit",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/scope/resources/0": {
+        "scheme": "iltero_unit",
+        "scope": null,
+        "value": "root"
+      }
+    },
+    "remove": [],
+    "message": "an exception names each resource by its address, scoped by its unit and nothing else"
+  },
+  {
+    "name": "exceptions_sharing_an_id",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1/id": "exc_0001"
+    },
+    "remove": [],
+    "message": "each exception has an id of its own"
+  },
+  {
+    "name": "exceptions_covering_one_resource_at_the_same_time",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1": {
+        "id": "exc_0002",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+            "version": "1.0.0",
+            "digest": "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_db_instance.payments"
+            }
+          ]
+        },
+        "valid_from": "2026-11-01T00:00:00Z",
+        "expires_at": "2027-02-01T00:00:00Z",
+        "requested_by": {
+          "provider": "iltero_pseudonym",
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
+        },
+        "approved_by": {
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+        },
+        "approved_at": "2026-10-30T14:12:00Z",
+        "requester_and_run_starter": "different_users",
+        "approver_and_run_starter": "different_users",
+        "reason": "The database is reached through a private link added in the next change."
+      }
+    },
+    "remove": [],
+    "message": "no two exceptions cover the same assertion, environment and resource at the same time"
+  },
+  {
+    "name": "exception_without_the_digest_of_its_assertion",
+    "vector": "plan.json",
+    "remove": [
+      "/spec/exceptions/0/scope/assertion/digest"
+    ],
+    "set": {},
+    "message": "Field required"
+  },
+  {
+    "name": "exception_with_a_scope_of_another_kind",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/scope/kind": "vulnerabilities"
+    },
+    "remove": [],
+    "message": "Input should be 'resources'"
+  },
+  {
+    "name": "one_requester_found_both_to_have_started_the_run_and_not",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1/requested_by": {
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+      }
+    },
+    "remove": [],
+    "message": "a run has one starter, so one Iltero user is found to be them, or not, in every exception"
+  },
+  {
+    "name": "one_iltero_user_found_to_have_started_the_run_as_approver_and_not_as_requester",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/1/approved_by": {
+        "provider": "iltero_pseudonym",
+        "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+      },
+      "/spec/exceptions/1/approver_and_run_starter": "same_user"
+    },
+    "remove": [],
+    "message": "a run has one starter, so one Iltero user is found to be them, or not, in every exception"
+  },
+  {
+    "name": "two_iltero_users_found_to_have_started_the_run",
+    "vector": "plan.json",
+    "set": {
+      "/spec/exceptions/0/requester_and_run_starter": "same_user"
+    },
+    "remove": [],
+    "message": "a run has one starter, so at most one Iltero user is found to be them"
+  }
+]

@@ -58,7 +58,6 @@
   },
   "evaluations": null,
   "approvals": null,
-  "exceptions": null,
   "run": null,
   "drift_check": {
     "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
@@ -140,5 +139,8 @@
   "scans": null,
   "verified_source": null,
   "attestation_outcome": null,
-  "commit_review": null
+  "commit_review": null,
+  "apply_job_facts": null,
+  "apply_job_timing": null,
+  "replan_check": null
 }

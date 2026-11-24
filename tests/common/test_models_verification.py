@@ -1,4 +1,4 @@
-"""The verification report: eleven properties, each with a result a verifier gives it, and no overall verdict."""
+"""The verification report: nineteen properties, each with a result a verifier gives it, and no overall verdict."""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ def test_the_vector_validates_and_names_this_api_version() -> None:
     assert VerificationReport.model_validate(REPORT).api_version == API_VERSION
 
 
-def test_a_report_names_the_twelve_properties_and_no_overall_verdict() -> None:
+def test_a_report_names_the_nineteen_properties_and_no_overall_verdict() -> None:
     assert list(Properties.model_fields) == [
         "integrity",
         "source_identity",
@@ -54,6 +54,13 @@ def test_a_report_names_the_twelve_properties_and_no_overall_verdict() -> None:
         "commit_review",
         "reference_time",
         "evaluator_binary",
+        "scanner_reports",
+        "plan_age",
+        "apply_job_approval_order",
+        "received_plan_file",
+        "rendered_plan",
+        "pinned_plan",
+        "replan_resource_actions",
     ]
     assert set(VerificationReport.model_fields) == {"api_version", "kind", "metadata", "record", "properties"}
 
@@ -206,9 +213,13 @@ def test_a_finished_record_missing_a_stage_it_expects_failed_its_stage_completen
     VerificationReport.model_validate(document)
 
 
-def test_a_record_that_lists_no_exception_has_its_exceptions_not_assessed() -> None:
+def test_a_record_that_relied_on_a_served_exception_is_the_records_claim_rather_than_verified() -> None:
     document = copy.deepcopy(REPORT)
-    document["properties"]["exceptions"] = {"state": "not_performed", "reason": "exceptions_not_listed", "detail": None}
+    document["properties"]["exceptions"] = {
+        "state": "not_assessed",
+        "reason": "served_exception_relied_on",
+        "detail": None,
+    }
     with pytest.raises(ValidationError, match="exceptions is one of the results"):
         VerificationReport.model_validate(document)
 

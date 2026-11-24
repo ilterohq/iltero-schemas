@@ -8,12 +8,26 @@ stage found can never be cured by another stage's checks.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Final, Literal
 
-from pydantic import AfterValidator, Field, model_validator
+from pydantic import Field, model_validator
 
+from iltero_schemas.canonical.common.encoding import digest_of
 from iltero_schemas.models.common.base import StageValue, StrictModel
+from iltero_schemas.models.common.coverage_gaps import (
+    CHECKED_AFTER_DEPLOYMENT,
+    IDENTITY_REASONS,
+    MAX_GAPS,
+    PROVIDER_SOURCE_GAP_REASONS,
+    EvaluatorDidNotDecideGap,
+    Gap,
+    IdentityReason,
+    PlanFlagGap,
+    PlanIndexGap,
+    ProviderSourceGap,
+    StateNotReadGap,
+    postponed_count,
+)
 from iltero_schemas.models.common.event import STATUS_REASONS
 from iltero_schemas.models.common.evidence_status import (
     EVALUATOR_ERROR_REASON,
@@ -32,7 +46,6 @@ from iltero_schemas.models.common.evidence_status import (
     GapReasonValue,
     evidence_status,
 )
-from iltero_schemas.models.common.facts import NotReported
 from iltero_schemas.models.common.fields import (
     MAX_RESOURCES,
     Address,
@@ -40,25 +53,35 @@ from iltero_schemas.models.common.fields import (
     Digest,
     Identifier,
     RawText,
-    RunStage,
     Status,
 )
-from iltero_schemas.models.common.server_facts import ENGINES, Engine
+from iltero_schemas.models.common.server_facts import Engine
 
 STATUSES: tuple[Status, ...] = ("pass", "fail", "unknown", "not_applicable", "not_evaluated", "error")
 # A verdict: every required check passed or did not apply (``met``); a required check failed (``not_met``); a
 # required check could not be decided (``undecided``); or the stage could not make every required check
 # (``incomplete``). A required check is an assertion the stage was required to evaluate, about a subject in scope.
 VerdictValue = Literal["met", "not_met", "undecided", "incomplete"]
-# The verdicts from the one that wins to the one that loses, when several stages fold into one: a failed check is
-# never hidden by a gap, and the evidence status still says when a required check was not made
-# (``REQUIRED_CHECKS_REASON``).
-VERDICT_ORDER: tuple[VerdictValue, ...] = ("not_met", "incomplete", "undecided", "met")
-# Why a verdict is incomplete, the one that wins first: a required check was not evaluated (a required assertion with no
-# evaluation, a check not evaluated, a truncated list, a state not read: ``every_required_check_made``), or an
-# evaluator ended in an error.
+# Why a verdict is incomplete: a required check was not evaluated (a required assertion with no evaluation, a check
+# not evaluated, a truncated list, a state not read: ``every_required_check_made``), or an evaluator ended in an error.
 IncompleteReason = Literal["not_evaluated", "evaluator_failed"]
-INCOMPLETE_ORDER: tuple[IncompleteReason, ...] = ("not_evaluated", "evaluator_failed")
+# Why a verdict is ``not_met`` although nothing else is open: every failed check is one an exception the server served
+# covers in full (``Coverage.failed_checks_excepted``). The checks did not pass: their results stay ``fail``.
+ExceptedReason = Literal["every_failure_excepted"]
+EVERY_FAILURE_EXCEPTED: Final[ExceptedReason] = "every_failure_excepted"
+VerdictReason = IncompleteReason | ExceptedReason
+# Every verdict a stage or a record may give, with its reason, from the one that wins to the one that loses when
+# several stages fold into one: a failure no exception covers is never hidden by a gap, a gap or an undecided check is
+# never hidden by failures exceptions cover, and the evidence status still says when a required check was not made
+# (``REQUIRED_CHECKS_REASON``).
+VERDICT_RANKING: tuple[tuple[VerdictValue, VerdictReason | None], ...] = (
+    ("not_met", None),
+    ("incomplete", "not_evaluated"),
+    ("incomplete", "evaluator_failed"),
+    ("undecided", None),
+    ("not_met", EVERY_FAILURE_EXCEPTED),
+    ("met", None),
+)
 
 
 # More inputs than a configuration reads from other units, and few enough that a record stays small.
@@ -69,37 +92,36 @@ class Verdict(StrictModel):
     """A verdict, why it is incomplete when it is, and where it came from.
 
     A stage's verdict follows from that stage's own counts (``status_counts``).
-    A record's is the verdict of the stage that wins by ``VERDICT_ORDER``
+    A record's is the verdict of the stage that wins by ``VERDICT_RANKING``
     (``stage_precedence``), and names that stage.
     """
 
     value: VerdictValue
-    # Present exactly when the verdict is incomplete.
-    reason: IncompleteReason | None
+    # Why the verdict is incomplete, or why it is ``not_met`` with every failure excepted; null otherwise
+    # (``VERDICT_RANKING``).
+    reason: VerdictReason | None
     computed_from: Literal["status_counts", "stage_precedence"]
     stage: StageValue | None
 
     @model_validator(mode="after")
     def _one_meaning(self) -> Verdict:
-        if (self.reason is None) != (self.value != "incomplete"):
-            raise ValueError("a verdict names its reason exactly when it is incomplete")
+        if (self.value, self.reason) not in VERDICT_RANKING:
+            raise ValueError(
+                "a verdict names its reason exactly when it is incomplete, or not_met with every failure excepted"
+            )
         if (self.stage is None) != (self.computed_from == "status_counts"):
             raise ValueError("a verdict names its stage exactly when it was taken from a stage")
         return self
 
     @property
-    def rank(self) -> tuple[int, int]:
-        """Where the verdict comes in ``VERDICT_ORDER``, and an incomplete one's reason in ``INCOMPLETE_ORDER``."""
-        reason = INCOMPLETE_ORDER.index(self.reason) if self.reason is not None else 0
-        return VERDICT_ORDER.index(self.value), reason
+    def rank(self) -> int:
+        """Where the verdict, with its reason, comes in ``VERDICT_RANKING``."""
+        return VERDICT_RANKING.index((self.value, self.reason))
 
 
-# Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, or
-# an identity that was redacted or cannot be named.
-# The reasons that are also gaps: a resource left out for its identity is a gap in what the stage could check.
-IdentityReason = Literal["identity_redacted", "identity_unnameable"]
-ExclusionReason = Literal["not_managed", "deposed", IdentityReason]
-IDENTITY_REASONS: frozenset[str] = frozenset(get_args(IdentityReason))
+# Why a plan resource is left out of the subjects in scope: not managed by the configuration, a deposed object, a type
+# that creates no object outside the tool, or an identity that was redacted or cannot be named.
+ExclusionReason = Literal["not_managed", "deposed", "makes_no_outside_object", IdentityReason]
 
 
 class Excluded(StrictModel):
@@ -110,99 +132,6 @@ class Excluded(StrictModel):
     # kept as written, whatever its characters.
     id: RawText | None
     reason: ExclusionReason
-
-
-class _Gap(StrictModel):
-    # Null or left out in a stage's own coverage, since a stage's writer does not name itself; the record's combined
-    # coverage names the stage each gap came from.
-    stage: StageValue | None = None
-
-
-class PlanFlagGap(_Gap):
-    """A plan flag that is not true; ``value`` is the plan's flag: false, or the not-reported marker."""
-
-    kind: Literal["plan_incomplete", "plan_not_applyable"]
-    value: Literal[False] | NotReported
-
-
-class PlanIndexGap(_Gap):
-    """A plan resource whose identity was redacted or cannot be named, by its index in the plan's resource list."""
-
-    kind: IdentityReason
-    plan_index: Count
-
-
-# The count gap a plan stage counts its checks postponed until after the deployment under
-# (``models.iac.postponed_checks``).
-CHECKED_AFTER_DEPLOYMENT = "checked_after_deployment"
-
-
-def postponed_count(gaps: Iterable[object]) -> int:
-    """How many checks a stage's coverage counts as postponed until after the deployment."""
-    return sum(gap.count for gap in gaps if isinstance(gap, CountGap) and gap.kind == CHECKED_AFTER_DEPLOYMENT)
-
-
-# What a count gap may name: what the plan left out, checks postponed until after the deployment, and why evaluations
-# did not run or ended in error.
-# The reasons an evaluation is not evaluated or in error. Each is a gap a stage lists with the number of its combined
-# verdicts the reason left without a decision, recomputed from its events
-# (``models.common.verdicts.no_decision_reason_counts``).
-NO_DECISION_REASON_GAP_KINDS: frozenset[str] = STATUS_REASONS["not_evaluated"] | STATUS_REASONS["error"]
-COUNT_GAP_KINDS: frozenset[str] = (
-    frozenset({"deferred_changes", "related_copies_omitted", "unresolved_references", CHECKED_AFTER_DEPLOYMENT})
-    | NO_DECISION_REASON_GAP_KINDS
-)
-
-
-def _count_gap_kind(value: str) -> str:
-    if value not in COUNT_GAP_KINDS:
-        raise ValueError(f"kind must be a gap a count can describe: {', '.join(sorted(COUNT_GAP_KINDS))}")
-    return value
-
-
-class CountGap(_Gap):
-    """How many of one thing are missing from what the stage evaluated."""
-
-    kind: Annotated[str, AfterValidator(_count_gap_kind)]
-    count: Annotated[int, Field(ge=1)]
-
-
-class StateNotReadGap(_Gap):
-    """The state after the apply, which was not read: no outcome of the apply was held to it.
-
-    The pipeline said the infrastructure-as-code (IaC) tool could not read it;
-    nothing corroborates that. A stage that lists it is a coverage gap, whatever
-    its checks found.
-    """
-
-    kind: Literal["state_not_read"]
-
-
-def _no_decision_reason(value: str) -> str:
-    if value not in NO_DECISION_REASON_GAP_KINDS:
-        raise ValueError("reason is a reason an evaluation is not evaluated or in error")
-    return value
-
-
-class EvaluatorDidNotDecideGap(_Gap):
-    """How many times one evaluator could not decide an assertion about a subject, and why, where the subject's
-    verdict does not already say so: another evaluator decided it, or another evaluator's result or another status
-    left it without a decision. The verdict stands; this gap shows that a check did not run or failed, so a reader
-    never takes a verdict for one every evaluator reached."""
-
-    kind: Literal["evaluator_did_not_decide"]
-    engine: Engine
-    reason: Annotated[str, AfterValidator(_no_decision_reason)]
-    count: Annotated[int, Field(ge=1)]
-
-
-# One gap in a stage's coverage; each shape has its own fields, so a gap reads as exactly one of them.
-Gap = PlanFlagGap | PlanIndexGap | CountGap | StateNotReadGap | EvaluatorDidNotDecideGap
-# The most gaps a coverage lists: one per resource a plan holds, each flag, count or state kind once per stage, and
-# each evaluator and reason once per stage.
-MAX_GAPS = MAX_RESOURCES + len(get_args(RunStage)) * (
-    3 + len(COUNT_GAP_KINDS) + len(ENGINES) * len(NO_DECISION_REASON_GAP_KINDS)
-)
 
 
 class SubjectsInScope(StrictModel):
@@ -226,6 +155,11 @@ class SubjectsInScope(StrictModel):
         if len(set(indexes)) != len(indexes):
             raise ValueError("a plan resource is excluded once, for one reason")
         return self
+
+    def counts_one(self, part: StrictModel) -> bool:
+        """Whether the scope counts one subject, ``part`` (a deployment or a drift check), by the digest of its JSON
+        form."""
+        return self.value == 1 and self.source_digest == digest_of(part.model_dump(mode="json", by_alias=True))
 
 
 class AssertionsRequired(StrictModel):
@@ -271,10 +205,13 @@ class Coverage(StrictModel):
     assertions_evaluated: Count
     subjects_per_assertion: dict[str, Count]
     status_counts: dict[Status, Count]
+    # The failed checks, of those ``status_counts`` counts, that an exception the server served covers in full
+    # (``verdicts.excepted_failure_count``); 0 at a stage that applies no served exceptions.
+    failed_checks_excepted: Count
     # Each evaluator's own results before they combine, by engine (``none`` for evaluations no evaluator ran): one per
     # assertion and subject it evaluated, so they add up to the events, not to ``evaluations``. The verdict reads only
-    # ``status_counts``, where a required scanner's gap can cancel another evaluator's pass. A scanner's counts are its
-    # report's own results, as the pipeline supplied it.
+    # ``status_counts``, where a scanner requirement's gap can cancel another evaluator's pass. A scanner's counts are
+    # its report's own results, as the pipeline supplied it.
     evaluator_status_counts: dict[Engine, dict[Status, Count]]
     evaluations: Count
     gaps: Annotated[list[Gap], Field(max_length=MAX_GAPS)]
@@ -296,6 +233,8 @@ class Coverage(StrictModel):
             raise ValueError(f"status_counts names every status: {', '.join(STATUSES)}")
         if sum(self.status_counts.values()) != self.evaluations:
             raise ValueError("the status counts add up to the number of evaluations")
+        if self.failed_checks_excepted > self.status_counts["fail"]:
+            raise ValueError("a stage counts no more failed checks as excepted than it has failed checks")
         self._check_evaluator_status_counts()
         if postponed_count(self.gaps) > self.status_counts["unknown"]:
             raise ValueError(f"a stage counts no more checks as {CHECKED_AFTER_DEPLOYMENT} than it left unknown")
@@ -307,6 +246,7 @@ class Coverage(StrictModel):
         ]
         if len(set(not_decided)) != len(not_decided):
             raise ValueError("a stage lists each evaluator and reason that did not decide once")
+        self._check_provider_source_gaps()
         gaps = [(gap.kind, gap.plan_index) for gap in self.gaps if isinstance(gap, PlanIndexGap)]
         excluded = {(e.reason, e.plan_index) for e in self.subjects_in_scope.excluded if e.reason in IDENTITY_REASONS}
         if len(set(gaps)) != len(gaps) or set(gaps) != excluded:
@@ -315,6 +255,22 @@ class Coverage(StrictModel):
                 "reason"
             )
         return self
+
+    def _check_provider_source_gaps(self) -> None:
+        """A stage lists each provider source once for each kind of gap, sorted, only when it counted the plan's
+        resources, and counts at most the resources in scope; a record's combined coverage lists each stage's."""
+        listed = [gap for gap in self.gaps if isinstance(gap, ProviderSourceGap)]
+        keys = [(gap.stage, gap.kind, gap.provider_source) for gap in listed]
+        by_stage = [
+            [(kind, source) for stage, kind, source in keys if stage is named] for named in {k[0] for k in keys}
+        ]
+        if len(set(keys)) != len(keys) or any(group != sorted(group) for group in by_stage):
+            raise ValueError("a stage lists each provider source once for each kind of gap, sorted by kind and source")
+        own = [gap for gap in listed if gap.stage is None]
+        if own and self.subjects_in_scope.counted_from != "plan_resource_enumeration":
+            raise ValueError("only a stage that counted the plan's resources lists a provider source gap")
+        if sum(gap.count for gap in own) > self.subjects_in_scope.value:
+            raise ValueError("a stage's provider source gaps count no more resources than it has in scope")
 
     def _check_evaluator_status_counts(self) -> None:
         """Each evaluator listed names every status and gave at least one evaluation; how many it gave is checked
@@ -365,10 +321,10 @@ def every_required_check_made(coverage: Coverage) -> bool:
     )
 
 
-def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, IncompleteReason | None]:
+def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, VerdictReason | None]:
     """The verdict the stage's counts call for."""
     counts = coverage.status_counts
-    if counts["fail"]:
+    if counts["fail"] > coverage.failed_checks_excepted:
         return "not_met", None
     if not every_required_check_made(coverage):
         return "incomplete", "not_evaluated"
@@ -377,22 +333,25 @@ def _stage_verdict(coverage: Coverage) -> tuple[VerdictValue, IncompleteReason |
     # A check postponed until after the deployment is decided later, not undecided.
     if counts["unknown"] > postponed_count(coverage.gaps):
         return "undecided", None
-    return "met", None
+    return ("not_met", EVERY_FAILURE_EXCEPTED) if counts["fail"] else ("met", None)
 
 
 def stage_outcome(coverage: Coverage) -> StageOutcome:
     """A stage's verdict and evidence status, from its own counts by the one rule every reader can recompute.
 
-    The verdict: ``not_met`` whenever a required check failed; otherwise ``incomplete`` when it could not make every
-    required check (``not_evaluated``, which a state after the apply that was not read also gives) or an evaluator
-    ended in an error (``evaluator_failed``); then ``undecided`` for a check it could not decide; otherwise ``met``.
+    The verdict: ``not_met`` whenever a required check failed that no exception the server served covers in full;
+    otherwise ``incomplete`` when it could not make every required check (``not_evaluated``, which a state after the
+    apply that was not read also gives) or an evaluator ended in an error (``evaluator_failed``); then ``undecided``
+    for a check it could not decide; then ``not_met`` with ``every_failure_excepted`` when checks failed and served
+    exceptions cover every one; otherwise ``met``.
 
     The evidence has gaps for every reason that holds, listed in the order of ``GAP_REASON_PRECEDENCE``: an evaluator
     ended in an error, even one another evaluator's verdict on the same assertion and subject outweighed; the state
     after the apply was not read; a required check was not made, whatever the verdict, so a failure never hides a
     missing check; the plan does not say it is complete; inputs were replaced with placeholders; plan resources were
-    left out of scope for their identity; no required assertion found a subject in scope; or the stage was required to
-    evaluate no assertion. Only the first three change the verdict.
+    left out of scope for their identity; resources in scope come from a provider with no resource kinds, or from a
+    source its provider's kind table was not reviewed against; no required assertion found a subject in scope; or the
+    stage was required to evaluate no assertion. Only the first three change the verdict.
     """
     value, incomplete = _stage_verdict(coverage)
     errors = coverage.status_counts["error"]
@@ -427,6 +386,16 @@ def stage_outcome(coverage: Coverage) -> StageOutcome:
             f"{excluded} plan {'resource was' if excluded == 1 else 'resources were'} left out of scope for "
             f"{'its' if excluded == 1 else 'their'} identity"
         )
+    for gap_kind, (gap_reason, detail) in PROVIDER_SOURCE_GAP_REASONS.items():
+        gaps = [gap for gap in coverage.gaps if isinstance(gap, ProviderSourceGap) and gap.kind == gap_kind]
+        if gaps:
+            count = sum(gap.count for gap in gaps)
+            holding[gap_reason] = detail.format(
+                count=count,
+                resources="resource" if count == 1 else "resources",
+                sources=len(gaps),
+                source_word="source" if len(gaps) == 1 else "sources",
+            )
     per_assertion = coverage.subjects_per_assertion.values()
     if per_assertion and not any(per_assertion):
         holding[NO_RESOURCE_REASON] = NO_RESOURCE_DETAIL

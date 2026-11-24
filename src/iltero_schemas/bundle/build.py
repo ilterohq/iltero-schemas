@@ -38,6 +38,7 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 
+from iltero_schemas import signing
 from iltero_schemas.ast import parse_document, source_digest
 from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import canonical_bytes, digest, digest_of, required_assertion_digest
@@ -48,14 +49,6 @@ from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 
 MANIFEST = ".manifest"
 SIGNATURES = ".signatures.json"
-# The scope every signature names; a verifier asks for exactly this one.
-BUNDLE_SIGNING_SCOPE = "iltero-assertions"
-SIGNING_ALGORITHM = "ES256"
-# An ES256 signature is the two 32-byte numbers r and s, one after the other.
-SIGNATURE_BYTES = 64
-# The order of the P-256 curve. An ECDSA signature (r, s) stays valid with s replaced by ORDER - s, so only the
-# smaller of the two ("low-S") is accepted: one signing then gives one signature, and one tarball digest.
-P256_ORDER = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
 # The policy language version the modules are written in.
 REGO_VERSION = 1
 _ROOT_PREFIX = PACKAGE_PREFIX.replace(".", "/")
@@ -155,10 +148,6 @@ def unsigned_bundle(sources: Sequence[str], *, minimum_cli_version: str) -> Unsi
     return UnsignedBundle(members, MappingProxyType(metadata), content_digest, MappingProxyType(files))
 
 
-def _b64url(data: bytes) -> bytes:
-    return base64.urlsafe_b64encode(data).rstrip(b"=")
-
-
 def signing_input(bundle: UnsignedBundle, *, key_id: str) -> bytes:
     """The bytes the key signs: a JSON Web Signature header and payload listing every file and its digest.
 
@@ -168,34 +157,26 @@ def signing_input(bundle: UnsignedBundle, *, key_id: str) -> bytes:
     returns is usually DER-encoded. It goes to :func:`descriptor` as the raw
     64 bytes, r then s.
     """
-    header = {"alg": SIGNING_ALGORITHM, "kid": key_id, "typ": "JWT"}
-    files = [
-        {"name": name, "hash": hashlib.sha256(bundle.files[name]).hexdigest(), "algorithm": "SHA-256"}
-        for name in sorted(bundle.files)
+    return files_signing_input(bundle.files, key_id=key_id)
+
+
+def files_signing_input(files: Mapping[str, bytes], *, key_id: str) -> bytes:
+    """The bytes the key signs for a bundle of ``files``, every file but its signature: each file's name and SHA-256
+    digest, by name, under ``key_id`` and the bundle signing scope."""
+    listed = [
+        {"name": name, "hash": hashlib.sha256(files[name]).hexdigest(), "algorithm": "SHA-256"}
+        for name in sorted(files)
     ]
-    payload = {"files": files, "keyid": key_id, "scope": BUNDLE_SIGNING_SCOPE}
-    return _b64url(canonical_bytes(header)) + b"." + _b64url(canonical_bytes(payload))
-
-
-def _r_and_s(signature: bytes) -> tuple[int, int]:
-    """The two numbers of a raw 64-byte ``r‖s`` signature. Each must lie strictly between 0 and the curve order."""
-    if len(signature) != SIGNATURE_BYTES:
-        raise BundleError(f"an {SIGNING_ALGORITHM} signature is {SIGNATURE_BYTES} bytes, r then s")
-    half = SIGNATURE_BYTES // 2
-    r, s = int.from_bytes(signature[:half], "big"), int.from_bytes(signature[half:], "big")
-    if not (0 < r < P256_ORDER and 0 < s < P256_ORDER):
-        raise BundleError(f"an {SIGNING_ALGORITHM} signature's r and s each lie between 0 and the curve order")
-    return r, s
+    return signing.signing_input(key_id=key_id, scope=signing.BUNDLE_SIGNING_SCOPE, payload={"files": listed})
 
 
 def signatures_file(signed: bytes, signature: bytes) -> bytes:
     """``.signatures.json`` for ``signed`` (from :func:`signing_input`) and its raw 64-byte ``r‖s`` signature."""
-    _, s = _r_and_s(signature)
-    if s > P256_ORDER // 2:
-        raise BundleError(
-            f"an {SIGNING_ALGORITHM} signature is written in its low-S form: s at most half the curve order"
-        )
-    return canonical_bytes({"signatures": [(signed + b"." + _b64url(signature)).decode("ascii")]})
+    try:
+        signing.check_low_s(signature)
+    except signing.SignatureError as error:
+        raise BundleError(str(error)) from None
+    return canonical_bytes({"signatures": [(signed + b"." + signing.base64url(signature)).decode("ascii")]})
 
 
 def tarball(files: Mapping[str, bytes]) -> bytes:
@@ -211,15 +192,12 @@ def tarball(files: Mapping[str, bytes]) -> bytes:
     return gzip.compress(raw.getvalue(), compresslevel=9, mtime=0)
 
 
-def normalized_signature(signature: bytes) -> bytes:
-    """``signature`` (raw ``r‖s``) in its low-S form: ``s`` replaced by the curve order minus ``s`` when larger.
-
-    Both forms verify. Signing services do not all return the low one, and a
-    bundle carries only that form, so one signing gives one tarball digest.
-    """
-    _, s = _r_and_s(signature)
-    half = SIGNATURE_BYTES // 2
-    return signature[:half] + min(s, P256_ORDER - s).to_bytes(half, "big")
+def _normalized(signature: bytes) -> bytes:
+    """``signature`` in its low-S form, refused as a ``BundleError`` when it is no ES256 signature at all."""
+    try:
+        return signing.normalized_signature(signature)
+    except signing.SignatureError as error:
+        raise BundleError(str(error)) from None
 
 
 def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> BundleDescriptor:
@@ -227,13 +205,13 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
 
     The tarball is packed here from the same key id the signing input named, so
     the two cannot disagree. ``signature`` is written in its low-S form
-    (:func:`normalized_signature`), whichever form the signer returned. A signer checks its own
+    (``normalized_signature``), whichever form the signer returned. A signer checks its own
     output with ``check_descriptor`` and a signature check before storing it.
     """
     signed_bundle = tarball(
         {
             **bundle.files,
-            SIGNATURES: signatures_file(signing_input(bundle, key_id=key_id), normalized_signature(signature)),
+            SIGNATURES: signatures_file(signing_input(bundle, key_id=key_id), _normalized(signature)),
         }
     )
     return BundleDescriptor.model_validate(
@@ -243,7 +221,7 @@ def descriptor(bundle: UnsignedBundle, *, key_id: str, signature: bytes) -> Bund
             "content_digest": bundle.content_digest,
             "tarball_digest": digest(signed_bundle),
             "key_id": key_id,
-            "algorithm": SIGNING_ALGORITHM,
+            "algorithm": signing.SIGNING_ALGORITHM,
             "compiler_version": bundle.metadata["compiler_version"],
             "capabilities_digest": bundle.metadata["capabilities_digest"],
             "minimum_cli_version": bundle.metadata["minimum_cli_version"],

@@ -1,15 +1,40 @@
-"""Every scanner result a stage's source suppressed names exactly the project's exception its kept file gives it."""
+"""Every exception a record names is exactly the one the copy its stage kept gives the result: a project's exceptions
+file, or the exceptions the server served."""
 
 from __future__ import annotations
 
 import copy
+import json
+from collections.abc import Callable
 from typing import Any
 
-from iltero_schemas.canonical.common.encoding import digest
+import pytest
+
+from iltero_schemas.canonical.common.encoding import canonical_bytes, digest
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.iac.exception_evidence import LEFT_OUT, NOT_GIVEN, NOT_KEPT, NOT_READABLE, exception_problems
+from iltero_schemas.models.common.served_exceptions import MAX_SERVED_EXCEPTIONS_BYTES
+from iltero_schemas.models.iac.exception_evidence import (
+    LEFT_OUT,
+    NOT_GIVEN,
+    NOT_KEPT,
+    NOT_READABLE,
+    SERVED_LEFT_OUT,
+    SERVED_NOT_READABLE,
+    local_exception_problems,
+    served_exception_problems,
+)
 from iltero_schemas.models.iac.kept_files import KeptFiles
-from tests.exceptions import FILE_BYTES, FILE_DIGEST, GRANT, applying_exceptions, suppressed
+from iltero_schemas.vectors.plans import set_pointer
+from tests.conftest import VECTORS, documents
+from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed
+from tests.records import (
+    every_kept_copy,
+    ran_by_the_cli,
+    valid_case_record,
+)
+from tests.server_runs import (
+    served,
+)
 
 WHERE = "stages.plan.scanners.local_exceptions"
 
@@ -17,9 +42,18 @@ WHERE = "stages.plan.scanners.local_exceptions"
 def _problems(record: dict[str, Any], exceptions: dict[str, bytes]) -> list[tuple[str, str]]:
     car = CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
     files = KeptFiles(
-        scanner_check_mappings={}, observations={}, reports={}, plans={}, assertions={}, exceptions=exceptions
+        scanner_check_mappings={},
+        observations={},
+        reports={},
+        plans={},
+        assertions={},
+        local_exceptions=exceptions,
+        served_exceptions={},
+        inputs={},
+        identities={},
+        served_bundles={},
     )
-    return exception_problems(car, files)
+    return local_exception_problems(car, files)
 
 
 def _at(record: dict[str, Any]) -> str:
@@ -65,13 +99,15 @@ def test_a_result_naming_an_exception_its_kept_file_does_not_give_it_is_listed()
 
 def test_a_result_naming_an_exception_for_another_environment_or_time_is_listed() -> None:
     for change in ({"environment": "staging"}, {"valid_from": "2026-10-01T00:00:00Z"}):
-        grant = copy.deepcopy(GRANT)
+        exception = copy.deepcopy(EXCEPTION)
         if "environment" in change:
-            grant["scope"]["environment"] = change["environment"]
+            exception["scope"]["environment"] = change["environment"]
         else:
-            grant["valid_from"] = change["valid_from"]
-        text = FILE_BYTES.replace(b"environment: production", b"environment: " + grant["scope"]["environment"].encode())
-        text = text.replace(b'"2026-09-01T00:00:00Z"', ('"' + grant["valid_from"] + '"').encode())
+            exception["valid_from"] = change["valid_from"]
+        text = FILE_BYTES.replace(
+            b"environment: production", b"environment: " + exception["scope"]["environment"].encode()
+        )
+        text = text.replace(b'"2026-09-01T00:00:00Z"', ('"' + exception["valid_from"] + '"').encode())
         record, files = _with_file(text)
         assert _problems(record, files) == [(_at(record), NOT_GIVEN)]
 
@@ -128,6 +164,125 @@ def test_a_result_whose_subject_has_no_address_is_given_no_exception() -> None:
         reports={},
         plans={},
         assertions={},
-        exceptions={FILE_DIGEST: FILE_BYTES},
+        local_exceptions={FILE_DIGEST: FILE_BYTES},
+        served_exceptions={},
+        inputs={},
+        identities={},
+        served_bundles={},
     )
-    assert exception_problems(car.model_copy(update={"events": events}), files) == [(_at(record), NOT_GIVEN)]
+    assert local_exception_problems(car.model_copy(update={"events": events}), files) == [(_at(record), NOT_GIVEN)]
+
+
+SERVED = "stages.plan.served_exceptions"
+SERVED_CASE = "iac_record_of_a_run_the_server_opened_whose_plan_stage_names_a_failed_result_a_served_exception_covers"
+SERVED_DOCUMENT: dict[str, Any] = json.loads((VECTORS / "served_exceptions" / "plan.json").read_text(encoding="utf-8"))
+
+
+def _kept_by_digest() -> dict[str, bytes]:
+    """Every served exceptions vector as a stage keeps it, by its digest: its canonical bytes; and every copy a record
+    of the vectors kept, as it kept it."""
+    kept = [canonical_bytes(json.loads(path.read_text(encoding="utf-8"))) for path in documents("served_exceptions")]
+    kept += every_kept_copy("served-exceptions.json")
+    return {digest(data): data for data in kept}
+
+
+def _served_problems(record: dict[str, Any], kept: dict[str, bytes]) -> list[tuple[str, str]]:
+    car = CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
+    files = KeptFiles(
+        scanner_check_mappings={},
+        observations={},
+        reports={},
+        plans={},
+        assertions={},
+        local_exceptions={},
+        served_exceptions=kept,
+        inputs={},
+        identities={},
+        served_bundles={},
+    )
+    return served_exception_problems(car, files)
+
+
+def _keeping(record: dict[str, Any], data: bytes) -> dict[str, Any]:
+    """``record`` with its plan stage keeping ``data`` as its copy of the served exceptions, by its digest and size."""
+    used = record["stages"]["plan"]["served_exceptions"]
+    entry = next(ref for ref in record["evidence_refs"] if ref["path"] == used["copy_path"])
+    used["digest"] = entry["digest"] = digest(data)
+    entry["size_bytes"] = len(data)
+    return record
+
+
+def test_every_failed_result_a_record_names_as_excepted_is_one_its_kept_served_exceptions_cover() -> None:
+    cases = json.loads((VECTORS / "records_valid" / "iac" / "cases.json").read_text(encoding="utf-8"))
+    served = [
+        case["name"]
+        for case in cases
+        if valid_case_record("iac", case["name"])["stages"].get("plan", {}).get("served_exceptions") is not None
+    ]
+    assert SERVED_CASE in served
+    for name in served:
+        assert _served_problems(valid_case_record("iac", name), _kept_by_digest()) == [], name
+
+
+def _indented(document: Any) -> bytes:
+    return json.dumps(document, indent=2).encode()
+
+
+def _compact(document: Any) -> bytes:
+    return json.dumps(document, separators=(",", ":")).encode()
+
+
+# The forms a case keeps its copy of the served exceptions in: canonical JSON, as a stage keeps it, or another form.
+KEPT_FORMS: dict[str, Callable[[Any], bytes]] = {
+    "canonical": canonical_bytes,
+    "indented": _indented,
+    "compact": _compact,
+}
+SERVED_CASES: list[dict[str, Any]] = json.loads(
+    (VECTORS / "served_exceptions_kept" / "cases.json").read_text(encoding="utf-8")
+)
+
+
+@pytest.mark.parametrize("case", SERVED_CASES, ids=[case["name"] for case in SERVED_CASES])
+def test_a_failed_result_named_or_left_out_against_the_kept_served_exceptions_is_listed(case: dict[str, Any]) -> None:
+    """The record of a ``records_valid`` case, with the copy its plan stage keeps built from a ``served_exceptions``
+    vector, changed and written in the form the case names, and the record naming that copy's digest."""
+    record = valid_case_record("iac", case["record"])
+    for pointer, value in case["set_record"].items():
+        set_pointer(record, pointer, copy.deepcopy(value))
+    kept: dict[str, bytes] = {}
+    if case["kept"] is not None:
+        served = json.loads((VECTORS / "served_exceptions" / case["kept"]["vector"]).read_text(encoding="utf-8"))
+        for pointer, value in case["kept"]["set"].items():
+            set_pointer(served, pointer, copy.deepcopy(value))
+        data = KEPT_FORMS[case["kept"]["form"]](served)
+        record = _keeping(record, data)
+        kept = {digest(data): data}
+    assert [list(problem) for problem in _served_problems(record, kept)] == case["problems"]
+
+
+def test_a_copy_larger_than_a_document_may_be_is_listed_unread() -> None:
+    data = canonical_bytes({**SERVED_DOCUMENT, "padding": "x" * MAX_SERVED_EXCEPTIONS_BYTES})
+    record = _keeping(valid_case_record("iac", SERVED_CASE), data)
+    assert _served_problems(record, {digest(data): data}) == [(SERVED, SERVED_NOT_READABLE)]
+
+
+def test_a_check_two_evaluators_failed_with_one_named_as_excepted_is_listed_as_left_out() -> None:
+    record = served(json.loads((VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")))
+    ran_by_the_cli(record)
+    opa = next(
+        event
+        for event in record["events"]
+        if event["assertion"]["id"].endswith("S3.PUBLIC_ACCESS_BLOCKED")
+        and event["provenance"]["evaluator"]["engine"] == "opa"
+    )
+    failure = {
+        "assertion": opa["assertion"],
+        "resource": opa["subject"]["identities"][0],
+        "engine": "opa",
+        "exception_id": "exc_0002",
+    }
+    data = canonical_bytes(SERVED_DOCUMENT)
+    record["stages"]["plan"]["served_exceptions"]["excepted_failures"] = [failure]
+    record = _keeping(record, data)
+    assert _served_problems(record, {digest(data): data}) == [(f"{SERVED}.excepted_failures", SERVED_LEFT_OUT)]

@@ -1,0 +1,188 @@
+[
+  {
+    "name": "build_input_as_the_stage_kept_it",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "tests"
+    },
+    "set": {},
+    "kept_as": "canonical",
+    "problems": []
+  },
+  {
+    "name": "build_input_naming_a_test_report_of_another_file",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "tests"
+    },
+    "set": {
+      "/tests/0/file_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.0.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ]
+    ]
+  },
+  {
+    "name": "build_input_naming_a_scan_report_of_another_file",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "scans"
+    },
+    "set": {
+      "/scans/0/file_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.0.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ]
+    ]
+  },
+  {
+    "name": "build_input_naming_a_scan_report_of_another_image",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "scans"
+    },
+    "set": {
+      "/scans/0/image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.0.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ]
+    ]
+  },
+  {
+    "name": "build_input_naming_a_scan_report_of_another_format",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "scans"
+    },
+    "set": {
+      "/scans/0/format": "trivy_json"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.0.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ]
+    ]
+  },
+  {
+    "name": "build_input_naming_a_scan_report_tied_to_its_image_otherwise",
+    "vector": "image/local_run_build.json",
+    "record_set": {},
+    "input": {
+      "stage": "plan",
+      "carrying": "scans"
+    },
+    "set": {
+      "/scans/0/image_digest_source": "pipeline"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.0.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input that names a test or scan report the record's build does not name"
+      ]
+    ]
+  },
+  {
+    "name": "deploy_input_about_another_deployment",
+    "vector": "image/local_run_deploy_rolled_out.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/reported_by": "pipeline",
+      "/deployment/digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input about another deployment than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "deploy_input_whose_drift_check_is_not_the_one_the_post_verify_stage_counts",
+    "vector": "image/local_run_deploy_rolled_out.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/drift_check/pods_resource_version": "999999"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.3.provenance.input_digest",
+        "names an evaluation input whose drift check is not the one the post-verify stage counts"
+      ]
+    ]
+  }
+]

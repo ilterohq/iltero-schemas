@@ -14,12 +14,18 @@ from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.stage_scanners import ScannerCheckMappingUsed
 from iltero_schemas.models.iac import scanner_results
+from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_checks_by_digest
 from iltero_schemas.scanner_check_mappings.iac.load import load_scanner_check_mapping
 from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING
 from tests.conftest import VECTORS
 from tests.iac.test_models_scanner_results import SCANNED, _problems, kept_files
+from tests.server_runs import (
+    SERVED_MAPPING,
+    SERVED_MAPPING_USED,
+)
 
 PROJECT_MAPPING = load_scanner_check_mapping(
     (VECTORS / "scanner_check_mappings" / "iac" / "payments.json").read_text(encoding="utf-8")
@@ -60,7 +66,10 @@ def test_a_stage_always_applies_the_shipped_mapping_and_at_most_one_project_mapp
     record = copy.deepcopy(SCANNED)
     mappings = _mappings(record)
     record["stages"]["plan"]["scanners"]["scanner_check_mappings"] = [copy.deepcopy(mappings[i]) for i in order]
-    with pytest.raises(ValidationError, match="always applies the scanner check mapping Iltero ships"):
+    with pytest.raises(
+        ValidationError,
+        match="with at most one of the project's own listed first",
+    ):
         _validate(record)
 
 
@@ -114,10 +123,10 @@ def test_a_scanner_verdict_on_a_project_assertion_needs_the_projects_own_mapping
         _validate(record)
 
 
-def test_a_scanner_verdict_is_about_a_starter_or_one_of_the_projects_own_assertions() -> None:
+def test_a_scanner_verdict_on_an_assertion_from_the_servers_bundle_comes_from_the_mapping_the_server_served() -> None:
     record = copy.deepcopy(SCANNED)
     record["events"][SCANNER_EVENT]["provenance"]["assertion_source"] = "server_bundle"
-    with pytest.raises(ValidationError, match="is about an Iltero starter assertion or one of the project's own"):
+    with pytest.raises(ValidationError, match="comes from the scanner check mapping the server served"):
         _validate(record)
 
 
@@ -131,6 +140,33 @@ def test_the_evidence_register_lists_the_copy_of_the_shipped_mapping_beside_a_pr
         shipped["digest"] = "sha256:" + "e" * 64
     with pytest.raises(ValidationError, match="the evidence register lists the copy of each scanner check mapping"):
         CAR.model_validate(record)
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        ({"descriptor_digest": None}, "names its descriptor, signing key and signature exactly when it was served"),
+        ({"key_id": None}, "names its descriptor, signing key and signature exactly when it was served"),
+        ({"signature": None}, "names its descriptor, signing key and signature exactly when it was served"),
+        ({"file_path": "scanner-check-mapping.yaml"}, "no other mapping names one"),
+        ({"id": "ILT.SCANNER_CHECKS.STARTER"}, "only the shipped scanner check mapping is ILT.SCANNER_CHECKS.STARTER"),
+    ],
+    ids=["no_descriptor", "no_signing_key", "no_signature", "a_file", "the_starter_id"],
+)
+def test_a_served_mapping_names_its_descriptor_and_key_no_file_and_never_the_starter_id(
+    change: dict[str, Any], message: str
+) -> None:
+    ScannerCheckMappingUsed.model_validate(SERVED_MAPPING_USED)
+    with pytest.raises(ValidationError, match=message):
+        ScannerCheckMappingUsed.model_validate({**SERVED_MAPPING_USED, **change})
+
+
+@pytest.mark.parametrize("origin", ["shipped", "file"])
+@pytest.mark.parametrize("field", ["descriptor_digest", "key_id", "signature"])
+def test_only_a_served_mapping_names_a_descriptor_signing_key_or_signature(origin: str, field: str) -> None:
+    used = _mappings(copy.deepcopy(SCANNED))[0 if origin == "file" else 1]
+    with pytest.raises(ValidationError, match="exactly when it was served"):
+        ScannerCheckMappingUsed.model_validate({**used, field: SERVED_MAPPING_USED[field]})
 
 
 def test_the_copy_of_a_project_mapping_names_the_file_it_was_read_from() -> None:
@@ -167,7 +203,7 @@ def test_the_copy_of_the_shipped_mapping_names_no_file_beside_a_project_mapping(
     shipped = _mappings(record)[1]
     entry = next(ref for ref in record["evidence_refs"] if ref["path"] == shipped["copy_path"])
     entry["source"] = {"name": "scanner-check-mapping.yaml", "digest": "sha256:" + "f" * 64}
-    with pytest.raises(ValidationError, match="the copy of the shipped mapping names no file"):
+    with pytest.raises(ValidationError, match="the copy of the shipped or the served mapping names no file"):
         CAR.model_validate(record)
 
 
@@ -253,3 +289,38 @@ def test_each_scanner_verdict_comes_from_the_mapping_allowed_to_decide_its_asser
         ("ACME.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED", "checkov", "pass"),
     ]
     assert all(digest in shipped for key, digest in verdicts if not key[0].startswith("ACME."))
+
+
+def _served_copy_problem(change: dict[str, Any]) -> str | None:
+    used = ScannerCheckMappingUsed.model_validate({**SERVED_MAPPING_USED, **change})
+    files = KeptFiles(
+        scanner_check_mappings={used.copy_path: SERVED_MAPPING},
+        observations={},
+        reports={},
+        plans={},
+        assertions={},
+        local_exceptions={},
+        served_exceptions={},
+        inputs={},
+        identities={},
+        served_bundles={},
+    )
+    return scanner_results._scanner_check_mapping(used, files)[1]
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"signature": "A" * 86},
+        {"key_id": "dev-scanner-check-mapping-other"},
+        {"descriptor_digest": "sha256:" + "7" * 64},
+    ],
+    ids=["another_signature", "another_key", "another_descriptor_digest"],
+)
+def test_a_served_mapping_names_the_digest_of_the_descriptor_its_copy_key_and_signature_rebuild(
+    change: dict[str, Any],
+) -> None:
+    assert _served_copy_problem({}) is None
+    assert _served_copy_problem(change) == (
+        "does not name the digest of the descriptor its copy, key id and signature rebuild"
+    )

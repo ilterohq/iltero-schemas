@@ -1,0 +1,417 @@
+{
+  "cases": [
+    {
+      "name": "redacted_report_with_nothing_left_to_hide",
+      "description": "A report redaction left nothing the rules would hide.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "check_type": "terraform_plan",
+        "summary": {
+          "checkov_version": "3.3.8",
+          "parsing_errors": 0,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0
+        },
+        "results": {
+          "failed_checks": [
+            {
+              "check_id": "CKV_AWS_16",
+              "resource_address": "aws_db_instance.main",
+              "check_result": {
+                "result": "FAILED",
+                "evaluated_keys": [
+                  "storage_encrypted"
+                ]
+              },
+              "code": {
+                "__redacted": true,
+                "reason": "deny_key",
+                "present": true,
+                "type": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "report_with_values_left_in_place",
+      "description": "A value under a credential key, one shaped like a credential and one at a configured path, each left in place.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "results.failed_checks[*].file_path"
+        ],
+        "exempt_paths": []
+      },
+      "document": {
+        "check_type": "terraform_plan",
+        "summary": {
+          "checkov_version": "3.3.8",
+          "parsing_errors": 0,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0
+        },
+        "results": {
+          "failed_checks": [
+            {
+              "check_id": "CKV_AWS_16",
+              "file_path": "/main.tf",
+              "resource_address": "aws_db_instance.main",
+              "password": "left-in-place",
+              "guideline": "postgres://app:hidden-value@db.internal/app"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "plan_with_a_marked_value_left_in_place",
+      "description": "A plan whose flags mark a value sensitive, and whose provider setting is left in place: the tool's marks are applied again.",
+      "document_name": "redacted_plan",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "resource_changes": [
+          {
+            "address": "aws_db_instance.main",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "password": "left-in-place",
+                "engine": "postgres"
+              },
+              "after_sensitive": {
+                "password": true
+              },
+              "before_sensitive": false
+            }
+          }
+        ],
+        "configuration": {
+          "provider_config": {
+            "aws": {
+              "expressions": {
+                "region": {
+                  "constant_value": "eu-west-1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "object_with_a_key_shaped_like_a_credential",
+      "description": "An object holding a key shaped like a credential is listed once, at the object, and the values under the key are not read.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "results": {
+          "by_name": {
+            "DB_PASSWORD=hunter2": {
+              "guideline": "postgres://app:hidden-value@db.internal/app"
+            },
+            "team": "a"
+          }
+        }
+      }
+    },
+    {
+      "name": "objects_that_only_resemble_markers",
+      "description": "An object with a marker's fields and one more, or with a reason no rule gives, is read like any other object.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "extra": {
+          "__redacted": true,
+          "reason": "deny_key",
+          "present": true,
+          "type": "string",
+          "note": "postgres://app:hidden-value@db.internal/app"
+        },
+        "unlisted": {
+          "__redacted": true,
+          "reason": "postgres://app:hidden-value@db.internal/app",
+          "present": true,
+          "type": "string"
+        }
+      }
+    },
+    {
+      "name": "observations_read_from_a_redacted_report",
+      "description": "Observations are checked with no anchor: a configured path does not apply to them.",
+      "document_name": "scanner_observations",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "owner"
+        ],
+        "exempt_paths": []
+      },
+      "document": {
+        "owner": "team-a",
+        "results": [
+          {
+            "check_id": "CKV_AWS_16",
+            "address": "aws_db_instance.main"
+          }
+        ]
+      }
+    },
+    {
+      "name": "more_problems_than_a_check_lists",
+      "description": "A check lists the first problems in path order and counts them all.",
+      "document_name": "scanner_report",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "urls": [
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app",
+          "postgres://app:hidden-value@db.internal/app"
+        ]
+      }
+    },
+    {
+      "name": "plan_with_values_left_where_its_flags_say_they_are_known_only_after_the_deployment",
+      "description": "A value left where the plan's flags say the tool knows a value only after the deployment is read like any value: the unknown marker is what belongs there.",
+      "document_name": "redacted_plan",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "document": {
+        "resource_changes": [
+          {
+            "address": "aws_db_instance.a",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "endpoint": "postgres://app:hidden-value@db.internal/app",
+                "arn": {
+                  "__unknown": true,
+                  "reason": "known_after_deploy",
+                  "present": true
+                }
+              },
+              "after_unknown": {
+                "endpoint": true,
+                "arn": true
+              },
+              "before_sensitive": false,
+              "after_sensitive": {}
+            }
+          },
+          {
+            "address": "aws_db_instance.b",
+            "change": {
+              "actions": [
+                "create"
+              ],
+              "before": null,
+              "after": {
+                "connection": "postgres://app:hidden-value@db.internal/app"
+              },
+              "after_unknown": true,
+              "before_sensitive": false,
+              "after_sensitive": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

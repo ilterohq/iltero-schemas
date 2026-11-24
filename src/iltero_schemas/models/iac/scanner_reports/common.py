@@ -8,8 +8,9 @@ from dataclasses import dataclass
 from pydantic import ValidationError
 
 from iltero_schemas.models.common.redaction import is_redaction_marker
+from iltero_schemas.models.common.scanners import ILTERO_CLI, RanBy
 from iltero_schemas.models.iac.scanner_addresses import resolve
-from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS
+from iltero_schemas.models.iac.scanner_check_mapping import TOOL_DECISIONS, InputKind
 from iltero_schemas.models.iac.scanner_observations import (
     API_VERSION,
     KIND,
@@ -46,9 +47,17 @@ class Source:
     """What the observations name besides the results: the report, the plan, and how the tool ran."""
 
     report_digest: str
-    plan_digest: str
+    kept_plan_digest: str
     rules_digest: str | None
     configuration_digest: str | None
+    ran_by: RanBy
+    # The input the Iltero CLI gave the tool, which the observations name even when the tool found nothing; None when
+    # the pipeline ran it, and the observations name the input kinds their results cover.
+    input_kind: InputKind | None
+
+    def __post_init__(self) -> None:
+        if (self.ran_by == ILTERO_CLI) != (self.input_kind is not None):
+            raise ValueError("a reader is given the input the tool read exactly when the Iltero CLI ran it")
 
 
 # The type a redaction marker names for a hidden null: the one hidden value a reader reads the same as the value.
@@ -224,12 +233,16 @@ def observations(
                 "kind": KIND,
                 "tool": tool,
                 "tool_version": tool_version,
-                "supplied_by": "pipeline",
+                "ran_by": source.ran_by,
                 "rules_digest": source.rules_digest,
                 "configuration_digest": source.configuration_digest,
                 "report_digest": source.report_digest,
-                "plan_digest": source.plan_digest,
-                "input_kinds": sorted({result.input_kind for result in results}),
+                "kept_plan_digest": source.kept_plan_digest,
+                "input_kinds": (
+                    [source.input_kind]
+                    if source.input_kind is not None
+                    else sorted({result.input_kind for result in results})
+                ),
                 "unreadable_results": errors,
                 "written_configuration_results": configuration,
                 "tool_parsing_errors": tool_parsing_errors,

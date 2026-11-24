@@ -2,3 +2,7 @@
 # Bash on Windows and test vectors keep the digest they were recorded with.
 * text=auto eol=lf
 tests/vectors/** -text
+# The scanner pin keeps upstream files whose signature must keep matching, byte for byte.
+src/iltero_schemas/scanners/common/*.json -text
+src/iltero_schemas/scanners/common/*.txt -text
+src/iltero_schemas/scanners/common/locks/** -text

@@ -32,8 +32,7 @@ from iltero_schemas.canonical.common.assertion_set import required_assertion_dig
 from iltero_schemas.canonical.common.encoding import DIGEST_PREFIX, canonical_bytes
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StrictModel
-from iltero_schemas.models.common.event import AssertionRef
-from iltero_schemas.models.common.fields import Digest, Identifier, Version
+from iltero_schemas.models.common.fields import AssertionRef, Digest, Identifier, Version
 
 # The descriptor a server serves beside the tarball, and the bundle's own description inside it (the manifest's
 # ``metadata.iltero``, whose digest is the content digest).

@@ -4,17 +4,22 @@ records."""
 from __future__ import annotations
 
 import copy
+import json
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
+from iltero_schemas.canonical import digest_of
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.checked_content import CheckedPlan
+from iltero_schemas.models.iac.deployment import Deployment
 from iltero_schemas.models.iac.drift_check import TOOLS_WITH_DRIFT_READER
-from tests.records import RECORD, iac_change
+from iltero_schemas.models.iac.tool_names import APPLY_COLLECTORS
+from tests.conftest import VECTORS
+from tests.records import DEPLOYED, RECORD, iac_change
 
 
 def test_an_infrastructure_change_runs_every_stage_of_a_deployment_in_order() -> None:
@@ -22,9 +27,9 @@ def test_an_infrastructure_change_runs_every_stage_of_a_deployment_in_order() ->
     assert IAC_CHANGE.run_type == "change"
 
 
-def test_an_infrastructure_change_may_leave_out_the_approval_gate_and_the_reading_after_deployment_only() -> None:
-    assert IAC_CHANGE.project_may_leave_out == {Stage.PRE_DEPLOY, Stage.POST_VERIFY}
-    assert IAC_CHANGE.environment_policy_may_leave_out == {Stage.POST_VERIFY}
+def test_a_project_cannot_leave_out_an_infrastructure_changes_pre_deploy_stage_but_an_environments_policy_can() -> None:
+    assert IAC_CHANGE.project_may_leave_out == {Stage.POST_VERIFY}
+    assert IAC_CHANGE.environment_policy_may_leave_out == {Stage.PRE_DEPLOY, Stage.POST_VERIFY}
 
 
 def test_the_post_verify_stage_is_not_supported_only_for_a_tool_whose_drift_no_pipeline_reads() -> None:
@@ -78,3 +83,50 @@ def test_an_infrastructure_changes_plan_stage_redacts_the_plan_the_record_names(
     document["stages"]["plan"]["redaction"]["input"]["digest"] = document["evidence_refs"][0]["digest"]
     with pytest.raises(ValidationError, match="the plan stage's redaction report is of the plan the record names"):
         CAR.model_validate(document)
+
+
+# A record of a run the server opened that reached its post-deploy stage: its deployment names the apply log by its
+# keyed digest, and the register's entry of the log names the same.
+GOVERNED_DEPLOYED: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8")
+)
+APPLY_LOG_BINDING = (
+    "in a record of a run the server opened, the apply log's entry of the evidence register names the keyed digest "
+    "the deployment names"
+)
+
+
+def _with_apply_log_digests(deployment: str | None, register: str | None) -> dict[str, Any]:
+    """The deployed record of a run the server opened naming its apply log by ``deployment`` in the deployment and by
+    ``register`` in the register, with the post-deploy stage counting the deployment it names."""
+    document = copy.deepcopy(GOVERNED_DEPLOYED)
+    document["change"]["deployment"]["apply"]["source"]["digest"] = deployment
+    log = next(ref for ref in document["evidence_refs"] if ref["collector"]["tool"] == "terraform_apply")
+    log["source"]["digest"] = register
+    counted = digest_of(
+        Deployment.model_validate(document["change"]["deployment"]).model_dump(mode="json", by_alias=True)
+    )
+    stage = document["stages"]["post_deploy"]
+    stage["coverage"]["subjects_in_scope"]["source_digest"] = counted
+    stage["redaction"]["input"]["digest"] = counted
+    return document
+
+
+@pytest.mark.parametrize(
+    ("deployment", "register"),
+    [(None, "hmac-sha256:" + "a" * 64), ("hmac-sha256:" + "a" * 64, None), (None, None)],
+    ids=["no digest in the deployment", "no digest in the register", "no digest on either side"],
+)
+def test_in_a_run_the_server_opened_an_apply_log_named_by_no_digest_is_bound_to_nothing(
+    deployment: str | None, register: str | None
+) -> None:
+    with pytest.raises(ValidationError, match=APPLY_LOG_BINDING):
+        CAR.model_validate(_with_apply_log_digests(deployment, register))
+
+
+def test_in_a_run_the_tool_opened_the_apply_log_is_bound_by_its_one_redacted_entry() -> None:
+    record = CAR.model_validate(DEPLOYED)
+    deployment = iac_change(record).deployment
+    assert deployment is not None and deployment.apply.source.digest is None
+    logs = [ref for ref in record.evidence_refs if ref.collector.tool == APPLY_COLLECTORS["terraform"]]
+    assert len(logs) == 1 and logs[0].redaction_policy is not None

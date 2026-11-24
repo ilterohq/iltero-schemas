@@ -40,3 +40,8 @@ def test_values_without_a_canonical_form_are_refused(value: object) -> None:
 
 def test_canonicalization_name_is_recorded_as_rfc8785() -> None:
     assert CANONICALIZATION == "RFC8785"
+
+
+def test_a_lone_surrogate_in_a_key_has_no_canonical_form() -> None:
+    with pytest.raises(CanonicalizationError, match="a string holds a character with no canonical form"):
+        canonical_bytes({"\udc80": 0})

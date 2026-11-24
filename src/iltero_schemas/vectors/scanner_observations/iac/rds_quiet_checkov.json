@@ -5,7 +5,7 @@
     "plan"
   ],
   "kind": "ScannerObservations",
-  "plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
+  "kept_plan_digest": "sha256:e24089425a6d9d76ce3ac79f2906aede4c40dd01af6f76556acebaedd9f7adf1",
   "report_digest": "sha256:6f6f9682db50241df8ce431709e376d9080f352efd868f1ee2e1c962160b32a1",
   "results": [
     {
@@ -732,7 +732,7 @@
   ],
   "results_not_listed": 37,
   "rules_digest": null,
-  "supplied_by": "pipeline",
+  "ran_by": "pipeline",
   "tool": "checkov",
   "tool_parsing_errors": 0,
   "tool_version": "3.3.8",

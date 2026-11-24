@@ -1,0 +1,297 @@
+{
+  "description": "Each case gives the apply job's facts (the facts below with set applied by JSON Pointer, or its own facts) and the approvals, and the apply_job_timing every reader works out from them: the plan's age in whole seconds rounded up, and the approvals of the apply job given before, and at or after, the plan-stage record was accepted.",
+  "facts": {
+    "flow": "apply_in_a_later_job",
+    "apply_job": {
+      "ci_run_id": "9876543",
+      "ci_run_attempt": 1,
+      "ci_job_id": "28471930012"
+    },
+    "accepted_plan_stage_record": {
+      "run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43",
+      "change_digest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+      "plan_digest": "hmac-sha256:f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8",
+      "artifact_digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+    },
+    "plan_stage_record_accepted_at": "2026-09-21T00:00:00Z",
+    "facts_issued_at": "2026-09-22T00:00:00Z",
+    "plan_age_limit": {
+      "seconds": 86400,
+      "source": "server_default",
+      "policy_version": null
+    },
+    "approval_requirement": {
+      "required": true,
+      "source": "environment_policy",
+      "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+    },
+    "received_plan_file_digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+    "rendered_plan": {
+      "digest": "hmac-sha256:f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8",
+      "digest_version": "1",
+      "tool": "terraform"
+    },
+    "pinned_plan_digest": "hmac-sha256:f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8"
+  },
+  "cases": [
+    {
+      "name": "plan_age_exactly_at_the_limit",
+      "set": {},
+      "approvals": [],
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": 0,
+        "approvals_given_after_plan_stage_record_accepted": 0
+      }
+    },
+    {
+      "name": "plan_age_one_nanosecond_over_the_limit",
+      "set": {
+        "/facts_issued_at": "2026-09-22T00:00:00.000000001Z"
+      },
+      "approvals": [],
+      "expected": {
+        "plan_age_seconds": 86401,
+        "approvals_given_before_plan_stage_record_accepted": 0,
+        "approvals_given_after_plan_stage_record_accepted": 0
+      }
+    },
+    {
+      "name": "plan_age_from_times_of_one_and_nine_fraction_digits",
+      "set": {
+        "/plan_stage_record_accepted_at": "2026-09-21T00:00:00.5Z",
+        "/facts_issued_at": "2026-09-22T00:00:00.123456789Z"
+      },
+      "approvals": [],
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": 0,
+        "approvals_given_after_plan_stage_record_accepted": 0
+      }
+    },
+    {
+      "name": "approvals_of_the_apply_job_before_at_and_after_the_plan_stage_record_was_accepted",
+      "set": {},
+      "approvals": [
+        {
+          "id": "apr_0001",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-20T23:59:59.999999999Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          }
+        },
+        {
+          "id": "apr_0002",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T00:00:00Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          }
+        },
+        {
+          "id": "apr_0003",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T12:00:00.5Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          }
+        },
+        {
+          "id": "apr_0004",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T12:00:00Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930099"
+          }
+        },
+        {
+          "id": "apr_0005",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "iltero_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T12:00:00Z",
+          "bound_to": null
+        }
+      ],
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": 1,
+        "approvals_given_after_plan_stage_record_accepted": 2
+      }
+    },
+    {
+      "name": "approval_of_the_apply_job_timed_exactly_when_the_facts_were_issued",
+      "set": {},
+      "approvals": [
+        {
+          "id": "apr_0001",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-22T00:00:00.000Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          }
+        }
+      ],
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": 0,
+        "approvals_given_after_plan_stage_record_accepted": 1
+      }
+    },
+    {
+      "name": "approval_of_another_attempt_of_the_apply_jobs_run",
+      "set": {},
+      "approvals": [
+        {
+          "id": "apr_0001",
+          "actor": {
+            "provider": "github",
+            "id": "583232"
+          },
+          "roles": [],
+          "status": "approved",
+          "subject": {
+            "kind": "run",
+            "id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+          },
+          "method": "ci_deployment_review",
+          "independence": "independent",
+          "policy_version": null,
+          "timestamp": "2026-09-21T12:00:00Z",
+          "bound_to": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 2,
+            "ci_job_id": "28471930012"
+          }
+        }
+      ],
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": 0,
+        "approvals_given_after_plan_stage_record_accepted": 0
+      }
+    },
+    {
+      "name": "apply_job_facts_the_server_could_not_supply",
+      "facts": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "approvals": [],
+      "expected": {
+        "plan_age_seconds": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        },
+        "approvals_given_before_plan_stage_record_accepted": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        },
+        "approvals_given_after_plan_stage_record_accepted": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      }
+    },
+    {
+      "name": "approvals_the_server_could_not_supply",
+      "set": {},
+      "approvals": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
+      },
+      "expected": {
+        "plan_age_seconds": 86400,
+        "approvals_given_before_plan_stage_record_accepted": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        },
+        "approvals_given_after_plan_stage_record_accepted": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      }
+    }
+  ]
+}

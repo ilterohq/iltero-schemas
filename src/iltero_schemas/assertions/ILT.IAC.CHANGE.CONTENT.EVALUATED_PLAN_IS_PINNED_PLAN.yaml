@@ -1,0 +1,16 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN
+  version: "1.0.0"
+  title: The evaluated plan is the plan the run is held to
+  remediation: Apply the plan the run is held to, or open a new run for another plan.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  assert:
+    path: apply_job_facts.pinned_plan_digest
+    equal:
+      path: plan.digest

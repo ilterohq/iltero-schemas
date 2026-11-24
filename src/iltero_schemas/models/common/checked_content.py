@@ -17,7 +17,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
 from iltero_schemas.models.common.base import StrictModel
-from iltero_schemas.models.common.fields import Digest, Identifier
+from iltero_schemas.models.common.fields import Digest, Identifier, PlanDigest
 from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.image.naming import ImageRepository
 
@@ -26,13 +26,13 @@ class CheckedPlan(StrictModel):
     """A plan, by its digest and the IaC tool and version of the rule that computed it."""
 
     kind: Literal["plan"]
-    digest: Digest
+    digest: PlanDigest
     digest_version: Identifier
     tool: IacTool
 
     @model_validator(mode="after")
     def _version_is_the_tools(self) -> CheckedPlan:
-        check_plan_digest_version(self.tool, self.digest_version)
+        check_plan_digest_version(self.tool, self.digest_version, self.digest)
         return self
 
 

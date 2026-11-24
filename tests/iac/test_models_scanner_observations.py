@@ -20,7 +20,12 @@ OBSERVED: dict[str, Any] = json.loads(
     (VECTORS / "scanner_observations" / "iac" / "rds_checkov.json").read_text(encoding="utf-8")
 )
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    kept_plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
+    input_kind=None,
 )
 
 
@@ -51,7 +56,7 @@ def test_every_tool_names_what_it_read_in_its_own_words() -> None:
         ("results.0.unresolved_reason", "ambiguous", "names why it resolves to none"),
         ("results.0.evaluated_keys", ["b", "a"], "evaluated_keys is sorted"),
         ("input_kinds", ["plan", "plan"], "input_kinds is sorted"),
-        ("supplied_by", "iltero_cli", "Input should be"),
+        ("ran_by", "the_scanner_vendor", "Input should be"),
         ("results.0.title", "Ensure", "Extra inputs are not permitted"),
     ],
 )
@@ -171,9 +176,9 @@ def test_a_result_of_an_input_no_scanner_checks_entry_reads_is_counted_and_left_
 
 def test_the_observations_name_the_report_and_the_plan_they_were_read_from() -> None:
     observed = read_checkov(_checkov(_failed("aws_db_instance.a")), ["aws_db_instance.a"], SOURCE)
-    assert (observed.report_digest, observed.plan_digest, observed.supplied_by) == (
+    assert (observed.report_digest, observed.kept_plan_digest, observed.ran_by) == (
         SOURCE.report_digest,
-        SOURCE.plan_digest,
+        SOURCE.kept_plan_digest,
         "pipeline",
     )
 
@@ -257,3 +262,27 @@ def test_the_counts_a_tool_writes_are_null_exactly_when_it_writes_none(tool: str
     ).model_dump(mode="json", by_alias=True)
     with pytest.raises(ValidationError, match="given exactly when the tool writes counts"):
         ScannerObservations.model_validate({**observed, **counts})
+
+
+CLI_RAN = "name the configuration a scanner ran with exactly when the Iltero CLI ran it"
+
+
+def test_observations_of_a_scanner_the_iltero_cli_ran_name_its_configuration_and_no_downloaded_checks() -> None:
+    configuration = "sha256:" + "d" * 64
+    ran = {**OBSERVED, "ran_by": "iltero_cli", "configuration_digest": configuration, "rules_digest": None}
+    ScannerObservations.model_validate(ran)
+    for changes in ({"configuration_digest": None}, {"rules_digest": "sha256:" + "e" * 64}):
+        with pytest.raises(ValidationError, match=CLI_RAN):
+            ScannerObservations.model_validate({**ran, **changes})
+
+
+def test_observations_of_a_scanner_the_pipeline_ran_name_no_configuration() -> None:
+    with pytest.raises(ValidationError, match=CLI_RAN):
+        ScannerObservations.model_validate({**OBSERVED, "configuration_digest": "sha256:" + "d" * 64})
+
+
+@pytest.mark.parametrize("kinds", [[], ["deployed_resources", "plan"]], ids=["none", "two"])
+def test_observations_of_a_scanner_the_iltero_cli_ran_name_the_one_input_it_gave_the_scanner(kinds: list[str]) -> None:
+    ran = {**OBSERVED, "ran_by": "iltero_cli", "configuration_digest": "sha256:" + "d" * 64, "rules_digest": None}
+    with pytest.raises(ValidationError, match="name the one input it gave the scanner"):
+        ScannerObservations.model_validate({**ran, "input_kinds": kinds, "results": []})

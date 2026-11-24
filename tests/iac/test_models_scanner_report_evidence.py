@@ -37,7 +37,7 @@ def test_a_kept_report_holding_more_than_the_contract_keeps_is_listed() -> None:
 
 def test_a_report_that_miscounts_the_redacted_values_it_kept_is_listed() -> None:
     record = copy.deepcopy(SCANNED)
-    record["stages"]["plan"]["scanners"]["reports"][0]["redacted_values"] = {"known_sensitive": 1}
+    record["stages"]["plan"]["scanners"]["reports"][0]["redacted_values"] = {"declared_sensitive": 1}
     assert [
         "stages.plan.scanners.reports.0",
         "does not count, for each reason, the redacted values the report the stage kept holds",

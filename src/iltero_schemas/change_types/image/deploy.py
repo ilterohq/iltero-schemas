@@ -23,11 +23,10 @@ from iltero_schemas.assertions.paths import (
     REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
     RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
 )
-from iltero_schemas.canonical import change_digest, digest_of
+from iltero_schemas.canonical import change_digest
 from iltero_schemas.change_types.common.activity import Activity
 from iltero_schemas.change_types.common.bindings import bound_to_change_digest_problems
-from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_digest
-from iltero_schemas.change_types.common.expected_status import expected_status_problems
+from iltero_schemas.change_types.common.evidence import JSON_MEDIA_TYPE, given_file_digest
 from iltero_schemas.change_types.image.build import ImageRef
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import StrictModel
@@ -77,8 +76,7 @@ def _checked_content(car: CAR) -> CheckedImage:
 
 def _counted(stage: StageRecord, part: StrictModel, what: str) -> None:
     """``stage`` counts the one deployment by the digest of ``part``."""
-    scope = stage.coverage.subjects_in_scope
-    if scope.value != 1 or scope.source_digest != digest_of(part.model_dump(mode="json", by_alias=True)):
+    if not stage.coverage.subjects_in_scope.counts_one(part):
         raise ValueError(f"the {stage.stage.value} stage must count the one deployment by {what}")
 
 
@@ -132,7 +130,7 @@ def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> 
             raise ValueError(f"{what} is a file of type {JSON_MEDIA_TYPE}")
         if ref.redaction_policy is None:
             raise ValueError(f"{what} names the redaction policy that ran over it")
-        given_digest(ref, what)
+        given_file_digest(ref, what)
         if tag is not None and ref_id == tag.read_from_evidence_ref:
             raise ValueError(f"{what} is not the tag's metadata file")
 
@@ -178,7 +176,7 @@ def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     deploy = _body(car)
     problems: list[tuple[str, str]] = []
     checked = _checked_content(car).model_dump(mode="json")
-    if deploy.digest != change_digest(IMAGE_RELEASE_TYPE, car.unit, car.subject.environment, checked):
+    if deploy.digest != change_digest(IMAGE_RELEASE_TYPE, car.unit, car.subject.environment_name, checked):
         problems.append(("change.digest", "is not the digest of the change type, unit, environment and image"))
     if deploy.drift_check is not None and deploy.drift_check.change_digest != deploy.digest:
         problems.append(("change.drift_check.change_digest", "is not change.digest"))
@@ -209,10 +207,11 @@ def running_image_status(image_digest: str, platform_digests: list[str] | None, 
     return "pass"
 
 
-def _expected_statuses(car: CAR, deploy: ImageDeploy) -> dict[str, str]:
+def _expected_statuses(car: CAR) -> dict[str, str]:
     """The status each built-in check must have, recomputed from what the record holds: in a run the server opened,
     whether it accepted a build of the image (a run the tool opened is held to unknown by its structure); whether the
     deployed image is the checked one; and whether the workload's live pods run it."""
+    deploy = _body(car)
     expected: dict[str, str] = {}
     if _opened_by_server(car):
         expected[BUILD_ACCEPTED_FOR_ENVIRONMENT_ID] = "pass" if deploy.build is not None else "fail"
@@ -229,9 +228,9 @@ def _expected_statuses(car: CAR, deploy: ImageDeploy) -> dict[str, str]:
     return expected
 
 
-def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
-    """Each built-in check found what the record's own image, deployment and reading say it must."""
-    return expected_status_problems(car, _expected_statuses(car, _body(car)))
+def _no_problems(_car: CAR) -> list[tuple[str, str]]:
+    """A deploy's recomputable values beyond its counts are its built-in checks' statuses (``expected_statuses``)."""
+    return []
 
 
 IMAGE_DEPLOY = Activity(
@@ -241,6 +240,7 @@ IMAGE_DEPLOY = Activity(
     stages=(Stage.PRE_DEPLOY, Stage.POST_DEPLOY, Stage.POST_VERIFY),
     project_may_leave_out=frozenset({Stage.POST_VERIFY}),
     environment_policy_may_leave_out=frozenset({Stage.POST_VERIFY}),
+    stages_that_need_the_server=frozenset(),
     # The workload the image runs in may be of a kind no reader reads, such as one a cloud's own service runs.
     not_supported=lambda _car: frozenset({Stage.POST_VERIFY}),
     required_documents=MappingProxyType(
@@ -248,17 +248,21 @@ IMAGE_DEPLOY = Activity(
     ),
     named_documents=lambda _car: MappingProxyType({}),
     checked_content=_checked_content,
+    input_parts_of_the_record=lambda _car, _stage: MappingProxyType({}),
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
-    integrity_problems=_integrity_problems,
+    integrity_problems=_no_problems,
     reads_a_state_after_the_apply=False,
     stages_that_read_scanner_reports=frozenset(),
+    stage_that_applies_served_exceptions=None,
     carried_out_matches_checked=(REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
         {
-            Stage.PRE_DEPLOY: BUILD_ACCEPTED_FOR_ENVIRONMENT_ID,
-            Stage.POST_DEPLOY: REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID,
-            Stage.POST_VERIFY: RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID,
+            Stage.PRE_DEPLOY: frozenset({BUILD_ACCEPTED_FOR_ENVIRONMENT_ID}),
+            Stage.POST_DEPLOY: frozenset({REPORTED_IMAGE_MATCHES_CHECKED_IMAGE_ID}),
+            Stage.POST_VERIFY: frozenset({RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE_ID}),
         }
     ),
+    expected_statuses=_expected_statuses,
+    enforced_in_advisory_mode=frozenset(),
 )

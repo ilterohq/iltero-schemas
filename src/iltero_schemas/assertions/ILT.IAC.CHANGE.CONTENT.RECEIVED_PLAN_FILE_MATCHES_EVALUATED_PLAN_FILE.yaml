@@ -1,0 +1,19 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE
+  version: "1.0.0"
+  title: The apply job reported the saved plan file the plan stage evaluated, by its digest
+  remediation: Give the apply job the saved plan file the plan stage evaluated.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    path: apply_job_facts.flow
+    not_equal: plan_and_apply_in_one_job
+  assert:
+    path: apply_job_facts.received_plan_file_digest
+    equal:
+      path: plan.artifact_digest

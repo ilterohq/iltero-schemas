@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import copy
 import json
+from pathlib import PurePosixPath
 from typing import Any
 
 from iltero_schemas.assertions import BUILT_INS, COMMITS_REVIEWED_ID, SHIPPED_ASSERTIONS
 from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes
 from iltero_schemas.canonical.common import encoding
 from iltero_schemas.canonical.common.assertion_set import required_assertion_digest
+from iltero_schemas.canonical.common.run_digest_key import keyed_given_file_digest
 from iltero_schemas.change_types import IAC_CHANGE, IacChange
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import API_VERSION
@@ -19,23 +21,43 @@ from iltero_schemas.models.common.coverage import Coverage, StageOutcome, stage_
 from iltero_schemas.models.common.event import EVENTS_FILE_KIND, AssuranceEvent
 from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.record_coverage import combine_in_order, record_evidence_status
+from iltero_schemas.models.common.scanners import ILTERO_CLI, INSTALLED_AS_PYTHON_PACKAGES
 from iltero_schemas.models.common.stage_counts import evaluated_counts, evaluator_status_counts
 from iltero_schemas.models.common.stages import REDACTED_INPUT_KIND, STAGES_THAT_REDACT_NOTHING
 from iltero_schemas.models.common.subjects import subject_key
 from iltero_schemas.profiles import reads_part
 from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING, SHIPPED_MAPPING_DIGEST
+from iltero_schemas.scanners.iac.runs import scanner_configuration_digest
+from iltero_schemas.vectors.kept_files import case_files_of, kept_files_of
+from iltero_schemas.vectors.plans import remove_pointer, set_pointer
+from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
 from tests.conftest import VECTORS
 
 # The unknown marker a stage keeps for a part its input carries when no facts were read from the server.
 UNKNOWN: dict[str, Any] = {"__unknown": True, "reason": "server_facts_unavailable"}
+
+
 # What a stage keeps in place of a part of the server's facts none of its checks read.
 NOT_READ_BY_THE_STAGE: dict[str, Any] = {"__unknown": True, "reason": "not_read_by_the_stage"}
+
+
 RECORD: dict[str, Any] = json.loads((VECTORS / "records" / "iac" / "local_run.json").read_text(encoding="utf-8"))
-# The captured record of a run that reached its post-deploy stage, whose pre-deploy checks read facts.
+
+
+# A record of a run the tool opened that reached its post-deploy stage, which the Iltero CLI wrote.
 DEPLOYED: dict[str, Any] = json.loads(
     (VECTORS / "records" / "iac" / "local_run_deployed.json").read_text(encoding="utf-8")
 )
-# The captured record of a run that reached its post-verify stage.
+
+
+# A record of a run the server opened that reached its post-deploy stage through a pre-deploy stage whose facts from the
+# server were unavailable, which the Iltero CLI wrote. Only a run the server opened has a pre-deploy stage.
+THROUGH_PRE_DEPLOY: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "governed_run_deployed_without_server_facts.json").read_text(encoding="utf-8")
+)
+
+
+# A record of a run the tool opened that reached its post-verify stage, which the Iltero CLI wrote.
 VERIFIED: dict[str, Any] = json.loads(
     (VECTORS / "records" / "iac" / "local_run_post_verify.json").read_text(encoding="utf-8")
 )
@@ -91,7 +113,10 @@ def stage(name: str, **changes: Any) -> dict[str, Any]:
     copied["events"] = {**copied["events"], "count": 0}
     copied["redaction"]["input"]["kind"] = REDACTED_INPUT_KIND[Stage(name)]
     if Stage(name) in STAGES_THAT_REDACT_NOTHING:
-        copied["redaction"].update(redacted=[], unknown=[], allowed=[])
+        copied["redaction"].update(redacted=[], unknown=[], exempted=[])
+    # Only the plan stage's report names value changes.
+    for entry in copied["redaction"]["redacted"]:
+        entry["value_change"] = None
     coverage = copied["coverage"]
     counted_from = "change_unit" if name == "pre_deploy" else "deployment_unit"
     coverage["subjects_in_scope"].update(value=1, counted_from=counted_from, removed_by_plan=0, excluded=[])
@@ -118,7 +143,7 @@ def recount(document: dict[str, Any], name: str) -> None:
     assert name != "post_verify" and document["stages"][name].get("scanners") is None, "recount counts simple stages"
     events = [AssuranceEvent.model_validate(e) for e in document["events"] if e["evaluation"]["stage"] == name]
     required = {f"{e.assertion.id}@{e.assertion.version}" for e in events}
-    assertions, subjects, per_assertion = evaluated_counts(events, required, required_scanners=frozenset())
+    assertions, subjects, per_assertion = evaluated_counts(events, required, scanner_requirements=())
     document["stages"][name]["coverage"].update(
         assertions_evaluated=assertions,
         subjects_evaluated=subjects,
@@ -149,7 +174,7 @@ def iac_change(car: CAR) -> IacChange:
 
 def add_built_in(document: dict[str, Any], name: str) -> dict[str, Any]:
     """``document`` with the passing evaluation of the built-in assertion its ``name`` stage requires, counted by it."""
-    assertion_id = IAC_CHANGE.always_evaluated[Stage(name)]
+    (assertion_id,) = IAC_CHANGE.always_evaluated[Stage(name)]
     shipped = BUILT_INS[assertion_id]
     unit = [Identity(scheme="iltero_unit", value=document["unit"])]
     event = copy.deepcopy(RECORD["events"][1])
@@ -196,22 +221,46 @@ def keep_events_files(document: dict[str, Any]) -> dict[str, Any]:
     return document
 
 
-def served(document: dict[str, Any]) -> dict[str, Any]:
-    """``document`` as the record of a run the server opened: its assertion sets pinned by the server, and every check
-    that read facts reading them from the server."""
-    served_document = copy.deepcopy(document)
-    served_document["governance"]["run_opened_by"] = "server"
-    for coverage in [served_document["coverage"], *(s["coverage"] for s in served_document["stages"].values())]:
-        coverage["assertions_required"]["origin"] = "server_pinned"
-    for event in served_document["events"]:
-        if event["provenance"]["facts_source"] == "none":
-            event["provenance"]["facts_source"] = "server"
-    # A stage whose checks now read the server's facts holds the marker its input held, not the one for facts unread.
-    for stage in served_document["stages"].values():
-        for part in ("approvals", "commit_review"):
-            if isinstance(stage.get(part), dict) and stage[part].get("reason") == NOT_READ_BY_THE_STAGE["reason"]:
-                stage[part] = copy.deepcopy(UNKNOWN)
-    return keep_events_files(served_document)
+def with_top_level(document: dict[str, Any]) -> dict[str, Any]:
+    """``document`` with its top level set to its stages combined, where they combine, so only the rule under test
+    fails."""
+    try:
+        document.update(top_level(document))
+    except ValueError:
+        pass  # stages that cannot be combined: the structure is what a test is about
+    return document
+
+
+def combined_again(document: dict[str, Any]) -> dict[str, Any]:
+    """``document`` with its outcome combined again over its expected stages, where its stages combine."""
+    document["all_expected_stages_reported"] = set(document["stages"]) == set(document["expected_stages"])
+    return with_top_level(document)
+
+
+# The digest of what the Iltero CLI ran, in records of scanners it ran: a placeholder no pin names.
+CLI_RAN_DIGEST = "sha256:" + "c" * 64
+
+
+def ran_by_the_cli(document: dict[str, Any]) -> None:
+    """Make every scanner report of ``document`` one the Iltero CLI ran, as a run the server opened requires: each
+    report names it, the scanner's digest, the platform its stage's policy evaluator ran on, for Checkov the Python
+    version, and that the network was not blocked."""
+    # The platform each stage's policy evaluator ran on, which the scanners of the stage ran on too.
+    platforms = {
+        event["evaluation"]["stage"]: event["provenance"]["evaluator"]["limits"]["platform"]
+        for event in document["events"]
+        if (event["provenance"].get("evaluator") or {}).get("engine") == "opa"
+    }
+    for name, stage in document["stages"].items():
+        for report in (stage.get("scanners") or {}).get("reports", []):
+            report.update(
+                ran_by=ILTERO_CLI,
+                scanner_digest=CLI_RAN_DIGEST,
+                platform=platforms.get(name, "linux-x86_64"),
+                python_version="cp312" if report["tool"] in INSTALLED_AS_PYTHON_PACKAGES else None,
+                outbound_network="not_blocked",
+                configuration_digest=scanner_configuration_digest(report["tool"], "plan"),
+            )
 
 
 def keep_the_apply_log(document: dict[str, Any]) -> None:
@@ -222,9 +271,15 @@ def keep_the_apply_log(document: dict[str, Any]) -> None:
 
 
 def with_commit_review_check(source: dict[str, Any], status: str, reason: str | None) -> dict[str, Any]:
-    """``source`` with its first pre-deploy check now the commit review, with ``status`` and ``reason``."""
+    """``source`` with its pre-deploy commit review check, or its first pre-deploy check made the commit review, given
+    ``status`` and ``reason``."""
     document = copy.deepcopy(source)
-    index = next(i for i, e in enumerate(document["events"]) if e["evaluation"]["stage"] == "pre_deploy")
+    stage_events = [i for i, e in enumerate(document["events"]) if e["evaluation"]["stage"] == "pre_deploy"]
+    reviews = [i for i in stage_events if document["events"][i]["assertion"]["id"] == COMMITS_REVIEWED_ID]
+    if reviews:
+        document["events"][reviews[0]]["evaluation"].update(status=status, status_reason=reason)
+        return document
+    index = stage_events[0]
     old = document["events"][index]["assertion"]["id"]
     shipped = SHIPPED_ASSERTIONS[COMMITS_REVIEWED_ID]
     document["events"][index]["assertion"].update(id=COMMITS_REVIEWED_ID, digest=shipped.digest)
@@ -246,7 +301,11 @@ SHIPPED_MAPPING_USED: dict[str, Any] = {
     "digest": SHIPPED_MAPPING_DIGEST,
     "copy_path": "units/root/plan/shipped-scanner-check-mapping.json",
     "assertions_mapped": len(SHIPPED_MAPPING.spec.assertion_mappings),
+    "descriptor_digest": None,
+    "key_id": None,
+    "signature": None,
 }
+
 
 # A plan stage's scanners block: one Checkov report read under a project's scanner checks entries and the shipped
 # mapping, none of its results bound.
@@ -260,15 +319,23 @@ SCANNERS: dict[str, Any] = {
             "digest": "sha256:" + "b" * 64,
             "copy_path": "units/root/plan/scanner-check-mapping.json",
             "assertions_mapped": 2,
+            "descriptor_digest": None,
+            "key_id": None,
+            "signature": None,
         },
         SHIPPED_MAPPING_USED,
     ],
-    "required_scanners": [],
+    "scanner_requirements": [],
     "reports": [
         {
             "tool": "checkov",
             "tool_version": "3.3.8",
-            "supplied_by": "pipeline",
+            "ran_by": "pipeline",
+            "scanner_digest": None,
+            "platform": None,
+            "python_version": None,
+            "outbound_network": None,
+            "configuration_digest": None,
             "input_kinds": ["plan"],
             "report_digest": "sha256:" + "a" * 64,
             "observations": "units/root/artifacts/sha256-" + "c" * 64,
@@ -280,6 +347,8 @@ SCANNERS: dict[str, Any] = {
             "redacted_values": {},
         }
     ],
+    # The base record's one plan the plan stage kept, redacted.
+    "redacted_plan": "units/root/artifacts/sha256-f5f26f89d90bf515331191c979d01c84206b4ddb44f4d2d218977be3d7073054",
     "local_exceptions": None,
 }
 
@@ -290,7 +359,11 @@ def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> Non
     from the same file."""
     template = next(ref for ref in document["evidence_refs"] if ref["source"] is not None)
     scanners = document["stages"][stage]["scanners"]
-    policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": "sha256:" + "e" * 64}
+    # A run the tool opened names no digest of the file a report was redacted from; one the server opened, its keyed
+    # digest.
+    keyed = document["governance"]["run_opened_by"] == "server"
+    given_file_digest = keyed_given_file_digest("sha256:" + "e" * 64, vector_run_digest_key()) if keyed else None
+    policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": given_file_digest}
     files: list[tuple[str, str, Any, Any, str]] = []
     for used in scanners["scanner_check_mappings"]:
         file_path = used["file_path"]
@@ -309,19 +382,64 @@ def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> Non
         document["evidence_refs"].append({**entry, "redaction_policy": redaction_policy})
 
 
-def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
-    """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
-    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
-    case = next(c for c in cases if c["name"] == name)
+def case_record(case: dict[str, Any]) -> dict[str, Any]:
+    """The record a record case names, its values set and then removed."""
     document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
     for pointer, value in case["set"].items():
         set_pointer(document, pointer, copy.deepcopy(value))
+    for pointer in case["remove"]:
+        remove_pointer(document, pointer)
     return document
 
 
-def set_pointer(document: Any, pointer: str, value: Any) -> None:
-    """Set the value at a JSON Pointer (RFC 6901) whose parent exists."""
-    *parents, last = [token.replace("~1", "/").replace("~0", "~") for token in pointer.split("/")[1:]]
-    for token in parents:
-        document = document[int(token)] if isinstance(document, list) else document[token]
-    document[int(last) if isinstance(document, list) else last] = value
+def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
+    """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
+    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
+    return case_record(next(c for c in cases if c["name"] == name))
+
+
+def every_kept_copy(file_name: str) -> list[bytes]:
+    """Every file named ``file_name`` (``served-exceptions.json``) that a record or case of the vectors kept."""
+    copies = []
+    for held in sorted(VECTORS.joinpath("kept_files").rglob("*.json")):
+        change_type = held.relative_to(VECTORS / "kept_files").parts[0]
+        stem = held.name.removesuffix(".json")
+        files = (
+            case_files_of({"name": stem, "vector": f"{change_type}/"})
+            if held.parent.name == "cases"
+            else kept_files_of(f"{change_type}/{stem}")
+        )
+        copies += [data for path, data in files.items() if PurePosixPath(path).name == file_name]
+    return copies
+
+
+def kept_files_by_digest(name: str) -> dict[str, bytes]:
+    """The files the record ``name`` (``iac/local_run``) kept that the vectors hold, by the digest its register names
+    each by."""
+    record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
+    files = kept_files_of(name)
+    return {ref["digest"]: files[ref["path"]] for ref in record["evidence_refs"] if ref["path"] in files}
+
+
+# The project file that leaves a stage out of a record built by ``stage_record``.
+PROJECT_CONFIG: dict[str, Any] = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
+
+
+def stage_record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) -> dict[str, Any]:
+    """The run's record with ``changes``; a change of expected stages leaves the rest of the lifecycle out of scope."""
+    document = copy.deepcopy(RECORD)
+    document["stages"].update(copy.deepcopy(stages or {}))
+    for dotted, value in changes.items():
+        set_path(document, dotted, value)
+    if "expected_stages" in changes and "out_of_scope" not in changes:
+        expected = set(changes["expected_stages"])
+        tool_opened = document["governance"]["run_opened_by"] == "local"
+        document["out_of_scope"] = [
+            {"stage": stage.value, "reason": "needs_the_server", "declared_in": None}
+            if tool_opened and stage in IAC_CHANGE.stages_that_need_the_server
+            else {"stage": stage.value, "reason": "project_config", "declared_in": PROJECT_CONFIG}
+            for stage in IAC_CHANGE.stages
+            if stage.value not in expected
+        ]
+    # Each stage names its own events file by its events, so a test edits only the value under test.
+    return with_top_level(keep_events_files(document))

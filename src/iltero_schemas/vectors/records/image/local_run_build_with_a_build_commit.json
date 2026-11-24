@@ -1,0 +1,958 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "ChangeAssuranceRecord",
+  "metadata": {
+    "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
+    "issuer": {
+      "type": "local",
+      "identity_verified": false
+    }
+  },
+  "run": {
+    "id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b"
+  },
+  "unit": "api",
+  "trust_level": "self_attested",
+  "compliance_determination": null,
+  "governance": {
+    "run_opened_by": "local"
+  },
+  "subject": {
+    "kind": "change",
+    "environment": null,
+    "unit": "api",
+    "source": {
+      "vcs": "git",
+      "commit": {
+        "sha": "c84e7a1000000000000000000000000000000000"
+      },
+      "repository": null,
+      "ref": {
+        "type": "branch",
+        "name": "main"
+      },
+      "pull_request": null
+    },
+    "project_directory": ".",
+    "project_tree": {
+      "id": "7e3d5a1000000000000000000000000000000000"
+    }
+  },
+  "change": {
+    "activity": "image_build",
+    "image": {
+      "repository": "ghcr.io/acme/api",
+      "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+      "tag_resolution": {
+        "tag": "1.4.2",
+        "read_from": "pipeline_metadata_file",
+        "read_from_evidence_ref": "plan/build-metadata.json"
+      }
+    },
+    "platform_digests": [
+      "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+      "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9"
+    ],
+    "index_evidence_ref": "plan/image-index.json",
+    "reports": [
+      {
+        "evidence_ref": "plan/reports/junit.xml",
+        "format": "junit",
+        "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+        "image_digest_source": "pipeline"
+      },
+      {
+        "evidence_ref": "plan/reports/trivy.json",
+        "format": "trivy_json",
+        "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+        "image_digest_source": "report"
+      }
+    ],
+    "build_commit": {
+      "commit": "c84e7a1000000000000000000000000000000000",
+      "read_from": "buildx_provenance",
+      "evidence_ref": "plan/build-metadata.json",
+      "verification": "not_verified"
+    },
+    "attestation": {
+      "evidence_ref": "plan/attestation.sigstore.json",
+      "verification": "not_verified",
+      "sent_to_server": false
+    }
+  },
+  "units_file": null,
+  "redaction_policy": {
+    "id": "iltero.redaction",
+    "version": "1",
+    "additional_paths": [],
+    "exempt_paths": []
+  },
+  "stages": {
+    "plan": {
+      "stage": "plan",
+      "observed_at": "2026-11-01T10:05:00Z",
+      "reference_time": {
+        "value": "2026-11-01T10:05:00Z",
+        "source": "runner_clock"
+      },
+      "execution": {
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "content_digest": null,
+          "key_id": null,
+          "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44"
+        },
+        "reason": null,
+        "detail": null
+      },
+      "enforcement_mode": "enforcing",
+      "approvals": null,
+      "commit_review": null,
+      "apply_job_facts": null,
+      "compiler": {
+        "version": "1.0.0",
+        "contract_version": "0.1.0",
+        "contract_digest": null,
+        "install": "editable"
+      },
+      "redaction": {
+        "policy": {
+          "id": "iltero.redaction",
+          "version": "1",
+          "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913"
+        },
+        "input": {
+          "kind": "observation",
+          "digest": "sha256:1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c"
+        },
+        "redacted": [],
+        "unknown": [],
+        "exempted": []
+      },
+      "events": {
+        "path": "units/api/plan/events.json",
+        "digest": "sha256:d701432c2d6987e0f6494a1d92ccb438cdd220087612c0d68c59b2e88a315cc7",
+        "count": 3
+      },
+      "assertions": {
+        "index": "units/api/plan/assertions/compiled.json",
+        "digest": "sha256:5196e36994c19b096cf6caaa52a94b0c6ac9069d35041dfc3b7f1c2a8d01ab74",
+        "count": 3
+      },
+      "scanners": null,
+      "served_exceptions": null,
+      "values_known_after_deployment": "block",
+      "postponed_checks": null,
+      "resource_redaction": null,
+      "coverage": {
+        "subjects_in_scope": {
+          "value": 1,
+          "counted_from": "artifact_unit",
+          "source_digest": "sha256:a97c8a5deee3079c0e5079be595b6ce19d9cd83a33fdbb7b53a7aad92bddaee0",
+          "removed_by_plan": 0,
+          "excluded": []
+        },
+        "subjects_evaluated": 1,
+        "assertions_required": {
+          "value": 3,
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:db254d771c08460d6c7cac02a76c59deff875ee02cacef5ed6ac8f3e8f61215f"
+        },
+        "assertions_evaluated": 3,
+        "subjects_per_assertion": {
+          "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+          "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
+        },
+        "status_counts": {
+          "pass": 2,
+          "fail": 0,
+          "unknown": 1,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "error": 0
+        },
+        "failed_checks_excepted": 0,
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": [],
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 2,
+            "fail": 0,
+            "unknown": 1,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        }
+      },
+      "verdict": {
+        "value": "undecided",
+        "reason": null,
+        "computed_from": "status_counts",
+        "stage": null
+      },
+      "evidence_status": {
+        "value": "whole",
+        "reasons": []
+      }
+    }
+  },
+  "events": [
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT",
+        "version": "1.0.0",
+        "digest": "sha256:37e8badbeab9f642c2d9e56374269dc0ae21cb0e2e477d72bd7efeb693f65bee"
+      },
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:a809024ae012833745b2c821c65739d03e08c8aa6eb7fea8294a7b3550aae9aa",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_build",
+        "stage": "plan",
+        "status": "unknown",
+        "status_reason": "server_facts_unavailable",
+        "status_detail": null,
+        "policy_reason": "verified_source.commit: server_facts_unavailable",
+        "observations": {
+          "predicates": [
+            {
+              "actual": null,
+              "clause": "assert",
+              "expected": {
+                "ref": "verified_source.commit"
+              },
+              "index": 0,
+              "op": "equal",
+              "path": "artifact.build_commit",
+              "resolved": null,
+              "status": "unknown"
+            }
+          ],
+          "unknown": {
+            "path": "verified_source.commit",
+            "reason": "server_facts_unavailable"
+          },
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+        },
+        "input_digest": "sha256:1e999288fb00d3ce0d3063b61f0a0b601d8bd82013b7e8bb749f79988f73f369",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "linux-x86_64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "content_digest": null,
+          "key_id": null
+        },
+        "scanner_checks": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:02e2fe5805fa1e08d62caf5da2556643f45b45e5bef7e35941b16d04df604a15",
+        "compiled_digest": "sha256:1706e0c72d4b571e285f7799d1347da97da9e30596f04fed65e1a7bb9fcac53a",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": null,
+          "install": "editable"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-01T10:05:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN",
+        "version": "1.0.0",
+        "digest": "sha256:5389a65c1dfa408cc444052c95aac03cbbf6246949f8c43baf4d35c3c92224b1"
+      },
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:a809024ae012833745b2c821c65739d03e08c8aa6eb7fea8294a7b3550aae9aa",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_build",
+        "stage": "plan",
+        "status": "pass",
+        "status_reason": null,
+        "status_detail": null,
+        "policy_reason": "assert: true",
+        "observations": {
+          "predicates": [
+            {
+              "actual": {
+                "count": 1,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "matched": 1,
+              "op": "exists",
+              "path": "scans",
+              "status": "true"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+        },
+        "input_digest": "sha256:6ebc0eac48af88e32cafadcfb949a316675b9c42ef56d0c475d3c41853f87ac0",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "linux-x86_64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "content_digest": null,
+          "key_id": null
+        },
+        "scanner_checks": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:7c55680b254f181248d69587c6af56a6cb44b92f4d664cacf0e851d9ba1ab8ec",
+        "compiled_digest": "sha256:0c31092c4e729a066321d34046ce2ad8c39152eeaf5fe55f6b85ef554ed24da9",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": null,
+          "install": "editable"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-01T10:05:00Z"
+    },
+    {
+      "assertion": {
+        "id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN",
+        "version": "1.0.0",
+        "digest": "sha256:39a3fae5217c800a09800f24ee2ba10dc68bec3de4c387bb7e3dc24964bc079a"
+      },
+      "subject": {
+        "kind": "artifact",
+        "key": "sha256:a809024ae012833745b2c821c65739d03e08c8aa6eb7fea8294a7b3550aae9aa",
+        "identities": [
+          {
+            "scheme": "iltero_unit",
+            "value": "api",
+            "scope": null
+          }
+        ]
+      },
+      "evaluation": {
+        "activity": "image_build",
+        "stage": "plan",
+        "status": "pass",
+        "status_reason": null,
+        "status_detail": null,
+        "policy_reason": "assert: true",
+        "observations": {
+          "predicates": [
+            {
+              "actual": {
+                "count": 1,
+                "type": "array"
+              },
+              "clause": "assert",
+              "expected": null,
+              "index": 0,
+              "matched": 1,
+              "op": "exists",
+              "path": "tests",
+              "status": "true"
+            }
+          ],
+          "unknown": null,
+          "when": null
+        }
+      },
+      "provenance": {
+        "run": {
+          "id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
+          "unit": "api"
+        },
+        "source_commit": "c84e7a1000000000000000000000000000000000",
+        "checked_content": {
+          "kind": "container_image",
+          "repository": "ghcr.io/acme/api",
+          "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+        },
+        "input_digest": "sha256:3d5bd0e68923120ec52a17f616d5a4b261f7e70e8e1e511558c6fc5d9c9a2801",
+        "evaluator": {
+          "engine": "opa",
+          "version": "1.20.2",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "limits": {
+            "timeout_seconds": 60.0,
+            "memory_limit": {
+              "bytes": 536870912,
+              "enforced": false,
+              "kind": "none"
+            },
+            "max_output_bytes": 1054720,
+            "evaluations_per_process": 64,
+            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+            "platform": "linux-x86_64"
+          }
+        },
+        "bundle": {
+          "kind": "local_bundle",
+          "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "content_digest": null,
+          "key_id": null
+        },
+        "scanner_checks": null,
+        "assertion_source": "contract_starter",
+        "assertion_source_digest": "sha256:0fd7a0afafeb21fde9be6b4ced849b0cb6dda459d31a87f2e1fdd9198573ab9c",
+        "compiled_digest": "sha256:ec1a198ca63693c05dc5c3f27be907be950d343d4468ba6aa95bd583fcad318e",
+        "compiler": {
+          "version": "1.0.0",
+          "contract_version": "0.1.0",
+          "contract_digest": null,
+          "install": "editable"
+        },
+        "executor": {
+          "type": "human",
+          "provider": "local",
+          "ci_run_id": null
+        },
+        "facts_source": "none"
+      },
+      "observed_at": "2026-11-01T10:05:00Z"
+    }
+  ],
+  "coverage": {
+    "subjects_in_scope": {
+      "value": 1,
+      "counted_from": "artifact_unit",
+      "source_digest": "sha256:a97c8a5deee3079c0e5079be595b6ce19d9cd83a33fdbb7b53a7aad92bddaee0",
+      "removed_by_plan": 0,
+      "excluded": []
+    },
+    "subjects_evaluated": 1,
+    "assertions_required": {
+      "value": 3,
+      "origin": "project_files",
+      "required_assertion_digest": "sha256:1e7b02723cd7970360748f17ec2062e8f58afcab083c23533369dc6833c45d64"
+    },
+    "assertions_evaluated": 3,
+    "subjects_per_assertion": {
+      "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
+      "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+      "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0": 1
+    },
+    "status_counts": {
+      "pass": 2,
+      "fail": 0,
+      "unknown": 1,
+      "not_applicable": 0,
+      "not_evaluated": 0,
+      "error": 0
+    },
+    "failed_checks_excepted": 0,
+    "evaluations": 3,
+    "gaps": [],
+    "truncated": {
+      "value": false,
+      "limit": null,
+      "reason": null
+    },
+    "sampled": false,
+    "substituted_inputs": [],
+    "evaluator_status_counts": {
+      "opa": {
+        "pass": 2,
+        "fail": 0,
+        "unknown": 1,
+        "not_applicable": 0,
+        "not_evaluated": 0,
+        "error": 0
+      }
+    }
+  },
+  "verdict": {
+    "value": "undecided",
+    "reason": null,
+    "computed_from": "stage_precedence",
+    "stage": "plan"
+  },
+  "evidence_status": {
+    "value": "whole",
+    "reasons": []
+  },
+  "all_expected_stages_reported": true,
+  "expected_stages": [
+    "plan"
+  ],
+  "out_of_scope": [],
+  "evidence_refs": [
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:630bf2776c48117e9a44537ef6ffb471abceaff6b1bf86c8ced2148389c301f0",
+      "size_bytes": 414,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:1706e0c72d4b571e285f7799d1347da97da9e30596f04fed65e1a7bb9fcac53a",
+      "size_bytes": 12710,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:071718a6c69be917d85c7e448bbe3ed070b20a988ff0ddece9edd0109fe15510",
+      "size_bytes": 510,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:eec283ba7c6b09c370ab911ec6fb44c6905654a4211a6e2e30cc22c731047037",
+      "size_bytes": 1189,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:0c31092c4e729a066321d34046ce2ad8c39152eeaf5fe55f6b85ef554ed24da9",
+      "size_bytes": 13051,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:39fbf7745694f286d157f970b306a7fd3eaa034450e6cac685e0085bbd381091",
+      "size_bytes": 834,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.ast.json",
+      "media_type": "application/json",
+      "digest": "sha256:a5e5618b0f3b3d2a2eccee0253192c413c02aebd30197a8fc7bda6230aff2b70",
+      "size_bytes": 1022,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.ast.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.rego",
+      "media_type": "application/vnd.iltero.rego",
+      "digest": "sha256:ec1a198ca63693c05dc5c3f27be907be950d343d4468ba6aa95bd583fcad318e",
+      "size_bytes": 12991,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.rego",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.yaml",
+      "media_type": "application/yaml",
+      "digest": "sha256:c07aa1c9af8f67b832fe8330bb8a18d693bc9239b21f932d53ee84818741c187",
+      "size_bytes": 782,
+      "path": "units/api/plan/assertions/ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0.yaml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/assertions/compiled.json",
+      "media_type": "application/json",
+      "digest": "sha256:5196e36994c19b096cf6caaa52a94b0c6ac9069d35041dfc3b7f1c2a8d01ab74",
+      "size_bytes": 3048,
+      "path": "units/api/plan/assertions/compiled.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/attestation.sigstore.json",
+      "media_type": "application/vnd.dev.sigstore.bundle.v0.3+json",
+      "digest": "sha256:f2168ec310ea3d35dc929b480c85a91c21775cbbf36db3a37e041e5fe815f586",
+      "size_bytes": 61,
+      "path": "units/api/plan/attestation.sigstore.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:f2168ec310ea3d35dc929b480c85a91c21775cbbf36db3a37e041e5fe815f586",
+        "name": "attestation.sigstore.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/build-metadata.json",
+      "media_type": "application/json",
+      "digest": "sha256:cb0c1bcd5146105491bb007a73622ca7ff0ee122ba1ae976308cca2ab5e1f602",
+      "size_bytes": 453,
+      "path": "units/api/plan/build-metadata.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:cb0c1bcd5146105491bb007a73622ca7ff0ee122ba1ae976308cca2ab5e1f602",
+        "name": "build-metadata.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-1e999288fb00d3ce0d3063b61f0a0b601d8bd82013b7e8bb749f79988f73f369",
+      "media_type": "application/json",
+      "digest": "sha256:1e999288fb00d3ce0d3063b61f0a0b601d8bd82013b7e8bb749f79988f73f369",
+      "size_bytes": 2084,
+      "path": "units/api/plan/contexts/sha256-1e999288fb00d3ce0d3063b61f0a0b601d8bd82013b7e8bb749f79988f73f369",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-3d5bd0e68923120ec52a17f616d5a4b261f7e70e8e1e511558c6fc5d9c9a2801",
+      "media_type": "application/json",
+      "digest": "sha256:3d5bd0e68923120ec52a17f616d5a4b261f7e70e8e1e511558c6fc5d9c9a2801",
+      "size_bytes": 2072,
+      "path": "units/api/plan/contexts/sha256-3d5bd0e68923120ec52a17f616d5a4b261f7e70e8e1e511558c6fc5d9c9a2801",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-6ebc0eac48af88e32cafadcfb949a316675b9c42ef56d0c475d3c41853f87ac0",
+      "media_type": "application/json",
+      "digest": "sha256:6ebc0eac48af88e32cafadcfb949a316675b9c42ef56d0c475d3c41853f87ac0",
+      "size_bytes": 2071,
+      "path": "units/api/plan/contexts/sha256-6ebc0eac48af88e32cafadcfb949a316675b9c42ef56d0c475d3c41853f87ac0",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/events.json",
+      "media_type": "application/json",
+      "digest": "sha256:d701432c2d6987e0f6494a1d92ccb438cdd220087612c0d68c59b2e88a315cc7",
+      "size_bytes": 6579,
+      "path": "units/api/plan/events.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": "RFC8785",
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/image-index.json",
+      "media_type": "application/vnd.oci.image.index.v1+json",
+      "digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
+      "size_bytes": 371,
+      "path": "units/api/plan/image-index.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/redaction-policy.json",
+      "media_type": "application/json",
+      "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913",
+      "size_bytes": 2229,
+      "path": "units/api/plan/redaction-policy.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/reports/junit.xml",
+      "media_type": "application/xml",
+      "digest": "sha256:0eaea31ca99000cce2346dc16ca7e019a248aa70fc13d72b2bb940c5f16badf9",
+      "size_bytes": 37,
+      "path": "units/api/plan/reports/junit.xml",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:0eaea31ca99000cce2346dc16ca7e019a248aa70fc13d72b2bb940c5f16badf9",
+        "name": "junit.xml"
+      },
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "plan/reports/trivy.json",
+      "media_type": "application/json",
+      "digest": "sha256:11aac8c631e72d3a5acfb76f6ab1ab31091b5a868c7d566f7dfbc06e429ef28e",
+      "size_bytes": 143,
+      "path": "units/api/plan/reports/trivy.json",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": {
+        "digest": "sha256:11aac8c631e72d3a5acfb76f6ab1ab31091b5a868c7d566f7dfbc06e429ef28e",
+        "name": "trivy.json"
+      },
+      "canonicalization": null,
+      "redaction_policy": null
+    },
+    {
+      "ref_id": "sha256-1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "media_type": "application/json",
+      "digest": "sha256:1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "size_bytes": 4096,
+      "path": "units/api/plan/sha256-1ae14c8b868ef4f06409d9e44251d5b5fe47244d59e882bf88a2406f3325756c",
+      "storage_uri": null,
+      "retention_until": null,
+      "collected_at": "2026-11-01T10:05:00Z",
+      "collector": {
+        "tool": "iltero",
+        "version": "0.1.0"
+      },
+      "source": null,
+      "canonicalization": null,
+      "redaction_policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913"
+      }
+    }
+  ],
+  "integrity": {
+    "scheme": "file_digests",
+    "signature": null
+  },
+  "expires_at": null,
+  "retention_class": null,
+  "retention_reason": "no_server_scope"
+}

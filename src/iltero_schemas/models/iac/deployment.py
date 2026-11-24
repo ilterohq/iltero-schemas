@@ -20,6 +20,7 @@ from typing import Annotated, Literal
 from pydantic import Discriminator, Field, Tag, model_validator
 
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
+from iltero_schemas.canonical.iac.state import check_state_digest_version
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
 from iltero_schemas.models.common.fields import (
     MAX_RESOURCES,
@@ -27,7 +28,10 @@ from iltero_schemas.models.common.fields import (
     Address,
     ArtifactDigestSource,
     Digest,
+    GivenFileDigest,
     Identifier,
+    PlanDigest,
+    StateDigest,
     Timestamp,
     check_artifact_digest,
     parse_timestamp,
@@ -57,7 +61,7 @@ Removal = Literal["deleted", "forgotten"]
 class AppliedPlan(StrictModel):
     """The plan the pipeline says it gave the IaC tool to apply, by the fingerprints the plan stage recorded."""
 
-    digest: Digest
+    digest: PlanDigest
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_source: ArtifactDigestSource
@@ -210,22 +214,35 @@ class ApplyTiming(StrictModel):
 
 
 class ApplySource(StrictModel):
-    """The apply log the changes were read from: the digest of its bytes, and the tool that wrote it."""
+    """The apply log the changes were read from: the digest of its bytes, and the tool that wrote it.
 
-    digest: Digest
+    The record keeps the log only redacted, so the digest is keyed in a run the server opened and null in a run the
+    tool opened (``models.common.given_file_digests``).
+    """
+
+    digest: GivenFileDigest | None
     tool: IacTool
     tool_version: Identifier
 
 
 class StateSource(StrictModel):
-    """A state file: the digest of its bytes and the tool that wrote it.
+    """A state: its digest, the version of the rule the digest was made by, and the tool that wrote it.
 
-    The tool's version is null when the state holds nothing.
+    The record never keeps the state. Its digest is keyed in a run the server opened, and the digest of the state as
+    the record's redaction policy leaves it in a run the tool opened (``models.iac.state_digests``); ``digest_version``
+    is the version of the rule the digest's form names (``canonical.iac.state``). The tool's version is null when the
+    state holds nothing.
     """
 
-    digest: Digest
+    digest: StateDigest
+    digest_version: Identifier
     tool: IacTool
     tool_version: Identifier | None
+
+    @model_validator(mode="after")
+    def _digest_version_of_its_form(self) -> StateSource:
+        check_state_digest_version(self.tool, self.digest_version, self.digest)
+        return self
 
 
 def _state_shape(value: object) -> str:
@@ -341,7 +358,7 @@ class Deployment(StrictModel):
     @model_validator(mode="after")
     def _plan_digest_version_is_the_tools(self) -> Deployment:
         # The applied plan may be a re-plan, so it is held to its own tool's rule, not to the evaluated plan.
-        check_plan_digest_version(self.apply.source.tool, self.plan.digest_version)
+        check_plan_digest_version(self.apply.source.tool, self.plan.digest_version, self.plan.digest)
         return self
 
 

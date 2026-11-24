@@ -21,7 +21,6 @@ carries the same shape.
 
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
@@ -29,12 +28,15 @@ from pydantic import Field, model_validator
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
 from iltero_schemas.models.common.fields import (
     MAX_RESOURCES,
+    NANOSECONDS_PER_SECOND,
     Address,
     Count,
     Digest,
+    GivenFileDigest,
     Identifier,
     Timestamp,
     Uuid,
+    nanoseconds_between,
     parse_timestamp,
 )
 from iltero_schemas.models.iac.deployment import Deployment
@@ -42,8 +44,6 @@ from iltero_schemas.models.iac.tool_names import IacTool
 
 # The longest a reader accepts as the least time between the readings: a day, far longer than a settle time needs.
 MAX_MINIMUM_INTERVAL_SECONDS = 86_400
-# Nanoseconds in a microsecond, the finest unit a ``timedelta`` keeps.
-_NANOSECONDS_PER_MICROSECOND = 1_000
 # The IaC tools whose drift a pipeline can read back, so whose post-verify stage a record cannot call unsupported.
 TOOLS_WITH_DRIFT_READER: frozenset[IacTool] = frozenset({"terraform"})
 # How a resource differs from what the apply wrote: its values changed, or it is no longer there.
@@ -75,9 +75,10 @@ class DriftCheck(StrictModel):
     resources_read: Annotated[int, Field(ge=0, le=MAX_RESOURCES)]
     first_reading_at: Timestamp
     second_reading_at: Timestamp
-    # The digest of each refresh-only plan's bytes as the tool wrote them, so a kept copy matches its reading.
-    first_reading_digest: Digest
-    second_reading_digest: Digest
+    # The digest of each refresh-only plan's bytes as the tool wrote them, which the record never keeps: keyed in a
+    # run the server opened, null in a run the tool opened (``models.common.given_file_digests``).
+    first_reading_digest: GivenFileDigest | None
+    second_reading_digest: GivenFileDigest | None
     # The least time the readings had to be apart.
     minimum_interval_seconds: Annotated[int, Field(gt=0, le=MAX_MINIMUM_INTERVAL_SECONDS)]
     # Sorted by address, each once.
@@ -90,18 +91,16 @@ class DriftCheck(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> DriftCheck:
-        (first, first_fraction), (second, second_fraction) = (
-            parse_timestamp(self.first_reading_at),
-            parse_timestamp(self.second_reading_at),
-        )
-        apart = (second - first) // timedelta(microseconds=1) * _NANOSECONDS_PER_MICROSECOND
-        if apart + second_fraction - first_fraction < self.minimum_interval_seconds * 1_000_000_000:
+        apart = nanoseconds_between(self.first_reading_at, self.second_reading_at)
+        if apart < self.minimum_interval_seconds * NANOSECONDS_PER_SECOND:
             raise ValueError("the second reading is at least minimum_interval_seconds after the first")
         if not sorted_unique([resource.address for resource in self.differences]):
             raise ValueError("the differences are sorted by address and name each resource once")
         if self.differences_count != len(self.differences):
             raise ValueError("differences_count is the number of differences")
-        if self.first_reading_digest == self.second_reading_digest:
+        if (self.first_reading_digest is None) != (self.second_reading_digest is None):
+            raise ValueError("the drift check names the digests of both readings, or of neither")
+        if self.first_reading_digest is not None and self.first_reading_digest == self.second_reading_digest:
             raise ValueError("the two readings are two refresh-only plans, so their digests differ")
         first_only = [resource.address for resource in self.first_reading_only_differences]
         if not sorted_unique(first_only):

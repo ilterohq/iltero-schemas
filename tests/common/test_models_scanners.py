@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import get_args
 
-from iltero_schemas.models.common.car import ScannerReport
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 from iltero_schemas.models.common.scanners import SCANNER_TOOLS, ScannerTool
+from iltero_schemas.models.common.stage_scanners import ScannerReport
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerChecks
 
 

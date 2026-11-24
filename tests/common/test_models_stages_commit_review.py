@@ -14,10 +14,18 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.facts import NotReadByTheStage, ServerFactsUnavailable
 from tests.conftest import VECTORS
-from tests.records import DEPLOYED, UNKNOWN, served, valid_case_record, with_commit_review_check
+from tests.records import (
+    THROUGH_PRE_DEPLOY,
+    UNKNOWN,
+    valid_case_record,
+    with_commit_review_check,
+)
+from tests.server_runs import (
+    served,
+)
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
-HEAD = DEPLOYED["subject"]["source"]["commit"]["sha"]
+HEAD = THROUGH_PRE_DEPLOY["subject"]["source"]["commit"]["sha"]
 # The review the server serves, as of the deployed record's source commit.
 _SERVED: dict[str, Any] = json.loads((VECTORS / "contexts" / "iac" / "pre_deploy_change.json").read_text())[
     "commit_review"
@@ -37,21 +45,34 @@ NO_STARTING_POINT = {
 } | {"outcome": "no_review_starting_point"}
 
 
+def _reading_no_facts(document: dict[str, Any]) -> dict[str, Any]:
+    """``document`` with its pre-deploy stage's checks reading no facts from the server."""
+    for event in document["events"]:
+        if event["evaluation"]["stage"] == "pre_deploy":
+            event["provenance"]["facts_source"] = "none"
+    return document
+
+
+def _failed_review() -> dict[str, Any]:
+    """The record of a run the server opened whose commit review check failed, so its stage keeps a review read."""
+    return served(with_commit_review_check(THROUGH_PRE_DEPLOY, "fail", None))
+
+
 def _keeping(document: dict[str, Any], kept: dict[str, Any]) -> dict[str, Any]:
     document["stages"]["pre_deploy"]["commit_review"] = kept
     return document
 
 
 def test_the_pre_deploy_stage_keeps_the_commit_review_it_read_from_the_server() -> None:
-    car = CAR.model_validate(_keeping(served(DEPLOYED), READING), context=_READER)
+    car = CAR.model_validate(_keeping(_failed_review(), READING), context=_READER)
     kept = car.stages[Stage.PRE_DEPLOY].commit_review
     assert kept is not None and not isinstance(kept, ServerFactsUnavailable | NotReadByTheStage)
     assert (kept.head_commit, kept.decided_at) == (HEAD, READING["decided_at"])
-    CAR.model_validate(_keeping(served(DEPLOYED), NO_STARTING_POINT), context=_READER)
+    CAR.model_validate(_keeping(_failed_review(), NO_STARTING_POINT), context=_READER)
 
 
 def test_a_stage_whose_results_read_facts_from_the_server_may_keep_the_unknown_marker() -> None:
-    car = CAR.model_validate(served(DEPLOYED), context=_READER)
+    car = CAR.model_validate(served(THROUGH_PRE_DEPLOY), context=_READER)
     assert isinstance(car.stages[Stage.PRE_DEPLOY].commit_review, ServerFactsUnavailable)
 
 
@@ -59,14 +80,14 @@ def test_a_stage_whose_results_read_no_facts_from_the_server_keeps_the_unknown_m
     with pytest.raises(
         ValidationError, match="keeps the unknown marker for its commit review when its results read no"
     ):
-        CAR.model_validate(_keeping(copy.deepcopy(DEPLOYED), READING), context=_READER)
+        CAR.model_validate(_keeping(_reading_no_facts(served(THROUGH_PRE_DEPLOY)), READING), context=_READER)
 
 
 @pytest.mark.parametrize(("stage", "kept"), [("post_deploy", UNKNOWN), ("post_deploy", READING), ("pre_deploy", None)])
 def test_a_stage_keeps_a_commit_review_or_the_unknown_marker_exactly_where_its_input_carries_one(
     stage: str, kept: dict[str, Any] | None
 ) -> None:
-    document = served(DEPLOYED)
+    document = served(THROUGH_PRE_DEPLOY)
     document["stages"][stage]["commit_review"] = kept
     with pytest.raises(
         ValidationError, match=f"the {stage} stage keeps a commit review, or the unknown marker, exactly"
@@ -76,7 +97,7 @@ def test_a_stage_keeps_a_commit_review_or_the_unknown_marker_exactly_where_its_i
 
 @pytest.mark.parametrize(("status", "kept"), [("pass", REVIEWED), ("fail", READING), ("fail", NO_STARTING_POINT)])
 def test_a_stage_keeps_the_commit_review_its_check_decided_from(status: str, kept: dict[str, Any]) -> None:
-    document = served(with_commit_review_check(DEPLOYED, status, None))
+    document = served(with_commit_review_check(THROUGH_PRE_DEPLOY, status, None))
     with pytest.raises(ValidationError, match="the pre_deploy stage keeps the commit review its .* check decided from"):
         CAR.model_validate(document, context=_READER)
     CAR.model_validate(_keeping(document, kept), context=_READER)
@@ -84,13 +105,13 @@ def test_a_stage_keeps_the_commit_review_its_check_decided_from(status: str, kep
 
 @pytest.mark.parametrize(("status", "kept"), [("pass", READING), ("pass", NO_STARTING_POINT), ("fail", REVIEWED)])
 def test_a_stages_commit_review_is_reviewed_exactly_when_its_check_passed(status: str, kept: dict[str, Any]) -> None:
-    document = _keeping(served(with_commit_review_check(DEPLOYED, status, None)), kept)
+    document = _keeping(served(with_commit_review_check(THROUGH_PRE_DEPLOY, status, None)), kept)
     with pytest.raises(ValidationError, match="commit review is reviewed exactly when its .* check passed"):
         CAR.model_validate(document, context=_READER)
 
 
 def test_a_stage_keeps_the_unknown_marker_when_its_check_could_not_read_a_commit_review() -> None:
-    document = served(with_commit_review_check(DEPLOYED, "unknown", "server_facts_unavailable"))
+    document = served(with_commit_review_check(THROUGH_PRE_DEPLOY, "unknown", "server_facts_unavailable"))
     CAR.model_validate(document, context=_READER)
     with pytest.raises(
         ValidationError, match="keeps the unknown marker when its .* check could not read a commit review"
@@ -99,7 +120,7 @@ def test_a_stage_keeps_the_unknown_marker_when_its_check_could_not_read_a_commit
 
 
 def test_a_stage_evaluates_its_commit_review_check_at_most_once() -> None:
-    document = _keeping(served(with_commit_review_check(DEPLOYED, "pass", None)), REVIEWED)
+    document = _keeping(served(with_commit_review_check(THROUGH_PRE_DEPLOY, "pass", None)), REVIEWED)
     check = next(e for e in document["events"] if e["assertion"]["id"] == COMMITS_REVIEWED_ID)
     again = copy.deepcopy(check)
     again["evaluation"].update(status="unknown", status_reason="server_facts_unavailable")
@@ -110,10 +131,19 @@ def test_a_stage_evaluates_its_commit_review_check_at_most_once() -> None:
         CAR.model_validate(document, context=_READER)
 
 
-def test_a_stages_commit_review_was_decided_no_later_than_the_stage_observed_it() -> None:
+def test_a_stages_commit_review_was_decided_no_later_than_the_stages_reference_time() -> None:
     late = {**READING, "decided_at": "2099-01-01T00:00:00Z"}
-    with pytest.raises(ValidationError, match="commit review was decided no later than the stage observed it"):
-        CAR.model_validate(_keeping(served(DEPLOYED), late), context=_READER)
+    with pytest.raises(ValidationError, match="commit review was decided no later than the stage's reference time"):
+        CAR.model_validate(_keeping(_failed_review(), late), context=_READER)
+
+
+def test_a_stages_commit_review_decided_after_the_stage_observed_it_holds_by_its_reference_time() -> None:
+    """The review and the stage's reference time are on one clock; the stage's own observed time is not compared."""
+    document = _failed_review()
+    stage = document["stages"]["pre_deploy"]
+    stage["reference_time"] = {"value": "2099-01-01T00:00:00Z", "source": "server"}
+    kept = {**READING, "decided_at": "2099-01-01T00:00:00Z"}
+    CAR.model_validate(_keeping(document, kept), context=_READER)
 
 
 def test_an_infrastructure_changes_commit_review_is_of_its_source_commit_unless_it_says_it_is_not() -> None:
@@ -123,15 +153,15 @@ def test_an_infrastructure_changes_commit_review_is_of_its_source_commit_unless_
         {**NO_STARTING_POINT, "outcome": "source_commit_not_verified_commit"},
     ):
         with pytest.raises(ValidationError, match="commit review is of the record's source commit, unless it is"):
-            CAR.model_validate(_keeping(served(DEPLOYED), kept), context=_READER)
+            CAR.model_validate(_keeping(_failed_review(), kept), context=_READER)
     not_verified = {**NO_STARTING_POINT, "outcome": "source_commit_not_verified_commit", "head_commit": other}
-    CAR.model_validate(_keeping(served(DEPLOYED), not_verified), context=_READER)
+    CAR.model_validate(_keeping(_failed_review(), not_verified), context=_READER)
 
 
 def test_an_infrastructure_change_keeps_no_commit_review_about_an_images_build() -> None:
     kept = {**NO_STARTING_POINT, "outcome": "build_commit_not_verified_commit"}
     with pytest.raises(ValidationError, match="a record of iac_change keeps no commit review that is build_commit_not"):
-        CAR.model_validate(_keeping(served(DEPLOYED), kept), context=_READER)
+        CAR.model_validate(_keeping(_failed_review(), kept), context=_READER)
 
 
 def _image_deploy_whose_commit_review_check_passed() -> dict[str, Any]:

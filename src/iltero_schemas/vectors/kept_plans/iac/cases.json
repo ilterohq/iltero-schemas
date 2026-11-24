@@ -1,0 +1,76 @@
+[
+  {
+    "name": "plans_of_a_run_the_tool_opened_its_kept_plan_holds",
+    "vector": "iac/local_run_deployed.json",
+    "plans": {
+      "set": {}
+    },
+    "problems": []
+  },
+  {
+    "name": "plans_of_a_run_the_tool_opened_whose_kept_plan_was_edited",
+    "vector": "iac/local_run_deployed.json",
+    "plans": {
+      "set": {
+        "/planned_values": {
+          "edited": true
+        }
+      }
+    },
+    "problems": [
+      [
+        "change.plan.digest",
+        "is not the digest of a redacted plan the record keeps, among the files given"
+      ],
+      [
+        "change.deployment.plan.digest",
+        "is not the digest of a redacted plan the record keeps, among the files given"
+      ]
+    ]
+  },
+  {
+    "name": "plans_of_a_run_the_tool_opened_whose_kept_plan_is_not_given",
+    "vector": "iac/local_run_deployed.json",
+    "plans": null,
+    "problems": [
+      [
+        "change.plan.digest",
+        "is not the digest of a redacted plan the record keeps, among the files given"
+      ],
+      [
+        "change.deployment.plan.digest",
+        "is not the digest of a redacted plan the record keeps, among the files given"
+      ]
+    ]
+  },
+  {
+    "name": "plans_of_a_run_the_tool_opened_that_kept_the_plan_it_evaluated_and_the_plan_it_applied",
+    "vector": "iac/local_run_scanned_then_another_plan_applied.json",
+    "plans": {
+      "set": {}
+    },
+    "problems": []
+  },
+  {
+    "name": "plans_of_a_run_the_tool_opened_given_only_the_plan_it_evaluated_when_it_applied_another",
+    "vector": "iac/local_run_scanned_then_another_plan_applied.json",
+    "plans": {
+      "set": {},
+      "only": [
+        "sha256:f5f26f89d90bf515331191c979d01c84206b4ddb44f4d2d218977be3d7073054"
+      ]
+    },
+    "problems": [
+      [
+        "change.deployment.plan.digest",
+        "is not the digest of a redacted plan the record keeps, among the files given"
+      ]
+    ]
+  },
+  {
+    "name": "plans_of_a_run_the_server_opened_whose_kept_plan_is_not_given",
+    "vector": "iac/governed_run_deployed.json",
+    "plans": null,
+    "problems": []
+  }
+]

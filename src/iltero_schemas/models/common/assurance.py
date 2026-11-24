@@ -2,7 +2,7 @@
 assurance history (``spec.target.kind: assurance``).
 
 It names the assertion and the subject, the current result and the one before it,
-and what happened in between: the deployments recorded and the exceptions approved.
+and what happened in between: the deployments recorded.
 An input about a subject with no earlier result has no ``previous`` and nothing
 ``since_previous``.
 """
@@ -15,7 +15,7 @@ from pydantic import Field, model_validator
 
 from iltero_schemas.models.common.base import StageValue, StrictModel
 from iltero_schemas.models.common.fields import AssertionKey, Digest, Status, Timestamp, Uuid, parse_timestamp
-from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, EvaluatedSubject, ExceptionGrant
+from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, EvaluatedSubject
 
 
 class AssuranceResult(StrictModel):
@@ -38,7 +38,6 @@ class SincePrevious(StrictModel):
     """What happened between the previous result and the current one."""
 
     deployments: Annotated[list[RecordedDeployment], Field(max_length=MAX_FACT_ITEMS)]
-    exceptions: Annotated[list[ExceptionGrant], Field(max_length=MAX_FACT_ITEMS)]
 
 
 class Assurance(StrictModel):

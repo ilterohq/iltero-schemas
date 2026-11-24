@@ -9,6 +9,7 @@ variant of each part, and changes none here.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Annotated, Any, Literal
@@ -31,12 +32,102 @@ PLAN_NAMING_FIELDS: Mapping[str, str] = MappingProxyType(
 
 
 def provider_short_name(source: object) -> str | None:
-    """The name an assertion targets a provider by, such as ``aws`` for ``registry.terraform.io/hashicorp/aws``."""
-    return source.rsplit("/", 1)[-1] if isinstance(source, str) else None
+    """The name an assertion targets a provider by, such as ``aws`` for ``registry.terraform.io/hashicorp/aws``; None
+    for a source that is not a full address of a host, a namespace and a type, such as the bare ``aws`` an old
+    Terraform wrote, since it does not say whose provider it is."""
+    if not isinstance(source, str):
+        return None
+    parts = source.split("/")
+    return parts[-1] if len(parts) == 3 and all(parts) else None
+
+
+# The registries that publish Terraform's and OpenTofu's providers under the same namespaces.
+_REGISTRIES = ("registry.terraform.io", "registry.opentofu.org")
+# For each provider with a list of resource kinds, the sources whose resource types the kind table was reviewed
+# against. A provider of the same short name at any other source, such as a fork, is still checked by the table, and its
+# resources are counted as a gap, since the table may not describe it.
+REVIEWED_PROVIDER_SOURCES: Mapping[str, frozenset[str]] = MappingProxyType(
+    {"aws": frozenset(f"{registry}/hashicorp/aws" for registry in _REGISTRIES)}
+)
+# The start of the resource types that create no object outside the tool, by the exact source of their provider: a
+# random value, a point in time. A resource of one of them makes nothing a check could find outside, so it is left out
+# of scope.
+TYPE_PREFIXES_THAT_MAKE_NO_OUTSIDE_OBJECT: Mapping[str, str] = MappingProxyType(
+    {
+        **{f"{registry}/hashicorp/random": "random_" for registry in _REGISTRIES},
+        **{f"{registry}/hashicorp/time": "time_" for registry in _REGISTRIES},
+    }
+)
+# The resource types that create no object outside the tool unless the configuration gives them a provisioner, which
+# can run any command: by the exact source of their provider.
+TYPES_THAT_MAKE_NO_OUTSIDE_OBJECT_WITHOUT_A_PROVISIONER: Mapping[str, str] = MappingProxyType(
+    {
+        **{f"{registry}/hashicorp/null": "null_resource" for registry in _REGISTRIES},
+        "terraform.io/builtin/terraform": "terraform_data",
+    }
+)
+# An index of an address: ``[0]``, or ``["key"]`` with its escapes.
+_INDEX = re.compile(r'\[(?:"(?:[^"\\]|\\.)*"|[^\]]*)\]')
+
+
+def configured_address(address: str) -> str:
+    """``module.a["k"].aws_x.y[0]`` → ``module.a.aws_x.y``: the address as the configuration writes it.
+
+    An index needs a closing bracket, so only the text up to the last one is searched: each opening bracket there has
+    one after it, and the search takes time in proportion to the address's length.
+    """
+    end = address.rfind("]") + 1
+    return _INDEX.sub("", address[:end]) + address[end:]
+
+
+def _mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def configured_modules(configuration: Any) -> dict[str, dict[str, Any]]:
+    """Every module of a plan's ``configuration`` by its address prefix (``""`` for the root, ``module.a.`` below it).
+    A section of the wrong shape is read as absent."""
+    modules: dict[str, dict[str, Any]] = {}
+    pending = [(_mapping(_mapping(configuration).get("root_module")), "")]
+    while pending:
+        module, prefix = pending.pop()
+        modules[prefix] = module
+        for name, call in _mapping(module.get("module_calls")).items():
+            pending.append((_mapping(_mapping(call).get("module")), f"{prefix}module.{name}."))
+    return modules
+
+
+def configured_provisioners(plan: Any) -> Mapping[str, bool]:
+    """Whether each resource the plan's configuration declares has a provisioner, by its configured address. A
+    resource of a module the configuration leaves out is not listed."""
+    provisioners: dict[str, bool] = {}
+    for prefix, module in configured_modules(_mapping(plan).get("configuration")).items():
+        resources = module.get("resources")
+        for resource in resources if isinstance(resources, list) else []:
+            if isinstance(resource, dict) and isinstance(resource.get("address"), str):
+                listed = resource.get("provisioners", [])
+                provisioners[f"{prefix}{resource['address']}"] = not isinstance(listed, list) or bool(listed)
+    return MappingProxyType(provisioners)
+
+
+def makes_no_outside_object(*, source: str, resource_type: str, address: str, provisioners: Mapping[str, bool]) -> bool:
+    """Whether a resource of ``resource_type``, from the provider at ``source``, at ``address``, creates no object
+    outside the tool: a type that starts as ``TYPE_PREFIXES_THAT_MAKE_NO_OUTSIDE_OBJECT`` says, or one of
+    ``TYPES_THAT_MAKE_NO_OUTSIDE_OBJECT_WITHOUT_A_PROVISIONER``, that the configuration declares with no provisioner
+    (``provisioners``, from ``configured_provisioners``). Any resource can carry a provisioner, so one the configuration
+    does not declare, or declares with a provisioner or a provisioner list of another shape, may run a command and
+    stays in scope."""
+    prefix = TYPE_PREFIXES_THAT_MAKE_NO_OUTSIDE_OBJECT.get(source)
+    of_such_a_type = (prefix is not None and resource_type.startswith(prefix)) or (
+        TYPES_THAT_MAKE_NO_OUTSIDE_OBJECT_WITHOUT_A_PROVISIONER.get(source) == resource_type
+    )
+    return of_such_a_type and provisioners.get(configured_address(address)) is False
 
 
 # The key Terraform gives a deposed object: an old copy of a resource that a replacement set aside.
 DEPOSED_KEY_PATTERN = r"^[0-9a-f]{8}$"
+# The same shape, compiled once for every reader of a deposed key.
+DEPOSED_KEY = re.compile(DEPOSED_KEY_PATTERN)
 DeposedKey = Annotated[str, Field(pattern=DEPOSED_KEY_PATTERN)]
 
 

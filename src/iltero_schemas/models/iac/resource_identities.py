@@ -29,7 +29,7 @@ from pydantic import Field, model_validator
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StrictModel, sorted_unique
-from iltero_schemas.models.common.fields import MAX_RESOURCES, Address, Digest, Identifier
+from iltero_schemas.models.common.fields import MAX_RESOURCES, Address, Identifier, PlanDigest
 from iltero_schemas.models.iac.deployment import Removal, StateSource
 from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.models.iac.tools.variants import IdentityToolData, check_tool_data
@@ -115,7 +115,7 @@ def _one_entry_per_cloud_identity(entries: Sequence[ResolvedIdentity], name: str
 class PlanSource(StrictModel):
     """The applied plan what left the state was read from, by its digest and the rule it was computed by."""
 
-    digest: Digest
+    digest: PlanDigest
     digest_version: Identifier
 
 
@@ -127,8 +127,11 @@ StateReadFrom = Literal["state_file", "refresh_plan"]
 class IdentitySources(StrictModel):
     """What the identities were read from: the state, where it was read from, and the applied plan for what left it.
 
-    ``state.digest`` is the digest of the bytes that were read: the state file, or the refresh-only plan. A
-    refresh-only plan applies nothing, so identities read from one name no applied plan and list nothing as removed.
+    ``state.digest`` names the state that was read (``models.iac.state_digests``). In a run the server opened it is the
+    keyed digest of the bytes read, the state file or the refresh-only plan. In a run the tool opened it is the digest
+    of the state as the record's redaction policy leaves it: the state file, or the refresh-only plan's
+    ``prior_state``. A refresh-only plan applies nothing, so identities read from one name no applied plan and list
+    nothing as removed.
     """
 
     state: StateSource
@@ -171,7 +174,9 @@ class IdentityRecord(StrictModel):
         check_tool_data(self.sources.state.tool, [self.tool_data], "tool_data")
         if self.sources.plan is not None:
             # The applied plan was written by the tool that wrote the state, so its digest follows that tool's rule.
-            check_plan_digest_version(self.sources.state.tool, self.sources.plan.digest_version)
+            check_plan_digest_version(
+                self.sources.state.tool, self.sources.plan.digest_version, self.sources.plan.digest
+            )
         _one_list_each(self.resolved, self.unresolved)
         _one_entry_per_cloud_identity(self.resolved, "resolved")
         checked = (

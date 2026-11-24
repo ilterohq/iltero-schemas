@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import copy
+import time
 from typing import Any
 
 import pytest
 from pydantic import ValidationError
 
 from iltero_schemas.models.iac.deployment import Apply
-from iltero_schemas.models.iac.tools.terraform import DeposedDelete
+from iltero_schemas.models.iac.tools.terraform import DeposedDelete, configured_address
 from tests.conftest import POST_DEPLOY, change
 
 APPLY: dict[str, Any] = POST_DEPLOY["deployment"]["apply"]
@@ -231,3 +232,30 @@ def test_a_cut_log_never_shows_a_deposed_objects_delete_was_not_attempted() -> N
     apply.update(changes=[replace], outcomes_from="apply_log_and_state")
     with pytest.raises(ValidationError, match="never shows that a deposed object's delete was not attempted"):
         Apply.model_validate(apply)
+
+
+@pytest.mark.parametrize(
+    ("address", "base"),
+    [
+        ('module.a["k"].aws_x.y[0]', "module.a.aws_x.y"),
+        ('aws_x.y["a]b"]', "aws_x.y"),
+        ("aws_x.y", "aws_x.y"),
+        ("aws_x.y[", "aws_x.y["),
+        ("a[0]b[", "ab["),
+    ],
+)
+def test_an_address_s_indexes_are_dropped_to_give_the_configuration_s_address(address: str, base: str) -> None:
+    assert configured_address(address) == base
+
+
+def test_an_address_with_many_opening_brackets_and_no_closing_one_is_read_in_linear_time() -> None:
+    def seconds(count: int) -> float:
+        fastest = float("inf")
+        for _ in range(5):
+            started = time.perf_counter()
+            configured_address("[" * count)
+            fastest = min(fastest, time.perf_counter() - started)
+        return fastest
+
+    small, large = seconds(20_000), seconds(80_000)
+    assert large < 10 * small, (small, large)

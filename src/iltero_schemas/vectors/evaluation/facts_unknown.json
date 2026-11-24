@@ -51,6 +51,90 @@
         "unknown": null,
         "when": "true"
       }
+    },
+    {
+      "name": "approved_after_plan_stage_record_accepted_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.flow: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_facts.flow",
+          "reason": "server_facts_unavailable"
+        },
+        "when": "unknown"
+      }
+    },
+    {
+      "name": "evaluated_plan_is_pinned_plan_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.pinned_plan_digest: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_facts.pinned_plan_digest",
+          "reason": "server_facts_unavailable"
+        },
+        "when": null
+      }
+    },
+    {
+      "name": "received_plan_file_matches_evaluated_plan_file_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.flow: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_facts.flow",
+          "reason": "server_facts_unavailable"
+        },
+        "when": "unknown"
+      }
+    },
+    {
+      "name": "rendered_plan_matches_evaluated_plan_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.flow: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_facts.flow",
+          "reason": "server_facts_unavailable"
+        },
+        "when": "unknown"
+      }
+    },
+    {
+      "name": "plan_age_within_limit_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_timing.plan_age_seconds: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_timing.plan_age_seconds",
+          "reason": "server_facts_unavailable"
+        },
+        "when": null
+      }
+    },
+    {
+      "name": "replan_has_same_actions_as_evaluated_plan_unknown_marker",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+      "facts": "unknown_marker",
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.flow: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_facts.flow",
+          "reason": "server_facts_unavailable"
+        },
+        "when": "unknown"
+      }
     }
   ]
 }

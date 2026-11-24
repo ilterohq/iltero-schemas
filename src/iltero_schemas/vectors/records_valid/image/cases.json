@@ -1,7 +1,7 @@
 [
   {
     "name": "image_build_of_a_single_platform_image",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/platform_digests": [],
       "/change/index_evidence_ref": null,
@@ -13,7 +13,7 @@
   },
   {
     "name": "image_build_with_no_tag_no_build_commit_and_no_attestation",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/image/tag_resolution": null,
       "/change/build_commit": null,
@@ -33,7 +33,7 @@
   },
   {
     "name": "image_build_given_no_reports",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/reports": [],
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:e0f1d582b1a704fc9f698a3bc7e349ed4fa1e9ac1fe401639f2581e6fbc6c922",
@@ -43,50 +43,80 @@
   },
   {
     "name": "image_build_of_a_run_the_server_opened_names_no_environment",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/governance/run_opened_by": "server",
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/plan/execution/bundle/key_id": "iltero-signing-test",
+      "/stages/plan/events/digest": "sha256:5e8cf3a9dd91bfced2982d5bd04682d621898f1c831aa11814c230ee2b3405be",
       "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/0/provenance/assertion_source": "server_bundle",
       "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/1/provenance/assertion_source": "server_bundle",
       "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/2/provenance/assertion_source": "server_bundle",
       "/events/2/provenance/facts_source": "server",
-      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-      "/evidence_refs/15/size_bytes": 6585,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-        "count": 3
-      }
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/evidence_refs/15/digest": "sha256:5e8cf3a9dd91bfced2982d5bd04682d621898f1c831aa11814c230ee2b3405be",
+      "/evidence_refs/15/size_bytes": 6816
     },
     "remove": []
   },
   {
     "name": "image_build_of_a_run_the_server_opened_that_sent_its_attestation",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/governance/run_opened_by": "server",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server",
       "/change/attestation/sent_to_server": true,
+      "/stages/plan/execution/bundle/kind": "server",
+      "/stages/plan/execution/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/stages/plan/execution/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/plan/execution/bundle/key_id": "iltero-signing-test",
+      "/stages/plan/events/digest": "sha256:5e8cf3a9dd91bfced2982d5bd04682d621898f1c831aa11814c230ee2b3405be",
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
+      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
+      "/events/0/provenance/bundle/kind": "server",
+      "/events/0/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/0/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/0/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/0/provenance/assertion_source": "server_bundle",
+      "/events/0/provenance/facts_source": "server",
+      "/events/1/provenance/bundle/kind": "server",
+      "/events/1/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/1/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/1/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/1/provenance/assertion_source": "server_bundle",
+      "/events/1/provenance/facts_source": "server",
+      "/events/2/provenance/bundle/kind": "server",
+      "/events/2/provenance/bundle/tarball_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "/events/2/provenance/bundle/content_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/2/provenance/bundle/key_id": "iltero-signing-test",
+      "/events/2/provenance/assertion_source": "server_bundle",
+      "/events/2/provenance/facts_source": "server",
       "/coverage/subjects_in_scope/source_digest": "sha256:c0e6d2fc315ea7e467fe45e89665dbd061e433280eab9e39f693f933500f0b7f",
-      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-      "/evidence_refs/15/size_bytes": 6585,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-        "count": 3
-      }
+      "/coverage/assertions_required/origin": "server_pinned",
+      "/evidence_refs/15/digest": "sha256:5e8cf3a9dd91bfced2982d5bd04682d621898f1c831aa11814c230ee2b3405be",
+      "/evidence_refs/15/size_bytes": 6816
     },
     "remove": []
   },
   {
     "name": "image_build_of_a_local_run_with_no_evaluator",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/events/0/evaluation/status": "not_evaluated",
       "/events/0/evaluation/status_reason": "evaluator_unavailable",
@@ -167,6 +197,7 @@
           "not_evaluated": 3,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -221,6 +252,7 @@
           "not_evaluated": 3,
           "error": 0
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -252,7 +284,7 @@
   },
   {
     "name": "image_build_of_a_local_run_whose_commit_check_errored",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/events/0/evaluation/status": "error",
       "/events/0/evaluation/status_reason": "evaluator_crash",
@@ -325,6 +357,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -379,6 +412,7 @@
           "not_evaluated": 0,
           "error": 1
         },
+        "failed_checks_excepted": 0,
         "evaluations": 3,
         "gaps": [
           {
@@ -410,7 +444,7 @@
   },
   {
     "name": "image_build_of_a_local_run_whose_build_names_no_commit",
-    "vector": "image/local_run_build.json",
+    "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/build_commit": null,
       "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
@@ -428,343 +462,273 @@
   },
   {
     "name": "image_deploy_to_a_stateful_set_that_owns_its_pods",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/local_run_deploy_rolled_out.json",
     "set": {
       "/change/drift_check": {
-        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-        "workload": {
-          "platform": "kubernetes",
-          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
-          "kind": "stateful_set",
-          "namespace": "payments",
-          "name": "api",
-          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
-        },
-        "rollout": {
-          "kind": "stateful_set",
-          "resource_version": "48213",
-          "generation": 4,
-          "observed_generation": 4,
-          "complete": true,
-          "expected_live_pods": 2,
-          "desired_replicas": 2,
-          "replicas": 2,
-          "updated_replicas": 2,
-          "available_replicas": 2,
-          "current_revision": "api-6d5c4b3a2",
-          "update_revision": "api-6d5c4b3a2",
-          "strategy": "rolling_update",
-          "partition": 0
-        },
-        "template_containers": [
-          {
-            "name": "api",
-            "role": "app",
-            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
-            "compared": true
-          },
-          {
-            "name": "log-shipper",
-            "role": "sidecar",
-            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
-            "compared": false
-          }
-        ],
+        "change_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
         "containers_read": [
           {
-            "name": "api",
-            "role": "app",
-            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
             "compared": true,
-            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "digest": "sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "image_reference": "docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "name": "api",
             "pod_state": "live",
-            "revision": "api-6d5c4b3a2",
             "pods": [
-              "api-7d9f8b6c5-abcde",
-              "api-7d9f8b6c5-fghij"
-            ]
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "api-6d5c4b3a2",
+            "role": "app"
           },
           {
-            "name": "log-shipper",
-            "role": "sidecar",
-            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
             "compared": false,
-            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "digest": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "log-shipper",
             "pod_state": "live",
-            "revision": "api-6d5c4b3a2",
             "pods": [
-              "api-7d9f8b6c5-abcde",
-              "api-7d9f8b6c5-fghij"
-            ]
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "api-6d5c4b3a2",
+            "role": "sidecar"
+          },
+          {
+            "compared": false,
+            "digest": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "migrate",
+            "pod_state": "live",
+            "pods": [
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "api-6d5c4b3a2",
+            "role": "init"
           }
         ],
         "live_pods_read": 2,
-        "pods_resource_version": "48217",
-        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
-        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pod_owners_evidence_ref": null,
         "pods_evidence_ref": "post_verify/pods.json",
-        "pod_owners_evidence_ref": null
+        "pods_resource_version": "560",
+        "rollout": {
+          "available_replicas": 2,
+          "complete": true,
+          "desired_replicas": 2,
+          "expected_live_pods": 2,
+          "generation": 1,
+          "kind": "stateful_set",
+          "observed_generation": 1,
+          "replicas": 2,
+          "resource_version": "548",
+          "strategy": "rolling_update",
+          "updated_replicas": 2,
+          "partition": 0,
+          "current_revision": "api-6d5c4b3a2",
+          "update_revision": "api-6d5c4b3a2"
+        },
+        "run_id": "a724f0bd-676d-5417-8597-cf82b3259281",
+        "template_containers": [
+          {
+            "compared": true,
+            "image_reference": "docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "name": "api",
+            "role": "app"
+          },
+          {
+            "compared": false,
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "log-shipper",
+            "role": "sidecar"
+          },
+          {
+            "compared": false,
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "migrate",
+            "role": "init"
+          }
+        ],
+        "workload": {
+          "cluster_id": "74f9f5a4-ed3f-45e5-9863-f25648606762",
+          "kind": "stateful_set",
+          "name": "api",
+          "namespace": "payments",
+          "platform": "kubernetes",
+          "uid": "519606fd-9586-42c1-a5ad-5ac9be340162"
+        },
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:a698a924ad349030e4eebe9982e054011b723b9fd899f4102b9c56da59a1de24",
-      "/stages/post_verify/redaction/input/digest": "sha256:a698a924ad349030e4eebe9982e054011b723b9fd899f4102b9c56da59a1de24"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:43f3b1c77261ea62ea670dd793546ef7d2788929ad6c6884072439cccade9087",
+      "/stages/post_verify/redaction/input/digest": "sha256:43f3b1c77261ea62ea670dd793546ef7d2788929ad6c6884072439cccade9087"
     },
     "remove": [
-      "/evidence_refs/12"
+      "/evidence_refs/20"
     ]
   },
   {
     "name": "image_deploy_with_a_terminating_pod_on_the_previous_image",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/local_run_deploy_rolled_out.json",
     "set": {
       "/change/drift_check": {
-        "run_id": "7a2d3c4b-5e6f-5071-8b9c-1d2e3f4a5b6c",
-        "change_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-        "workload": {
-          "platform": "kubernetes",
-          "cluster_id": "5f0c1d1f-1f6c-4e5b-8b4a-7c2e3d9a8b7c",
-          "kind": "deployment",
-          "namespace": "payments",
-          "name": "api",
-          "uid": "3e1f0a2b-7c4d-4e5f-8a6b-9c0d1e2f3a4b"
-        },
-        "rollout": {
-          "resource_version": "48213",
-          "generation": 4,
-          "observed_generation": 4,
-          "complete": true,
-          "expected_live_pods": 2,
-          "kind": "deployment",
-          "desired_replicas": 2,
-          "replicas": 2,
-          "updated_replicas": 2,
-          "available_replicas": 2,
-          "paused": false,
-          "strategy": "rolling_update"
-        },
-        "template_containers": [
-          {
-            "name": "api",
-            "role": "app",
-            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
-            "compared": true
-          },
-          {
-            "name": "log-shipper",
-            "role": "sidecar",
-            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
-            "compared": false
-          }
-        ],
+        "change_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
         "containers_read": [
           {
-            "name": "api",
-            "role": "app",
-            "image_reference": "ghcr.io/acme/api@sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
             "compared": true,
-            "digest": "sha256:9555f244c96cff1d2aaeec43cc6bb226d166a5642c92c485570cd0c73a3487fb",
+            "digest": "sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "image_reference": "docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "name": "api",
             "pod_state": "live",
-            "revision": "7d9f8b6c5",
             "pods": [
-              "api-7d9f8b6c5-abcde",
-              "api-7d9f8b6c5-fghij"
-            ]
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "75877d75f5",
+            "role": "app"
           },
           {
-            "name": "api",
-            "role": "app",
-            "image_reference": "ghcr.io/acme/api@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "compared": true,
             "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "image_reference": "docker.io/library/nginx@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "name": "api",
             "pod_state": "terminating",
-            "revision": "5c4b3a291",
             "pods": [
               "api-5c4b3a291-zzzzz"
-            ]
+            ],
+            "revision": "5c4b3a291",
+            "role": "app"
           },
           {
-            "name": "log-shipper",
-            "role": "sidecar",
-            "image_reference": "docker.io/fluent/fluent-bit:3.1.4",
             "compared": false,
-            "digest": "sha256:6e2c192007955e140b45a9f70dfe9d04d2a6f269328b6a69f7da4af044e55fc5",
+            "digest": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "log-shipper",
             "pod_state": "live",
-            "revision": "7d9f8b6c5",
             "pods": [
-              "api-7d9f8b6c5-abcde",
-              "api-7d9f8b6c5-fghij"
-            ]
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "75877d75f5",
+            "role": "sidecar"
+          },
+          {
+            "compared": false,
+            "digest": "sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec",
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "migrate",
+            "pod_state": "live",
+            "pods": [
+              "api-75877d75f5-jh2h8",
+              "api-75877d75f5-nzgfm"
+            ],
+            "revision": "75877d75f5",
+            "role": "init"
           }
         ],
         "live_pods_read": 2,
-        "pods_resource_version": "48217",
-        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json",
-        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "pod_owners_evidence_ref": "post_verify/pod-owners.json",
         "pods_evidence_ref": "post_verify/pods.json",
-        "pod_owners_evidence_ref": "post_verify/pod-owners.json"
+        "pods_resource_version": "560",
+        "rollout": {
+          "available_replicas": 2,
+          "complete": true,
+          "desired_replicas": 2,
+          "expected_live_pods": 2,
+          "generation": 1,
+          "kind": "deployment",
+          "observed_generation": 1,
+          "paused": false,
+          "replicas": 2,
+          "resource_version": "548",
+          "strategy": "rolling_update",
+          "updated_replicas": 2
+        },
+        "run_id": "a724f0bd-676d-5417-8597-cf82b3259281",
+        "template_containers": [
+          {
+            "compared": true,
+            "image_reference": "docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "name": "api",
+            "role": "app"
+          },
+          {
+            "compared": false,
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "log-shipper",
+            "role": "sidecar"
+          },
+          {
+            "compared": false,
+            "image_reference": "docker.io/library/busybox:1.37",
+            "name": "migrate",
+            "role": "init"
+          }
+        ],
+        "workload": {
+          "cluster_id": "74f9f5a4-ed3f-45e5-9863-f25648606762",
+          "kind": "deployment",
+          "name": "api",
+          "namespace": "payments",
+          "platform": "kubernetes",
+          "uid": "519606fd-9586-42c1-a5ad-5ac9be340162"
+        },
+        "workload_after_pods_listing_evidence_ref": "post_verify/workload-after-pods-listing.json",
+        "workload_before_pods_listing_evidence_ref": "post_verify/workload-before-pods-listing.json"
       },
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e9338cab1ea994441271a57c5cef3d27973efceeecb9a711e33b9dd8d27689f7",
-      "/stages/post_verify/redaction/input/digest": "sha256:e9338cab1ea994441271a57c5cef3d27973efceeecb9a711e33b9dd8d27689f7"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:6e01e3059a354069302cb17a30c9eab649c6fe9b118507c3997af1c8ecb4231a",
+      "/stages/post_verify/redaction/input/digest": "sha256:6e01e3059a354069302cb17a30c9eab649c6fe9b118507c3997af1c8ecb4231a"
     },
     "remove": []
   },
   {
     "name": "image_deploy_of_a_run_the_server_opened_with_its_accepted_build",
-    "vector": "image/local_run_deploy.json",
-    "set": {
-      "/governance/run_opened_by": "server",
-      "/change/build": {
-        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
-        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        "platform_digests": [
-          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-        ],
-        "verified_commit": "c84e7a1000000000000000000000000000000000",
-        "build_commit": "c84e7a1000000000000000000000000000000000",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        }
-      },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/size_bytes": 4881,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 1,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
-    },
+    "vector": "image/governed_run_deploy_rolled_out.json",
+    "set": {},
     "remove": []
   },
   {
     "name": "image_deploy_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/governed_run_deploy_rolled_out.json",
     "set": {
-      "/governance/run_opened_by": "server",
-      "/change/build": {
-        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
-        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        "platform_digests": [
-          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-        ],
-        "verified_commit": "c84e7a1000000000000000000000000000000000",
-        "build_commit": "c84e7a1000000000000000000000000000000000",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        }
+      "/coverage/assertions_required/value": 4,
+      "/coverage/assertions_required/required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83",
+      "/coverage/assertions_evaluated": 4,
+      "/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
+        "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
       },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
+      "/coverage/status_counts/pass": 4,
+      "/coverage/evaluator_status_counts/opa/pass": 4,
+      "/coverage/evaluations": 4,
+      "/evidence_refs/15/digest": "sha256:841580955738d4f0ebe286f823fe079c8c4a265bfc517c1d59fd688bd4adb548",
+      "/evidence_refs/15/size_bytes": 4966,
+      "/stages/pre_deploy/assertions/count": 2,
+      "/stages/pre_deploy/coverage/assertions_evaluated": 2,
+      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e",
+      "/stages/pre_deploy/coverage/assertions_required/value": 2,
+      "/stages/pre_deploy/coverage/evaluations": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/pre_deploy/coverage/status_counts/pass": 2,
+      "/stages/pre_deploy/coverage/subjects_per_assertion": {
+        "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
       },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/coverage/status_counts/pass": 3,
-      "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/commit_review": {
-        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
-        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "decided_at": "2026-09-16T18:29:30Z",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
-        "head_commit": "c84e7a1000000000000000000000000000000000",
-        "review_starting_point": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "set_by": {
-            "provider": "iltero",
-            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
-          },
-          "set_at": "2026-09-01T08:00:00Z",
-          "reason": "Branch protection required reviews from this commit on."
-        },
-        "counted_since": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "earlier_reading": null
-        },
-        "commits_counted": 3,
-        "outcome": "reviewed"
-      },
-      "/stages/pre_deploy/events/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/digest": "sha256:126e95fed03f7dd399387762c145274916a61ea127d3654ceb3dcc58eb92b18f",
-      "/evidence_refs/25/size_bytes": 4881,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 1,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/stages/pre_deploy/events/count": 2,
+      "/stages/pre_deploy/events/digest": "sha256:841580955738d4f0ebe286f823fe079c8c4a265bfc517c1d59fd688bd4adb548"
     },
-    "remove": []
+    "remove": [
+      "/events/1",
+      "/evidence_refs/10",
+      "/evidence_refs/9",
+      "/evidence_refs/8",
+      "/evidence_refs/2"
+    ]
   },
   {
     "name": "image_deploy_whose_workload_no_reader_reads",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/local_run_deploy_rolled_out.json",
     "set": {
       "/expected_stages": [
         "pre_deploy",
@@ -782,7 +746,7 @@
         "subjects_in_scope": {
           "value": 1,
           "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
+          "source_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
           "removed_by_plan": 0,
           "excluded": []
         },
@@ -790,11 +754,11 @@
         "assertions_required": {
           "value": 3,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:14fc1cac49f2c4f2dc85a18192fdf6a5dc53145206469856d49f14ab44e5fcc4"
+          "required_assertion_digest": "sha256:ab31e602f5a115c7c7b108c59e79804dbc711af2f580f0d7dbd70185967d2ecd"
         },
         "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
           "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
           "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1
         },
@@ -806,15 +770,7 @@
           "not_evaluated": 0,
           "error": 0
         },
-        "evaluations": 3,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
+        "failed_checks_excepted": 0,
         "evaluator_status_counts": {
           "opa": {
             "pass": 1,
@@ -824,7 +780,16 @@
             "not_evaluated": 0,
             "error": 0
           }
-        }
+        },
+        "evaluations": 3,
+        "gaps": [],
+        "truncated": {
+          "value": false,
+          "limit": null,
+          "reason": null
+        },
+        "sampled": false,
+        "substituted_inputs": []
       },
       "/verdict": {
         "value": "undecided",
@@ -844,65 +809,64 @@
   },
   {
     "name": "image_deploy_of_a_run_the_server_opened_with_no_accepted_build",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/governed_run_deploy_rolled_out.json",
     "set": {
-      "/governance/run_opened_by": "server",
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/fail": 1,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "fail",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: false; change.build not_equal is false",
-      "/events/1/evaluation/observations/predicates/0/status": "false",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
+      "/change/build": null,
+      "/coverage/status_counts/pass": 3,
       "/coverage/status_counts/fail": 1,
       "/coverage/status_counts/unknown": 1,
-      "/stages/pre_deploy/events/digest": "sha256:3793e388c756c15e483d08e1c82a796133ccc93c0cc2363c138b60fa56250b15",
-      "/evidence_refs/25/digest": "sha256:3793e388c756c15e483d08e1c82a796133ccc93c0cc2363c138b60fa56250b15",
-      "/evidence_refs/25/size_bytes": 4903,
-      "/stages/pre_deploy/verdict": {
-        "value": "not_met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
+      "/coverage/evaluator_status_counts/opa/pass": 3,
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/events/0/provenance/input_digest": "sha256:60a30c51e0e771bb2b6df631c28ad1430c285d91ac650013d1c5f4592cae8321",
+      "/events/1/evaluation/observations/predicates/0/actual": null,
+      "/events/1/evaluation/observations/predicates/0/status": "unknown",
+      "/events/1/evaluation/observations/unknown": {
+        "path": "commit_review.outcome",
+        "reason": "server_facts_unavailable"
       },
-      "/verdict": {
-        "value": "not_met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
+      "/events/1/evaluation/policy_reason": "commit_review.outcome: server_facts_unavailable",
+      "/events/1/evaluation/status": "unknown",
+      "/events/1/evaluation/status_reason": "server_facts_unavailable",
+      "/events/1/provenance/input_digest": "sha256:b3d00bc8810a767ecca7a0352710bbc9a0fe1d22acfd666ffefd7c9271eb38b6",
+      "/events/2/evaluation/observations/predicates/0/actual": null,
+      "/events/2/evaluation/observations/predicates/0/status": "false",
+      "/events/2/evaluation/policy_reason": "assert: false; change.build not_equal is false",
+      "/events/2/evaluation/status": "fail",
+      "/events/2/provenance/input_digest": "sha256:f7fefcebf9845accbbe38ae808e5140b82a90eb9401bd250cb5119da7b1a36c5",
+      "/evidence_refs/1/digest": "sha256:60a30c51e0e771bb2b6df631c28ad1430c285d91ac650013d1c5f4592cae8321",
+      "/evidence_refs/1/path": "units/root/pre_deploy/contexts/sha256-60a30c51e0e771bb2b6df631c28ad1430c285d91ac650013d1c5f4592cae8321",
+      "/evidence_refs/1/ref_id": "sha256-60a30c51e0e771bb2b6df631c28ad1430c285d91ac650013d1c5f4592cae8321",
+      "/evidence_refs/1/size_bytes": 1821,
+      "/evidence_refs/2/digest": "sha256:b3d00bc8810a767ecca7a0352710bbc9a0fe1d22acfd666ffefd7c9271eb38b6",
+      "/evidence_refs/2/path": "units/root/pre_deploy/contexts/sha256-b3d00bc8810a767ecca7a0352710bbc9a0fe1d22acfd666ffefd7c9271eb38b6",
+      "/evidence_refs/2/ref_id": "sha256-b3d00bc8810a767ecca7a0352710bbc9a0fe1d22acfd666ffefd7c9271eb38b6",
+      "/evidence_refs/2/size_bytes": 1816,
+      "/evidence_refs/3/digest": "sha256:f7fefcebf9845accbbe38ae808e5140b82a90eb9401bd250cb5119da7b1a36c5",
+      "/evidence_refs/3/path": "units/root/pre_deploy/contexts/sha256-f7fefcebf9845accbbe38ae808e5140b82a90eb9401bd250cb5119da7b1a36c5",
+      "/evidence_refs/3/ref_id": "sha256-f7fefcebf9845accbbe38ae808e5140b82a90eb9401bd250cb5119da7b1a36c5",
+      "/evidence_refs/3/size_bytes": 1828,
+      "/evidence_refs/15/digest": "sha256:8862712fbd3c467978cac5c8eb4f2c10945438d0c70dc2530b9eb60371ab849c",
+      "/evidence_refs/15/size_bytes": 7405,
+      "/stages/pre_deploy/commit_review": {
+        "__unknown": true,
+        "reason": "server_facts_unavailable"
       },
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 0,
-          "fail": 1,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 1,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:8862712fbd3c467978cac5c8eb4f2c10945438d0c70dc2530b9eb60371ab849c",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/value": "not_met"
     },
     "remove": []
   },
   {
     "name": "image_deploy_whose_build_check_did_not_run_for_want_of_its_evaluator",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/local_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/verdict/value": "incomplete",
       "/stages/pre_deploy/verdict/reason": "not_evaluated",
@@ -910,57 +874,45 @@
       "/events/1/evaluation/status_reason": "evaluator_unavailable",
       "/verdict/value": "incomplete",
       "/verdict/reason": "not_evaluated",
-      "/stages/pre_deploy/events/digest": "sha256:92db68bbb32db329e4607ddc91351ecad517d776168a73d4506f6cef3eda0544",
-      "/evidence_refs/25/digest": "sha256:92db68bbb32db329e4607ddc91351ecad517d776168a73d4506f6cef3eda0544",
-      "/evidence_refs/25/size_bytes": 4976,
       "/stages/pre_deploy/evidence_status": {
-        "value": "has_gaps",
         "reasons": [
           {
             "reason": "required_checks_not_evaluated",
             "stage": null,
             "detail": "1 of 2 required checks were not evaluated"
           }
-        ]
+        ],
+        "value": "has_gaps"
       },
       "/evidence_status": {
-        "value": "has_gaps",
         "reasons": [
           {
             "reason": "required_checks_not_evaluated",
             "stage": "pre_deploy",
             "detail": "1 of 2 required checks were not evaluated"
           }
-        ]
+        ],
+        "value": "has_gaps"
       },
       "/stages/pre_deploy/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 2,
-          "origin": "project_files",
-          "required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e"
-        },
         "assertions_evaluated": 1,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 0,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 1,
-          "error": 0
+        "assertions_required": {
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:4cb80fdf9d9c79aa49f24be26e49c4bd317f32d97afa58444205945080946658",
+          "value": 2
         },
         "evaluations": 2,
+        "evaluator_status_counts": {
+          "opa": {
+            "error": 0,
+            "fail": 0,
+            "not_applicable": 0,
+            "not_evaluated": 1,
+            "pass": 0,
+            "unknown": 1
+          }
+        },
+        "failed_checks_excepted": 0,
         "gaps": [
           {
             "stage": null,
@@ -968,85 +920,99 @@
             "count": 1
           }
         ],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
         "sampled": false,
+        "status_counts": {
+          "error": 0,
+          "fail": 0,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "pass": 0,
+          "unknown": 1
+        },
+        "subjects_evaluated": 1,
+        "subjects_in_scope": {
+          "counted_from": "change_unit",
+          "excluded": [],
+          "removed_by_plan": 0,
+          "source_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
+          "value": 1
+        },
+        "subjects_per_assertion": {
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        },
         "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 0,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 0,
-            "not_evaluated": 1,
-            "error": 0
-          }
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
         }
       },
       "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
+        "assertions_evaluated": 3,
+        "assertions_required": {
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:225f649be136ed9a737261107522ea39f043e27f8991ef0a57fcec83ed0471ce",
+          "value": 4
+        },
+        "evaluations": 4,
+        "evaluator_status_counts": {
+          "opa": {
+            "error": 0,
+            "fail": 0,
+            "not_applicable": 0,
+            "not_evaluated": 1,
+            "pass": 2,
+            "unknown": 1
+          }
+        },
+        "failed_checks_excepted": 0,
+        "gaps": [
+          {
+            "stage": "pre_deploy",
+            "kind": "evaluator_unavailable",
+            "count": 1
+          }
+        ],
+        "sampled": false,
+        "status_counts": {
+          "error": 0,
+          "fail": 0,
+          "not_applicable": 0,
+          "not_evaluated": 1,
+          "pass": 2,
+          "unknown": 1
         },
         "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "project_files",
-          "required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83"
+        "subjects_in_scope": {
+          "counted_from": "change_unit",
+          "excluded": [],
+          "removed_by_plan": 0,
+          "source_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
+          "value": 1
         },
-        "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
           "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
           "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
           "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
-        "status_counts": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 1,
-          "error": 0
-        },
-        "evaluations": 4,
-        "gaps": [
-          {
-            "stage": "pre_deploy",
-            "kind": "evaluator_unavailable",
-            "count": 1
-          }
-        ],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
         "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 2,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 0,
-            "not_evaluated": 1,
-            "error": 0
-          }
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
         }
-      }
+      },
+      "/stages/pre_deploy/events/digest": "sha256:9f8e293ef40b21c8b609c24e172ef3fca53457412e2b71204265b4acd348bca5",
+      "/evidence_refs/10/digest": "sha256:9f8e293ef40b21c8b609c24e172ef3fca53457412e2b71204265b4acd348bca5",
+      "/evidence_refs/10/size_bytes": 4984
     },
     "remove": []
   },
   {
     "name": "image_deploy_whose_build_check_evaluator_crashed",
-    "vector": "image/local_run_deploy.json",
+    "vector": "image/local_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/verdict/value": "incomplete",
       "/stages/pre_deploy/verdict/reason": "evaluator_failed",
@@ -1054,57 +1020,45 @@
       "/events/1/evaluation/status_reason": "evaluator_crash",
       "/verdict/value": "incomplete",
       "/verdict/reason": "evaluator_failed",
-      "/stages/pre_deploy/events/digest": "sha256:3795190295e06811c040f05f4cb4228e666b377d6437084652ece56b2b41072e",
-      "/evidence_refs/25/digest": "sha256:3795190295e06811c040f05f4cb4228e666b377d6437084652ece56b2b41072e",
-      "/evidence_refs/25/size_bytes": 4962,
       "/stages/pre_deploy/evidence_status": {
-        "value": "has_gaps",
         "reasons": [
           {
             "reason": "required_policy_evaluation_failed",
             "stage": null,
             "detail": "1 of 2 evaluations ended in an evaluator error"
           }
-        ]
+        ],
+        "value": "has_gaps"
       },
       "/evidence_status": {
-        "value": "has_gaps",
         "reasons": [
           {
             "reason": "required_policy_evaluation_failed",
             "stage": "pre_deploy",
             "detail": "1 of 2 evaluations ended in an evaluator error"
           }
-        ]
+        ],
+        "value": "has_gaps"
       },
       "/stages/pre_deploy/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 2,
-          "origin": "project_files",
-          "required_assertion_digest": "sha256:c845db912b9e75e7d3d91128b3b41e157f7acec410019e1fb54db75df5198e8e"
-        },
         "assertions_evaluated": 1,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 0,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 1
+        "assertions_required": {
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:4cb80fdf9d9c79aa49f24be26e49c4bd317f32d97afa58444205945080946658",
+          "value": 2
         },
         "evaluations": 2,
+        "evaluator_status_counts": {
+          "opa": {
+            "error": 1,
+            "fail": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "pass": 0,
+            "unknown": 1
+          }
+        },
+        "failed_checks_excepted": 0,
         "gaps": [
           {
             "stage": null,
@@ -1112,256 +1066,100 @@
             "count": 1
           }
         ],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
         "sampled": false,
+        "status_counts": {
+          "error": 1,
+          "fail": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "pass": 0,
+          "unknown": 1
+        },
+        "subjects_evaluated": 1,
+        "subjects_in_scope": {
+          "counted_from": "change_unit",
+          "excluded": [],
+          "removed_by_plan": 0,
+          "source_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
+          "value": 1
+        },
+        "subjects_per_assertion": {
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
+        },
         "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 0,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 1
-          }
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
         }
       },
       "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
+        "assertions_evaluated": 3,
+        "assertions_required": {
+          "origin": "project_files",
+          "required_assertion_digest": "sha256:225f649be136ed9a737261107522ea39f043e27f8991ef0a57fcec83ed0471ce",
+          "value": 4
+        },
+        "evaluations": 4,
+        "evaluator_status_counts": {
+          "opa": {
+            "error": 1,
+            "fail": 0,
+            "not_applicable": 0,
+            "not_evaluated": 0,
+            "pass": 2,
+            "unknown": 1
+          }
+        },
+        "failed_checks_excepted": 0,
+        "gaps": [
+          {
+            "stage": "pre_deploy",
+            "kind": "evaluator_crash",
+            "count": 1
+          }
+        ],
+        "sampled": false,
+        "status_counts": {
+          "error": 1,
+          "fail": 0,
+          "not_applicable": 0,
+          "not_evaluated": 0,
+          "pass": 2,
+          "unknown": 1
         },
         "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "project_files",
-          "required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83"
+        "subjects_in_scope": {
+          "counted_from": "change_unit",
+          "excluded": [],
+          "removed_by_plan": 0,
+          "source_digest": "sha256:10b772ac7ca400b08750f6d0d8aba5062dd1c50822a5cf745374b009d9a09c1b",
+          "value": 1
         },
-        "assertions_evaluated": 3,
         "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
+          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
           "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
           "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
           "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
         },
-        "status_counts": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 1,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 1
-        },
-        "evaluations": 4,
-        "gaps": [
-          {
-            "stage": "pre_deploy",
-            "kind": "evaluator_crash",
-            "count": 1
-          }
-        ],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
         "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 2,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 1
-          }
+        "truncated": {
+          "limit": null,
+          "reason": null,
+          "value": false
         }
-      }
+      },
+      "/stages/pre_deploy/events/digest": "sha256:f9ad541afb394a44b9d9117641815ec69d324f727d7635770b5429aae222bcb2",
+      "/evidence_refs/10/digest": "sha256:f9ad541afb394a44b9d9117641815ec69d324f727d7635770b5429aae222bcb2",
+      "/evidence_refs/10/size_bytes": 4970
     },
     "remove": []
   },
   {
     "name": "image_deploy_of_a_run_the_server_opened_whose_commit_review_check_passed",
-    "vector": "image/local_run_deploy.json",
-    "set": {
-      "/governance/run_opened_by": "server",
-      "/change/build": {
-        "run_id": "6f1c2b3a-4d5e-5f60-8a9b-0c1d2e3f4a5b",
-        "record_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        "platform_digests": [
-          "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
-        ],
-        "verified_commit": "c84e7a1000000000000000000000000000000000",
-        "build_commit": "c84e7a1000000000000000000000000000000000",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        }
-      },
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/status_counts/pass": 2,
-      "/stages/pre_deploy/coverage/status_counts/unknown": 0,
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_verify/coverage/assertions_required/origin": "server_pinned",
-      "/events/0/provenance/facts_source": "server",
-      "/events/1/evaluation/status": "pass",
-      "/events/1/evaluation/status_reason": null,
-      "/events/1/evaluation/policy_reason": "assert: true",
-      "/events/1/evaluation/observations/predicates/0/actual": {
-        "type": "object"
-      },
-      "/events/1/evaluation/observations/predicates/0/status": "true",
-      "/events/1/evaluation/observations/unknown": null,
-      "/events/1/provenance/facts_source": "server",
-      "/stages/pre_deploy/commit_review": {
-        "host_reading_id": "4b1d2c3e-5f60-4718-8a9b-0c1d2e3f4a5b",
-        "host_reading_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "decided_at": "2026-09-16T18:29:30Z",
-        "repository": {
-          "host": "github",
-          "instance": "github.com",
-          "repository_id": "712400318"
-        },
-        "head_commit": "c84e7a1000000000000000000000000000000000",
-        "review_starting_point": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "set_by": {
-            "provider": "iltero",
-            "id": "3f2a1b4c-5d6e-4f70-8a9b-1c2d3e4f5a6b"
-          },
-          "set_at": "2026-09-01T08:00:00Z",
-          "reason": "Branch protection required reviews from this commit on."
-        },
-        "counted_since": {
-          "commit": "0b5f2d9000000000000000000000000000000000",
-          "earlier_reading": null
-        },
-        "commits_counted": 3,
-        "outcome": "reviewed"
-      },
-      "/events/0/assertion": {
-        "id": "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED",
-        "version": "1.0.0",
-        "digest": "sha256:dd7cc3120203e76fafda23c7a04a6391efc746048fda00ac0b99056f54506cbb"
-      },
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/events/0/evaluation/policy_reason": "assert: true",
-      "/events/0/evaluation/observations": {
-        "predicates": [
-          {
-            "actual": "reviewed",
-            "clause": "assert",
-            "expected": "reviewed",
-            "index": 0,
-            "op": "equal",
-            "path": "commit_review.outcome",
-            "status": "true"
-          }
-        ],
-        "unknown": null,
-        "when": null
-      },
-      "/stages/pre_deploy/coverage/subjects_per_assertion": {
-        "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-        "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1
-      },
-      "/stages/pre_deploy/coverage/assertions_required/required_assertion_digest": "sha256:e09d31bcffc26c90abf6f5dd77a649abc260e4a1609ebb037e58181b812cded6",
-      "/stages/pre_deploy/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "status_counts",
-        "stage": null
-      },
-      "/stages/pre_deploy/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/coverage": {
-        "subjects_in_scope": {
-          "value": 1,
-          "counted_from": "change_unit",
-          "source_digest": "sha256:4edd32ab77cfd06df324ec6e843e6b8cd9bfd3a30d530ff3ec9e93555a21e8f2",
-          "removed_by_plan": 0,
-          "excluded": []
-        },
-        "subjects_evaluated": 1,
-        "assertions_required": {
-          "value": 4,
-          "origin": "server_pinned",
-          "required_assertion_digest": "sha256:32973982d1db76646e3cafa4d623139a10fba0613a5e24cd75aaf3eb4ab89203"
-        },
-        "assertions_evaluated": 4,
-        "subjects_per_assertion": {
-          "ILT.COMMON.CHANGE.SOURCE.COMMITS_REVIEWED@1.0.0": 1,
-          "ILT.IMAGE.CHANGE.BUILD.BUILD_ACCEPTED_FOR_ENVIRONMENT@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.CONTENT.REPORTED_IMAGE_MATCHES_CHECKED_IMAGE@1.0.0": 1,
-          "ILT.IMAGE.DEPLOYMENT.DRIFT.RUNNING_IMAGE_MATCHES_DEPLOYED_IMAGE@1.0.0": 1
-        },
-        "status_counts": {
-          "pass": 4,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        },
-        "evaluations": 4,
-        "gaps": [],
-        "truncated": {
-          "value": false,
-          "limit": null,
-          "reason": null
-        },
-        "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 4,
-            "fail": 0,
-            "unknown": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
-      },
-      "/verdict": {
-        "value": "met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
-      },
-      "/evidence_status": {
-        "value": "whole",
-        "reasons": []
-      },
-      "/events/0/provenance/assertion_source_digest": "sha256:bdc96950d9cea64db15da8738a8f88a804171e90f81dbd2d96eb437a8d69fbf7",
-      "/events/0/provenance/compiled_digest": "sha256:e6e6c86aa30e7d3ccc5a2b63361010d2f9b14818879ef21d3f6f84cbb6a1557a",
-      "/stages/pre_deploy/events/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/digest": "sha256:c656a804941f49b539ed079c919c7dd6b60083b0f5e93d0a08ca7a8b0ae5971e",
-      "/evidence_refs/25/size_bytes": 4444,
-      "/stages/pre_deploy/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
-    },
+    "vector": "image/governed_run_deploy_rolled_out.json",
+    "set": {},
     "remove": []
   }
 ]

@@ -1,0 +1,1428 @@
+{
+  "description": "Each case evaluates one of the five checks of the apply job, or the re-plan check, over contexts/iac/pre_deploy_apply_in_a_later_job.json with the parts in set replaced; apply_job_timing is what the function apply_job_timing gives for the case's facts and approvals. The expected status is also the one apply_job_check_statuses gives without an evaluator. Facts the server could not supply are in facts_unknown.json.",
+  "context": "iac/pre_deploy_apply_in_a_later_job.json",
+  "cases": [
+    {
+      "name": "plan_age_within_its_limit",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "plan_age_exactly_at_its_limit",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 1200,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "plan_age_over_its_limit",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 1199,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_timing.plan_age_seconds less_than_or_equal is false",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "plan_age_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "plan_age_beside_approvals_the_server_could_not_supply",
+      "assertion": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "approvals_given_after_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        },
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "apply_job_approved_after_the_plan_stage_record_was_accepted",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_approved_exactly_when_the_plan_stage_record_was_accepted",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-16T18:10:00Z",
+            "bound_to": {
+              "ci_run_id": "9876543",
+              "ci_run_attempt": 1,
+              "ci_job_id": "28471930012"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_approved_before_the_plan_stage_record_was_accepted",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 1,
+          "approvals_given_after_plan_stage_record_accepted": 0
+        },
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-16T18:09:59.999999999Z",
+            "bound_to": {
+              "ci_run_id": "9876543",
+              "ci_run_attempt": 1,
+              "ci_job_id": "28471930012"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_timing.approvals_given_before_plan_stage_record_accepted equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_approved_before_and_after_the_plan_stage_record_was_accepted",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 1,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "approvals": [
+          {
+            "id": "apr_0001",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-16T18:05:00Z",
+            "bound_to": {
+              "ci_run_id": "9876543",
+              "ci_run_attempt": 1,
+              "ci_job_id": "28471930012"
+            }
+          },
+          {
+            "id": "apr_0002",
+            "actor": {
+              "provider": "github",
+              "id": "583232"
+            },
+            "roles": [],
+            "status": "approved",
+            "subject": {
+              "kind": "run",
+              "id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90"
+            },
+            "method": "ci_deployment_review",
+            "independence": "independent",
+            "policy_version": null,
+            "timestamp": "2026-09-16T18:25:00Z",
+            "bound_to": {
+              "ci_run_id": "9876543",
+              "ci_run_attempt": 1,
+              "ci_job_id": "28471930012"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_timing.approvals_given_before_plan_stage_record_accepted equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_not_approved",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 0
+        },
+        "approvals": []
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_timing.approvals_given_after_plan_stage_record_accepted greater_than_or_equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_approvals_the_server_could_not_supply",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "approvals_given_after_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        },
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_timing.approvals_given_before_plan_stage_record_accepted: server_facts_unavailable",
+        "unknown": {
+          "path": "apply_job_timing.approvals_given_before_plan_stage_record_accepted",
+          "reason": "server_facts_unavailable"
+        },
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_order_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "apply_job_order_of_a_job_the_server_could_not_identify",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_facts": {
+          "flow": "job_not_identified",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "apply_job_order_where_the_policy_requires_no_approval",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": false,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "organization_scope": {
+          "organization": {
+            "id": "acme"
+          },
+          "workspace": {
+            "id": "production"
+          },
+          "environment": {
+            "name": "production",
+            "production": false
+          }
+        }
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "apply_job_order_of_a_job_the_server_could_not_identify_where_the_policy_requires_no_approval",
+      "assertion": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+      "set": {
+        "apply_job_facts": {
+          "flow": "job_not_identified",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": false,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "organization_scope": {
+          "organization": {
+            "id": "acme"
+          },
+          "workspace": {
+            "id": "production"
+          },
+          "environment": {
+            "name": "production",
+            "production": false
+          }
+        }
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "received_plan_file_is_the_evaluated_one",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "received_plan_file_is_another",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_facts.received_plan_file_digest equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "received_plan_file_not_sent",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": {
+            "outcome": "not_sent"
+          },
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_facts.received_plan_file_digest equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "received_plan_file_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "received_plan_file_of_a_job_the_server_could_not_identify",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_facts": {
+          "flow": "job_not_identified",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "received_plan_file_beside_approvals_the_server_could_not_supply",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RECEIVED_PLAN_FILE_MATCHES_EVALUATED_PLAN_FILE",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "approvals_given_after_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        },
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "evaluated_plan_is_the_pinned_plan",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "evaluated_plan_is_not_the_pinned_plan",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:6666666666666666666666666666666666666666666666666666666666666666"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_facts.pinned_plan_digest equal is false",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "evaluated_plan_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "pinned_plan_beside_approvals_the_server_could_not_supply",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.EVALUATED_PLAN_IS_PINNED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "approvals_given_after_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        },
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": null
+      }
+    },
+    {
+      "name": "rendered_plan_is_the_evaluated_one",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "rendered_plan_is_another",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:6666666666666666666666666666666666666666666666666666666666666666",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; apply_job_facts.rendered_plan.digest equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "rendered_plan_not_sent",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "outcome": "not_sent"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.rendered_plan.digest: path_missing",
+        "unknown": {
+          "path": "apply_job_facts.rendered_plan.digest",
+          "reason": "path_missing"
+        },
+        "when": "true"
+      }
+    },
+    {
+      "name": "rendered_plan_not_sent_beside_a_saved_plan_file_not_sent",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "apply_in_a_later_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": {
+            "outcome": "not_sent"
+          },
+          "rendered_plan": {
+            "outcome": "not_sent"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "unknown",
+        "reason": "apply_job_facts.rendered_plan.digest: path_missing",
+        "unknown": {
+          "path": "apply_job_facts.rendered_plan.digest",
+          "reason": "path_missing"
+        },
+        "when": "true"
+      }
+    },
+    {
+      "name": "rendered_plan_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "rendered_plan_of_a_job_the_server_could_not_identify",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "job_not_identified",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+          "rendered_plan": {
+            "digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "digest_version": "1",
+            "tool": "terraform"
+          },
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "rendered_plan_beside_approvals_the_server_could_not_supply",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          },
+          "approvals_given_after_plan_stage_record_accepted": {
+            "__unknown": true,
+            "reason": "server_facts_unavailable"
+          }
+        },
+        "approvals": {
+          "__unknown": true,
+          "reason": "server_facts_unavailable"
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "replan_plans_the_same_as_the_evaluated_plan",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        }
+      },
+      "expected": {
+        "status": "pass",
+        "reason": "assert: true",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "replan_acts_otherwise_than_the_evaluated_plan",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": {
+          "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+          "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+          "tool": "terraform",
+          "tool_version": "1.14.0",
+          "replanned_at": "2026-09-16T18:32:00Z",
+          "evaluated_plan_resources": 2,
+          "replan_resources": 2,
+          "differences": [
+            {
+              "address": "aws_db_instance.payments",
+              "deposed_key": null,
+              "difference": "actions_changed"
+            }
+          ],
+          "differences_count": 1
+        }
+      },
+      "expected": {
+        "status": "fail",
+        "reason": "assert: false; replan_check.differences_count equal is false",
+        "unknown": null,
+        "when": "true"
+      }
+    },
+    {
+      "name": "replan_in_a_run_that_plans_and_applies_in_one_job",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+      "set": {
+        "apply_job_facts": {
+          "flow": "plan_and_apply_in_one_job",
+          "apply_job": {
+            "ci_run_id": "9876543",
+            "ci_run_attempt": 1,
+            "ci_job_id": "28471930012"
+          },
+          "accepted_plan_stage_record": {
+            "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+            "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+            "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+          },
+          "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+          "facts_issued_at": "2026-09-16T18:30:00Z",
+          "plan_age_limit": {
+            "seconds": 86400,
+            "source": "server_default",
+            "policy_version": null
+          },
+          "approval_requirement": {
+            "required": true,
+            "source": "environment_policy",
+            "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+          },
+          "received_plan_file_digest": null,
+          "rendered_plan": null,
+          "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": null
+      },
+      "expected": {
+        "status": "not_applicable",
+        "reason": "when: false",
+        "unknown": null,
+        "when": "false"
+      }
+    },
+    {
+      "name": "replan_not_compared",
+      "assertion": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+      "set": {
+        "apply_job_timing": {
+          "plan_age_seconds": 1200,
+          "approvals_given_before_plan_stage_record_accepted": 0,
+          "approvals_given_after_plan_stage_record_accepted": 1
+        },
+        "replan_check": {
+          "outcome": "not_compared"
+        }
+      },
+      "expected": {
+        "status": "unknown",
+        "reason": "replan_check.differences_count: path_missing",
+        "unknown": {
+          "path": "replan_check.differences_count",
+          "reason": "path_missing"
+        },
+        "when": "true"
+      }
+    }
+  ]
+}

@@ -11,7 +11,13 @@ from pydantic import TypeAdapter, ValidationError
 from iltero_schemas.canonical import change_digest, digest_of, record_uuid
 from iltero_schemas.change_types import PlanRecord
 from iltero_schemas.models.common.assertion import Stage
-from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS, StageRecord
+from iltero_schemas.models.common.car import (
+    CAR,
+    PATH_OF_TWO_DIGESTS,
+    PATH_OF_TWO_FILES,
+    SKIP_INTEGRITY_CHECKS,
+    StageRecord,
+)
 from iltero_schemas.models.common.coverage import Coverage, stage_outcome
 from iltero_schemas.models.common.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.common.redaction import MAX_REPORTED_PATHS
@@ -31,6 +37,11 @@ from tests.records import (
     top_level,
 )
 from tests.records import record as _record
+from tests.server_runs import (
+    expecting_the_stages_that_need_the_server,
+    keep_no_served_exceptions,
+    with_keyed_digests,
+)
 
 
 def test_a_record_a_run_wrote_validates() -> None:
@@ -155,14 +166,40 @@ def test_limits_a_record_names_must_be_limits(path: str, value: Any, message: st
         CAR.model_validate(document)
 
 
-def test_the_evidence_register_names_each_file_once() -> None:
+def test_the_evidence_register_names_each_file_by_one_digest_and_each_entry_once() -> None:
     document = _record()
     document["evidence_refs"].append(copy.deepcopy(document["evidence_refs"][0]))
-    with pytest.raises(ValidationError, match="name the same file"):
+    document["evidence_refs"][-1].update(ref_id="elsewhere.json", digest="sha256:" + "0" * 64)
+    with pytest.raises(ValidationError, match=PATH_OF_TWO_DIGESTS):
         CAR.model_validate(document)
     document["evidence_refs"][-1]["path"] = "units/root/elsewhere.json"
+    document["evidence_refs"][-1]["ref_id"] = document["evidence_refs"][0]["ref_id"]
     with pytest.raises(ValidationError, match="share a name"):
         CAR.model_validate(document)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("size_bytes", 1), ("media_type", "application/octet-stream"), ("canonicalization", None)],
+)
+def test_two_entries_naming_one_file_name_it_by_one_size_media_type_and_canonicalization(
+    field: str, value: Any
+) -> None:
+    document = _record()
+    entry = copy.deepcopy(document["evidence_refs"][0])
+    entry["ref_id"] = "a-second-name.json"
+    entry[field] = value if entry[field] != value else "application/json"
+    document["evidence_refs"].append(entry)
+    with pytest.raises(ValidationError, match=PATH_OF_TWO_FILES):
+        CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
+
+
+def test_two_entries_of_one_digest_may_name_one_file_as_a_record_package_keeps_them() -> None:
+    document = _record()
+    entry = copy.deepcopy(document["evidence_refs"][0])
+    entry["ref_id"] = "a-second-name.json"
+    document["evidence_refs"].append(entry)
+    assert CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True}).evidence_refs[-1].path == entry["path"]
 
 
 def test_a_stage_given_no_scanner_report_says_so() -> None:
@@ -179,16 +216,26 @@ def test_a_stage_records_what_each_report_said_and_what_became_of_it() -> None:
     assert scanners.scanner_check_mappings[0].id == "ACME.SCANNER_CHECKS.PAYMENTS"
 
 
-def test_a_scanner_block_keeps_a_report_or_names_a_required_scanner() -> None:
-    with pytest.raises(ValidationError, match="keep a report or name a required scanner"):
+def test_a_scanner_block_keeps_a_report_or_names_a_scanner_requirement() -> None:
+    with pytest.raises(ValidationError, match="keep a report or name a scanner requirement"):
         CAR.model_validate(_record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "reports": []}}))
 
 
-@pytest.mark.parametrize("required", [["trivy", "checkov"], ["checkov", "checkov"]], ids=["unsorted", "repeated"])
-def test_the_required_scanners_are_sorted_each_once(required: list[str]) -> None:
-    with pytest.raises(ValidationError, match="required_scanners is sorted, each once"):
+@pytest.mark.parametrize(
+    ("groups", "message"),
+    [
+        ([{"any_of": ["trivy"]}, {"any_of": ["checkov"]}], "the scanner requirements are sorted by their members"),
+        ([{"any_of": ["checkov"]}, {"any_of": ["checkov", "trivy"]}], "a member of one scanner requirement at most"),
+        ([{"any_of": ["trivy", "checkov"]}], "names its scanners sorted, each once"),
+        ([{"any_of": ["checkov", "checkov"]}], "names its scanners sorted, each once"),
+        ([{"any_of": []}], "at least 1 item"),
+    ],
+    ids=["groups unsorted", "a scanner in two groups", "members unsorted", "member repeated", "empty group"],
+)
+def test_the_scanner_requirements_are_canonical(groups: list[dict[str, list[str]]], message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
         CAR.model_validate(
-            _record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "required_scanners": required}})
+            _record(**{"stages.plan.scanners": {**copy.deepcopy(SCANNERS), "scanner_requirements": groups}})
         )
 
 
@@ -273,7 +320,7 @@ def _post_deploy_stage(plan_stage: dict[str, Any]) -> dict[str, Any]:
     stage["events"] = {**plan_stage["events"], "count": 0}
     # The record keeps the deployment as it is: the stage redacts nothing.
     redacted = {**plan_stage["redaction"]["input"], "kind": "deployment"}
-    stage["redaction"] = {**plan_stage["redaction"], "input": redacted, "redacted": [], "unknown": [], "allowed": []}
+    stage["redaction"] = {**plan_stage["redaction"], "input": redacted, "redacted": [], "unknown": [], "exempted": []}
     stage["coverage"] = {
         **plan_stage["coverage"],
         "subjects_in_scope": {
@@ -337,7 +384,10 @@ def test_the_identities_are_read_from_the_applied_plan_the_deployment_names() ->
         "digest": document["change"]["plan"]["digest"],
         "digest_version": "2",
     }
-    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
+    with pytest.raises(
+        ValidationError,
+        match="a plan digest that is not keyed names the version of the terraform redacted plan digest rule",
+    ):
         CAR.model_validate(document)
     document["change"]["identity"]["sources"]["plan"] = None
     document["change"]["identity"].update(removed=None, removed_unresolved=None)
@@ -475,16 +525,19 @@ def test_a_change_digest_is_the_digest_of_its_unit() -> None:
 
 
 def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
-    document = _record(**{"governance.run_opened_by": "server", "subject.environment": None})
+    document = expecting_the_stages_that_need_the_server(
+        with_keyed_digests(_record(**{"governance.run_opened_by": "server", "subject.environment": None}))
+    )
     for coverage in (document["coverage"], document["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
+    keep_no_served_exceptions(document)
     with pytest.raises(ValidationError, match="a record of a run the server opened names the environment"):
         CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
 
 
 def test_a_change_digest_names_the_records_environment() -> None:
     plan = _checked(RECORD["change"]["plan"]["digest"])
-    document = _record(**{"subject.environment": "staging"})
+    document = _record(**{"subject.environment.name": "staging"})
     with pytest.raises(
         ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
     ):
@@ -546,23 +599,33 @@ def test_the_identities_count_exactly_the_deposed_objects_the_apply_destroyed() 
         ("stages.plan.reference_time.anything", [1, 2]),
         ("stages.plan.redaction", {}),
         ("stages.plan.redaction.input.kind", "artifact"),
-        ("stages.plan.redaction.redacted", [{"path": "resources[0].after.password", "reason": "Not A Token"}]),
+        ("stages.plan.redaction.redacted", [{"path": ["resources", 0, "after", "password"], "reason": "Not A Token"}]),
+        ("stages.plan.redaction.redacted", [{"path": ["resources", 0], "reason": "matched_pattern"}]),
         ("subject.source", {"x": 1}),
         ("subject.source.vcs", "svn"),
     ],
-    ids=["time-no-source", "time-extra", "redaction-empty", "redaction-kind", "redaction-reason", "source", "vcs"],
+    ids=[
+        "time-no-source",
+        "time-extra",
+        "redaction-empty",
+        "redaction-kind",
+        "redaction-reason",
+        "redaction-reason-unlisted",
+        "source",
+        "vcs",
+    ],
 )
 def test_the_reference_time_redaction_report_and_source_have_their_shape(path: str, value: Any) -> None:
     with pytest.raises(ValidationError):
         CAR.model_validate(_record(**{path: value}))
 
 
-def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None:
-    odd = 'resources[0].after.tags["a key\nwith a line"]' + "x" * 3000
+def test_a_redaction_report_keeps_each_key_of_a_path_as_written() -> None:
+    odd = ["resources", 0, "after", "tags", "a key\nwith a line." + "x" * 3000, ""]
     document = _record(
         **{
             "stages.plan.redaction.unknown": [odd],
-            "stages.plan.redaction.allowed": [{"path": odd, "reason": "Public by design"}],
+            "stages.plan.redaction.exempted": [{"path": odd, "reason": "Public by design"}],
         }
     )
     assert CAR.model_validate(document).stages[Stage.PLAN].redaction.unknown == [odd]
@@ -571,25 +634,37 @@ def test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written() -> None
 @pytest.mark.parametrize(
     ("path", "value"),
     [
-        ("stages.plan.redaction.unknown", ["x" * (RAW_TEXT_MAX_BYTES + 1)]),
-        ("stages.plan.redaction.unknown", [""]),
-        ("stages.plan.redaction.unknown", ["p"] * (MAX_REPORTED_PATHS + 1)),
-        ("stages.plan.redaction.allowed", [{"path": "p", "reason": "line\nbreak"}]),
-        ("stages.plan.redaction.allowed", [{"path": "p", "reason": ""}]),
+        ("stages.plan.redaction.unknown", [["x" * (RAW_TEXT_MAX_BYTES + 1)]]),
+        ("stages.plan.redaction.unknown", [["p"] * 65]),
+        ("stages.plan.redaction.unknown", [[-1]]),
+        ("stages.plan.redaction.unknown", [[True]]),
+        ("stages.plan.redaction.unknown", ["p"]),
+        ("stages.plan.redaction.unknown", [[f"p{i}"] for i in range(MAX_REPORTED_PATHS + 1)]),
+        ("stages.plan.redaction.exempted", [{"path": ["p"], "reason": "line\nbreak"}]),
+        ("stages.plan.redaction.exempted", [{"path": ["p"], "reason": ""}]),
     ],
-    ids=["path-too-long", "path-empty", "too-many-paths", "reason-control", "reason-empty"],
+    ids=[
+        "key-too-long",
+        "path-too-deep",
+        "negative-index",
+        "boolean-segment",
+        "dotted-text",
+        "too-many-paths",
+        "reason-control",
+        "reason-empty",
+    ],
 )
-def test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text(path: str, value: Any) -> None:
+def test_a_redaction_report_is_bounded_and_its_exemption_reasons_are_plain_text(path: str, value: Any) -> None:
     with pytest.raises(ValidationError):
         CAR.model_validate(_record(**{path: value}))
 
 
 def test_raw_text_is_bounded_in_utf8_bytes() -> None:
     at_limit = "\u00e9" * (RAW_TEXT_MAX_BYTES // 2)
-    accepted = CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [at_limit]}))
-    assert accepted.stages[Stage.PLAN].redaction.unknown == [at_limit]
+    accepted = CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [[at_limit]]}))
+    assert accepted.stages[Stage.PLAN].redaction.unknown == [[at_limit]]
     with pytest.raises(ValidationError, match=f"at most {RAW_TEXT_MAX_BYTES} bytes"):
-        CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [at_limit + "\u00e9"]}))
+        CAR.model_validate(_record(**{"stages.plan.redaction.unknown": [[at_limit + "\u00e9"]]}))
 
 
 @pytest.mark.parametrize(
@@ -617,7 +692,7 @@ def test_a_clock_time_written_another_way_is_the_same_instant() -> None:
 
 def test_a_stage_names_a_local_bundles_content_digest_and_key_as_null() -> None:
     document = _record()
-    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-bundle-2026-09"
+    document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "iltero-signing-test"
     with pytest.raises(ValidationError, match="exactly when its kind is server"):
         CAR.model_validate(document)
 

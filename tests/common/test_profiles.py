@@ -29,13 +29,15 @@ DOCUMENTED = {
         "subject",
         "evaluations",
         "approvals",
-        "exceptions",
         "commit_review",
         "run",
+        "apply_job_facts",
+        "apply_job_timing",
+        "replan_check",
     },
     Stage.POST_DEPLOY: {"source", "change", "plan", "subject", "deployment"},
     Stage.POST_VERIFY: {"source", "subject", "deployment", "drift_check", "assurance"},
-    Stage.RUNTIME: {"source", "subject", "deployment", "assurance", "exceptions"},
+    Stage.RUNTIME: {"source", "subject", "deployment", "assurance"},
 }
 # The parts a build's input provides at its plan stage, beyond the three every stage has.
 BUILD = {"source", "subject", "artifact", "tests", "scans", "verified_source", "attestation_outcome"}

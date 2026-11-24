@@ -28,10 +28,14 @@ if TYPE_CHECKING:
 # The type of the run that records an activity: ``change``, a run that changes a project's unit in an environment;
 # ``build``, a run that builds an artifact, in no environment.
 RunType = Literal["change", "build"]
-# A document a stage must keep: the record itself, the resource identities document that lists the deployed
-# resources, or the raw index of a container image built for several platforms. Every other file a record names stays
-# in the pipeline's own store; the record keeps its digest.
-DocumentName = Literal["record", "resource_identities", "image_index"]
+# A document a stage sends the server: the record itself, the resource identities document that lists the deployed
+# resources, the raw index of a container image built for several platforms, and, for a stage that reads scanner
+# reports in a run the server opened, the redacted plan they were read against, each report as the stage kept it and the
+# observations it read from each. Every other file a record names stays in the pipeline's own store; the record keeps
+# its digest.
+DocumentName = Literal[
+    "record", "resource_identities", "image_index", "redacted_plan", "scanner_report", "scanner_observations"
+]
 
 
 @dataclass(frozen=True)
@@ -47,6 +51,9 @@ class Activity:
     project_may_leave_out: frozenset[Stage]
     # The stages the policy of the environment a server opened the run for may leave out of a record.
     environment_policy_may_leave_out: frozenset[Stage]
+    # The stages that read what only the server that opened a run supplies: a run the tool opened leaves each of them
+    # out of scope as needing the server (``needs_the_server``), and only those.
+    stages_that_need_the_server: frozenset[Stage]
     # The stages a record may call not supported: those its tool or its target cannot run, such as the post-verify
     # stage of an IaC tool whose drift no pipeline reads back. Any other stage is expected, or left out by a project or
     # a policy.
@@ -54,17 +61,29 @@ class Activity:
     # The documents a run uploads to the server for each stage, which the server counts as required: the record, and
     # after the deployment the resource identities document, which lists the deployed resources by their cloud ids.
     required_documents: Mapping[Stage, tuple[DocumentName, ...]]
-    # The documents a stage must keep only because the record's change names them, by stage and document, each by its
-    # name in the record's evidence register: for a build, its raw index.
+    # The documents a stage sends with its record beyond the required ones, by stage and document, each by the
+    # ``ref_id`` of its entry in the record's evidence register: for a build, its raw index; for a change made with an
+    # IaC tool, the files a stage of a run the server opened that reads scanner reports read them with
+    # (``models.iac.stage_files``); none for a run the tool opened.
     named_documents: Callable[[CAR], Mapping[Stage, Mapping[DocumentName, tuple[str, ...]]]]
     # The built-in assertion that ties the record's evaluations to its checked content, by its id, and the stage it is
     # evaluated at. No policy excludes it.
     carried_out_matches_checked: tuple[str, Stage]
     # Every built-in assertion a record of this activity evaluates, by the stage it belongs to: once that stage has
-    # reported, it evaluated the assertion once, and found it applies. ``carried_out_matches_checked`` is one of them.
-    always_evaluated: Mapping[Stage, str]
+    # reported, it evaluated each once, and found it applies unless its expected status is not_applicable.
+    # ``carried_out_matches_checked`` is one of them.
+    always_evaluated: Mapping[Stage, frozenset[str]]
+    # The status each built-in check of a record must have, by assertion id, worked out from what the record holds;
+    # a check it names no status for is not held to one. Every reader works it out the same way.
+    expected_statuses: Callable[[CAR], Mapping[str, str]]
+    # The built-in checks the Iltero CLI stops on even when their stage runs in advisory mode: any result other than
+    # pass or not_applicable. The record states the stage's mode; only the CI job's own result shows what ran.
+    enforced_in_advisory_mode: frozenset[str]
     # The content the record's change checked, which every event of the record names.
     checked_content: Callable[[CAR], CheckedContent]
+    # The parts an evaluation input of a stage carries as the record holds them, by the part's name: a kept input that
+    # carries another value is not one of the record's (``models.common.kept_inputs``).
+    input_parts_of_the_record: Callable[[CAR, Stage], Mapping[str, object]]
     # Raise ``ValueError`` unless the change's body holds together with the record's stages.
     check_record: Callable[[CAR], None]
     # The values of the body a reader can recompute that are bound to the change digest, and are not what they
@@ -77,6 +96,9 @@ class Activity:
     # The stages that read scanner reports: only they keep one, and only their evaluations may stand on a scanner's
     # result.
     stages_that_read_scanner_reports: frozenset[Stage]
+    # The stage that applies the exceptions the server serves a run it opened to its failed results
+    # (``models.common.served_exceptions``); None for an activity that applies none.
+    stage_that_applies_served_exceptions: Stage | None
 
 
 @dataclass(frozen=True)

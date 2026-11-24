@@ -1,12 +1,12 @@
 """The unknown marker: what stands where a fact could not be supplied.
 
 Some assertions need facts only the server holds: who approved the change,
-which exceptions are in force, earlier evaluations. Until the server can
-supply such a part, the evaluation input holds an unknown marker in its place
-rather than an empty list. The difference decides the verdict: an assertion
-that looks for an approval in an empty list fails, as if the change had been
-refused; the same assertion over a marker yields ``unknown`` with the
-marker's reason, which says what is true — the answer was not available.
+earlier evaluations. Until the server can supply such a part, the evaluation
+input holds an unknown marker in its place rather than an empty list. The
+difference decides the verdict: an assertion that looks for an approval in an
+empty list fails, as if the change had been refused; the same assertion over a
+marker yields ``unknown`` with the marker's reason, which says what is true —
+the answer was not available.
 
 A fact a tool did not report, such as whether an older IaC tool's plan is
 complete, or the registry digest of an image a container runs when the

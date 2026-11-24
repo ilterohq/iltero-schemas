@@ -4,16 +4,17 @@
       "name": "empty_object",
       "description": "An empty plan is digested as an empty object.",
       "tool": "terraform",
-      "version": "1",
       "plan": {},
       "canonical": "{}",
-      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:49451b0957d3f406ef84f54972822c5c2e86af2f2566ae942fef8f34243f3453",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:7bebdb01bd27ff1ea3a3fbc2e9e673782d5b4a93965bacc00089e074f76379c8"
     },
     {
       "name": "only_excluded_keys",
       "description": "A plan that holds only the keys the digest ignores is digested as an empty object.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "timestamp": "2026-06-25T00:00:00Z",
         "terraform_version": "1.5.7",
@@ -36,13 +37,15 @@
         ]
       },
       "canonical": "{}",
-      "digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:49451b0957d3f406ef84f54972822c5c2e86af2f2566ae942fef8f34243f3453",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:7bebdb01bd27ff1ea3a3fbc2e9e673782d5b4a93965bacc00089e074f76379c8"
     },
     {
       "name": "excluded_keys_stripped_around_content",
       "description": "The keys the digest ignores are dropped; resource_changes is kept with its order.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "format_version": "1.2",
         "terraform_version": "1.5.7",
@@ -77,13 +80,15 @@
         ]
       },
       "canonical": "{\"resource_changes\":[{\"address\":\"aws_s3_bucket.a\",\"change\":{\"actions\":[\"create\"]}},{\"address\":\"aws_s3_bucket.b\",\"change\":{\"actions\":[\"create\"]}}]}",
-      "digest": "sha256:7419ed8af78e9e7731464d5394dead0dbf686a3e330c30649b1de638d75e1223"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:49927489cea09179cbab8fa30f1aee4a8dc2fa16a389ab90f30492763ede9590",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:31433b7c70f917fd3cc423e0a18e3feb5297f0ad261fe81cdf1dc4a28a2229d3"
     },
     {
       "name": "numbers_bool_null",
       "description": "Whole-number floats are written as integers (1.0 becomes 1), -0.0 becomes 0; true, false and null are kept.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "resource_changes": [
           {
@@ -100,13 +105,15 @@
         ]
       },
       "canonical": "{\"resource_changes\":[{\"values\":{\"count\":1,\"disabled\":false,\"enabled\":true,\"frac\":0.5,\"neg_zero\":0,\"note\":null,\"ratio\":1}}]}",
-      "digest": "sha256:05b964040c49fc52aa3ab56394978ebe5daa34aafa12b5047133fddcc0136e24"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:44bc01706940c71c515660f78efc1b07d1a12ce6246f7e8470adc84524c00705",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:f19f31a9b761a26428bf225fddb1015abd871cb1eafadd1f179c5f3f08123ff3"
     },
     {
       "name": "nested_key_sorting",
       "description": "Object keys are sorted at every level; the order of arrays is kept.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "planned_values": {
           "root_module": {
@@ -125,13 +132,15 @@
         }
       },
       "canonical": "{\"planned_values\":{\"root_module\":{\"resources\":[{\"name\":\"x\",\"values\":{\"tags\":{\"a\":\"1\",\"b\":\"2\"}}}]}}}",
-      "digest": "sha256:4f7ce37f925ae2be1656bd8fffb6c31cf248260b5b558f99093a677a6196fca2"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:b682c3f32694ef768654aecf3859291faee8609347d4f8c485e42e0fca80269e",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:7ecd9213ce1b1a50e2cb74562371c6f839f046ae4bf123e507317e9cde974305"
     },
     {
       "name": "non_ascii_values",
       "description": "Characters outside ASCII are written as themselves, not escaped.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "resource_changes": [
           {
@@ -143,26 +152,30 @@
         ]
       },
       "canonical": "{\"resource_changes\":[{\"values\":{\"emoji\":\"🔒\",\"note\":\"café-η\"}}]}",
-      "digest": "sha256:de5768ce2a1a612c60038bb4c308a05d71fd3900fdeeb0833163fda362f92330"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:46b425377cd2d6be57553293704b4d31a56cae104a8f831c156ffc81311d2fd8",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:f02cff027c0a78217f682cbf2e9c7520760f2f4610a23705c756ae5cb2db955f"
     },
     {
       "name": "non_ascii_keys",
       "description": "Object keys outside ASCII are sorted by code point.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "resource_changes": [],
         "é": 1,
         "a": 2
       },
       "canonical": "{\"a\":2,\"resource_changes\":[],\"é\":1}",
-      "digest": "sha256:ba8bf264f08bd6531924f8abdf630c50fa9c0ded7c413895484c2f3f755d4759"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:a1dfb0f7e66b07a823b5846f0511079724d34d3b2941eb970c3e493ffe89a19f",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:0f6c68bc3cff83376d509a9ef12da70d16358b8c504dde7322df9255220157be"
     },
     {
       "name": "array_order_significant",
       "description": "The order of resource_changes is kept exactly as Terraform wrote it; it is meaningful.",
       "tool": "terraform",
-      "version": "1",
       "plan": {
         "resource_changes": [
           {
@@ -177,7 +190,10 @@
         ]
       },
       "canonical": "{\"resource_changes\":[{\"address\":\"z\"},{\"address\":\"a\"},{\"address\":\"m\"}]}",
-      "digest": "sha256:909713d8c1be9121ec60460d8b123b985a94709cf8bd14f48dbb5ca1ad1c3bed"
+      "keyed_version": "1",
+      "keyed_digest": "hmac-sha256:42ebd143522e1ff5ad61fb20aff48053afcd26596f859106f4e92cf0d881d1c0",
+      "redacted_version": "redacted-1",
+      "redacted_digest": "sha256:9fdd71ae2008ad87228cd57e16185708f3537f40147f5c84eccadd6232b258b2"
     }
   ]
 }

@@ -1,0 +1,18 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN
+  version: "1.0.0"
+  title: The re-plan the apply job reports plans the same actions on the same resources as the plan the plan stage evaluated
+  remediation: Plan the change again in a new run, review the new plan, and approve its apply job.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    path: apply_job_facts.flow
+    not_equal: plan_and_apply_in_one_job
+  assert:
+    path: replan_check.differences_count
+    equal: 0

@@ -9,8 +9,8 @@
     "verified_at": "2026-09-22T13:10:00.000Z"
   },
   "record": {
-    "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
-    "digest": "sha256:ecb9bf065f2928754413d520b082ad02f97cc0d396577a0d3e6d87ef5ea790a1"
+    "uuid": "ad857659-ddba-5e8d-a9e4-75d3350af863",
+    "digest": "sha256:963103bec81ac2bcb1ef373986d56211e6c3c1d001b9f5c7e4802e66b3e63b0d"
   },
   "properties": {
     "integrity": {
@@ -69,9 +69,44 @@
       "detail": null
     },
     "evaluator_binary": {
-      "state": "failed",
-      "reason": "other_binary_named",
-      "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (4 more problems)"
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
+    },
+    "scanner_reports": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
+      "detail": null
+    },
+    "plan_age": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "apply_job_approval_order": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "received_plan_file": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "rendered_plan": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "pinned_plan": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
+    },
+    "replan_resource_actions": {
+      "state": "not_performed",
+      "reason": "run_opened_locally",
+      "detail": null
     }
   }
 }

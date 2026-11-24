@@ -7,5 +7,640 @@
     },
     "remove": [],
     "message": "stage_completeness is one of the results a verifier gives that property"
+  },
+  {
+    "name": "exceptions_with_the_result_the_contract_no_longer_gives",
+    "vector": "iac/verification_report.json",
+    "set": {
+      "/properties/exceptions/state": "not_assessed",
+      "/properties/exceptions/reason": "served_exceptions_not_assessed"
+    },
+    "remove": [],
+    "message": "exceptions is one of the results a verifier gives that property"
+  },
+  {
+    "name": "scanner_reports_with_a_reason_of_another_property",
+    "vector": "iac/verification_report.json",
+    "set": {
+      "/properties/scanner_reports/state": "claimed_by_record",
+      "/properties/scanner_reports/reason": "server_bundle_named"
+    },
+    "remove": [],
+    "message": "scanner_reports is one of the results a verifier gives that property"
+  },
+  {
+    "name": "plan_age_with_the_reason_of_another_property",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/plan_age/reason": "same_resource_actions"
+    },
+    "remove": [],
+    "message": "plan_age is one of the results a verifier gives that property"
+  },
+  {
+    "name": "plan_age_claimed_with_the_reason_of_a_failure",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/plan_age/reason": "plan_older_than_limit"
+    },
+    "remove": [],
+    "message": "plan_age is one of the results a verifier gives that property"
+  },
+  {
+    "name": "replan_resource_actions_verified_on_an_unsigned_record",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/replan_resource_actions/state": "verified"
+    },
+    "remove": [],
+    "message": "no property of an unsigned record is verified"
+  },
+  {
+    "name": "plan_age_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/apply_job_approval_order": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/received_plan_file": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/rendered_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/pinned_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/replan_resource_actions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "apply_job_approval_order_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_age": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/received_plan_file": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/rendered_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/pinned_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/replan_resource_actions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "received_plan_file_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_age": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/apply_job_approval_order": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/rendered_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/pinned_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/replan_resource_actions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "rendered_plan_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_age": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/apply_job_approval_order": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/received_plan_file": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/pinned_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/replan_resource_actions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "pinned_plan_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_age": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/apply_job_approval_order": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/received_plan_file": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/rendered_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/replan_resource_actions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "replan_resource_actions_decided_beside_a_failed_integrity",
+    "vector": "iac/verification_report_commit_not_reviewed.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/approval_identity": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_provenance": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/stage_completeness": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_apply_match": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/runtime_verification": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/deployment_coverage": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/exceptions": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/commit_review": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/reference_time": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/evaluator_binary": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/scanner_reports": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/plan_age": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/apply_job_approval_order": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/received_plan_file": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/rendered_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/pinned_plan": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "when a record's integrity is not established, every other property is could_not_decide"
   }
 ]

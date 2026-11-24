@@ -39,12 +39,10 @@ from iltero_schemas.canonical.common.encoding import digest_of
 from iltero_schemas.models.common.assertion import Stage, TargetKind
 from iltero_schemas.models.common.base import StrictModel
 from iltero_schemas.models.common.change_type import ActivityName
-from iltero_schemas.models.common.coverage import (
-    CHECKED_AFTER_DEPLOYMENT,
-    postponed_count,
-)
-from iltero_schemas.models.common.event import AssertionRef, AssuranceEvent, OpaEvaluator
-from iltero_schemas.models.common.fields import MAX_RESOURCES, Digest
+from iltero_schemas.models.common.coverage_gaps import CHECKED_AFTER_DEPLOYMENT, postponed_count
+from iltero_schemas.models.common.event import AssuranceEvent, OpaEvaluator
+from iltero_schemas.models.common.fields import MAX_RESOURCES, AssertionRef, Digest, PlanDigest
+from iltero_schemas.models.common.redaction import check_value_changes
 from iltero_schemas.models.common.subjects import local_identity
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths
@@ -72,7 +70,7 @@ class PostponedCheck(StrictModel):
     subject_key: Digest
     # The path the condition could not settle, as the condition names it (``resource.after.storage_encrypted``).
     path: Annotated[str, Field(pattern=r"^resource\.after\.[A-Za-z0-9_.-]+$", max_length=MAX_PATH_LENGTH)]
-    plan_digest: Digest
+    plan_digest: PlanDigest
 
     @property
     def key(self) -> CheckKey:
@@ -174,6 +172,8 @@ def check_postponed_checks(car: CAR) -> None:
             raise ValueError("only the post-verify stage redacts values after the apply")
         if record.resource_redaction is not None and record.resource_redaction.input.kind != "post_apply_resources":
             raise ValueError("the post-verify stage's resource redaction is of the values after the apply")
+        if record.resource_redaction is not None:
+            check_value_changes(record.resource_redaction)
     plan = car.stages.get(Stage.PLAN)
     listed = plan.postponed_checks if plan is not None and plan.postponed_checks is not None else []
     counted = postponed_count(plan.coverage.gaps) if plan is not None else 0

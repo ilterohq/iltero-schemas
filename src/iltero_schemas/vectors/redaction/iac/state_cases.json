@@ -1,0 +1,3878 @@
+{
+  "cases": [
+    {
+      "name": "terraform_state_with_a_sensitive_string_output",
+      "description": "A captured state with a sensitive string output whose value the random_password resource holds too, a non-sensitive output, a data source, a resource with sensitive values and child modules: each flagged value is hidden, and so is the whole output named password, by its key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_create.json",
+        "under": null
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            1,
+            "values",
+            "sensitive_content"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "bcrypt_hash"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "result"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "outputs",
+            "password",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          2,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          3,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          4,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          5,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          6,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          7,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "password",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "outputs": {
+            "manifest": {
+              "sensitive": false,
+              "value": "suffix=a85595\n",
+              "type": "string"
+            },
+            "password": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          },
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.local_file.manifest",
+                "mode": "data",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=a85595\n",
+                  "content_base64": "c3VmZml4PWE4NTU5NQo=",
+                  "content_base64sha256": "yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=",
+                  "content_base64sha512": "kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==",
+                  "content_md5": "70d83f239c8b2f783ce2c5dde3e39809",
+                  "content_sha1": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "content_sha256": "caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409",
+                  "content_sha512": "923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69",
+                  "filename": "./manifest.txt",
+                  "id": "7939bae7383f7c439f56c1a1b8e95960e7dddc86"
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "local_file.manifest",
+                "mode": "managed",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=a85595\n",
+                  "content_base64": null,
+                  "content_base64sha256": "yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=",
+                  "content_base64sha512": "kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==",
+                  "content_md5": "70d83f239c8b2f783ce2c5dde3e39809",
+                  "content_sha1": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "content_sha256": "caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409",
+                  "content_sha512": "923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69",
+                  "directory_permission": "0777",
+                  "file_permission": "0777",
+                  "filename": "./manifest.txt",
+                  "id": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "sensitive_content": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": false,
+                    "type": "null"
+                  },
+                  "source": null
+                },
+                "sensitive_values": {
+                  "sensitive_content": true
+                },
+                "depends_on": [
+                  "random_id.suffix"
+                ]
+              },
+              {
+                "address": "random_id.kept_outside",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "kept_outside",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "JtA=",
+                  "b64_url": "JtA",
+                  "byte_length": 2,
+                  "dec": "9936",
+                  "hex": "26d0",
+                  "id": "JtA",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.old_name",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "old_name",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "K3E=",
+                  "b64_url": "K3E",
+                  "byte_length": 2,
+                  "dec": "11121",
+                  "hex": "2b71",
+                  "id": "K3E",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.retired",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "retired",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "AYk=",
+                  "b64_url": "AYk",
+                  "byte_length": 2,
+                  "dec": "393",
+                  "hex": "0189",
+                  "id": "AYk",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.suffix",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "suffix",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "qFWV",
+                  "b64_url": "qFWV",
+                  "byte_length": 3,
+                  "dec": "11031957",
+                  "hex": "a85595",
+                  "id": "qFWV",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_password.db",
+                "mode": "managed",
+                "type": "random_password",
+                "name": "db",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 3,
+                "values": {
+                  "bcrypt_hash": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "id": "none",
+                  "keepers": null,
+                  "length": 20,
+                  "lower": true,
+                  "min_lower": 0,
+                  "min_numeric": 0,
+                  "min_special": 0,
+                  "min_upper": 0,
+                  "number": true,
+                  "numeric": true,
+                  "override_special": null,
+                  "result": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "special": true,
+                  "upper": true
+                },
+                "sensitive_values": {
+                  "bcrypt_hash": true,
+                  "result": true
+                }
+              },
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1",
+                  "output": "v1",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "c56e173a-60c1-f6a4-65d7-9dd24f29e1f4",
+                      "input": "api-a85595-0",
+                      "output": "api-a85595-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "6f6c1107-6bc5-0037-f757-4f437e7fee3a",
+                      "input": "api-a85595-1",
+                      "output": "api-a85595-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"api\"]"
+              },
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "b7f3481e-498a-72a3-abdd-2920f809f16c",
+                      "input": "worker-a85595-0",
+                      "output": "worker-a85595-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "d8f43a8c-4a59-7fee-31d5-d432805d8c58",
+                      "input": "worker-a85595-1",
+                      "output": "worker-a85595-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"worker\"]"
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"manifest\":{\"sensitive\":false,\"type\":\"string\",\"value\":\"suffix=a85595\\n\"},\"password\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"child_modules\":[{\"address\":\"module.svc[\\\"api\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"c56e173a-60c1-f6a4-65d7-9dd24f29e1f4\",\"input\":\"api-a85595-0\",\"output\":\"api-a85595-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"6f6c1107-6bc5-0037-f757-4f437e7fee3a\",\"input\":\"api-a85595-1\",\"output\":\"api-a85595-1\",\"triggers_replace\":null}}]},{\"address\":\"module.svc[\\\"worker\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"b7f3481e-498a-72a3-abdd-2920f809f16c\",\"input\":\"worker-a85595-0\",\"output\":\"worker-a85595-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"d8f43a8c-4a59-7fee-31d5-d432805d8c58\",\"input\":\"worker-a85595-1\",\"output\":\"worker-a85595-1\",\"triggers_replace\":null}}]}],\"resources\":[{\"address\":\"data.local_file.manifest\",\"mode\":\"data\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=a85595\\n\",\"content_base64\":\"c3VmZml4PWE4NTU5NQo=\",\"content_base64sha256\":\"yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=\",\"content_base64sha512\":\"kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==\",\"content_md5\":\"70d83f239c8b2f783ce2c5dde3e39809\",\"content_sha1\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"content_sha256\":\"caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409\",\"content_sha512\":\"923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69\",\"filename\":\"./manifest.txt\",\"id\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\"}},{\"address\":\"local_file.manifest\",\"depends_on\":[\"random_id.suffix\"],\"mode\":\"managed\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{\"sensitive_content\":true},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=a85595\\n\",\"content_base64\":null,\"content_base64sha256\":\"yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=\",\"content_base64sha512\":\"kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==\",\"content_md5\":\"70d83f239c8b2f783ce2c5dde3e39809\",\"content_sha1\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"content_sha256\":\"caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409\",\"content_sha512\":\"923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69\",\"directory_permission\":\"0777\",\"file_permission\":\"0777\",\"filename\":\"./manifest.txt\",\"id\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"sensitive_content\":{\"__redacted\":true,\"present\":false,\"reason\":\"declared_sensitive\",\"type\":\"null\"},\"source\":null}},{\"address\":\"random_id.kept_outside\",\"mode\":\"managed\",\"name\":\"kept_outside\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"JtA=\",\"b64_url\":\"JtA\",\"byte_length\":2,\"dec\":\"9936\",\"hex\":\"26d0\",\"id\":\"JtA\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.old_name\",\"mode\":\"managed\",\"name\":\"old_name\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"K3E=\",\"b64_url\":\"K3E\",\"byte_length\":2,\"dec\":\"11121\",\"hex\":\"2b71\",\"id\":\"K3E\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.retired\",\"mode\":\"managed\",\"name\":\"retired\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"AYk=\",\"b64_url\":\"AYk\",\"byte_length\":2,\"dec\":\"393\",\"hex\":\"0189\",\"id\":\"AYk\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.suffix\",\"mode\":\"managed\",\"name\":\"suffix\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"qFWV\",\"b64_url\":\"qFWV\",\"byte_length\":3,\"dec\":\"11031957\",\"hex\":\"a85595\",\"id\":\"qFWV\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_password.db\",\"mode\":\"managed\",\"name\":\"db\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":3,\"sensitive_values\":{\"bcrypt_hash\":true,\"result\":true},\"type\":\"random_password\",\"values\":{\"bcrypt_hash\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"id\":\"none\",\"keepers\":null,\"length\":20,\"lower\":true,\"min_lower\":0,\"min_numeric\":0,\"min_special\":0,\"min_upper\":0,\"number\":true,\"numeric\":true,\"override_special\":null,\"result\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"special\":true,\"upper\":true}},{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\",\"output\":\"v1\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:11ff8faaf41206f43d9cbdc9ecaa1c3b82d1ac2efcf10893b9660ba86cbb7e29"
+    },
+    {
+      "name": "terraform_state_with_a_deposed_object",
+      "description": "A captured state holding a tainted object and a deposed object at one address, each marked by its own sensitive_values.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_deposed_left.json",
+        "under": null
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          1,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.server",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "server",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "a2f1cb23-6ffe-fcc7-f7bb-e3d991c6a655",
+                  "input": "2",
+                  "output": "2",
+                  "triggers_replace": "2"
+                },
+                "sensitive_values": {},
+                "tainted": true
+              },
+              {
+                "address": "terraform_data.server",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "server",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "57c3df4b-830e-540b-da42-b68dc284ca4f",
+                  "input": "1",
+                  "output": "1",
+                  "triggers_replace": "1"
+                },
+                "sensitive_values": {},
+                "deposed_key": "bb9fd791"
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.server\",\"mode\":\"managed\",\"name\":\"server\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"tainted\":true,\"type\":\"terraform_data\",\"values\":{\"id\":\"a2f1cb23-6ffe-fcc7-f7bb-e3d991c6a655\",\"input\":\"2\",\"output\":\"2\",\"triggers_replace\":\"2\"}},{\"address\":\"terraform_data.server\",\"deposed_key\":\"bb9fd791\",\"mode\":\"managed\",\"name\":\"server\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"57c3df4b-830e-540b-da42-b68dc284ca4f\",\"input\":\"1\",\"output\":\"1\",\"triggers_replace\":\"1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:13d0905f1bfa6cecf3f7c9ce7c751f4791e24eb8d8d21fed244229145def2ef4"
+    },
+    {
+      "name": "terraform_state_after_a_change",
+      "description": "A captured state after an apply that changed, renamed and imported resources.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_change.json",
+        "under": null
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            1,
+            "values",
+            "sensitive_content"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            5,
+            "values",
+            "bcrypt_hash"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            5,
+            "values",
+            "result"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "outputs",
+            "password",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          2,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          3,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          4,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          5,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          6,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "password",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "outputs": {
+            "manifest": {
+              "sensitive": false,
+              "value": "suffix=a85595\n",
+              "type": "string"
+            },
+            "password": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          },
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.local_file.manifest",
+                "mode": "data",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=a85595\n",
+                  "content_base64": "c3VmZml4PWE4NTU5NQo=",
+                  "content_base64sha256": "yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=",
+                  "content_base64sha512": "kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==",
+                  "content_md5": "70d83f239c8b2f783ce2c5dde3e39809",
+                  "content_sha1": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "content_sha256": "caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409",
+                  "content_sha512": "923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69",
+                  "filename": "./manifest.txt",
+                  "id": "7939bae7383f7c439f56c1a1b8e95960e7dddc86"
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "local_file.manifest",
+                "mode": "managed",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=a85595\n",
+                  "content_base64": null,
+                  "content_base64sha256": "yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=",
+                  "content_base64sha512": "kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==",
+                  "content_md5": "70d83f239c8b2f783ce2c5dde3e39809",
+                  "content_sha1": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "content_sha256": "caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409",
+                  "content_sha512": "923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69",
+                  "directory_permission": "0777",
+                  "file_permission": "0777",
+                  "filename": "./manifest.txt",
+                  "id": "7939bae7383f7c439f56c1a1b8e95960e7dddc86",
+                  "sensitive_content": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": false,
+                    "type": "null"
+                  },
+                  "source": null
+                },
+                "sensitive_values": {
+                  "sensitive_content": true
+                },
+                "depends_on": [
+                  "random_id.suffix"
+                ]
+              },
+              {
+                "address": "random_id.imported",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "imported",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "AAECAw==",
+                  "b64_url": "AAECAw",
+                  "byte_length": 4,
+                  "dec": "66051",
+                  "hex": "00010203",
+                  "id": "AAECAw",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.new_name",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "new_name",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "K3E=",
+                  "b64_url": "K3E",
+                  "byte_length": 2,
+                  "dec": "11121",
+                  "hex": "2b71",
+                  "id": "K3E",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.suffix",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "suffix",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "qFWV",
+                  "b64_url": "qFWV",
+                  "byte_length": 3,
+                  "dec": "11031957",
+                  "hex": "a85595",
+                  "id": "qFWV",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_password.db",
+                "mode": "managed",
+                "type": "random_password",
+                "name": "db",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 3,
+                "values": {
+                  "bcrypt_hash": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "id": "none",
+                  "keepers": null,
+                  "length": 24,
+                  "lower": true,
+                  "min_lower": 0,
+                  "min_numeric": 0,
+                  "min_special": 0,
+                  "min_upper": 0,
+                  "number": true,
+                  "numeric": true,
+                  "override_special": null,
+                  "result": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "special": true,
+                  "upper": true
+                },
+                "sensitive_values": {
+                  "bcrypt_hash": true,
+                  "result": true
+                }
+              },
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v2",
+                  "output": "v2",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "c56e173a-60c1-f6a4-65d7-9dd24f29e1f4",
+                      "input": "api-a85595-0",
+                      "output": "api-a85595-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "6f6c1107-6bc5-0037-f757-4f437e7fee3a",
+                      "input": "api-a85595-1",
+                      "output": "api-a85595-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"api\"]"
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"manifest\":{\"sensitive\":false,\"type\":\"string\",\"value\":\"suffix=a85595\\n\"},\"password\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"child_modules\":[{\"address\":\"module.svc[\\\"api\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"c56e173a-60c1-f6a4-65d7-9dd24f29e1f4\",\"input\":\"api-a85595-0\",\"output\":\"api-a85595-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"6f6c1107-6bc5-0037-f757-4f437e7fee3a\",\"input\":\"api-a85595-1\",\"output\":\"api-a85595-1\",\"triggers_replace\":null}}]}],\"resources\":[{\"address\":\"data.local_file.manifest\",\"mode\":\"data\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=a85595\\n\",\"content_base64\":\"c3VmZml4PWE4NTU5NQo=\",\"content_base64sha256\":\"yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=\",\"content_base64sha512\":\"kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==\",\"content_md5\":\"70d83f239c8b2f783ce2c5dde3e39809\",\"content_sha1\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"content_sha256\":\"caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409\",\"content_sha512\":\"923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69\",\"filename\":\"./manifest.txt\",\"id\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\"}},{\"address\":\"local_file.manifest\",\"depends_on\":[\"random_id.suffix\"],\"mode\":\"managed\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{\"sensitive_content\":true},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=a85595\\n\",\"content_base64\":null,\"content_base64sha256\":\"yqX9A5yQA41xHQUx6UuP2bxsSn0GpGOYgus+KEeU5Ak=\",\"content_base64sha512\":\"kjwTUN1+93mmJJ0EX5WdxJnHdE47isfGhayPm4qB4u1wOKy99foBZ/rNYgqOhX4exOEhCAqpmPfXUnwlTpMMaQ==\",\"content_md5\":\"70d83f239c8b2f783ce2c5dde3e39809\",\"content_sha1\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"content_sha256\":\"caa5fd039c90038d711d0531e94b8fd9bc6c4a7d06a4639882eb3e284794e409\",\"content_sha512\":\"923c1350dd7ef779a6249d045f959dc499c7744e3b8ac7c685ac8f9b8a81e2ed7038acbdf5fa0167facd620a8e857e1ec4e121080aa998f7d7527c254e930c69\",\"directory_permission\":\"0777\",\"file_permission\":\"0777\",\"filename\":\"./manifest.txt\",\"id\":\"7939bae7383f7c439f56c1a1b8e95960e7dddc86\",\"sensitive_content\":{\"__redacted\":true,\"present\":false,\"reason\":\"declared_sensitive\",\"type\":\"null\"},\"source\":null}},{\"address\":\"random_id.imported\",\"mode\":\"managed\",\"name\":\"imported\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"AAECAw==\",\"b64_url\":\"AAECAw\",\"byte_length\":4,\"dec\":\"66051\",\"hex\":\"00010203\",\"id\":\"AAECAw\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.new_name\",\"mode\":\"managed\",\"name\":\"new_name\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"K3E=\",\"b64_url\":\"K3E\",\"byte_length\":2,\"dec\":\"11121\",\"hex\":\"2b71\",\"id\":\"K3E\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.suffix\",\"mode\":\"managed\",\"name\":\"suffix\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"qFWV\",\"b64_url\":\"qFWV\",\"byte_length\":3,\"dec\":\"11031957\",\"hex\":\"a85595\",\"id\":\"qFWV\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_password.db\",\"mode\":\"managed\",\"name\":\"db\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":3,\"sensitive_values\":{\"bcrypt_hash\":true,\"result\":true},\"type\":\"random_password\",\"values\":{\"bcrypt_hash\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"id\":\"none\",\"keepers\":null,\"length\":24,\"lower\":true,\"min_lower\":0,\"min_numeric\":0,\"min_special\":0,\"min_upper\":0,\"number\":true,\"numeric\":true,\"override_special\":null,\"result\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"special\":true,\"upper\":true}},{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v2\",\"output\":\"v2\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:68eed1ada2fa2af4b7a466bf495fcb4554e34ed80e31c53f83a561865193a8dc"
+    },
+    {
+      "name": "terraform_state_verified_after_the_deployment",
+      "description": "A captured state, the one a deployment checked after it settled was held to.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "refresh_verified.json",
+        "under": null
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            1,
+            "values",
+            "sensitive_content"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "bcrypt_hash"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "result"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "outputs",
+            "password",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          2,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          3,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          4,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          5,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          6,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          7,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "password",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "outputs": {
+            "manifest": {
+              "sensitive": false,
+              "value": "suffix=3a86f2\n",
+              "type": "string"
+            },
+            "password": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          },
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.local_file.manifest",
+                "mode": "data",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=3a86f2\n",
+                  "content_base64": "c3VmZml4PTNhODZmMgo=",
+                  "content_base64sha256": "5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=",
+                  "content_base64sha512": "0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==",
+                  "content_md5": "59ca2b3d7a194a7d3ef9c6fc060bbadb",
+                  "content_sha1": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "content_sha256": "e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a",
+                  "content_sha512": "d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a",
+                  "filename": "./manifest.txt",
+                  "id": "631d2e4018226c254b97ce95f661d3a53b578cd5"
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "local_file.manifest",
+                "mode": "managed",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=3a86f2\n",
+                  "content_base64": null,
+                  "content_base64sha256": "5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=",
+                  "content_base64sha512": "0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==",
+                  "content_md5": "59ca2b3d7a194a7d3ef9c6fc060bbadb",
+                  "content_sha1": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "content_sha256": "e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a",
+                  "content_sha512": "d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a",
+                  "directory_permission": "0777",
+                  "file_permission": "0777",
+                  "filename": "./manifest.txt",
+                  "id": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "sensitive_content": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": false,
+                    "type": "null"
+                  },
+                  "source": null
+                },
+                "sensitive_values": {
+                  "sensitive_content": true
+                },
+                "depends_on": [
+                  "random_id.suffix"
+                ]
+              },
+              {
+                "address": "random_id.kept_outside",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "kept_outside",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "8SE=",
+                  "b64_url": "8SE",
+                  "byte_length": 2,
+                  "dec": "61729",
+                  "hex": "f121",
+                  "id": "8SE",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.old_name",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "old_name",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "D3o=",
+                  "b64_url": "D3o",
+                  "byte_length": 2,
+                  "dec": "3962",
+                  "hex": "0f7a",
+                  "id": "D3o",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.retired",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "retired",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "lvA=",
+                  "b64_url": "lvA",
+                  "byte_length": 2,
+                  "dec": "38640",
+                  "hex": "96f0",
+                  "id": "lvA",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.suffix",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "suffix",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "Ooby",
+                  "b64_url": "Ooby",
+                  "byte_length": 3,
+                  "dec": "3835634",
+                  "hex": "3a86f2",
+                  "id": "Ooby",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_password.db",
+                "mode": "managed",
+                "type": "random_password",
+                "name": "db",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 3,
+                "values": {
+                  "bcrypt_hash": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "id": "none",
+                  "keepers": null,
+                  "length": 20,
+                  "lower": true,
+                  "min_lower": 0,
+                  "min_numeric": 0,
+                  "min_special": 0,
+                  "min_upper": 0,
+                  "number": true,
+                  "numeric": true,
+                  "override_special": null,
+                  "result": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "special": true,
+                  "upper": true
+                },
+                "sensitive_values": {
+                  "bcrypt_hash": true,
+                  "result": true
+                }
+              },
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "68790321-f3f0-47d4-c6d6-48e9ed2f02f0",
+                  "input": "v1",
+                  "output": "v1",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "a0c91285-c080-915d-a250-c0009003e21c",
+                      "input": "api-3a86f2-0",
+                      "output": "api-3a86f2-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "96349d6a-6166-4887-ba3f-9e156616348b",
+                      "input": "api-3a86f2-1",
+                      "output": "api-3a86f2-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"api\"]"
+              },
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "79718711-75b2-d400-1ab4-5b3a50d96735",
+                      "input": "worker-3a86f2-0",
+                      "output": "worker-3a86f2-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "78204082-7991-fbea-c29d-752f922630a4",
+                      "input": "worker-3a86f2-1",
+                      "output": "worker-3a86f2-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"worker\"]"
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"manifest\":{\"sensitive\":false,\"type\":\"string\",\"value\":\"suffix=3a86f2\\n\"},\"password\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"child_modules\":[{\"address\":\"module.svc[\\\"api\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"a0c91285-c080-915d-a250-c0009003e21c\",\"input\":\"api-3a86f2-0\",\"output\":\"api-3a86f2-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"96349d6a-6166-4887-ba3f-9e156616348b\",\"input\":\"api-3a86f2-1\",\"output\":\"api-3a86f2-1\",\"triggers_replace\":null}}]},{\"address\":\"module.svc[\\\"worker\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"79718711-75b2-d400-1ab4-5b3a50d96735\",\"input\":\"worker-3a86f2-0\",\"output\":\"worker-3a86f2-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"78204082-7991-fbea-c29d-752f922630a4\",\"input\":\"worker-3a86f2-1\",\"output\":\"worker-3a86f2-1\",\"triggers_replace\":null}}]}],\"resources\":[{\"address\":\"data.local_file.manifest\",\"mode\":\"data\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=3a86f2\\n\",\"content_base64\":\"c3VmZml4PTNhODZmMgo=\",\"content_base64sha256\":\"5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=\",\"content_base64sha512\":\"0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==\",\"content_md5\":\"59ca2b3d7a194a7d3ef9c6fc060bbadb\",\"content_sha1\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"content_sha256\":\"e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a\",\"content_sha512\":\"d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a\",\"filename\":\"./manifest.txt\",\"id\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\"}},{\"address\":\"local_file.manifest\",\"depends_on\":[\"random_id.suffix\"],\"mode\":\"managed\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{\"sensitive_content\":true},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=3a86f2\\n\",\"content_base64\":null,\"content_base64sha256\":\"5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=\",\"content_base64sha512\":\"0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==\",\"content_md5\":\"59ca2b3d7a194a7d3ef9c6fc060bbadb\",\"content_sha1\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"content_sha256\":\"e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a\",\"content_sha512\":\"d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a\",\"directory_permission\":\"0777\",\"file_permission\":\"0777\",\"filename\":\"./manifest.txt\",\"id\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"sensitive_content\":{\"__redacted\":true,\"present\":false,\"reason\":\"declared_sensitive\",\"type\":\"null\"},\"source\":null}},{\"address\":\"random_id.kept_outside\",\"mode\":\"managed\",\"name\":\"kept_outside\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"8SE=\",\"b64_url\":\"8SE\",\"byte_length\":2,\"dec\":\"61729\",\"hex\":\"f121\",\"id\":\"8SE\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.old_name\",\"mode\":\"managed\",\"name\":\"old_name\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"D3o=\",\"b64_url\":\"D3o\",\"byte_length\":2,\"dec\":\"3962\",\"hex\":\"0f7a\",\"id\":\"D3o\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.retired\",\"mode\":\"managed\",\"name\":\"retired\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"lvA=\",\"b64_url\":\"lvA\",\"byte_length\":2,\"dec\":\"38640\",\"hex\":\"96f0\",\"id\":\"lvA\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.suffix\",\"mode\":\"managed\",\"name\":\"suffix\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"Ooby\",\"b64_url\":\"Ooby\",\"byte_length\":3,\"dec\":\"3835634\",\"hex\":\"3a86f2\",\"id\":\"Ooby\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_password.db\",\"mode\":\"managed\",\"name\":\"db\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":3,\"sensitive_values\":{\"bcrypt_hash\":true,\"result\":true},\"type\":\"random_password\",\"values\":{\"bcrypt_hash\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"id\":\"none\",\"keepers\":null,\"length\":20,\"lower\":true,\"min_lower\":0,\"min_numeric\":0,\"min_special\":0,\"min_upper\":0,\"number\":true,\"numeric\":true,\"override_special\":null,\"result\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"special\":true,\"upper\":true}},{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"68790321-f3f0-47d4-c6d6-48e9ed2f02f0\",\"input\":\"v1\",\"output\":\"v1\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:4bd3ae0c7588d1c297c383fb614bbe906a74fdd91f4ba391f45c983ca2d4ba1b"
+    },
+    {
+      "name": "terraform_state_read_by_a_refresh_only_plan",
+      "description": "The prior_state of the second refresh-only plan of the same deployment, the state the post-verify stage's identities were read from: for a state that did not change, the same digest as the state itself.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "refresh_verified_second_reading.json",
+        "under": "prior_state"
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            1,
+            "values",
+            "sensitive_content"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "bcrypt_hash"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            6,
+            "values",
+            "result"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "outputs",
+            "password",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          2,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          3,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          4,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          5,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          6,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "resources",
+          7,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          1,
+          "resources",
+          1,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "password",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "outputs": {
+            "manifest": {
+              "sensitive": false,
+              "value": "suffix=3a86f2\n",
+              "type": "string"
+            },
+            "password": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          },
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.local_file.manifest",
+                "mode": "data",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=3a86f2\n",
+                  "content_base64": "c3VmZml4PTNhODZmMgo=",
+                  "content_base64sha256": "5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=",
+                  "content_base64sha512": "0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==",
+                  "content_md5": "59ca2b3d7a194a7d3ef9c6fc060bbadb",
+                  "content_sha1": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "content_sha256": "e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a",
+                  "content_sha512": "d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a",
+                  "filename": "./manifest.txt",
+                  "id": "631d2e4018226c254b97ce95f661d3a53b578cd5"
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "local_file.manifest",
+                "mode": "managed",
+                "type": "local_file",
+                "name": "manifest",
+                "provider_name": "registry.terraform.io/hashicorp/local",
+                "schema_version": 0,
+                "values": {
+                  "content": "suffix=3a86f2\n",
+                  "content_base64": null,
+                  "content_base64sha256": "5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=",
+                  "content_base64sha512": "0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==",
+                  "content_md5": "59ca2b3d7a194a7d3ef9c6fc060bbadb",
+                  "content_sha1": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "content_sha256": "e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a",
+                  "content_sha512": "d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a",
+                  "directory_permission": "0777",
+                  "file_permission": "0777",
+                  "filename": "./manifest.txt",
+                  "id": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+                  "sensitive_content": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": false,
+                    "type": "null"
+                  },
+                  "source": null
+                },
+                "sensitive_values": {
+                  "sensitive_content": true
+                },
+                "depends_on": [
+                  "random_id.suffix"
+                ]
+              },
+              {
+                "address": "random_id.kept_outside",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "kept_outside",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "8SE=",
+                  "b64_url": "8SE",
+                  "byte_length": 2,
+                  "dec": "61729",
+                  "hex": "f121",
+                  "id": "8SE",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.old_name",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "old_name",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "D3o=",
+                  "b64_url": "D3o",
+                  "byte_length": 2,
+                  "dec": "3962",
+                  "hex": "0f7a",
+                  "id": "D3o",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.retired",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "retired",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "lvA=",
+                  "b64_url": "lvA",
+                  "byte_length": 2,
+                  "dec": "38640",
+                  "hex": "96f0",
+                  "id": "lvA",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_id.suffix",
+                "mode": "managed",
+                "type": "random_id",
+                "name": "suffix",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 0,
+                "values": {
+                  "b64_std": "Ooby",
+                  "b64_url": "Ooby",
+                  "byte_length": 3,
+                  "dec": "3835634",
+                  "hex": "3a86f2",
+                  "id": "Ooby",
+                  "keepers": null,
+                  "prefix": null
+                },
+                "sensitive_values": {}
+              },
+              {
+                "address": "random_password.db",
+                "mode": "managed",
+                "type": "random_password",
+                "name": "db",
+                "provider_name": "registry.terraform.io/hashicorp/random",
+                "schema_version": 3,
+                "values": {
+                  "bcrypt_hash": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "id": "none",
+                  "keepers": null,
+                  "length": 20,
+                  "lower": true,
+                  "min_lower": 0,
+                  "min_numeric": 0,
+                  "min_special": 0,
+                  "min_upper": 0,
+                  "number": true,
+                  "numeric": true,
+                  "override_special": null,
+                  "result": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "special": true,
+                  "upper": true
+                },
+                "sensitive_values": {
+                  "bcrypt_hash": true,
+                  "result": true
+                }
+              },
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "68790321-f3f0-47d4-c6d6-48e9ed2f02f0",
+                  "input": "v1",
+                  "output": "v1",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "a0c91285-c080-915d-a250-c0009003e21c",
+                      "input": "api-3a86f2-0",
+                      "output": "api-3a86f2-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"api\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "96349d6a-6166-4887-ba3f-9e156616348b",
+                      "input": "api-3a86f2-1",
+                      "output": "api-3a86f2-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"api\"]"
+              },
+              {
+                "resources": [
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[0]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 0,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "79718711-75b2-d400-1ab4-5b3a50d96735",
+                      "input": "worker-3a86f2-0",
+                      "output": "worker-3a86f2-0",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  },
+                  {
+                    "address": "module.svc[\"worker\"].terraform_data.instance[1]",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "instance",
+                    "index": 1,
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "78204082-7991-fbea-c29d-752f922630a4",
+                      "input": "worker-3a86f2-1",
+                      "output": "worker-3a86f2-1",
+                      "triggers_replace": null
+                    },
+                    "sensitive_values": {},
+                    "depends_on": [
+                      "random_id.suffix"
+                    ]
+                  }
+                ],
+                "address": "module.svc[\"worker\"]"
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"manifest\":{\"sensitive\":false,\"type\":\"string\",\"value\":\"suffix=3a86f2\\n\"},\"password\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"child_modules\":[{\"address\":\"module.svc[\\\"api\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"a0c91285-c080-915d-a250-c0009003e21c\",\"input\":\"api-3a86f2-0\",\"output\":\"api-3a86f2-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"api\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"96349d6a-6166-4887-ba3f-9e156616348b\",\"input\":\"api-3a86f2-1\",\"output\":\"api-3a86f2-1\",\"triggers_replace\":null}}]},{\"address\":\"module.svc[\\\"worker\\\"]\",\"resources\":[{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[0]\",\"depends_on\":[\"random_id.suffix\"],\"index\":0,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"79718711-75b2-d400-1ab4-5b3a50d96735\",\"input\":\"worker-3a86f2-0\",\"output\":\"worker-3a86f2-0\",\"triggers_replace\":null}},{\"address\":\"module.svc[\\\"worker\\\"].terraform_data.instance[1]\",\"depends_on\":[\"random_id.suffix\"],\"index\":1,\"mode\":\"managed\",\"name\":\"instance\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"78204082-7991-fbea-c29d-752f922630a4\",\"input\":\"worker-3a86f2-1\",\"output\":\"worker-3a86f2-1\",\"triggers_replace\":null}}]}],\"resources\":[{\"address\":\"data.local_file.manifest\",\"mode\":\"data\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=3a86f2\\n\",\"content_base64\":\"c3VmZml4PTNhODZmMgo=\",\"content_base64sha256\":\"5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=\",\"content_base64sha512\":\"0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==\",\"content_md5\":\"59ca2b3d7a194a7d3ef9c6fc060bbadb\",\"content_sha1\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"content_sha256\":\"e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a\",\"content_sha512\":\"d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a\",\"filename\":\"./manifest.txt\",\"id\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\"}},{\"address\":\"local_file.manifest\",\"depends_on\":[\"random_id.suffix\"],\"mode\":\"managed\",\"name\":\"manifest\",\"provider_name\":\"registry.terraform.io/hashicorp/local\",\"schema_version\":0,\"sensitive_values\":{\"sensitive_content\":true},\"type\":\"local_file\",\"values\":{\"content\":\"suffix=3a86f2\\n\",\"content_base64\":null,\"content_base64sha256\":\"5A4aiQZGW3R4TyWhfad05m81XvlAhUjN8aRYC7TliJo=\",\"content_base64sha512\":\"0OyqjdkIuqSjGFR9gyVlK7ppLUN5VS2QWGu6VQxW0PAJGhQ4FMdclGQeIGDs96gF2iF5W1SiC4OV/nsxgGMvig==\",\"content_md5\":\"59ca2b3d7a194a7d3ef9c6fc060bbadb\",\"content_sha1\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"content_sha256\":\"e40e1a8906465b74784f25a17da774e66f355ef9408548cdf1a4580bb4e5889a\",\"content_sha512\":\"d0ecaa8dd908baa4a318547d8325652bba692d4379552d90586bba550c56d0f0091a143814c75c94641e2060ecf7a805da21795b54a20b8395fe7b3180632f8a\",\"directory_permission\":\"0777\",\"file_permission\":\"0777\",\"filename\":\"./manifest.txt\",\"id\":\"631d2e4018226c254b97ce95f661d3a53b578cd5\",\"sensitive_content\":{\"__redacted\":true,\"present\":false,\"reason\":\"declared_sensitive\",\"type\":\"null\"},\"source\":null}},{\"address\":\"random_id.kept_outside\",\"mode\":\"managed\",\"name\":\"kept_outside\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"8SE=\",\"b64_url\":\"8SE\",\"byte_length\":2,\"dec\":\"61729\",\"hex\":\"f121\",\"id\":\"8SE\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.old_name\",\"mode\":\"managed\",\"name\":\"old_name\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"D3o=\",\"b64_url\":\"D3o\",\"byte_length\":2,\"dec\":\"3962\",\"hex\":\"0f7a\",\"id\":\"D3o\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.retired\",\"mode\":\"managed\",\"name\":\"retired\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"lvA=\",\"b64_url\":\"lvA\",\"byte_length\":2,\"dec\":\"38640\",\"hex\":\"96f0\",\"id\":\"lvA\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_id.suffix\",\"mode\":\"managed\",\"name\":\"suffix\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"random_id\",\"values\":{\"b64_std\":\"Ooby\",\"b64_url\":\"Ooby\",\"byte_length\":3,\"dec\":\"3835634\",\"hex\":\"3a86f2\",\"id\":\"Ooby\",\"keepers\":null,\"prefix\":null}},{\"address\":\"random_password.db\",\"mode\":\"managed\",\"name\":\"db\",\"provider_name\":\"registry.terraform.io/hashicorp/random\",\"schema_version\":3,\"sensitive_values\":{\"bcrypt_hash\":true,\"result\":true},\"type\":\"random_password\",\"values\":{\"bcrypt_hash\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"id\":\"none\",\"keepers\":null,\"length\":20,\"lower\":true,\"min_lower\":0,\"min_numeric\":0,\"min_special\":0,\"min_upper\":0,\"number\":true,\"numeric\":true,\"override_special\":null,\"result\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"special\":true,\"upper\":true}},{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"68790321-f3f0-47d4-c6d6-48e9ed2f02f0\",\"input\":\"v1\",\"output\":\"v1\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:4bd3ae0c7588d1c297c383fb614bbe906a74fdd91f4ba391f45c983ca2d4ba1b"
+    },
+    {
+      "name": "terraform_state_with_sensitive_object_and_list_outputs_copied_unmarked",
+      "description": "A sensitive object output and a sensitive list output, whose member strings a resource holds unmarked: every string inside them is hidden wherever it appears.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.copy",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "copy",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "c56e173a-60c1-f6a4-65d7-9dd24f29e1f4",
+                  "input": "fake-member-value-0001",
+                  "output": "fake-list-member-0002"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "connection": {
+              "sensitive": true,
+              "value": {
+                "host": "db.example.internal",
+                "phrase": "fake-member-value-0001"
+              },
+              "type": [
+                "object",
+                {
+                  "host": "string",
+                  "phrase": "string"
+                }
+              ]
+            },
+            "endpoints": {
+              "sensitive": true,
+              "value": [
+                "fake-list-member-0002"
+              ],
+              "type": [
+                "list",
+                "string"
+              ]
+            }
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "outputs",
+            "connection",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "outputs",
+            "endpoints",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "connection",
+          "value"
+        ],
+        [
+          "values",
+          "outputs",
+          "endpoints",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.copy",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "copy",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "c56e173a-60c1-f6a4-65d7-9dd24f29e1f4",
+                  "input": {
+                    "__redacted": true,
+                    "reason": "sensitive_value_reuse",
+                    "present": true,
+                    "type": "string"
+                  },
+                  "output": {
+                    "__redacted": true,
+                    "reason": "sensitive_value_reuse",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "connection": {
+              "sensitive": true,
+              "value": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "object"
+              },
+              "type": [
+                "object",
+                {
+                  "host": "string",
+                  "phrase": "string"
+                }
+              ]
+            },
+            "endpoints": {
+              "sensitive": true,
+              "value": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "array"
+              },
+              "type": [
+                "list",
+                "string"
+              ]
+            }
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"connection\":{\"sensitive\":true,\"type\":[\"object\",{\"host\":\"string\",\"phrase\":\"string\"}],\"value\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"object\"}},\"endpoints\":{\"sensitive\":true,\"type\":[\"list\",\"string\"],\"value\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"array\"}}},\"root_module\":{\"resources\":[{\"address\":\"terraform_data.copy\",\"mode\":\"managed\",\"name\":\"copy\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"c56e173a-60c1-f6a4-65d7-9dd24f29e1f4\",\"input\":{\"__redacted\":true,\"present\":true,\"reason\":\"sensitive_value_reuse\",\"type\":\"string\"},\"output\":{\"__redacted\":true,\"present\":true,\"reason\":\"sensitive_value_reuse\",\"type\":\"string\"}}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:660fe450af7a30231da39f08e1a2ff58e2681041ee2ca46de2272dfac6d08d46"
+    },
+    {
+      "name": "terraform_state_with_a_sensitive_value_in_a_child_module",
+      "description": "A resource of a child module whose sensitive_values flags one attribute.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "address": "module.db",
+                "resources": [
+                  {
+                    "address": "module.db.terraform_data.secret",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "secret",
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "6f6c1107-6bc5-0037-f757-4f437e7fee3a",
+                      "input": "fake-module-value-0003",
+                      "output": "visible"
+                    },
+                    "sensitive_values": {
+                      "input": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "child_modules",
+            0,
+            "resources",
+            0,
+            "values",
+            "input"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "root_module",
+          "child_modules",
+          0,
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "address": "module.db",
+                "resources": [
+                  {
+                    "address": "module.db.terraform_data.secret",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "secret",
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "6f6c1107-6bc5-0037-f757-4f437e7fee3a",
+                      "input": {
+                        "__redacted": true,
+                        "reason": "declared_sensitive",
+                        "present": true,
+                        "type": "string"
+                      },
+                      "output": "visible"
+                    },
+                    "sensitive_values": {
+                      "input": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"child_modules\":[{\"address\":\"module.db\",\"resources\":[{\"address\":\"module.db.terraform_data.secret\",\"mode\":\"managed\",\"name\":\"secret\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{\"input\":true},\"type\":\"terraform_data\",\"values\":{\"id\":\"6f6c1107-6bc5-0037-f757-4f437e7fee3a\",\"input\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"output\":\"visible\"}}]}],\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:d63672c187ab3b31b8399739e230e9b05cd1db9ca375ecbfe50b6ef862b38710"
+    },
+    {
+      "name": "terraform_state_with_nested_sensitive_values",
+      "description": "sensitive_values that flag one key of a map, one item of a list, and a whole object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.nested",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "nested",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "b7f3481e-498a-72a3-abdd-2920f809f16c",
+                  "tags": {
+                    "team": "platform",
+                    "contact": "fake-contact-value-0004"
+                  },
+                  "rules": [
+                    {
+                      "port": "443"
+                    },
+                    {
+                      "port": "fake-rule-value-0005"
+                    }
+                  ],
+                  "settings": {
+                    "mode": "strict",
+                    "level": 3
+                  }
+                },
+                "sensitive_values": {
+                  "tags": {
+                    "contact": true
+                  },
+                  "rules": [
+                    {},
+                    {
+                      "port": true
+                    }
+                  ],
+                  "settings": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            0,
+            "values",
+            "tags",
+            "contact"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            0,
+            "values",
+            "rules",
+            1,
+            "port"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            0,
+            "values",
+            "settings"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.nested",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "nested",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "b7f3481e-498a-72a3-abdd-2920f809f16c",
+                  "tags": {
+                    "team": "platform",
+                    "contact": {
+                      "__redacted": true,
+                      "reason": "declared_sensitive",
+                      "present": true,
+                      "type": "string"
+                    }
+                  },
+                  "rules": [
+                    {
+                      "port": "443"
+                    },
+                    {
+                      "port": {
+                        "__redacted": true,
+                        "reason": "declared_sensitive",
+                        "present": true,
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "settings": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "object"
+                  }
+                },
+                "sensitive_values": {
+                  "tags": {
+                    "contact": true
+                  },
+                  "rules": [
+                    {},
+                    {
+                      "port": true
+                    }
+                  ],
+                  "settings": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.nested\",\"mode\":\"managed\",\"name\":\"nested\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{\"rules\":[{},{\"port\":true}],\"settings\":true,\"tags\":{\"contact\":true}},\"type\":\"terraform_data\",\"values\":{\"id\":\"b7f3481e-498a-72a3-abdd-2920f809f16c\",\"rules\":[{\"port\":\"443\"},{\"port\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"}}],\"settings\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"object\"},\"tags\":{\"contact\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"team\":\"platform\"}}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:19ab18a4d4642666bc88717a358179bd901e516a0a692586abfa6dd08e0457bf"
+    },
+    {
+      "name": "terraform_state_with_a_sensitive_value_in_a_data_source",
+      "description": "A data source whose sensitive_values flags one attribute.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.terraform_data.read",
+                "mode": "data",
+                "type": "terraform_data",
+                "name": "read",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "d8f43a8c-4a59-7fee-31d5-d432805d8c58",
+                  "content": "fake-data-value-0006"
+                },
+                "sensitive_values": {
+                  "content": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "root_module",
+            "resources",
+            0,
+            "values",
+            "content"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.terraform_data.read",
+                "mode": "data",
+                "type": "terraform_data",
+                "name": "read",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "d8f43a8c-4a59-7fee-31d5-d432805d8c58",
+                  "content": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                "sensitive_values": {
+                  "content": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"data.terraform_data.read\",\"mode\":\"data\",\"name\":\"read\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{\"content\":true},\"type\":\"terraform_data\",\"values\":{\"content\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"string\"},\"id\":\"d8f43a8c-4a59-7fee-31d5-d432805d8c58\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:9c3e538372da43894a03fbece2077563270cf0ebadd22bfd2b1bef9de2c70dcd"
+    },
+    {
+      "name": "terraform_state_with_a_non_string_sensitive_output_and_a_non_sensitive_output",
+      "description": "A sensitive number output, hidden, and a non-sensitive string output, kept.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "port": {
+              "sensitive": true,
+              "value": 5432,
+              "type": "number"
+            },
+            "region_name": {
+              "sensitive": false,
+              "value": "eu-west-1",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "outputs",
+            "port",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "port",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "port": {
+              "sensitive": true,
+              "value": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "number"
+              },
+              "type": "number"
+            },
+            "region_name": {
+              "sensitive": false,
+              "value": "eu-west-1",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"port\":{\"sensitive\":true,\"type\":\"number\",\"value\":{\"__redacted\":true,\"present\":true,\"reason\":\"declared_sensitive\",\"type\":\"number\"}},\"region_name\":{\"sensitive\":false,\"type\":\"string\",\"value\":\"eu-west-1\"}},\"root_module\":{\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:f509414c9c0cb17850735f5fc8f27b0d32f621f97b7d3ee5c3575ce7583cb1bf"
+    },
+    {
+      "name": "terraform_state_that_is_empty",
+      "description": "A state that holds nothing, with no values and no terraform_version.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0"
+      },
+      "marks": [],
+      "anchors": [],
+      "kept_state": {
+        "format_version": "1.0"
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:1da85b5bbb58f51444fc8fbc32886f6ecb7a814497cd494cd451d52c37d1e193"
+    },
+    {
+      "name": "terraform_state_written_by_one_terraform_version",
+      "description": "A small state as one Terraform version writes it.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:df3bccdb69281d03fba62fe0cf8142e69cc9a3a71b48a5bb1282915eec7d8f42"
+    },
+    {
+      "name": "terraform_state_written_by_another_terraform_version",
+      "description": "The same state as another Terraform version, with another format version, writes it: the same digest.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.1",
+        "terraform_version": "1.9.8",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.1",
+        "terraform_version": "1.9.8",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:df3bccdb69281d03fba62fe0cf8142e69cc9a3a71b48a5bb1282915eec7d8f42"
+    },
+    {
+      "name": "terraform_state_under_a_policy_with_an_additional_path",
+      "description": "A policy whose additional path tags.owner hides that value under each resource's values, and nowhere else.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "tags.owner"
+        ],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.tagged",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "tagged",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e1",
+                  "tags": {
+                    "owner": "team-a",
+                    "env": "dev"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "owner": {
+              "sensitive": false,
+              "value": {
+                "tags": {
+                  "owner": "team-b"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.tagged",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "tagged",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e1",
+                  "tags": {
+                    "owner": {
+                      "__redacted": true,
+                      "reason": "configured_path",
+                      "present": true,
+                      "type": "string"
+                    },
+                    "env": "dev"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "owner": {
+              "sensitive": false,
+              "value": {
+                "tags": {
+                  "owner": "team-b"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"owner\":{\"sensitive\":false,\"type\":\"object\",\"value\":{\"tags\":{\"owner\":\"team-b\"}}}},\"root_module\":{\"resources\":[{\"address\":\"terraform_data.tagged\",\"mode\":\"managed\",\"name\":\"tagged\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"e1\",\"tags\":{\"env\":\"dev\",\"owner\":{\"__redacted\":true,\"present\":true,\"reason\":\"configured_path\",\"type\":\"string\"}}}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:033619f188d63629d61cd2adee9c00c94f1bc750bdfe06b289b52951bec0d955"
+    },
+    {
+      "name": "terraform_state_under_a_policy_with_an_exempt_path",
+      "description": "A policy whose exempt path keeps a value the deny rule would hide, with its reason.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": [
+          {
+            "path": "password_hint",
+            "reason": "the hint is checked for its length"
+          }
+        ]
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.hint",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "hint",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e2",
+                  "password_hint": "fake-hint-0007"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.hint",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "hint",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e2",
+                  "password_hint": "fake-hint-0007"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.hint\",\"mode\":\"managed\",\"name\":\"hint\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"e2\",\"password_hint\":\"fake-hint-0007\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:ecd83d4376257c7901b091693324b0d0769d94bbe221f7f3b2dda5b04433f207"
+    },
+    {
+      "name": "terraform_state_with_a_value_shaped_like_a_credential",
+      "description": "A value no flag marks, hidden because it is shaped like a credential: a URL with a password in it.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.url",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "url",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e3",
+                  "input": "postgres://app:fake-pass-0008@db.example.internal/app"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.url",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "url",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e3",
+                  "input": {
+                    "__redacted": true,
+                    "reason": "value_shape",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.url\",\"mode\":\"managed\",\"name\":\"url\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"e3\",\"input\":{\"__redacted\":true,\"present\":true,\"reason\":\"value_shape\",\"type\":\"string\"}}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:1a97dc9ec39600b0117df3e070770d78dd3f65300c5702985faf245a126dc2c6"
+    },
+    {
+      "name": "terraform_state_with_check_results",
+      "description": "A captured state of a resource with a postcondition and a check block, with their results under checks: accepted, checks left out unread, the same digest as the same state without checks.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_with_checks.json",
+        "under": null
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.example",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "example",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "9e344e69-28ec-d3e6-4c8e-6fbce6bb818b",
+                  "input": "hello",
+                  "output": "hello",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.example\",\"mode\":\"managed\",\"name\":\"example\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"9e344e69-28ec-d3e6-4c8e-6fbce6bb818b\",\"input\":\"hello\",\"output\":\"hello\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:dff83431be8a68d5a7bd2f37f409d10071261c79ca4677934f257394ffafcf99"
+    },
+    {
+      "name": "terraform_state_with_check_results_left_out",
+      "description": "The captured state with check results, without its checks key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.example",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "example",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "9e344e69-28ec-d3e6-4c8e-6fbce6bb818b",
+                  "input": "hello",
+                  "output": "hello",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "marks": [],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.example",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "example",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "9e344e69-28ec-d3e6-4c8e-6fbce6bb818b",
+                  "input": "hello",
+                  "output": "hello",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"root_module\":{\"resources\":[{\"address\":\"terraform_data.example\",\"mode\":\"managed\",\"name\":\"example\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"9e344e69-28ec-d3e6-4c8e-6fbce6bb818b\",\"input\":\"hello\",\"output\":\"hello\",\"triggers_replace\":null}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:dff83431be8a68d5a7bd2f37f409d10071261c79ca4677934f257394ffafcf99"
+    },
+    {
+      "name": "terraform_state_with_a_failed_check_holding_a_secret",
+      "description": "A failed check whose problems hold a key shaped like a credential and a copy of a sensitive output's value: not refused, and checks is never searched, so the copy there hides nothing elsewhere.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "sensitive": true,
+              "value": "fake-check-value-0014",
+              "type": "string"
+            }
+          }
+        },
+        "checks": [
+          {
+            "address": {
+              "kind": "check",
+              "name": "health",
+              "to_display": "check.health"
+            },
+            "status": "fail",
+            "instances": [
+              {
+                "address": {
+                  "to_display": "check.health"
+                },
+                "status": "fail",
+                "problems": [
+                  {
+                    "message": "fake-check-value-0014",
+                    "irk_fakekeyvalue00140000": "v"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "outputs",
+            "token",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "token",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"token\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:eb9c6a4f27dcb015a1e8e22d641aa33b59bef4b5e24b066253587c7868e9d28e"
+    },
+    {
+      "name": "terraform_state_with_a_failed_check_left_out",
+      "description": "The state with a failed check, without its checks key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "sensitive": true,
+              "value": "fake-check-value-0014",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "marks": [
+        {
+          "path": [
+            "values",
+            "outputs",
+            "token",
+            "value"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "values",
+          "root_module",
+          "resources",
+          0,
+          "values"
+        ],
+        [
+          "values",
+          "outputs",
+          "token",
+          "value"
+        ]
+      ],
+      "kept_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "__redacted": true,
+              "reason": "deny_key",
+              "present": true,
+              "type": "object"
+            }
+          }
+        }
+      },
+      "canonical": "{\"digest_version\":\"redacted-1\",\"rule\":\"iltero.redacted_state_digest\",\"state\":{\"values\":{\"outputs\":{\"token\":{\"__redacted\":true,\"present\":true,\"reason\":\"deny_key\",\"type\":\"object\"}},\"root_module\":{\"resources\":[{\"address\":\"terraform_data.config\",\"mode\":\"managed\",\"name\":\"config\",\"provider_name\":\"terraform.io/builtin/terraform\",\"schema_version\":0,\"sensitive_values\":{},\"type\":\"terraform_data\",\"values\":{\"id\":\"0add5104-4b1d-22a1-221a-417c9310d41e\",\"input\":\"v1\"}}]}}},\"tool\":\"terraform\"}",
+      "redacted_state_digest": "sha256:eb9c6a4f27dcb015a1e8e22d641aa33b59bef4b5e24b066253587c7868e9d28e"
+    },
+    {
+      "name": "terraform_state_with_a_resource_that_names_no_sensitive_values",
+      "description": "Refused: a resource entry with no sensitive_values key, which the tool writes for every resource.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.bare",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "bare",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e4"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "refused": "every resource names its sensitive values, as the tool writes them; the resource at values.root_module.resources[0] names none"
+    },
+    {
+      "name": "terraform_state_that_is_not_an_object",
+      "description": "Refused: a state that is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": [],
+      "refused": "a state is a JSON object"
+    },
+    {
+      "name": "terraform_state_with_an_unknown_top_level_key",
+      "description": "Refused: a top-level key other than format_version, terraform_version, values and checks.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        },
+        "resource_changes": []
+      },
+      "refused": "a state holds no top-level key other than format_version, terraform_version, values and checks; it holds resource_changes"
+    },
+    {
+      "name": "terraform_state_with_an_unknown_top_level_key_shaped_like_a_credential",
+      "description": "Refused, without naming the key: a top-level key shaped like a credential (a run digest key token).",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        },
+        "irk_fakekeyvalue00120000": "v"
+      },
+      "refused": "a state holds no top-level key other than format_version, terraform_version, values and checks"
+    },
+    {
+      "name": "terraform_state_with_an_unknown_key_under_values_that_is_not_a_plain_identifier",
+      "description": "Refused, without naming the key: a key under values with characters other than letters, digits and _.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {},
+          "extra key: fake-value-0013": {}
+        }
+      },
+      "refused": "the values of a state hold no key other than root_module and outputs"
+    },
+    {
+      "name": "terraform_state_whose_values_are_not_an_object",
+      "description": "Refused: values is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": []
+      },
+      "refused": "the values of a state are an object"
+    },
+    {
+      "name": "terraform_state_with_an_unknown_key_under_values",
+      "description": "Refused: a key under values other than root_module and outputs.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {},
+          "checks": []
+        }
+      },
+      "refused": "the values of a state hold no key other than root_module and outputs; they hold checks"
+    },
+    {
+      "name": "terraform_state_whose_outputs_are_not_an_object",
+      "description": "Refused: outputs is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": []
+        }
+      },
+      "refused": "the outputs of a state are an object of outputs, each an object"
+    },
+    {
+      "name": "terraform_state_with_an_output_that_is_not_an_object",
+      "description": "Refused: an output that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": "value"
+          }
+        }
+      },
+      "refused": "the outputs of a state are an object of outputs, each an object"
+    },
+    {
+      "name": "terraform_state_whose_root_module_is_not_an_object",
+      "description": "Refused: root_module is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": []
+        }
+      },
+      "refused": "the module at values.root_module of the state is an object"
+    },
+    {
+      "name": "terraform_state_whose_resources_are_not_a_list",
+      "description": "Refused: resources is an object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "resources": {}
+          }
+        }
+      },
+      "refused": "the resources of the module at values.root_module of the state are a list of objects"
+    },
+    {
+      "name": "terraform_state_with_a_resource_that_is_not_an_object",
+      "description": "Refused: a resource entry that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              "terraform_data.config"
+            ]
+          }
+        }
+      },
+      "refused": "the resources of the module at values.root_module of the state are a list of objects"
+    },
+    {
+      "name": "terraform_state_whose_sensitive_values_are_of_another_type",
+      "description": "Refused: sensitive_values that is a string, neither an object, a list nor a boolean.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.odd",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "odd",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e5"
+                },
+                "sensitive_values": "input"
+              }
+            ]
+          }
+        }
+      },
+      "refused": "the sensitive values of the resource at values.root_module.resources[0] hold only objects, lists and booleans"
+    },
+    {
+      "name": "terraform_state_whose_sensitive_values_hold_a_flag_that_is_not_a_boolean",
+      "description": "Refused: a flag inside sensitive_values that is a string, not true or false.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.odd",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "odd",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e6",
+                  "input": "v"
+                },
+                "sensitive_values": {
+                  "input": "yes"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "refused": "the sensitive values of the resource at values.root_module.resources[0] hold only objects, lists and booleans"
+    },
+    {
+      "name": "terraform_state_with_an_output_that_does_not_say_whether_it_is_sensitive",
+      "description": "Refused: an output with no sensitive key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": {
+              "value": "v",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "refused": "every output of a state says whether it is sensitive, true or false"
+    },
+    {
+      "name": "terraform_state_with_an_output_whose_sensitive_flag_is_not_a_boolean",
+      "description": "Refused: an output whose sensitive is the string true.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": {
+              "sensitive": "true",
+              "value": "v"
+            }
+          }
+        }
+      },
+      "refused": "every output of a state says whether it is sensitive, true or false"
+    },
+    {
+      "name": "terraform_state_with_an_integer_beyond_the_canonical_range",
+      "description": "Refused: a value with no canonical form, an integer beyond 2**53, so the state has no digest.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.big",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "big",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e7",
+                  "count": 9007199254740993
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "refused": "an integer is outside the range JSON numbers hold exactly"
+    },
+    {
+      "name": "terraform_state_whose_child_modules_are_not_a_list",
+      "description": "Refused: child_modules is an object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "child_modules": {}
+          }
+        }
+      },
+      "refused": "the child modules of the module at values.root_module of the state are a list"
+    },
+    {
+      "name": "terraform_state_with_a_child_module_that_is_not_an_object",
+      "description": "Refused: a child module that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "child_modules": [
+              "module.db"
+            ]
+          }
+        }
+      },
+      "refused": "the module at values.root_module.child_modules[0] of the state is an object"
+    },
+    {
+      "name": "terraform_state_holding_a_planted_redaction_marker",
+      "description": "Refused: a state that already holds a whole redaction marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "refused": "the state holds an object at values.root_module.resources[0].values.input that a reader could take for a redaction or unknown marker, which only redaction writes"
+    },
+    {
+      "name": "terraform_state_holding_a_planted_unknown_marker",
+      "description": "Refused: a state that already holds a whole unknown marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__unknown": true,
+                    "reason": "known_after_deploy",
+                    "present": true
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "refused": "the state holds an object at values.root_module.resources[0].values.input that a reader could take for a redaction or unknown marker, which only redaction writes"
+    },
+    {
+      "name": "terraform_state_holding_a_marker_lookalike",
+      "description": "Refused: a state that already holds an object with the redaction marker's key and other keys in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__redacted": "yes",
+                    "note": "fake-lookalike-0015"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      },
+      "refused": "the state holds an object at values.root_module.resources[0].values.input that a reader could take for a redaction or unknown marker, which only redaction writes"
+    }
+  ]
+}

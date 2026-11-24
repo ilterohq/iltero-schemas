@@ -21,10 +21,20 @@ from typing import Any
 
 import pytest
 
-from iltero_schemas.canonical import CANONICALIZATION, canonical_bytes, change_digest, digest, record_uuid
+from iltero_schemas.canonical import (
+    CANONICALIZATION,
+    REDACTED_PLAN_DIGEST_VERSIONS,
+    canonical_bytes,
+    change_digest,
+    digest,
+    record_uuid,
+)
 from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.models.common.event import EVENTS_FILE_KIND, AssuranceEvent
+from iltero_schemas.models.common.redaction import path_order
 from iltero_schemas.models.common.stage_counts import evaluator_status_counts
+from iltero_schemas.redaction.common.policy import BUILT_IN_REDACTION_POLICY as BUILT_IN
+from iltero_schemas.redaction.common.value_change import paired_before
 from tests.conftest import ROOT, STARTER_ASSERTIONS, VECTORS
 from tests.records import UNKNOWN
 
@@ -36,14 +46,29 @@ ACTIVITY = "iac_change"
 # value it has now). Pointers name a field where it is now.
 CHANGED: list[tuple[str, str, Any]] = [
     ("identities", "/sources/read_from", "state_file"),
+    ("identities", "/sources/plan/digest_version", "redacted-1"),
+    # A run the tool opened names the state by the digest of the state as the record's redaction policy leaves it, here
+    # that of the captured state raw_states/iac/apply_create.json under the built-in policy.
+    ("identities", "/sources/state/digest", "sha256:11ff8faaf41206f43d9cbdc9ecaa1c3b82d1ac2efcf10893b9660ba86cbb7e29"),
+    ("identities", "/sources/state/digest_version", "redacted-1"),
     ("records", "/change/identity/sources/read_from", "state_file"),
     ("records", "/change/drift_check", None),
-    ("records", "/expected_stages", ["plan", "pre_deploy", "post_deploy", "post_verify"]),
-    ("records", "/out_of_scope", []),
+    # The re-plan check the apply job made, which only a run that applies in a later job names.
+    ("records", "/change/replan_check", None),
+    # A run the tool opened leaves out the pre-deploy stage as needing the server.
+    ("records", "/expected_stages", ["plan", "post_deploy", "post_verify"]),
+    ("records", "/out_of_scope", [{"stage": "pre_deploy", "reason": "needs_the_server", "declared_in": None}]),
     ("records", "/stages/plan/commit_review", None),
     ("records", "/stages/plan/values_known_after_deployment", "block"),
     ("records", "/stages/plan/postponed_checks", None),
     ("records", "/stages/plan/resource_redaction", None),
+    # The exceptions the server served a stage, which a run the tool opened never applies.
+    ("records", "/stages/plan/served_exceptions", None),
+    # The server's facts about the apply job, which only an infrastructure change's pre-deploy stage keeps.
+    ("records", "/stages/plan/apply_job_facts", None),
+    # The failed checks served exceptions cover in full: none in a run the tool opened.
+    ("records", "/stages/plan/coverage/failed_checks_excepted", 0),
+    ("records", "/coverage/failed_checks_excepted", 0),
     (
         "records",
         "/units_file/units",
@@ -52,6 +77,8 @@ CHANGED: list[tuple[str, str, Any]] = [
             {"name": "app", "directory": "app", "depends_on": ["network"]},
         ],
     ),
+    # A record writes out the redaction policy its stages ran.
+    ("records", "/redaction_policy", BUILT_IN.document().model_dump(mode="json")),
     # A record names where its project sits in the repository.
     ("records", "/subject/project_directory", "."),
     # And the git tree of its project directory at the commit.
@@ -59,14 +86,17 @@ CHANGED: list[tuple[str, str, Any]] = [
 ]
 # Each refusal message or problem reworded since the baseline, by its old wording.
 REWORDED = {
+    "is not the version of the terraform plan digest rule": (
+        "a plan digest that is not keyed names the version of the terraform redacted plan digest rule"
+    ),
+    "every stage and every redacted evidence file name the same redaction policy": (
+        "every stage and every redacted evidence file name the redaction policy the record writes out, by its digest"
+    ),
     "every event names the plan the record evaluated": "every event names the content the record's change checked",
     "does not match plan.complete and plan.applyable": "does not match change.plan.complete and change.plan.applyable",
     "not the digest of the change's units": "not the digest of the change type, unit, environment and plan",
     "lists an approval of another change": (
         "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
-    ),
-    "a project can leave out only the pre-deploy approval gate and the post-verify stage": (
-        "a project can leave out only the pre-deploy and post-verify stages"
     ),
     "a resource is bound or unresolved, never both": "a resource is resolved or unresolved, never both",
     "every binding names the tool that wrote the state it was read from": (
@@ -139,6 +169,9 @@ REMOVED_CASES = {
     "record_of_a_local_run_with_attested_clock_time",
     # A project's scanner check mapping is named by its path in the project, so a path is no longer refused.
     "binding_set_file_named_by_its_path",
+    # A record of a run the server opened now builds on the record the Iltero CLI wrote of such a run, which already
+    # names the server's bundle, so this case is record_of_a_run_the_server_opened.
+    "record_of_a_run_the_server_opened_from_a_served_bundle",
 }
 # Cases rebuilt since the baseline, each still a case: a stage lists approvals only when its results read facts from
 # the server, so an approval of another change is now listed in the record of a run the server opened; and a stage's
@@ -150,7 +183,15 @@ REBUILT_CASES = {
     "pre_deploy_stage_of_a_forged_change_digest",
     # A declared unit names its directory, so the case's unit names one and still leaves out its dependencies.
     "units_file_unit_named_without_its_dependencies",
+    # A record of a run the server opened now builds on the record the Iltero CLI wrote of such a run.
+    "record_of_a_run_the_server_opened",
+    "record_says_the_server_opened_a_run_without_pins",
 }
+# What a case of a run the server opened sets since the baseline so its plan stage applies the exceptions served to it:
+# their copy and the failed results they cover, the server's time, and the copy's entry of the register.
+SERVED_EXCEPTIONS_POINTERS = frozenset(
+    {"/stages/plan/served_exceptions", "/stages/plan/reference_time/source", "/evidence_refs/-"}
+)
 # Cases renamed since the baseline, by their old name: none is left renamed.
 RENAMED_CASES: dict[str, str] = {}
 # Where the baseline's cases added a stage, its events file: a stage now names an entry of the record's register, so
@@ -173,7 +214,14 @@ COMMON_TESTS = "common"
 RECORD_COVERAGE_TESTS = "tests/common/test_models_record_coverage.py"
 # The tests of a stage's verdict and evidence status moved to their own module.
 COVERAGE_VERDICT_TESTS = "tests/common/test_models_coverage_verdicts.py"
+# The tests of an event's status reasons moved to their own module.
+EVENT_STATUS_REASON_TESTS = "tests/common/test_models_event_status_reasons.py"
+# The tests of which stages a record expects, and why it leaves the others out, moved to their own module.
+STAGE_SCOPE_TESTS = "tests/common/test_models_stage_scope.py"
 MOVED_TESTS = {
+    "test_a_reason_outside_its_status_is_refused": EVENT_STATUS_REASON_TESTS,
+    "test_every_listed_reason_is_accepted_for_its_status": EVENT_STATUS_REASON_TESTS,
+    "test_policy_statuses_are_the_four_the_output_contract_allows": EVENT_STATUS_REASON_TESTS,
     "test_a_stage_verdict_is_the_code_its_counts_give": COVERAGE_VERDICT_TESTS,
     "test_an_error_marks_a_stage_incomplete_and_a_clean_run_complete": COVERAGE_VERDICT_TESTS,
     "test_a_record_counts_the_resources_of_its_one_plan_stage_first": RECORD_COVERAGE_TESTS,
@@ -192,8 +240,22 @@ MOVED_TESTS = {
     "test_the_verdict_is_the_stage_verdict_that_wins_by_precedence": RECORD_COVERAGE_TESTS,
     "test_truncated_and_sampled_carry_over_from_any_stage": RECORD_COVERAGE_TESTS,
     "test_two_stages_add_up_and_keep_the_plans_resources_in_scope": RECORD_COVERAGE_TESTS,
+    "test_a_record_always_expects_its_post_deploy_stage": STAGE_SCOPE_TESTS,
+    "test_a_stage_left_out_says_why_in_a_way_that_holds": STAGE_SCOPE_TESTS,
+    "test_the_file_that_leaves_a_stage_out_is_inside_the_project": STAGE_SCOPE_TESTS,
 }
 RENAMED_TESTS = {
+    # A record package keeps each file by its digest, so two entries of one digest may name one path.
+    "test_the_evidence_register_names_each_file_once": (
+        "test_the_evidence_register_names_each_file_by_one_digest_and_each_entry_once"
+    ),
+    # A redaction report's paths are lists of keys and indexes, and a project's kept paths are exempted.
+    "test_a_redaction_report_is_bounded_and_its_allowed_reasons_are_plain_text": (
+        "test_a_redaction_report_is_bounded_and_its_exemption_reasons_are_plain_text"
+    ),
+    "test_a_redaction_report_keeps_paths_and_allowed_reasons_as_written": (
+        "test_a_redaction_report_keeps_each_key_of_a_path_as_written"
+    ),
     # A reference time states its value and source only: no trust word, no timestamp authority or time window.
     "test_a_reference_time_claims_no_more_than_its_source": "test_a_reference_time_states_its_value_and_source_only",
     "test_a_stage_that_read_placeholders_is_incomplete_and_keeps_its_verdict": (
@@ -243,6 +305,9 @@ RENAMED_TESTS = {
     "test_a_binding_set_read_from_a_file_names_it": "test_a_scanner_check_mapping_read_from_a_file_names_it",
 }
 REMOVED_TESTS = {
+    # A project's configuration no longer leaves out an infrastructure change's approval gate: only the environment's
+    # policy does.
+    "tests/test_models_stages.py::test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so",
     # No reference time comes from a timestamp authority, so none carries a time window.
     "tests/test_models_context.py::test_a_timestamp_authority_time_carries_its_time_window",
     "tests/test_models_context.py::test_a_timestamp_authority_time_lies_inside_its_time_window",
@@ -254,10 +319,31 @@ REMOVED_TESTS = {
     "tests/test_models_car.py::test_a_scanner_block_whose_counts_do_not_add_up_is_refused",
     # A verdict carries no exit code, so no precedence of exit codes is left to test.
     "tests/test_models_coverage.py::test_the_precedence_names_every_exit_code_once",
+    # A run the tool opened has no pre-deploy stage; the rule that it has no facts from the server is tested on an image
+    # deploy's pre-deploy stage instead.
+    "tests/test_models_stages.py::test_an_offline_record_has_no_facts_from_the_server",
 }
 # The starter assertions gained ``spec.change_type``, so each digest of theirs the baseline cites, and each digest of a
 # set of them, maps to its value now; ``sizes`` gives the size of each retained file now.
 STARTER_DIGESTS: dict[str, Any] = json.loads((BASELINE / "starter_assertion_digests.json").read_text(encoding="utf-8"))
+# The redaction policy changed since the baseline, and every record names the built-in policy it now writes out.
+REDACTION_POLICY_DIGESTS = {"sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b": BUILT_IN.digest}
+# Plan digests are keyed per run since the baseline: in a run the tool opened, each is the digest of the redacted plan,
+# under the redacted rule's version. The baseline's records of such runs keep no redacted plan the vectors ship, so each
+# names an illustrative digest, mapped here from the one it named.
+PLAN_DIGESTS_NOW = {
+    "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761": (
+        "sha256:f55a2f13ca1f659e2c9b0148a6dc731948d76bcbb3887eb61d087290482f60d7"
+    )
+}
+REDACTED_VERSION = REDACTED_PLAN_DIGEST_VERSIONS["terraform"]
+# The size of the redaction policy's file a record keeps, which is the policy's canonical JSON.
+REDACTION_POLICY_BYTES = len(canonical_bytes(BUILT_IN.as_dict()))
+# Reasons for hiding a value renamed since the baseline, so none names a tool.
+RENAMED_REDACTION_REASONS = {"terraform_sensitive": "declared_sensitive", "outside_the_reading": "field_not_read"}
+# Records the Iltero CLI's writer now writes, kept as it wrote them rather than edited by hand: they are compared with
+# no baseline, and the cases of each still refuse it for the reason they did.
+WRITTEN_BY_THE_CLI = {"local_run.json", "local_run_declared_units.json"}
 DOCUMENT_FOLDERS = ("records", "identities")
 # The baseline is older than the image change types: its records and their cases are now those of the IaC change type,
 # in that type's subfolder of their folder.
@@ -310,10 +396,25 @@ def _checked_content(value: Any) -> Any:
     }
 
 
+def _with_redacted_versions(value: Any) -> Any:
+    """``value`` with every plan digest's ``digest_version`` the version of the redacted rule it now follows."""
+    if isinstance(value, list):
+        return [_with_redacted_versions(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    return {
+        key: REDACTED_VERSION if key == "digest_version" and item == "1" else _with_redacted_versions(item)
+        for key, item in value.items()
+    }
+
+
 def _new_change_digest(document: dict[str, Any]) -> dict[str, str]:
     """The baseline record's change digest, mapped to the one the change type, unit, environment and checked content
     now give it."""
-    plan = {key: document["plan"][key] for key in ("digest", "digest_version", "tool")} | {"kind": "plan"}
+    plan = _with_redacted_versions(
+        {key: document["plan"][key] for key in ("digest", "digest_version", "tool")} | {"kind": "plan"}
+    )
+    plan["digest"] = PLAN_DIGESTS_NOW.get(plan["digest"], plan["digest"])
     return {
         document["change"]["digest"]: change_digest(
             ACTIVITY, document["unit"], document["subject"]["environment"], plan
@@ -407,13 +508,47 @@ def _reworded_reason(reason: str | None) -> str | None:
     return f"assert: false; {match.group(1)} {match.group(2)} is false" if match else reason
 
 
+def _segments(text: str) -> list[str | int]:
+    """A path written ``a.b[0]`` as the list of its keys and indexes; the baseline's paths hold no dotted key."""
+    segments: list[str | int] = []
+    for part in text.split("."):
+        name, _, rest = part.partition("[")
+        segments.append(name)
+        segments.extend(int(index) for index in re.findall(r"\[(\d+)\]", "[" + rest if rest else ""))
+    return segments
+
+
+def _reshaped_report(report: dict[str, Any]) -> None:
+    """A baseline redaction report as a report is written now: paths as lists, in path order, the reasons renamed,
+    and the paths a project kept listed as exempted."""
+    for listed in ("redacted", "allowed"):
+        for entry in report[listed]:
+            entry["path"] = _segments(entry["path"])
+            entry["reason"] = RENAMED_REDACTION_REASONS.get(entry["reason"], entry["reason"])
+    report["redacted"].sort(key=lambda entry: (path_order(entry["path"]), entry["reason"]))
+    # Each entry of the report of what the plan stage observed names its value change: under a resource change's
+    # after, unknown, as no baseline report hides the paired path under before; null elsewhere.
+    observed = report["input"]["kind"] == "observation"
+    for entry in report["redacted"]:
+        paired = paired_before(tuple(entry["path"])) if observed else None
+        entry["value_change"] = None if paired is None else "unknown"
+    report["exempted"] = sorted(report.pop("allowed"), key=lambda entry: (path_order(entry["path"]), entry["reason"]))
+    report["unknown"] = sorted((_segments(path) for path in report["unknown"]), key=path_order)
+
+
 def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
     """The baseline record ``name`` in the change-type envelope, with the change digest the new rule gives and every
     value bound to it, and each stage's events file digested from its events."""
-    digests = STARTER_DIGESTS["digests"] | _new_change_digest(document)
-    moved: dict[str, Any] = _renamed(_replaced(_with_activity(_checked_content(document)), digests))
+    digests = STARTER_DIGESTS["digests"] | REDACTION_POLICY_DIGESTS | PLAN_DIGESTS_NOW | _new_change_digest(document)
+    moved: dict[str, Any] = _with_redacted_versions(
+        _renamed(_replaced(_with_activity(_checked_content(document)), digests))
+    )
     for ref in moved["evidence_refs"]:
         ref["size_bytes"] = STARTER_DIGESTS["sizes"].get(ref["digest"], ref["size_bytes"])
+        if ref["digest"] == BUILT_IN.digest:
+            ref["size_bytes"] = REDACTION_POLICY_BYTES
+    for record in moved["stages"].values():
+        _reshaped_report(record["redaction"])
     moved["change"] = {
         "activity": ACTIVITY,
         "digest": moved["change"]["digest"],
@@ -432,6 +567,11 @@ def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
         record["events"]["digest"] = digest(data)
     # A record's id is now derived from its run and unit.
     moved["metadata"]["uuid"] = record_uuid(moved["run"]["id"], moved["unit"])
+    # A record's environment is now its name and whether its policy treats it as production, which a run the tool
+    # opened cannot know.
+    environment = moved["subject"]["environment"]
+    if isinstance(environment, str):
+        moved["subject"]["environment"] = {"name": environment, "production": dict(UNKNOWN)}
     return moved
 
 
@@ -520,7 +660,7 @@ def _moved_case(case: dict[str, Any], folder: str) -> dict[str, Any]:
     now."""
     moved = {**case}
     record = _new_change_digest(_read(BASELINE / folder / case["vector"])) if folder == "records" else {}
-    digests = STARTER_DIGESTS["digests"] | record
+    digests = STARTER_DIGESTS["digests"] | REDACTION_POLICY_DIGESTS | record
     moved["set"] = {
         _renamed_pointer(_moved_pointer(pointer), case["vector"]): _renamed(
             _replaced(_with_activity(_checked_content(value)), digests), pointer.rsplit("/", 1)[-1]
@@ -589,11 +729,24 @@ def _shipped_cases(folder: str) -> Path:
     return VECTORS / folder / "cases.json"
 
 
+def _without_given_file_digests_of_redacted_files(record: dict[str, Any]) -> dict[str, Any]:
+    """``record``, of a run the tool opened, naming no digest of a file it keeps redacted: each register entry that
+    names a redaction policy names the file the pipeline gave by its name alone."""
+    for ref in record["evidence_refs"]:
+        if ref["source"] is not None and ref["redaction_policy"] is not None:
+            ref["source"]["digest"] = None
+    return record
+
+
 def _with_changes(folder: str, name: str) -> Any:
     """The baseline document ``name`` of ``folder`` with every field changed since the baseline set to its declared
     value."""
     document = _read(BASELINE / folder / name)
-    changed = _moved_record(document, name) if folder == "records" else _renamed(copy.deepcopy(document))
+    changed = (
+        _without_given_file_digests_of_redacted_files(_moved_record(document, name))
+        if folder == "records"
+        else _renamed(copy.deepcopy(document))
+    )
     for changed_in, pointer, value in CHANGED:
         if changed_in != folder:
             continue
@@ -610,7 +763,10 @@ def _with_changes(folder: str, name: str) -> Any:
 
 
 BASELINE_DOCUMENTS = [
-    (folder, path) for folder in DOCUMENT_FOLDERS for path in sorted((BASELINE / folder).glob("*.json"))
+    (folder, path)
+    for folder in DOCUMENT_FOLDERS
+    for path in sorted((BASELINE / folder).glob("*.json"))
+    if not (folder == "records" and path.name in WRITTEN_BY_THE_CLI)
 ]
 
 
@@ -653,16 +809,24 @@ def test_no_baseline_vector_was_removed(folder: str) -> None:
 _EVENTS_FILE_VALUE = re.compile(r"^/(stages/[a-z_]+/events/digest|evidence_refs/[0-9]+/(digest|size_bytes))$")
 
 
-def _without_events_file_values(case: dict[str, Any]) -> dict[str, Any]:
-    """``case`` without the events-file digests and sizes it sets for the events it edits, and, for a case whose
-    evidence status now lists more than the one reason it named (``LISTED_REASONS_CASES``), without its statuses."""
+def _without_events_file_values(case: dict[str, Any], *, applies_served_exceptions: bool) -> dict[str, Any]:
+    """``case`` without the events-file digests and sizes it sets for the events it edits; for a case whose plan stage
+    now applies the exceptions served to it, without what that sets (``SERVED_EXCEPTIONS_POINTERS``); and, for a case
+    whose evidence status now lists more than the one reason it named (``LISTED_REASONS_CASES``), without its
+    statuses."""
     listed = case["name"] in LISTED_REASONS_CASES
+    served = SERVED_EXCEPTIONS_POINTERS if applies_served_exceptions else frozenset()
     kept = {
         k: v
         for k, v in case["set"].items()
-        if not _EVENTS_FILE_VALUE.match(k) and not (listed and "/evidence_status" in k)
+        if not _EVENTS_FILE_VALUE.match(k) and k not in served and not (listed and "/evidence_status" in k)
     }
     return {**case, "set": kept}
+
+
+def _applies(case: dict[str, Any]) -> bool:
+    """Whether ``case``'s plan stage now applies the exceptions served to it."""
+    return "/stages/plan/served_exceptions" in case.get("set", {})
 
 
 @pytest.mark.parametrize("folder", tuple(BASELINE_CASE_FOLDERS))
@@ -676,14 +840,19 @@ def test_every_baseline_case_is_still_a_case_as_it_was(folder: str) -> None:
         for case in baseline
         if case["name"] in shipped
         and case["name"] not in REBUILT_CASES
-        and _without_events_file_values(shipped[case["name"]])
-        != _without_events_file_values(_moved_case(case, BASELINE_CASE_FOLDERS[folder]))
+        and case["vector"] not in WRITTEN_BY_THE_CLI
+        and _without_events_file_values(
+            shipped[case["name"]], applies_served_exceptions=_applies(shipped[case["name"]])
+        )
+        != _without_events_file_values(
+            _moved_case(case, BASELINE_CASE_FOLDERS[folder]), applies_served_exceptions=_applies(shipped[case["name"]])
+        )
     ]
     # A rebuilt case is built anew, but still refuses its record for the reason it did.
     refused_otherwise = [
         case["name"]
         for case in baseline
-        if case["name"] in REBUILT_CASES
+        if (case["name"] in REBUILT_CASES or case["vector"] in WRITTEN_BY_THE_CLI)
         and case["name"] in shipped
         and {key: shipped[case["name"]].get(key) for key in ("message", "problems")}
         != {key: _moved_case(case, BASELINE_CASE_FOLDERS[folder]).get(key) for key in ("message", "problems")}

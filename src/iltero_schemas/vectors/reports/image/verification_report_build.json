@@ -10,7 +10,7 @@
   },
   "record": {
     "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
-    "digest": "sha256:2f037293dbf71c4555dbf45c038bc8e99fad486687cabbdd6d55c3210d2ebaa7"
+    "digest": "sha256:f8312bc8ce93fedab9392ff66547d6c864c24c0c580bff889c6e1b791766c036"
   },
   "properties": {
     "integrity": {
@@ -72,6 +72,41 @@
       "state": "failed",
       "reason": "other_binary_named",
       "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (2 more problems)"
+    },
+    "scanner_reports": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "plan_age": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "apply_job_approval_order": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "received_plan_file": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "rendered_plan": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "pinned_plan": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
+    },
+    "replan_resource_actions": {
+      "state": "not_assessed",
+      "reason": "not_in_activity",
+      "detail": null
     }
   }
 }

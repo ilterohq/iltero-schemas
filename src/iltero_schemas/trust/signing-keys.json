@@ -1,0 +1,5 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "SigningKeys",
+  "keys": []
+}

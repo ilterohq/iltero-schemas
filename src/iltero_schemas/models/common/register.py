@@ -10,7 +10,7 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 
 if TYPE_CHECKING:
-    from iltero_schemas.models.common.car import CAR
+    from iltero_schemas.models.common.car import CAR, EvidenceRef
     from iltero_schemas.models.common.local_exceptions import LocalExceptionsUsed
 
 
@@ -19,10 +19,10 @@ def check_register(car: CAR) -> None:
     and assertion index, by path and digest; each stage's copy of each scanner check mapping it used, by path and
     digest, naming the file it was read from; the observations it read from each scanner report, by path, read from
     the file that report was kept from, and each report as it kept it, by digest, collected as that scanner's report
-    and redacted from one file the pipeline gave; every input an event was evaluated over; and what the plan stage
-    redacted, kept as an entry the redaction policy ran over. Each scanner file is an entry of its own: neither another
-    scanner file, nor a stage's events file or assertion index, nor the input of an evaluation that stands on no
-    scanner's result."""
+    and redacted from one file the pipeline gave; every input an event was evaluated over; what the plan stage
+    redacted, kept as an entry the redaction policy ran over; and each stage's canonical copy of the exceptions the
+    server served it. Each scanner file is an entry of its own: neither another scanner file, nor a stage's events file
+    or assertion index, nor the input of an evaluation that stands on no scanner's result."""
     kept = {(ref.path, ref.digest) for ref in car.evidence_refs}
     paths = {ref.path for ref in car.evidence_refs}
     digests = {ref.digest for ref in car.evidence_refs}
@@ -30,6 +30,8 @@ def check_register(car: CAR) -> None:
     scanner_files: list[str] = []
     misread: list[tuple[Stage, str]] = []
     scanner_digests: set[str] = set()
+    # Only a run the server opened names the file each report was redacted from by its digest.
+    compared = car.governance.run_opened_by == "server"
     for stage, record in car.stages.items():
         if (record.events.path, record.events.digest) not in kept:
             raise ValueError(f"the {stage.value} stage's events file is an entry of the evidence register")
@@ -56,7 +58,7 @@ def check_register(car: CAR) -> None:
             ):
                 raise ValueError(
                     "in the evidence register, the copy of a project's scanner check mapping names the file it was "
-                    "read from, and the copy of the shipped mapping names no file"
+                    "read from, and the copy of the shipped or the served mapping names no file"
                 )
             scanner_files.append(used.copy_path)
         for report in record.scanners.reports:
@@ -66,22 +68,22 @@ def check_register(car: CAR) -> None:
                     "evidence register"
                 )
             entries = [ref for ref in car.evidence_refs if ref.digest == report.report_digest]
+            # The file each entry was redacted from, by its name and, in a run the server opened, its keyed digest; a
+            # run the tool opened names it by its name alone, and in a run the server opened a null digest binds
+            # nothing.
             kept_from = {
-                ref.source.digest
+                (ref.source.name, ref.source.digest)
                 for ref in entries
                 if ref.source is not None and ref.redaction_policy is not None and ref.collector.tool == report.tool
             }
-            if len(kept_from) != 1:
+            if len(kept_from) != 1 or (compared and any(digest is None for _, digest in kept_from)):
                 raise ValueError(
                     f"the {report.tool} report the {stage.value} stage kept is an entry of the evidence register, "
                     "redacted from the file the pipeline gave"
                 )
             observations = [ref for ref in car.evidence_refs if ref.path == report.observations]
             scanner_digests |= {report.report_digest, *(ref.digest for ref in observations)}
-            if (
-                not misread
-                and {ref.source.digest if ref.source is not None else None for ref in observations} != kept_from
-            ):
+            if not misread and not _read_from(observations, kept_from, compared=compared):
                 misread = [(stage, report.tool)]
             scanner_files += [report.observations, *(ref.path for ref in entries)]
         if record.scanners.local_exceptions is not None:
@@ -102,6 +104,7 @@ def check_register(car: CAR) -> None:
             f"the observations the {stage.value} stage read from its {scanner} report were read from the file that "
             "report was kept from"
         )
+    _check_served_exceptions_copy(car, stage_files | set(scanner_files))
     _check_exceptions_named(car)
     inputs = {e.provenance.input_digest for e in car.events} - {None}
     if not inputs <= digests:
@@ -113,6 +116,44 @@ def check_register(car: CAR) -> None:
         raise ValueError(
             "what the plan stage redacted is an entry of the evidence register that names the redaction policy"
         )
+
+
+def _read_from(observations: list[EvidenceRef], kept_from: set[tuple[str, str | None]], *, compared: bool) -> bool:
+    """Whether every entry of the observations names, as its source, the file the report was kept from: by its name
+    and, where given file digests are ``compared`` (in a run the server opened, which names them keyed), by its
+    digest. In a run the tool opened, the observations also name their report by its digest
+    (``ScannerObservations.report_digest``)."""
+    ((name, digest),) = kept_from
+    return all(
+        ref.source is not None and ref.source.name == name and (not compared or ref.source.digest == digest)
+        for ref in observations
+    )
+
+
+def _check_served_exceptions_copy(car: CAR, other_files: set[str]) -> None:
+    """Each stage's copy of the served exceptions it applied is an entry of the register of its own, kept as canonical
+    JSON, from no file the pipeline gave and with nothing redacted."""
+    for stage, record in car.stages.items():
+        used = record.served_exceptions
+        if used is None:
+            continue
+        entries = [ref for ref in car.evidence_refs if ref.path == used.copy_path]
+        if (
+            not entries
+            or used.copy_path in other_files
+            or any(
+                ref.digest != used.digest
+                or ref.source is not None
+                or ref.redaction_policy is not None
+                or ref.canonicalization != CANONICALIZATION
+                for ref in entries
+            )
+        ):
+            raise ValueError(
+                f"the {stage.value} stage's copy of the exceptions the server served it is an entry of the evidence "
+                f"register of its own, kept as canonical JSON ({CANONICALIZATION}) and not copied from a file the "
+                "pipeline gave"
+            )
 
 
 def _exceptions_copy(car: CAR, stage: Stage, used: LocalExceptionsUsed) -> str:

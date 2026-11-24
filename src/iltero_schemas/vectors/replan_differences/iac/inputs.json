@@ -1,0 +1,623 @@
+{
+  "cases": [
+    {
+      "name": "plans_the_same",
+      "description": "The same captured plan on both sides: no difference.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      }
+    },
+    {
+      "name": "resource_added",
+      "description": "The re-plan updates terraform_data.settings, which the evaluated plan leaves alone.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/4/change/actions": [
+            "no-op"
+          ]
+        },
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      }
+    },
+    {
+      "name": "resource_removed",
+      "description": "The evaluated plan updates terraform_data.settings, which the re-plan leaves alone.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/4/change/actions": [
+            "no-op"
+          ]
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "update_turned_into_a_replacement",
+      "description": "An update in the evaluated plan is a replacement in the re-plan.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/4/change/actions": [
+            "delete",
+            "create"
+          ]
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "replacement_in_another_order",
+      "description": "A replacement that deletes first in one plan and creates first in the other.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/1/change/actions": [
+            "create",
+            "delete"
+          ]
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "deposed_object_as_its_own_entry",
+      "description": "A deposed object, keyed by its deposed key, that the re-plan no longer deletes.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_deposed_lone.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_deposed_lone.json",
+        "set": {},
+        "remove": [
+          "/resource_changes/1"
+        ]
+      }
+    },
+    {
+      "name": "data_source_ignored",
+      "description": "A data source that reads in one plan and does nothing in the other: not compared.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_create.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_create.json",
+        "set": {
+          "/resource_changes/0/change/actions": [
+            "no-op"
+          ]
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "no_op_ignored",
+      "description": "A change that does nothing, under another address in the re-plan: not compared.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_change.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_change.json",
+        "set": {
+          "/resource_changes/0/address": "local_file.other"
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "forget_compared",
+      "description": "A resource the evaluated plan forgets and the re-plan deletes.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_change.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_change.json",
+        "set": {
+          "/resource_changes/2/change/actions": [
+            "delete"
+          ]
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "import_dropped",
+      "description": "An import in the evaluated plan that the re-plan no longer makes.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_change.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_change.json",
+        "set": {
+          "/resource_changes/1/change/importing": null
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "move_turned_into_a_delete_and_a_create",
+      "description": "A move in the evaluated plan that the re-plan makes as a create of the new address and a delete of the old.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/3/change/actions": [
+            "create"
+          ],
+          "/resource_changes/3/previous_address": null,
+          "/resource_changes/-": {
+            "address": "terraform_data.app",
+            "mode": "managed",
+            "type": "terraform_data",
+            "name": "app",
+            "provider_name": "terraform.io/builtin/terraform",
+            "change": {
+              "actions": [
+                "delete"
+              ],
+              "before": {},
+              "after": null,
+              "after_unknown": {},
+              "before_sensitive": {},
+              "after_sensitive": false
+            }
+          }
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "address_hidden_by_a_sensitive_copy",
+      "description": "A resource only the evaluated plan creates, whose address holds a string the re-plan declares sensitive: its address is the marker.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "resource_changes": [
+            {
+              "address": "terraform_data.app[\"fake-sensitive-name-0031\"]",
+              "mode": "managed",
+              "type": "terraform_data",
+              "name": "app",
+              "index": "fake-sensitive-name-0031",
+              "provider_name": "terraform.io/builtin/terraform",
+              "change": {
+                "actions": [
+                  "create"
+                ],
+                "before": null,
+                "after": {},
+                "after_unknown": {},
+                "before_sensitive": false,
+                "after_sensitive": {}
+              }
+            }
+          ]
+        }
+      },
+      "replan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "planned_values": {
+            "outputs": {
+              "names": {
+                "sensitive": true,
+                "value": "fake-sensitive-name-0031"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "addresses_hidden_by_the_policy",
+      "description": "Addresses shaped like a credential, which the redacted plans hide: an added and a removed resource, each named by its plan's marker.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "resource_changes": [
+            {
+              "address": "terraform_data.app[\"token=fake-shaped-0032\"]",
+              "mode": "managed",
+              "type": "terraform_data",
+              "name": "app",
+              "index": "fake-sensitive-name-0031",
+              "provider_name": "terraform.io/builtin/terraform",
+              "change": {
+                "actions": [
+                  "create"
+                ],
+                "before": null,
+                "after": {},
+                "after_unknown": {},
+                "before_sensitive": false,
+                "after_sensitive": {}
+              }
+            }
+          ]
+        }
+      },
+      "replan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "resource_changes": [
+            {
+              "address": "terraform_data.app[\"token=fake-shaped-0033\"]",
+              "mode": "managed",
+              "type": "terraform_data",
+              "name": "app",
+              "index": "fake-sensitive-name-0031",
+              "provider_name": "terraform.io/builtin/terraform",
+              "change": {
+                "actions": [
+                  "create"
+                ],
+                "before": null,
+                "after": {},
+                "after_unknown": {},
+                "before_sensitive": false,
+                "after_sensitive": {}
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "address_hidden_on_one_side_only",
+      "description": "A resource whose actions changed, whose address only the re-plan hides: the re-plan's marker names it.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "resource_changes": [
+            {
+              "address": "terraform_data.app[\"fake-sensitive-name-0031\"]",
+              "mode": "managed",
+              "type": "terraform_data",
+              "name": "app",
+              "index": "fake-sensitive-name-0031",
+              "provider_name": "terraform.io/builtin/terraform",
+              "change": {
+                "actions": [
+                  "create"
+                ],
+                "before": null,
+                "after": {},
+                "after_unknown": {},
+                "before_sensitive": false,
+                "after_sensitive": {}
+              }
+            }
+          ]
+        }
+      },
+      "replan": {
+        "plan": {
+          "format_version": "1.2",
+          "terraform_version": "1.14.0",
+          "timestamp": "2026-09-22T13:00:00Z",
+          "resource_changes": [
+            {
+              "address": "terraform_data.app[\"fake-sensitive-name-0031\"]",
+              "mode": "managed",
+              "type": "terraform_data",
+              "name": "app",
+              "index": "fake-sensitive-name-0031",
+              "provider_name": "terraform.io/builtin/terraform",
+              "change": {
+                "actions": [
+                  "delete",
+                  "create"
+                ],
+                "before": {},
+                "after": {},
+                "after_unknown": {},
+                "before_sensitive": {},
+                "after_sensitive": {}
+              }
+            }
+          ],
+          "planned_values": {
+            "outputs": {
+              "names": {
+                "sensitive": true,
+                "value": "fake-sensitive-name-0031"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "refused_duplicate_key",
+      "description": "Refused: two resource changes with one address.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/5/address": "terraform_data.settings",
+          "/resource_changes/5/previous_address": null
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "refused_entry_that_is_not_an_object",
+      "description": "Refused: a resource change that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/0": "terraform_data.kept_outside"
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "refused_planted_marker",
+      "description": "Refused: a re-plan that already holds a redaction marker.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {
+          "/resource_changes/4/change/after/input": {
+            "__redacted": true,
+            "reason": "declared_sensitive",
+            "present": true,
+            "type": "string"
+          }
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "refused_unknown_tool",
+      "description": "Refused: a tool with no reader.",
+      "tool": "pulumi",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      }
+    },
+    {
+      "name": "refused_deposed_key_of_another_shape",
+      "description": "Refused: a deposed key that is not eight lowercase hexadecimal characters.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "apply_deposed_lone.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "apply_deposed_lone.json",
+        "set": {
+          "/resource_changes/1/deposed": "NOT-HEX1"
+        },
+        "remove": []
+      }
+    },
+    {
+      "name": "refused_no_timestamp",
+      "description": "Refused: a re-plan with no timestamp.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "evaluated_plan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": []
+      },
+      "replan": {
+        "raw": "plan_move.json",
+        "set": {},
+        "remove": [
+          "/timestamp"
+        ]
+      }
+    }
+  ]
+}

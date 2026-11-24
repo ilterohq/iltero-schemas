@@ -33,13 +33,13 @@ from iltero_schemas.models.common.change_type import (
 ALWAYS_REQUIRED_PARTS = frozenset({"evaluation", "organization_scope", "reference_time"})
 _SOURCE = frozenset({"source"})
 _CHANGE = frozenset({"change", "plan", "subject"})
-# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals, exceptions,
-# and whether its commits were reviewed.
-_CHANGE_FACTS = frozenset({"evaluations", "approvals", "exceptions", "commit_review"})
+# The facts only the server holds about a change before it is deployed: earlier evaluations, approvals and whether its
+# commits were reviewed. Exceptions are never part of an input: no assertion reads one.
+_CHANGE_FACTS = frozenset({"evaluations", "approvals", "commit_review"})
 # The parts only the server holds. An input that may carry one reads server facts. A value the server supplies inside
 # another part (the environment's production flag, an image deploy's accepted build) is not one: it holds the unknown
 # marker in a run the tool opened, and follows who opened the run.
-SERVER_FACTS = _CHANGE_FACTS | {"verified_source", "attestation_outcome"}
+SERVER_FACTS = _CHANGE_FACTS | {"verified_source", "attestation_outcome", "apply_job_facts"}
 # The parts that name the content the change checked: the plan, the built image, or the deployed image's change.
 CHECKED_CONTENT_PARTS = frozenset({"plan", "artifact", "change"})
 
@@ -62,9 +62,15 @@ class Profile:
 
 
 PLAN_RESOURCE = Profile("plan_resource", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE, frozenset())
-# A pre-deploy input names the run it belongs to, which an approval of a run names.
+# The server's facts about the job that applies an infrastructure change, and what is worked out from them.
+_APPLY_JOB = frozenset({"apply_job_facts", "apply_job_timing"})
+# A pre-deploy input names the run it belongs to, which an approval of a run names. It carries the re-plan check the
+# apply job made exactly when its apply job's facts are of a later job, and may when they are the unknown marker
+# (``models.iac.replan_check.check_replan_presence``).
 PRE_DEPLOY_CHANGE = Profile(
-    "pre_deploy_change", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | _CHANGE_FACTS | {"run"}, frozenset()
+    "pre_deploy_change",
+    ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | _CHANGE_FACTS | {"run"} | _APPLY_JOB,
+    frozenset({"replan_check"}),
 )
 POST_DEPLOY = Profile("post_deploy", ALWAYS_REQUIRED_PARTS | _SOURCE | _CHANGE | {"deployment"}, frozenset())
 # A post-verify input carries the drift check: what reading the deployed resources back found.
@@ -76,7 +82,7 @@ POST_VERIFY = Profile(
 POST_VERIFY_RESOURCE = Profile(
     "post_verify_resource", ALWAYS_REQUIRED_PARTS | {"subject", "resource", "plan", "deployment"}, _SOURCE
 )
-RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance", "exceptions"})
+RUNTIME = Profile("runtime", ALWAYS_REQUIRED_PARTS | {"subject"}, _SOURCE | {"deployment", "assurance"})
 # A build's input: the image it built, the test and scan reports it was given, the commit the server verified from
 # the build job's identity, and what the server found when it checked the build's attestation.
 PLAN_ARTIFACT = Profile(

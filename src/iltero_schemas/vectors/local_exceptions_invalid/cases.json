@@ -1,0 +1,42 @@
+[
+  {
+    "name": "exception_covering_a_built_in",
+    "vector": "scanner_evidence/iac/local_run_suppressed_with_exception/local-exceptions.yaml",
+    "set": {
+      "/spec/exceptions/0/scope/assertion/id": "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN"
+    },
+    "remove": [],
+    "message": "an exception never covers a built-in assertion: what it records is never waived"
+  },
+  {
+    "name": "exception_lasting_more_than_a_year",
+    "vector": "scanner_evidence/iac/local_run_suppressed_with_exception/local-exceptions.yaml",
+    "set": {
+      "/spec/exceptions/0/expires_at": "2027-11-02T00:00:00Z"
+    },
+    "remove": [],
+    "message": "an exception lasts at most 365 days from when it starts"
+  },
+  {
+    "name": "exception_ending_before_it_starts",
+    "vector": "scanner_evidence/iac/local_run_suppressed_with_exception/local-exceptions.yaml",
+    "set": {
+      "/spec/exceptions/0/expires_at": "2026-10-31T00:00:00Z"
+    },
+    "remove": [],
+    "message": "an exception expires after it starts"
+  },
+  {
+    "name": "exception_naming_a_resource_by_its_unit",
+    "vector": "scanner_evidence/iac/local_run_suppressed_with_exception/local-exceptions.yaml",
+    "set": {
+      "/spec/exceptions/0/scope/resources/0": {
+        "scheme": "iltero_unit",
+        "scope": null,
+        "value": "root"
+      }
+    },
+    "remove": [],
+    "message": "an exception names each resource by its address, scoped by its unit and nothing else"
+  }
+]

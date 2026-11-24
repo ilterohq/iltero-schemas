@@ -1,5 +1,5 @@
-"""What an activity's rules check of a file its record keeps from the pipeline: that the record names the digest of
-the file as the pipeline gave it."""
+"""What an activity's rules check of a file its record keeps from the pipeline: that the record names the file as the
+pipeline gave it, and the digest of that file where the record names one."""
 
 from __future__ import annotations
 
@@ -12,11 +12,13 @@ if TYPE_CHECKING:
 JSON_MEDIA_TYPE = "application/json"
 
 
-def given_digest(ref: EvidenceRef, what: str) -> str:
+def given_file_digest(ref: EvidenceRef, what: str) -> str | None:
     """The digest of the file as the pipeline gave it, from ``ref``'s source: the stored file's own digest when
-    nothing redacted it. Raise ``ValueError`` naming ``what`` otherwise."""
+    nothing redacted it; for a file kept redacted, the keyed digest in a run the server opened and None in a run the
+    tool opened (``models.common.given_file_digests``). Raise ``ValueError`` naming ``what`` when ``ref`` names no
+    source, or names a file kept unredacted by another digest than its own."""
     if ref.source is None:
-        raise ValueError(f"{what} names the digest of the file as the pipeline gave it, in its source")
+        raise ValueError(f"{what} names the file as the pipeline gave it, in its source")
     if ref.redaction_policy is None and ref.source.digest != ref.digest:
         raise ValueError(f"{what}, when nothing redacted it, is stored as the pipeline gave it")
     return ref.source.digest

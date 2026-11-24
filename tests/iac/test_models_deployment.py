@@ -214,7 +214,7 @@ UPDATED = change("a.x", "update", ["update"], "applied")
         "ended before it started",
         "ended a fraction of a microsecond before it started",
         "the log's clock trusted",
-        "source digest",
+        "apply log digest",
         "another basis",
     ],
 )
@@ -414,7 +414,10 @@ def test_a_deployment_read_from_a_log_names_the_log_as_the_source_of_its_times()
 def test_an_applied_plan_digest_version_other_than_its_tools_is_refused() -> None:
     document = copy.deepcopy(POST_DEPLOY)
     document["deployment"]["plan"]["digest_version"] = "2"
-    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
+    with pytest.raises(
+        ValidationError,
+        match="a plan digest that is not keyed names the version of the terraform redacted plan digest rule",
+    ):
         AssuranceContext.model_validate(document)
 
 

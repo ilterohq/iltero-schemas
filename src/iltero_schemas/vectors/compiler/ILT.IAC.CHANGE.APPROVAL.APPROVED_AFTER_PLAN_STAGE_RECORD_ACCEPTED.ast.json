@@ -1,0 +1,48 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "literal": 0,
+          "op": "equal",
+          "path": "apply_job_timing.approvals_given_before_plan_stage_record_accepted"
+        }
+      },
+      {
+        "predicate": {
+          "literal": 1,
+          "op": "greater_than_or_equal",
+          "path": "apply_job_timing.approvals_given_after_plan_stage_record_accepted"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "all": [
+      {
+        "predicate": {
+          "literal": "plan_and_apply_in_one_job",
+          "op": "not_equal",
+          "path": "apply_job_facts.flow"
+        }
+      },
+      {
+        "predicate": {
+          "literal": true,
+          "op": "equal",
+          "path": "apply_job_facts.approval_requirement.required"
+        }
+      }
+    ]
+  }
+}

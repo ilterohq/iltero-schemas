@@ -4,6 +4,7 @@ a crash, and a kept report holds only what the reader reads, which reads the sam
 from __future__ import annotations
 
 import copy
+import dataclasses
 import json
 from typing import Any
 
@@ -16,7 +17,12 @@ from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from tests.conftest import VECTORS
 
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    kept_plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
+    input_kind=None,
 )
 
 
@@ -171,7 +177,7 @@ def test_a_checkov_framework_the_reader_only_counts_keeps_just_enough_to_be_coun
     assert reader.read(kept, ["aws_s3_bucket.a"], SOURCE) == reader.read(report, ["aws_s3_bucket.a"], SOURCE)
 
 
-MARKER = {"__redacted": True, "reason": "matched_pattern", "present": True, "type": "string"}
+MARKER = {"__redacted": True, "reason": "value_shape", "present": True, "type": "string"}
 
 
 @pytest.mark.parametrize("case", FRAMEWORK_CASES, ids=[case["name"] for case in FRAMEWORK_CASES])
@@ -417,3 +423,53 @@ def test_a_kept_checkov_report_keeps_the_counts_of_each_frameworks_summary() -> 
 
 def test_a_checkov_summary_with_no_framework_lists_every_result_it_counts() -> None:
     assert read_checkov(CHECKOV_SUMMARY_ONLY, [], SOURCE).results_not_listed == 0
+
+
+RDS_CHECKOV: dict[str, Any] = json.loads((REPORTS / "rds_checkov.json").read_text(encoding="utf-8"))
+CHECKOV_FOUND_NOTHING: dict[str, Any] = {
+    "check_type": "terraform_plan",
+    "results": {"passed_checks": [], "failed_checks": [], "skipped_checks": []},
+    "summary": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "parsing_errors": 0,
+        "resource_count": 0,
+        "checkov_version": "3.4.3",
+    },
+}
+TRIVY_FOUND_NOTHING: dict[str, Any] = {
+    "SchemaVersion": 2,
+    "ArtifactName": "plan.json",
+    "ArtifactType": "filesystem",
+    "Results": [],
+    "Trivy": {"Version": "0.76.2"},
+}
+CLI_SOURCE = dataclasses.replace(
+    SOURCE, ran_by="iltero_cli", configuration_digest="sha256:" + "d" * 64, input_kind="plan"
+)
+
+
+@pytest.mark.parametrize(
+    ("read", "report"),
+    [(read_checkov, CHECKOV_FOUND_NOTHING), (read_checkov, CHECKOV_SUMMARY_ONLY), (read_trivy, TRIVY_FOUND_NOTHING)],
+    ids=["checkov", "checkov summary only", "trivy"],
+)
+def test_a_scanner_the_iltero_cli_ran_that_found_nothing_still_names_the_input_it_was_given(
+    read: Any, report: dict[str, Any]
+) -> None:
+    observed = read(report, [], CLI_SOURCE)
+    assert observed.results == [] and observed.input_kinds == ["plan"]
+    assert read(report, [], SOURCE).input_kinds == []
+
+
+def test_a_reader_is_given_the_input_the_tool_read_exactly_when_the_iltero_cli_ran_it() -> None:
+    with pytest.raises(ValueError, match="exactly when the Iltero CLI ran it"):
+        dataclasses.replace(SOURCE, input_kind="plan")
+    with pytest.raises(ValueError, match="exactly when the Iltero CLI ran it"):
+        dataclasses.replace(CLI_SOURCE, input_kind=None)
+
+
+def test_a_result_of_another_input_than_the_one_the_iltero_cli_gave_cannot_be_read() -> None:
+    with pytest.raises(ReportError):
+        read_checkov(RDS_CHECKOV, [], dataclasses.replace(CLI_SOURCE, input_kind="deployed_resources"))

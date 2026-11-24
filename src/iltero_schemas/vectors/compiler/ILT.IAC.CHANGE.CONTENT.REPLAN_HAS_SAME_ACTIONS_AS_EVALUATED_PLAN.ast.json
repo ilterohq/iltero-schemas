@@ -1,0 +1,26 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": 0,
+      "op": "equal",
+      "path": "replan_check.differences_count"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.CHANGE.CONTENT.REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": "plan_and_apply_in_one_job",
+      "op": "not_equal",
+      "path": "apply_job_facts.flow"
+    }
+  }
+}

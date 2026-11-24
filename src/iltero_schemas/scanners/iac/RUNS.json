@@ -1,0 +1,78 @@
+{
+  "checkov": {
+    "plan": {
+      "arguments": [
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "-c",
+        "import runpy, sys; sys.path.append({packages_folder!r}); runpy.run_module('checkov.main', run_name='__main__', alter_sys=True)",
+        "-f",
+        "{input_file}",
+        "--framework",
+        "terraform_plan",
+        "-o",
+        "json",
+        "--skip-download"
+      ],
+      "environment": {
+        "CKV_SKIP_PACKAGE_UPDATE_CHECK": "true",
+        "HOME": "{home_folder}",
+        "TMPDIR": "{temporary_folder}"
+      },
+      "posix_environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "windows_environment": {
+        "PATH": "{system_root_folder}\\System32",
+        "SYSTEMROOT": "{system_root_folder}",
+        "TEMP": "{temporary_folder}",
+        "TMP": "{temporary_folder}",
+        "USERPROFILE": "{home_folder}"
+      },
+      "files": {},
+      "working_folder": "{working_folder}"
+    }
+  },
+  "trivy": {
+    "plan": {
+      "arguments": [
+        "config",
+        "--format",
+        "json",
+        "--include-non-failures",
+        "--skip-version-check",
+        "--disable-telemetry",
+        "--skip-check-update",
+        "--cache-dir",
+        "{cache_folder}",
+        "--config",
+        "{config_file}",
+        "--ignorefile",
+        "{ignore_file}",
+        "{input_file}"
+      ],
+      "environment": {
+        "HOME": "{home_folder}",
+        "TMPDIR": "{temporary_folder}"
+      },
+      "posix_environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "windows_environment": {
+        "PATH": "{system_root_folder}\\System32",
+        "SYSTEMROOT": "{system_root_folder}",
+        "TEMP": "{temporary_folder}",
+        "TMP": "{temporary_folder}",
+        "USERPROFILE": "{home_folder}"
+      },
+      "files": {
+        "config_file": "",
+        "ignore_file": ""
+      },
+      "working_folder": "{working_folder}"
+    }
+  }
+}

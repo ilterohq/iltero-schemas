@@ -28,7 +28,7 @@ STATE_DETAIL: Final = "the state after the apply was not read, so no outcome of 
 # gate that never ran before the deployment. Only a record holds it, never a stage.
 STAGE_NOT_REPORTED_REASON: Final = "expected_stage_not_reported"
 # Why the evidence of a stage that did not make every required check has gaps, whatever its verdict: a failed check
-# makes the verdict ``not_met``, and this reason still says checks are missing.
+# no served exception covers makes the verdict ``not_met``, and this reason still says checks are missing.
 REQUIRED_CHECKS_REASON: Final = "required_checks_not_evaluated"
 # Why a record's evidence has gaps while a check its plan stage postponed has not been settled: it stopped before
 # post-verify (``models.iac.postponed_checks``). Only a record holds it, never a stage.
@@ -40,6 +40,19 @@ SUBSTITUTED_REASON: Final = "upstream_state_unavailable"
 # Why the evidence of a stage that left plan resources out of scope for their identity has gaps: their identity was
 # redacted or cannot be named, so no assertion could check them (``coverage.PlanIndexGap``).
 EXCLUDED_IDENTITY_REASON: Final = "plan_resources_excluded_for_their_identity"
+# Why the evidence of a stage has gaps when resources in scope come from a provider with no list of resource kinds a
+# selector can name, so no kind-scoped check can reach them (``coverage.ProviderSourceGap``).
+NO_RESOURCE_KINDS_REASON: Final = "provider_has_no_resource_kinds"
+# Why the evidence of a stage has gaps when resources in scope come from a source other than those a provider's kind
+# table was reviewed against, such as a fork of the same name: checks reach them, but the table may not describe them.
+UNREVIEWED_SOURCE_REASON: Final = "provider_source_not_reviewed"
+# What each of those two reasons says, from the gaps' counts.
+NO_RESOURCE_KINDS_DETAIL: Final = (
+    "{count} plan {resources} in scope from {sources} provider {source_word} with no resource kinds a check can name"
+)
+UNREVIEWED_DETAIL: Final = (
+    "{count} plan {resources} in scope from {sources} provider {source_word} no reviewed kind table describes"
+)
 # Why the evidence of a stage none of whose required assertions found a subject in scope has gaps: every check ran and
 # found nothing to check, so the verdict says nothing about any resource.
 NO_RESOURCE_REASON: Final = "no_resource_in_scope_for_any_check"
@@ -57,6 +70,8 @@ GapReasonValue = Literal[
     "plan_not_complete",
     "upstream_state_unavailable",
     "plan_resources_excluded_for_their_identity",
+    "provider_has_no_resource_kinds",
+    "provider_source_not_reviewed",
     "no_resource_in_scope_for_any_check",
     "no_assertion_required",
 ]
@@ -69,6 +84,8 @@ GAP_REASON_PRECEDENCE: tuple[GapReasonValue, ...] = (
     PLAN_REASON,
     SUBSTITUTED_REASON,
     EXCLUDED_IDENTITY_REASON,
+    NO_RESOURCE_KINDS_REASON,
+    UNREVIEWED_SOURCE_REASON,
     NO_RESOURCE_REASON,
     NO_ASSERTION_REASON,
 )

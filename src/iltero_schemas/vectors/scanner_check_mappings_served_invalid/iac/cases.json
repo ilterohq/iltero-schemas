@@ -1,0 +1,68 @@
+[
+  {
+    "name": "served_mapping_with_another_check_for_a_starter",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/spec/assertion_mappings/3/scanner_checks/0/rule_ids": [
+        "CKV2_AWS_99"
+      ]
+    },
+    "remove": [],
+    "problems": [
+      [
+        "spec.assertion_mappings.3",
+        "is not the shipped entry for its starter assertion"
+      ]
+    ]
+  },
+  {
+    "name": "served_mapping_citing_another_version_of_a_starter",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/spec/assertion_mappings/4/assertion/version": "1.0.1"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "spec.assertion_mappings.4",
+        "is not the shipped entry for its starter assertion"
+      ]
+    ]
+  },
+  {
+    "name": "served_mapping_leaving_out_a_starter_entry",
+    "vector": "iac/served_catalog.json",
+    "set": {},
+    "remove": [
+      "/spec/assertion_mappings/5"
+    ],
+    "problems": [
+      [
+        "spec.assertion_mappings",
+        "leaves out the shipped entry for ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET"
+      ]
+    ]
+  },
+  {
+    "name": "served_mapping_leaving_out_one_starter_and_changing_another",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/spec/assertion_mappings/3/scanner_checks/0/rule_ids": [
+        "CKV2_AWS_99"
+      ]
+    },
+    "remove": [
+      "/spec/assertion_mappings/5"
+    ],
+    "problems": [
+      [
+        "spec.assertion_mappings",
+        "leaves out the shipped entry for ILT.IAC.RESOURCE.AWS.EC2.NO_SSH_OR_RDP_OPEN_TO_THE_INTERNET"
+      ],
+      [
+        "spec.assertion_mappings.3",
+        "is not the shipped entry for its starter assertion"
+      ]
+    ]
+  }
+]

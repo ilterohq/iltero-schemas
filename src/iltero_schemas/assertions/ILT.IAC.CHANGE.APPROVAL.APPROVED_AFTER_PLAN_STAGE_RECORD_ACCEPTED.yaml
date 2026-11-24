@@ -1,0 +1,24 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.APPROVAL.APPROVED_AFTER_PLAN_STAGE_RECORD_ACCEPTED
+  version: "1.0.0"
+  title: The apply job was approved after the plan stage's record was accepted, and not before, where an approval of the apply job is required
+  remediation: Require a reviewer for the apply job in the CI system, run the apply job again, and approve the new run after the plan stage's record is accepted.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    all:
+      - path: apply_job_facts.flow
+        not_equal: plan_and_apply_in_one_job
+      - path: apply_job_facts.approval_requirement.required
+        equal: true
+  assert:
+    all:
+      - path: apply_job_timing.approvals_given_before_plan_stage_record_accepted
+        equal: 0
+      - path: apply_job_timing.approvals_given_after_plan_stage_record_accepted
+        greater_than_or_equal: 1

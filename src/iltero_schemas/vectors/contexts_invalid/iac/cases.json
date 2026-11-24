@@ -691,7 +691,7 @@
     "vector": "iac/pre_deploy_change.json",
     "set": {
       "/organization_scope/environment": null,
-      "/change/digest": "sha256:9b42675bc694b0f41e1b6363c04a4b71e6169dc1ae6486009d1efd76823756bf"
+      "/change/digest": "sha256:a50dce75de06517a788e190898a7da156062f18216a17b1656abe2989fb450e1"
     },
     "remove": [],
     "message": "commit_review holds the unknown marker when the input names no environment or its production flag is the marker"
@@ -993,5 +993,142 @@
     },
     "remove": [],
     "message": "a redaction marker's __redacted is true"
+  },
+  {
+    "name": "input_whose_plan_age_its_apply_jobs_facts_do_not_give",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/apply_job_timing/plan_age_seconds": 0
+    },
+    "remove": [],
+    "message": "the input's apply_job_timing is what the function apply_job_timing gives for its apply job's facts and approvals"
+  },
+  {
+    "name": "input_carrying_the_apply_jobs_facts_without_their_timing",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/apply_job_timing": null
+    },
+    "remove": [],
+    "message": "pre_deploy_change: missing apply_job_timing"
+  },
+  {
+    "name": "input_carrying_the_apply_jobs_timing_without_their_facts",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/apply_job_facts": null
+    },
+    "remove": [],
+    "message": "pre_deploy_change: missing apply_job_facts"
+  },
+  {
+    "name": "input_whose_apply_jobs_facts_name_another_run",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/apply_job_facts/accepted_plan_stage_record/run_id": "0b6d3c52-5f0e-4b8a-9a40-2f1c7e5d9a11"
+    },
+    "remove": [],
+    "message": "the apply job's facts name the accepted plan-stage record of this run, change, plan and saved plan file"
+  },
+  {
+    "name": "input_whose_apply_jobs_facts_name_another_plan",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/apply_job_facts/accepted_plan_stage_record/plan_digest": "hmac-sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "remove": [],
+    "message": "the apply job's facts name the accepted plan-stage record of this run, change, plan and saved plan file"
+  },
+  {
+    "name": "input_with_an_approval_timed_after_the_apply_jobs_facts_were_issued",
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "set": {
+      "/approvals/0/timestamp": "2026-09-16T18:30:00.000000001Z"
+    },
+    "remove": [],
+    "message": "no approval is timed after the apply job's facts were issued"
+  },
+  {
+    "name": "post_verify_input_naming_only_its_first_reading",
+    "vector": "iac/post_verify.json",
+    "set": {
+      "/drift_check/first_reading_digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012"
+    },
+    "remove": [],
+    "message": "the drift check names the digests of both readings, or of neither"
+  },
+  {
+    "name": "post_verify_input_naming_one_reading_twice",
+    "vector": "iac/post_verify.json",
+    "set": {
+      "/drift_check/first_reading_digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012",
+      "/drift_check/second_reading_digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012"
+    },
+    "remove": [],
+    "message": "the two readings are two refresh-only plans, so their digests differ"
+  },
+  {
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "remove": [],
+    "name": "pre_deploy_input_of_a_one_job_run_naming_a_replan_check",
+    "set": {
+      "/apply_job_facts": {
+        "flow": "plan_and_apply_in_one_job",
+        "apply_job": {
+          "ci_run_id": "9876543",
+          "ci_run_attempt": 1,
+          "ci_job_id": "28471930012"
+        },
+        "accepted_plan_stage_record": {
+          "run_id": "5b0d7a2e-4f1c-4c8e-9a3d-2f6b1e8c7a90",
+          "change_digest": "sha256:c51c45ee2c184548b5426aeaa28dc35619c332a05fd5f924c9dfd4aab2eee740",
+          "plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "artifact_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b"
+        },
+        "plan_stage_record_accepted_at": "2026-09-16T18:10:00Z",
+        "facts_issued_at": "2026-09-16T18:30:00Z",
+        "plan_age_limit": {
+          "seconds": 86400,
+          "source": "server_default",
+          "policy_version": null
+        },
+        "approval_requirement": {
+          "required": true,
+          "source": "environment_policy",
+          "policy_version": "8c1d2e3f-4a5b-4c6d-9e7f-0a1b2c3d4e5f"
+        },
+        "received_plan_file_digest": null,
+        "rendered_plan": null,
+        "pinned_plan_digest": "hmac-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    "message": "a run that plans and applies in one job names no re-plan check"
+  },
+  {
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "remove": [],
+    "name": "pre_deploy_input_of_a_later_job_naming_no_replan_check",
+    "set": {
+      "/replan_check": null
+    },
+    "message": "a run that does not plan and apply in one job names its re-plan check"
+  },
+  {
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "remove": [],
+    "name": "pre_deploy_input_whose_replan_check_is_of_another_run",
+    "set": {
+      "/replan_check/run_id": "0b9f3c52-6c1e-4d3a-9f0e-2a7d5b1c8e43"
+    },
+    "message": "the input's re-plan check is for its run, its change and its plan's IaC tool"
+  },
+  {
+    "vector": "iac/pre_deploy_apply_in_a_later_job.json",
+    "remove": [],
+    "name": "pre_deploy_input_whose_replan_check_is_of_another_change",
+    "set": {
+      "/replan_check/change_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "message": "the input's re-plan check is for its run, its change and its plan's IaC tool"
   }
 ]

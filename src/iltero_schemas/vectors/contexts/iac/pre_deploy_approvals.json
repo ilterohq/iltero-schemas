@@ -234,14 +234,14 @@
         }
       }
     ],
-    "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
+    "digest": "sha256:cfa15a426afa996613ae2b73c61290d25f4e7c689ecc31b9c19a1915f1754038"
   },
   "plan": {
     "applyable": true,
     "artifact_digest": null,
     "artifact_digest_source": "not_provided",
     "complete": true,
-    "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
+    "digest": "hmac-sha256:f14df25d6832fe3ef9ed417de31c967b7463eaaf3a516979872ab7276f75b075",
     "digest_version": "1",
     "format_version": "1.2",
     "resources": [
@@ -465,10 +465,6 @@
     "__unknown": true,
     "reason": "server_facts_unavailable"
   },
-  "exceptions": {
-    "__unknown": true,
-    "reason": "server_facts_unavailable"
-  },
   "run": {
     "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
   },
@@ -484,5 +480,24 @@
   "commit_review": {
     "__unknown": true,
     "reason": "server_facts_unavailable"
-  }
+  },
+  "apply_job_facts": {
+    "__unknown": true,
+    "reason": "server_facts_unavailable"
+  },
+  "apply_job_timing": {
+    "plan_age_seconds": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    },
+    "approvals_given_before_plan_stage_record_accepted": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    },
+    "approvals_given_after_plan_stage_record_accepted": {
+      "__unknown": true,
+      "reason": "server_facts_unavailable"
+    }
+  },
+  "replan_check": null
 }

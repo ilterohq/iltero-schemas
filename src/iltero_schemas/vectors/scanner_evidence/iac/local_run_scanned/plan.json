@@ -6,27 +6,46 @@
       "aws": {
         "expressions": {
           "access_key": {
-            "constant_value": "FIXTUREACCESSKEYID"
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "region": {
-            "constant_value": "eu-west-1"
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "secret_key": {
-            "constant_value": {
-              "__redacted": true
-            }
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "skip_credentials_validation": {
-            "constant_value": true
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "skip_metadata_api_check": {
-            "constant_value": true
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "skip_region_validation": {
-            "constant_value": true
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           },
           "skip_requesting_account_id": {
-            "constant_value": true
+            "__redacted": true,
+            "present": true,
+            "reason": "provider_configuration",
+            "type": "object"
           }
         },
         "full_name": "registry.terraform.io/hashicorp/aws",
@@ -50,9 +69,10 @@
               ]
             },
             "smtp_login": {
-              "references": [
-                "var.smtp_login"
-              ]
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "object"
             }
           },
           "for_each_expression": {
@@ -131,10 +151,10 @@
                     ]
                   },
                   "tags": {
-                    "references": [
-                      "var.smtp_login",
-                      "var.region"
-                    ]
+                    "__redacted": true,
+                    "present": true,
+                    "reason": "declared_sensitive",
+                    "type": "object"
                   }
                 },
                 "mode": "managed",
@@ -182,7 +202,13 @@
           }
         },
         "connection": {
-          "__redacted": true
+          "expression": {
+            "__redacted": true,
+            "present": true,
+            "reason": "declared_sensitive",
+            "type": "object"
+          },
+          "sensitive": true
         }
       },
       "resources": [
@@ -214,9 +240,10 @@
               ]
             },
             "password": {
-              "references": [
-                "var.db_password"
-              ]
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "object"
             },
             "publicly_accessible": {
               "constant_value": false
@@ -294,7 +321,10 @@
               }
             },
             "user_data": {
-              "constant_value": "#!/bin/sh\nexport AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\nexport AWS_SECRET_ACCESS_KEY=fixture/secret/not/real\necho \"bootstrap\"\n"
+              "__redacted": true,
+              "present": true,
+              "reason": "deny_key",
+              "type": "object"
             }
           },
           "mode": "managed",
@@ -408,9 +438,10 @@
               "constant_value": "String"
             },
             "value": {
-              "constant_value": {
-                "__redacted": true
-              }
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "object"
             }
           },
           "mode": "managed",
@@ -461,14 +492,17 @@
       ],
       "variables": {
         "db_password": {
-          "default": {
-            "__redacted": true
-          },
-          "sensitive": true
+          "__redacted": true,
+          "present": true,
+          "reason": "deny_key",
+          "type": "object"
         },
         "smtp_login": {
           "default": {
-            "__redacted": true
+            "__redacted": true,
+            "present": true,
+            "reason": "declared_sensitive",
+            "type": "string"
           },
           "sensitive": true
         }
@@ -489,7 +523,24 @@
       "before_sensitive": false
     },
     "connection": {
-      "__redacted": true
+      "actions": [
+        "create"
+      ],
+      "after": {
+        "__redacted": true,
+        "present": true,
+        "reason": "declared_sensitive",
+        "type": "string"
+      },
+      "after_sensitive": true,
+      "after_unknown": false,
+      "before": {
+        "__redacted": true,
+        "present": false,
+        "reason": "declared_sensitive",
+        "type": "null"
+      },
+      "before_sensitive": true
     }
   },
   "planned_values": {
@@ -497,12 +548,17 @@
       "bucket_name": {
         "sensitive": false,
         "type": "string",
-        "value": {
-          "__redacted": true
-        }
+        "value": "fixture-payments-logs"
       },
       "connection": {
-        "__redacted": true
+        "sensitive": true,
+        "type": "string",
+        "value": {
+          "__redacted": true,
+          "present": true,
+          "reason": "declared_sensitive",
+          "type": "string"
+        }
       }
     },
     "root_module": {
@@ -578,13 +634,19 @@
                 "sqs_success_feedback_sample_rate": null,
                 "tags": {
                   "login": {
-                    "__redacted": true
+                    "__redacted": true,
+                    "present": true,
+                    "reason": "declared_sensitive",
+                    "type": "string"
                   },
                   "region": "eu-west-1"
                 },
                 "tags_all": {
                   "login": {
-                    "__redacted": true
+                    "__redacted": true,
+                    "present": true,
+                    "reason": "sensitive_value_reuse",
+                    "type": "string"
                   },
                   "region": "eu-west-1"
                 }
@@ -675,13 +737,19 @@
                 "sqs_success_feedback_sample_rate": null,
                 "tags": {
                   "login": {
-                    "__redacted": true
+                    "__redacted": true,
+                    "present": true,
+                    "reason": "declared_sensitive",
+                    "type": "string"
                   },
                   "region": "eu-central-1"
                 },
                 "tags_all": {
                   "login": {
-                    "__redacted": true
+                    "__redacted": true,
+                    "present": true,
+                    "reason": "sensitive_value_reuse",
+                    "type": "string"
                   },
                   "region": "eu-central-1"
                 }
@@ -752,9 +820,17 @@
             "max_allocated_storage": null,
             "monitoring_interval": 0,
             "password": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "string"
             },
-            "password_wo": null,
+            "password_wo": {
+              "__redacted": true,
+              "present": false,
+              "reason": "declared_sensitive",
+              "type": "null"
+            },
             "password_wo_version": null,
             "performance_insights_enabled": false,
             "publicly_accessible": false,
@@ -893,7 +969,12 @@
               "role": "bastion"
             },
             "timeouts": null,
-            "user_data": "12564f8f77e44146ccbf0c4000b60fa5c90862f1",
+            "user_data": {
+              "__redacted": true,
+              "present": true,
+              "reason": "deny_key",
+              "type": "string"
+            },
             "user_data_replace_on_change": false,
             "volume_tags": null
           }
@@ -1033,9 +1114,17 @@
             "tags": null,
             "type": "String",
             "value": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "string"
             },
-            "value_wo": null,
+            "value_wo": {
+              "__redacted": true,
+              "present": false,
+              "reason": "declared_sensitive",
+              "type": "null"
+            },
             "value_wo_version": null
           }
         },
@@ -1128,12 +1217,17 @@
         "bucket_name": {
           "sensitive": false,
           "type": "string",
-          "value": {
-            "__redacted": true
-          }
+          "value": "fixture-payments-logs"
         },
         "connection": {
-          "__redacted": true
+          "sensitive": true,
+          "type": "string",
+          "value": {
+            "__redacted": true,
+            "present": true,
+            "reason": "declared_sensitive",
+            "type": "string"
+          }
         }
       },
       "root_module": {}
@@ -1213,45 +1307,258 @@
           "create"
         ],
         "after": {
+          "address": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "allocated_storage": 20,
           "allow_major_version_upgrade": null,
           "apply_immediately": false,
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "auto_minor_version_upgrade": true,
+          "availability_zone": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "backup_retention_period": 3,
+          "backup_target": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "backup_window": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "blue_green_update": [],
+          "ca_cert_identifier": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "character_set_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "copy_tags_to_snapshot": false,
           "custom_iam_instance_profile": null,
           "customer_owned_ip_enabled": null,
+          "database_insights_mode": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "db_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "db_subnet_group_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "dedicated_log_volume": false,
           "delete_automated_backups": true,
           "deletion_protection": null,
           "domain": null,
           "domain_auth_secret_arn": null,
           "domain_dns_ips": null,
+          "domain_fqdn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "domain_iam_role_name": null,
           "domain_ou": null,
           "enabled_cloudwatch_logs_exports": null,
+          "endpoint": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "engine": "postgres",
+          "engine_lifecycle_support": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "engine_version": "16",
+          "engine_version_actual": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "final_snapshot_identifier": null,
+          "hosted_zone_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "iam_database_authentication_enabled": null,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "identifier": "payments",
+          "identifier_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "instance_class": "db.t3.micro",
+          "iops": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "kms_key_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "latest_restorable_time": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "license_model": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "listener_endpoint": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "maintenance_window": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "manage_master_user_password": null,
+          "master_user_secret": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "master_user_secret_kms_key_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "max_allocated_storage": null,
           "monitoring_interval": 0,
-          "password": {
-            "__redacted": true
+          "monitoring_role_arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
           },
-          "password_wo": null,
+          "multi_az": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "nchar_character_set_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "network_type": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "option_group_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "parameter_group_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "password": {
+            "__redacted": true,
+            "present": true,
+            "reason": "declared_sensitive",
+            "type": "string"
+          },
+          "password_wo": {
+            "__redacted": true,
+            "present": false,
+            "reason": "declared_sensitive",
+            "type": "null"
+          },
           "password_wo_version": null,
           "performance_insights_enabled": false,
+          "performance_insights_kms_key_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "performance_insights_retention_period": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "port": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "publicly_accessible": false,
+          "replica_mode": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "replicas": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "replicate_source_db": null,
+          "resource_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "restore_to_point_in_time": [],
           "s3_import": [],
           "skip_final_snapshot": true,
+          "snapshot_identifier": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "status": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "storage_encrypted": true,
+          "storage_throughput": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "storage_type": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": {
             "environment": "production",
             "owner": "platform"
@@ -1261,8 +1568,18 @@
             "owner": "platform"
           },
           "timeouts": null,
+          "timezone": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "upgrade_storage_config": null,
-          "username": "payments"
+          "username": "payments",
+          "vpc_security_group_ids": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "blue_green_update": [],
@@ -1342,7 +1659,42 @@
           "create"
         ],
         "after": {
+          "create_date": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "encrypted_secret": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "encrypted_ses_smtp_password_v4": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "key_fingerprint": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "pgp_key": null,
+          "secret": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ses_smtp_password_v4": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "status": "Active",
           "user": "ci-audit"
         },
@@ -1375,7 +1727,42 @@
           "create"
         ],
         "after": {
+          "create_date": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "encrypted_secret": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "encrypted_ses_smtp_password_v4": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "key_fingerprint": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "pgp_key": null,
+          "secret": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ses_smtp_password_v4": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "status": "Active",
           "user": "ci-deploy"
         },
@@ -1408,11 +1795,31 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "force_destroy": false,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "name": "ci-audit",
           "path": "/",
           "permissions_boundary": null,
-          "tags": null
+          "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "unique_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {}
@@ -1439,11 +1846,31 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "force_destroy": false,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "name": "ci-deploy",
           "path": "/",
           "permissions_boundary": null,
-          "tags": null
+          "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "unique_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {}
@@ -1471,22 +1898,262 @@
         ],
         "after": {
           "ami": "ami-0fixture000000000",
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "associate_public_ip_address": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "availability_zone": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "capacity_reservation_specification": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "cpu_core_count": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "cpu_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "cpu_threads_per_core": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "credit_specification": [],
+          "disable_api_stop": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "disable_api_termination": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ebs_block_device": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ebs_optimized": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "enable_primary_ipv6": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "enclave_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ephemeral_block_device": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "get_password_data": false,
           "hibernation": null,
+          "host_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "host_resource_group_arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "iam_instance_profile": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "instance_initiated_shutdown_behavior": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "instance_lifecycle": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "instance_market_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "instance_state": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "instance_type": "t3.micro",
+          "ipv6_address_count": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ipv6_addresses": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "key_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "launch_template": [],
+          "maintenance_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "metadata_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "monitoring": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "network_interface": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "outpost_arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "password_data": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "placement_group": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "placement_partition_number": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "primary_network_interface_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "private_dns": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "private_dns_name_options": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "private_ip": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "public_dns": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "public_ip": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "root_block_device": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "secondary_private_ips": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "security_groups": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "source_dest_check": true,
+          "spot_instance_request_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "subnet_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": {
             "role": "bastion"
           },
           "tags_all": {
             "role": "bastion"
           },
+          "tenancy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "timeouts": null,
-          "user_data": "12564f8f77e44146ccbf0c4000b60fa5c90862f1",
+          "user_data": {
+            "__redacted": true,
+            "present": true,
+            "reason": "deny_key",
+            "type": "string"
+          },
+          "user_data_base64": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "user_data_replace_on_change": false,
-          "volume_tags": null
+          "volume_tags": null,
+          "vpc_security_group_ids": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "capacity_reservation_specification": [],
@@ -1577,15 +2244,50 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "bypass_policy_lockout_safety_check": false,
           "custom_key_store_id": null,
           "customer_master_key_spec": "SYMMETRIC_DEFAULT",
           "deletion_window_in_days": null,
           "description": "payments database key",
           "enable_key_rotation": true,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "is_enabled": true,
+          "key_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "key_usage": "ENCRYPT_DECRYPT",
+          "multi_region": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "rotation_period_in_days": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "timeouts": null,
           "xks_key_id": null
         },
@@ -1616,15 +2318,130 @@
           "create"
         ],
         "after": {
+          "acceleration_status": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "acl": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "bucket": "fixture-payments-logs",
+          "bucket_domain_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "bucket_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "bucket_regional_domain_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "cors_rule": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "force_destroy": false,
+          "grant": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "hosted_zone_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "lifecycle_rule": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "logging": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "object_lock_configuration": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "object_lock_enabled": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "region": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "replication_configuration": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "request_payer": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "server_side_encryption_configuration": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": {
             "owner": "platform"
           },
           "tags_all": {
             "owner": "platform"
           },
-          "timeouts": null
+          "timeouts": null,
+          "versioning": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "website": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "website_domain": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "website_endpoint": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "cors_rule": [],
@@ -1683,6 +2500,16 @@
         "after": {
           "block_public_acls": true,
           "block_public_policy": true,
+          "bucket": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ignore_public_acls": true,
           "restrict_public_buckets": false
         },
@@ -1706,7 +2533,22 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "description": "database access",
+          "egress": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ingress": [
             {
               "cidr_blocks": [
@@ -1723,9 +2565,29 @@
             }
           ],
           "name": "payments-db",
+          "name_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "revoke_rules_on_delete": false,
           "tags": null,
-          "timeouts": null
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "timeouts": null,
+          "vpc_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "egress": [],
@@ -1776,16 +2638,69 @@
         ],
         "after": {
           "allowed_pattern": null,
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "data_type": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "description": null,
+          "has_value_wo": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "insecure_value": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "key_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "name": "/payments/connection",
           "overwrite": null,
           "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "tier": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "type": "String",
           "value": {
-            "__redacted": true
+            "__redacted": true,
+            "present": true,
+            "reason": "declared_sensitive",
+            "type": "string"
           },
-          "value_wo": null,
-          "value_wo_version": null
+          "value_wo": {
+            "__redacted": true,
+            "present": false,
+            "reason": "declared_sensitive",
+            "type": "null"
+          },
+          "value_wo_version": null,
+          "version": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {},
@@ -1818,20 +2733,65 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "assign_ipv6_address_on_creation": false,
+          "availability_zone": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "availability_zone_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "cidr_block": "10.0.0.0/24",
           "customer_owned_ipv4_pool": null,
           "enable_dns64": false,
           "enable_lni_at_device_index": null,
           "enable_resource_name_dns_a_record_on_launch": false,
           "enable_resource_name_dns_aaaa_record_on_launch": false,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ipv6_cidr_block": null,
+          "ipv6_cidr_block_association_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ipv6_native": false,
           "map_customer_owned_ip_on_launch": null,
           "map_public_ip_on_launch": false,
           "outpost_arn": null,
+          "owner_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "private_dns_hostname_type_on_launch": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": null,
-          "timeouts": null
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "timeouts": null,
+          "vpc_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {}
@@ -1863,20 +2823,65 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "assign_ipv6_address_on_creation": false,
+          "availability_zone": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "availability_zone_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "cidr_block": "10.0.1.0/24",
           "customer_owned_ipv4_pool": null,
           "enable_dns64": false,
           "enable_lni_at_device_index": null,
           "enable_resource_name_dns_a_record_on_launch": false,
           "enable_resource_name_dns_aaaa_record_on_launch": false,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ipv6_cidr_block": null,
+          "ipv6_cidr_block_association_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ipv6_native": false,
           "map_customer_owned_ip_on_launch": null,
           "map_public_ip_on_launch": false,
           "outpost_arn": null,
+          "owner_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "private_dns_hostname_type_on_launch": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": null,
-          "timeouts": null
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "timeouts": null,
+          "vpc_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {}
@@ -1908,15 +2913,85 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "assign_generated_ipv6_cidr_block": null,
           "cidr_block": "10.0.0.0/16",
+          "default_network_acl_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "default_route_table_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "default_security_group_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "dhcp_options_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "enable_dns_hostnames": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "enable_dns_support": true,
+          "enable_network_address_usage_metrics": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "instance_tenancy": "default",
           "ipv4_ipam_pool_id": null,
           "ipv4_netmask_length": null,
+          "ipv6_association_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ipv6_cidr_block": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "ipv6_cidr_block_network_border_group": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "ipv6_ipam_pool_id": null,
           "ipv6_netmask_length": null,
-          "tags": null
+          "main_route_table_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner_id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          }
         },
         "after_sensitive": {
           "tags_all": {}
@@ -1956,8 +3031,28 @@
           "application_success_feedback_role_arn": null,
           "application_success_feedback_sample_rate": null,
           "archive_policy": null,
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "beginning_archive_time": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "content_based_deduplication": false,
           "delivery_policy": null,
+          "display_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "fifo_throughput_scope": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "fifo_topic": false,
           "firehose_failure_feedback_role_arn": null,
           "firehose_success_feedback_role_arn": null,
@@ -1965,25 +3060,61 @@
           "http_failure_feedback_role_arn": null,
           "http_success_feedback_role_arn": null,
           "http_success_feedback_sample_rate": null,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "kms_master_key_id": null,
           "lambda_failure_feedback_role_arn": null,
           "lambda_success_feedback_role_arn": null,
           "lambda_success_feedback_sample_rate": null,
           "name": "payments-alerts-eu-west-1",
+          "name_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "signature_version": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "sqs_failure_feedback_role_arn": null,
           "sqs_success_feedback_role_arn": null,
           "sqs_success_feedback_sample_rate": null,
           "tags": {
             "login": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "string"
             },
             "region": "eu-west-1"
           },
           "tags_all": {
             "login": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "sensitive_value_reuse",
+              "type": "string"
             },
             "region": "eu-west-1"
+          },
+          "tracing_config": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
           }
         },
         "after_sensitive": {
@@ -2022,6 +3153,21 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "policy": "{\"Statement\":[],\"Version\":\"2012-10-17\"}"
         },
         "after_sensitive": {},
@@ -2050,8 +3196,28 @@
           "application_success_feedback_role_arn": null,
           "application_success_feedback_sample_rate": null,
           "archive_policy": null,
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "beginning_archive_time": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "content_based_deduplication": false,
           "delivery_policy": null,
+          "display_name": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "fifo_throughput_scope": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "fifo_topic": false,
           "firehose_failure_feedback_role_arn": null,
           "firehose_success_feedback_role_arn": null,
@@ -2059,25 +3225,61 @@
           "http_failure_feedback_role_arn": null,
           "http_success_feedback_role_arn": null,
           "http_success_feedback_sample_rate": null,
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "kms_master_key_id": null,
           "lambda_failure_feedback_role_arn": null,
           "lambda_success_feedback_role_arn": null,
           "lambda_success_feedback_sample_rate": null,
           "name": "payments-alerts-eu-central-1",
+          "name_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "signature_version": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "sqs_failure_feedback_role_arn": null,
           "sqs_success_feedback_role_arn": null,
           "sqs_success_feedback_sample_rate": null,
           "tags": {
             "login": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "declared_sensitive",
+              "type": "string"
             },
             "region": "eu-central-1"
           },
           "tags_all": {
             "login": {
-              "__redacted": true
+              "__redacted": true,
+              "present": true,
+              "reason": "sensitive_value_reuse",
+              "type": "string"
             },
             "region": "eu-central-1"
+          },
+          "tracing_config": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
           }
         },
         "after_sensitive": {
@@ -2116,6 +3318,21 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "owner": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "policy": "{\"Statement\":[],\"Version\":\"2012-10-17\"}"
         },
         "after_sensitive": {},
@@ -2140,16 +3357,76 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "content_based_deduplication": false,
+          "deduplication_scope": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "delay_seconds": 0,
           "fifo_queue": false,
+          "fifo_throughput_limit": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "kms_data_key_reuse_period_seconds": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "kms_master_key_id": null,
           "max_message_size": 262144,
           "message_retention_seconds": 345600,
           "name": "payments-alerts-eu-west-1-dlq",
+          "name_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "receive_wait_time_seconds": 0,
+          "redrive_allow_policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "redrive_policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "sqs_managed_sse_enabled": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "timeouts": null,
+          "url": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "visibility_timeout_seconds": 30
         },
         "after_sensitive": {
@@ -2185,16 +3462,76 @@
           "create"
         ],
         "after": {
+          "arn": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "content_based_deduplication": false,
+          "deduplication_scope": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "delay_seconds": 0,
           "fifo_queue": false,
+          "fifo_throughput_limit": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "id": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "kms_data_key_reuse_period_seconds": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "kms_master_key_id": null,
           "max_message_size": 262144,
           "message_retention_seconds": 345600,
           "name": "payments-alerts-eu-central-1-dlq",
+          "name_prefix": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "receive_wait_time_seconds": 0,
+          "redrive_allow_policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "redrive_policy": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
+          "sqs_managed_sse_enabled": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "tags": null,
+          "tags_all": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "timeouts": null,
+          "url": {
+            "__unknown": true,
+            "present": true,
+            "reason": "known_after_deploy"
+          },
           "visibility_timeout_seconds": 30
         },
         "after_sensitive": {
@@ -2228,13 +3565,17 @@
   "timestamp": "2026-09-22T00:03:30Z",
   "variables": {
     "db_password": {
-      "value": {
-        "__redacted": true
-      }
+      "__redacted": true,
+      "present": true,
+      "reason": "deny_key",
+      "type": "object"
     },
     "smtp_login": {
       "value": {
-        "__redacted": true
+        "__redacted": true,
+        "present": true,
+        "reason": "declared_sensitive",
+        "type": "string"
       }
     }
   }

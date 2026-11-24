@@ -17,7 +17,7 @@ from typing import Any
 import pytest
 
 from iltero_schemas.canonical import digest
-from iltero_schemas.trust import BundleKey, parse_bundle_keys
+from iltero_schemas.trust import SigningKey, parse_signing_keys
 from tests.conftest import ROOT
 
 SCRIPT = ROOT / "scripts" / "check_release.py"
@@ -60,11 +60,11 @@ def _key(public_key: str = PUBLIC_KEY, **fields: Any) -> dict[str, Any]:
 
 
 def _file(*entries: dict[str, Any]) -> bytes:
-    return json.dumps({"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": list(entries)}).encode()
+    return json.dumps({"apiVersion": "iltero.com/v1", "kind": "SigningKeys", "keys": list(entries)}).encode()
 
 
-def _keys(*entries: dict[str, Any]) -> Mapping[str, BundleKey]:
-    return parse_bundle_keys(_file(*entries), development=False)
+def _keys(*entries: dict[str, Any]) -> Mapping[str, SigningKey]:
+    return parse_signing_keys(_file(*entries), development=False)
 
 
 def _problems(

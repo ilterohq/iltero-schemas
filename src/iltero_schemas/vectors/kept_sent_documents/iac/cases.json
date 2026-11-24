@@ -1,0 +1,202 @@
+[
+  {
+    "name": "kept_plan_as_the_stage_kept_it",
+    "vector": "iac/local_run_scanned_project_required.json",
+    "document": "redacted_plan",
+    "evidence_ref": 0,
+    "set": {},
+    "problems": []
+  },
+  {
+    "name": "kept_plan_holding_a_value_shaped_like_a_credential",
+    "vector": "iac/local_run_scanned_project_required.json",
+    "document": "redacted_plan",
+    "evidence_ref": 0,
+    "set": {
+      "/variables/left_in_place": {
+        "value": "postgres://app:fake-pass-0011@db.example.internal/app"
+      }
+    },
+    "problems": [
+      [
+        "evidence_refs.0",
+        "holds a value or a key the record's redaction policy would hide"
+      ]
+    ]
+  },
+  {
+    "name": "kept_plan_nested_deeper_than_a_check_reads",
+    "vector": "iac/local_run_scanned_project_required.json",
+    "document": "redacted_plan",
+    "evidence_ref": 0,
+    "set": {
+      "/variables/deep": {
+        "value": [
+          [
+            [
+              [
+                [
+                  [
+                    [
+                      [
+                        [
+                          [
+                            [
+                              [
+                                [
+                                  [
+                                    [
+                                      [
+                                        [
+                                          [
+                                            [
+                                              [
+                                                [
+                                                  [
+                                                    [
+                                                      [
+                                                        [
+                                                          [
+                                                            [
+                                                              [
+                                                                [
+                                                                  [
+                                                                    [
+                                                                      [
+                                                                        [
+                                                                          [
+                                                                            [
+                                                                              [
+                                                                                [
+                                                                                  [
+                                                                                    [
+                                                                                      [
+                                                                                        [
+                                                                                          [
+                                                                                            [
+                                                                                              [
+                                                                                                [
+                                                                                                  [
+                                                                                                    [
+                                                                                                      [
+                                                                                                        [
+                                                                                                          [
+                                                                                                            [
+                                                                                                              [
+                                                                                                                [
+                                                                                                                  [
+                                                                                                                    [
+                                                                                                                      [
+                                                                                                                        [
+                                                                                                                          [
+                                                                                                                            [
+                                                                                                                              [
+                                                                                                                                [
+                                                                                                                                  [
+                                                                                                                                    [
+                                                                                                                                      [
+                                                                                                                                        [
+                                                                                                                                          [
+                                                                                                                                            [
+                                                                                                                                              [
+                                                                                                                                                [
+                                                                                                                                                  [
+                                                                                                                                                    "x"
+                                                                                                                                                  ]
+                                                                                                                                                ]
+                                                                                                                                              ]
+                                                                                                                                            ]
+                                                                                                                                          ]
+                                                                                                                                        ]
+                                                                                                                                      ]
+                                                                                                                                    ]
+                                                                                                                                  ]
+                                                                                                                                ]
+                                                                                                                              ]
+                                                                                                                            ]
+                                                                                                                          ]
+                                                                                                                        ]
+                                                                                                                      ]
+                                                                                                                    ]
+                                                                                                                  ]
+                                                                                                                ]
+                                                                                                              ]
+                                                                                                            ]
+                                                                                                          ]
+                                                                                                        ]
+                                                                                                      ]
+                                                                                                    ]
+                                                                                                  ]
+                                                                                                ]
+                                                                                              ]
+                                                                                            ]
+                                                                                          ]
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
+                                                                                  ]
+                                                                                ]
+                                                                              ]
+                                                                            ]
+                                                                          ]
+                                                                        ]
+                                                                      ]
+                                                                    ]
+                                                                  ]
+                                                                ]
+                                                              ]
+                                                            ]
+                                                          ]
+                                                        ]
+                                                      ]
+                                                    ]
+                                                  ]
+                                                ]
+                                              ]
+                                            ]
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    "problems": [
+      [
+        "evidence_refs.0",
+        "nests deeper than a check of what its redaction policy would hide reads"
+      ]
+    ]
+  },
+  {
+    "name": "kept_plan_with_a_resource_that_names_no_sensitive_values",
+    "vector": "iac/local_run_scanned_project_required.json",
+    "document": "redacted_plan",
+    "evidence_ref": 0,
+    "set": {
+      "/planned_values/root_module/resources/0": {
+        "address": "terraform_data.bare",
+        "values": {}
+      }
+    },
+    "problems": [
+      [
+        "evidence_refs.0",
+        "is a plan whose flags for sensitive values its tool's reader refuses to read"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,1260 @@
+{
+  "cases": [
+    {
+      "name": "terraform_state_with_a_sensitive_string_output",
+      "description": "A captured state with a sensitive string output whose value the random_password resource holds too, a non-sensitive output, a data source, a resource with sensitive values and child modules: each flagged value is hidden, and so is the whole output named password, by its key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_create.json",
+        "under": null
+      }
+    },
+    {
+      "name": "terraform_state_with_a_deposed_object",
+      "description": "A captured state holding a tainted object and a deposed object at one address, each marked by its own sensitive_values.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_deposed_left.json",
+        "under": null
+      }
+    },
+    {
+      "name": "terraform_state_after_a_change",
+      "description": "A captured state after an apply that changed, renamed and imported resources.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_change.json",
+        "under": null
+      }
+    },
+    {
+      "name": "terraform_state_verified_after_the_deployment",
+      "description": "A captured state, the one a deployment checked after it settled was held to.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "refresh_verified.json",
+        "under": null
+      }
+    },
+    {
+      "name": "terraform_state_read_by_a_refresh_only_plan",
+      "description": "The prior_state of the second refresh-only plan of the same deployment, the state the post-verify stage's identities were read from: for a state that did not change, the same digest as the state itself.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "refresh_verified_second_reading.json",
+        "under": "prior_state"
+      }
+    },
+    {
+      "name": "terraform_state_with_sensitive_object_and_list_outputs_copied_unmarked",
+      "description": "A sensitive object output and a sensitive list output, whose member strings a resource holds unmarked: every string inside them is hidden wherever it appears.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.copy",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "copy",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "c56e173a-60c1-f6a4-65d7-9dd24f29e1f4",
+                  "input": "fake-member-value-0001",
+                  "output": "fake-list-member-0002"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "connection": {
+              "sensitive": true,
+              "value": {
+                "host": "db.example.internal",
+                "phrase": "fake-member-value-0001"
+              },
+              "type": [
+                "object",
+                {
+                  "host": "string",
+                  "phrase": "string"
+                }
+              ]
+            },
+            "endpoints": {
+              "sensitive": true,
+              "value": [
+                "fake-list-member-0002"
+              ],
+              "type": [
+                "list",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_sensitive_value_in_a_child_module",
+      "description": "A resource of a child module whose sensitive_values flags one attribute.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ],
+            "child_modules": [
+              {
+                "address": "module.db",
+                "resources": [
+                  {
+                    "address": "module.db.terraform_data.secret",
+                    "mode": "managed",
+                    "type": "terraform_data",
+                    "name": "secret",
+                    "provider_name": "terraform.io/builtin/terraform",
+                    "schema_version": 0,
+                    "values": {
+                      "id": "6f6c1107-6bc5-0037-f757-4f437e7fee3a",
+                      "input": "fake-module-value-0003",
+                      "output": "visible"
+                    },
+                    "sensitive_values": {
+                      "input": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_nested_sensitive_values",
+      "description": "sensitive_values that flag one key of a map, one item of a list, and a whole object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.nested",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "nested",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "b7f3481e-498a-72a3-abdd-2920f809f16c",
+                  "tags": {
+                    "team": "platform",
+                    "contact": "fake-contact-value-0004"
+                  },
+                  "rules": [
+                    {
+                      "port": "443"
+                    },
+                    {
+                      "port": "fake-rule-value-0005"
+                    }
+                  ],
+                  "settings": {
+                    "mode": "strict",
+                    "level": 3
+                  }
+                },
+                "sensitive_values": {
+                  "tags": {
+                    "contact": true
+                  },
+                  "rules": [
+                    {},
+                    {
+                      "port": true
+                    }
+                  ],
+                  "settings": true
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_sensitive_value_in_a_data_source",
+      "description": "A data source whose sensitive_values flags one attribute.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "data.terraform_data.read",
+                "mode": "data",
+                "type": "terraform_data",
+                "name": "read",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "d8f43a8c-4a59-7fee-31d5-d432805d8c58",
+                  "content": "fake-data-value-0006"
+                },
+                "sensitive_values": {
+                  "content": true
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_non_string_sensitive_output_and_a_non_sensitive_output",
+      "description": "A sensitive number output, hidden, and a non-sensitive string output, kept.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "port": {
+              "sensitive": true,
+              "value": 5432,
+              "type": "number"
+            },
+            "region_name": {
+              "sensitive": false,
+              "value": "eu-west-1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_that_is_empty",
+      "description": "A state that holds nothing, with no values and no terraform_version.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0"
+      }
+    },
+    {
+      "name": "terraform_state_written_by_one_terraform_version",
+      "description": "A small state as one Terraform version writes it.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_written_by_another_terraform_version",
+      "description": "The same state as another Terraform version, with another format version, writes it: the same digest.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.1",
+        "terraform_version": "1.9.8",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_under_a_policy_with_an_additional_path",
+      "description": "A policy whose additional path tags.owner hides that value under each resource's values, and nowhere else.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [
+          "tags.owner"
+        ],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.tagged",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "tagged",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e1",
+                  "tags": {
+                    "owner": "team-a",
+                    "env": "dev"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "owner": {
+              "sensitive": false,
+              "value": {
+                "tags": {
+                  "owner": "team-b"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_under_a_policy_with_an_exempt_path",
+      "description": "A policy whose exempt path keeps a value the deny rule would hide, with its reason.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": [
+          {
+            "path": "password_hint",
+            "reason": "the hint is checked for its length"
+          }
+        ]
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.hint",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "hint",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e2",
+                  "password_hint": "fake-hint-0007"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_value_shaped_like_a_credential",
+      "description": "A value no flag marks, hidden because it is shaped like a credential: a URL with a password in it.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.url",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "url",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e3",
+                  "input": "postgres://app:fake-pass-0008@db.example.internal/app"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_check_results",
+      "description": "A captured state of a resource with a postcondition and a check block, with their results under checks: accepted, checks left out unread, the same digest as the same state without checks.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "raw_state": {
+        "file": "apply_with_checks.json",
+        "under": null
+      }
+    },
+    {
+      "name": "terraform_state_with_check_results_left_out",
+      "description": "The captured state with check results, without its checks key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.example",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "example",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "9e344e69-28ec-d3e6-4c8e-6fbce6bb818b",
+                  "input": "hello",
+                  "output": "hello",
+                  "triggers_replace": null
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_failed_check_holding_a_secret",
+      "description": "A failed check whose problems hold a key shaped like a credential and a copy of a sensitive output's value: not refused, and checks is never searched, so the copy there hides nothing elsewhere.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "sensitive": true,
+              "value": "fake-check-value-0014",
+              "type": "string"
+            }
+          }
+        },
+        "checks": [
+          {
+            "address": {
+              "kind": "check",
+              "name": "health",
+              "to_display": "check.health"
+            },
+            "status": "fail",
+            "instances": [
+              {
+                "address": {
+                  "to_display": "check.health"
+                },
+                "status": "fail",
+                "problems": [
+                  {
+                    "message": "fake-check-value-0014",
+                    "irk_fakekeyvalue00140000": "v"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "terraform_state_with_a_failed_check_left_out",
+      "description": "The state with a failed check, without its checks key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          },
+          "outputs": {
+            "token": {
+              "sensitive": true,
+              "value": "fake-check-value-0014",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_resource_that_names_no_sensitive_values",
+      "description": "Refused: a resource entry with no sensitive_values key, which the tool writes for every resource.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.bare",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "bare",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e4"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_that_is_not_an_object",
+      "description": "Refused: a state that is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": []
+    },
+    {
+      "name": "terraform_state_with_an_unknown_top_level_key",
+      "description": "Refused: a top-level key other than format_version, terraform_version, values and checks.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        },
+        "resource_changes": []
+      }
+    },
+    {
+      "name": "terraform_state_with_an_unknown_top_level_key_shaped_like_a_credential",
+      "description": "Refused, without naming the key: a top-level key shaped like a credential (a run digest key token).",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.config",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "config",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "0add5104-4b1d-22a1-221a-417c9310d41e",
+                  "input": "v1"
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        },
+        "irk_fakekeyvalue00120000": "v"
+      }
+    },
+    {
+      "name": "terraform_state_with_an_unknown_key_under_values_that_is_not_a_plain_identifier",
+      "description": "Refused, without naming the key: a key under values with characters other than letters, digits and _.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {},
+          "extra key: fake-value-0013": {}
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_values_are_not_an_object",
+      "description": "Refused: values is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": []
+      }
+    },
+    {
+      "name": "terraform_state_with_an_unknown_key_under_values",
+      "description": "Refused: a key under values other than root_module and outputs.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {},
+          "checks": []
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_outputs_are_not_an_object",
+      "description": "Refused: outputs is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": []
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_an_output_that_is_not_an_object",
+      "description": "Refused: an output that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": "value"
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_root_module_is_not_an_object",
+      "description": "Refused: root_module is a list.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": []
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_resources_are_not_a_list",
+      "description": "Refused: resources is an object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "resources": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_resource_that_is_not_an_object",
+      "description": "Refused: a resource entry that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              "terraform_data.config"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_sensitive_values_are_of_another_type",
+      "description": "Refused: sensitive_values that is a string, neither an object, a list nor a boolean.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.odd",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "odd",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e5"
+                },
+                "sensitive_values": "input"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_sensitive_values_hold_a_flag_that_is_not_a_boolean",
+      "description": "Refused: a flag inside sensitive_values that is a string, not true or false.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.odd",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "odd",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e6",
+                  "input": "v"
+                },
+                "sensitive_values": {
+                  "input": "yes"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_an_output_that_does_not_say_whether_it_is_sensitive",
+      "description": "Refused: an output with no sensitive key.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": {
+              "value": "v",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_an_output_whose_sensitive_flag_is_not_a_boolean",
+      "description": "Refused: an output whose sensitive is the string true.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "outputs": {
+            "name": {
+              "sensitive": "true",
+              "value": "v"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_an_integer_beyond_the_canonical_range",
+      "description": "Refused: a value with no canonical form, an integer beyond 2**53, so the state has no digest.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.big",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "big",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e7",
+                  "count": 9007199254740993
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_whose_child_modules_are_not_a_list",
+      "description": "Refused: child_modules is an object.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "child_modules": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_with_a_child_module_that_is_not_an_object",
+      "description": "Refused: a child module that is a string.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "values": {
+          "root_module": {
+            "child_modules": [
+              "module.db"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_holding_a_planted_redaction_marker",
+      "description": "Refused: a state that already holds a whole redaction marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_holding_a_planted_unknown_marker",
+      "description": "Refused: a state that already holds a whole unknown marker in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__unknown": true,
+                    "reason": "known_after_deploy",
+                    "present": true
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "terraform_state_holding_a_marker_lookalike",
+      "description": "Refused: a state that already holds an object with the redaction marker's key and other keys in a value.",
+      "tool": "terraform",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "state": {
+        "format_version": "1.0",
+        "terraform_version": "1.14.0",
+        "values": {
+          "root_module": {
+            "resources": [
+              {
+                "address": "terraform_data.planted",
+                "mode": "managed",
+                "type": "terraform_data",
+                "name": "planted",
+                "provider_name": "terraform.io/builtin/terraform",
+                "schema_version": 0,
+                "values": {
+                  "id": "e8",
+                  "input": {
+                    "__redacted": "yes",
+                    "note": "fake-lookalike-0015"
+                  }
+                },
+                "sensitive_values": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

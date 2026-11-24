@@ -22,7 +22,12 @@
             "method": "ci_deployment_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": {
+              "ci_run_id": "11223344",
+              "ci_run_attempt": 1,
+              "ci_job_id": "31400000001"
+            }
           }
         ]
       },
@@ -54,8 +59,13 @@
             },
             "method": "ci_deployment_review",
             "independence": "self_permitted_by_policy",
-            "policy_version": "3",
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "policy_version": "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": {
+              "ci_run_id": "11223344",
+              "ci_run_attempt": 1,
+              "ci_job_id": "31400000001"
+            }
           }
         ]
       },
@@ -85,12 +95,13 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
+              "digest": "sha256:cfa15a426afa996613ae2b73c61290d25f4e7c689ecc31b9c19a1915f1754038"
             },
             "method": "iltero_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": null
           }
         ]
       },
@@ -138,7 +149,12 @@
             "method": "ci_deployment_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": {
+              "ci_run_id": "11223344",
+              "ci_run_attempt": 1,
+              "ci_job_id": "31400000001"
+            }
           }
         ]
       },
@@ -173,7 +189,8 @@
             "method": "iltero_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": null
           }
         ]
       },
@@ -203,12 +220,13 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
+              "digest": "sha256:cfa15a426afa996613ae2b73c61290d25f4e7c689ecc31b9c19a1915f1754038"
             },
             "method": "iltero_review",
             "independence": "self_permitted_by_policy",
-            "policy_version": "3",
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "policy_version": "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": null
           }
         ]
       },
@@ -236,12 +254,13 @@
             "status": "approved",
             "subject": {
               "kind": "change",
-              "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
+              "digest": "sha256:cfa15a426afa996613ae2b73c61290d25f4e7c689ecc31b9c19a1915f1754038"
             },
             "method": "iltero_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": null
           }
         ]
       },
@@ -292,7 +311,12 @@
             "method": "ci_deployment_review",
             "independence": "independent",
             "policy_version": null,
-            "timestamp": "2026-09-22T13:05:30.000Z"
+            "timestamp": "2026-09-22T13:05:30.000Z",
+            "bound_to": {
+              "ci_run_id": "11223344",
+              "ci_run_attempt": 1,
+              "ci_job_id": "31400000001"
+            }
           }
         ]
       },
@@ -321,7 +345,7 @@
               "kind": "rds_instance"
             }
           ],
-          "digest": "sha256:cd54cb1945933a57da20ccb0b8100cc8366baa7924b1f47885c804e0688d594e"
+          "digest": "sha256:cfa15a426afa996613ae2b73c61290d25f4e7c689ecc31b9c19a1915f1754038"
         }
       },
       "expected": {

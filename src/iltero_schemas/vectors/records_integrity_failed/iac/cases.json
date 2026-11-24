@@ -17,7 +17,7 @@
     "name": "change_digest_of_another_unit_with_the_same_plan",
     "vector": "iac/local_run.json",
     "set": {
-      "/change/digest": "sha256:84a057fe7933139fc19ea3be448fa5b7c8f8c18bd2caa38647bc4f7beaeddd6d"
+      "/change/digest": "sha256:e1e17574e478758403561a0078a4ef54585c89fec6a5144919b734dc80a3261d"
     },
     "remove": [],
     "problems": [
@@ -31,7 +31,7 @@
     "name": "change_digest_computed_without_the_records_environment",
     "vector": "iac/local_run.json",
     "set": {
-      "/change/digest": "sha256:5143ac1df03ca4fea7aec7440b2069b126924a008cc986f66bdd946dadedadcd"
+      "/change/digest": "sha256:a8a2a8946fc66f8a448849790b1ba3112b4ce2e02ab7524284f35d7d95f6d1fd"
     },
     "remove": [],
     "problems": [
@@ -43,1060 +43,13 @@
   },
   {
     "name": "pre_deploy_stage_of_a_forged_change_digest",
-    "vector": "iac/local_run.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_required/value": 5,
-      "/coverage/assertions_required/required_assertion_digest": "sha256:ad53a89ec1899d73526afc4c4d0fcdfa8446cd71543442630354fe41445dd8b7",
-      "/coverage/assertions_evaluated": 5,
-      "/stages/pre_deploy": {
-        "assertions": {
-          "count": 0,
-          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
-          "index": "units/root/plan/assertions/compiled.json"
-        },
-        "compiler": {
-          "contract_digest": null,
-          "contract_version": "0.1.0",
-          "install": "editable",
-          "version": "1.0.0"
-        },
-        "events": {
-          "count": 0,
-          "digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
-          "path": "units/root/pre_deploy/events.json"
-        },
-        "observed_at": "2026-09-22T13:00:13.568Z",
-        "execution": {
-          "bundle": {
-            "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
-            "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-            "kind": "local_bundle",
-            "content_digest": null,
-            "key_id": null
-          },
-          "detail": null,
-          "evaluator": {
-            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-            "engine": "opa",
-            "version": "1.20.2"
-          },
-          "reason": null
-        },
-        "enforcement_mode": "enforcing",
-        "redaction": {
-          "allowed": [],
-          "policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "redacted": [
-            {
-              "path": "resources[0].after.password",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[0].after.password_wo",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[1].after.secret",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[1].after.ses_smtp_password_v4",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[2].after.secret",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[2].after.ses_smtp_password_v4",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[3].related[0].resource.after.secret",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[3].related[0].resource.after.ses_smtp_password_v4",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[4].related[0].resource.after.secret",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[4].related[0].resource.after.ses_smtp_password_v4",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[5].after.user_data",
-              "reason": "deny_key"
-            },
-            {
-              "path": "resources[6].related[0].resource.after.password",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[6].related[0].resource.after.password_wo",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[7].related[1].resource.after.tags.login",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[7].related[1].resource.after.tags_all.login",
-              "reason": "sensitive_value_reuse"
-            },
-            {
-              "path": "resources[7].related[2].resource.after.tags.login",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[7].related[2].resource.after.tags_all.login",
-              "reason": "sensitive_value_reuse"
-            },
-            {
-              "path": "resources[10].after.value",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[10].after.value_wo",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[14].after.tags.login",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[14].after.tags_all.login",
-              "reason": "sensitive_value_reuse"
-            },
-            {
-              "path": "resources[16].after.tags.login",
-              "reason": "terraform_sensitive"
-            },
-            {
-              "path": "resources[16].after.tags_all.login",
-              "reason": "sensitive_value_reuse"
-            }
-          ],
-          "input": {
-            "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-            "kind": "facts"
-          },
-          "unknown": [
-            "resources[0].after.address",
-            "resources[0].after.arn",
-            "resources[0].after.availability_zone",
-            "resources[0].after.backup_target",
-            "resources[0].after.backup_window",
-            "resources[0].after.ca_cert_identifier",
-            "resources[0].after.character_set_name",
-            "resources[0].after.database_insights_mode",
-            "resources[0].after.db_name",
-            "resources[0].after.db_subnet_group_name",
-            "resources[0].after.domain_fqdn",
-            "resources[0].after.endpoint",
-            "resources[0].after.engine_lifecycle_support",
-            "resources[0].after.engine_version_actual",
-            "resources[0].after.hosted_zone_id",
-            "resources[0].after.id",
-            "resources[0].after.identifier_prefix",
-            "resources[0].after.iops",
-            "resources[0].after.kms_key_id",
-            "resources[0].after.latest_restorable_time",
-            "resources[0].after.license_model",
-            "resources[0].after.listener_endpoint",
-            "resources[0].after.maintenance_window",
-            "resources[0].after.master_user_secret",
-            "resources[0].after.master_user_secret_kms_key_id",
-            "resources[0].after.monitoring_role_arn",
-            "resources[0].after.multi_az",
-            "resources[0].after.nchar_character_set_name",
-            "resources[0].after.network_type",
-            "resources[0].after.option_group_name",
-            "resources[0].after.parameter_group_name",
-            "resources[0].after.performance_insights_kms_key_id",
-            "resources[0].after.performance_insights_retention_period",
-            "resources[0].after.port",
-            "resources[0].after.replica_mode",
-            "resources[0].after.replicas",
-            "resources[0].after.resource_id",
-            "resources[0].after.snapshot_identifier",
-            "resources[0].after.status",
-            "resources[0].after.storage_throughput",
-            "resources[0].after.storage_type",
-            "resources[0].after.timezone",
-            "resources[0].after.vpc_security_group_ids",
-            "resources[1].after.create_date",
-            "resources[1].after.encrypted_secret",
-            "resources[1].after.encrypted_ses_smtp_password_v4",
-            "resources[1].after.id",
-            "resources[1].after.key_fingerprint",
-            "resources[1].after.secret",
-            "resources[1].after.ses_smtp_password_v4",
-            "resources[2].after.create_date",
-            "resources[2].after.encrypted_secret",
-            "resources[2].after.encrypted_ses_smtp_password_v4",
-            "resources[2].after.id",
-            "resources[2].after.key_fingerprint",
-            "resources[2].after.secret",
-            "resources[2].after.ses_smtp_password_v4",
-            "resources[3].after.arn",
-            "resources[3].after.id",
-            "resources[3].after.tags_all",
-            "resources[3].after.unique_id",
-            "resources[3].related[0].resource.after.create_date",
-            "resources[3].related[0].resource.after.encrypted_secret",
-            "resources[3].related[0].resource.after.encrypted_ses_smtp_password_v4",
-            "resources[3].related[0].resource.after.id",
-            "resources[3].related[0].resource.after.key_fingerprint",
-            "resources[3].related[0].resource.after.secret",
-            "resources[3].related[0].resource.after.ses_smtp_password_v4",
-            "resources[4].after.arn",
-            "resources[4].after.id",
-            "resources[4].after.tags_all",
-            "resources[4].after.unique_id",
-            "resources[4].related[0].resource.after.create_date",
-            "resources[4].related[0].resource.after.encrypted_secret",
-            "resources[4].related[0].resource.after.encrypted_ses_smtp_password_v4",
-            "resources[4].related[0].resource.after.id",
-            "resources[4].related[0].resource.after.key_fingerprint",
-            "resources[4].related[0].resource.after.secret",
-            "resources[4].related[0].resource.after.ses_smtp_password_v4",
-            "resources[5].after.arn",
-            "resources[5].after.associate_public_ip_address",
-            "resources[5].after.availability_zone",
-            "resources[5].after.capacity_reservation_specification",
-            "resources[5].after.cpu_core_count",
-            "resources[5].after.cpu_options",
-            "resources[5].after.cpu_threads_per_core",
-            "resources[5].after.disable_api_stop",
-            "resources[5].after.disable_api_termination",
-            "resources[5].after.ebs_block_device",
-            "resources[5].after.ebs_optimized",
-            "resources[5].after.enable_primary_ipv6",
-            "resources[5].after.enclave_options",
-            "resources[5].after.ephemeral_block_device",
-            "resources[5].after.host_id",
-            "resources[5].after.host_resource_group_arn",
-            "resources[5].after.iam_instance_profile",
-            "resources[5].after.id",
-            "resources[5].after.instance_initiated_shutdown_behavior",
-            "resources[5].after.instance_lifecycle",
-            "resources[5].after.instance_market_options",
-            "resources[5].after.instance_state",
-            "resources[5].after.ipv6_address_count",
-            "resources[5].after.ipv6_addresses",
-            "resources[5].after.key_name",
-            "resources[5].after.maintenance_options",
-            "resources[5].after.metadata_options",
-            "resources[5].after.monitoring",
-            "resources[5].after.network_interface",
-            "resources[5].after.outpost_arn",
-            "resources[5].after.password_data",
-            "resources[5].after.placement_group",
-            "resources[5].after.placement_partition_number",
-            "resources[5].after.primary_network_interface_id",
-            "resources[5].after.private_dns",
-            "resources[5].after.private_dns_name_options",
-            "resources[5].after.private_ip",
-            "resources[5].after.public_dns",
-            "resources[5].after.public_ip",
-            "resources[5].after.root_block_device",
-            "resources[5].after.secondary_private_ips",
-            "resources[5].after.security_groups",
-            "resources[5].after.spot_instance_request_id",
-            "resources[5].after.subnet_id",
-            "resources[5].after.tenancy",
-            "resources[5].after.user_data_base64",
-            "resources[5].after.vpc_security_group_ids",
-            "resources[6].after.arn",
-            "resources[6].after.id",
-            "resources[6].after.key_id",
-            "resources[6].after.multi_region",
-            "resources[6].after.policy",
-            "resources[6].after.rotation_period_in_days",
-            "resources[6].after.tags_all",
-            "resources[6].related[0].resource.after.address",
-            "resources[6].related[0].resource.after.arn",
-            "resources[6].related[0].resource.after.availability_zone",
-            "resources[6].related[0].resource.after.backup_target",
-            "resources[6].related[0].resource.after.backup_window",
-            "resources[6].related[0].resource.after.ca_cert_identifier",
-            "resources[6].related[0].resource.after.character_set_name",
-            "resources[6].related[0].resource.after.database_insights_mode",
-            "resources[6].related[0].resource.after.db_name",
-            "resources[6].related[0].resource.after.db_subnet_group_name",
-            "resources[6].related[0].resource.after.domain_fqdn",
-            "resources[6].related[0].resource.after.endpoint",
-            "resources[6].related[0].resource.after.engine_lifecycle_support",
-            "resources[6].related[0].resource.after.engine_version_actual",
-            "resources[6].related[0].resource.after.hosted_zone_id",
-            "resources[6].related[0].resource.after.id",
-            "resources[6].related[0].resource.after.identifier_prefix",
-            "resources[6].related[0].resource.after.iops",
-            "resources[6].related[0].resource.after.kms_key_id",
-            "resources[6].related[0].resource.after.latest_restorable_time",
-            "resources[6].related[0].resource.after.license_model",
-            "resources[6].related[0].resource.after.listener_endpoint",
-            "resources[6].related[0].resource.after.maintenance_window",
-            "resources[6].related[0].resource.after.master_user_secret",
-            "resources[6].related[0].resource.after.master_user_secret_kms_key_id",
-            "resources[6].related[0].resource.after.monitoring_role_arn",
-            "resources[6].related[0].resource.after.multi_az",
-            "resources[6].related[0].resource.after.nchar_character_set_name",
-            "resources[6].related[0].resource.after.network_type",
-            "resources[6].related[0].resource.after.option_group_name",
-            "resources[6].related[0].resource.after.parameter_group_name",
-            "resources[6].related[0].resource.after.performance_insights_kms_key_id",
-            "resources[6].related[0].resource.after.performance_insights_retention_period",
-            "resources[6].related[0].resource.after.port",
-            "resources[6].related[0].resource.after.replica_mode",
-            "resources[6].related[0].resource.after.replicas",
-            "resources[6].related[0].resource.after.resource_id",
-            "resources[6].related[0].resource.after.snapshot_identifier",
-            "resources[6].related[0].resource.after.status",
-            "resources[6].related[0].resource.after.storage_throughput",
-            "resources[6].related[0].resource.after.storage_type",
-            "resources[6].related[0].resource.after.timezone",
-            "resources[6].related[0].resource.after.vpc_security_group_ids",
-            "resources[7].after.acceleration_status",
-            "resources[7].after.acl",
-            "resources[7].after.arn",
-            "resources[7].after.bucket_domain_name",
-            "resources[7].after.bucket_prefix",
-            "resources[7].after.bucket_regional_domain_name",
-            "resources[7].after.cors_rule",
-            "resources[7].after.grant",
-            "resources[7].after.hosted_zone_id",
-            "resources[7].after.id",
-            "resources[7].after.lifecycle_rule",
-            "resources[7].after.logging",
-            "resources[7].after.object_lock_configuration",
-            "resources[7].after.object_lock_enabled",
-            "resources[7].after.policy",
-            "resources[7].after.region",
-            "resources[7].after.replication_configuration",
-            "resources[7].after.request_payer",
-            "resources[7].after.server_side_encryption_configuration",
-            "resources[7].after.versioning",
-            "resources[7].after.website",
-            "resources[7].after.website_domain",
-            "resources[7].after.website_endpoint",
-            "resources[7].related[0].resource.after.bucket",
-            "resources[7].related[0].resource.after.id",
-            "resources[7].related[1].resource.after.arn",
-            "resources[7].related[1].resource.after.beginning_archive_time",
-            "resources[7].related[1].resource.after.display_name",
-            "resources[7].related[1].resource.after.fifo_throughput_scope",
-            "resources[7].related[1].resource.after.id",
-            "resources[7].related[1].resource.after.name_prefix",
-            "resources[7].related[1].resource.after.owner",
-            "resources[7].related[1].resource.after.policy",
-            "resources[7].related[1].resource.after.signature_version",
-            "resources[7].related[1].resource.after.tracing_config",
-            "resources[7].related[2].resource.after.arn",
-            "resources[7].related[2].resource.after.beginning_archive_time",
-            "resources[7].related[2].resource.after.display_name",
-            "resources[7].related[2].resource.after.fifo_throughput_scope",
-            "resources[7].related[2].resource.after.id",
-            "resources[7].related[2].resource.after.name_prefix",
-            "resources[7].related[2].resource.after.owner",
-            "resources[7].related[2].resource.after.policy",
-            "resources[7].related[2].resource.after.signature_version",
-            "resources[7].related[2].resource.after.tracing_config",
-            "resources[8].after.bucket",
-            "resources[8].after.id",
-            "resources[9].after.arn",
-            "resources[9].after.egress",
-            "resources[9].after.id",
-            "resources[9].after.name_prefix",
-            "resources[9].after.owner_id",
-            "resources[9].after.tags_all",
-            "resources[9].after.vpc_id",
-            "resources[10].after.arn",
-            "resources[10].after.data_type",
-            "resources[10].after.has_value_wo",
-            "resources[10].after.id",
-            "resources[10].after.insecure_value",
-            "resources[10].after.key_id",
-            "resources[10].after.tags_all",
-            "resources[10].after.tier",
-            "resources[10].after.version",
-            "resources[11].after.arn",
-            "resources[11].after.availability_zone",
-            "resources[11].after.availability_zone_id",
-            "resources[11].after.id",
-            "resources[11].after.ipv6_cidr_block_association_id",
-            "resources[11].after.owner_id",
-            "resources[11].after.private_dns_hostname_type_on_launch",
-            "resources[11].after.tags_all",
-            "resources[11].after.vpc_id",
-            "resources[12].after.arn",
-            "resources[12].after.availability_zone",
-            "resources[12].after.availability_zone_id",
-            "resources[12].after.id",
-            "resources[12].after.ipv6_cidr_block_association_id",
-            "resources[12].after.owner_id",
-            "resources[12].after.private_dns_hostname_type_on_launch",
-            "resources[12].after.tags_all",
-            "resources[12].after.vpc_id",
-            "resources[13].after.arn",
-            "resources[13].after.default_network_acl_id",
-            "resources[13].after.default_route_table_id",
-            "resources[13].after.default_security_group_id",
-            "resources[13].after.dhcp_options_id",
-            "resources[13].after.enable_dns_hostnames",
-            "resources[13].after.enable_network_address_usage_metrics",
-            "resources[13].after.id",
-            "resources[13].after.ipv6_association_id",
-            "resources[13].after.ipv6_cidr_block",
-            "resources[13].after.ipv6_cidr_block_network_border_group",
-            "resources[13].after.main_route_table_id",
-            "resources[13].after.owner_id",
-            "resources[13].after.tags_all",
-            "resources[13].related[0].resource.after.arn",
-            "resources[13].related[0].resource.after.availability_zone",
-            "resources[13].related[0].resource.after.availability_zone_id",
-            "resources[13].related[0].resource.after.id",
-            "resources[13].related[0].resource.after.ipv6_cidr_block_association_id",
-            "resources[13].related[0].resource.after.owner_id",
-            "resources[13].related[0].resource.after.private_dns_hostname_type_on_launch",
-            "resources[13].related[0].resource.after.tags_all",
-            "resources[13].related[0].resource.after.vpc_id",
-            "resources[13].related[1].resource.after.arn",
-            "resources[13].related[1].resource.after.availability_zone",
-            "resources[13].related[1].resource.after.availability_zone_id",
-            "resources[13].related[1].resource.after.id",
-            "resources[13].related[1].resource.after.ipv6_cidr_block_association_id",
-            "resources[13].related[1].resource.after.owner_id",
-            "resources[13].related[1].resource.after.private_dns_hostname_type_on_launch",
-            "resources[13].related[1].resource.after.tags_all",
-            "resources[13].related[1].resource.after.vpc_id",
-            "resources[14].after.arn",
-            "resources[14].after.beginning_archive_time",
-            "resources[14].after.display_name",
-            "resources[14].after.fifo_throughput_scope",
-            "resources[14].after.id",
-            "resources[14].after.name_prefix",
-            "resources[14].after.owner",
-            "resources[14].after.policy",
-            "resources[14].after.signature_version",
-            "resources[14].after.tracing_config",
-            "resources[14].related[0].resource.after.arn",
-            "resources[14].related[0].resource.after.id",
-            "resources[14].related[0].resource.after.owner",
-            "resources[15].after.arn",
-            "resources[15].after.id",
-            "resources[15].after.owner",
-            "resources[16].after.arn",
-            "resources[16].after.beginning_archive_time",
-            "resources[16].after.display_name",
-            "resources[16].after.fifo_throughput_scope",
-            "resources[16].after.id",
-            "resources[16].after.name_prefix",
-            "resources[16].after.owner",
-            "resources[16].after.policy",
-            "resources[16].after.signature_version",
-            "resources[16].after.tracing_config",
-            "resources[16].related[0].resource.after.arn",
-            "resources[16].related[0].resource.after.id",
-            "resources[16].related[0].resource.after.owner",
-            "resources[17].after.arn",
-            "resources[17].after.id",
-            "resources[17].after.owner",
-            "resources[18].after.arn",
-            "resources[18].after.deduplication_scope",
-            "resources[18].after.fifo_throughput_limit",
-            "resources[18].after.id",
-            "resources[18].after.kms_data_key_reuse_period_seconds",
-            "resources[18].after.name_prefix",
-            "resources[18].after.policy",
-            "resources[18].after.redrive_allow_policy",
-            "resources[18].after.redrive_policy",
-            "resources[18].after.sqs_managed_sse_enabled",
-            "resources[18].after.tags_all",
-            "resources[18].after.url",
-            "resources[19].after.arn",
-            "resources[19].after.deduplication_scope",
-            "resources[19].after.fifo_throughput_limit",
-            "resources[19].after.id",
-            "resources[19].after.kms_data_key_reuse_period_seconds",
-            "resources[19].after.name_prefix",
-            "resources[19].after.policy",
-            "resources[19].after.redrive_allow_policy",
-            "resources[19].after.redrive_policy",
-            "resources[19].after.sqs_managed_sse_enabled",
-            "resources[19].after.tags_all",
-            "resources[19].after.url"
-          ]
-        },
-        "reference_time": {
-          "value": "2026-09-22T13:00:13.568Z",
-          "source": "runner_clock"
-        },
-        "stage": "pre_deploy",
-        "scanners": null,
-        "values_known_after_deployment": null,
-        "postponed_checks": null,
-        "resource_redaction": null,
-        "coverage": {
-          "assertions_evaluated": 0,
-          "assertions_required": {
-            "origin": "project_files",
-            "required_assertion_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-            "value": 0
-          },
-          "evaluations": 0,
-          "gaps": [],
-          "sampled": false,
-          "status_counts": {
-            "error": 0,
-            "fail": 0,
-            "not_applicable": 0,
-            "not_evaluated": 0,
-            "pass": 0,
-            "unknown": 0
-          },
-          "subjects_evaluated": 0,
-          "subjects_in_scope": {
-            "counted_from": "change_unit",
-            "excluded": [],
-            "removed_by_plan": 0,
-            "source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-            "value": 1
-          },
-          "subjects_per_assertion": {},
-          "truncated": {
-            "limit": null,
-            "reason": null,
-            "value": false
-          },
-          "substituted_inputs": [],
-          "evaluator_status_counts": {}
-        },
-        "verdict": {
-          "value": "met",
-          "reason": null,
-          "computed_from": "status_counts",
-          "stage": null
-        },
-        "evidence_status": {
-          "value": "has_gaps",
-          "reasons": [
-            {
-              "reason": "no_assertion_required",
-              "stage": null,
-              "detail": "the stage was required to evaluate no assertion"
-            }
-          ]
-        },
-        "approvals": {
-          "__unknown": true,
-          "reason": "not_read_by_the_stage"
-        },
-        "commit_review": {
-          "__unknown": true,
-          "reason": "not_read_by_the_stage"
-        }
-      },
-      "/evidence_refs": [
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "terraform_plan",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "media_type": "application/json",
-          "path": "units/root/artifacts/sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-          "retention_until": null,
-          "size_bytes": 61075,
-          "source": {
-            "digest": "sha256:62372246774ac5e1c1622ab1d2ba32dc509fc378eefbe369a61f4a3b4148f6f4",
-            "name": "plan-create.json"
-          },
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "media_type": "application/json",
-          "path": "units/root/plan/sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-          "retention_until": null,
-          "size_bytes": 52817,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-          "retention_until": null,
-          "size_bytes": 12981,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-          "retention_until": null,
-          "size_bytes": 12975,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-          "retention_until": null,
-          "size_bytes": 12984,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-          "retention_until": null,
-          "size_bytes": 12982,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "media_type": "application/json",
-          "path": "units/root/plan/contexts/sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "redaction_policy": {
-            "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-            "id": "iltero.redaction",
-            "version": "1"
-          },
-          "ref_id": "sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-          "retention_until": null,
-          "size_bytes": 14920,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c4c31aefa1c7afa3e0e539d237ea7e58fa719d28f42541f9218fcaadc5e9983b",
-          "media_type": "application/json",
-          "path": "units/root/plan/redaction-policy.json",
-          "redaction_policy": null,
-          "ref_id": "plan/redaction-policy.json",
-          "retention_until": null,
-          "size_bytes": 1972,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:5cb05875496703b1561ca5bf08405438c3221061d24986bc20360d6b58b5a9a8",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 505,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:3cf5eec9f5231eefb992810bc9662658a4e3f9e1338e9090d2f18ad168d0d96a",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12679,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ff547a831f11e08a299e771dd27928112df1f4d5788e0173f1e8999bea466982",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 545,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a5b85f37e880b10638391694c2e8a1b6ec4cac978b28cfb2550f1085a8f01e46",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 467,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a06ca4d8c161af811f625dbea12e177c6f1c040a2288a3546db1b2beec7e1c08",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12651,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:c26857373bdb1fcb06aaeb71df6f72bb7eae71d6959871aeca8d44c9717a7138",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 523,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:ce37958ef872daa0df756c1a57998c1981598482adbaba63c944bf352d62cfc2",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 993,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:51f82229ebc4e4202d51d78b6c5ef81a414a4d5adeb153f6081c492dbb5c392b",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 13046,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:f5552c7e1eda4ba0f7ff8ebee9192a856cdeafe9ca3f148e16d39439d5125018",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 1259,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:9d84f6cd820c2c7c7e818d32825a306a253496985cf2a649034eacaaaaeaf735",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 462,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:a6141829534248fe1b300c823d8b727ec9eb351e0b04f45f7676bce3b783b8a9",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 12662,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:d89bd4f78a915620528265682d85001e2de02d1fd151e12432152522cddc24b2",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 527,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:df1f968a05bac6609d45f3815276fa8791de1aa68b066a10a20d4f7922a3dc20",
-          "media_type": "application/yaml",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-          "retention_until": null,
-          "size_bytes": 1007,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:79e6c5591d20d8fe74c9993b777d8b627d50836e9b170618c8a1d873e7a0c3fd",
-          "media_type": "application/vnd.iltero.rego",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-          "retention_until": null,
-          "size_bytes": 13295,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:96eb8a93f2f806fbb0d5e3fdfef6e4123de724c326bb8c5067fd0eca420c058e",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-          "redaction_policy": null,
-          "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-          "retention_until": null,
-          "size_bytes": 1639,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": null,
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:1dc077a19ea6e41cbacc5fd30ce7ce32262cfe4035a8ca6bcf68682cb2f8aa98",
-          "media_type": "application/json",
-          "path": "units/root/plan/assertions/compiled.json",
-          "redaction_policy": null,
-          "ref_id": "plan/compiled.json",
-          "retention_until": null,
-          "size_bytes": 4720,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:0c0bb014415098ab9e6d84ab702b8a9074ff80d71f9ef33a025f9538d5256613",
-          "media_type": "application/json",
-          "path": "units/root/plan/events.json",
-          "redaction_policy": null,
-          "ref_id": "plan/events.json",
-          "retention_until": null,
-          "size_bytes": 11697,
-          "source": null,
-          "storage_uri": null
-        },
-        {
-          "canonicalization": "RFC8785",
-          "collected_at": "2026-09-22T13:00:13.568Z",
-          "collector": {
-            "tool": "iltero",
-            "version": "0.1.0"
-          },
-          "digest": "sha256:0434c426ad822884376b91a48a4f84ebd5c41e96a87b8354780a2057e3de8fbc",
-          "media_type": "application/json",
-          "path": "units/root/pre_deploy/events.json",
-          "redaction_policy": null,
-          "ref_id": "pre_deploy/events.json",
-          "retention_until": null,
-          "size_bytes": 67,
-          "source": null,
-          "storage_uri": null
-        }
-      ],
-      "/verdict": {
-        "value": "not_met",
-        "reason": null,
-        "computed_from": "stage_precedence",
-        "stage": "plan"
-      },
-      "/evidence_status": {
-        "value": "has_gaps",
-        "reasons": [
-          {
-            "reason": "no_assertion_required",
-            "stage": "pre_deploy",
-            "detail": "the stage was required to evaluate no assertion"
-          }
-        ]
-      }
+      "/change/replan_check/change_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/stages/pre_deploy/apply_job_facts/accepted_plan_stage_record/change_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/stages/pre_deploy/approvals/0/subject/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     },
     "remove": [],
     "problems": [
@@ -1108,43 +61,64 @@
   },
   {
     "name": "approval_of_another_change",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/governance/run_opened_by": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server",
-      "/stages/pre_deploy/approvals": [
-        {
-          "id": "apr_0001",
-          "actor": {
-            "provider": "iltero",
-            "id": "reviewer_1"
-          },
-          "roles": [
-            "security"
-          ],
-          "status": "approved",
-          "subject": {
-            "kind": "change",
-            "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-          },
-          "method": "iltero_review",
-          "independence": "independent",
-          "policy_version": null,
-          "timestamp": "2026-10-29T00:23:59.760Z"
-        }
-      ],
-      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
-      "/evidence_refs/18/size_bytes": 5164,
-      "/stages/pre_deploy/events": {
-        "count": 2,
-        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
-        "path": "units/root/pre_deploy/events.json"
-      }
+      "/events/1/evaluation/observations/predicates/1/matched": 0,
+      "/events/1/evaluation/observations/predicates/1/status": "false",
+      "/events/1/provenance/input_digest": "sha256:bdd034acfc9fe042d3418fbb4a124167e0dd7e5ff7ad2a96ee5559db6a8933be",
+      "/events/2/provenance/input_digest": "sha256:49c903c97a4d627e931c1d3ff42a469efd7307e27d944a7efd5b5d561762c0fc",
+      "/events/3/provenance/input_digest": "sha256:ee9700ec5dc89d35d8f6621338f1fdd479b1305bfdc42c1dbd13399362b89c80",
+      "/events/4/evaluation/observations/predicates/1/matched": 0,
+      "/events/4/evaluation/observations/predicates/1/status": "false",
+      "/events/4/provenance/input_digest": "sha256:974322eb4c1e9188e8734de3a65bd1501de1245d4e47ccce40128c929047a9a3",
+      "/events/5/provenance/input_digest": "sha256:366c667df43ff1ede73dcc49cc61fabe2870f3f2c3b458194250506e24cd3b36",
+      "/events/6/provenance/input_digest": "sha256:c9ed4270405bd91b745c79e3ce5d9374aa319fd796c3c405d12907bc8dc1d802",
+      "/events/7/provenance/input_digest": "sha256:5c572d175f838346428e75c66b61fc82fb96961ad1022ed3c3f1afa337e593bf",
+      "/events/8/provenance/input_digest": "sha256:e44264a1ec4998717f61c1dc55fa79925a7aeffa2124c7f49446b3e42bf383aa",
+      "/events/9/provenance/input_digest": "sha256:63edb303fec39ce2d356ab5496bf5841d8a6ba2ac8baf9179f06ea273484d625",
+      "/evidence_refs/10/digest": "sha256:bdd034acfc9fe042d3418fbb4a124167e0dd7e5ff7ad2a96ee5559db6a8933be",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-bdd034acfc9fe042d3418fbb4a124167e0dd7e5ff7ad2a96ee5559db6a8933be",
+      "/evidence_refs/10/ref_id": "sha256-bdd034acfc9fe042d3418fbb4a124167e0dd7e5ff7ad2a96ee5559db6a8933be",
+      "/evidence_refs/10/size_bytes": 4964,
+      "/evidence_refs/11/digest": "sha256:49c903c97a4d627e931c1d3ff42a469efd7307e27d944a7efd5b5d561762c0fc",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-49c903c97a4d627e931c1d3ff42a469efd7307e27d944a7efd5b5d561762c0fc",
+      "/evidence_refs/11/ref_id": "sha256-49c903c97a4d627e931c1d3ff42a469efd7307e27d944a7efd5b5d561762c0fc",
+      "/evidence_refs/11/size_bytes": 4959,
+      "/evidence_refs/12/digest": "sha256:ee9700ec5dc89d35d8f6621338f1fdd479b1305bfdc42c1dbd13399362b89c80",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-ee9700ec5dc89d35d8f6621338f1fdd479b1305bfdc42c1dbd13399362b89c80",
+      "/evidence_refs/12/ref_id": "sha256-ee9700ec5dc89d35d8f6621338f1fdd479b1305bfdc42c1dbd13399362b89c80",
+      "/evidence_refs/12/size_bytes": 4983,
+      "/evidence_refs/13/digest": "sha256:974322eb4c1e9188e8734de3a65bd1501de1245d4e47ccce40128c929047a9a3",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-974322eb4c1e9188e8734de3a65bd1501de1245d4e47ccce40128c929047a9a3",
+      "/evidence_refs/13/ref_id": "sha256-974322eb4c1e9188e8734de3a65bd1501de1245d4e47ccce40128c929047a9a3",
+      "/evidence_refs/13/size_bytes": 4967,
+      "/evidence_refs/14/digest": "sha256:366c667df43ff1ede73dcc49cc61fabe2870f3f2c3b458194250506e24cd3b36",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-366c667df43ff1ede73dcc49cc61fabe2870f3f2c3b458194250506e24cd3b36",
+      "/evidence_refs/14/ref_id": "sha256-366c667df43ff1ede73dcc49cc61fabe2870f3f2c3b458194250506e24cd3b36",
+      "/evidence_refs/14/size_bytes": 4970,
+      "/evidence_refs/15/digest": "sha256:c9ed4270405bd91b745c79e3ce5d9374aa319fd796c3c405d12907bc8dc1d802",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-c9ed4270405bd91b745c79e3ce5d9374aa319fd796c3c405d12907bc8dc1d802",
+      "/evidence_refs/15/ref_id": "sha256-c9ed4270405bd91b745c79e3ce5d9374aa319fd796c3c405d12907bc8dc1d802",
+      "/evidence_refs/15/size_bytes": 4987,
+      "/evidence_refs/16/digest": "sha256:5c572d175f838346428e75c66b61fc82fb96961ad1022ed3c3f1afa337e593bf",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-5c572d175f838346428e75c66b61fc82fb96961ad1022ed3c3f1afa337e593bf",
+      "/evidence_refs/16/ref_id": "sha256-5c572d175f838346428e75c66b61fc82fb96961ad1022ed3c3f1afa337e593bf",
+      "/evidence_refs/16/size_bytes": 4977,
+      "/evidence_refs/17/digest": "sha256:e44264a1ec4998717f61c1dc55fa79925a7aeffa2124c7f49446b3e42bf383aa",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-e44264a1ec4998717f61c1dc55fa79925a7aeffa2124c7f49446b3e42bf383aa",
+      "/evidence_refs/17/ref_id": "sha256-e44264a1ec4998717f61c1dc55fa79925a7aeffa2124c7f49446b3e42bf383aa",
+      "/evidence_refs/17/size_bytes": 4982,
+      "/evidence_refs/18/digest": "sha256:63edb303fec39ce2d356ab5496bf5841d8a6ba2ac8baf9179f06ea273484d625",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-63edb303fec39ce2d356ab5496bf5841d8a6ba2ac8baf9179f06ea273484d625",
+      "/evidence_refs/18/ref_id": "sha256-63edb303fec39ce2d356ab5496bf5841d8a6ba2ac8baf9179f06ea273484d625",
+      "/evidence_refs/18/size_bytes": 4961,
+      "/evidence_refs/48/digest": "sha256:ebc38e91b1323a907c71be72bbf17e06f642adb605d3f243da0945cce1c0423c",
+      "/evidence_refs/48/size_bytes": 23395,
+      "/stages/pre_deploy/approvals/0/actor/id": "reviewer_1",
+      "/stages/pre_deploy/approvals/0/id": "apr_0001",
+      "/stages/pre_deploy/approvals/0/subject/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "/stages/pre_deploy/approvals/0/timestamp": "2026-09-21T23:59:59.760Z",
+      "/stages/pre_deploy/events/digest": "sha256:ebc38e91b1323a907c71be72bbf17e06f642adb605d3f243da0945cce1c0423c"
     },
     "remove": [],
     "problems": [
@@ -1158,8 +132,7 @@
     "name": "edited_plan_verdict",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/verdict/value": "met",
-      "/stages/plan/verdict/reason": null
+      "/stages/plan/verdict/value": "met"
     },
     "remove": [],
     "problems": [
@@ -1178,8 +151,7 @@
     "vector": "iac/local_run.json",
     "set": {
       "/change/digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/stages/plan/verdict/value": "met",
-      "/stages/plan/verdict/reason": null
+      "/stages/plan/verdict/value": "met"
     },
     "remove": [],
     "problems": [
@@ -1202,8 +174,8 @@
     "vector": "iac/local_run_post_verify.json",
     "set": {
       "/change/drift_check/change_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:e6cbc0742fcfdfcdb7dc46ba0245ffb16d6961547e1ef34f42a9d7442a4f4971",
-      "/stages/post_verify/redaction/input/digest": "sha256:e6cbc0742fcfdfcdb7dc46ba0245ffb16d6961547e1ef34f42a9d7442a4f4971"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:b55b92132e5e7a5a64b4a1392462f8baf57c42c4d55689b92096ec4855d36445",
+      "/stages/post_verify/redaction/input/digest": "sha256:b55b92132e5e7a5a64b4a1392462f8baf57c42c4d55689b92096ec4855d36445"
     },
     "remove": [],
     "problems": [
@@ -1215,52 +187,26 @@
   },
   {
     "name": "approval_of_the_change_in_production_presented_for_staging",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed.json",
     "set": {
-      "/governance/run_opened_by": "server",
-      "/coverage/assertions_required/origin": "server_pinned",
-      "/stages/plan/coverage/assertions_required/origin": "server_pinned",
-      "/stages/pre_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/stages/post_deploy/coverage/assertions_required/origin": "server_pinned",
-      "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server",
-      "/subject/environment": "staging",
-      "/stages/pre_deploy/approvals": [
-        {
-          "id": "apr_0001",
-          "actor": {
-            "provider": "iltero",
-            "id": "reviewer_1"
-          },
-          "roles": [
-            "security"
-          ],
-          "status": "approved",
-          "subject": {
-            "kind": "change",
-            "digest": "sha256:d1884afa2e39d7ab7764a8b21aa1576a6f2fcf6f76c79f4f7b0e58707d6f434a"
-          },
-          "method": "iltero_review",
-          "independence": "independent",
-          "policy_version": null,
-          "timestamp": "2026-10-29T00:23:59.760Z"
-        }
-      ],
-      "/change/digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e",
-      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:e2adc43217e5a91616cadfdaef9f01fe000afcaefb38da29515f7dc251a3ae3e",
-      "/evidence_refs/18/digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
-      "/evidence_refs/18/size_bytes": 5164,
-      "/stages/pre_deploy/events": {
-        "count": 2,
-        "digest": "sha256:8e725431d8861b7bbc953a10dacd7d97c8b1df14900b48d6dd2ec19e5089c8e8",
-        "path": "units/root/pre_deploy/events.json"
-      }
+      "/change/digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/stages/pre_deploy/approvals/0/id": "apr_0001",
+      "/stages/pre_deploy/approvals/0/actor/id": "reviewer_1",
+      "/stages/pre_deploy/approvals/0/timestamp": "2026-09-21T23:59:59.760Z",
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/subject/environment/name": "staging",
+      "/subject/environment/production": false,
+      "/stages/pre_deploy/apply_job_facts/accepted_plan_stage_record/change_digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169"
     },
     "remove": [],
     "problems": [
       [
         "stages.pre_deploy.approvals",
         "lists approval apr_0001 of another change: another change type, unit, environment or checked content"
+      ],
+      [
+        "change.replan_check.change_digest",
+        "is not change.digest"
       ]
     ]
   },
@@ -1270,13 +216,13 @@
     "set": {
       "/change/deployment/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
       "/change/identity/sources/plan/digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
-      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:e9e0647170c796033843e0094d0ab4c42a5a4eeea3622facb91602c83bbaee4e",
-      "/stages/post_deploy/redaction/input/digest": "sha256:e9e0647170c796033843e0094d0ab4c42a5a4eeea3622facb91602c83bbaee4e"
+      "/stages/post_deploy/coverage/subjects_in_scope/source_digest": "sha256:79284944ccabdf1ad0a3e77e80792360e4d80a650ff80a4004e60a29cc246261",
+      "/stages/post_deploy/redaction/input/digest": "sha256:79284944ccabdf1ad0a3e77e80792360e4d80a650ff80a4004e60a29cc246261"
     },
     "remove": [],
     "problems": [
       [
-        "events.3.evaluation.status",
+        "events.1.evaluation.status",
         "is not fail, what the record's change gives"
       ]
     ]
@@ -1292,13 +238,13 @@
         }
       ],
       "/change/drift_check/differences_count": 1,
-      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:4209bd3fe60e5fbae04888c749434127184c651916b7201cc3f0042bda87e6d2",
-      "/stages/post_verify/redaction/input/digest": "sha256:4209bd3fe60e5fbae04888c749434127184c651916b7201cc3f0042bda87e6d2"
+      "/stages/post_verify/coverage/subjects_in_scope/source_digest": "sha256:1203d5cff5bf7ba069e8f53c86d56bd875fafd84e491320e318d4e8efab33c34",
+      "/stages/post_verify/redaction/input/digest": "sha256:1203d5cff5bf7ba069e8f53c86d56bd875fafd84e491320e318d4e8efab33c34"
     },
     "remove": [],
     "problems": [
       [
-        "events.4.evaluation.status",
+        "events.2.evaluation.status",
         "is not fail, what the record's change gives"
       ]
     ]
@@ -1314,7 +260,7 @@
     "remove": [],
     "problems": [
       [
-        "events.3.evaluation.status",
+        "events.1.evaluation.status",
         "is not fail, what the record's change gives"
       ]
     ]
@@ -1323,29 +269,29 @@
     "name": "deployment_of_the_evaluated_plan_whose_plan_match_check_failed",
     "vector": "iac/local_run_deployed.json",
     "set": {
-      "/events/3/evaluation/status": "fail",
-      "/stages/post_deploy/events/digest": "sha256:6649df60d1879152c6e103c01418b77297022ca97384e61aafa7a5b8101e99cb",
-      "/evidence_refs/25/digest": "sha256:6649df60d1879152c6e103c01418b77297022ca97384e61aafa7a5b8101e99cb",
+      "/events/1/evaluation/status": "fail",
       "/stages/post_deploy/coverage/evaluator_status_counts": {
         "opa": {
-          "pass": 0,
+          "error": 0,
           "fail": 1,
-          "unknown": 0,
           "not_applicable": 0,
           "not_evaluated": 0,
-          "error": 0
+          "pass": 0,
+          "unknown": 0
         }
       },
       "/coverage/evaluator_status_counts": {
         "opa": {
-          "pass": 0,
+          "error": 0,
           "fail": 1,
-          "unknown": 1,
-          "not_applicable": 2,
+          "not_applicable": 1,
           "not_evaluated": 0,
-          "error": 0
+          "pass": 0,
+          "unknown": 0
         }
-      }
+      },
+      "/stages/post_deploy/events/digest": "sha256:88a6ecd94821a4e90dfd8283c9b12e57eb4917e661e52df93840cdce1e785b92",
+      "/evidence_refs/14/digest": "sha256:88a6ecd94821a4e90dfd8283c9b12e57eb4917e661e52df93840cdce1e785b92"
     },
     "remove": [],
     "problems": [
@@ -1354,7 +300,7 @@
         "does not count the combined statuses of the stage's evaluations"
       ],
       [
-        "events.3.evaluation.status",
+        "events.1.evaluation.status",
         "is not pass, what the record's change gives"
       ]
     ]
@@ -1364,8 +310,8 @@
     "vector": "iac/local_run.json",
     "remove": [],
     "set": {
-      "/stages/plan/coverage/assertions_required/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      "/coverage/assertions_required/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945"
+      "/coverage/assertions_required/required_assertion_digest": "sha256:d76c0135b4bfe9bfbd94e6aa53d0dcb5b0fb27f5694a3e2adca1a0e1517fe945",
+      "/stages/plan/coverage/assertions_required/required_assertion_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     },
     "problems": [
       [
@@ -1390,7 +336,7 @@
   },
   {
     "name": "state_not_read_without_its_gap",
-    "vector": "iac/local_run_state_not_read.json",
+    "vector": "iac/local_run_state_not_read_from_a_damaged_apply_log.json",
     "set": {
       "/stages/post_deploy/coverage/gaps": [],
       "/stages/post_deploy/verdict": {
@@ -1404,10 +350,10 @@
         "reasons": []
       },
       "/verdict": {
-        "value": "undecided",
+        "value": "met",
         "reason": null,
         "computed_from": "stage_precedence",
-        "stage": "pre_deploy"
+        "stage": "plan"
       },
       "/evidence_status": {
         "value": "has_gaps",
@@ -1435,26 +381,35 @@
         },
         "subjects_evaluated": 0,
         "assertions_required": {
-          "value": 4,
+          "value": 2,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:7d5d9ce1e48c15697243245c759edbdfc0fad7fdf2794c3bc12f70dbbd23eea6"
+          "required_assertion_digest": "sha256:ca1ccf1960af06f2c75ba26c0ab666159ada9b5ea47bc029840df9b745e8180a"
         },
-        "assertions_evaluated": 4,
+        "assertions_evaluated": 2,
         "subjects_per_assertion": {
           "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
-          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
-          "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
           "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,
           "fail": 0,
-          "unknown": 1,
-          "not_applicable": 2,
+          "unknown": 0,
+          "not_applicable": 1,
           "not_evaluated": 0,
           "error": 0
         },
-        "evaluations": 4,
+        "failed_checks_excepted": 0,
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 1,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        },
+        "evaluations": 2,
         "gaps": [],
         "truncated": {
           "value": false,
@@ -1462,17 +417,7 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 1,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 2,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
+        "substituted_inputs": []
       }
     },
     "remove": [],
@@ -1494,20 +439,20 @@
         }
       ],
       "/stages/post_deploy/verdict": {
-        "value": "incomplete",
-        "reason": "not_evaluated",
         "computed_from": "status_counts",
-        "stage": null
+        "reason": "not_evaluated",
+        "stage": null,
+        "value": "incomplete"
       },
       "/stages/post_deploy/evidence_status": {
-        "value": "has_gaps",
         "reasons": [
           {
             "reason": "state_not_read",
             "stage": null,
             "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
           }
-        ]
+        ],
+        "value": "has_gaps"
       },
       "/verdict": {
         "value": "incomplete",
@@ -1524,6 +469,11 @@
             "detail": "the state after the apply was not read, so no outcome of the apply was held to it"
           },
           {
+            "reason": "provider_has_no_resource_kinds",
+            "stage": "plan",
+            "detail": "1 plan resource in scope from 1 provider source with no resource kinds a check can name"
+          },
+          {
             "reason": "no_resource_in_scope_for_any_check",
             "stage": "plan",
             "detail": "no required assertion had a subject in scope"
@@ -1532,41 +482,106 @@
       },
       "/coverage": {
         "subjects_in_scope": {
-          "value": 11,
+          "value": 1,
           "counted_from": "plan_resource_enumeration",
-          "source_digest": "sha256:542655f99097af73932265f53f659c0f3799748c210c1bc8491ca64a5b3a6862",
+          "source_digest": "sha256:9a0cab9e3780ed7a05399642de6bed920431c7f1d8611054f7d6febcf4a79bdd",
           "removed_by_plan": 0,
           "excluded": [
             {
               "plan_index": 0,
               "id": "data.local_file.manifest",
               "reason": "not_managed"
+            },
+            {
+              "plan_index": 2,
+              "id": "random_id.kept_outside",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 3,
+              "id": "random_id.old_name",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 4,
+              "id": "random_id.retired",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 5,
+              "id": "random_id.suffix",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 6,
+              "id": "random_password.db",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 7,
+              "id": "terraform_data.config",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 8,
+              "id": "module.svc[\"api\"].terraform_data.instance[0]",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 9,
+              "id": "module.svc[\"api\"].terraform_data.instance[1]",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 10,
+              "id": "module.svc[\"worker\"].terraform_data.instance[0]",
+              "reason": "makes_no_outside_object"
+            },
+            {
+              "plan_index": 11,
+              "id": "module.svc[\"worker\"].terraform_data.instance[1]",
+              "reason": "makes_no_outside_object"
             }
           ]
         },
         "subjects_evaluated": 0,
         "assertions_required": {
-          "value": 4,
+          "value": 2,
           "origin": "project_files",
-          "required_assertion_digest": "sha256:7d5d9ce1e48c15697243245c759edbdfc0fad7fdf2794c3bc12f70dbbd23eea6"
+          "required_assertion_digest": "sha256:c1059e26b841f7b04489448233eb59e1f58c89293e2c652fb85dc9cd88e95675"
         },
-        "assertions_evaluated": 4,
+        "assertions_evaluated": 2,
         "subjects_per_assertion": {
           "ACME.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0,
-          "ACME.COMMON.CHANGE.APPROVAL.PRODUCTION_APPROVED@1.0.0": 1,
-          "ACME.IAC.CHANGE.APPROVAL.SENSITIVE_CHANGE_APPROVED@1.0.0": 1,
           "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN@1.0.0": 1
         },
         "status_counts": {
           "pass": 1,
           "fail": 0,
-          "unknown": 1,
-          "not_applicable": 2,
+          "unknown": 0,
+          "not_applicable": 1,
           "not_evaluated": 0,
           "error": 0
         },
-        "evaluations": 4,
+        "failed_checks_excepted": 0,
+        "evaluator_status_counts": {
+          "opa": {
+            "pass": 1,
+            "fail": 0,
+            "unknown": 0,
+            "not_applicable": 1,
+            "not_evaluated": 0,
+            "error": 0
+          }
+        },
+        "evaluations": 2,
         "gaps": [
+          {
+            "stage": "plan",
+            "kind": "provider_has_no_resource_kinds",
+            "provider_source": "registry.terraform.io/hashicorp/local",
+            "count": 1
+          },
           {
             "stage": "post_deploy",
             "kind": "state_not_read"
@@ -1578,17 +593,7 @@
           "reason": null
         },
         "sampled": false,
-        "substituted_inputs": [],
-        "evaluator_status_counts": {
-          "opa": {
-            "pass": 1,
-            "fail": 0,
-            "unknown": 1,
-            "not_applicable": 2,
-            "not_evaluated": 0,
-            "error": 0
-          }
-        }
+        "substituted_inputs": []
       }
     },
     "remove": [],
@@ -1601,16 +606,12 @@
   },
   {
     "name": "state_read_with_an_evaluation_unknown_for_a_state_not_read",
-    "vector": "iac/local_run_deployed.json",
+    "vector": "iac/governed_run_deployed_without_server_facts.json",
     "set": {
       "/events/1/evaluation/status_reason": "state_not_read",
-      "/evidence_refs/18/digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
-      "/evidence_refs/18/size_bytes": 5150,
-      "/stages/pre_deploy/events": {
-        "count": 2,
-        "digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
-        "path": "units/root/pre_deploy/events.json"
-      }
+      "/evidence_refs/48/digest": "sha256:8f0606f572aa7cf80c04887196232bc694dae1820f9cba490b9a0baee645524a",
+      "/evidence_refs/48/size_bytes": 24021,
+      "/stages/pre_deploy/events/digest": "sha256:8f0606f572aa7cf80c04887196232bc694dae1820f9cba490b9a0baee645524a"
     },
     "remove": [],
     "problems": [
@@ -1621,28 +622,7 @@
     ]
   },
   {
-    "name": "state_not_read_given_as_a_reason_before_the_post_deploy_stage",
-    "vector": "iac/local_run_state_not_read.json",
-    "set": {
-      "/events/1/evaluation/status_reason": "state_not_read",
-      "/evidence_refs/18/digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
-      "/evidence_refs/18/size_bytes": 5150,
-      "/stages/pre_deploy/events": {
-        "count": 2,
-        "digest": "sha256:2f013d06109c2233771ec55feb5b34344d8998e119113816c5e9029d294290a1",
-        "path": "units/root/pre_deploy/events.json"
-      }
-    },
-    "remove": [],
-    "problems": [
-      [
-        "events.1.evaluation.status_reason",
-        "names a state not read the record does not"
-      ]
-    ]
-  },
-  {
-    "name": "required_scanners_gap_left_out_of_the_coverage",
+    "name": "scanner_requirement_gap_left_out_of_the_coverage",
     "vector": "iac/local_run_scanner_required.json",
     "set": {
       "/stages/plan/coverage/gaps": [],
@@ -1657,7 +637,7 @@
     ]
   },
   {
-    "name": "required_scanners_gap_miscounted",
+    "name": "scanner_requirement_gap_miscounted",
     "vector": "iac/local_run_scanner_required.json",
     "set": {
       "/stages/plan/coverage/gaps": [
@@ -1715,13 +695,11 @@
     "name": "plan_stage_counting_no_subject_for_assertions_its_events_evaluated",
     "vector": "iac/local_run.json",
     "set": {
-      "/stages/plan/coverage/subjects_per_assertion": {
-        "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 0,
-        "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
-      }
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0": 0,
+      "/stages/plan/coverage/subjects_per_assertion/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0": 0
     },
     "remove": [],
     "problems": [
@@ -1808,14 +786,1325 @@
     "name": "record_whose_evaluator_status_counts_are_not_its_stages_combined",
     "vector": "iac/local_run.json",
     "set": {
-      "/coverage/evaluator_status_counts/opa/pass": 3,
-      "/coverage/evaluator_status_counts/opa/fail": 1
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 3
     },
     "remove": [],
     "problems": [
       [
         "coverage",
         "is not the record's stages combined"
+      ]
+    ]
+  },
+  {
+    "name": "iac_record_naming_every_failure_excepted_where_a_failure_no_exception_covers_stands",
+    "vector": "iac/governed_run.json",
+    "set": {
+      "/coverage/failed_checks_excepted": 1,
+      "/evidence_refs/26/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/evidence_refs/26/size_bytes": 1808,
+      "/stages/plan/coverage/failed_checks_excepted": 1,
+      "/stages/plan/served_exceptions/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/stages/plan/served_exceptions/excepted_failures/-": {
+        "assertion": {
+          "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+          "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+          "version": "1.0.0"
+        },
+        "engine": "opa",
+        "exception_id": "exc_0002",
+        "resource": {
+          "scheme": "terraform_address",
+          "scope": {
+            "unit": "root"
+          },
+          "value": "aws_s3_bucket.logs"
+        }
+      },
+      "/stages/plan/verdict/reason": "every_failure_excepted",
+      "/verdict/reason": "every_failure_excepted"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.verdict",
+        "is not the verdict the stage's counts give"
+      ]
+    ]
+  },
+  {
+    "name": "iac_record_counting_no_failure_excepted_where_a_served_exception_covers_one",
+    "vector": "iac/governed_run.json",
+    "set": {
+      "/evidence_refs/26/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/evidence_refs/26/size_bytes": 1808,
+      "/stages/plan/served_exceptions/digest": "sha256:1d0ff9a25346ca25e2fe092cbe2cb1c4f1147d05037d1639c59ecd206a0ab953",
+      "/stages/plan/served_exceptions/excepted_failures/-": {
+        "assertion": {
+          "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57",
+          "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+          "version": "1.0.0"
+        },
+        "engine": "opa",
+        "exception_id": "exc_0002",
+        "resource": {
+          "scheme": "terraform_address",
+          "scope": {
+            "unit": "root"
+          },
+          "value": "aws_s3_bucket.logs"
+        }
+      }
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.coverage",
+        "does not count the failed checks the exceptions the stage names cover in full"
+      ]
+    ]
+  },
+  {
+    "name": "iac_record_stating_a_plain_failure_where_served_exceptions_cover_every_failure",
+    "vector": "iac/governed_run_every_failure_excepted.json",
+    "set": {
+      "/stages/plan/verdict/reason": null,
+      "/verdict/reason": null
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.verdict",
+        "is not the verdict the stage's counts give"
+      ]
+    ]
+  },
+  {
+    "name": "iac_record_stating_every_failure_excepted_where_a_check_is_undecided",
+    "vector": "iac/governed_run_every_failure_excepted_one_check_undecided.json",
+    "set": {
+      "/stages/plan/verdict/reason": "every_failure_excepted",
+      "/stages/plan/verdict/value": "not_met",
+      "/verdict/reason": "every_failure_excepted",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.plan.verdict",
+        "is not the verdict the stage's counts give"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_facts_of_another_change",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/stages/pre_deploy/apply_job_facts/accepted_plan_stage_record/change_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "stages.pre_deploy.apply_job_facts.accepted_plan_stage_record.change_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "plan_age_within_limit_check_naming_a_status_its_facts_do_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/9/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:158b4e3becca48bb2e6e043e56114f853e7c05b12f6ae8036c0beb7e61de2c40",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:158b4e3becca48bb2e6e043e56114f853e7c05b12f6ae8036c0beb7e61de2c40",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.9.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "approved_after_plan_stage_record_accepted_check_naming_a_status_its_facts_do_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/3/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:9e3c40eda7103cb68b1047a2a50e83cbc280c8cb25202ff7de16af3016bee486",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:9e3c40eda7103cb68b1047a2a50e83cbc280c8cb25202ff7de16af3016bee486",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "received_plan_file_matches_evaluated_plan_file_check_naming_a_status_its_facts_do_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/6/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:8007ba4c304856f0034ac72728b2ae71d96a6a09fdf4ad44c5d5d1ca1027e084",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:8007ba4c304856f0034ac72728b2ae71d96a6a09fdf4ad44c5d5d1ca1027e084",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.6.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "evaluated_plan_is_pinned_plan_check_naming_a_status_its_facts_do_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/5/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:9f2562617a97d0339491dfcb2955bd56d28d232d7184512492ea8b30ac44a79c",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:9f2562617a97d0339491dfcb2955bd56d28d232d7184512492ea8b30ac44a79c",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.5.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "plan_older_than_its_limit_whose_plan_age_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/events/1/provenance/input_digest": "sha256:a7aed0cc02035b661afc4a37c86cc5af505d8d447fe9626bccd78465561b2ca2",
+      "/events/2/provenance/input_digest": "sha256:ae5a3359c9800cdcd91cf2149ff6e17f026b3ab32ff8c456a6685c80141abe69",
+      "/events/3/provenance/input_digest": "sha256:a708414cdbc7733d6450786198967a2f19b2201f226c43c5ae6695897a3de2ad",
+      "/events/4/provenance/input_digest": "sha256:4ccec740412cd60549d3498631d9b93c1b646f429302eeaa6fd453cc7abb16a2",
+      "/events/5/provenance/input_digest": "sha256:c6889e4868321e36e9d0e32a8793c92d551aac9023b7545d537c27d319de756a",
+      "/events/6/provenance/input_digest": "sha256:208a57b393094c6d5b70ea10fe5d541f134d69fa29797a6bdae79ff70418f4de",
+      "/events/7/provenance/input_digest": "sha256:56fde7a662c3ef1d552c261fb319353feeecd9f37b558adad7f0d8c16c123eb2",
+      "/events/8/provenance/input_digest": "sha256:af8acc3945bc8a71a21949f6e0020bc9772590468a3644edaee49480d6f2ec7f",
+      "/events/9/evaluation/observations/predicates/0/resolved": 86400,
+      "/events/9/evaluation/observations/predicates/0/status": "false",
+      "/events/9/evaluation/policy_reason": "assert: false; apply_job_timing.plan_age_seconds less_than_or_equal is false",
+      "/events/9/provenance/input_digest": "sha256:82f4631b3268678c90d9cb0e3f975cd185b4bfa3a741e9a37e2be596c0c27657",
+      "/evidence_refs/10/digest": "sha256:a7aed0cc02035b661afc4a37c86cc5af505d8d447fe9626bccd78465561b2ca2",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-a7aed0cc02035b661afc4a37c86cc5af505d8d447fe9626bccd78465561b2ca2",
+      "/evidence_refs/10/ref_id": "sha256-a7aed0cc02035b661afc4a37c86cc5af505d8d447fe9626bccd78465561b2ca2",
+      "/evidence_refs/10/size_bytes": 4987,
+      "/evidence_refs/11/digest": "sha256:ae5a3359c9800cdcd91cf2149ff6e17f026b3ab32ff8c456a6685c80141abe69",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-ae5a3359c9800cdcd91cf2149ff6e17f026b3ab32ff8c456a6685c80141abe69",
+      "/evidence_refs/11/ref_id": "sha256-ae5a3359c9800cdcd91cf2149ff6e17f026b3ab32ff8c456a6685c80141abe69",
+      "/evidence_refs/11/size_bytes": 4982,
+      "/evidence_refs/12/digest": "sha256:a708414cdbc7733d6450786198967a2f19b2201f226c43c5ae6695897a3de2ad",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-a708414cdbc7733d6450786198967a2f19b2201f226c43c5ae6695897a3de2ad",
+      "/evidence_refs/12/ref_id": "sha256-a708414cdbc7733d6450786198967a2f19b2201f226c43c5ae6695897a3de2ad",
+      "/evidence_refs/12/size_bytes": 5006,
+      "/evidence_refs/13/digest": "sha256:4ccec740412cd60549d3498631d9b93c1b646f429302eeaa6fd453cc7abb16a2",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-4ccec740412cd60549d3498631d9b93c1b646f429302eeaa6fd453cc7abb16a2",
+      "/evidence_refs/13/ref_id": "sha256-4ccec740412cd60549d3498631d9b93c1b646f429302eeaa6fd453cc7abb16a2",
+      "/evidence_refs/13/size_bytes": 4990,
+      "/evidence_refs/14/digest": "sha256:c6889e4868321e36e9d0e32a8793c92d551aac9023b7545d537c27d319de756a",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-c6889e4868321e36e9d0e32a8793c92d551aac9023b7545d537c27d319de756a",
+      "/evidence_refs/14/ref_id": "sha256-c6889e4868321e36e9d0e32a8793c92d551aac9023b7545d537c27d319de756a",
+      "/evidence_refs/14/size_bytes": 4993,
+      "/evidence_refs/15/digest": "sha256:208a57b393094c6d5b70ea10fe5d541f134d69fa29797a6bdae79ff70418f4de",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-208a57b393094c6d5b70ea10fe5d541f134d69fa29797a6bdae79ff70418f4de",
+      "/evidence_refs/15/ref_id": "sha256-208a57b393094c6d5b70ea10fe5d541f134d69fa29797a6bdae79ff70418f4de",
+      "/evidence_refs/15/size_bytes": 5010,
+      "/evidence_refs/16/digest": "sha256:56fde7a662c3ef1d552c261fb319353feeecd9f37b558adad7f0d8c16c123eb2",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-56fde7a662c3ef1d552c261fb319353feeecd9f37b558adad7f0d8c16c123eb2",
+      "/evidence_refs/16/ref_id": "sha256-56fde7a662c3ef1d552c261fb319353feeecd9f37b558adad7f0d8c16c123eb2",
+      "/evidence_refs/16/size_bytes": 5000,
+      "/evidence_refs/17/digest": "sha256:af8acc3945bc8a71a21949f6e0020bc9772590468a3644edaee49480d6f2ec7f",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-af8acc3945bc8a71a21949f6e0020bc9772590468a3644edaee49480d6f2ec7f",
+      "/evidence_refs/17/ref_id": "sha256-af8acc3945bc8a71a21949f6e0020bc9772590468a3644edaee49480d6f2ec7f",
+      "/evidence_refs/17/size_bytes": 5005,
+      "/evidence_refs/18/digest": "sha256:82f4631b3268678c90d9cb0e3f975cd185b4bfa3a741e9a37e2be596c0c27657",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-82f4631b3268678c90d9cb0e3f975cd185b4bfa3a741e9a37e2be596c0c27657",
+      "/evidence_refs/18/ref_id": "sha256-82f4631b3268678c90d9cb0e3f975cd185b4bfa3a741e9a37e2be596c0c27657",
+      "/evidence_refs/18/size_bytes": 4984,
+      "/evidence_refs/48/digest": "sha256:fde4d90ff85d2ff8ebde4fae9b8cd836283d92d643ef40cff9a6440e05b1244a",
+      "/evidence_refs/48/size_bytes": 23457,
+      "/stages/pre_deploy/apply_job_facts/plan_age_limit/seconds": 86400,
+      "/stages/pre_deploy/events/digest": "sha256:fde4d90ff85d2ff8ebde4fae9b8cd836283d92d643ef40cff9a6440e05b1244a"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.9.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_approved_before_the_plan_stage_record_was_accepted_whose_order_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/events/1/provenance/input_digest": "sha256:e844fe1d68fb5a90a4c70793bf14c5cc8f583df417d1847f00e96b0a96705b01",
+      "/events/2/provenance/input_digest": "sha256:d2d1ab8ca7d9f916def66bca4d6789d18fedaaacc2b3a00539ef12f264af520f",
+      "/events/3/evaluation/observations/predicates/2/actual": 1,
+      "/events/3/evaluation/observations/predicates/2/status": "false",
+      "/events/3/evaluation/observations/predicates/3/actual": 0,
+      "/events/3/evaluation/observations/predicates/3/status": "false",
+      "/events/3/evaluation/policy_reason": "assert: false; apply_job_timing.approvals_given_before_plan_stage_record_accepted equal is false",
+      "/events/3/provenance/input_digest": "sha256:878ef368098ed3c6968c6bfd1e306076ebe0856d2ed82c3a4b4342183f7d9768",
+      "/events/4/provenance/input_digest": "sha256:ab21293b2b02164a759beb8298665a81a6bdbdd3a5a4fcc23eb26376a34c0529",
+      "/events/5/provenance/input_digest": "sha256:970e307a3715a64280eadfe518443eae3e9d5583c85a285cb1eaff86650cd160",
+      "/events/6/provenance/input_digest": "sha256:e6853a9475716579d314ce0cec2d05cce05de34893f3b291d78b48d55c212c34",
+      "/events/7/provenance/input_digest": "sha256:3ea3984e9cbec654c32bc226e8ad3cfaaa950119c5905a7ea88695a2e7f00725",
+      "/events/8/provenance/input_digest": "sha256:ea30706ca7041974ea557f5255ba92f18713d2301d9ace7470749bfed5b5db81",
+      "/events/9/provenance/input_digest": "sha256:95dd56958b70386cdc823cabb910ce4c9e017cbd41ff84319f62cd0b5abcd9b3",
+      "/evidence_refs/10/digest": "sha256:e844fe1d68fb5a90a4c70793bf14c5cc8f583df417d1847f00e96b0a96705b01",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-e844fe1d68fb5a90a4c70793bf14c5cc8f583df417d1847f00e96b0a96705b01",
+      "/evidence_refs/10/ref_id": "sha256-e844fe1d68fb5a90a4c70793bf14c5cc8f583df417d1847f00e96b0a96705b01",
+      "/evidence_refs/11/digest": "sha256:d2d1ab8ca7d9f916def66bca4d6789d18fedaaacc2b3a00539ef12f264af520f",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-d2d1ab8ca7d9f916def66bca4d6789d18fedaaacc2b3a00539ef12f264af520f",
+      "/evidence_refs/11/ref_id": "sha256-d2d1ab8ca7d9f916def66bca4d6789d18fedaaacc2b3a00539ef12f264af520f",
+      "/evidence_refs/12/digest": "sha256:878ef368098ed3c6968c6bfd1e306076ebe0856d2ed82c3a4b4342183f7d9768",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-878ef368098ed3c6968c6bfd1e306076ebe0856d2ed82c3a4b4342183f7d9768",
+      "/evidence_refs/12/ref_id": "sha256-878ef368098ed3c6968c6bfd1e306076ebe0856d2ed82c3a4b4342183f7d9768",
+      "/evidence_refs/13/digest": "sha256:ab21293b2b02164a759beb8298665a81a6bdbdd3a5a4fcc23eb26376a34c0529",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-ab21293b2b02164a759beb8298665a81a6bdbdd3a5a4fcc23eb26376a34c0529",
+      "/evidence_refs/13/ref_id": "sha256-ab21293b2b02164a759beb8298665a81a6bdbdd3a5a4fcc23eb26376a34c0529",
+      "/evidence_refs/14/digest": "sha256:970e307a3715a64280eadfe518443eae3e9d5583c85a285cb1eaff86650cd160",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-970e307a3715a64280eadfe518443eae3e9d5583c85a285cb1eaff86650cd160",
+      "/evidence_refs/14/ref_id": "sha256-970e307a3715a64280eadfe518443eae3e9d5583c85a285cb1eaff86650cd160",
+      "/evidence_refs/15/digest": "sha256:e6853a9475716579d314ce0cec2d05cce05de34893f3b291d78b48d55c212c34",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-e6853a9475716579d314ce0cec2d05cce05de34893f3b291d78b48d55c212c34",
+      "/evidence_refs/15/ref_id": "sha256-e6853a9475716579d314ce0cec2d05cce05de34893f3b291d78b48d55c212c34",
+      "/evidence_refs/16/digest": "sha256:3ea3984e9cbec654c32bc226e8ad3cfaaa950119c5905a7ea88695a2e7f00725",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-3ea3984e9cbec654c32bc226e8ad3cfaaa950119c5905a7ea88695a2e7f00725",
+      "/evidence_refs/16/ref_id": "sha256-3ea3984e9cbec654c32bc226e8ad3cfaaa950119c5905a7ea88695a2e7f00725",
+      "/evidence_refs/17/digest": "sha256:ea30706ca7041974ea557f5255ba92f18713d2301d9ace7470749bfed5b5db81",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-ea30706ca7041974ea557f5255ba92f18713d2301d9ace7470749bfed5b5db81",
+      "/evidence_refs/17/ref_id": "sha256-ea30706ca7041974ea557f5255ba92f18713d2301d9ace7470749bfed5b5db81",
+      "/evidence_refs/18/digest": "sha256:95dd56958b70386cdc823cabb910ce4c9e017cbd41ff84319f62cd0b5abcd9b3",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-95dd56958b70386cdc823cabb910ce4c9e017cbd41ff84319f62cd0b5abcd9b3",
+      "/evidence_refs/18/ref_id": "sha256-95dd56958b70386cdc823cabb910ce4c9e017cbd41ff84319f62cd0b5abcd9b3",
+      "/evidence_refs/48/digest": "sha256:cdb4f924296ffb1a547eb621a8713088668a14d31913d67d9f14227d363e2b37",
+      "/evidence_refs/48/size_bytes": 23479,
+      "/stages/pre_deploy/approvals/1/timestamp": "2026-09-16T18:30:00Z",
+      "/stages/pre_deploy/events/digest": "sha256:cdb4f924296ffb1a547eb621a8713088668a14d31913d67d9f14227d363e2b37"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_facts_the_server_could_not_supply_whose_plan_age_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed_without_server_facts.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 2,
+      "/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/coverage/status_counts/pass": 2,
+      "/coverage/status_counts/unknown": 7,
+      "/events/9/evaluation/status": "pass",
+      "/events/9/evaluation/status_reason": null,
+      "/evidence_refs/48/digest": "sha256:0b272d0417f055fa9e53e2fcebee38580e4a494d3df76a5d4332b7e1308c2c2c",
+      "/evidence_refs/48/size_bytes": 24006,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 7,
+      "/stages/pre_deploy/events/digest": "sha256:0b272d0417f055fa9e53e2fcebee38580e4a494d3df76a5d4332b7e1308c2c2c"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.9.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_of_an_environment_requiring_no_approval_whose_order_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/change/replan_check/change_digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/coverage/evaluator_status_counts/opa/not_applicable": 3,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/not_applicable": 3,
+      "/coverage/status_counts/pass": 8,
+      "/events/1/evaluation/observations/predicates/0/actual": false,
+      "/events/1/evaluation/observations/predicates/0/status": "false",
+      "/events/1/evaluation/observations/when": "false",
+      "/events/1/evaluation/policy_reason": "when: false",
+      "/events/1/evaluation/status": "not_applicable",
+      "/events/1/evaluation/status_reason": "when_guard_excluded",
+      "/events/1/provenance/input_digest": "sha256:12b56148c21c9060072eee9301e057c5323c0d679662bb9a28d5541dd34dc21a",
+      "/events/2/provenance/input_digest": "sha256:e9252dd37f53043fb73341e07f06012d9f3d308663a7ed275093a1c721eaf625",
+      "/events/3/evaluation/observations/predicates/1/actual": false,
+      "/events/3/evaluation/observations/predicates/1/status": "false",
+      "/events/3/evaluation/observations/when": "false",
+      "/events/3/evaluation/policy_reason": "when: false",
+      "/events/3/provenance/input_digest": "sha256:85e2c55bf43ff0b20d3850ffef218fcddf9b75da857350842dc78c6557be92e3",
+      "/events/4/provenance/input_digest": "sha256:322b9ed013ffe208a34aa62ff50d6801eea2ca000eab4cd431def3d5bf5deaf6",
+      "/events/5/provenance/input_digest": "sha256:3aa7bc5e4f8433405030d6690c5991cc4fa89d139f4fc7af438b4f7d55bdbdcf",
+      "/events/6/provenance/input_digest": "sha256:8e395a5dfddeec297e7be3b6cf266135e54c9eac47c41771df8ca2f29dd45844",
+      "/events/7/provenance/input_digest": "sha256:4a6579e3085b930ede6682311f7e92cf120de85c85f2ae80a6b467cb1352027e",
+      "/events/8/provenance/input_digest": "sha256:9ca0f0d5b1e34c73b791338a88e958056ca430288f035e638d8fa0227bd80fad",
+      "/events/9/provenance/input_digest": "sha256:ce1d7b4b6d29e0466eb7c9e12e46b8e246cbffbb125ae0788dc96d00fa35a077",
+      "/events/10/provenance/input_digest": "sha256:36de62d51be3dba6bc4ca968311ccfc9f1d5cc435bafd2c1634f1f3a35a808ee",
+      "/evidence_refs/10/digest": "sha256:12b56148c21c9060072eee9301e057c5323c0d679662bb9a28d5541dd34dc21a",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-12b56148c21c9060072eee9301e057c5323c0d679662bb9a28d5541dd34dc21a",
+      "/evidence_refs/10/ref_id": "sha256-12b56148c21c9060072eee9301e057c5323c0d679662bb9a28d5541dd34dc21a",
+      "/evidence_refs/10/size_bytes": 4987,
+      "/evidence_refs/11/digest": "sha256:e9252dd37f53043fb73341e07f06012d9f3d308663a7ed275093a1c721eaf625",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-e9252dd37f53043fb73341e07f06012d9f3d308663a7ed275093a1c721eaf625",
+      "/evidence_refs/11/ref_id": "sha256-e9252dd37f53043fb73341e07f06012d9f3d308663a7ed275093a1c721eaf625",
+      "/evidence_refs/11/size_bytes": 4982,
+      "/evidence_refs/12/digest": "sha256:85e2c55bf43ff0b20d3850ffef218fcddf9b75da857350842dc78c6557be92e3",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-85e2c55bf43ff0b20d3850ffef218fcddf9b75da857350842dc78c6557be92e3",
+      "/evidence_refs/12/ref_id": "sha256-85e2c55bf43ff0b20d3850ffef218fcddf9b75da857350842dc78c6557be92e3",
+      "/evidence_refs/12/size_bytes": 5006,
+      "/evidence_refs/13/digest": "sha256:322b9ed013ffe208a34aa62ff50d6801eea2ca000eab4cd431def3d5bf5deaf6",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-322b9ed013ffe208a34aa62ff50d6801eea2ca000eab4cd431def3d5bf5deaf6",
+      "/evidence_refs/13/ref_id": "sha256-322b9ed013ffe208a34aa62ff50d6801eea2ca000eab4cd431def3d5bf5deaf6",
+      "/evidence_refs/13/size_bytes": 4990,
+      "/evidence_refs/14/digest": "sha256:3aa7bc5e4f8433405030d6690c5991cc4fa89d139f4fc7af438b4f7d55bdbdcf",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-3aa7bc5e4f8433405030d6690c5991cc4fa89d139f4fc7af438b4f7d55bdbdcf",
+      "/evidence_refs/14/ref_id": "sha256-3aa7bc5e4f8433405030d6690c5991cc4fa89d139f4fc7af438b4f7d55bdbdcf",
+      "/evidence_refs/14/size_bytes": 4993,
+      "/evidence_refs/15/digest": "sha256:8e395a5dfddeec297e7be3b6cf266135e54c9eac47c41771df8ca2f29dd45844",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-8e395a5dfddeec297e7be3b6cf266135e54c9eac47c41771df8ca2f29dd45844",
+      "/evidence_refs/15/ref_id": "sha256-8e395a5dfddeec297e7be3b6cf266135e54c9eac47c41771df8ca2f29dd45844",
+      "/evidence_refs/15/size_bytes": 5010,
+      "/evidence_refs/16/digest": "sha256:4a6579e3085b930ede6682311f7e92cf120de85c85f2ae80a6b467cb1352027e",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-4a6579e3085b930ede6682311f7e92cf120de85c85f2ae80a6b467cb1352027e",
+      "/evidence_refs/16/ref_id": "sha256-4a6579e3085b930ede6682311f7e92cf120de85c85f2ae80a6b467cb1352027e",
+      "/evidence_refs/16/size_bytes": 5000,
+      "/evidence_refs/17/digest": "sha256:9ca0f0d5b1e34c73b791338a88e958056ca430288f035e638d8fa0227bd80fad",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-9ca0f0d5b1e34c73b791338a88e958056ca430288f035e638d8fa0227bd80fad",
+      "/evidence_refs/17/ref_id": "sha256-9ca0f0d5b1e34c73b791338a88e958056ca430288f035e638d8fa0227bd80fad",
+      "/evidence_refs/17/size_bytes": 5005,
+      "/evidence_refs/18/digest": "sha256:ce1d7b4b6d29e0466eb7c9e12e46b8e246cbffbb125ae0788dc96d00fa35a077",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-ce1d7b4b6d29e0466eb7c9e12e46b8e246cbffbb125ae0788dc96d00fa35a077",
+      "/evidence_refs/18/ref_id": "sha256-ce1d7b4b6d29e0466eb7c9e12e46b8e246cbffbb125ae0788dc96d00fa35a077",
+      "/evidence_refs/18/size_bytes": 4984,
+      "/evidence_refs/48/digest": "sha256:6517a28d05489ea9c995b5e64e9f86082c9556dc8a981a6674dad70356af898d",
+      "/evidence_refs/48/size_bytes": 23424,
+      "/evidence_refs/50/digest": "sha256:36de62d51be3dba6bc4ca968311ccfc9f1d5cc435bafd2c1634f1f3a35a808ee",
+      "/evidence_refs/50/path": "units/root/post_deploy/contexts/sha256-36de62d51be3dba6bc4ca968311ccfc9f1d5cc435bafd2c1634f1f3a35a808ee",
+      "/evidence_refs/50/ref_id": "sha256-36de62d51be3dba6bc4ca968311ccfc9f1d5cc435bafd2c1634f1f3a35a808ee",
+      "/evidence_refs/50/size_bytes": 4870,
+      "/evidence_refs/56/digest": "sha256:57fc71ae4ab85372e108a5a4babbb5cfdf879d9a5d5a7bd34238361d22dd6e49",
+      "/stages/post_deploy/events/digest": "sha256:57fc71ae4ab85372e108a5a4babbb5cfdf879d9a5d5a7bd34238361d22dd6e49",
+      "/stages/pre_deploy/apply_job_facts/accepted_plan_stage_record/change_digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/stages/pre_deploy/apply_job_facts/approval_requirement/required": false,
+      "/stages/pre_deploy/approvals/0/subject/digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/not_applicable": 2,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/not_applicable": 2,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/subjects_in_scope/source_digest": "sha256:d94529372b0cb79e51a98e80e4e1aee9285c12abac7ce25e73ecec155ee0e169",
+      "/stages/pre_deploy/events/digest": "sha256:6517a28d05489ea9c995b5e64e9f86082c9556dc8a981a6674dad70356af898d",
+      "/subject/environment/name": "staging",
+      "/subject/environment/production": false
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not not_applicable, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "plan_and_apply_in_one_job_whose_order_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check": null,
+      "/coverage/evaluator_status_counts/opa/not_applicable": 5,
+      "/coverage/evaluator_status_counts/opa/pass": 6,
+      "/coverage/status_counts/not_applicable": 5,
+      "/coverage/status_counts/pass": 6,
+      "/events/1/provenance/input_digest": "sha256:41d56b6f8541b4f7c1383e307d989c2475569a3f50ea1434ba22773aeca89c51",
+      "/events/2/provenance/input_digest": "sha256:6377512e7baa60d778cf2560d1fd55c2fa46aeb48bae4bc5b800f20641ad3253",
+      "/events/3/evaluation/observations/predicates/0/actual": "plan_and_apply_in_one_job",
+      "/events/3/evaluation/observations/predicates/0/status": "false",
+      "/events/3/evaluation/observations/when": "false",
+      "/events/3/evaluation/policy_reason": "when: false",
+      "/events/3/provenance/input_digest": "sha256:c80f70583460b701f7d478d1e82d0afa7701a1f441c4193b7a14f884929b2af6",
+      "/events/4/provenance/input_digest": "sha256:2c1083b3c08e469bda35cf3b26b3ee11b01a56ceb99bf73e5cba3dd562c9c9ce",
+      "/events/5/provenance/input_digest": "sha256:757744cfcd1b97e198add1a94024016f225fc152cd5a75301341b2458a73d72b",
+      "/events/6/evaluation/observations/predicates/0/actual": "plan_and_apply_in_one_job",
+      "/events/6/evaluation/observations/predicates/0/status": "false",
+      "/events/6/evaluation/observations/predicates/1/actual": null,
+      "/events/6/evaluation/observations/predicates/1/status": "false",
+      "/events/6/evaluation/observations/when": "false",
+      "/events/6/evaluation/policy_reason": "when: false",
+      "/events/6/evaluation/status": "not_applicable",
+      "/events/6/evaluation/status_reason": "when_guard_excluded",
+      "/events/6/provenance/input_digest": "sha256:be1c463ee8d4bc9605813dada9c2fd029d68b2e249f1c9a14050852ea26cbab0",
+      "/events/7/evaluation/observations/predicates/0/actual": "plan_and_apply_in_one_job",
+      "/events/7/evaluation/observations/predicates/0/status": "false",
+      "/events/7/evaluation/observations/predicates/1/actual": null,
+      "/events/7/evaluation/observations/predicates/1/status": "unknown",
+      "/events/7/evaluation/observations/predicates/2/actual": null,
+      "/events/7/evaluation/observations/predicates/2/status": "unknown",
+      "/events/7/evaluation/observations/predicates/3/actual": null,
+      "/events/7/evaluation/observations/predicates/3/status": "unknown",
+      "/events/7/evaluation/observations/when": "false",
+      "/events/7/evaluation/policy_reason": "when: false",
+      "/events/7/evaluation/status": "not_applicable",
+      "/events/7/evaluation/status_reason": "when_guard_excluded",
+      "/events/7/provenance/input_digest": "sha256:ff2294566f30b996073985578a444866caefba211bdb475c314bade1f49eaef5",
+      "/events/8/evaluation/observations/predicates/0/actual": "plan_and_apply_in_one_job",
+      "/events/8/evaluation/observations/predicates/0/status": "false",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/when": "false",
+      "/events/8/evaluation/policy_reason": "when: false",
+      "/events/8/evaluation/status": "not_applicable",
+      "/events/8/evaluation/status_reason": "when_guard_excluded",
+      "/events/8/provenance/input_digest": "sha256:9b9d185f7ed34024a095da944138160458599d5916b24f68c61390840d932bfa",
+      "/events/9/provenance/input_digest": "sha256:fa18eb948b344f4c1feb81c1d1d8ff142d4cf2fb7d92d637b68d3dccca196a7e",
+      "/evidence_refs/10/digest": "sha256:41d56b6f8541b4f7c1383e307d989c2475569a3f50ea1434ba22773aeca89c51",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-41d56b6f8541b4f7c1383e307d989c2475569a3f50ea1434ba22773aeca89c51",
+      "/evidence_refs/10/ref_id": "sha256-41d56b6f8541b4f7c1383e307d989c2475569a3f50ea1434ba22773aeca89c51",
+      "/evidence_refs/10/size_bytes": 4492,
+      "/evidence_refs/11/digest": "sha256:6377512e7baa60d778cf2560d1fd55c2fa46aeb48bae4bc5b800f20641ad3253",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-6377512e7baa60d778cf2560d1fd55c2fa46aeb48bae4bc5b800f20641ad3253",
+      "/evidence_refs/11/ref_id": "sha256-6377512e7baa60d778cf2560d1fd55c2fa46aeb48bae4bc5b800f20641ad3253",
+      "/evidence_refs/11/size_bytes": 4487,
+      "/evidence_refs/12/digest": "sha256:c80f70583460b701f7d478d1e82d0afa7701a1f441c4193b7a14f884929b2af6",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-c80f70583460b701f7d478d1e82d0afa7701a1f441c4193b7a14f884929b2af6",
+      "/evidence_refs/12/ref_id": "sha256-c80f70583460b701f7d478d1e82d0afa7701a1f441c4193b7a14f884929b2af6",
+      "/evidence_refs/12/size_bytes": 4511,
+      "/evidence_refs/13/digest": "sha256:2c1083b3c08e469bda35cf3b26b3ee11b01a56ceb99bf73e5cba3dd562c9c9ce",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-2c1083b3c08e469bda35cf3b26b3ee11b01a56ceb99bf73e5cba3dd562c9c9ce",
+      "/evidence_refs/13/ref_id": "sha256-2c1083b3c08e469bda35cf3b26b3ee11b01a56ceb99bf73e5cba3dd562c9c9ce",
+      "/evidence_refs/13/size_bytes": 4495,
+      "/evidence_refs/14/digest": "sha256:757744cfcd1b97e198add1a94024016f225fc152cd5a75301341b2458a73d72b",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-757744cfcd1b97e198add1a94024016f225fc152cd5a75301341b2458a73d72b",
+      "/evidence_refs/14/ref_id": "sha256-757744cfcd1b97e198add1a94024016f225fc152cd5a75301341b2458a73d72b",
+      "/evidence_refs/14/size_bytes": 4498,
+      "/evidence_refs/15/digest": "sha256:be1c463ee8d4bc9605813dada9c2fd029d68b2e249f1c9a14050852ea26cbab0",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-be1c463ee8d4bc9605813dada9c2fd029d68b2e249f1c9a14050852ea26cbab0",
+      "/evidence_refs/15/ref_id": "sha256-be1c463ee8d4bc9605813dada9c2fd029d68b2e249f1c9a14050852ea26cbab0",
+      "/evidence_refs/15/size_bytes": 4515,
+      "/evidence_refs/16/digest": "sha256:ff2294566f30b996073985578a444866caefba211bdb475c314bade1f49eaef5",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-ff2294566f30b996073985578a444866caefba211bdb475c314bade1f49eaef5",
+      "/evidence_refs/16/ref_id": "sha256-ff2294566f30b996073985578a444866caefba211bdb475c314bade1f49eaef5",
+      "/evidence_refs/16/size_bytes": 4505,
+      "/evidence_refs/17/digest": "sha256:9b9d185f7ed34024a095da944138160458599d5916b24f68c61390840d932bfa",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-9b9d185f7ed34024a095da944138160458599d5916b24f68c61390840d932bfa",
+      "/evidence_refs/17/ref_id": "sha256-9b9d185f7ed34024a095da944138160458599d5916b24f68c61390840d932bfa",
+      "/evidence_refs/17/size_bytes": 4510,
+      "/evidence_refs/18/digest": "sha256:fa18eb948b344f4c1feb81c1d1d8ff142d4cf2fb7d92d637b68d3dccca196a7e",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-fa18eb948b344f4c1feb81c1d1d8ff142d4cf2fb7d92d637b68d3dccca196a7e",
+      "/evidence_refs/18/ref_id": "sha256-fa18eb948b344f4c1feb81c1d1d8ff142d4cf2fb7d92d637b68d3dccca196a7e",
+      "/evidence_refs/18/size_bytes": 4489,
+      "/evidence_refs/48/digest": "sha256:313e7dee9ec5a4201025bb3a11319fbc12b3df183df3c2a8a7bea4e21a77e7b7",
+      "/evidence_refs/48/size_bytes": 23365,
+      "/stages/pre_deploy/apply_job_facts/flow": "plan_and_apply_in_one_job",
+      "/stages/pre_deploy/apply_job_facts/received_plan_file_digest": null,
+      "/stages/pre_deploy/apply_job_facts/rendered_plan": null,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/not_applicable": 4,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 5,
+      "/stages/pre_deploy/coverage/status_counts/not_applicable": 4,
+      "/stages/pre_deploy/coverage/status_counts/pass": 5,
+      "/stages/pre_deploy/events/digest": "sha256:313e7dee9ec5a4201025bb3a11319fbc12b3df183df3c2a8a7bea4e21a77e7b7"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.3.evaluation.status",
+        "is not not_applicable, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "rendered_plan_other_than_the_evaluated_one_whose_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/outcome": "not_compared",
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/coverage/status_counts/pass": 8,
+      "/coverage/status_counts/unknown": 1,
+      "/events/1/provenance/input_digest": "sha256:8a9ab6e425561104726baee0e617445dab7f9c17ee103caa5b8366de3e123d9b",
+      "/events/2/provenance/input_digest": "sha256:144fa4598925fd5415e1c213d680676d078059f36f42dbe4b531477073849182",
+      "/events/3/provenance/input_digest": "sha256:96cbbe1ff0a43ee812357bf22e98d64276f84c23d1c45e610601a86b5ea41a44",
+      "/events/4/provenance/input_digest": "sha256:99daa871f44a9df1458324fb7fb0e35eb0bb334d309a870e03beb584f576d41e",
+      "/events/5/provenance/input_digest": "sha256:a38ca9fa23c2929360854093105347e9853e05206dace6e37c9c756b6a7c0dd7",
+      "/events/6/provenance/input_digest": "sha256:ccfd60a54e2facee2c312c46f30e3ffe1b7d4a390f87134a9970e71435e906ba",
+      "/events/7/evaluation/observations/predicates/1/actual": "hmac-sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/events/7/evaluation/observations/predicates/1/status": "false",
+      "/events/7/evaluation/policy_reason": "assert: false; apply_job_facts.rendered_plan.digest equal is false",
+      "/events/7/provenance/input_digest": "sha256:a4c568aae5eb40e1afc715e7f9705b9e3e24004a66c29ff37160027684d165b0",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/unknown": {
+        "path": "replan_check.differences_count",
+        "reason": "path_missing"
+      },
+      "/events/8/evaluation/policy_reason": "replan_check.differences_count: path_missing",
+      "/events/8/evaluation/status": "unknown",
+      "/events/8/evaluation/status_reason": "replan_not_compared",
+      "/events/8/provenance/input_digest": "sha256:91651d38b4e2f3c8fb056a32aea2c9065867cdac616c48b82d143a1e7f1b32d8",
+      "/events/9/provenance/input_digest": "sha256:7574f62735a81a845b8413b8266cff46f26019b5f8eac5e383d93305560a17c3",
+      "/evidence_refs/10/digest": "sha256:8a9ab6e425561104726baee0e617445dab7f9c17ee103caa5b8366de3e123d9b",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-8a9ab6e425561104726baee0e617445dab7f9c17ee103caa5b8366de3e123d9b",
+      "/evidence_refs/10/ref_id": "sha256-8a9ab6e425561104726baee0e617445dab7f9c17ee103caa5b8366de3e123d9b",
+      "/evidence_refs/10/size_bytes": 4703,
+      "/evidence_refs/11/digest": "sha256:144fa4598925fd5415e1c213d680676d078059f36f42dbe4b531477073849182",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-144fa4598925fd5415e1c213d680676d078059f36f42dbe4b531477073849182",
+      "/evidence_refs/11/ref_id": "sha256-144fa4598925fd5415e1c213d680676d078059f36f42dbe4b531477073849182",
+      "/evidence_refs/11/size_bytes": 4698,
+      "/evidence_refs/12/digest": "sha256:96cbbe1ff0a43ee812357bf22e98d64276f84c23d1c45e610601a86b5ea41a44",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-96cbbe1ff0a43ee812357bf22e98d64276f84c23d1c45e610601a86b5ea41a44",
+      "/evidence_refs/12/ref_id": "sha256-96cbbe1ff0a43ee812357bf22e98d64276f84c23d1c45e610601a86b5ea41a44",
+      "/evidence_refs/12/size_bytes": 4722,
+      "/evidence_refs/13/digest": "sha256:99daa871f44a9df1458324fb7fb0e35eb0bb334d309a870e03beb584f576d41e",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-99daa871f44a9df1458324fb7fb0e35eb0bb334d309a870e03beb584f576d41e",
+      "/evidence_refs/13/ref_id": "sha256-99daa871f44a9df1458324fb7fb0e35eb0bb334d309a870e03beb584f576d41e",
+      "/evidence_refs/13/size_bytes": 4706,
+      "/evidence_refs/14/digest": "sha256:a38ca9fa23c2929360854093105347e9853e05206dace6e37c9c756b6a7c0dd7",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-a38ca9fa23c2929360854093105347e9853e05206dace6e37c9c756b6a7c0dd7",
+      "/evidence_refs/14/ref_id": "sha256-a38ca9fa23c2929360854093105347e9853e05206dace6e37c9c756b6a7c0dd7",
+      "/evidence_refs/14/size_bytes": 4709,
+      "/evidence_refs/15/digest": "sha256:ccfd60a54e2facee2c312c46f30e3ffe1b7d4a390f87134a9970e71435e906ba",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-ccfd60a54e2facee2c312c46f30e3ffe1b7d4a390f87134a9970e71435e906ba",
+      "/evidence_refs/15/ref_id": "sha256-ccfd60a54e2facee2c312c46f30e3ffe1b7d4a390f87134a9970e71435e906ba",
+      "/evidence_refs/15/size_bytes": 4726,
+      "/evidence_refs/16/digest": "sha256:a4c568aae5eb40e1afc715e7f9705b9e3e24004a66c29ff37160027684d165b0",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-a4c568aae5eb40e1afc715e7f9705b9e3e24004a66c29ff37160027684d165b0",
+      "/evidence_refs/16/ref_id": "sha256-a4c568aae5eb40e1afc715e7f9705b9e3e24004a66c29ff37160027684d165b0",
+      "/evidence_refs/16/size_bytes": 4716,
+      "/evidence_refs/17/digest": "sha256:91651d38b4e2f3c8fb056a32aea2c9065867cdac616c48b82d143a1e7f1b32d8",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-91651d38b4e2f3c8fb056a32aea2c9065867cdac616c48b82d143a1e7f1b32d8",
+      "/evidence_refs/17/ref_id": "sha256-91651d38b4e2f3c8fb056a32aea2c9065867cdac616c48b82d143a1e7f1b32d8",
+      "/evidence_refs/17/size_bytes": 4721,
+      "/evidence_refs/18/digest": "sha256:7574f62735a81a845b8413b8266cff46f26019b5f8eac5e383d93305560a17c3",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-7574f62735a81a845b8413b8266cff46f26019b5f8eac5e383d93305560a17c3",
+      "/evidence_refs/18/ref_id": "sha256-7574f62735a81a845b8413b8266cff46f26019b5f8eac5e383d93305560a17c3",
+      "/evidence_refs/18/size_bytes": 4700,
+      "/evidence_refs/48/digest": "sha256:ddc95264551658e26124b93301575270631991b85fdbda844bed2f331b12a9e0",
+      "/evidence_refs/48/size_bytes": 23567,
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/digest": "hmac-sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:ddc95264551658e26124b93301575270631991b85fdbda844bed2f331b12a9e0",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [
+      "/change/replan_check/change_digest",
+      "/change/replan_check/differences",
+      "/change/replan_check/differences_count",
+      "/change/replan_check/evaluated_plan_resources",
+      "/change/replan_check/replan_resources",
+      "/change/replan_check/replanned_at",
+      "/change/replan_check/run_id",
+      "/change/replan_check/tool",
+      "/change/replan_check/tool_version"
+    ],
+    "problems": [
+      [
+        "events.7.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "rendered_plan_not_sent_whose_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/outcome": "not_compared",
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/coverage/status_counts/pass": 8,
+      "/coverage/status_counts/unknown": 1,
+      "/events/1/provenance/input_digest": "sha256:c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/events/2/provenance/input_digest": "sha256:c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/events/3/provenance/input_digest": "sha256:7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/events/4/provenance/input_digest": "sha256:7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/events/5/provenance/input_digest": "sha256:124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/events/6/provenance/input_digest": "sha256:13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/events/7/evaluation/observations/predicates/1/actual": null,
+      "/events/7/evaluation/observations/predicates/1/status": "unknown",
+      "/events/7/evaluation/observations/predicates/2/actual": null,
+      "/events/7/evaluation/observations/predicates/2/status": "unknown",
+      "/events/7/evaluation/observations/predicates/3/actual": null,
+      "/events/7/evaluation/observations/predicates/3/status": "unknown",
+      "/events/7/evaluation/observations/unknown": {
+        "path": "apply_job_facts.rendered_plan.digest",
+        "reason": "path_missing"
+      },
+      "/events/7/evaluation/policy_reason": "apply_job_facts.rendered_plan.digest: path_missing",
+      "/events/7/provenance/input_digest": "sha256:834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/unknown": {
+        "path": "replan_check.differences_count",
+        "reason": "path_missing"
+      },
+      "/events/8/evaluation/policy_reason": "replan_check.differences_count: path_missing",
+      "/events/8/evaluation/status": "unknown",
+      "/events/8/evaluation/status_reason": "replan_not_compared",
+      "/events/8/provenance/input_digest": "sha256:06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/events/9/provenance/input_digest": "sha256:16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/10/digest": "sha256:c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/ref_id": "sha256-c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/size_bytes": 4596,
+      "/evidence_refs/11/digest": "sha256:c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/ref_id": "sha256-c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/size_bytes": 4591,
+      "/evidence_refs/12/digest": "sha256:7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/ref_id": "sha256-7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/size_bytes": 4615,
+      "/evidence_refs/13/digest": "sha256:7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/ref_id": "sha256-7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/size_bytes": 4599,
+      "/evidence_refs/14/digest": "sha256:124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/ref_id": "sha256-124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/size_bytes": 4602,
+      "/evidence_refs/15/digest": "sha256:13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/ref_id": "sha256-13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/size_bytes": 4619,
+      "/evidence_refs/16/digest": "sha256:834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/ref_id": "sha256-834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/size_bytes": 4609,
+      "/evidence_refs/17/digest": "sha256:06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/ref_id": "sha256-06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/size_bytes": 4614,
+      "/evidence_refs/18/digest": "sha256:16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/ref_id": "sha256-16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/size_bytes": 4593,
+      "/evidence_refs/48/digest": "sha256:f58a672007bf53e0a63c32bf6456e358a4e513001da768f3dae18af5a8d8034c",
+      "/evidence_refs/48/size_bytes": 23546,
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/outcome": "not_sent",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:f58a672007bf53e0a63c32bf6456e358a4e513001da768f3dae18af5a8d8034c",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [
+      "/change/replan_check/change_digest",
+      "/change/replan_check/differences",
+      "/change/replan_check/differences_count",
+      "/change/replan_check/evaluated_plan_resources",
+      "/change/replan_check/replan_resources",
+      "/change/replan_check/replanned_at",
+      "/change/replan_check/run_id",
+      "/change/replan_check/tool",
+      "/change/replan_check/tool_version",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/digest",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/digest_version",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/tool"
+    ],
+    "problems": [
+      [
+        "events.7.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "rendered_plan_not_sent_whose_check_gives_another_reason",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/outcome": "not_compared",
+      "/coverage/evaluator_status_counts/opa/pass": 7,
+      "/coverage/evaluator_status_counts/opa/unknown": 2,
+      "/coverage/status_counts/pass": 7,
+      "/coverage/status_counts/unknown": 2,
+      "/events/1/provenance/input_digest": "sha256:c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/events/2/provenance/input_digest": "sha256:c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/events/3/provenance/input_digest": "sha256:7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/events/4/provenance/input_digest": "sha256:7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/events/5/provenance/input_digest": "sha256:124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/events/6/provenance/input_digest": "sha256:13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/events/7/evaluation/observations/predicates/1/actual": null,
+      "/events/7/evaluation/observations/predicates/1/status": "unknown",
+      "/events/7/evaluation/observations/predicates/2/actual": null,
+      "/events/7/evaluation/observations/predicates/2/status": "unknown",
+      "/events/7/evaluation/observations/predicates/3/actual": null,
+      "/events/7/evaluation/observations/predicates/3/status": "unknown",
+      "/events/7/evaluation/observations/unknown": {
+        "path": "apply_job_facts.rendered_plan.digest",
+        "reason": "path_missing"
+      },
+      "/events/7/evaluation/policy_reason": "apply_job_facts.rendered_plan.digest: path_missing",
+      "/events/7/evaluation/status": "unknown",
+      "/events/7/evaluation/status_reason": "path_missing",
+      "/events/7/provenance/input_digest": "sha256:834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/unknown": {
+        "path": "replan_check.differences_count",
+        "reason": "path_missing"
+      },
+      "/events/8/evaluation/policy_reason": "replan_check.differences_count: path_missing",
+      "/events/8/evaluation/status": "unknown",
+      "/events/8/evaluation/status_reason": "replan_not_compared",
+      "/events/8/provenance/input_digest": "sha256:06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/events/9/provenance/input_digest": "sha256:16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/10/digest": "sha256:c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/ref_id": "sha256-c45e1a1d5bad03827869df84bf672cd42024e55883814aea246fa64f6a7c4b77",
+      "/evidence_refs/10/size_bytes": 4596,
+      "/evidence_refs/11/digest": "sha256:c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/ref_id": "sha256-c4e41a156983065f60194c9a8684624913dce0b0b095a9cb862848fdbc90ddda",
+      "/evidence_refs/11/size_bytes": 4591,
+      "/evidence_refs/12/digest": "sha256:7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/ref_id": "sha256-7cf633629f8f084cddc0abd8f6712ec6635ceec1fcf7c3959b76c327d0360e6a",
+      "/evidence_refs/12/size_bytes": 4615,
+      "/evidence_refs/13/digest": "sha256:7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/ref_id": "sha256-7293aaffdd80f09991d519cf7f7ca4a0deab9f8a285a4b7463dc831c1d24bb9b",
+      "/evidence_refs/13/size_bytes": 4599,
+      "/evidence_refs/14/digest": "sha256:124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/ref_id": "sha256-124d6e89bd5e2dced36a280d4c52d82398c0834bedaeb391cc86b23baa747a5d",
+      "/evidence_refs/14/size_bytes": 4602,
+      "/evidence_refs/15/digest": "sha256:13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/ref_id": "sha256-13a18d75a2780e0a1f91b623f5adf923bf615b3cffe7ec2ccedbea6ec0255e48",
+      "/evidence_refs/15/size_bytes": 4619,
+      "/evidence_refs/16/digest": "sha256:834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/ref_id": "sha256-834870bc634bc252a73baa6873ed8c72ab17d9b2684c62707b008a5be93ad306",
+      "/evidence_refs/16/size_bytes": 4609,
+      "/evidence_refs/17/digest": "sha256:06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/ref_id": "sha256-06dd78d3294ca162c1c5094d4a682fe757931d7ef2552c4fd8b97c814408aad7",
+      "/evidence_refs/17/size_bytes": 4614,
+      "/evidence_refs/18/digest": "sha256:16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/ref_id": "sha256-16d85ea7e8d3ec8bb814c4bedee1b8b96c7ddb4b43ae665cce07fc74da7f527d",
+      "/evidence_refs/18/size_bytes": 4593,
+      "/evidence_refs/48/digest": "sha256:cd7b7eeb2bd807c866ee24bf4d08c15e7a073f067a6749fcd50b10c5938a3f2c",
+      "/evidence_refs/48/size_bytes": 23559,
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/outcome": "not_sent",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 6,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 2,
+      "/stages/pre_deploy/coverage/status_counts/pass": 6,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 2,
+      "/stages/pre_deploy/events/digest": "sha256:cd7b7eeb2bd807c866ee24bf4d08c15e7a073f067a6749fcd50b10c5938a3f2c",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [
+      "/change/replan_check/change_digest",
+      "/change/replan_check/differences",
+      "/change/replan_check/differences_count",
+      "/change/replan_check/evaluated_plan_resources",
+      "/change/replan_check/replan_resources",
+      "/change/replan_check/replanned_at",
+      "/change/replan_check/run_id",
+      "/change/replan_check/tool",
+      "/change/replan_check/tool_version",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/digest",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/digest_version",
+      "/stages/pre_deploy/apply_job_facts/rendered_plan/tool"
+    ],
+    "problems": [
+      [
+        "events.7.evaluation.status_reason",
+        "is not rendered_plan_not_sent, what the apply job's facts give"
+      ]
+    ]
+  },
+  {
+    "name": "rendered_plan_sent_whose_check_gives_the_reason_of_one_not_sent",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/coverage/status_counts/pass": 8,
+      "/coverage/status_counts/unknown": 1,
+      "/events/7/evaluation/status": "unknown",
+      "/events/7/evaluation/status_reason": "rendered_plan_not_sent",
+      "/evidence_refs/48/digest": "sha256:805f7620b6e28c2fd82fee8e5b88d8d4934ab8db949012571b8552cf94277293",
+      "/evidence_refs/48/size_bytes": 23416,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:805f7620b6e28c2fd82fee8e5b88d8d4934ab8db949012571b8552cf94277293",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.7.evaluation.status_reason",
+        "is rendered_plan_not_sent, but the apply job's facts name a rendered plan"
+      ],
+      [
+        "events.7.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_facts_the_server_could_not_supply_whose_rendered_plan_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed_without_server_facts.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 2,
+      "/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/coverage/status_counts/pass": 2,
+      "/coverage/status_counts/unknown": 7,
+      "/events/7/evaluation/status": "pass",
+      "/events/7/evaluation/status_reason": null,
+      "/evidence_refs/48/digest": "sha256:0cdcbaf6c965d8ab28d81dbc9f9fadb8a4e2e2a89b3352209fd9e85c7b4640ca",
+      "/evidence_refs/48/size_bytes": 24006,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 7,
+      "/stages/pre_deploy/events/digest": "sha256:0cdcbaf6c965d8ab28d81dbc9f9fadb8a4e2e2a89b3352209fd9e85c7b4640ca"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.7.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "rendered_plan_matches_evaluated_plan_check_naming_a_status_its_facts_do_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/7/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:fab832f9b958a2d67f14087b48cbfb493bb80c47aaa704bb89ebaf16d63a4481",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:fab832f9b958a2d67f14087b48cbfb493bb80c47aaa704bb89ebaf16d63a4481",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.7.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "replan_check_of_another_change",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/change_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "change.replan_check.change_digest",
+        "is not change.digest"
+      ]
+    ]
+  },
+  {
+    "name": "replan_check_naming_a_status_its_replan_does_not_give",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/pass": 8,
+      "/events/8/evaluation/status": "fail",
+      "/evidence_refs/48/digest": "sha256:74bfd4e6f6baa0971419faea95f17c699422560317c302faf9e0e205ec3c48b0",
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/fail": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/events/digest": "sha256:74bfd4e6f6baa0971419faea95f17c699422560317c302faf9e0e205ec3c48b0",
+      "/stages/pre_deploy/verdict/value": "not_met",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "not_met"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.8.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "replan_acting_otherwise_whose_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/differences": [
+        {
+          "address": "random_password.db",
+          "deposed_key": null,
+          "difference": "actions_changed"
+        }
+      ],
+      "/change/replan_check/differences_count": 1,
+      "/events/1/provenance/input_digest": "sha256:d7a121650f7404046424dca56bd4e39ae5bff0766c3cd0d8a21bc7a9272e6fb7",
+      "/events/2/provenance/input_digest": "sha256:9cfe9008ee7ec0e0ffb7e1cf317d6871488b4d67542c17e61be9582e437289eb",
+      "/events/3/provenance/input_digest": "sha256:1b4797825465d8d2050a2a62b54255044cd4b7769521f832ee52f5567783f65a",
+      "/events/4/provenance/input_digest": "sha256:1c07f47460e44a5e338fb9daaabb4eff90c2bb2a54fc2992d1454400f6b80c4d",
+      "/events/5/provenance/input_digest": "sha256:260e9061060ef3075460ff535da535db0b495f9159f8e8f4108f7909c05368a3",
+      "/events/6/provenance/input_digest": "sha256:3beaf863b761fba9c470fdd98e5f3eea32191ae42e3e5329f6c9206a68ccad46",
+      "/events/7/provenance/input_digest": "sha256:0243aae17599859645c3dad16dc99a9138dce9d9fec0c95092c8137a62e6cf5a",
+      "/events/8/evaluation/observations/predicates/1/actual": 1,
+      "/events/8/evaluation/observations/predicates/1/status": "false",
+      "/events/8/evaluation/policy_reason": "assert: false; replan_check.differences_count equal is false",
+      "/events/8/provenance/input_digest": "sha256:97983c617f8f6ef0e32da5309fb225e634e42bf0a65f7180ad4b21221239e1dd",
+      "/events/9/provenance/input_digest": "sha256:c276e919a4c267952b78fab131495c08aa0e1ccf7b2fa81309b8c46421d72776",
+      "/evidence_refs/10/digest": "sha256:d7a121650f7404046424dca56bd4e39ae5bff0766c3cd0d8a21bc7a9272e6fb7",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-d7a121650f7404046424dca56bd4e39ae5bff0766c3cd0d8a21bc7a9272e6fb7",
+      "/evidence_refs/10/ref_id": "sha256-d7a121650f7404046424dca56bd4e39ae5bff0766c3cd0d8a21bc7a9272e6fb7",
+      "/evidence_refs/10/size_bytes": 5070,
+      "/evidence_refs/11/digest": "sha256:9cfe9008ee7ec0e0ffb7e1cf317d6871488b4d67542c17e61be9582e437289eb",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-9cfe9008ee7ec0e0ffb7e1cf317d6871488b4d67542c17e61be9582e437289eb",
+      "/evidence_refs/11/ref_id": "sha256-9cfe9008ee7ec0e0ffb7e1cf317d6871488b4d67542c17e61be9582e437289eb",
+      "/evidence_refs/11/size_bytes": 5065,
+      "/evidence_refs/12/digest": "sha256:1b4797825465d8d2050a2a62b54255044cd4b7769521f832ee52f5567783f65a",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-1b4797825465d8d2050a2a62b54255044cd4b7769521f832ee52f5567783f65a",
+      "/evidence_refs/12/ref_id": "sha256-1b4797825465d8d2050a2a62b54255044cd4b7769521f832ee52f5567783f65a",
+      "/evidence_refs/12/size_bytes": 5089,
+      "/evidence_refs/13/digest": "sha256:1c07f47460e44a5e338fb9daaabb4eff90c2bb2a54fc2992d1454400f6b80c4d",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-1c07f47460e44a5e338fb9daaabb4eff90c2bb2a54fc2992d1454400f6b80c4d",
+      "/evidence_refs/13/ref_id": "sha256-1c07f47460e44a5e338fb9daaabb4eff90c2bb2a54fc2992d1454400f6b80c4d",
+      "/evidence_refs/13/size_bytes": 5073,
+      "/evidence_refs/14/digest": "sha256:260e9061060ef3075460ff535da535db0b495f9159f8e8f4108f7909c05368a3",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-260e9061060ef3075460ff535da535db0b495f9159f8e8f4108f7909c05368a3",
+      "/evidence_refs/14/ref_id": "sha256-260e9061060ef3075460ff535da535db0b495f9159f8e8f4108f7909c05368a3",
+      "/evidence_refs/14/size_bytes": 5076,
+      "/evidence_refs/15/digest": "sha256:3beaf863b761fba9c470fdd98e5f3eea32191ae42e3e5329f6c9206a68ccad46",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-3beaf863b761fba9c470fdd98e5f3eea32191ae42e3e5329f6c9206a68ccad46",
+      "/evidence_refs/15/ref_id": "sha256-3beaf863b761fba9c470fdd98e5f3eea32191ae42e3e5329f6c9206a68ccad46",
+      "/evidence_refs/15/size_bytes": 5093,
+      "/evidence_refs/16/digest": "sha256:0243aae17599859645c3dad16dc99a9138dce9d9fec0c95092c8137a62e6cf5a",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-0243aae17599859645c3dad16dc99a9138dce9d9fec0c95092c8137a62e6cf5a",
+      "/evidence_refs/16/ref_id": "sha256-0243aae17599859645c3dad16dc99a9138dce9d9fec0c95092c8137a62e6cf5a",
+      "/evidence_refs/16/size_bytes": 5083,
+      "/evidence_refs/17/digest": "sha256:97983c617f8f6ef0e32da5309fb225e634e42bf0a65f7180ad4b21221239e1dd",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-97983c617f8f6ef0e32da5309fb225e634e42bf0a65f7180ad4b21221239e1dd",
+      "/evidence_refs/17/ref_id": "sha256-97983c617f8f6ef0e32da5309fb225e634e42bf0a65f7180ad4b21221239e1dd",
+      "/evidence_refs/17/size_bytes": 5088,
+      "/evidence_refs/18/digest": "sha256:c276e919a4c267952b78fab131495c08aa0e1ccf7b2fa81309b8c46421d72776",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-c276e919a4c267952b78fab131495c08aa0e1ccf7b2fa81309b8c46421d72776",
+      "/evidence_refs/18/ref_id": "sha256-c276e919a4c267952b78fab131495c08aa0e1ccf7b2fa81309b8c46421d72776",
+      "/evidence_refs/18/size_bytes": 5067,
+      "/evidence_refs/48/digest": "sha256:7cfe0f9457d9d681293fe541ac31762945490d3fee9cec06320f7c27235db5fa",
+      "/evidence_refs/48/size_bytes": 23442,
+      "/stages/pre_deploy/events/digest": "sha256:7cfe0f9457d9d681293fe541ac31762945490d3fee9cec06320f7c27235db5fa"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.8.evaluation.status",
+        "is not fail, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "replan_not_compared_whose_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/outcome": "not_compared",
+      "/events/1/provenance/input_digest": "sha256:a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/events/2/provenance/input_digest": "sha256:92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/events/3/provenance/input_digest": "sha256:3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/events/4/provenance/input_digest": "sha256:ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/events/5/provenance/input_digest": "sha256:5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/events/6/provenance/input_digest": "sha256:03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/events/7/provenance/input_digest": "sha256:ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/unknown": {
+        "path": "replan_check.differences_count",
+        "reason": "path_missing"
+      },
+      "/events/8/evaluation/policy_reason": "replan_check.differences_count: path_missing",
+      "/events/8/provenance/input_digest": "sha256:45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/events/9/provenance/input_digest": "sha256:e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/10/digest": "sha256:a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/ref_id": "sha256-a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/size_bytes": 4703,
+      "/evidence_refs/11/digest": "sha256:92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/ref_id": "sha256-92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/size_bytes": 4698,
+      "/evidence_refs/12/digest": "sha256:3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/ref_id": "sha256-3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/size_bytes": 4722,
+      "/evidence_refs/13/digest": "sha256:ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/ref_id": "sha256-ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/size_bytes": 4706,
+      "/evidence_refs/14/digest": "sha256:5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/ref_id": "sha256-5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/size_bytes": 4709,
+      "/evidence_refs/15/digest": "sha256:03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/ref_id": "sha256-03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/size_bytes": 4726,
+      "/evidence_refs/16/digest": "sha256:ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/ref_id": "sha256-ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/size_bytes": 4716,
+      "/evidence_refs/17/digest": "sha256:45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/ref_id": "sha256-45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/size_bytes": 4721,
+      "/evidence_refs/18/digest": "sha256:e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/ref_id": "sha256-e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/size_bytes": 4700,
+      "/evidence_refs/48/digest": "sha256:812204956b0728d09585393371f8ef148c2603d31d691233323ec813f13c8a5a",
+      "/evidence_refs/48/size_bytes": 23492,
+      "/stages/pre_deploy/events/digest": "sha256:812204956b0728d09585393371f8ef148c2603d31d691233323ec813f13c8a5a"
+    },
+    "remove": [
+      "/change/replan_check/change_digest",
+      "/change/replan_check/differences",
+      "/change/replan_check/differences_count",
+      "/change/replan_check/evaluated_plan_resources",
+      "/change/replan_check/replan_resources",
+      "/change/replan_check/replanned_at",
+      "/change/replan_check/run_id",
+      "/change/replan_check/tool",
+      "/change/replan_check/tool_version"
+    ],
+    "problems": [
+      [
+        "events.8.evaluation.status",
+        "is not unknown, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "replan_not_compared_whose_check_gives_another_reason",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/change/replan_check/outcome": "not_compared",
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/coverage/status_counts/pass": 8,
+      "/coverage/status_counts/unknown": 1,
+      "/events/1/provenance/input_digest": "sha256:a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/events/2/provenance/input_digest": "sha256:92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/events/3/provenance/input_digest": "sha256:3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/events/4/provenance/input_digest": "sha256:ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/events/5/provenance/input_digest": "sha256:5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/events/6/provenance/input_digest": "sha256:03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/events/7/provenance/input_digest": "sha256:ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/events/8/evaluation/observations/predicates/1/actual": null,
+      "/events/8/evaluation/observations/predicates/1/status": "unknown",
+      "/events/8/evaluation/observations/unknown": {
+        "path": "replan_check.differences_count",
+        "reason": "path_missing"
+      },
+      "/events/8/evaluation/policy_reason": "replan_check.differences_count: path_missing",
+      "/events/8/evaluation/status": "unknown",
+      "/events/8/evaluation/status_reason": "path_missing",
+      "/events/8/provenance/input_digest": "sha256:45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/events/9/provenance/input_digest": "sha256:e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/10/digest": "sha256:a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/path": "units/root/pre_deploy/contexts/sha256-a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/ref_id": "sha256-a56727e62676cbf1c27475cba32217e7b243fdca4bfc5313eebce3126860807c",
+      "/evidence_refs/10/size_bytes": 4703,
+      "/evidence_refs/11/digest": "sha256:92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/path": "units/root/pre_deploy/contexts/sha256-92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/ref_id": "sha256-92ca57ec0b189eeb3d837361d34c5f5d22c20b5bc7dd67479abb2aa193792377",
+      "/evidence_refs/11/size_bytes": 4698,
+      "/evidence_refs/12/digest": "sha256:3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/path": "units/root/pre_deploy/contexts/sha256-3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/ref_id": "sha256-3e9c183a4f83f530951bb796cc0673730a5ccbdfc1e39c1555afaca77b5d8b92",
+      "/evidence_refs/12/size_bytes": 4722,
+      "/evidence_refs/13/digest": "sha256:ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/path": "units/root/pre_deploy/contexts/sha256-ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/ref_id": "sha256-ee54b4209ad4d557a5d99762bda29fbae9db8e8c3846a8e35045bedf75b5e317",
+      "/evidence_refs/13/size_bytes": 4706,
+      "/evidence_refs/14/digest": "sha256:5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/path": "units/root/pre_deploy/contexts/sha256-5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/ref_id": "sha256-5afd0c8f7873cbac555705101c03c1bd2279cb7e83d2c90a637a3631122a8514",
+      "/evidence_refs/14/size_bytes": 4709,
+      "/evidence_refs/15/digest": "sha256:03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/path": "units/root/pre_deploy/contexts/sha256-03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/ref_id": "sha256-03087c30a9b47518d62954f2112d319e5529e3dc6f126fc33b9e66ecfc70a041",
+      "/evidence_refs/15/size_bytes": 4726,
+      "/evidence_refs/16/digest": "sha256:ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/path": "units/root/pre_deploy/contexts/sha256-ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/ref_id": "sha256-ae4c1e95feb888d9d2a760edd64b94475db9fd1f2a729fb48b4d2d8f2f0b359f",
+      "/evidence_refs/16/size_bytes": 4716,
+      "/evidence_refs/17/digest": "sha256:45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/path": "units/root/pre_deploy/contexts/sha256-45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/ref_id": "sha256-45f6ee72abba117fc8c5aef6d6bc51c6eec1866aff1483e74d8003c6ca171527",
+      "/evidence_refs/17/size_bytes": 4721,
+      "/evidence_refs/18/digest": "sha256:e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/path": "units/root/pre_deploy/contexts/sha256-e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/ref_id": "sha256-e96b2f5bae4d6831b357ab6ac357af92884d53eeb41f4c7747fdb257c4df67d0",
+      "/evidence_refs/18/size_bytes": 4700,
+      "/evidence_refs/48/digest": "sha256:c80d0fbb8ad86714911e1808c90cdf8e4c9d01b39c2db90fdbeabc1b12f0d267",
+      "/evidence_refs/48/size_bytes": 23505,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:c80d0fbb8ad86714911e1808c90cdf8e4c9d01b39c2db90fdbeabc1b12f0d267",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [
+      "/change/replan_check/change_digest",
+      "/change/replan_check/differences",
+      "/change/replan_check/differences_count",
+      "/change/replan_check/evaluated_plan_resources",
+      "/change/replan_check/replan_resources",
+      "/change/replan_check/replanned_at",
+      "/change/replan_check/run_id",
+      "/change/replan_check/tool",
+      "/change/replan_check/tool_version"
+    ],
+    "problems": [
+      [
+        "events.8.evaluation.status_reason",
+        "is not replan_not_compared, what the record's re-plan check gives"
+      ]
+    ]
+  },
+  {
+    "name": "replan_compared_whose_check_gives_the_reason_of_one_not_compared",
+    "vector": "iac/governed_run_deployed.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 8,
+      "/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/coverage/status_counts/pass": 8,
+      "/coverage/status_counts/unknown": 1,
+      "/events/8/evaluation/status": "unknown",
+      "/events/8/evaluation/status_reason": "replan_not_compared",
+      "/evidence_refs/48/digest": "sha256:07c6213e80d1d9c3c40267e0f2fa284e41a6533353463820e4b2d7b494f978a5",
+      "/evidence_refs/48/size_bytes": 23413,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 7,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 1,
+      "/stages/pre_deploy/coverage/status_counts/pass": 7,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 1,
+      "/stages/pre_deploy/events/digest": "sha256:07c6213e80d1d9c3c40267e0f2fa284e41a6533353463820e4b2d7b494f978a5",
+      "/stages/pre_deploy/verdict/value": "undecided",
+      "/verdict/stage": "pre_deploy",
+      "/verdict/value": "undecided"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.8.evaluation.status_reason",
+        "is replan_not_compared, but the record names a re-plan it compared"
+      ],
+      [
+        "events.8.evaluation.status",
+        "is not pass, what the record's change gives"
+      ]
+    ]
+  },
+  {
+    "name": "apply_job_facts_the_server_could_not_supply_whose_replan_check_claims_a_pass",
+    "vector": "iac/governed_run_deployed_without_server_facts.json",
+    "set": {
+      "/coverage/evaluator_status_counts/opa/pass": 2,
+      "/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/coverage/status_counts/pass": 2,
+      "/coverage/status_counts/unknown": 7,
+      "/events/8/evaluation/status": "pass",
+      "/events/8/evaluation/status_reason": null,
+      "/evidence_refs/48/digest": "sha256:6ee223364023b311d7540bc8b7b10df96716f8db08ce8c685d228e850af58bb9",
+      "/evidence_refs/48/size_bytes": 24006,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/pass": 1,
+      "/stages/pre_deploy/coverage/evaluator_status_counts/opa/unknown": 7,
+      "/stages/pre_deploy/coverage/status_counts/pass": 1,
+      "/stages/pre_deploy/coverage/status_counts/unknown": 7,
+      "/stages/pre_deploy/events/digest": "sha256:6ee223364023b311d7540bc8b7b10df96716f8db08ce8c685d228e850af58bb9"
+    },
+    "remove": [],
+    "problems": [
+      [
+        "events.8.evaluation.status",
+        "is not unknown, what the record's change gives"
       ]
     ]
   }

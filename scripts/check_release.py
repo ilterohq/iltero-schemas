@@ -6,7 +6,7 @@ For a release tag:
   at that commit, and ``CHANGELOG.md`` has a dated section for that version;
 - the version is higher than every earlier release, and the newest earlier
   release is in the tag's history;
-- against that release's trusted bundle keys: no key is removed; a key's
+- against that release's trusted signing keys: no key is removed; a key's
   public key and ``valid_from`` never change; a status only moves forward
   (active to retired or revoked, retired to revoked); a status date or reason,
   once written, never changes; and a release that changes the key file raises
@@ -33,11 +33,11 @@ import tomllib
 from collections.abc import Mapping
 from pathlib import Path
 
-from iltero_schemas.trust import BundleKey, TrustFileError, parse_bundle_keys
+from iltero_schemas.trust import SigningKey, TrustFileError, parse_signing_keys
 
 ROOT = Path(__file__).resolve().parent.parent
 TRUST_DIR = "src/iltero_schemas/trust"
-TRUST_FILE = f"{TRUST_DIR}/bundle-keys.json"
+TRUST_FILE = f"{TRUST_DIR}/signing-keys.json"
 _TAG = re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 # The moves a key's status may make between two releases, besides staying the same.
 FORWARD = frozenset({("active", "retired"), ("active", "revoked"), ("retired", "revoked")})
@@ -71,7 +71,7 @@ def version_problems(tag: str, pyproject: str, changelog: str) -> list[str]:
 
 
 def history_problems(
-    old: Mapping[str, BundleKey], new: Mapping[str, BundleKey], *, changed: bool, old_tag: str, new_tag: str | None
+    old: Mapping[str, SigningKey], new: Mapping[str, SigningKey], *, changed: bool, old_tag: str, new_tag: str | None
 ) -> list[str]:
     """Every way ``new`` breaks the history of ``old``, the keys of the newest earlier release.
 
@@ -129,8 +129,8 @@ def _key_problems(repo: Path, previous: str, new: bytes, new_tag: str | None) ->
     old = _show(repo, previous, TRUST_FILE)
     try:
         return history_problems(
-            parse_bundle_keys(old, development=False),
-            parse_bundle_keys(new, development=False),
+            parse_signing_keys(old, development=False),
+            parse_signing_keys(new, development=False),
             changed=old != new,
             old_tag=previous,
             new_tag=new_tag,

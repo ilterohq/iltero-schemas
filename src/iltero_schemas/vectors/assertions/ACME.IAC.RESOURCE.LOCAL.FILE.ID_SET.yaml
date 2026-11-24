@@ -1,0 +1,21 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ACME.IAC.RESOURCE.LOCAL.FILE.ID_SET
+  version: "1.0.0"
+  title: The manifest file has the id of what the apply wrote
+spec:
+  change_type: iac_change
+  stage: plan
+  target:
+    kind: resource
+    resources:
+      - tool: terraform
+        provider: local
+        resource_types: [local_file]
+  when:
+    path: resource.name
+    equal: manifest
+  assert:
+    path: resource.after.id
+    equal: "631d2e4018226c254b97ce95f661d3a53b578cd5"

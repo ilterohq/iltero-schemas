@@ -1,0 +1,1264 @@
+{
+  "cases": [
+    {
+      "name": "update_with_a_changed_and_an_unchanged_hidden_value",
+      "description": "An update whose two values the tool marks sensitive on both sides: one differs, one is equal.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "label"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "label"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": "fake-old-value-0017",
+              "label": "fake-same-value-0018"
+            },
+            "after": {
+              "note": "fake-new-value-0019",
+              "label": "fake-same-value-0018"
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              },
+              "label": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            },
+            "after": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              },
+              "label": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "label"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unchanged"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "changed"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "label"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "create_with_a_hidden_value",
+      "description": "A create: nothing under before, so the hidden value under after is unknown.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "create",
+            "before": null,
+            "after": {
+              "note": "fake-created-value-0020"
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "create",
+            "before": null,
+            "after": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unknown"
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "delete_with_a_hidden_value",
+      "description": "A delete: only before holds the hidden value, and an entry under before names no value change.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "delete",
+            "before": {
+              "note": "fake-deleted-value-0021"
+            },
+            "after": null
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "delete",
+            "before": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            },
+            "after": null
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_list_changed_shape",
+      "description": "A list that grew: the item both sides hold is compared, the new item has no counterpart.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "rules",
+            0,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "rules",
+            0,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "rules",
+            1,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "rules": [
+                {
+                  "note": "fake-rule-value-0022"
+                }
+              ]
+            },
+            "after": {
+              "rules": [
+                {
+                  "note": "fake-rule-value-0022"
+                },
+                {
+                  "note": "fake-rule-value-0023"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "rules": [
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "after": {
+              "rules": [
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "rules",
+              0,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unchanged"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "rules",
+              1,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unknown"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "rules",
+              0,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_value_is_hidden_after_only",
+      "description": "The value is plain before and hidden after: never compared, so a plain value says nothing of the hidden one.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": "fake-plain-value-0024"
+            },
+            "after": {
+              "note": "fake-hidden-value-0025"
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": "fake-plain-value-0024"
+            },
+            "after": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unknown"
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_value_is_known_only_after_the_deployment",
+      "description": "A value the tool marks sensitive and known only after the deployment: unknown.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "known_after_deploy",
+          "declared_sensitive": false
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": "fake-old-value-0026"
+            },
+            "after": {}
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "string"
+              }
+            },
+            "after": {
+              "note": {
+                "__unknown": true,
+                "reason": "known_after_deploy",
+                "present": true
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unknown"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [
+          [
+            "resources",
+            0,
+            "after",
+            "note"
+          ]
+        ],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_list_items_moved",
+      "description": "Two hidden list items that swapped places: items pair by position, so each reads as changed.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "rules",
+            0,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "rules",
+            1,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "rules",
+            0,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "rules",
+            1,
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "rules": [
+                {
+                  "note": "fake-rule-value-0028"
+                },
+                {
+                  "note": "fake-rule-value-0029"
+                }
+              ]
+            },
+            "after": {
+              "rules": [
+                {
+                  "note": "fake-rule-value-0029"
+                },
+                {
+                  "note": "fake-rule-value-0028"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "rules": [
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "after": {
+              "rules": [
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                },
+                {
+                  "note": {
+                    "__redacted": true,
+                    "reason": "declared_sensitive",
+                    "present": true,
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "rules",
+              0,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "changed"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "rules",
+              1,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "changed"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "rules",
+              0,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "rules",
+              1,
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_hidden_values_have_no_canonical_form",
+      "description": "Two hidden integers beyond 2**53, which have no canonical form: never compared, so unknown.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": 9007199254740993
+            },
+            "after": {
+              "note": 9007199254740995
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "number"
+              }
+            },
+            "after": {
+              "note": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "number"
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unknown"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "update_whose_before_value_is_hidden_by_a_hidden_parent",
+      "description": "The value hidden under after, its pair under before hidden with the object that holds it: compared.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "before",
+            "settings"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "after",
+            "settings",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "settings": {
+                "note": "fake-settings-0030"
+              }
+            },
+            "after": {
+              "settings": {
+                "note": "fake-settings-0030"
+              }
+            }
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "update",
+            "before": {
+              "settings": {
+                "__redacted": true,
+                "reason": "declared_sensitive",
+                "present": true,
+                "type": "object"
+              }
+            },
+            "after": {
+              "settings": {
+                "note": {
+                  "__redacted": true,
+                  "reason": "declared_sensitive",
+                  "present": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "after",
+              "settings",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unchanged"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "before",
+              "settings"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    },
+    {
+      "name": "related_resource_copy_with_an_unchanged_hidden_value",
+      "description": "The copy of a related resource, whose hidden value is equal on both sides.",
+      "policy": {
+        "id": "iltero.redaction",
+        "version": "1",
+        "additional_paths": [],
+        "exempt_paths": []
+      },
+      "marks": [
+        {
+          "path": [
+            "resources",
+            0,
+            "related",
+            0,
+            "resource",
+            "before",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        },
+        {
+          "path": [
+            "resources",
+            0,
+            "related",
+            0,
+            "resource",
+            "after",
+            "note"
+          ],
+          "reason": "declared_sensitive",
+          "declared_sensitive": true
+        }
+      ],
+      "anchors": [
+        [
+          "resources",
+          0,
+          "before"
+        ],
+        [
+          "resources",
+          0,
+          "after"
+        ]
+      ],
+      "tree": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "no-op",
+            "before": null,
+            "after": null,
+            "related": [
+              {
+                "address": "terraform_data.other",
+                "relation": "targets",
+                "resource": {
+                  "action": "update",
+                  "before": {
+                    "note": "fake-related-0027"
+                  },
+                  "after": {
+                    "note": "fake-related-0027"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "redacted": {
+        "resources": [
+          {
+            "address": "terraform_data.example",
+            "action": "no-op",
+            "before": null,
+            "after": null,
+            "related": [
+              {
+                "address": "terraform_data.other",
+                "relation": "targets",
+                "resource": {
+                  "action": "update",
+                  "before": {
+                    "note": {
+                      "__redacted": true,
+                      "reason": "declared_sensitive",
+                      "present": true,
+                      "type": "string"
+                    }
+                  },
+                  "after": {
+                    "note": {
+                      "__redacted": true,
+                      "reason": "declared_sensitive",
+                      "present": true,
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "report": {
+        "redacted": [
+          {
+            "path": [
+              "resources",
+              0,
+              "related",
+              0,
+              "resource",
+              "after",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": "unchanged"
+          },
+          {
+            "path": [
+              "resources",
+              0,
+              "related",
+              0,
+              "resource",
+              "before",
+              "note"
+            ],
+            "reason": "declared_sensitive",
+            "value_change": null
+          }
+        ],
+        "unknown": [],
+        "exempted": []
+      }
+    }
+  ]
+}

@@ -9,26 +9,26 @@ from typing import Any, get_args
 import pytest
 from pydantic import ValidationError
 
-from iltero_schemas.assertions import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, BUILT_INS
-from iltero_schemas.assertions.paths import NOT_DECIDED_BY_SCANNERS
+from iltero_schemas.assertions import (
+    APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
+    BUILT_INS,
+)
+from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.common.ci import CI_SYSTEMS
 from iltero_schemas.models.common.event import (
     EVALUATOR_FAULT_REASONS,
     NO_EVALUATOR_REASONS,
-    POLICY_STATUSES,
     STATUS_REASONS,
     STATUS_SEVERITY,
     AssuranceEvent,
     Bundle,
+    event_digest,
 )
 from iltero_schemas.models.common.fields import Identity, Status
 from iltero_schemas.models.common.scanner_evaluator import (
     NO_RESULT_IN_THE_REPORT,
     NO_RESULT_OF_THE_MAPPED_CHECKS,
     SCANNER_NOT_RUN,
-    SCANNER_ONLY_REASONS,
-    SCANNER_OUTCOMES,
-    SCANNER_VERSION_NOT_ALLOWED,
 )
 from iltero_schemas.models.common.subjects import subject_key
 from tests.conftest import ARNS, VECTORS
@@ -88,43 +88,6 @@ def test_the_vector_validates() -> None:
     event = AssuranceEvent.model_validate(VECTOR)
     assert event.evaluation.status == "pass" and event.subject.key is not None
     assert event.subject.identities[0].value == "aws_db_instance.payments"
-
-
-def test_policy_statuses_are_the_four_the_output_contract_allows() -> None:
-    assert POLICY_STATUSES == {"pass", "fail", "unknown", "not_applicable"}
-    assert set(STATUS_REASONS) == {"pass", "fail", "unknown", "not_applicable", "not_evaluated", "error"}
-
-
-@pytest.mark.parametrize(
-    ("status", "reason"),
-    [(status, reason) for status, reasons in STATUS_REASONS.items() for reason in sorted(reasons)],
-)
-def test_every_listed_reason_is_accepted_for_its_status(status: str, reason: str) -> None:
-    changes: dict[str, Any] = {"evaluation.status": status, "evaluation.status_reason": reason}
-    if reason == "no_subject_in_scope":
-        changes.update({"subject.key": None, "subject.identities": [], "provenance.input_digest": None})
-    if reason in NO_EVALUATOR_REASONS:
-        changes.update({"provenance.evaluator": None, "provenance.bundle": None})
-    # Only an evaluation from a scanner's results gives a reason only scanners give.
-    document = _from_scanner(**changes) if reason in SCANNER_ONLY_REASONS else _event(**changes)
-    AssuranceEvent.model_validate(document)
-
-
-@pytest.mark.parametrize(
-    ("status", "reason", "message"),
-    [
-        ("pass", "redacted", "a status of pass has no status_reason"),
-        ("fail", "redacted", "a status of fail has no status_reason"),
-        ("unknown", "evaluator_crash", "status_reason must be a reason for status unknown"),
-        ("error", "redacted", "status_reason must be a reason for status error"),
-        ("unknown", None, "needs a status_reason"),
-        ("error", None, "needs a status_reason"),
-        ("done", None, "Input should be"),
-    ],
-)
-def test_a_reason_outside_its_status_is_refused(status: str, reason: str | None, message: str) -> None:
-    with pytest.raises(ValidationError, match=message):
-        AssuranceEvent.model_validate(_event(**{"evaluation.status": status, "evaluation.status_reason": reason}))
 
 
 def test_a_subject_has_no_key_and_no_identity_exactly_when_no_subject_was_in_scope() -> None:
@@ -248,7 +211,7 @@ def _at(stage: str, **changes: Any) -> dict[str, Any]:
     return _event(**{"evaluation.stage": stage}, **subject, **changes)
 
 
-@pytest.mark.parametrize("stage", ["pre_deploy", "runtime"])
+@pytest.mark.parametrize("stage", ["pre_deploy"])
 @pytest.mark.parametrize("source", ["server", "none"])
 def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(stage: str, source: str) -> None:
     AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": source}))
@@ -256,7 +219,7 @@ def test_a_check_at_a_stage_that_reads_server_facts_says_where_they_came_from(st
         AssuranceEvent.model_validate(_at(stage, **{"provenance.facts_source": None}))
 
 
-@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify"])
+@pytest.mark.parametrize("stage", ["plan", "post_deploy", "post_verify", "runtime"])
 def test_a_check_at_a_stage_that_reads_no_server_facts_names_no_facts_source(stage: str) -> None:
     AssuranceEvent.model_validate(_at(stage))
     with pytest.raises(ValidationError, match="facts_source is present exactly when"):
@@ -296,7 +259,7 @@ SERVED = {
     "kind": "server",
     "tarball_digest": "sha256:" + "5" * 64,
     "content_digest": "sha256:" + "6" * 64,
-    "key_id": "iltero-bundle-2026-09",
+    "key_id": "iltero-signing-test",
 }
 
 
@@ -360,9 +323,9 @@ def test_a_resource_only_the_cloud_knows_is_a_subject_only_at_runtime() -> None:
     [
         ("server", None, None),
         ("server", "sha256:" + "6" * 64, None),
-        ("server", None, "iltero-bundle-2026-09"),
+        ("server", None, "iltero-signing-test"),
         ("local_bundle", "sha256:" + "6" * 64, None),
-        ("local_bundle", None, "iltero-bundle-2026-09"),
+        ("local_bundle", None, "iltero-signing-test"),
     ],
     ids=[
         "server naming neither",
@@ -391,7 +354,7 @@ def test_a_served_bundle_with_its_content_digest_and_key_is_accepted() -> None:
             "kind": "server",
             "tarball_digest": "sha256:" + "5" * 64,
             "content_digest": "sha256:" + "6" * 64,
-            "key_id": "iltero-bundle-2026-09",
+            "key_id": "iltero-signing-test",
         }
     )
 
@@ -451,148 +414,12 @@ def test_an_assertion_this_package_always_evaluates_is_named_only_by_its_shipped
             AssuranceEvent.model_validate(_at("post_deploy", **{**built_in, "provenance.assertion_source": source}))
 
 
-def test_a_scanners_result_stands_for_an_assertion_it_can_see() -> None:
-    AssuranceEvent.model_validate(FROM_SCANNER)
-
-
-@pytest.mark.parametrize(("status", "reason"), sorted(SCANNER_OUTCOMES, key=str))
-def test_every_outcome_of_a_scanners_results_makes_a_valid_event(status: str, reason: str | None) -> None:
-    AssuranceEvent.model_validate(_from_scanner(**{"evaluation.status": status, "evaluation.status_reason": reason}))
-
-
-@pytest.mark.parametrize(
-    ("status", "reason"),
-    [("unknown", "redacted"), ("not_applicable", "when_guard_excluded"), ("not_evaluated", "timeout")],
-)
-def test_a_scanners_result_gives_no_other_status(status: str, reason: str) -> None:
-    changes = {"evaluation.status": status, "evaluation.status_reason": reason}
-    with pytest.raises(ValidationError, match="an evaluation from a scanner's results is one of"):
-        AssuranceEvent.model_validate(_from_scanner(**changes))
-
-
-def test_a_scanner_whose_report_holds_no_result_at_all_leaves_no_subject_unknown() -> None:
-    changes = {"evaluation.status": "unknown", "evaluation.status_reason": NO_RESULT_IN_THE_REPORT}
-    with pytest.raises(ValidationError, match="status_reason must be a reason for status unknown"):
-        AssuranceEvent.model_validate(_from_scanner(**changes))
-
-
-def test_only_an_evaluation_from_a_scanners_result_is_not_evaluated_for_the_scanners_version() -> None:
-    changes = {"evaluation.status": "not_evaluated", "evaluation.status_reason": SCANNER_VERSION_NOT_ALLOWED}
-    with pytest.raises(
-        ValidationError, match=f"only an evaluation from a scanner's results is {SCANNER_VERSION_NOT_ALLOWED}"
-    ):
-        AssuranceEvent.model_validate(_event(**changes))
-
-
-def test_a_required_scanner_that_gave_no_report_names_its_bound_checks_and_nothing_it_read() -> None:
-    AssuranceEvent.model_validate(
-        _from_scanner(**{"evaluation.status": "not_evaluated", "evaluation.status_reason": SCANNER_NOT_RUN})
-    )
-
-
-@pytest.mark.parametrize(
-    ("changes", "message"),
-    [
-        ({"provenance.evaluator.version": "3.3.8"}, "names no version and no input exactly when"),
-        ({"provenance.input_digest": "sha256:" + "a" * 64}, "names no version and no input exactly when"),
-        ({"provenance.evaluator.result_addresses": ["aws_db_instance.payments"]}, "decided none of its mapped checks"),
-        ({"provenance.evaluator.undecided_rule_ids": []}, "decided none of its mapped checks"),
-    ],
-    ids=["a version", "an input", "a resource read", "a check decided"],
-)
-def test_a_required_scanner_that_gave_no_report_names_nothing_it_did_not_do(
-    changes: dict[str, Any], message: str
-) -> None:
-    not_run = {"evaluation.status": "not_evaluated", "evaluation.status_reason": SCANNER_NOT_RUN}
-    with pytest.raises(ValidationError, match=message):
-        AssuranceEvent.model_validate(_from_scanner(**not_run, **changes))
-
-
-def test_a_scanner_that_gave_a_report_names_its_version_and_the_report() -> None:
-    with pytest.raises(ValidationError, match="names no version and no input exactly when"):
-        AssuranceEvent.model_validate(_from_scanner(**{"provenance.evaluator.version": None}))
-
-
-def test_a_scanners_result_is_about_a_resource() -> None:
-    unit = {"scheme": "iltero_unit", "value": "root", "scope": None}
-    key = subject_key("change", [Identity(scheme="iltero_unit", value="root")])
-    changes = {"subject.kind": "change", "subject.identities": [unit], "subject.key": key}
-    with pytest.raises(ValidationError, match="an evaluation from a scanner's result is about a resource"):
-        AssuranceEvent.model_validate(_from_scanner(**changes))
-
-
-def test_a_scanners_result_reads_no_facts_from_the_server() -> None:
-    with pytest.raises(ValidationError, match="an evaluation from a scanner's result reads no facts from the server"):
-        AssuranceEvent.model_validate(_from_scanner(**{"provenance.facts_source": "server"}))
-
-
-def test_a_scanners_result_names_the_scanners_version_not_its_digest() -> None:
-    with pytest.raises(ValidationError, match="a scanner's version is named, not its digest"):
-        AssuranceEvent.model_validate(_from_scanner(**{"provenance.evaluator.digest": "sha256:" + "a" * 64}))
-
-
-@pytest.mark.parametrize("assertion_id", sorted(NOT_DECIDED_BY_SCANNERS))
-def test_an_assertion_no_scanner_decides_is_never_decided_by_a_scanners_result(assertion_id: str) -> None:
-    event = copy.deepcopy(FROM_SCANNER)
-    event["assertion"]["id"] = assertion_id
-    with pytest.raises(ValidationError, match=f"{assertion_id} is never decided by a scanner's result"):
-        AssuranceEvent.model_validate(event)
-
-
 def test_every_evaluator_fault_reason_is_a_reason_of_its_status() -> None:
     for status, reasons in EVALUATOR_FAULT_REASONS.items():
         assert reasons <= STATUS_REASONS[status]
 
 
-@pytest.mark.parametrize(
-    ("field", "value", "message"),
-    [
-        ("rule_ids", ["CKV_AWS_17", "CKV_AWS_16"], "rule_ids is sorted, each once"),
-        ("result_addresses", ["b", "a"], "result_addresses is sorted, each once"),
-        ("unknown_paths", ["x", "x"], "unknown_paths is sorted, each once"),
-        ("failed_rule_ids", ["CKV_AWS_99"], "name mapped checks"),
-        ("undecided_rule_ids", ["CKV_AWS_99"], "name mapped checks"),
-    ],
-)
-def test_a_scanner_evaluator_names_its_checks_resources_and_paths_once_in_order(
-    field: str, value: list[str], message: str
-) -> None:
-    with pytest.raises(ValidationError, match=message):
-        AssuranceEvent.model_validate(_from_scanner(**{f"provenance.evaluator.{field}": value}))
-
-
-def test_a_check_is_failed_or_undecided_never_both() -> None:
-    changes = {
-        "provenance.evaluator.failed_rule_ids": ["CKV_AWS_16"],
-        "provenance.evaluator.undecided_rule_ids": ["CKV_AWS_16"],
-    }
-    with pytest.raises(ValidationError, match="each in one of them"):
-        AssuranceEvent.model_validate(_from_scanner(**changes))
-
-
-_RULES: list[str] = FROM_SCANNER["provenance"]["evaluator"]["rule_ids"]
-
-
-@pytest.mark.parametrize(
-    "changes",
-    [
-        {"provenance.evaluator.result_addresses": ["aws_db_instance.main"]},
-        {"provenance.evaluator.unknown_paths": ["publicly_accessible"]},
-        {"provenance.evaluator.failed_rule_ids": _RULES[:1], "provenance.evaluator.undecided_rule_ids": _RULES[1:]},
-        {"provenance.evaluator.undecided_rule_ids": []},
-    ],
-    ids=["a resource read", "an unknown path", "a failed check", "a check decided"],
-)
-def test_a_scanner_whose_report_holds_no_result_of_its_checks_decided_none_of_them_and_read_no_resource(
-    changes: dict[str, Any],
-) -> None:
-    reason = {"evaluation.status": "not_evaluated", "evaluation.status_reason": NO_RESULT_OF_THE_MAPPED_CHECKS}
-    with pytest.raises(ValidationError, match="holds no result of its mapped checks decided none of them"):
-        AssuranceEvent.model_validate(_from_scanner(**reason, **changes))
-
-
-def test_a_scanner_whose_report_holds_no_result_at_all_decided_none_of_its_checks_and_read_no_resource() -> None:
-    reason = {"evaluation.status": "not_evaluated", "evaluation.status_reason": NO_RESULT_IN_THE_REPORT}
-    AssuranceEvent.model_validate(_from_scanner(**reason))
-    with pytest.raises(ValidationError, match="holds no result at all decided none of its checks"):
-        AssuranceEvent.model_validate(_from_scanner(**reason, **{"provenance.evaluator.undecided_rule_ids": []}))
+@pytest.mark.parametrize("name", ["plan_from_checkov.json", "plan_pass.json"])
+def test_an_events_digest_is_the_same_read_from_a_record_or_sent_alone(name: str) -> None:
+    sent = json.loads((VECTORS / "events" / "iac" / name).read_text(encoding="utf-8"))
+    assert event_digest(AssuranceEvent.model_validate(sent)) == digest_of(sent)

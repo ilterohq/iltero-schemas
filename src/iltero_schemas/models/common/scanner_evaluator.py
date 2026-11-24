@@ -8,7 +8,7 @@ checks its scanner checks entry maps and what their results rest on
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import Field, model_validator
 
@@ -33,7 +33,7 @@ SCANNER_RESULT_UNRESOLVED = "scanner_result_unresolved"
 SCANNER_REPORT_INCOMPLETE = "scanner_report_incomplete"
 # Why an assertion that only scanners decide was not evaluated: no report the stage was given has checks mapped to it.
 NO_SCANNER_REPORT = "no_scanner_report"
-# A scanner the run requires gave no report, so it decided nothing about a subject its checks are mapped to.
+# A member of a scanner requirement gave no report, so it decided nothing about a subject its checks are mapped to.
 SCANNER_NOT_RUN = "scanner_not_run"
 # The report of a tool that names resources only when they fail holds no result, passed, failed or skipped, of any
 # check a scanner checks entry names, of the input the entry reads, so it says nothing about a subject of the entry.
@@ -45,7 +45,7 @@ NO_RESULT_IN_THE_REPORT = "no_result_in_the_report"
 # unknown where a passing check read a value the plan knows only after the deployment, where a tool that reports
 # passes reported nothing for the subject, or where a failure could be about it; or not evaluated, for the scanner's
 # version, a check the source suppressed, a tool that names resources only when they fail, a report with no result of
-# the checks or no result at all, or a required scanner that gave no report.
+# the checks or no result at all, or a member of a scanner requirement that gave no report.
 SCANNER_OUTCOMES = frozenset(
     {
         ("pass", None),
@@ -83,20 +83,18 @@ MAX_UNKNOWN_PATHS = 512
 
 class ScannerEvaluator(StrictModel):
     """A scanner that ran elsewhere, whose results decided the assertion through a scanner checks entry
-    (``models.iac.scanner_check_mapping``), or a scanner the run requires that gave no report (``scanner_not_run``),
-    which decided nothing.
+    (``models.iac.scanner_check_mapping``), or a member of a scanner requirement that gave no report
+    (``scanner_not_run``), which decided nothing.
 
-    Nothing was executed here, so there are no limits to record and no digest: the version is the one the tool wrote
-    into its own report. The evaluator names the checks its entry maps, how their results found the subject, the
-    plan addresses of the resources those results were about, and the paths the plan leaves unknown on them.
+    The version is the one the tool wrote into its own report; what ran, and where, is named once on that report
+    (``ScannerReport``), which the evaluation names as its input. The evaluator names the checks its entry maps,
+    how their results found the subject, the plan addresses of the resources those results were about, and the paths
+    the plan leaves unknown on them.
     """
 
     engine: ScannerTool
-    # The version the tool wrote into its report; null exactly when a required scanner gave no report.
+    # The version the tool wrote into its report; null exactly when a member of a scanner requirement gave no report.
     version: Identifier | None
-    # Always null: the record names the version the tool wrote, and nothing it keeps could verify a digest.
-    digest: Digest | None
-    reason: Literal["not_executed_by_cli"]
     rule_ids: Annotated[list[RuleId], Field(min_length=1, max_length=MAX_RULE_IDS)]
     subject_match: SubjectMatch
     # Sorted, each once; empty when no result of a mapped check was about the subject.
@@ -114,8 +112,6 @@ class ScannerEvaluator(StrictModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> ScannerEvaluator:
-        if self.digest is not None:
-            raise ValueError("a scanner's version is named, not its digest")
         for name in ("rule_ids", "result_addresses", "unknown_paths", "failed_rule_ids", "undecided_rule_ids"):
             if not sorted_unique(getattr(self, name)):
                 raise ValueError(f"{name} is sorted, each once")

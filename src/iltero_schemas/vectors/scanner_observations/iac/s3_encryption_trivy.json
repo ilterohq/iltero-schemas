@@ -5,7 +5,7 @@
     "plan"
   ],
   "kind": "ScannerObservations",
-  "plan_digest": "sha256:d37a513b07feba66be9eadcd5ea7f5637c24c6c848a3070177a0c469ec018809",
+  "kept_plan_digest": "sha256:d37a513b07feba66be9eadcd5ea7f5637c24c6c848a3070177a0c469ec018809",
   "report_digest": "sha256:abb6842f16a9ef77845c61b7d84247266386d48ca37fc7716418747278f3df42",
   "results": [
     {
@@ -323,7 +323,7 @@
   ],
   "results_not_listed": null,
   "rules_digest": null,
-  "supplied_by": "pipeline",
+  "ran_by": "pipeline",
   "tool": "trivy",
   "tool_parsing_errors": null,
   "tool_version": "0.72.0",

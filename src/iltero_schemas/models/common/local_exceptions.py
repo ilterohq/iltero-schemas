@@ -1,26 +1,20 @@
 """``LocalExceptions``: exceptions a project writes in its own files, for a run the tool opened.
 
-An exception says that an assertion does not have to hold for an environment and the resources
-it names, between two times, why, and who the project says approved it, in the same shape the
-server uses (``models.common.server_facts.ExceptionGrant``). Written in a project's own files, it is the
-project's own word: nothing outside the project approved it. A record names one only from a
-scanner's evaluation the scanned source suppressed, to say which exception the suppression rests
-on. The evaluation stays not evaluated (``suppressed_in_source``): an exception explains a gap, it
-never fills it. A record of a run Iltero opens names none.
+A project's exception (``LocalException``) says that an assertion does not have to hold for an environment and the
+resources it names, between two times, why, and who the project says approved it. Written in a project's own files,
+it is the project's own word: nothing outside the project approved it. A record names one only from a scanner's
+evaluation the scanned source suppressed, to say which exception the suppression rests on. The evaluation stays not
+evaluated (``suppressed_in_source``): an exception explains a gap, it never fills it. A record of a run Iltero opens
+names none.
 
-The stage that applied the file keeps a byte copy of it (``LocalExceptionsUsed``). A reader reads
-that copy (``read_local_exceptions``) and works out again which exception covers each suppressed
-result (``exception_in_force``): the record must name that one, or none when none covers it.
-
-An exception names a resource by its address in the IaC tool's configuration, scoped by its unit,
-the identity the plan stage keys the subject by. A cloud identity is not used: a resource being
-created has none yet, and one that is replaced gets a new one.
+The stage that applied the file keeps a byte copy of it (``LocalExceptionsUsed``). A reader reads that copy
+(``read_local_exceptions``) and works out again which exception covers each suppressed result
+(``models.common.exception_terms.exception_in_force``): the record must name that one, or none when none covers it.
+The rules every exception follows, and how one is matched to a result, are in ``models.common.exception_terms``.
 """
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from datetime import timedelta
 from pathlib import PurePosixPath
 from typing import Annotated, Literal
 
@@ -29,86 +23,67 @@ from pydantic import Field, model_validator
 from iltero_schemas.ast.document import MAX_DOCUMENT_BYTES, load_document
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.base import StrictModel
+from iltero_schemas.models.common.exception_terms import MAX_EXCEPTION_RESOURCES, check_exception, check_exception_list
 from iltero_schemas.models.common.fields import (
+    AssertionId,
     Digest,
     Identifier,
     Identity,
     MemberPath,
     ProjectDocumentMetadata,
     ProjectPath,
-    parse_timestamp,
+    Timestamp,
 )
-from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, ExceptionGrant, in_force
+from iltero_schemas.models.common.server_facts import MAX_FACT_ITEMS, Actor, Text
 from iltero_schemas.models.common.strict_json import strict_json
-from iltero_schemas.models.common.subjects import ADDRESS_IDENTITY_SCHEMES
 
 KIND = "LocalExceptions"
 # The suffixes of an exceptions file read as JSON, and of one read as YAML.
 JSON_SUFFIXES = frozenset({".json"})
 YAML_SUFFIXES = frozenset({".yaml", ".yml"})
 
-# The longest a project's own exception may hold, from when it starts, so each is reviewed at least once a year.
-MAX_EXCEPTION_DAYS = 365
-MAX_EXCEPTION_DURATION = timedelta(days=MAX_EXCEPTION_DAYS)
 
-# Why no exception covers a suppressed result: none is about its assertion and resource; those that are name another
-# environment, or the run names none; or every one has expired, or one holds only later.
-NoExceptionReason = Literal[
-    "no_exception_for_the_assertion_and_resource",
-    "for_another_environment",
-    "run_names_no_environment",
-    "not_yet_in_force",
-    "expired",
-]
+class AssertionName(StrictModel):
+    """An assertion by its id: a project's exception covers every version of it."""
+
+    id: AssertionId
 
 
-def _resource_key(identity: Identity) -> tuple[str, str, tuple[tuple[str, str], ...] | None]:
-    scope = None if identity.scope is None else tuple(sorted(identity.scope.items()))
-    return (identity.scheme, identity.value, scope)
+class LocalExceptionScope(StrictModel):
+    """What a project's exception covers: one assertion, in one environment, for the resources it names."""
+
+    assertion: AssertionName
+    environment: Identifier
+    resources: Annotated[list[Identity], Field(min_length=1, max_length=MAX_EXCEPTION_RESOURCES)]
 
 
-def _overlap(first: ExceptionGrant, second: ExceptionGrant) -> bool:
-    """Whether two exceptions cover one assertion, environment and resource at some same time."""
-    if (first.scope.assertion.id, first.scope.environment) != (second.scope.assertion.id, second.scope.environment):
-        return False
-    if not {_resource_key(r) for r in first.scope.resources} & {_resource_key(r) for r in second.scope.resources}:
-        return False
-    return parse_timestamp(first.valid_from) <= parse_timestamp(second.expires_at) and parse_timestamp(
-        second.valid_from
-    ) <= parse_timestamp(first.expires_at)
+class LocalException(StrictModel):
+    """One exception a project wrote: an assertion waived for an environment and resources, between two times, why,
+    and who the project says approved it."""
+
+    id: Identifier
+    status: Literal["approved"]
+    scope: LocalExceptionScope
+    valid_from: Timestamp
+    expires_at: Timestamp
+    approved_by: Actor
+    reason: Text
+
+    @model_validator(mode="after")
+    def _follows_the_rules_of_every_exception(self) -> LocalException:
+        check_exception(self)
+        return self
 
 
 class LocalExceptionsSpec(StrictModel):
-    """The exceptions, each id once, each resource an address scoped by its unit, each lasting at most
-    ``MAX_EXCEPTION_DAYS``, and at most one exception for an assertion, environment and resource at any time, so the one
-    that covers a result is never a choice."""
+    """The exceptions, each id once, and at most one exception for an assertion, environment and resource at any
+    time, so the one that covers a result is never a choice. Empty for a project that has none yet."""
 
-    exceptions: Annotated[list[ExceptionGrant], Field(min_length=1, max_length=MAX_FACT_ITEMS)]
+    exceptions: Annotated[list[LocalException], Field(max_length=MAX_FACT_ITEMS)]
 
     @model_validator(mode="after")
-    def _each_id_once(self) -> LocalExceptionsSpec:
-        ids = [grant.id for grant in self.exceptions]
-        if len(set(ids)) != len(ids):
-            raise ValueError("each exception has an id of its own")
-        for grant in self.exceptions:
-            ends, starts = parse_timestamp(grant.expires_at), parse_timestamp(grant.valid_from)
-            if (ends[0] - starts[0], ends[1]) > (MAX_EXCEPTION_DURATION, starts[1]):
-                raise ValueError(
-                    f"an exception in a project's own files lasts at most {MAX_EXCEPTION_DAYS} days from when it starts"
-                )
-            if any(
-                r.scheme not in ADDRESS_IDENTITY_SCHEMES or r.scope is None or set(r.scope) != {"unit"}
-                for r in grant.scope.resources
-            ):
-                raise ValueError(
-                    "an exception in a project's own files names each resource by its address, scoped by its unit "
-                    "and nothing else"
-                )
-        for index, grant in enumerate(self.exceptions):
-            if any(_overlap(grant, other) for other in self.exceptions[index + 1 :]):
-                raise ValueError(
-                    "no two exceptions cover the same assertion, environment and resource at the same time"
-                )
+    def _one_exception_at_a_time(self) -> LocalExceptionsSpec:
+        check_exception_list(self.exceptions)
         return self
 
 
@@ -175,43 +150,3 @@ def read_local_exceptions(data: bytes, file_path: str) -> LocalExceptions:
             raise ValueError("a project's exceptions file is UTF-8 text") from None
         document = load_document(text)
     return LocalExceptions.model_validate(document)
-
-
-def covers(grant: ExceptionGrant, assertion_id: str, identity: Identity) -> bool:
-    """Whether ``grant`` is about ``assertion_id``, at any version, and names the resource ``identity`` names: the
-    same scheme, value and scope."""
-    return grant.scope.assertion.id == assertion_id and any(
-        _resource_key(resource) == _resource_key(identity) for resource in grant.scope.resources
-    )
-
-
-def exception_in_force(
-    grants: Iterable[ExceptionGrant], assertion_id: str, identity: Identity, environment: str | None, at: str
-) -> ExceptionGrant | None:
-    """The exception that covers ``assertion_id`` for the resource ``identity`` names, in ``environment``, at the
-    time ``at``: at most one does (``LocalExceptionsSpec``). None when none does, and for a run that names no
-    environment."""
-    for grant in grants:
-        if covers(grant, assertion_id, identity) and grant.scope.environment == environment and in_force(grant, at):
-            return grant
-    return None
-
-
-def why_no_exception(
-    grants: Iterable[ExceptionGrant], assertion_id: str, identity: Identity, environment: str | None, at: str
-) -> NoExceptionReason | None:
-    """Why no exception covers the result ``exception_in_force`` is asked about; None when one does."""
-    covering = [grant for grant in grants if covers(grant, assertion_id, identity)]
-    if not covering:
-        return "no_exception_for_the_assertion_and_resource"
-    if environment is None:
-        return "run_names_no_environment"
-    here = [grant for grant in covering if grant.scope.environment == environment]
-    if not here:
-        return "for_another_environment"
-    if any(in_force(grant, at) for grant in here):
-        return None
-    # Between two exceptions, the next one is not yet in force.
-    if all(parse_timestamp(grant.expires_at) < parse_timestamp(at) for grant in here):
-        return "expired"
-    return "not_yet_in_force"

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated, Any, Literal
 
 from pydantic import AfterValidator, Field
@@ -28,6 +28,12 @@ from iltero_schemas.models.common.base import StrictModel
 
 # Every digest: ``sha256:`` and 64 lowercase hex digits.
 DIGEST_PATTERN = r"^sha256:[0-9a-f]{64}$"
+# A keyed digest, made with a run's digest key (``canonical.common.run_digest_key``): ``hmac-sha256:`` and 64 hex.
+KEYED_DIGEST_PATTERN = r"^hmac-sha256:[0-9a-f]{64}$"
+# A plan's digest: keyed in a run the server opened, a digest of the redacted plan in a run the tool opened.
+PLAN_DIGEST_PATTERN = r"^(sha256|hmac-sha256):[0-9a-f]{64}$"
+# The longest digest any record names: a keyed digest, ``hmac-sha256:`` and 64 hex digits.
+MAX_DIGEST_LENGTH = len("hmac-sha256:") + 64
 # RFC 3339 in UTC, seconds or finer.
 TIMESTAMP_PATTERN = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,9})?Z$"
 # A full git object id: SHA-1 (40) or SHA-256 (64) hex.
@@ -46,6 +52,8 @@ Count = Annotated[int, Field(ge=0, le=INT_MAX)]
 # Ways a managed resource is planned to change; a data source's ``read`` never reaches a record.
 Action = Literal["create", "update", "delete", "replace", "no-op", "forget"]
 ArtifactDigestSource = Literal["saved_plan", "not_provided"]
+# Who opened the run a record belongs to: the server, or the tool on its own.
+RunOpenedBy = Literal["server", "local"]
 # The stages a governed run passes through; ``runtime`` evaluations never belong to a run.
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed evaluation stops the pipeline (``enforcing``) or is only reported (``advisory``).
@@ -99,6 +107,11 @@ def _timestamp(value: str) -> str:
     return value
 
 
+# Nanoseconds in a microsecond, the finest unit a ``timedelta`` keeps, and in a second.
+_NANOSECONDS_PER_MICROSECOND = 1_000
+NANOSECONDS_PER_SECOND = 1_000_000_000
+
+
 def parse_timestamp(timestamp: str) -> tuple[datetime, int]:
     """A ``Timestamp`` as a value that orders to the nanosecond: its whole seconds, then its fraction in nanoseconds.
 
@@ -106,6 +119,13 @@ def parse_timestamp(timestamp: str) -> tuple[datetime, int]:
     """
     whole, _, fraction = timestamp.removesuffix("Z").partition(".")
     return datetime.fromisoformat(f"{whole}Z"), int(fraction.ljust(9, "0"))
+
+
+def nanoseconds_between(earlier: str, later: str) -> int:
+    """The time from the ``Timestamp`` ``earlier`` to ``later``, in whole nanoseconds, exact for any fraction either
+    carries; negative when ``later`` is before ``earlier``."""
+    (start, start_fraction), (end, end_fraction) = parse_timestamp(earlier), parse_timestamp(later)
+    return (end - start) // timedelta(microseconds=1) * _NANOSECONDS_PER_MICROSECOND + end_fraction - start_fraction
 
 
 # A component of a path inside a record's directory: a file or directory name, bounded, with no separator in it.
@@ -211,10 +231,21 @@ def _raw_text_bytes(value: str) -> str:
 # Text a record keeps exactly as its source wrote it, such as a plan address or a map key: any character, bounded.
 # It may hold control, bidirectional or invisible characters, so a reader escapes it, all of those included, to show it.
 RawText = Annotated[str, Field(min_length=1, max_length=RAW_TEXT_MAX_BYTES), AfterValidator(_raw_text_bytes)]
+# A key of a JSON object a record names as written, such as a key on a redacted path: any text, even empty, bounded.
+RawKey = Annotated[str, Field(max_length=RAW_TEXT_MAX_BYTES), AfterValidator(_raw_text_bytes)]
 # Any name or id a record carries: bounded, never a control character.
 Identifier = Annotated[str, Field(min_length=1, max_length=IDENTIFIER_MAX_LENGTH), AfterValidator(plain_text)]
 Address = Annotated[str, Field(min_length=1, max_length=ADDRESS_MAX_LENGTH), AfterValidator(plain_text)]
 Digest = Annotated[str, Field(pattern=DIGEST_PATTERN)]
+KeyedDigest = Annotated[str, Field(pattern=KEYED_DIGEST_PATTERN)]
+PlanDigest = Annotated[str, Field(pattern=PLAN_DIGEST_PATTERN)]
+# The digest of bytes a record keeps only redacted, or never keeps: keyed in a run the server opened; a plain digest
+# where the record keeps the bytes as given. Which form a record names is checked against who opened its run
+# (``models.common.given_file_digests``).
+GivenFileDigest = Digest | KeyedDigest
+# The digest of a state a record never keeps: keyed in a run the server opened, the digest of the redacted state in a
+# run the tool opened (``models.iac.state_digests``).
+StateDigest = Digest | KeyedDigest
 Timestamp = Annotated[str, Field(pattern=TIMESTAMP_PATTERN), AfterValidator(_timestamp)]
 Commit = Annotated[str, Field(pattern=GIT_OBJECT_ID_PATTERN)]
 # The id of any other git object, such as the tree that names a folder's content.
@@ -256,6 +287,12 @@ class AssertionKey(StrictModel):
 
     id: AssertionId
     version: Version
+
+
+class AssertionRef(AssertionKey):
+    """The assertion, with the digest of its document as it was read."""
+
+    digest: Digest
 
 
 def _clean(value: Any) -> bool:

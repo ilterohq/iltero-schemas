@@ -10,6 +10,7 @@ allowlist and compare the result.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,8 @@ from iltero_schemas.ast.parse import parse_document
 from iltero_schemas.bundle.build import member
 from iltero_schemas.canonical import (
     CANONICALIZATION,
-    PLAN_DIGEST_VERSIONS,
+    KEYED_PLAN_DIGEST_VERSIONS,
+    REDACTED_PLAN_DIGEST_VERSIONS,
     canonical_assertion_set_bytes,
     canonical_bytes,
     canonical_change_bytes,
@@ -30,31 +32,56 @@ from iltero_schemas.canonical import (
     change_digest,
     digest,
     digest_of,
-    plan_digest,
+    keyed_given_file_digest,
+    keyed_plan_digest,
     record_uuid,
+    redacted_plan_digest_of_kept,
     required_assertion_digest,
 )
 from iltero_schemas.compiler import COMPILER_VERSION, RUNTIME_REGO, compile, package_of
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.context import AssuranceContext
 from iltero_schemas.models.common.event import AssuranceEvent, events_file_bytes
+from iltero_schemas.models.common.pinned_evaluator import evaluator_binary_result
 from iltero_schemas.models.common.reference_time import ReferenceTime
+from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
+from iltero_schemas.models.iac.apply_job_results import apply_job_results
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
+from iltero_schemas.models.iac.scanner_check_mapping_descriptor import ScannerCheckMappingDescriptor
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
 from iltero_schemas.models.iac.scanner_reports.checkov import read_checkov
 from iltero_schemas.models.iac.scanner_reports.common import Source
 from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
-from iltero_schemas.opa import CAPABILITIES
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
-from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, STARTER_ASSERTIONS, VECTORS, documents, visible
+from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
+from tests.conftest import (
+    CHANGE_TYPES,
+    SPLIT_CASE_FOLDERS,
+    STARTER_ASSERTIONS,
+    VECTORS,
+    documents,
+    evaluate_with_opa,
+    run_opa,
+    visible,
+)
+from tests.records import (
+    case_record,
+    valid_case_record,
+)
+from tests.server_runs import (
+    names_the_servers_bundle,
+)
 
 COMPILER = VECTORS / "compiler"
 ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
 CANONICAL_CASES = json.loads((VECTORS / "canonical" / "cases.json").read_text(encoding="utf-8"))
 PLAN_DIGEST_DOCUMENT = json.loads(
     (VECTORS / "canonical" / "iac" / "plan_digest_cases.json").read_text(encoding="utf-8")
+)
+GIVEN_FILE_DIGEST_CASES = json.loads(
+    (VECTORS / "canonical" / "given_file_digest_cases.json").read_text(encoding="utf-8")
 )
 ASSERTION_SET_CASES = json.loads((VECTORS / "canonical" / "assertion_set_cases.json").read_text(encoding="utf-8"))
 CHANGE_DIGEST_CASES = json.loads((VECTORS / "canonical" / "change_digest_cases.json").read_text(encoding="utf-8"))
@@ -65,23 +92,31 @@ INVALID_EXPECTED = json.loads((VECTORS / "assertions_invalid" / "expected.json")
 # Each folder holds one kind of document.
 DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
     "scanner_check_mappings": ScannerCheckMapping,
+    "scanner_check_mapping_descriptors": ScannerCheckMappingDescriptor,
     "contexts": AssuranceContext,
     "events": AssuranceEvent,
     "identities": ResourceIdentities,
     "records": CAR,
     "reports": VerificationReport,
     "scanner_observations": ScannerObservations,
+    "served_exceptions": ServedExceptions,
 }
 # Every document folder but scanner check mappings and identities, and every folder of their cases, holds one subfolder
 # per change type it has documents of; events are of IaC changes only. A document folder also holds its one
 # digests.json.
-SPLIT_FOLDERS = {folder: set(CHANGE_TYPES) for folder in ("contexts", "records", "reports", *SPLIT_CASE_FOLDERS)} | {
+SPLIT_FOLDERS = {
+    folder: set(CHANGE_TYPES)
+    for folder in ("contexts", "kept_bundles", "kept_files", "kept_inputs", "records", "reports", *SPLIT_CASE_FOLDERS)
+} | {
     folder: {"iac"}
     for folder in (
         "events",
         "scanner_check_mappings",
         "scanner_check_mappings_invalid",
         "scanner_check_mappings_project_invalid",
+        "scanner_check_mappings_served_invalid",
+        "scanner_check_mapping_descriptors",
+        "scanner_check_mapping_descriptors_invalid",
         "scanner_observations",
         "scanner_reports",
         "scanner_evidence",
@@ -116,7 +151,24 @@ def test_canonical_vector_is_reproduced(case: dict[str, Any]) -> None:
 @pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
 def test_plan_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
     assert canonical_plan_bytes(case["tool"], case["plan"]).decode("utf-8") == case["canonical"]
-    assert plan_digest(case["tool"], case["plan"]) == case["digest"]
+    assert keyed_plan_digest(case["tool"], case["plan"], vector_run_digest_key()) == case["keyed_digest"]
+    assert redacted_plan_digest_of_kept(case["tool"], case["plan"]) == case["redacted_digest"]
+
+
+@pytest.mark.parametrize(
+    "case", GIVEN_FILE_DIGEST_CASES["cases"], ids=[c["name"] for c in GIVEN_FILE_DIGEST_CASES["cases"]]
+)
+def test_given_file_digest_vector_is_reproduced(case: dict[str, Any]) -> None:
+    if "refused" in case:
+        assert "keyed_digest" not in case
+        with pytest.raises(ValueError, match=re.escape(case["refused"])):
+            keyed_given_file_digest(case["plain_digest"], vector_run_digest_key())
+    else:
+        assert keyed_given_file_digest(case["plain_digest"], vector_run_digest_key()) == case["keyed_digest"]
+
+
+def test_the_given_file_digest_vectors_hold_keyed_and_refused_cases() -> None:
+    assert {"keyed_digest" in case for case in GIVEN_FILE_DIGEST_CASES["cases"]} == {True, False}
 
 
 @pytest.mark.parametrize("case", ASSERTION_SET_CASES["cases"], ids=[c["name"] for c in ASSERTION_SET_CASES["cases"]])
@@ -163,7 +215,8 @@ def test_the_pre_deploy_vector_names_its_change_by_the_change_digest() -> None:
 
 @pytest.mark.parametrize("case", PLAN_DIGEST_DOCUMENT["cases"], ids=[c["name"] for c in PLAN_DIGEST_DOCUMENT["cases"]])
 def test_plan_digest_vectors_record_the_current_version_of_their_tool(case: dict[str, Any]) -> None:
-    assert case["version"] == PLAN_DIGEST_VERSIONS[case["tool"]]
+    assert case["keyed_version"] == KEYED_PLAN_DIGEST_VERSIONS[case["tool"]]
+    assert case["redacted_version"] == REDACTED_PLAN_DIGEST_VERSIONS[case["tool"]]
 
 
 def test_compiler_vectors_record_the_compiler_version_and_runtime_digest() -> None:
@@ -229,18 +282,48 @@ def test_document_vector_is_written_as_its_model_dumps_it(folder: str, path: str
     assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
-@pytest.mark.parametrize(
-    ("report", "vector"),
-    [
-        ("image/verification_report_build.json", "image/local_run_build.json"),
-        ("iac/verification_report.json", "iac/local_run.json"),
-    ],
-)
-def test_a_report_vector_names_its_record_by_id_and_digest(report: str, vector: str) -> None:
+def _report_record(source: str) -> dict[str, Any]:
+    """The record a report vector is about: a ``records/`` document by its path, or the record of a ``records_valid``
+    case by ``<change type>:<case name>``."""
+    if ":" in source:
+        change_type, name = source.split(":")
+        return valid_case_record(change_type, name)
+    document: dict[str, Any] = json.loads((VECTORS / "records" / source).read_text(encoding="utf-8"))
+    return document
+
+
+# Each report vector and the record it is about.
+REPORT_RECORDS = [
+    ("image/verification_report_build.json", "image/local_run_build_with_a_build_commit.json"),
+    ("iac/verification_report.json", "iac/local_run.json"),
+    (
+        "iac/verification_report_commit_not_reviewed.json",
+        "iac:iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check",
+    ),
+]
+# The bundle provenance a verifier gives a record that names the server's bundle, and one that does not.
+BUNDLE_PROVENANCE = {True: ("claimed_by_record", "server_bundle_named"), False: ("not_performed", "local_assertions")}
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vector_names_its_record_by_id_and_digest(report: str, source: str) -> None:
     named = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
-    record = json.loads((VECTORS / "records" / vector).read_text(encoding="utf-8"))
-    digests = json.loads((VECTORS / "records" / DIGESTS_FILE).read_text(encoding="utf-8"))
-    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digests[vector]}
+    record = _report_record(source)
+    assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digest_of(record)}
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vectors_evaluator_binary_is_the_one_its_record_gives(report: str, source: str) -> None:
+    result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["evaluator_binary"]
+    events = [AssuranceEvent.model_validate(event) for event in _report_record(source)["events"]]
+    assert result == evaluator_binary_result(events).model_dump(mode="json")
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vectors_bundle_provenance_is_the_one_its_record_gives(report: str, source: str) -> None:
+    result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["bundle_provenance"]
+    car = CAR.model_validate(_report_record(source))
+    assert (result["state"], result["reason"]) == BUNDLE_PROVENANCE[names_the_servers_bundle(car)]
 
 
 @pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
@@ -263,11 +346,22 @@ def test_each_record_vector_has_the_id_its_run_and_unit_give(path: Path) -> None
 def test_the_vectors_hold_exactly_the_known_folders() -> None:
     folders = {path.name for path in visible(VECTORS) if path.is_dir() and path.name != "__pycache__"}
     known = {
+        "apply_job_timing",
         "assertions",
         "assertions_invalid",
         "attestations",
         "scanner_check_mappings_invalid",
         "scanner_check_mappings_project_invalid",
+        "scanner_check_mappings_served_invalid",
+        "sent_documents_invalid",
+        "sent_documents_valid",
+        "scanner_check_mapping_descriptors",
+        "scanner_check_mapping_descriptors_invalid",
+        "signing_keys",
+        "run_digest_keys",
+        "raw_plans",
+        "raw_states",
+        "replan_differences",
         "buildx",
         "canonical",
         "compiler",
@@ -275,13 +369,25 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "evaluation",
         "identities_invalid",
         "identities_valid",
+        "local_exceptions_invalid",
+        "served_exceptions_invalid",
+        "served_exceptions_kept",
+        "kept_bundles",
+        "kept_identities",
+        "kept_inputs",
+        "kept_plans",
+        "kept_sent_documents",
         "opa",
         "records_integrity_failed",
         "records_invalid",
         "records_valid",
+        "redaction",
+        "redaction_problems",
+        "replan_recounts",
         "reports_expected",
         "reports_invalid",
         "scan_coverage",
+        "kept_files",
         "scanner_evidence",
         "scanner_reports",
         "scanner_verdicts",
@@ -321,30 +427,19 @@ def test_every_document_vector_has_its_digest_and_nothing_else(folder: str) -> N
 # --- under the pinned evaluator ---------------------------------------------
 
 
-@pytest.fixture(scope="module")
-def capabilities(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    path = tmp_path_factory.mktemp("opa") / "capabilities.json"
-    path.write_bytes(CAPABILITIES)
-    return path
-
-
-def _run(opa: Path, *args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([str(opa), *args], input=stdin, capture_output=True, text=True, check=False, timeout=60)
-
-
 @pytest.mark.parametrize("path", ASSERTION_FILES, ids=_name)
 def test_compiled_module_checks_under_the_capabilities_and_is_fmt_stable(
     opa: Path, capabilities: Path, path: Path
 ) -> None:
     module = COMPILER / f"{path.stem}.rego"
-    checked = _run(opa, "check", "--strict", "--capabilities", str(capabilities), str(module))
+    checked = run_opa(opa, "check", "--strict", "--capabilities", str(capabilities), str(module))
     assert checked.returncode == 0, checked.stderr
-    formatted = _run(opa, "fmt", "--diff", str(module))
+    formatted = run_opa(opa, "fmt", "--diff", str(module))
     assert formatted.returncode == 0 and formatted.stdout == "", formatted.stdout
 
 
 def _build(opa: Path, capabilities: Path, directory: Path) -> subprocess.CompletedProcess[str]:
-    return _run(
+    return run_opa(
         opa, "build", "--capabilities", str(capabilities), "-b", str(directory), "-o", str(directory / "b.tar.gz")
     )
 
@@ -394,7 +489,7 @@ def test_forbidden_builtin_is_refused_by_the_capabilities(
 ) -> None:
     module = tmp_path / "policy.rego"
     module.write_text(f"package x\n\nr := {policy}\n", encoding="utf-8")
-    checked = _run(opa, "check", "--capabilities", str(capabilities), str(module))
+    checked = run_opa(opa, "check", "--capabilities", str(capabilities), str(module))
     assert checked.returncode != 0 and "undefined function" in checked.stderr
 
 
@@ -418,7 +513,7 @@ def test_an_evaluation_input_states_each_reference_time_as_a_record_does(case: d
 def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
     module = COMPILER / f"{case['assertion']}.rego"
     query = f"data.{package_of(case['assertion'])}.evaluate"
-    evaluated = _run(
+    evaluated = run_opa(
         opa,
         "eval",
         "--format",
@@ -447,34 +542,15 @@ def test_evaluation_vector_is_reproduced(opa: Path, capabilities: Path, case: di
         assert result["observations"]["predicates"] == expected["predicates"]
 
 
-def _evaluate(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
-    evaluated = _run(
-        opa,
-        "eval",
-        "--format",
-        "json",
-        "--strict-builtin-errors",
-        "--capabilities",
-        str(capabilities),
-        "--data",
-        str(module),
-        "--stdin-input",
-        f"data.{package}.evaluate",
-        stdin=json.dumps(context),
-    )
-    assert evaluated.returncode == 0, evaluated.stderr
-    return json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"][0]
-
-
 @pytest.mark.parametrize("case", FACTS_UNKNOWN["cases"], ids=[c["name"] for c in FACTS_UNKNOWN["cases"]])
 def test_missing_server_facts_are_unknown_never_fail(opa: Path, capabilities: Path, case: dict[str, Any]) -> None:
     context = json.loads((VECTORS / "contexts" / FACTS_UNKNOWN["context"]).read_text(encoding="utf-8"))
     context["evaluation"]["assertion"]["id"] = case["assertion"]
     assert case["facts"] in ("unknown_marker", "empty_list")
     if case["facts"] == "empty_list":
-        for part in ("evaluations", "approvals", "exceptions"):
+        for part in ("evaluations", "approvals"):
             context[part] = []
-    result = _evaluate(
+    result = evaluate_with_opa(
         opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
     )
     expected = case["expected"]
@@ -489,7 +565,7 @@ def test_an_approval_counts_for_its_change_or_its_run(opa: Path, capabilities: P
     context["evaluation"]["assertion"]["id"] = case["assertion"]
     context.update(case["set"])
     AssuranceContext.model_validate(context)
-    result = _evaluate(
+    result = evaluate_with_opa(
         opa, capabilities, COMPILER / f"{case['assertion']}.rego", package_of(case["assertion"]), context
     )
     expected = case["expected"]
@@ -504,7 +580,7 @@ def test_an_approval_counts_for_its_change_or_its_run(opa: Path, capabilities: P
 def test_the_scenario_assertions_pass_on_the_context_vector(opa: Path, capabilities: Path, assertion_id: str) -> None:
     context = json.loads((VECTORS / "contexts" / "iac" / "plan_resource.json").read_text(encoding="utf-8"))
     context["evaluation"]["assertion"]["id"] = assertion_id
-    evaluated = _run(
+    evaluated = run_opa(
         opa,
         "eval",
         "--format",
@@ -534,7 +610,7 @@ def test_plan_binding_decides_on_the_post_deploy_vector(
 ) -> None:
     context = json.loads((VECTORS / "contexts" / "iac" / "post_deploy.json").read_text(encoding="utf-8"))
     context["deployment"]["plan"].update(applied)
-    evaluated = _run(
+    evaluated = run_opa(
         opa,
         "eval",
         "--format",
@@ -580,10 +656,10 @@ def test_a_fact_the_apply_log_lost_is_unknown_to_a_check_that_reads_it_and_nothi
     module = compile(parse(_READS_THE_SUMMARY))
     path = tmp_path / "one_change.rego"
     path.write_bytes(module.source)
-    reads = _evaluate(opa, capabilities, path, module.package, context)
+    reads = evaluate_with_opa(opa, capabilities, path, module.package, context)
     assert reads["status"] == "unknown" and "deployment_log_incomplete" in json.dumps(reads)
     entry = COMPILER / "ILT.IAC.DEPLOYMENT.CONTENT.APPLIED_PLAN_MATCHES_EVALUATED_PLAN.rego"
-    ignores = _evaluate(
+    ignores = evaluate_with_opa(
         opa,
         capabilities,
         entry,
@@ -619,8 +695,42 @@ def test_a_scanner_report_reads_into_its_observations(case: dict[str, Any]) -> N
     report = json.loads((folder / case["report"]).read_text(encoding="utf-8"))
     addresses = json.loads((folder / case["plan_addresses"]).read_text(encoding="utf-8"))
     source = Source(
-        report_digest=digest_of(report), plan_digest=case["plan_digest"], rules_digest=None, configuration_digest=None
+        report_digest=digest_of(report),
+        kept_plan_digest=case["kept_plan_digest"],
+        rules_digest=None,
+        configuration_digest=None,
+        ran_by="pipeline",
+        input_kind=None,
     )
     observed = REPORT_READERS[case["tool"]](report, addresses, source).model_dump(mode="json", by_alias=True)
     expected = json.loads((VECTORS / "scanner_observations" / "iac" / case["observations"]).read_text(encoding="utf-8"))
     assert observed == expected
+
+
+def _case_records() -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
+    """Every record case's name, base record and record, its values set and removed."""
+    out = []
+    for folder in ("records_valid", "records_invalid", "records_integrity_failed"):
+        for change_type in CHANGE_TYPES:
+            path = VECTORS / folder / change_type / "cases.json"
+            for case in json.loads(path.read_text(encoding="utf-8")):
+                base = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
+                out.append((case["name"], base, case_record(case)))
+    return out
+
+
+def test_a_cases_register_entry_for_a_file_of_its_record_names_that_files_size() -> None:
+    stale = []
+    for name, base, record in _case_records():
+        sizes = {(ref["path"], ref["digest"]): ref["size_bytes"] for ref in base["evidence_refs"]}
+        for ref in record.get("evidence_refs", []):
+            if sizes.get((ref["path"], ref["digest"]), ref["size_bytes"]) != ref["size_bytes"]:
+                stale.append(f"{name}: {ref['path']}")
+    assert stale == []
+
+
+@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
+def test_a_report_vectors_apply_job_results_are_the_ones_its_record_gives(report: str, source: str) -> None:
+    properties = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]
+    for name, result in apply_job_results(CAR.model_validate(_report_record(source))).items():
+        assert properties[name] == result.model_dump(mode="json"), name

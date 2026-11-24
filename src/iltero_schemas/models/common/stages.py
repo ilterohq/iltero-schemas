@@ -20,25 +20,24 @@ from iltero_schemas.assertions.paths import COMMITS_REVIEWED_ID
 from iltero_schemas.canonical.common.assertion_set import required_assertion_digest
 from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.canonical.common.record import record_uuid
+from iltero_schemas.change_types.common.expected_status import expected_status_problems
 from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.change_types.image.deploy import ImageDeploy
-from iltero_schemas.models.common.assertion import COMBINATIONS, Stage, TargetKind, stage_name
+from iltero_schemas.models.common.assertion import COMBINATIONS, Stage, TargetKind
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IMAGE_DEPLOY_ACTIVITY
-from iltero_schemas.models.common.coverage import (
-    StageOutcome,
-    StateNotReadGap,
-    stage_outcome,
-    state_not_read_reason_problem,
-)
+from iltero_schemas.models.common.coverage import StageOutcome, stage_outcome, state_not_read_reason_problem
+from iltero_schemas.models.common.coverage_gaps import StateNotReadGap
 from iltero_schemas.models.common.event import events_file_bytes
 from iltero_schemas.models.common.evidence_status import STATE_REASON
 from iltero_schemas.models.common.facts import NotReadByTheStage, ServerFactsUnavailable
 from iltero_schemas.models.common.fields import parse_timestamp
 from iltero_schemas.models.common.record_coverage import combine_in_order, record_evidence_status
-from iltero_schemas.models.common.redaction import RedactedKind
+from iltero_schemas.models.common.record_redaction import check_one_redaction_policy
+from iltero_schemas.models.common.redaction import RedactedKind, check_value_changes
 from iltero_schemas.models.common.register import check_register
 from iltero_schemas.models.common.stage_counts import count_problems
-from iltero_schemas.models.common.verdicts import stage_required_scanners
+from iltero_schemas.models.common.stage_scope import check_scope
+from iltero_schemas.models.common.verdicts import stage_scanner_requirements
 from iltero_schemas.models.iac.postponed_checks import check_postponed_checks, open_postponed_checks
 from iltero_schemas.models.iac.scanner_results import check_scanner_results
 from iltero_schemas.profiles import reads_part
@@ -162,7 +161,7 @@ def _check_commit_review(car: CAR, activity: Activity, stage: Stage, record: Sta
     the review when that check passed or failed. It evaluates that check at most once, and the review is reviewed
     exactly when the check passed.
 
-    A kept review is one of the record's change type, decided no later than the stage observed it, and of what the
+    A kept review is one of the record's change type, decided no later than the stage's reference time, and of what the
     server verified: for an infrastructure change, its head commit is the record's source commit unless the outcome
     says it is not; for an image deploy, its head commit and repository are the accepted build's verified commit and
     repository, and it says the build named another commit exactly when it did. Whether a stage whose results read
@@ -215,8 +214,10 @@ def _check_commit_review(car: CAR, activity: Activity, stage: Stage, record: Sta
         )
     if review.outcome == _NOT_AN_OUTCOME_OF[car.change.activity]:
         raise ValueError(f"a record of {car.change.activity} keeps no commit review that is {review.outcome}")
-    if parse_timestamp(review.decided_at) > parse_timestamp(record.observed_at):
-        raise ValueError(f"the {stage.value} stage's commit review was decided no later than the stage observed it")
+    if parse_timestamp(review.decided_at) > parse_timestamp(record.reference_time.value):
+        raise ValueError(
+            f"the {stage.value} stage's commit review was decided no later than the stage's reference time"
+        )
     if isinstance(car.change, ImageDeploy):
         build = car.change.build
         if build is None or (review.head_commit, review.repository) != (build.verified_commit, build.repository):
@@ -250,40 +251,6 @@ def _check_order(car: CAR, activity: Activity) -> None:
         raise ValueError("a record verifies a deployment only after its post-deploy stage")
 
 
-def _check_scope(car: CAR, activity: Activity) -> None:
-    """Every stage of the activity is expected, or named once as not in scope with a reason that may leave it out."""
-    left_out = [item.stage for item in car.out_of_scope]
-    if len(set(left_out)) != len(left_out):
-        raise ValueError("a stage is named not in scope once")
-    if set(left_out) & set(car.expected_stages):
-        raise ValueError("a stage is expected or not in scope, never both")
-    for item in car.out_of_scope:
-        if item.reason == "project_config" and item.stage not in activity.project_may_leave_out:
-            raise ValueError(f"a project can leave out only the {_named(activity.project_may_leave_out)}")
-        if item.reason == "environment_policy" and item.stage not in activity.environment_policy_may_leave_out:
-            raise ValueError(
-                f"an environment's policy can leave out only the {_named(activity.environment_policy_may_leave_out)}"
-            )
-    unsupported = {item.stage for item in car.out_of_scope if item.reason == "not_supported"}
-    supported = unsupported - activity.not_supported(car)
-    if supported:
-        stage = min(supported, key=_ORDER.index)
-        raise ValueError(
-            f"the {stage_name(stage)} stage is supported for this record: expect it, or say who leaves it out"
-        )
-    by_policy = any(item.reason == "environment_policy" for item in car.out_of_scope)
-    if by_policy and car.governance.run_opened_by != "server":
-        raise ValueError("only a run the server opened has an environment policy that leaves a stage out")
-    if set(left_out) | set(car.expected_stages) != set(activity.stages):
-        raise ValueError("the record accounts for every stage of the lifecycle: expected, or not in scope")
-
-
-def _named(stages: frozenset[Stage]) -> str:
-    """``stages`` as a reader says them, such as "pre-deploy and post-verify stages"."""
-    *first, last = [stage_name(stage) for stage in sorted(stages, key=_ORDER.index)]
-    return f"{', '.join(first)} and {last} stages" if first else f"{last} stage"
-
-
 def _check_checked_content_of_events(car: CAR, activity: Activity) -> None:
     """Every event names the content the record's change checked, whichever stage it came from."""
     checked = activity.checked_content(car)
@@ -302,34 +269,27 @@ def _check_run_of_events(car: CAR) -> None:
 
 def _check_always_evaluated(car: CAR, activity: Activity) -> None:
     """Each built-in assertion of the activity is evaluated once, at its own stage, once that stage has reported, and
-    found to apply: it always has the stage's one subject."""
-    foreign = {e.assertion.id for e in car.events if e.assertion.id in BUILT_INS} - set(
-        activity.always_evaluated.values()
-    )
+    found to apply to the stage's one subject, unless the status the record gives it is not_applicable."""
+    owned = {assertion_id for ids in activity.always_evaluated.values() for assertion_id in ids}
+    foreign = {e.assertion.id for e in car.events if e.assertion.id in BUILT_INS} - owned
     if foreign:
         raise ValueError(f"{min(foreign)} is a built-in assertion of another activity, not of {activity.name}")
-    for stage, assertion_id in activity.always_evaluated.items():
-        found = [e for e in car.events if e.assertion.id == assertion_id]
-        if any(e.evaluation.stage is not stage for e in found) or len(found) != (stage in car.stages):
-            raise ValueError(f"{assertion_id} is evaluated once, at the {stage.value} stage, once it has reported")
-        if found and found[0].evaluation.status == "not_applicable":
-            raise ValueError(f"{assertion_id} always applies to the {stage.value} stage's one subject")
-
-
-def _check_one_redaction_policy(car: CAR) -> None:
-    """A record redacts under one policy: every stage's report and every redacted file name the same one."""
-    named = [record.redaction.policy for record in car.stages.values()]
-    named += [record.resource_redaction.policy for record in car.stages.values() if record.resource_redaction]
-    named += [ref.redaction_policy for ref in car.evidence_refs if ref.redaction_policy is not None]
-    if any(policy != named[0] for policy in named):
-        raise ValueError("every stage and every redacted evidence file name the same redaction policy")
+    expected = activity.expected_statuses(car)
+    for stage, ids in activity.always_evaluated.items():
+        for assertion_id in sorted(ids):
+            found = [e for e in car.events if e.assertion.id == assertion_id]
+            if any(e.evaluation.stage is not stage for e in found) or len(found) != (stage in car.stages):
+                raise ValueError(f"{assertion_id} is evaluated once, at the {stage.value} stage, once it has reported")
+            not_applicable = bool(found) and found[0].evaluation.status == "not_applicable"
+            if not_applicable and expected.get(assertion_id) != "not_applicable":
+                raise ValueError(f"{assertion_id} always applies to the {stage.value} stage's one subject")
 
 
 def _check_redacts_nothing(stage: Stage, record: StageRecord) -> None:
     """The stage's redaction report is of the part it counts, and lists no path: the record keeps that part as it is."""
     if record.redaction.input.digest != record.coverage.subjects_in_scope.source_digest:
         raise ValueError(f"the {stage.value} stage's redaction report is of the part it counts")
-    if record.redaction.redacted or record.redaction.unknown or record.redaction.allowed:
+    if record.redaction.redacted or record.redaction.unknown or record.redaction.exempted:
         raise ValueError(f"the {stage.value} stage redacts nothing: the part it counts is kept as it is")
 
 
@@ -337,15 +297,17 @@ def check_structure(car: CAR) -> None:
     """Raise ``ValueError`` unless the stages hold together, whatever values they carry."""
     activity = ACTIVITIES[car.change.activity]
     _check_order(car, activity)
-    _check_scope(car, activity)
+    check_scope(car, activity)
     _check_checked_content_of_events(car, activity)
     _check_run_of_events(car)
-    _check_always_evaluated(car, activity)
-    _check_one_redaction_policy(car)
-    check_register(car)
-    for stage, record in car.stages.items():
+    # A stage the record does not expect is refused before the built-in checks it would hold are counted.
+    for stage in car.stages:
         if stage not in car.expected_stages:
             raise ValueError(f"stage {stage.value!r} is not one this record expects")
+    _check_always_evaluated(car, activity)
+    check_one_redaction_policy(car)
+    check_register(car)
+    for stage, record in car.stages.items():
         if record.stage is not stage:
             raise ValueError(f"the {stage.value} stage record names itself {record.stage.value}")
         counted_from = scope_counted_from(
@@ -360,11 +322,20 @@ def check_structure(car: CAR) -> None:
             raise ValueError(f"the {stage.value} stage's redaction report is of the {read.replace('_', ' ')} it read")
         if stage in STAGES_THAT_REDACT_NOTHING:
             _check_redacts_nothing(stage, record)
+        check_value_changes(record.redaction)
         if record.enforcement_mode == "advisory" and stage not in ADVISORY_STAGES:
             raise ValueError(f"the {stage.value} stage comes after the deployment, so its gate is enforcing")
         if (record.approvals is not None) != reads_part(activity.name, stage, "approvals"):
             raise ValueError(
                 f"the {stage.value} stage keeps approvals, or the unknown marker, exactly where its input carries them"
+            )
+        server_carries_them = car.governance.run_opened_by == "server" and reads_part(
+            activity.name, stage, "apply_job_facts"
+        )
+        if (record.apply_job_facts is not None) != server_carries_them:
+            raise ValueError(
+                f"the {stage.value} stage keeps the apply job's facts, or the unknown marker, exactly where its input "
+                "carries them: at the pre-deploy stage of an infrastructure change in a run the server opened"
             )
         _check_approvals(car, stage, record)
         _check_commit_review(car, activity, stage, record)
@@ -448,7 +419,8 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
                 coverage,
                 events,
                 required=required,
-                required_scanners=stage_required_scanners(record),
+                scanner_requirements=stage_scanner_requirements(record),
+                excepted_failures=record.served_exceptions.excepted_failures if record.served_exceptions else [],
             )
         )
         problems.extend(_required_set_problems(car, stage, record))
@@ -465,6 +437,8 @@ def integrity_problems(car: CAR) -> list[tuple[str, str]]:
             if event.evaluation.status_reason == STATE_REASON
         )
     problems.extend(activity.integrity_problems(car))
+    # Each built-in check found the status the record gives it, which every activity works out the same way.
+    problems.extend(expected_status_problems(car, activity.expected_statuses(car)))
     combined = record_outcome(car)
     for key in ("coverage", "verdict", "evidence_status"):
         if getattr(combined, key) != getattr(car, key):

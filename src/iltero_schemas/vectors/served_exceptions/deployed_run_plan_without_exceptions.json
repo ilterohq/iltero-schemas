@@ -1,0 +1,11 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "ServedExceptions",
+  "metadata": {
+    "run_id": "aedb8e64-8015-5919-8440-968c74cb0188",
+    "stage": "plan"
+  },
+  "spec": {
+    "exceptions": []
+  }
+}

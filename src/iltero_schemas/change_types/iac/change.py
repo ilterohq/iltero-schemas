@@ -10,27 +10,31 @@ read from what that apply left in the state.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Mapping
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import model_validator
 
 from iltero_schemas.assertions.paths import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, NO_DRIFT_AFTER_APPLY_ID
-from iltero_schemas.canonical import change_digest, digest_of
+from iltero_schemas.canonical import change_digest
 from iltero_schemas.canonical.iac.plan import check_plan_digest_version
-from iltero_schemas.change_types.common.activity import Activity
+from iltero_schemas.change_types.common.activity import Activity, DocumentName
 from iltero_schemas.change_types.common.bindings import bound_to_change_digest_problems
-from iltero_schemas.change_types.common.expected_status import expected_status_problems
+from iltero_schemas.change_types.iac.apply_job import (
+    PRE_DEPLOY_BUILT_INS,
+    apply_job_change_digest_problems,
+    apply_job_expected_statuses,
+    check_apply_job,
+    rendered_plan_reason_problems,
+)
+from iltero_schemas.change_types.iac.replan import check_replan, replan_change_digest_problems, replan_reason_problems
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.base import StrictModel
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IAC_CHANGE_TYPE
 from iltero_schemas.models.common.checked_content import CheckedPlan, checked_plan
-from iltero_schemas.models.common.coverage import (
-    IDENTITY_REASONS,
-    PlanFlagGap,
-    StateNotReadGap,
-    state_not_read_reason_problem,
-)
+from iltero_schemas.models.common.coverage import state_not_read_reason_problem
+from iltero_schemas.models.common.coverage_gaps import IDENTITY_REASONS, PlanFlagGap, StateNotReadGap
 from iltero_schemas.models.common.evidence_status import STATE_REASON
 from iltero_schemas.models.common.facts import NotReported
 from iltero_schemas.models.common.fields import (
@@ -38,6 +42,7 @@ from iltero_schemas.models.common.fields import (
     Digest,
     FileName,
     Identifier,
+    PlanDigest,
     check_artifact_digest,
     check_artifact_file_name,
     parse_timestamp,
@@ -50,8 +55,15 @@ from iltero_schemas.models.iac.drift_check import (
     check_against_deployment,
     read_no_earlier_than,
 )
+from iltero_schemas.models.iac.given_file_digests import check_change_given_file_digest_form
+from iltero_schemas.models.iac.plan_coverage import check_provider_source_gaps
+from iltero_schemas.models.iac.plan_digests import check_plan_digest_form
+from iltero_schemas.models.iac.post_verify_identities import check_post_verify_identities_entry
+from iltero_schemas.models.iac.replan_check import Replan
 from iltero_schemas.models.iac.resource_identities import IdentityRecord
-from iltero_schemas.models.iac.tool_names import IacTool
+from iltero_schemas.models.iac.stage_files import check_stage_files
+from iltero_schemas.models.iac.state_digests import check_change_state_digest_form
+from iltero_schemas.models.iac.tool_names import APPLY_COLLECTORS, IacTool
 from iltero_schemas.models.iac.tools.variants import check_identity_against_apply
 
 if TYPE_CHECKING:
@@ -61,7 +73,7 @@ if TYPE_CHECKING:
 class PlanRecord(StrictModel):
     """The plan the stage evaluated, by its fingerprints and by what the IaC tool said about it."""
 
-    digest: Digest
+    digest: PlanDigest
     digest_version: Identifier
     artifact_digest: Digest | None
     artifact_digest_source: ArtifactDigestSource
@@ -84,7 +96,7 @@ class PlanRecord(StrictModel):
 
     @model_validator(mode="after")
     def _digest_version_is_the_tools(self) -> PlanRecord:
-        check_plan_digest_version(self.tool, self.digest_version)
+        check_plan_digest_version(self.tool, self.digest_version, self.digest)
         return self
 
 
@@ -101,6 +113,9 @@ class IacChange(StrictModel):
     identity: IdentityRecord | None
     # Null until the post-verify stage has read the deployed resources back.
     drift_check: DriftCheck | None
+    # The re-plan check the apply job made (``models.iac.replan_check``): null until the pre-deploy stage has
+    # reported, and null when the run plans and applies in one job (``change_types.iac.replan``).
+    replan_check: Replan | None
 
     @model_validator(mode="after")
     def _deployed_from_the_plan(self) -> IacChange:
@@ -189,12 +204,27 @@ def _check_deployment(car: CAR) -> None:
     stage = car.stages.get(Stage.POST_DEPLOY)
     if stage is None or deployment is None:
         return
-    scope = stage.coverage.subjects_in_scope
-    if scope.value != 1 or scope.source_digest != digest_of(deployment.model_dump(mode="json", by_alias=True)):
+    if not stage.coverage.subjects_in_scope.counts_one(deployment):
         raise ValueError("the post_deploy stage must count the one deployment the record describes, by its digest")
-    log = deployment.apply.source.digest
-    if not any(ref.source is not None and ref.source.digest == log for ref in car.evidence_refs):
-        raise ValueError("the apply log the deployment was read from is an entry of the evidence register")
+    _check_apply_log(car, deployment)
+
+
+def _check_apply_log(car: CAR, deployment: Deployment) -> None:
+    """The register keeps the apply log the deployment was read from once, redacted, collected by its tool's apply log
+    reader; in a run the server opened, whose record names the log by its keyed digest, the entry names the same."""
+    collector = APPLY_COLLECTORS[deployment.apply.source.tool]
+    logs = [ref for ref in car.evidence_refs if ref.collector.tool == collector]
+    if len(logs) != 1 or logs[0].source is None or logs[0].redaction_policy is None:
+        raise ValueError(
+            "the apply log the deployment was read from is one entry of the evidence register, collected by "
+            f"{collector} and kept redacted"
+        )
+    named = deployment.apply.source.digest
+    if car.governance.run_opened_by == "server" and (named is None or logs[0].source.digest != named):
+        raise ValueError(
+            "in a record of a run the server opened, the apply log's entry of the evidence register names the keyed "
+            "digest the deployment names"
+        )
 
 
 def _check_deposed(car: CAR) -> None:
@@ -257,38 +287,81 @@ def _check_drift_check(car: CAR) -> None:
         raise ValueError("every resource that differed in the first reading is one the record's identities list")
     if parse_timestamp(stage.observed_at) < parse_timestamp(check.second_reading_at):
         raise ValueError("the post-verify stage was observed no earlier than the drift check's second reading")
-    scope = stage.coverage.subjects_in_scope
-    if scope.value != 1 or scope.source_digest != digest_of(check.model_dump(mode="json", by_alias=True)):
+    if not stage.coverage.subjects_in_scope.counts_one(check):
         raise ValueError("the post_verify stage must count the one deployment by the drift check that read it")
 
 
+def _named_documents(car: CAR) -> Mapping[Stage, Mapping[DocumentName, tuple[str, ...]]]:
+    """For each stage of a run the server opened that reads scanner reports, the files it read them with: the redacted
+    plan, each report it kept and the observations it read from each (``models.iac.stage_files``). A run the tool opened
+    sends none."""
+    if car.governance.run_opened_by != "server":
+        return MappingProxyType({})
+    named: dict[Stage, Mapping[DocumentName, tuple[str, ...]]] = {}
+    by_digest = {ref.digest: ref.ref_id for ref in car.evidence_refs}
+    by_path = {ref.path: ref.ref_id for ref in car.evidence_refs}
+    for stage, record in car.stages.items():
+        if record.scanners is None:
+            continue
+        named[stage] = MappingProxyType(
+            {
+                "redacted_plan": (by_path[record.scanners.redacted_plan],),
+                "scanner_report": tuple(by_digest[report.report_digest] for report in record.scanners.reports),
+                "scanner_observations": tuple(by_path[report.observations] for report in record.scanners.reports),
+            }
+        )
+    return MappingProxyType(named)
+
+
+def _input_parts_of_the_record(car: CAR, stage: Stage) -> Mapping[str, object]:
+    """A pre-deploy input carries the record's re-plan check."""
+    if stage is Stage.PRE_DEPLOY:
+        return MappingProxyType({"replan_check": _body(car).replan_check})
+    return MappingProxyType({})
+
+
 def _check_record(car: CAR) -> None:
+    check_plan_digest_form(car, _body(car))
+    check_stage_files(car, _body(car).plan.tool)
+    check_provider_source_gaps(car, _body(car).plan.tool)
     _check_plan(car)
     _check_deployment(car)
     _check_deposed(car)
     _check_drift_check(car)
+    check_apply_job(car, _body(car))
+    check_replan(car, _body(car))
     identity = _body(car).identity
     if identity is not None:
         identity.check_unit(car.unit)
+    check_change_given_file_digest_form(car, _body(car))
+    check_change_state_digest_form(car, _body(car))
+    check_post_verify_identities_entry(car)
 
 
 def _change_digest_problems(car: CAR) -> list[tuple[str, str]]:
     """The change digest is the digest of the unit's plan in the record's environment, and the drift check, the
-    pre-deploy stage and every approval of a change name it."""
+    pre-deploy stage, the apply job's facts and every approval of a change name it."""
     change = _body(car)
     problems: list[tuple[str, str]] = []
     checked = _checked_content(car).model_dump(mode="json")
-    if change.digest != change_digest(IAC_CHANGE_TYPE, car.unit, car.subject.environment, checked):
+    if change.digest != change_digest(IAC_CHANGE_TYPE, car.unit, car.subject.environment_name, checked):
         problems.append(("change.digest", "is not the digest of the change type, unit, environment and plan"))
     if change.drift_check is not None and change.drift_check.change_digest != change.digest:
         problems.append(("change.drift_check.change_digest", "is not change.digest"))
-    return problems + bound_to_change_digest_problems(car, change.digest)
+    return (
+        problems
+        + bound_to_change_digest_problems(car, change.digest)
+        + apply_job_change_digest_problems(car, change.digest)
+        + replan_change_digest_problems(change)
+    )
 
 
-def _expected_statuses(change: IacChange) -> dict[str, str]:
-    """The status each built-in check must have, recomputed from what the record holds: whether the applied plan is
-    the evaluated one, and whether the reading after the apply found no resource that differed."""
-    expected: dict[str, str] = {}
+def _expected_statuses(car: CAR) -> dict[str, str]:
+    """The status each built-in check must have, recomputed from what the record holds: what the apply job's facts
+    give, whether the applied plan is the evaluated one, and whether the reading after the apply found no resource
+    that differed."""
+    change = _body(car)
+    expected: dict[str, str] = apply_job_expected_statuses(car, change)
     if change.deployment is not None:
         applied, evaluated = change.deployment.plan, change.plan
         same = (applied.digest, applied.artifact_digest, applied.artifact_digest_source) == (
@@ -303,13 +376,15 @@ def _expected_statuses(change: IacChange) -> dict[str, str]:
 
 
 def _integrity_problems(car: CAR) -> list[tuple[str, str]]:
-    """The record's own plan, deployment and reading give its gaps and its built-in checks' results.
-
-    The plan stage lists the gaps the plan's flags call for, the post-deploy stage the gap of a state not read, and
-    each built-in check found the status they give.
-    """
+    """The record's own plan and deployment give its gaps: the plan stage lists the gaps the plan's flags call for,
+    and the post-deploy stage the gap of a state not read; the rendered-plan check names a rendered plan not sent
+    exactly when the apply job's facts do, and the re-plan check names a re-plan not compared exactly when the record
+    does. Its built-in checks' statuses are ``expected_statuses``."""
     return (
-        _plan_flag_problems(car) + _state_problems(car) + expected_status_problems(car, _expected_statuses(_body(car)))
+        _plan_flag_problems(car)
+        + _state_problems(car)
+        + rendered_plan_reason_problems(car)
+        + replan_reason_problems(car, _body(car))
     )
 
 
@@ -352,8 +427,12 @@ IAC_CHANGE = Activity(
     change_type=IAC_CHANGE_TYPE,
     run_type="change",
     stages=(Stage.PLAN, Stage.PRE_DEPLOY, Stage.POST_DEPLOY, Stage.POST_VERIFY),
-    project_may_leave_out=frozenset({Stage.PRE_DEPLOY, Stage.POST_VERIFY}),
-    environment_policy_may_leave_out=frozenset({Stage.POST_VERIFY}),
+    # A project may leave out only the post-verify stage: whether the change is approved before its apply is the
+    # environment's policy, which the server holds, never the project's own file.
+    project_may_leave_out=frozenset({Stage.POST_VERIFY}),
+    environment_policy_may_leave_out=frozenset({Stage.PRE_DEPLOY, Stage.POST_VERIFY}),
+    # The approvals and the commit review the pre-deploy stage reads come only from the server.
+    stages_that_need_the_server=frozenset({Stage.PRE_DEPLOY}),
     not_supported=_not_supported,
     required_documents=MappingProxyType(
         {
@@ -363,15 +442,25 @@ IAC_CHANGE = Activity(
             Stage.POST_VERIFY: ("record",),
         }
     ),
-    named_documents=lambda _car: MappingProxyType({}),
+    named_documents=_named_documents,
     carried_out_matches_checked=(APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, Stage.POST_DEPLOY),
     always_evaluated=MappingProxyType(
-        {Stage.POST_DEPLOY: APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, Stage.POST_VERIFY: NO_DRIFT_AFTER_APPLY_ID}
+        {
+            Stage.PRE_DEPLOY: PRE_DEPLOY_BUILT_INS,
+            Stage.POST_DEPLOY: frozenset({APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID}),
+            Stage.POST_VERIFY: frozenset({NO_DRIFT_AFTER_APPLY_ID}),
+        }
     ),
+    expected_statuses=_expected_statuses,
+    # Whether the plan waited too long, the apply job was approved in order, it holds and renders the evaluated plan,
+    # and its re-plan acts on the same resources alike.
+    enforced_in_advisory_mode=PRE_DEPLOY_BUILT_INS,
     checked_content=_checked_content,
+    input_parts_of_the_record=_input_parts_of_the_record,
     check_record=_check_record,
     change_digest_problems=_change_digest_problems,
     integrity_problems=_integrity_problems,
     reads_a_state_after_the_apply=True,
     stages_that_read_scanner_reports=frozenset({Stage.PLAN}),
+    stage_that_applies_served_exceptions=Stage.PLAN,
 )

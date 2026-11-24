@@ -45,6 +45,8 @@ def canonical_bytes(value: Any) -> bytes:
         raise CanonicalizationError("the value has no canonical form") from None
     except TypeError:
         raise CanonicalizationError("not JSON data: null, booleans, numbers, strings, lists, objects") from None
+    except UnicodeError:
+        raise CanonicalizationError("a string holds a character with no canonical form") from None
 
 
 def digest(data: bytes) -> str:

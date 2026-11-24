@@ -40,7 +40,6 @@ from iltero_schemas.ast import AssertionSyntaxError
 from iltero_schemas.ast.document import DocumentError
 from iltero_schemas.bundle.build import (
     MANIFEST,
-    SIGNATURE_BYTES,
     SIGNATURES,
     BundleError,
     signatures_file,
@@ -51,7 +50,8 @@ from iltero_schemas.canonical import CanonicalizationError
 from iltero_schemas.compiler import COMPILER_VERSION
 from iltero_schemas.models.common.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
-from iltero_schemas.trust import BundleKey
+from iltero_schemas.signing import SIGNATURE_BYTES
+from iltero_schemas.trust import SigningKey
 
 # The tar entry types OPA loads as files; it skips every other type, so no other is accepted here either.
 _PLAIN_FILE = (tarfile.REGTYPE, tarfile.AREGTYPE)
@@ -68,7 +68,7 @@ class UnverifiedBundle:
     Nothing in it may be evaluated until the signature is verified with ``key``.
     """
 
-    key: BundleKey
+    key: SigningKey
     files: Mapping[str, bytes]
 
 
@@ -119,8 +119,9 @@ def _unique_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return dict(pairs)
 
 
-def _signature(files: Mapping[str, bytes]) -> tuple[bytes, bytes]:
-    """The signed bytes and raw signature of a bundle's ``.signatures.json``, which must be exactly as written."""
+def signature_in(files: Mapping[str, bytes]) -> tuple[bytes, bytes]:
+    """The signed bytes and raw signature of the ``.signatures.json`` among a bundle tarball's ``files``, which must be
+    exactly as written."""
     if SIGNATURES not in files:
         raise BundleError(f"the tarball holds no {SIGNATURES}")
     try:
@@ -142,13 +143,13 @@ def _signature(files: Mapping[str, bytes]) -> tuple[bytes, bytes]:
 
 def signature_of(descriptor: BundleDescriptor) -> tuple[bytes, bytes]:
     """The signed bytes and the raw 64-byte ``r‖s`` signature, to verify with the key's ``public_key_der``."""
-    return _signature(read_tarball(base64.b64decode(descriptor.tarball)))
+    return signature_in(read_tarball(base64.b64decode(descriptor.tarball)))
 
 
-def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]) -> UnverifiedBundle:
+def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, SigningKey]) -> UnverifiedBundle:
     """Check everything about ``descriptor`` but the signature's mathematics.
 
-    ``keys`` is the trust set: ``iltero_schemas.trust.BUNDLE_KEYS``, or a
+    ``keys`` is the trust set: ``iltero_schemas.trust.SIGNING_KEYS``, or a
     development tool's own set. Raises ``BundleError`` naming the first rule
     that fails; returns the key and the files that passed.
     """
@@ -176,7 +177,7 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, BundleKey]
     for name, expected in rebuilt.files.items():
         if files[name] != expected:
             raise BundleError(f"{name} is not what this package builds from the bundle's sources")
-    signed, _ = _signature(files)
+    signed, _ = signature_in(files)
     if signed != signing_input(rebuilt, key_id=descriptor.key_id):
         raise BundleError("the signature does not cover exactly this bundle's files under the descriptor's key_id")
     return UnverifiedBundle(key, MappingProxyType(files))

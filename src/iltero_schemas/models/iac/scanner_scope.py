@@ -8,14 +8,12 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from iltero_schemas.models.common.coverage import IDENTITY_REASONS, Excluded
-from iltero_schemas.models.iac.plan_exclusions import exclusion_reason
+from iltero_schemas.models.common.coverage import Excluded
+from iltero_schemas.models.common.coverage_gaps import IDENTITY_REASONS
+from iltero_schemas.models.iac.plan_exclusions import NamedTypes, exclusion_reason, leaves_scope
 from iltero_schemas.models.iac.plan_relations import plan_configures
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths
 from iltero_schemas.models.iac.tool_names import IacTool
-
-# The plan actions that take a resource out of the plan's scope.
-_LEAVES_SCOPE = (["delete"], ["forget"])
 
 
 @dataclass(frozen=True)
@@ -28,15 +26,21 @@ class PlanScope:
     in_scope: Mapping[str, list[str]]
 
 
-def left_out_for_identity(excluded: Iterable[Excluded]) -> frozenset[int]:
-    """The plan positions of the resources a stage left out of scope for their identity. Only these leave the scope of
-    an assertion only scanners decide: a resource left out as not managed or as a deposed object is never in it."""
-    return frozenset(entry.plan_index for entry in excluded if entry.reason in IDENTITY_REASONS)
+def left_out_of_scope(excluded: Iterable[Excluded]) -> frozenset[int]:
+    """The plan positions of the resources a stage left out of scope for their identity or because they create no
+    object outside the tool. Only these leave the scope of an assertion only scanners decide: a resource left out as not
+    managed or as a deposed object is never in it."""
+    return frozenset(
+        entry.plan_index
+        for entry in excluded
+        if entry.reason in IDENTITY_REASONS or entry.reason == "makes_no_outside_object"
+    )
 
 
 def plan_scope(plan: dict[str, Any], left_out: frozenset[int]) -> PlanScope:
     """What ``plan`` gives the stage's scanner verdicts. A resource at a position in ``left_out`` (the stage excluded
-    it for its identity, so its address may be redacted) gives nothing: it is in no assertion's scope. A deposed
+    it for its identity, so its address may be redacted, or as one that creates no object outside the tool) gives
+    nothing: it is in no assertion's scope. A deposed
     object, an old copy the plan sets aside while it replaces a resource, shares the live resource's address, so only
     the live resource gives its unknown paths."""
     unknown: dict[str, list[str]] = {}
@@ -47,14 +51,22 @@ def plan_scope(plan: dict[str, Any], left_out: frozenset[int]) -> PlanScope:
         body = change["change"]
         if change.get("deposed") is None:
             unknown[change["address"]] = plan_unknown_paths(body.get("after_unknown"))
-        if body.get("actions") not in _LEAVES_SCOPE:
+        if not leaves_scope(change):
             in_scope.setdefault(change["type"], []).append(change["address"])
     return PlanScope(unknown, plan_configures(plan), in_scope)
 
 
-def exclusion_holds(tool: IacTool, plan: dict[str, Any], excluded: Excluded) -> bool:
+def exclusion_holds(
+    tool: IacTool,
+    plan: dict[str, Any],
+    excluded: Excluded,
+    provisioners: Mapping[str, bool],
+    named_types: NamedTypes,
+) -> bool:
     """Whether the plan shows of the resource at ``excluded.plan_index`` what the exclusion says of it: the address
-    the plan wrote, or none when that address is not text, and the reason ``exclusion_reason`` gives for it."""
+    the plan wrote, or none when that address is not text, and the reason ``exclusion_reason`` gives for it, with the
+    plan's ``provisioners`` (``PlanNaming.configured_provisioners``) and the types the stage's assertions name
+    (``named_resource_types_of_targets``)."""
     changes = plan.get("resource_changes")
     if not isinstance(changes, list) or excluded.plan_index >= len(changes):
         return False
@@ -63,5 +75,5 @@ def exclusion_holds(tool: IacTool, plan: dict[str, Any], excluded: Excluded) -> 
         return False
     address = change.get("address")
     return excluded.id == (address if isinstance(address, str) else None) and excluded.reason == exclusion_reason(
-        tool, change
+        tool, change, provisioners, named_types
     )

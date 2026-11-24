@@ -1,0 +1,168 @@
+name: Scanner pin
+
+# Installs and runs the pinned scanners on each platform and Python version the pin covers, and compares their results
+# with the expected ones. It runs on every pull request and every push to dev, so its summary can be a required check:
+# the installs and runs happen only when the pin or its validation changed, and on demand.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+# Nothing in this workflow needs to write to the repository.
+permissions: {}
+
+concurrency:
+  group: scanner-pin-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PDM_VERSION: "2.26.2"
+
+jobs:
+  changes:
+    name: Whether the scanner pin changed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      pin: ${{ steps.compare.outputs.pin }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: compare
+        env:
+          EVENT: ${{ github.event_name }}
+          PULL_REQUEST_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # The paths the pin and its validation are made of.
+          paths='^(src/iltero_schemas/scanners/|scripts/validate_scanner_pin\.py$|scripts/scanner_pin_expected\.json$|src/iltero_schemas/vectors/raw_plans/iac/plan_create\.json$|\.github/workflows/scanner-pin\.yml$)'
+          case "$EVENT" in
+            workflow_dispatch) echo "pin=true" >> "$GITHUB_OUTPUT"; exit 0 ;;
+            pull_request) base="$PULL_REQUEST_BASE" ;;
+            # A push is compared with where it left main, which is what its merge will carry, so a cancelled run or a
+            # rewritten history never hides a change.
+            *) base=$(git merge-base origin/main HEAD) ;;
+          esac
+          # Its own statement, so a failed diff stops the job instead of reading as no change. Both sides of a moved file
+          # are listed, and no name is quoted.
+          changed=$(git -c core.quotePath=false diff --no-renames --name-only "$base" HEAD)
+          if grep -Eq "$paths" <<< "$changed"; then
+            echo "pin=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pin=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  native:
+    name: ${{ matrix.os }}, Python ${{ matrix.python-version }}
+    needs: [changes]
+    if: needs.changes.outputs.pin == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux on glibc, macOS on Apple silicon and Intel, Windows.
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel, windows-2025]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pdm-project/setup-pdm@544d7237314ee09c256785bd360f6b30add38b37 # v4.6
+        with:
+          python-version: ${{ matrix.python-version }}
+          version: ${{ env.PDM_VERSION }}
+          cache: false
+      - run: python -I scripts/validate_scanner_pin.py
+
+  # A container's own Python runs the script: Alpine for musl, and the manylinux2014 image (CentOS 7, glibc 2.17) for
+  # the oldest glibc the pin covers. Python 3.14 is locked for glibc 2.28, which the native Linux jobs run. Each image
+  # is pinned by digest, its tag in the comment beside it.
+  containers:
+    name: ${{ matrix.image }} on ${{ matrix.runner }}
+    needs: [changes]
+    if: needs.changes.outputs.pin == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        image:
+          # python:3.11-alpine3.20
+          - python@sha256:95040093b88eea0af546de5a6e7c714f976b0e5c8e79cc104df8f796354eb276
+          # python:3.12-alpine3.20
+          - python@sha256:25849f9599e06dfe4d11b552e06f5ac4cc2ad342054eb81f7877e611f6f87c66
+          # python:3.13-alpine3.20
+          - python@sha256:40a4559d3d6b2117b1fbe426f17d55b9100fa40609733a1d0c3f39e2151d4b33
+          # python:3.14-alpine3.22
+          - python@sha256:6b91e66ab2a880ce9ca5a1b91c70f45963ff71ff68268df056336e1a657d5efd
+          - manylinux2014 cp311
+          - manylinux2014 cp312
+          - manylinux2014 cp313
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run the validation in the container
+        env:
+          IMAGE: ${{ matrix.image }}
+        run: |
+          case "$IMAGE" in
+            manylinux2014*)
+              tag="${IMAGE#manylinux2014 }"
+              case "$(uname -m)" in
+                # quay.io/pypa/manylinux2014_x86_64:latest on 2026-11-19
+                x86_64) image="quay.io/pypa/manylinux2014_x86_64@sha256:e6a785657009c612fe2a85fa933051d03a50ba62b1c5e47d62abcab546a2e423" ;;
+                # quay.io/pypa/manylinux2014_aarch64:latest on 2026-11-19
+                aarch64) image="quay.io/pypa/manylinux2014_aarch64@sha256:c2995cae5e2d433fbe757d1466486727b3edd68ba644cd60df253365f35fda9e" ;;
+              esac
+              python="/opt/python/$tag-$tag/bin/python"
+              ;;
+            *)
+              image="$IMAGE"
+              python="python"
+              ;;
+          esac
+          docker run --rm -v "$PWD:/repository:ro" "$image" sh -c \
+            "cp -r /repository /tmp/repository && $python -I /tmp/repository/scripts/validate_scanner_pin.py"
+
+  summary:
+    name: Scanner pin summary
+    runs-on: ubuntu-24.04
+    needs: [changes, native, containers]
+    if: always()
+    permissions: {}
+    steps:
+      - name: Every job that had to run succeeded
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+          CHANGES: ${{ needs.changes.result }}
+          PIN_CHANGED: ${{ needs.changes.outputs.pin }}
+        run: |
+          echo "$RESULTS"
+          if [ "$CHANGES" != "success" ]; then
+            echo "::error::could not tell whether the scanner pin changed"
+            exit 1
+          fi
+          # When the pin did not change, the installs and runs are skipped by design.
+          if [ "$PIN_CHANGED" != "true" ]; then
+            exit 0
+          fi
+          if echo "$RESULTS" | grep -Eq '"result": *"(failure|cancelled|skipped)"'; then
+            echo "::error::a scanner pin job did not succeed"
+            exit 1
+          fi

@@ -18,7 +18,6 @@ from iltero_schemas.models.common.event import AssuranceEvent
 from iltero_schemas.models.common.evidence_status import (
     EVALUATOR_ERROR_REASON,
     OPEN_CHECKS_REASON,
-    STAGE_NOT_REPORTED_REASON,
     EvidenceStatus,
     GapReason,
 )
@@ -38,7 +37,7 @@ KEPT_PLAN: dict[str, Any] = json.loads(
     (VECTORS / "scanner_evidence" / "iac" / "local_run_scanned" / "plan.json").read_text(encoding="utf-8")
 )
 POSTPONED: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "iac" / "local_run_postponed.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "iac" / "local_run_postponed_storage_encryption.json").read_text(encoding="utf-8")
 )
 
 
@@ -121,7 +120,16 @@ def _files(car: CAR, plan: dict[str, Any], assertions: dict[str, Any]) -> KeptFi
     """The kept files, the plan keyed by the digest of the record's own plan entry."""
     kept = next(ref.digest for ref in car.evidence_refs if ref.collector.tool == "terraform_plan")
     return KeptFiles(
-        scanner_check_mappings={}, observations={}, reports={}, plans={kept: plan}, assertions=assertions, exceptions={}
+        scanner_check_mappings={},
+        observations={},
+        reports={},
+        plans={kept: plan},
+        assertions=assertions,
+        local_exceptions={},
+        served_exceptions={},
+        inputs={},
+        identities={},
+        served_bundles={},
     )
 
 
@@ -213,15 +221,14 @@ SETTLED: dict[str, Any] = json.loads(
 
 def test_a_record_that_reached_post_verify_settles_its_postponed_check_and_lists_no_open_check() -> None:
     """The Iltero CLI wrote this record: its plan stage postponed one check, which post-verify settled over the state
-    after the apply. Its pre-deploy stage never reported, the one gap its evidence lists."""
+    after the apply. Its evidence lists two gaps: its pre-deploy stage never reported, and its plan's local provider
+    has no resource kinds a check can name."""
     car = CAR.model_validate(SETTLED)
     plan = car.stages[Stage.PLAN]
     assert plan.postponed_checks is not None and len(plan.postponed_checks) == 1
     settling = [event for event in car.events if settles_a_postponed_check(event)]
     assert [(event.assertion.id, event.evaluation.status) for event in settling] == [
-        ("ACME.IAC.RESOURCE.TERRAFORM.DATA.OUTPUT_SET", "pass")
+        ("ACME.IAC.RESOURCE.LOCAL.FILE.ID_SET", "pass")
     ]
     assert car.stages[Stage.POST_VERIFY].resource_redaction is not None
-    assert [(gap.reason, gap.stage) for gap in car.evidence_status.reasons] == [
-        (STAGE_NOT_REPORTED_REASON, Stage.PRE_DEPLOY)
-    ]
+    assert car.evidence_status.reasons == []

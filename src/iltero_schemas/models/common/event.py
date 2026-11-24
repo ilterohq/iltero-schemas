@@ -13,16 +13,20 @@ it and are refused if present.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Annotated, Literal
+from collections.abc import Mapping, Sequence
+from types import MappingProxyType
+from typing import Annotated, Final, Literal
 
 from pydantic import AfterValidator, Field, model_validator
 
 from iltero_schemas.assertions.built_in import BUILT_INS, SHIPPED_ASSERTIONS
-from iltero_schemas.assertions.paths import NOT_DECIDED_BY_SCANNERS
-from iltero_schemas.canonical.common.encoding import canonical_bytes
+from iltero_schemas.assertions.paths import (
+    NOT_DECIDED_BY_SCANNERS,
+    RENDERED_PLAN_MATCHES_EVALUATED_PLAN_ID,
+    REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN_ID,
+)
+from iltero_schemas.canonical.common.encoding import canonical_bytes, digest_of
 from iltero_schemas.compiler.limits import REASON_MAX_BYTES
-from iltero_schemas.models.common import fields
 from iltero_schemas.models.common.assertion import (
     TargetKind,
 )
@@ -33,6 +37,7 @@ from iltero_schemas.models.common.checked_content import CheckedContent
 from iltero_schemas.models.common.ci import CiSystem
 from iltero_schemas.models.common.fields import (
     MAX_SUBJECT_IDENTITIES,
+    AssertionRef,
     BoundedObject,
     Commit,
     Digest,
@@ -61,6 +66,18 @@ from iltero_schemas.models.common.scanner_evaluator import (
 from iltero_schemas.models.common.subjects import check_subject
 from iltero_schemas.profiles import profile_for, reads_server_facts
 
+# Why the rendered-plan check is unknown when the apply job reported no plan rendered from its saved plan file: the
+# runner sets it from the apply job's facts.
+RENDERED_PLAN_NOT_SENT: Final = "rendered_plan_not_sent"
+# Why the re-plan check is unknown when the apply job compared no re-plan: the runner sets it from the record.
+REPLAN_NOT_COMPARED: Final = "replan_not_compared"
+# The reasons only one check gives, by reason: the runner sets each from what the check reads.
+REASONS_OF_ONE_CHECK: Mapping[str, str] = MappingProxyType(
+    {
+        RENDERED_PLAN_NOT_SENT: RENDERED_PLAN_MATCHES_EVALUATED_PLAN_ID,
+        REPLAN_NOT_COMPARED: REPLAN_HAS_SAME_ACTIONS_AS_EVALUATED_PLAN_ID,
+    }
+)
 # Why a status is what it is; the runner sets it, a policy never does.
 STATUS_REASONS: dict[str, frozenset[str]] = {
     "pass": frozenset(),
@@ -78,6 +95,8 @@ STATUS_REASONS: dict[str, frozenset[str]] = {
             "deployment_log_incomplete",
             "state_not_read",
             "kind_unmapped",
+            RENDERED_PLAN_NOT_SENT,
+            REPLAN_NOT_COMPARED,
             SCANNER_RESULT_UNRESOLVED,
             SCANNER_REPORT_INCOMPLETE,
         }
@@ -155,12 +174,6 @@ def _reason(value: str) -> str:
 
 
 Reason = Annotated[str, AfterValidator(_reason)]
-
-
-class AssertionRef(fields.AssertionKey):
-    """The assertion, with the digest of its document as it was read."""
-
-    digest: Digest
 
 
 class EventSubject(StrictModel):
@@ -417,6 +430,9 @@ class AssuranceEvent(StrictModel):
             raise ValueError("a policy verdict names the input it was computed over")
         if self.provenance.scanner_checks is not None and self.assertion.id in NOT_DECIDED_BY_SCANNERS:
             raise ValueError(f"{self.assertion.id} is never decided by a scanner's result")
+        only = REASONS_OF_ONE_CHECK.get(self.evaluation.status_reason or "")
+        if only is not None and self.assertion.id != only:
+            raise ValueError(f"only an evaluation of {only} gives the reason {self.evaluation.status_reason}")
         self._check_from_scanner()
         self._check_built_in()
         self._check_namespace()
@@ -462,3 +478,9 @@ def events_file_bytes(events: Sequence[AssuranceEvent]) -> bytes:
             "events": [event.model_dump(mode="json", by_alias=True) for event in events],
         }
     )
+
+
+def event_digest(event: AssuranceEvent) -> str:
+    """The digest of ``event``: of its canonical JSON (RFC 8785), the same whether it is read from a record's events
+    file or on its own."""
+    return digest_of(event.model_dump(mode="json", by_alias=True))

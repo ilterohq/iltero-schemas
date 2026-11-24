@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from iltero_schemas.models.common.coverage import CountGap, Coverage, stage_outcome
+from iltero_schemas.models.common.coverage import Coverage, stage_outcome
+from iltero_schemas.models.common.coverage_gaps import CountGap
 from iltero_schemas.models.common.evidence_status import (
     EVALUATOR_ERROR_REASON,
     PLAN_REASON,

@@ -1,0 +1,7 @@
+[
+  {"record": "iac/local_run_deployed.json", "state": "apply_create.json", "second_reading": null},
+  {"record": "iac/local_run_deployed_another_plan_applied.json", "state": "apply_change.json", "second_reading": null},
+  {"record": "iac/local_run_post_verify.json", "state": "refresh_verified.json", "second_reading": "refresh_verified_second_reading.json"},
+  {"record": "iac/local_run_postponed_settled.json", "state": "refresh_verified.json", "second_reading": "refresh_verified_second_reading.json"},
+  {"record": "iac/local_run_scanned_then_another_plan_applied.json", "state": "apply_create.json", "second_reading": null}
+]

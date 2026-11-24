@@ -10,6 +10,7 @@ from iltero_schemas.models.common.evidence_status import (
     EXCLUDED_IDENTITY_REASON,
     GAP_REASON_PRECEDENCE,
     NO_ASSERTION_REASON,
+    NO_RESOURCE_KINDS_REASON,
     NO_RESOURCE_REASON,
     OPEN_CHECKS_REASON,
     PLAN_REASON,
@@ -17,6 +18,7 @@ from iltero_schemas.models.common.evidence_status import (
     STAGE_NOT_REPORTED_REASON,
     STATE_REASON,
     SUBSTITUTED_REASON,
+    UNREVIEWED_SOURCE_REASON,
 )
 from tests.common.test_models_coverage import DEPLOYED_STAGE, PLACEHOLDER, PLAN_STAGE, _outcome
 
@@ -40,6 +42,8 @@ def test_a_stage_and_a_record_share_one_order_of_reasons() -> None:
         PLAN_REASON,
         SUBSTITUTED_REASON,
         EXCLUDED_IDENTITY_REASON,
+        NO_RESOURCE_KINDS_REASON,
+        UNREVIEWED_SOURCE_REASON,
         NO_RESOURCE_REASON,
         NO_ASSERTION_REASON,
     )

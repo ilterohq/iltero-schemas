@@ -1,0 +1,34 @@
+{
+  "assert": {
+    "predicate": {
+      "literal": "631d2e4018226c254b97ce95f661d3a53b578cd5",
+      "op": "equal",
+      "path": "resource.after.id"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ACME.IAC.RESOURCE.LOCAL.FILE.ID_SET",
+  "stage": "plan",
+  "target": {
+    "kind": "resource",
+    "resources": [
+      {
+        "provider": "local",
+        "resource_types": [
+          "local_file"
+        ],
+        "tool": "terraform"
+      }
+    ]
+  },
+  "type": "state",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": "manifest",
+      "op": "equal",
+      "path": "resource.name"
+    }
+  }
+}

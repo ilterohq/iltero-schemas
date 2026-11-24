@@ -25,9 +25,11 @@ SPLIT_LAYERS = {
     PACKAGE / "canonical": set(),
     PACKAGE / "change_types": set(),
     PACKAGE / "kinds": set(),
+    PACKAGE / "redaction": set(),
     PACKAGE / "models": {"providers"},
     PACKAGE / "scanner_check_mappings": set(),
-    ROOT / "tests": {"baseline", "conftest.py", "exceptions.py", "records.py"},
+    PACKAGE / "scanners": set(),
+    ROOT / "tests": {"baseline", "conftest.py", "exceptions.py", "records.py", "server_runs.py"},
 }
 # Vector folders of one kind of document, such as Sigstore attestations: a file name inside them, like
 # image_signature, describes the document, not a change type.
@@ -96,3 +98,79 @@ def test_no_file_tells_change_types_apart_by_its_name(root: Path) -> None:
         and _names_a_change_type(path)
     ]
     assert named == []
+
+
+# The modules that reach the network or start a program, and the ``os`` functions that start one: the package does
+# neither.
+NETWORK_OR_PROCESS_MODULES = {
+    "aiohttp", "asyncio", "ftplib", "http", "httpx", "multiprocessing", "requests", "smtplib", "socket", "ssl",
+    "subprocess", "urllib", "urllib3", "xmlrpc",
+}  # fmt: skip
+PROCESS_FUNCTIONS = re.compile(r"(system|popen|exec\w*|\w*spawn\w*|fork\w*)")
+
+
+@pytest.mark.parametrize("path", sorted(PACKAGE.rglob("*.py")), ids=lambda p: str(p.relative_to(PACKAGE)))
+def test_no_module_of_the_package_reaches_the_network_or_starts_a_program(path: Path) -> None:
+    module = ast.parse(path.read_text(encoding="utf-8"))
+    imported = [
+        *(node.module for node in ast.walk(module) if isinstance(node, ast.ImportFrom) and node.module),
+        *(alias.name for node in ast.walk(module) if isinstance(node, ast.Import) for alias in node.names),
+    ]
+    assert not [name for name in imported if name.split(".")[0] in NETWORK_OR_PROCESS_MODULES]
+    imported_from_os = [
+        alias.name
+        for node in ast.walk(module)
+        if isinstance(node, ast.ImportFrom) and node.module == "os"
+        for alias in node.names
+    ]
+    assert not [name for name in imported_from_os if PROCESS_FUNCTIONS.fullmatch(name)]
+    called = [
+        node.attr
+        for node in ast.walk(module)
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "os"
+    ]
+    assert not [name for name in called if PROCESS_FUNCTIONS.fullmatch(name)]
+    dynamic = [
+        node
+        for node in ast.walk(module)
+        if isinstance(node, ast.Call)
+        and (
+            (isinstance(node.func, ast.Name) and node.func.id == "__import__")
+            or (isinstance(node.func, ast.Attribute) and node.func.attr == "import_module")
+        )
+    ]
+    assert not dynamic
+
+
+# The longest path, from the package folder, of a file the package ships. Windows refuses a path longer than 260
+# characters unless long paths are turned on, and an installed package sits below Python's site-packages folder in the
+# user's profile, often 60 to 90 characters deep: 160 leaves 100 for it.
+MAX_SHIPPED_PATH = 160
+# The repository's own folders, whose files a checkout writes below its folder, and the longest path of one of their
+# files from the repository folder: the package's limit and ``src/``, leaving about 35 characters for a CI checkout
+# folder such as ``D:/a/<repository>/<repository>/``.
+CHECKED_OUT_FOLDERS = ("src", "tests", "scripts", "docs", ".github")
+MAX_CHECKED_OUT_PATH = MAX_SHIPPED_PATH + len("src/")
+
+
+def test_every_file_the_package_ships_has_a_path_short_enough_for_windows() -> None:
+    too_long = [
+        path.relative_to(PACKAGE.parent).as_posix()
+        for path in PACKAGE.rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and len(path.relative_to(PACKAGE.parent).as_posix()) > MAX_SHIPPED_PATH
+    ]
+    assert too_long == []
+
+
+def test_every_file_of_the_repository_has_a_path_short_enough_for_a_checkout_on_windows() -> None:
+    too_long = [
+        path.relative_to(ROOT).as_posix()
+        for folder in CHECKED_OUT_FOLDERS
+        for path in (ROOT / folder).rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and len(path.relative_to(ROOT).as_posix()) > MAX_CHECKED_OUT_PATH
+    ]
+    assert too_long == []

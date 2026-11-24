@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.canonical.common.encoding import CanonicalizationError, canonical_bytes, digest_of
 from iltero_schemas.models.common.redaction import redacted_value_counts
+from iltero_schemas.models.common.scanners import ILTERO_CLI
 from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_addresses import plan_resource_addresses
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
@@ -18,7 +19,7 @@ from iltero_schemas.models.iac.scanner_reports.readers import SCANNER_REPORT_REA
 
 if TYPE_CHECKING:
     # Only for the type: the record's model imports the module that imports this one.
-    from iltero_schemas.models.common.car import ScannerReport
+    from iltero_schemas.models.common.stage_scanners import ScannerReport
 
 # What reading a kept file the writer controls may raise; each is reported as a problem, never raised.
 UNREADABLE = (ValueError, TypeError, AttributeError, KeyError, RecursionError, CanonicalizationError)
@@ -40,8 +41,22 @@ def observations_problem(
         observed = ScannerObservations.model_validate(files.observations.get(report.observations))
     except ValidationError:
         return None, None, "names observations that are not given or are not observations"
-    named = (report.tool, report.tool_version, report.report_digest, report.input_kinds)
-    if (observed.tool, observed.tool_version, observed.report_digest, observed.input_kinds) != named:
+    named = (
+        report.tool,
+        report.tool_version,
+        report.ran_by,
+        report.configuration_digest,
+        report.report_digest,
+        report.input_kinds,
+    )
+    if (
+        observed.tool,
+        observed.tool_version,
+        observed.ran_by,
+        observed.configuration_digest,
+        observed.report_digest,
+        observed.input_kinds,
+    ) != named:
         return None, None, "names observations of another report"
     counts = (
         report.results_read,
@@ -53,11 +68,11 @@ def observations_problem(
     held = (len(observed.results), observed.unreadable_results, observed.written_configuration_results)
     if (*held, observed.tool_parsing_errors, observed.results_not_listed) != counts:
         return None, None, "does not count what its observations hold"
-    plan = files.plans.get(observed.plan_digest)
+    plan = files.plans.get(observed.kept_plan_digest)
     if (
-        observed.plan_digest not in register
+        observed.kept_plan_digest not in register
         or not isinstance(plan, dict)
-        or digest_or_none(plan) != observed.plan_digest
+        or digest_or_none(plan) != observed.kept_plan_digest
     ):
         return None, None, "names observations of a plan other than the one the stage kept"
     report_document = files.reports.get(report.report_digest)
@@ -72,7 +87,14 @@ def observations_problem(
         return None, None, "keeps more of its scanner's report than the contract keeps"
     if redacted_value_counts(report_document) != report.redacted_values:
         return None, None, "does not count, for each reason, the redacted values the report the stage kept holds"
-    source = Source(observed.report_digest, observed.plan_digest, observed.rules_digest, observed.configuration_digest)
+    source = Source(
+        observed.report_digest,
+        observed.kept_plan_digest,
+        observed.rules_digest,
+        observed.configuration_digest,
+        observed.ran_by,
+        observed.input_kinds[0] if observed.ran_by == ILTERO_CLI else None,
+    )
     try:
         rebuilt = reader.read(report_document, plan_resource_addresses(plan), source)
     except UNREADABLE:

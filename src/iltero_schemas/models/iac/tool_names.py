@@ -22,3 +22,5 @@ RESOURCE_TYPE_PATTERNS: Mapping[IacTool, str] = MappingProxyType({"terraform": r
 ADDRESS_SCHEMES: Mapping[IacTool, str] = MappingProxyType({"terraform": "terraform_address"})
 # The collector a record's register names for the plan a stage kept, redacted, of each tool.
 PLAN_COLLECTORS: Mapping[IacTool, str] = MappingProxyType({"terraform": "terraform_plan"})
+# The collector a record's register names for the apply log the post-deploy stage kept, redacted, of each tool.
+APPLY_COLLECTORS: Mapping[IacTool, str] = MappingProxyType({"terraform": "terraform_apply"})

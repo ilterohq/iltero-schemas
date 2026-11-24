@@ -12,7 +12,7 @@ from iltero_schemas.models.common.car import CAR
 from tests.conftest import VECTORS
 
 # The record of each change type that reached its post-verify stage, by its path from the records folder.
-VERIFIED_RECORDS = ("iac/local_run_post_verify.json", "image/local_run_deploy.json")
+VERIFIED_RECORDS = ("iac/local_run_post_verify.json", "image/local_run_deploy_rolled_out.json")
 KEPT_STAGES = ("post_deploy", "post_verify")
 CASES = [(vector, stage) for vector in VERIFIED_RECORDS for stage in KEPT_STAGES]
 IDS = [f"{vector.split('/')[0]}-{stage}" for vector, stage in CASES]
@@ -38,11 +38,11 @@ def test_a_redaction_report_of_another_part_than_the_stage_counts_is_refused(vec
         CAR.model_validate(document)
 
 
-# A path a redaction report lists, in each of its lists: one the policy hid, one it left unknown, one allowed through.
+# A path a redaction report lists, in each of its lists: one the policy hid, one it left unknown, one exempted.
 LISTED_PATHS: dict[str, Any] = {
-    "redacted": [{"path": "/apply/changes/0/address", "reason": "secret"}],
-    "unknown": ["/apply/changes/0/address"],
-    "allowed": [{"path": "/apply/changes/0/address", "reason": "The address names no secret."}],
+    "redacted": [{"path": ["apply", "changes", 0, "address"], "reason": "deny_key", "value_change": None}],
+    "unknown": [["apply", "changes", 0, "address"]],
+    "exempted": [{"path": ["apply", "changes", 0, "address"], "reason": "The address names no secret."}],
 }
 
 

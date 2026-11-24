@@ -1,0 +1,16 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT
+  version: "1.0.0"
+  title: The plan was no older than its plan age limit when the server issued the apply job's facts
+  remediation: Plan the change again, and apply it within the plan age limit.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  assert:
+    path: apply_job_timing.plan_age_seconds
+    less_than_or_equal:
+      path: apply_job_facts.plan_age_limit.seconds

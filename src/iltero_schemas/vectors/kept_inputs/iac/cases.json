@@ -1,0 +1,455 @@
+[
+  {
+    "name": "deployed_input_as_the_stage_kept_it",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "canonical",
+    "problems": []
+  },
+  {
+    "name": "input_not_given",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "not_given",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input the stage did not keep, or one whose bytes have another digest"
+      ]
+    ]
+  },
+  {
+    "name": "input_whose_bytes_have_another_digest",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "with_a_byte_added",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input the stage did not keep, or one whose bytes have another digest"
+      ]
+    ]
+  },
+  {
+    "name": "input_larger_than_an_input_may_be",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "too_large",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input larger than an input may be (16777216 bytes)"
+      ]
+    ]
+  },
+  {
+    "name": "input_not_kept_as_canonical_json",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "indented",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input not kept as canonical JSON"
+      ]
+    ]
+  },
+  {
+    "name": "kept_file_that_is_not_an_evaluation_input",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/kind": "AssuranceEvent"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names a kept file that is not an evaluation input"
+      ]
+    ]
+  },
+  {
+    "name": "input_about_an_environment_of_another_name",
+    "vector": "iac/local_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/organization_scope/environment/name": "staging"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input about another environment than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "input_about_another_change_than_the_records",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {
+      "/change/digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {},
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input about another change than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "input_that_says_otherwise_whether_the_environment_is_production",
+    "vector": "iac/local_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/organization_scope/environment/production": true
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input about another environment than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "input_whose_apply_job_facts_are_not_the_ones_its_stage_kept",
+    "vector": "iac/governed_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "pre_deploy",
+      "carrying": "apply_job_facts"
+    },
+    "set": {
+      "/apply_job_facts/plan_age_limit/seconds": 3600
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.3.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.4.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.5.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.6.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.7.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.8.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ],
+      [
+        "events.9.provenance.input_digest",
+        "names an evaluation input whose apply job's facts or approvals are not the ones its stage kept"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_tool_opened_naming_its_apply_log_by_a_keyed_digest",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/source/digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input whose digests of files the record keeps redacted, or never keeps, do not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_server_opened_naming_its_apply_log_by_no_digest",
+    "vector": "iac/governed_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/source/digest": null
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.10.provenance.input_digest",
+        "names an evaluation input whose digests of files the record keeps redacted, or never keeps, do not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_tool_opened_naming_its_readings_by_keyed_digests",
+    "vector": "iac/local_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/drift_check/first_reading_digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012",
+      "/drift_check/second_reading_digest": "hmac-sha256:b8da94b44d374f10c44e7df4bbaeafe0391bea16be552a9a71bd41e96049eb3f"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input whose digests of files the record keeps redacted, or never keeps, do not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_tool_opened_about_another_deployment",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/source/tool_version": "1.15.0"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input about another deployment than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_server_opened_about_another_deployment",
+    "vector": "iac/governed_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/source/tool_version": "1.15.0"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.10.provenance.input_digest",
+        "names an evaluation input about another deployment than the record's"
+      ]
+    ]
+  },
+  {
+    "name": "input_whose_drift_check_is_not_the_one_the_post_verify_stage_counts",
+    "vector": "iac/local_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/drift_check/tool_version": "1.15.0"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input whose drift check is not the one the post-verify stage counts"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_tool_opened_naming_its_state_by_a_keyed_digest",
+    "vector": "iac/local_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/state/digest": "hmac-sha256:1d5c655cccf198d39a3dc346c0cc15c86779330302695c3192f5c6627dc4f012",
+      "/deployment/apply/state/digest_version": "1"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input whose state digest does not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_server_opened_naming_its_state_by_a_plain_digest",
+    "vector": "iac/governed_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_deploy",
+      "carrying": "deployment"
+    },
+    "set": {
+      "/deployment/apply/state/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "/deployment/apply/state/digest_version": "redacted-1"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.10.provenance.input_digest",
+        "names an evaluation input whose state digest does not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_server_opened_naming_its_readings_by_no_digest",
+    "vector": "iac/governed_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/drift_check/first_reading_digest": null,
+      "/drift_check/second_reading_digest": null
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.11.provenance.input_digest",
+        "names an evaluation input whose digests of files the record keeps redacted, or never keeps, do not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_of_a_run_the_server_opened_naming_its_readings_by_plain_digests",
+    "vector": "iac/governed_run_post_verify.json",
+    "record_set": {},
+    "input": {
+      "stage": "post_verify",
+      "carrying": "drift_check"
+    },
+    "set": {
+      "/drift_check/first_reading_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "/drift_check/second_reading_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.11.provenance.input_digest",
+        "names an evaluation input whose digests of files the record keeps redacted, or never keeps, do not have the form of who opened the run"
+      ]
+    ]
+  },
+  {
+    "name": "input_whose_replan_check_is_not_the_records",
+    "vector": "iac/governed_run_deployed.json",
+    "record_set": {},
+    "input": {
+      "stage": "pre_deploy",
+      "carrying": "replan_check"
+    },
+    "set": {
+      "/replan_check/replanned_at": "2026-09-22T00:03:00Z"
+    },
+    "kept_as": "canonical",
+    "problems": [
+      [
+        "events.1.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.2.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.3.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.4.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.5.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.6.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.7.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.8.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ],
+      [
+        "events.9.provenance.input_digest",
+        "names an evaluation input whose re-plan check is not the record's"
+      ]
+    ]
+  }
+]

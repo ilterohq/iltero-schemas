@@ -1,0 +1,4 @@
+{
+  "iac/served_catalog.json": "sha256:6a95999dcef9811dc4e8474dc9b66bc51e00b0c98d915d78d5182a4340c9da60",
+  "iac/served_catalog_signed_with_the_bundle_key.json": "sha256:53a1ece25b9d77c32b185ed4b376f6d53cb6b511e0acb5a5e907ed14658832df"
+}

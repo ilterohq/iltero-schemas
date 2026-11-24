@@ -22,9 +22,7 @@ from iltero_schemas.distribution import (
 DIST_INFO = "iltero_schemas-0.2.0.dist-info"
 FILES = {
     "iltero_schemas/__init__.py": b'"""Iltero shared contract."""\n',
-    "iltero_schemas/trust/bundle-keys.json": (
-        b'{"apiVersion": "iltero.com/v1", "kind": "BundleSigningKeys", "keys": []}\n'
-    ),
+    "iltero_schemas/trust/signing-keys.json": (b'{"apiVersion": "iltero.com/v1", "kind": "SigningKeys", "keys": []}\n'),
     f"{DIST_INFO}/METADATA": b"Metadata-Version: 2.4\nName: iltero-schemas\nVersion: 0.2.0\n",
 }
 
@@ -70,15 +68,15 @@ def test_the_wheel_and_its_installation_have_one_digest(tmp_path: Path) -> None:
 
 
 def test_a_file_changed_inside_the_wheel_is_refused(tmp_path: Path) -> None:
-    changed = {**FILES, "iltero_schemas/trust/bundle-keys.json": b'{"keys": ["attacker"]}\n'}
-    with pytest.raises(ContractIntegrityError, match="bundle-keys.json: its bytes are not the ones RECORD lists"):
+    changed = {**FILES, "iltero_schemas/trust/signing-keys.json": b'{"keys": ["attacker"]}\n'}
+    with pytest.raises(ContractIntegrityError, match="signing-keys.json: its bytes are not the ones RECORD lists"):
         wheel_digest(_wheel(tmp_path, changed, record=_record(FILES)))
 
 
 def test_a_file_changed_after_installation_is_refused(tmp_path: Path) -> None:
     dist = _install(tmp_path, _wheel(tmp_path, FILES))
-    (tmp_path / "site" / "iltero_schemas" / "trust" / "bundle-keys.json").write_bytes(b"{}\n")
-    with pytest.raises(ContractIntegrityError, match="bundle-keys.json"):
+    (tmp_path / "site" / "iltero_schemas" / "trust" / "signing-keys.json").write_bytes(b"{}\n")
+    with pytest.raises(ContractIntegrityError, match="signing-keys.json"):
         identity_of(dist)
 
 

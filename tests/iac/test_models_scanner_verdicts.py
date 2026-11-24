@@ -21,7 +21,12 @@ from iltero_schemas.models.iac.scanner_verdicts import (
 from tests.conftest import VECTORS
 
 SOURCE = Source(
-    report_digest="sha256:" + "a" * 64, plan_digest="sha256:" + "b" * 64, rules_digest=None, configuration_digest=None
+    report_digest="sha256:" + "a" * 64,
+    kept_plan_digest="sha256:" + "b" * 64,
+    rules_digest=None,
+    configuration_digest=None,
+    ran_by="pipeline",
+    input_kind=None,
 )
 DB = "aws_db_instance.a"
 PLAN = [DB, "aws_db_instance.b", "aws_db_instance.n[0]", "aws_db_instance.n[1]"]
@@ -166,7 +171,7 @@ def test_trivy_silence_is_no_result_and_never_a_pass() -> None:
 
 
 def test_trivy_silence_in_a_report_holding_results_the_stage_could_not_read_is_unknown() -> None:
-    hidden = {"__redacted": True, "reason": "known_sensitive", "present": True, "type": "string"}
+    hidden = {"__redacted": True, "reason": "declared_sensitive", "present": True, "type": "string"}
     observed = _trivy(("AWS-0080", "PASS", None), (hidden, "FAIL", DB))  # type: ignore[arg-type]
     assert observed.unreadable_results == 1
     verdict = _of(_checks("trivy"), observed)
@@ -320,7 +325,7 @@ def test_a_suppressed_check_never_hides_a_bound_check_with_no_result() -> None:
 
 
 def test_a_trivy_suppression_never_hides_results_the_stage_could_not_read() -> None:
-    hidden = {"__redacted": True, "reason": "known_sensitive", "present": True, "type": "string"}
+    hidden = {"__redacted": True, "reason": "declared_sensitive", "present": True, "type": "string"}
     observed = _trivy(("AWS-0080", "EXCEPTION", DB), (hidden, "FAIL", DB))  # type: ignore[arg-type]
     verdict = _of(_checks("trivy"), observed)
     assert (verdict.status, verdict.status_reason) == ("unknown", "scanner_report_incomplete")

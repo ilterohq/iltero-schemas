@@ -17,7 +17,7 @@ from iltero_schemas.models.common.coverage import Coverage, stage_outcome
 from iltero_schemas.models.common.evidence_status import STATE_REASON
 from iltero_schemas.models.common.stages import integrity_problems
 from tests.conftest import VECTORS
-from tests.records import DEPLOYED, VERIFIED, count_by_digest, iac_change, top_level
+from tests.records import DEPLOYED, THROUGH_PRE_DEPLOY, VERIFIED, count_by_digest, iac_change, top_level
 
 NOT_READ = {"__unknown": True, "reason": "state_not_read"}
 STATE_GAP = {"kind": "state_not_read"}
@@ -111,23 +111,23 @@ def test_only_an_evaluation_of_a_record_whose_state_was_not_read_is_unknown_for_
     event = next(e for e in document["events"] if e["evaluation"]["stage"] == "post_deploy")
     event["evaluation"].update(status="unknown", status_reason=STATE_REASON)
     car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
-    assert ("events.3.evaluation.status_reason", "names a state not read the record does not") in [
+    index = document["events"].index(event)
+    assert (f"events.{index}.evaluation.status_reason", "names a state not read the record does not") in [
         tuple(problem) for problem in integrity_problems(car)
     ]
 
 
 def test_the_apply_log_is_an_entry_of_the_evidence_register() -> None:
-    log = DEPLOYED["change"]["deployment"]["apply"]["source"]["digest"]
     document = copy.deepcopy(DEPLOYED)
     document["evidence_refs"] = [
-        ref for ref in document["evidence_refs"] if ref["source"] is None or ref["source"]["digest"] != log
+        ref for ref in document["evidence_refs"] if ref["collector"]["tool"] != "terraform_apply"
     ]
-    with pytest.raises(ValidationError, match="the apply log the deployment was read from is an entry"):
+    with pytest.raises(ValidationError, match="the apply log the deployment was read from is one entry"):
         CAR.model_validate(document)
 
 
 def test_a_record_whose_state_was_not_read_gives_the_reason_only_at_post_deploy() -> None:
-    document = _not_read()
+    document = _not_read(THROUGH_PRE_DEPLOY)
     event = next(e for e in document["events"] if e["evaluation"]["stage"] == "pre_deploy")
     event["evaluation"].update(status="unknown", status_reason=STATE_REASON)
     car = CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
@@ -138,7 +138,7 @@ def test_a_record_whose_state_was_not_read_gives_the_reason_only_at_post_deploy(
 
 
 IMAGE_DEPLOY: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "image" / "local_run_deploy.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "image" / "local_run_deploy_rolled_out.json").read_text(encoding="utf-8")
 )
 
 

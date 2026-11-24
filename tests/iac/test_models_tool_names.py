@@ -7,7 +7,14 @@ from typing import get_args
 
 import pytest
 
-from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES, IAC_TOOLS, RESOURCE_TYPE_PATTERNS, IacTool
+from iltero_schemas.models.iac.tool_names import (
+    ADDRESS_SCHEMES,
+    APPLY_COLLECTORS,
+    IAC_TOOLS,
+    PLAN_COLLECTORS,
+    RESOURCE_TYPE_PATTERNS,
+    IacTool,
+)
 
 
 def test_every_tool_has_a_type_rule_and_an_address_scheme() -> None:
@@ -32,3 +39,9 @@ def test_the_tables_cannot_be_changed() -> None:
         ADDRESS_SCHEMES["terraform"] = "x"  # type: ignore[index]
     with pytest.raises(TypeError):
         RESOURCE_TYPE_PATTERNS["terraform"] = ".*"  # type: ignore[index]
+
+
+def test_every_tool_names_one_collector_for_its_plan_and_another_for_its_apply_log() -> None:
+    assert set(PLAN_COLLECTORS) == set(APPLY_COLLECTORS) == set(IAC_TOOLS)
+    assert all(PLAN_COLLECTORS[tool] != APPLY_COLLECTORS[tool] for tool in IAC_TOOLS)
+    assert APPLY_COLLECTORS["terraform"] == "terraform_apply"

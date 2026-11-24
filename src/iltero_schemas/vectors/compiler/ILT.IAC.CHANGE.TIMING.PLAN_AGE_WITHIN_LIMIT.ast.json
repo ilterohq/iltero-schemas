@@ -1,0 +1,20 @@
+{
+  "assert": {
+    "predicate": {
+      "op": "less_than_or_equal",
+      "path": "apply_job_timing.plan_age_seconds",
+      "ref": "apply_job_facts.plan_age_limit.seconds"
+    }
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.CHANGE.TIMING.PLAN_AGE_WITHIN_LIMIT",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": null
+}

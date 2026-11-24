@@ -1,0 +1,276 @@
+{
+  "trivy": {
+    "version": "0.76.2",
+    "release_tag": "v0.76.2",
+    "release_commit": "3f6334d223b52188324af3b9923b4249cd206652",
+    "published_at": "2026-11-05T12:50:25Z",
+    "download_url": "https://github.com/aquasecurity/trivy/releases/download/v0.76.2",
+    "checksums_file": "trivy_0.76.2_checksums.txt",
+    "signature": {
+      "bundle_file": "trivy_0.76.2_checksums.txt.sigstore.json",
+      "certificate_identity": "https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.76.2",
+      "certificate_oidc_issuer": "https://token.actions.githubusercontent.com",
+      "transparency_log_index": 3693536154
+    },
+    "programs": {
+      "darwin-aarch64": {
+        "archive": "trivy_0.76.2_macOS-ARM64.tar.gz",
+        "archive_format": "tar.gz",
+        "archive_sha256": "ae7ea358326960406b703c77b2ac490190797d80b306b5b50c2a27221da0a5b8",
+        "archive_size_bytes": 49840394,
+        "program": "trivy",
+        "program_sha256": "7a15c426f963473a485a4f315e21f8e2c881269d500bf0de35da13a4421fa108",
+        "program_size_bytes": 168530818
+      },
+      "darwin-x86_64": {
+        "archive": "trivy_0.76.2_macOS-64bit.tar.gz",
+        "archive_format": "tar.gz",
+        "archive_sha256": "e08bb9ea449ecf66c6bfb03cbb8697c503ff33d35fc585c9747e3eaeb7ed4c7b",
+        "archive_size_bytes": 53795834,
+        "program": "trivy",
+        "program_sha256": "d92df6dbfad2bc30e05e10508d43cdbc43f1e8553285f9d04473a10545f2e928",
+        "program_size_bytes": 180501536
+      },
+      "linux-aarch64": {
+        "archive": "trivy_0.76.2_Linux-ARM64.tar.gz",
+        "archive_format": "tar.gz",
+        "archive_sha256": "ab9d51f86e6a5fb936f605faff6b593ac51bc378fff4d3e8b9d58358b9c367c3",
+        "archive_size_bytes": 47437311,
+        "program": "trivy",
+        "program_sha256": "7844c3851b28470b6d7f0975fa0b3262c5b2272c9a54a91f522801bb8926f51f",
+        "program_size_bytes": 163184800
+      },
+      "linux-x86_64": {
+        "archive": "trivy_0.76.2_Linux-64bit.tar.gz",
+        "archive_format": "tar.gz",
+        "archive_sha256": "bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf",
+        "archive_size_bytes": 52714130,
+        "program": "trivy",
+        "program_sha256": "6a972c69606c7b3ea4c6bdcc6fc9332ea9ad38381624310c1e85cc77345909f3",
+        "program_size_bytes": 176386208
+      },
+      "windows-x86_64": {
+        "archive": "trivy_0.76.2_windows-64bit.zip",
+        "archive_format": "zip",
+        "archive_sha256": "691f737a7e5566a673c3a74dab9160552ec32101e953b659e5c77443d16dddb6",
+        "archive_size_bytes": 53905616,
+        "program": "trivy.exe",
+        "program_sha256": "dd07adf881a72b54d1a922191d62fa939938df2155be85a727da93b67b24e617",
+        "program_size_bytes": 179937280
+      }
+    }
+  },
+  "checkov": {
+    "version": "3.4.3",
+    "published_at": "2026-11-02T17:21:33.795176Z",
+    "index_url": "https://pypi.org/simple",
+    "resolved_before": "2026-11-05T00:00:00Z",
+    "wheel": {
+      "file": "checkov-3.4.3-py3-none-any.whl",
+      "sha256": "666f376019f6a9fdbeb5c9d2a57be3fb83a4acd2d924d447942450a926ba0f55",
+      "publisher": {
+        "repository": "bridgecrewio/checkov",
+        "workflow": "build.yml",
+        "environment": "release"
+      }
+    },
+    "locks": [
+      {
+        "platform": "darwin-aarch64",
+        "wheel_platform": "macosx_11_0_arm64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-macosx_11_0_arm64-cp311.txt",
+        "sha256": "32f3c0453ab1e176c31b4b8226c60cbbcd0892524339a1929c893ed43b034366"
+      },
+      {
+        "platform": "darwin-aarch64",
+        "wheel_platform": "macosx_11_0_arm64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-macosx_11_0_arm64-cp312.txt",
+        "sha256": "3fd1a3215cf49de3870f15db919711913fc6b190489648ec1420640ea11c23b8"
+      },
+      {
+        "platform": "darwin-aarch64",
+        "wheel_platform": "macosx_11_0_arm64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-macosx_11_0_arm64-cp313.txt",
+        "sha256": "a1a340290ef38c862fdadc03e56bd9b3aec70379be3ef9bb382f8b83167dd33e"
+      },
+      {
+        "platform": "darwin-aarch64",
+        "wheel_platform": "macosx_11_0_arm64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-macosx_11_0_arm64-cp314.txt",
+        "sha256": "92da83fe2529312f52b6ecfbdd97c68831281bb4ddc7701850b06da42ceff5ec"
+      },
+      {
+        "platform": "darwin-x86_64",
+        "wheel_platform": "macosx_10_15_x86_64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-macosx_10_15_x86_64-cp311.txt",
+        "sha256": "08c90a704eb1c98d13a2f93408e814acfb8da455053da670a6a642e643bfe07e"
+      },
+      {
+        "platform": "darwin-x86_64",
+        "wheel_platform": "macosx_10_15_x86_64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-macosx_10_15_x86_64-cp312.txt",
+        "sha256": "412c612e227c0c5edefa7fc4246b271417ac148a937e28653580d83037f81fa8"
+      },
+      {
+        "platform": "darwin-x86_64",
+        "wheel_platform": "macosx_10_15_x86_64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-macosx_10_15_x86_64-cp313.txt",
+        "sha256": "2d600ac32bff2e306dd3cf5c64dabd369e8928c48beadc805df9bb2ea5788ac0"
+      },
+      {
+        "platform": "darwin-x86_64",
+        "wheel_platform": "macosx_10_15_x86_64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-macosx_10_15_x86_64-cp314.txt",
+        "sha256": "2e8b2f8e1cfc7fdaa569b5adbba926d04c04ae52eba0399e432daa2fefad3b9f"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "manylinux_2_17_aarch64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_aarch64-cp311.txt",
+        "sha256": "39f6e5b0cd042dadf87730a75e83928cb8cf480be0680092ffab01600efc4298"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "manylinux_2_17_aarch64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_aarch64-cp312.txt",
+        "sha256": "66ad5b0de1fcdc2b57c352a5a63aac0dc67ccd293d45d02c71bfd6984855068c"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "manylinux_2_17_aarch64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_aarch64-cp313.txt",
+        "sha256": "387783f84bf5dd88168472986ffb133017af96d0754f20bd33088532691bcc1e"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "manylinux_2_28_aarch64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-manylinux_2_28_aarch64-cp314.txt",
+        "sha256": "6d4f16bf7a21a3b622a9c5fa411edf15e67e1523e0f2e531f042b53cbe0fb4b6"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "manylinux_2_17_x86_64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_x86_64-cp311.txt",
+        "sha256": "c3f0d5b8c2ba3674dedbe10e3e7edb30cb709a037b0abba41a708c2e13846384"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "manylinux_2_17_x86_64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_x86_64-cp312.txt",
+        "sha256": "b56e840c7a0af02aa0d73e28290f21b6344f509a92148078cab44209e6f419f7"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "manylinux_2_17_x86_64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-manylinux_2_17_x86_64-cp313.txt",
+        "sha256": "eb3f70a537855ba2f6a3d17de8cf941313333ff7c602fa81c2b0b4722cd319bc"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "manylinux_2_28_x86_64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-manylinux_2_28_x86_64-cp314.txt",
+        "sha256": "677bc87fe03b3b69c380f8c6a44229be56f82503a23bf277c30c1046f1aa5e0d"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "musllinux_1_2_aarch64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_aarch64-cp311.txt",
+        "sha256": "bd4a4f61ae7c131062b838ea9bd7e489ba6a8e11655ecd3642b2c37fe4c6b2bb"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "musllinux_1_2_aarch64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_aarch64-cp312.txt",
+        "sha256": "33eb0bbdde8f5c285cfa60531e1485a763a9e8ce11da315db8d8b8a6904caeec"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "musllinux_1_2_aarch64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_aarch64-cp313.txt",
+        "sha256": "dd8b62ad31fade2d49255a264a2de35521c6579a16bb3dc0b08f9b98e6d1d970"
+      },
+      {
+        "platform": "linux-aarch64",
+        "wheel_platform": "musllinux_1_2_aarch64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_aarch64-cp314.txt",
+        "sha256": "9e48d12ba9e6dc4f9bf4fbdc8a7c59a298a186d59e407cf8cb4dac173e263c9e"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "musllinux_1_2_x86_64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_x86_64-cp311.txt",
+        "sha256": "fa02d13b49dfd4fdd1c0f8104b20056e63a309b3f9986a7d01bae2536254a24c"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "musllinux_1_2_x86_64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_x86_64-cp312.txt",
+        "sha256": "29caa569374c0dede2e838bb3017bb86b3d8c73c2595791418b4beb1203ae2e7"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "musllinux_1_2_x86_64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_x86_64-cp313.txt",
+        "sha256": "4e8555460ead4290fb5fd7311d2140f9b6f744fa20116f14a3d66884c37da29b"
+      },
+      {
+        "platform": "linux-x86_64",
+        "wheel_platform": "musllinux_1_2_x86_64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-musllinux_1_2_x86_64-cp314.txt",
+        "sha256": "a14b19c9c42d41359cf214baab9a3cfb152d12b51050389bb932177db2ba915f"
+      },
+      {
+        "platform": "windows-x86_64",
+        "wheel_platform": "win_amd64",
+        "python_version": "cp311",
+        "file": "locks/checkov-3.4.3-win_amd64-cp311.txt",
+        "sha256": "428fc43b3be9cbcfe94e3332a650189b170aef3f652b60e495288bee77407d4d"
+      },
+      {
+        "platform": "windows-x86_64",
+        "wheel_platform": "win_amd64",
+        "python_version": "cp312",
+        "file": "locks/checkov-3.4.3-win_amd64-cp312.txt",
+        "sha256": "8e4712a278affd18b33b03712ea6d4232564b1cc7ecd26ce46fd6cfcf2f13fd4"
+      },
+      {
+        "platform": "windows-x86_64",
+        "wheel_platform": "win_amd64",
+        "python_version": "cp313",
+        "file": "locks/checkov-3.4.3-win_amd64-cp313.txt",
+        "sha256": "084a90106cca53d01a10065154a2ded70c616f5be53b18fd680847f949cf5288"
+      },
+      {
+        "platform": "windows-x86_64",
+        "wheel_platform": "win_amd64",
+        "python_version": "cp314",
+        "file": "locks/checkov-3.4.3-win_amd64-cp314.txt",
+        "sha256": "91bc514926f0c52f3ee30fab743e899b7c0b2f85196cac21c515902973d07d83"
+      }
+    ]
+  }
+}

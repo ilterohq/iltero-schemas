@@ -112,7 +112,7 @@
       "/sources/plan/digest_version": "2"
     },
     "remove": [],
-    "message": "is not the version of the terraform plan digest rule"
+    "message": "a plan digest that is not keyed names the version of the terraform redacted plan digest rule"
   },
   {
     "name": "identities_read_from_a_refresh_only_plan_naming_an_applied_plan",

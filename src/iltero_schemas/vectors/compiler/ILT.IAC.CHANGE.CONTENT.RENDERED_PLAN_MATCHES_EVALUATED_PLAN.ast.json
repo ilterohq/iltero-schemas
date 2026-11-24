@@ -1,0 +1,44 @@
+{
+  "assert": {
+    "all": [
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest",
+          "ref": "plan.digest"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.digest_version",
+          "ref": "plan.digest_version"
+        }
+      },
+      {
+        "predicate": {
+          "op": "equal",
+          "path": "apply_job_facts.rendered_plan.tool",
+          "ref": "plan.tool"
+        }
+      }
+    ]
+  },
+  "ast_version": 1,
+  "change_type": "iac_change",
+  "id": "ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN",
+  "stage": "pre_deploy",
+  "target": {
+    "kind": "change",
+    "resources": []
+  },
+  "type": "process",
+  "version": "1.0.0",
+  "when": {
+    "predicate": {
+      "literal": "plan_and_apply_in_one_job",
+      "op": "not_equal",
+      "path": "apply_job_facts.flow"
+    }
+  }
+}

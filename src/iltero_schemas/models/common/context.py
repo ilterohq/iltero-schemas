@@ -31,11 +31,9 @@ reads through it is ``unknown``.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from pydantic import (
-    ConfigDict,
     Field,
     ValidationInfo,
     ValidatorFunctionWrapHandler,
@@ -45,52 +43,53 @@ from pydantic import (
 
 from iltero_schemas.canonical.common.change import change_digest
 from iltero_schemas.canonical.common.encoding import canonical_bytes
-from iltero_schemas.canonical.iac.plan import check_plan_digest_version
-from iltero_schemas.kinds import RESOURCE_KINDS, kind_of
-from iltero_schemas.models.common.assertion import ProviderName
 from iltero_schemas.models.common.assurance import Assurance
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
-from iltero_schemas.models.common.base import StageValue, StrictModel, TargetKindValue
+from iltero_schemas.models.common.base import StrictModel
 from iltero_schemas.models.common.change_type import (
     IAC_CHANGE_ACTIVITY,
     IAC_CHANGE_TYPE,
     IMAGE_BUILD_ACTIVITY,
     IMAGE_DEPLOY_ACTIVITY,
     IMAGE_RELEASE_TYPE,
-    ActivityName,
 )
 from iltero_schemas.models.common.checked_content import checked_image, checked_plan
 from iltero_schemas.models.common.commit_review import CommitReview, check_commit_review
-from iltero_schemas.models.common.facts import NotReported, ServerFactsUnavailable
+from iltero_schemas.models.common.context_parts import (
+    EvaluationRun,
+    OrganizationScope,
+    Plan,
+    PlanResource,
+    ProposedChange,
+    RunRef,
+    Source,
+    Subject,
+    check_kinds,
+)
+from iltero_schemas.models.common.facts import ServerFactsUnavailable
 from iltero_schemas.models.common.fields import (
-    MAX_SUBJECT_IDENTITIES,
-    Action,
-    Address,
-    ArtifactDigestSource,
-    AssertionKey,
-    Commit,
-    Digest,
-    Identifier,
     Identity,
-    Timestamp,
-    Uuid,
-    check_artifact_digest,
     parse_timestamp,
 )
-from iltero_schemas.models.common.redaction import MaybeRedacted, MaybeRedactedAddress
 from iltero_schemas.models.common.reference_time import ReferenceTime
 from iltero_schemas.models.common.server_facts import (
     Approvals,
     AttestationOutcome,
     Evaluations,
-    Exceptions,
     VerifiedSource,
 )
 from iltero_schemas.models.common.subjects import ADDRESS_IDENTITY_SCHEMES, check_subject, local_identity, unit_of
+from iltero_schemas.models.iac.apply_job_facts import (
+    AcceptedPlanStageRecord,
+    ApplyJobFacts,
+    ApplyJobTiming,
+    check_input_apply_job,
+)
 from iltero_schemas.models.iac.deployment import Deployment, check_superseded, check_tool
 from iltero_schemas.models.iac.drift_check import NO_DRIFT_CHECK_WITHOUT_THE_STATE, DriftCheck, check_against_deployment
-from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES, IacTool
-from iltero_schemas.models.iac.tools.variants import RelatedToolData, ResourceToolData, check_tool_data
+from iltero_schemas.models.iac.replan_check import ReplanCheck, ReplanNotCompared, check_input_replan
+from iltero_schemas.models.iac.tool_names import ADDRESS_SCHEMES
+from iltero_schemas.models.iac.tools.variants import check_tool_data
 from iltero_schemas.models.image.build_reports import ScanReports, TestReports, check_scans_name_their_platform
 from iltero_schemas.models.image.deploy import ImageChange, ImageDeployment, ImageDriftCheck, check_compared
 from iltero_schemas.models.image.naming import ImageArtifact
@@ -101,7 +100,6 @@ KIND = "AssuranceContext"
 # part, a part not given written as null): far more than one resource's plan, its related resources
 # and the server's facts need, and a bound on what an evaluator is given to read.
 MAX_INPUT_BYTES = 16 * 1024 * 1024
-Relation = Literal["attached_to", "member_of", "targets", "configures"]
 # The parts a profile may name, whether or not this version specifies their shape.
 PARTS = (
     "source",
@@ -111,7 +109,6 @@ PARTS = (
     "plan",
     "evaluations",
     "approvals",
-    "exceptions",
     "run",
     "deployment",
     "drift_check",
@@ -122,193 +119,16 @@ PARTS = (
     "verified_source",
     "attestation_outcome",
     "commit_review",
+    "apply_job_facts",
+    "apply_job_timing",
+    "replan_check",
 )
 
 
-class Named(StrictModel):
-    name: Identifier
-
-
-class Identified(StrictModel):
-    id: Identifier
-
-
-class EvaluationRun(StrictModel):
-    """This evaluation run: its id, the activity and stage it belongs to, the runner's own clock, and the assertion."""
-
-    id: Identifier
-    activity: ActivityName
-    stage: StageValue
-    timestamp: Timestamp
-    assertion: AssertionKey
-
-
-class RunRef(StrictModel):
-    """The run an input belongs to, by Iltero's run id."""
-
-    id: Uuid
-
-
-class Environment(StrictModel):
-    """The environment the change is for: its name, and whether the policy it runs under treats it as production.
-
-    ``production`` comes from the server's policy for the environment; a run the server did not open cannot know
-    it, so it holds the unknown marker and a condition that reads it is ``unknown``, never false.
-    """
-
-    name: Identifier
-    production: bool | ServerFactsUnavailable
-
-
-class OrganizationScope(StrictModel):
-    """Organizational scope; a part is null when the run has none, such as a run not opened under a workspace."""
-
-    organization: Identified | None = None
-    workspace: Identified | None = None
-    environment: Environment | None = None
-
-
-class CommitRef(StrictModel):
-    sha: Commit
-
-
-class GitRef(StrictModel):
-    type: Literal["branch", "tag"]
-    name: Identifier
-
-
-class Source(StrictModel):
-    """The code the change comes from.
-
-    The commit is always known. ``repository`` is null for a checkout with no remote, ``ref`` for a detached head,
-    and ``pull_request`` for a run outside a pull request; a run on a developer's machine is never one.
-    """
-
-    vcs: Literal["git"]
-    commit: CommitRef
-    repository: Named | None = None
-    ref: GitRef | None = None
-    pull_request: Identified | None = None
-
-
-class Subject(StrictModel):
-    """What the evaluation is about: its key, and every identity known for it."""
-
-    kind: TargetKindValue
-    # The digest of its kind and its local identity (``models.common.subjects``).
-    key: Digest
-    identities: Annotated[list[Identity], Field(min_length=1, max_length=MAX_SUBJECT_IDENTITIES)]
-
-
-class KindNotMapped(StrictModel):
-    """What stands where a tool's adapter could not name a resource's kind: an evaluation that reads it is unknown."""
-
-    model_config = ConfigDict(serialize_by_alias=True)
-
-    unknown: Literal[True] = Field(alias="__unknown")
-    reason: Literal["kind_unmapped"]
-
-
-class ResourceIndexEntry(StrictModel):
-    """One line of the plan's table of contents: which resource, of which type and kind, planned to do what.
-
-    ``provider`` is the provider's short name (``aws``). ``kind`` is the kind the plan's tool table gives the type
-    (``kinds.iac.tables``); the unknown marker when the table has none; null exactly for a provider with no kinds.
-    """
-
-    id: Address
-    provider: ProviderName
-    type: Identifier
-    kind: Identifier | KindNotMapped | None
-
-    action: Action
-    module: Address | None
-
-
-def check_kinds(tool: IacTool, entries: Sequence[ResourceIndexEntry | PlanResource]) -> None:
-    """Raise ``ValueError`` unless every entry names the kind ``tool``'s table gives its type."""
-    for entry in entries:
-        named = kind_of(tool, entry.provider, entry.type)
-        if entry.provider not in RESOURCE_KINDS:
-            valid = entry.kind is None
-        elif named is None:
-            valid = isinstance(entry.kind, KindNotMapped)
-        else:
-            valid = entry.kind == named
-        if not valid:
-            raise ValueError(f"every entry names the kind the {tool} table gives its type")
-
-
-class ProposedChange(StrictModel):
-    """The proposed change: the resources it touches, and its digest, ``canonical.change_digest`` of its unit's plan
-    in the input's environment."""
-
-    resources: list[ResourceIndexEntry]
-    digest: Digest
-
-
-class Plan(StrictModel):
-    """The plan artifact: fingerprints, what the IaC tool said about it, and every resource it covers."""
-
-    # The IaC tool that wrote the plan, and the version of its plan format and of the tool itself.
-    tool: IacTool
-    format_version: Identifier
-    # The marker when the plan does not say.
-    tool_version: Identifier | NotReported
-    digest: Digest
-    digest_version: Identifier
-    artifact_digest: Digest | None
-    artifact_digest_source: ArtifactDigestSource
-    source_commit: Commit
-    # The marker when the tool's plan format has no such flag.
-    complete: bool | NotReported
-    applyable: bool | NotReported
-    resources: list[ResourceIndexEntry]
-
-    @model_validator(mode="after")
-    def _artifact_digest_has_its_source(self) -> Plan:
-        check_artifact_digest(self.artifact_digest, self.artifact_digest_source)
-        return self
-
-    @model_validator(mode="after")
-    def _digest_version_is_the_tools(self) -> Plan:
-        check_plan_digest_version(self.tool, self.digest_version)
-        return self
-
-
-class RelatedResource(StrictModel):
-    """Another resource that refers to this one, with its values as planned, or null when they were not carried."""
-
-    address: MaybeRedactedAddress
-    type: MaybeRedacted
-    relation: Relation
-    via: list[MaybeRedacted]
-    resource: dict[str, Any] | None
-    # What only the plan's tool says about the match, keyed by ``tool`` (``models.iac.tools.variants``).
-    tool_data: RelatedToolData
-
-
-class PlanResource(StrictModel):
-    """One managed resource as the plan describes it, values before and after, with the resources that refer to it."""
-
-    id: Address
-    provider: ProviderName
-    type: Identifier
-    kind: Identifier | KindNotMapped | None
-    name: MaybeRedacted
-    module: Address | None
-    action: Action
-    before: Any
-    after: Any
-    related: list[RelatedResource]
-    # What only the tool that planned it says about the resource, keyed by ``tool`` (``models.iac.tools.variants``).
-    tool_data: ResourceToolData
-
-    @model_validator(mode="after")
-    def _kind_from_its_tools_table(self) -> PlanResource:
-        check_kinds(self.tool_data.tool, [self])
-        check_tool_data(self.tool_data.tool, [related.tool_data for related in self.related], "related.tool_data")
-        return self
+def _production(scope: OrganizationScope) -> bool | None:
+    """Whether the input's environment is production, when the input knows: None for no environment or the marker."""
+    environment = scope.environment
+    return environment.production if environment is not None and isinstance(environment.production, bool) else None
 
 
 class AssuranceContext(StrictModel):
@@ -329,7 +149,6 @@ class AssuranceContext(StrictModel):
     # Facts only the server holds (``models.common.server_facts``); a marker when it could not supply them.
     evaluations: Evaluations | ServerFactsUnavailable | None = None
     approvals: Approvals | ServerFactsUnavailable | None = None
-    exceptions: Exceptions | ServerFactsUnavailable | None = None
     # Iltero's run this input belongs to, which an approval of a run names.
     run: RunRef | None = None
     drift_check: DriftCheck | ImageDriftCheck | None = None
@@ -345,6 +164,12 @@ class AssuranceContext(StrictModel):
     attestation_outcome: AttestationOutcome | ServerFactsUnavailable | None = None
     # Whether the change's commits were reviewed (``models.common.commit_review``); a marker when it could not say.
     commit_review: CommitReview | ServerFactsUnavailable | None = None
+    # What the server says about the job that applies an infrastructure change (``models.iac.apply_job_facts``); a
+    # marker when it could not supply it. ``apply_job_timing`` is what ``apply_job_timing`` works out from it.
+    apply_job_facts: ApplyJobFacts | ServerFactsUnavailable | None = None
+    apply_job_timing: ApplyJobTiming | None = None
+    # The re-plan check the apply job made (``models.iac.replan_check``): a comparison, or the marker that none was.
+    replan_check: ReplanCheck | ReplanNotCompared | None = None
 
     @field_validator("change", "deployment", "drift_check", mode="wrap")
     @classmethod
@@ -438,10 +263,36 @@ class AssuranceContext(StrictModel):
                 environment.production if environment is not None else None,
                 self.change.build if isinstance(self.change, ImageChange) else None,
             )
+        check_input_apply_job(
+            self.apply_job_facts,
+            self.apply_job_timing,
+            self.approvals,
+            _accepted_plan_stage_record(self.run, self.change, self.plan),
+            self.plan.artifact_digest_source if self.plan is not None else None,
+            _production(self.organization_scope),
+        )
+        check_input_replan(
+            self.apply_job_facts,
+            self.replan_check,
+            self.run.id if self.run is not None else None,
+            self.change.digest if self.change is not None else None,
+            self.plan.tool if self.plan is not None else None,
+        )
         if self.artifact is not None and self.scans is not None:
             scanned = [scan.image_digest for scan in self.scans]
             check_scans_name_their_platform(self.artifact.digest, self.artifact.platform_digests, scanned)
         return self
+
+
+def _accepted_plan_stage_record(
+    run: RunRef | None, change: ProposedChange | ImageChange | None, plan: Plan | None
+) -> AcceptedPlanStageRecord | None:
+    """The plan-stage record an infrastructure change's input is about, as the apply job's facts name it."""
+    if run is None or not isinstance(change, ProposedChange) or plan is None:
+        return None
+    return AcceptedPlanStageRecord(
+        run_id=run.id, change_digest=change.digest, plan_digest=plan.digest, artifact_digest=plan.artifact_digest
+    )
 
 
 # The parts whose shape depends on the input's activity, and their shapes for each activity that has them.

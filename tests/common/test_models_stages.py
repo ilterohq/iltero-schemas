@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from iltero_schemas.change_types import IAC_CHANGE, IMAGE_BUILD
 from iltero_schemas.models.common.assertion import Stage, TargetKind
-from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS, OutOfScope
+from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.coverage import Coverage, stage_outcome
 from iltero_schemas.models.common.fields import Identity
 from iltero_schemas.models.common.stages import integrity_problems, scope_counted_from
@@ -18,45 +18,22 @@ from iltero_schemas.models.common.subjects import subject_key
 from tests.records import (
     DEPLOYED,
     NOT_READ_BY_THE_STAGE,
+    PROJECT_CONFIG,
     RECORD,
+    THROUGH_PRE_DEPLOY,
     UNKNOWN,
     VERIFIED,
     add_built_in,
-    keep_events_files,
-    served,
-    top_level,
+    stage_record,
 )
 from tests.records import set_path as _set
 from tests.records import stage as _stage
+from tests.server_runs import (
+    served,
+    served_stage_record,
+)
 
 _READER = {SKIP_INTEGRITY_CHECKS: True}
-CONFIG = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
-
-
-def _with_top_level(document: dict[str, Any]) -> dict[str, Any]:
-    """The record's top level set to its stages combined, where they combine, so only the rule under test fails."""
-    try:
-        combined = top_level(document)
-    except ValueError:
-        return document  # stages that cannot be combined: the structure is what is under test
-    return {**document, **combined}
-
-
-def _record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: Any) -> dict[str, Any]:
-    """The run's record with ``changes``; a change of expected stages leaves the rest of the lifecycle out of scope."""
-    document = copy.deepcopy(RECORD)
-    document["stages"].update(copy.deepcopy(stages or {}))
-    for dotted, value in changes.items():
-        _set(document, dotted, value)
-    if "expected_stages" in changes and "out_of_scope" not in changes:
-        expected = set(changes["expected_stages"])
-        document["out_of_scope"] = [
-            {"stage": stage.value, "reason": "project_config", "declared_in": CONFIG}
-            for stage in IAC_CHANGE.stages
-            if stage.value not in expected
-        ]
-    # Each stage names its own events file by its events, so a test edits only the value under test.
-    return _with_top_level(keep_events_files(document))
 
 
 def _moved_event(index: int, stage: str) -> dict[str, Any]:
@@ -84,46 +61,48 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
 @pytest.mark.parametrize(
     ("document", "message"),
     [
-        (_record(expected_stages=["plan", "plan"]), "named once each, in the order they run"),
-        (_record(expected_stages=["pre_deploy", "plan"]), "named once each, in the order they run"),
-        (_record(expected_stages=[]), "starts at its plan stage"),
-        (_record(expected_stages=["post_deploy"]), "starts at its plan stage"),
-        (_record(expected_stages=["plan", "runtime"]), "runtime observations belong to no deployment"),
+        (stage_record(expected_stages=["plan", "plan"]), "named once each, in the order they run"),
+        (stage_record(expected_stages=["pre_deploy", "plan"]), "named once each, in the order they run"),
+        (stage_record(expected_stages=[]), "starts at its plan stage"),
+        (stage_record(expected_stages=["post_deploy"]), "starts at its plan stage"),
+        (stage_record(expected_stages=["plan", "runtime"]), "runtime observations belong to no deployment"),
         (
-            _record(out_of_scope=[{"stage": "post_verify", "reason": "project_config", "declared_in": CONFIG}] * 2),
+            stage_record(
+                out_of_scope=[{"stage": "post_verify", "reason": "project_config", "declared_in": PROJECT_CONFIG}] * 2
+            ),
             "a stage is named not in scope once",
         ),
         (
-            _record(
+            stage_record(
                 out_of_scope=[
-                    {"stage": "post_verify", "reason": "project_config", "declared_in": CONFIG},
+                    {"stage": "post_verify", "reason": "project_config", "declared_in": PROJECT_CONFIG},
                     {"stage": "post_deploy", "reason": "not_supported", "declared_in": None},
                 ]
             ),
             "a stage is expected or not in scope, never both",
         ),
         (
-            _record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=[]),
+            stage_record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=[]),
             "accounts for every stage of the lifecycle",
         ),
         (
-            _record(POST_VERIFY, expected_stages=["plan", "post_deploy", "post_verify"]),
+            stage_record(POST_VERIFY, expected_stages=["plan", "post_deploy", "post_verify"]),
             "verifies a deployment only after its post-deploy stage",
         ),
         (
-            _record(**{"stages.plan.coverage.subjects_in_scope.source_digest": "sha256:" + "c" * 64}),
+            stage_record(**{"stages.plan.coverage.subjects_in_scope.source_digest": "sha256:" + "c" * 64}),
             "counts the resources of the plan the record names",
         ),
         (
-            _record(PRE_DEPLOY, expected_stages=["plan", "post_deploy"]),
+            stage_record(PRE_DEPLOY, expected_stages=["plan", "post_deploy"]),
             "stage 'pre_deploy' is not one this record expects",
         ),
         (
-            _record({"pre_deploy": {**_stage("pre_deploy"), "stage": "plan"}}),
+            served_stage_record({"pre_deploy": {**_stage("pre_deploy"), "stage": "plan"}}),
             "the pre_deploy stage record names itself plan",
         ),
         (
-            _record(
+            served_stage_record(
                 {
                     "pre_deploy": _stage(
                         "pre_deploy", **{"coverage.subjects_in_scope.counted_from": "plan_resource_enumeration"}
@@ -132,17 +111,20 @@ POST_VERIFY = {"post_verify": _stage("post_verify")}
             ),
             "the pre_deploy stage counts its scope as change_unit",
         ),
-        (_record(events=[*RECORD["events"][:-1], _moved_event(-1, "pre_deploy")]), "every event belongs to a stage"),
         (
-            _record(CHECKED_PRE_DEPLOY, events=[_moved_event(0, "pre_deploy"), *RECORD["events"][1:]]),
+            stage_record(events=[*RECORD["events"][:-1], _moved_event(-1, "pre_deploy")]),
+            "every event belongs to a stage",
+        ),
+        (
+            served_stage_record(CHECKED_PRE_DEPLOY, events=[_moved_event(0, "pre_deploy"), *RECORD["events"][1:]]),
             "grouped by stage, in the order the stages run",
         ),
         (
-            _record(CHECKED_PRE_DEPLOY, events=[*RECORD["events"], _moved_event(-1, "pre_deploy")]),
+            served_stage_record(CHECKED_PRE_DEPLOY, events=[*RECORD["events"], _moved_event(-1, "pre_deploy")]),
             "an assertion is evaluated by one stage only",
         ),
         (
-            _record(
+            stage_record(
                 **{
                     "stages.plan.coverage.subjects_per_assertion": {
                         **RECORD["stages"]["plan"]["coverage"]["subjects_per_assertion"],
@@ -182,7 +164,7 @@ def test_a_record_whose_stages_do_not_hold_together_is_refused(document: dict[st
 
 def _with_an_edited_event_reason() -> dict[str, Any]:
     """The record with one event's reason reworded after its stage wrote its events file."""
-    document = _record()
+    document = stage_record()
     document["events"][1]["evaluation"]["policy_reason"] = "assert: true; reworded"
     return document
 
@@ -203,16 +185,16 @@ WITH_GAPS = {
 @pytest.mark.parametrize(
     ("document", "problems"),
     [
-        (_record(**{"stages.plan.events.count": 4}), ["stages.plan.events"]),
+        (stage_record(**{"stages.plan.events.count": 4}), ["stages.plan.events"]),
         (
-            _record(events=[RECORD["events"][0], _flipped_event(), *RECORD["events"][2:]]),
+            stage_record(events=[RECORD["events"][0], _flipped_event(), *RECORD["events"][2:]]),
             ["stages.plan.coverage", "stages.plan.coverage"],
         ),
-        (_record(**{"stages.plan.verdict": PASSED}), ["stages.plan.verdict"]),
-        (_record(**{"stages.plan.evidence_status": WITH_GAPS}), ["stages.plan.evidence_status"]),
-        ({**_record(), "coverage": {**RECORD["coverage"], "sampled": True}}, ["coverage"]),
-        ({**_record(), "verdict": {**RECORD["verdict"], "value": "met", "reason": None}}, ["verdict"]),
-        ({**_record(), "evidence_status": WITH_GAPS}, ["evidence_status"]),
+        (stage_record(**{"stages.plan.verdict": PASSED}), ["stages.plan.verdict"]),
+        (stage_record(**{"stages.plan.evidence_status": WITH_GAPS}), ["stages.plan.evidence_status"]),
+        ({**stage_record(), "coverage": {**RECORD["coverage"], "sampled": True}}, ["coverage"]),
+        ({**stage_record(), "verdict": {**RECORD["verdict"], "value": "met", "reason": None}}, ["verdict"]),
+        ({**stage_record(), "evidence_status": WITH_GAPS}, ["evidence_status"]),
         (_with_an_edited_event_reason(), ["stages.plan.events.digest"]),
     ],
     ids=[
@@ -249,7 +231,7 @@ def _plan_flags(
     coverage = Coverage.model_validate({**RECORD["stages"]["plan"]["coverage"], "gaps": gaps})
     status = stage_outcome(coverage).evidence_status.model_dump(mode="json")
     stage = {"stages.plan.coverage.gaps": gaps, "stages.plan.evidence_status": status}
-    document = _record(stages, **plan, **changes, **stage)
+    document = stage_record(stages, **plan, **changes, **stage)
     return CAR.model_validate(document, context=_READER)
 
 
@@ -310,137 +292,9 @@ def test_only_the_plan_stage_lists_a_plan_flag_gap() -> None:
     }
     expected = ["plan", "pre_deploy", "post_deploy"]
     changes = {"change.plan.complete": False, "stages.plan.coverage.gaps": gap}
-    document = _record(later, expected_stages=expected, all_expected_stages_reported=False, **changes)
+    document = served(stage_record(later, expected_stages=expected, all_expected_stages_reported=False, **changes))
     with pytest.raises(ValidationError, match="the pre_deploy stage lists a plan-flag gap"):
         CAR.model_validate(document, context=_READER)
-
-
-@pytest.mark.parametrize("path", ["C:/outside/config.yml", "D:config.yml", "../config.yml"])
-def test_the_file_that_leaves_a_stage_out_is_inside_the_project(path: str) -> None:
-    config = {"path": path, "digest": "sha256:" + "d" * 64}
-    scoped = _record(
-        expected_stages=["plan", "post_deploy"],
-        out_of_scope=[
-            {"stage": "pre_deploy", "reason": "project_config", "declared_in": config},
-            {"stage": "post_verify", "reason": "project_config", "declared_in": CONFIG},
-        ],
-    )
-    with pytest.raises(ValidationError, match="relative path inside the project"):
-        CAR.model_validate(scoped, context=_READER)
-
-
-def test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so() -> None:
-    """A project that has no approval step says so in its configuration, and the record names that file."""
-    config = {"path": ".iltero/config.yml", "digest": "sha256:" + "d" * 64}
-    scoped = _record(
-        expected_stages=["plan", "post_deploy"],
-        out_of_scope=[
-            {"stage": "pre_deploy", "reason": "project_config", "declared_in": config},
-            {"stage": "post_verify", "reason": "project_config", "declared_in": CONFIG},
-        ],
-    )
-    car = CAR.model_validate(scoped, context=_READER)
-    (left_out, _) = car.out_of_scope
-    assert left_out.declared_in is not None and left_out.declared_in.path == ".iltero/config.yml"
-
-
-@pytest.mark.parametrize(
-    ("entry", "message"),
-    [
-        ({"stage": "pre_deploy", "reason": "project_config", "declared_in": None}, "names the file that says so"),
-        ({"stage": "pre_deploy", "reason": "not_supported", "declared_in": CONFIG}, "names the file that says so"),
-        (
-            {"stage": "post_verify", "reason": "environment_policy", "declared_in": CONFIG},
-            "names the file that says so",
-        ),
-    ],
-    ids=["a project choice naming no file", "a file named for no choice", "a file named for a policy"],
-)
-def test_a_stage_left_out_says_why_in_a_way_that_holds(entry: dict[str, Any], message: str) -> None:
-    with pytest.raises(ValidationError, match=message):
-        OutOfScope.model_validate(entry)
-
-
-@pytest.mark.parametrize(
-    ("entry", "message"),
-    [
-        (
-            {"stage": "post_deploy", "reason": "project_config", "declared_in": CONFIG},
-            "a project can leave out only the pre-deploy and post-verify stages",
-        ),
-        (
-            {"stage": "pre_deploy", "reason": "environment_policy", "declared_in": None},
-            "an environment's policy can leave out only the post-verify stage",
-        ),
-        (
-            {"stage": "pre_deploy", "reason": "not_supported", "declared_in": None},
-            "the pre-deploy stage is supported for this record",
-        ),
-    ],
-    ids=["a project leaving out post-deploy", "a policy leaving out pre-deploy", "a tool that runs pre-deploy"],
-)
-def test_a_stage_is_left_out_only_for_a_reason_its_activity_allows(entry: dict[str, Any], message: str) -> None:
-    expected = [stage.value for stage in IAC_CHANGE.stages if stage.value != entry["stage"]]
-    scoped = _record(
-        expected_stages=expected,
-        out_of_scope=[entry],
-    )
-    with pytest.raises(ValidationError, match=message):
-        CAR.model_validate(scoped, context=_READER)
-
-
-POLICY_LEAVES_OUT_POST_VERIFY = {
-    "expected_stages": ["plan", "pre_deploy", "post_deploy"],
-    "out_of_scope": [{"stage": "post_verify", "reason": "environment_policy", "declared_in": None}],
-}
-
-
-def test_the_environment_policy_of_a_run_the_server_opened_can_leave_out_post_verify() -> None:
-    scoped = _record(**POLICY_LEAVES_OUT_POST_VERIFY, **{"governance.run_opened_by": "server"})
-    for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
-        coverage["assertions_required"]["origin"] = "server_pinned"
-    (left_out,) = CAR.model_validate(scoped, context=_READER).out_of_scope
-    assert left_out.reason == "environment_policy"
-
-
-def test_a_local_run_has_no_environment_policy_to_leave_a_stage_out() -> None:
-    with pytest.raises(ValidationError, match="only a run the server opened has an environment policy"):
-        CAR.model_validate(_record(**POLICY_LEAVES_OUT_POST_VERIFY), context=_READER)
-
-
-def test_a_terraform_record_cannot_call_its_post_verify_stage_unsupported() -> None:
-    unsupported = [{"stage": "post_verify", "reason": "not_supported", "declared_in": None}]
-    scoped = _record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=unsupported)
-    with pytest.raises(ValidationError, match="the post-verify stage is supported for this record"):
-        CAR.model_validate(scoped, context=_READER)
-
-
-def test_a_project_can_leave_out_the_post_verify_stage() -> None:
-    left_out = [{"stage": "post_verify", "reason": "project_config", "declared_in": CONFIG}]
-    scoped = _record(expected_stages=["plan", "pre_deploy", "post_deploy"], out_of_scope=left_out)
-    (entry,) = CAR.model_validate(scoped, context=_READER).out_of_scope
-    assert entry.reason == "project_config"
-
-
-def test_a_record_always_expects_its_post_deploy_stage() -> None:
-    with pytest.raises(ValidationError, match="a project can leave out only the pre-deploy and post-verify stages"):
-        CAR.model_validate(_record(expected_stages=["plan"]), context=_READER)
-
-
-@pytest.mark.parametrize(
-    ("reason", "declared_in", "message"),
-    [
-        ("project_config", CONFIG, "a project can leave out only the pre-deploy and post-verify stages"),
-        ("environment_policy", None, "an environment's policy can leave out only the post-verify stage"),
-        ("not_supported", None, "the post-deploy stage is supported for this record"),
-    ],
-    ids=["by the project", "by an environment's policy", "as not supported"],
-)
-def test_no_reason_leaves_out_the_post_deploy_stage(reason: str, declared_in: Any, message: str) -> None:
-    left_out = [{"stage": "post_deploy", "reason": reason, "declared_in": declared_in}]
-    scoped = _record(expected_stages=["plan", "pre_deploy", "post_verify"], out_of_scope=left_out)
-    with pytest.raises(ValidationError, match=message):
-        CAR.model_validate(scoped, context=_READER)
 
 
 @pytest.mark.parametrize(
@@ -449,7 +303,7 @@ def test_no_reason_leaves_out_the_post_deploy_stage(reason: str, declared_in: An
     ids=["another run", "another unit"],
 )
 def test_every_event_names_the_records_run(field: str, value: str) -> None:
-    document = _record()
+    document = stage_record()
     _set(document, f"events.0.provenance.run.{field}", value)
     if field == "unit":
         # The event moves to the other unit whole, so only the record can tell it is not its own.
@@ -460,30 +314,11 @@ def test_every_event_names_the_records_run(field: str, value: str) -> None:
         CAR.model_validate(document, context=_READER)
 
 
-def test_an_offline_record_has_no_facts_from_the_server() -> None:
-    pre_deploy = _stage("pre_deploy")
-    event = _moved_event(-1, "pre_deploy")
-    moved = f"{event['assertion']['id']}@{event['assertion']['version']}"
-    plan = copy.deepcopy(RECORD["stages"]["plan"])
-    del plan["coverage"]["subjects_per_assertion"][moved]
-    document = _record(
-        {"plan": plan, "pre_deploy": pre_deploy},
-        expected_stages=["plan", "pre_deploy", "post_deploy"],
-        all_expected_stages_reported=False,
-        events=[*RECORD["events"][:-1], event],
-    )
-    CAR.model_validate(document, context=_READER)
-    document["events"][-1]["provenance"]["facts_source"] = "server"
-    # The stage then keeps the marker its input held, as a stage that read the server's facts does.
-    for part in ("approvals", "commit_review"):
-        document["stages"]["pre_deploy"][part] = dict(UNKNOWN)
-    with pytest.raises(ValidationError, match="has no facts from the server"):
-        CAR.model_validate(document, context=_READER)
-
-
 def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
-    with_stage = _record(
-        PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], all_expected_stages_reported=False
+    with_stage = served(
+        stage_record(
+            PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], all_expected_stages_reported=False
+        )
     )
     CAR.model_validate(with_stage)
     with_stage["stages"]["pre_deploy"]["coverage"]["subjects_in_scope"]["source_digest"] = "sha256:" + "e" * 64
@@ -494,7 +329,9 @@ def test_a_pre_deploy_stage_counts_the_change_the_record_names() -> None:
 
 
 def test_a_stage_after_the_deployment_is_always_enforcing() -> None:
-    document = add_built_in(_record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")}), "post_deploy")
+    document = add_built_in(
+        stage_record({"post_deploy": _stage("post_deploy", enforcement_mode="advisory")}), "post_deploy"
+    )
     with pytest.raises(ValidationError, match="comes after the deployment, so its gate is enforcing"):
         CAR.model_validate(document, context=_READER)
 
@@ -559,19 +396,20 @@ def _approval(subject: dict[str, str], approval_id: str = "apr_0001") -> dict[st
         "independence": "independent",
         "policy_version": None,
         "timestamp": "2026-09-22T13:05:30.000Z",
+        "bound_to": None,
     }
 
 
 def _pre_deploy_reading(*approvals: dict[str, Any]) -> dict[str, Any]:
     """The record of a run the server opened, with a pre-deploy stage whose checks read ``approvals`` from it."""
-    document = served(DEPLOYED)
+    document = served(THROUGH_PRE_DEPLOY)
     document["stages"]["pre_deploy"]["approvals"] = list(approvals)
     return document
 
 
 def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> None:
-    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
-    of_run = _approval({"kind": "run", "id": DEPLOYED["run"]["id"]}, "apr_0002")
+    of_change = _approval({"kind": "change", "digest": THROUGH_PRE_DEPLOY["change"]["digest"]})
+    of_run = _approval({"kind": "run", "id": THROUGH_PRE_DEPLOY["run"]["id"]}, "apr_0002")
     CAR.model_validate(_pre_deploy_reading(of_change, of_run), context=_READER)
 
 
@@ -579,15 +417,18 @@ def test_a_stage_lists_the_approvals_its_checks_read_of_its_change_or_run() -> N
 def test_a_stage_whose_results_read_no_facts_from_the_server_keeps_the_unknown_marker_for_its_approvals(
     listed: bool,
 ) -> None:
-    of_change = _approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]})
-    document = copy.deepcopy(DEPLOYED)
+    of_change = _approval({"kind": "change", "digest": THROUGH_PRE_DEPLOY["change"]["digest"]})
+    document = served(THROUGH_PRE_DEPLOY)
+    for event in document["events"]:
+        if event["evaluation"]["stage"] == "pre_deploy":
+            event["provenance"]["facts_source"] = "none"
     document["stages"]["pre_deploy"]["approvals"] = [of_change] if listed else []
     with pytest.raises(ValidationError, match="the pre_deploy stage keeps the unknown marker for its approvals when"):
         CAR.model_validate(document, context=_READER)
 
 
 def test_a_stage_whose_results_read_facts_from_the_server_may_keep_the_unknown_marker_for_its_approvals() -> None:
-    document = served(DEPLOYED)
+    document = served(THROUGH_PRE_DEPLOY)
     assert document["stages"]["pre_deploy"]["approvals"] == UNKNOWN
     car = CAR.model_validate(document, context=_READER)
     assert car.stages[Stage.PRE_DEPLOY].listed_approvals == []
@@ -601,7 +442,7 @@ def test_a_stage_whose_results_read_facts_from_the_server_may_keep_the_unknown_m
             [_approval({"kind": "run", "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"})],
             "only approvals of a change or of",
         ),
-        ([_approval({"kind": "run", "id": DEPLOYED["run"]["id"]})] * 2, "lists each approval once"),
+        ([_approval({"kind": "run", "id": THROUGH_PRE_DEPLOY["run"]["id"]})] * 2, "lists each approval once"),
     ],
     ids=["another run", "listed twice"],
 )
@@ -620,7 +461,7 @@ def test_an_approval_of_another_change_is_an_integrity_problem() -> None:
 
 
 def test_a_forged_change_digest_is_reported_with_every_digest_bound_to_the_change() -> None:
-    document = _pre_deploy_reading(_approval({"kind": "change", "digest": DEPLOYED["change"]["digest"]}))
+    document = _pre_deploy_reading(_approval({"kind": "change", "digest": THROUGH_PRE_DEPLOY["change"]["digest"]}))
     document["change"]["digest"] = "sha256:" + "e" * 64
     with pytest.raises(
         ValidationError, match="change.digest is not the digest of the change type, unit, environment and plan"
@@ -635,7 +476,7 @@ def test_a_forged_change_digest_is_reported_with_every_digest_bound_to_the_chang
 
 def test_only_a_stage_whose_input_carries_approvals_keeps_them_or_the_unknown_marker() -> None:
     with pytest.raises(ValidationError, match="the plan stage keeps approvals, or the unknown marker, exactly where"):
-        CAR.model_validate(_record(**{"stages.plan.approvals": []}), context=_READER)
+        CAR.model_validate(stage_record(**{"stages.plan.approvals": []}), context=_READER)
     document = _pre_deploy_reading()
     document["stages"]["pre_deploy"]["approvals"] = None
     with pytest.raises(
@@ -644,13 +485,17 @@ def test_only_a_stage_whose_input_carries_approvals_keeps_them_or_the_unknown_ma
         CAR.model_validate(document, context=_READER)
 
 
-ONE_POLICY = "every stage and every redacted evidence file name the same redaction policy"
+ONE_POLICY = (
+    "every stage and every redacted evidence file name the redaction policy the record writes out, by its digest"
+)
 OTHER_POLICY_DIGEST = "sha256:" + "f" * 64
 
 
 def test_a_record_redacts_under_one_policy_in_every_stage() -> None:
-    document = _record(
-        PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], all_expected_stages_reported=False
+    document = served(
+        stage_record(
+            PRE_DEPLOY, expected_stages=["plan", "pre_deploy", "post_deploy"], all_expected_stages_reported=False
+        )
     )
     CAR.model_validate(document)
     document["stages"]["pre_deploy"]["redaction"]["policy"]["digest"] = OTHER_POLICY_DIGEST
@@ -661,7 +506,7 @@ def test_a_record_redacts_under_one_policy_in_every_stage() -> None:
 
 
 def test_a_redacted_evidence_file_names_the_records_policy() -> None:
-    document = _record()
+    document = stage_record()
     redacted = next(ref for ref in document["evidence_refs"] if ref["redaction_policy"] is not None)
     redacted["redaction_policy"]["digest"] = OTHER_POLICY_DIGEST
     with pytest.raises(ValidationError, match=ONE_POLICY):
@@ -669,18 +514,21 @@ def test_a_redacted_evidence_file_names_the_records_policy() -> None:
 
 
 def test_a_file_no_redaction_touched_names_no_policy() -> None:
-    document = _record()
+    document = stage_record()
     redacted = document["stages"]["plan"]["redaction"]["input"]["digest"]
     for ref in document["evidence_refs"]:
         if ref["digest"] != redacted:
             ref["redaction_policy"] = None
+            # A file kept with nothing redacted is kept as the pipeline gave it, so named by its own digest.
+            if ref["source"] is not None:
+                ref["source"]["digest"] = ref["digest"]
     CAR.model_validate(document)
 
 
 @pytest.mark.parametrize("name", ["post_deploy", "post_verify"])
 def test_an_infrastructure_stage_after_the_deployment_evaluates_its_always_evaluated_check(name: str) -> None:
     stages = {"post_deploy": _stage("post_deploy"), "post_verify": _stage("post_verify")}
-    document = _record(stages)
+    document = stage_record(stages)
     if name == "post_verify":
         add_built_in(document, "post_deploy")
     with pytest.raises(ValidationError, match="is evaluated once, at the .* stage, once it has reported"):
@@ -691,7 +539,7 @@ def test_an_infrastructure_stage_after_the_deployment_evaluates_its_always_evalu
     ("source", "name", "kind"),
     [
         (RECORD, "plan", "facts"),
-        (DEPLOYED, "pre_deploy", "observation"),
+        (THROUGH_PRE_DEPLOY, "pre_deploy", "observation"),
         (DEPLOYED, "post_deploy", "facts"),
         (VERIFIED, "post_verify", "observation"),
     ],

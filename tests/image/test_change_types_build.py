@@ -13,7 +13,6 @@ from pydantic import ValidationError
 from iltero_schemas.assertions import (
     APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
     BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID,
-    NO_DRIFT_AFTER_APPLY_ID,
     SHIPPED_ASSERTIONS,
     SIGNED_PROVENANCE_MATCHES_RUN_ID,
 )
@@ -34,9 +33,17 @@ from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.checked_content import CheckedImage
 from iltero_schemas.models.common.server_facts import AttestationNotSent, VerifiedAttestation
 from tests.conftest import VECTORS
-from tests.records import RECORD
+from tests.records import (
+    RECORD,
+    keep_events_files,
+)
+from tests.server_runs import (
+    from_the_servers_bundle,
+)
 
-BUILD: dict[str, Any] = json.loads((VECTORS / "records" / "image" / "local_run_build.json").read_text(encoding="utf-8"))
+BUILD: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "image" / "local_run_build_with_a_build_commit.json").read_text(encoding="utf-8")
+)
 # The evaluation input the record's report check read, as its evidence register keeps it.
 BUILD_INPUT: dict[str, Any] = json.loads(
     (VECTORS / "contexts" / "image" / "plan_artifact.json").read_text(encoding="utf-8")
@@ -78,11 +85,9 @@ def test_each_activity_names_the_check_that_binds_its_evaluations() -> None:
     assert IAC_CHANGE.carried_out_matches_checked == (APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID, Stage.POST_DEPLOY)
     for activity in (IMAGE_BUILD, IAC_CHANGE):
         assertion_id, stage = activity.carried_out_matches_checked
-        assert activity.always_evaluated[stage] == assertion_id
-    assert dict(IAC_CHANGE.always_evaluated) == {
-        Stage.POST_DEPLOY: APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID,
-        Stage.POST_VERIFY: NO_DRIFT_AFTER_APPLY_ID,
-    }
+        assert assertion_id in activity.always_evaluated[stage]
+    assert dict(IMAGE_BUILD.always_evaluated) == {Stage.PLAN: {BUILD_COMMIT_MATCHES_VERIFIED_COMMIT_ID}}
+    assert IMAGE_BUILD.enforced_in_advisory_mode == frozenset()
 
 
 def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave() -> None:
@@ -98,6 +103,16 @@ def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave() ->
         report["file_digest"]: report["image_digest_source"] for report in BUILD_INPUT["tests"] + BUILD_INPUT["scans"]
     }
     assert read.items() <= kept.items()
+
+
+@pytest.mark.parametrize("index", [0, 1], ids=["first report", "second report"])
+def test_a_build_keeps_each_test_and_scan_report_as_the_pipeline_gave_it(index: int) -> None:
+    document = copy.deepcopy(BUILD)
+    policy = next(ref["redaction_policy"] for ref in document["evidence_refs"] if ref["redaction_policy"] is not None)
+    named = document["change"]["reports"][index]["evidence_ref"]
+    next(ref for ref in document["evidence_refs"] if ref["ref_id"] == named)["redaction_policy"] = policy
+    with pytest.raises(ValidationError, match="a test or scan report is kept as the pipeline gave it"):
+        CAR.model_validate(document)
 
 
 def test_the_build_commit_is_the_one_its_metadata_file_names_for_its_image() -> None:
@@ -167,6 +182,8 @@ def _opened_by_server(record: dict[str, Any]) -> dict[str, Any]:
         coverage["assertions_required"]["origin"] = "server_pinned"
     for event in record["events"]:
         event["provenance"]["facts_source"] = "server"
+    from_the_servers_bundle(record)
+    keep_events_files(record)
     return record
 
 

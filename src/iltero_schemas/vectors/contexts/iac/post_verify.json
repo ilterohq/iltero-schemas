@@ -59,18 +59,19 @@
   "deployment": {
     "plan": {
       "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "digest_version": "1",
+      "digest_version": "redacted-1",
       "artifact_digest": null,
       "artifact_digest_source": "not_provided"
     },
     "apply": {
       "source": {
-        "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "digest": null,
         "tool": "terraform",
         "tool_version": "1.14.0"
       },
       "state": {
-        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "digest": "sha256:4bd3ae0c7588d1c297c383fb614bbe906a74fdd91f4ba391f45c983ca2d4ba1b",
+        "digest_version": "redacted-1",
         "tool": "terraform",
         "tool_version": "1.14.0"
       },
@@ -119,7 +120,6 @@
   "resource": null,
   "evaluations": null,
   "approvals": null,
-  "exceptions": null,
   "run": null,
   "drift_check": {
     "run_id": "0b6d3c52-5f0e-4b8a-9a40-2f1c7e5d9a11",
@@ -129,8 +129,8 @@
     "resources_read": 1,
     "first_reading_at": "2026-09-16T18:40:30Z",
     "second_reading_at": "2026-09-16T18:41:30Z",
-    "first_reading_digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-    "second_reading_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "first_reading_digest": null,
+    "second_reading_digest": null,
     "minimum_interval_seconds": 60,
     "differences": [],
     "differences_count": 0,
@@ -142,5 +142,8 @@
   "scans": null,
   "verified_source": null,
   "attestation_outcome": null,
-  "commit_review": null
+  "commit_review": null,
+  "apply_job_facts": null,
+  "apply_job_timing": null,
+  "replan_check": null
 }

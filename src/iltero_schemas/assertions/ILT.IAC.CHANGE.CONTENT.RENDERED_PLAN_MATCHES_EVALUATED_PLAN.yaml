@@ -1,0 +1,26 @@
+apiVersion: iltero.com/v1
+kind: TechnicalAssertion
+metadata:
+  id: ILT.IAC.CHANGE.CONTENT.RENDERED_PLAN_MATCHES_EVALUATED_PLAN
+  version: "1.0.0"
+  title: The plan the apply job reports it rendered from its saved plan file is the plan the plan stage evaluated
+  remediation: Give the apply job the saved plan file the plan stage evaluated, and the plan it renders.
+spec:
+  change_type: iac_change
+  stage: pre_deploy
+  target:
+    kind: change
+  when:
+    path: apply_job_facts.flow
+    not_equal: plan_and_apply_in_one_job
+  assert:
+    all:
+      - path: apply_job_facts.rendered_plan.digest
+        equal:
+          path: plan.digest
+      - path: apply_job_facts.rendered_plan.digest_version
+        equal:
+          path: plan.digest_version
+      - path: apply_job_facts.rendered_plan.tool
+        equal:
+          path: plan.tool

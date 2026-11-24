@@ -54,14 +54,14 @@
         "module": null
       }
     ],
-    "digest": "sha256:9a6cb4426d73989d0b87172c170f056a64c0d61ca4b4ef19516a870757a41d36"
+    "digest": "sha256:c09994e81a4b32e5adf9d6ca054bdf5481aff1e1c2b36344154f04736e4b0d7b"
   },
   "plan": {
     "tool": "terraform",
     "format_version": "1.2",
     "tool_version": "1.14.0",
     "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "digest_version": "1",
+    "digest_version": "redacted-1",
     "artifact_digest": null,
     "artifact_digest_source": "not_provided",
     "source_commit": "c84e7a1000000000000000000000000000000000",
@@ -93,13 +93,13 @@
   "deployment": {
     "plan": {
       "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "digest_version": "1",
+      "digest_version": "redacted-1",
       "artifact_digest": null,
       "artifact_digest_source": "not_provided"
     },
     "apply": {
       "source": {
-        "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "digest": null,
         "tool": "terraform",
         "tool_version": "1.14.0"
       },
@@ -151,7 +151,6 @@
   },
   "evaluations": null,
   "approvals": null,
-  "exceptions": null,
   "run": null,
   "drift_check": null,
   "assurance": null,
@@ -160,5 +159,8 @@
   "scans": null,
   "verified_source": null,
   "attestation_outcome": null,
-  "commit_review": null
+  "commit_review": null,
+  "apply_job_facts": null,
+  "apply_job_timing": null,
+  "replan_check": null
 }

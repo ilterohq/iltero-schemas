@@ -14,6 +14,7 @@ from iltero_schemas.models.common.fields import (
     FileName,
     GitObjectId,
     ProjectPath,
+    nanoseconds_between,
     parse_timestamp,
     plain_text,
 )
@@ -172,3 +173,16 @@ def test_a_git_object_id_is_a_sha1_or_sha256_id_in_lowercase_hex(value: str) -> 
 def test_a_git_object_id_of_another_length_or_not_in_lowercase_hex_is_refused(value: str) -> None:
     with pytest.raises(ValidationError, match="should match pattern"):
         TypeAdapter(GitObjectId).validate_python(value)
+
+
+@pytest.mark.parametrize(
+    ("earlier", "later", "nanoseconds"),
+    [
+        ("2026-09-21T00:00:00Z", "2026-09-21T00:00:00.000000001Z", 1),
+        ("2026-09-21T00:00:00.5Z", "2026-09-22T00:00:00.123456789Z", 86_399_623_456_789),
+        ("2026-09-21T00:00:01Z", "2026-09-21T00:00:00.999999999Z", -1),
+    ],
+    ids=["one nanosecond", "fractions of one and nine digits", "a later time first"],
+)
+def test_the_time_between_two_timestamps_is_exact_to_the_nanosecond(earlier: str, later: str, nanoseconds: int) -> None:
+    assert nanoseconds_between(earlier, later) == nanoseconds

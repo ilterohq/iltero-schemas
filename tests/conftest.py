@@ -14,6 +14,8 @@ import os
 import platform
 import re
 import shutil
+import socket
+import subprocess
 from pathlib import Path
 from typing import Any, cast, get_args
 
@@ -22,7 +24,7 @@ import pytest
 from iltero_schemas.models.common.assertion import PROVIDER_PATTERN
 from iltero_schemas.models.common.assertion_id import ILTERO_NAMESPACE, change_type_segment, provider_segment
 from iltero_schemas.models.common.change_type import ChangeTypeName
-from iltero_schemas.opa import OPA_RELEASE_PIN, platform_key
+from iltero_schemas.opa import CAPABILITIES, OPA_RELEASE_PIN, platform_key
 
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
@@ -37,6 +39,20 @@ SPLIT_CASE_FOLDERS = {
     "contexts_invalid": "contexts",
     "reports_invalid": "reports",
 }
+
+
+@pytest.fixture(autouse=True)
+def no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every test runs without the network: a test that tries to connect fails."""
+
+    def _refuse(*args: Any, **kwargs: Any) -> None:
+        raise AssertionError("a test tried to reach the network")
+
+    monkeypatch.setattr(socket.socket, "connect", _refuse)
+    monkeypatch.setattr(socket.socket, "connect_ex", _refuse)
+    monkeypatch.setattr(socket, "create_connection", _refuse)
+    monkeypatch.setattr(socket, "getaddrinfo", _refuse)
+    monkeypatch.setattr(socket.socket, "sendto", _refuse)
 
 
 def visible(folder: Path) -> list[Path]:
@@ -111,6 +127,40 @@ def opa() -> Path:
     return binary
 
 
+@pytest.fixture(scope="module")
+def capabilities(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The evaluator's allowlist of built-in functions this contract pins, as a file the evaluator reads."""
+    path = tmp_path_factory.mktemp("opa") / "capabilities.json"
+    path.write_bytes(CAPABILITIES)
+    return path
+
+
+def run_opa(opa: Path, *args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
+    """The evaluator run with ``args``, its output kept."""
+    return subprocess.run([str(opa), *args], input=stdin, capture_output=True, text=True, check=False, timeout=60)
+
+
+def evaluate_with_opa(opa: Path, capabilities: Path, module: Path, package: str, context: dict[str, Any]) -> Any:
+    """The one result the compiled ``module`` gives for ``context``, from the pinned evaluator."""
+    evaluated = run_opa(
+        opa,
+        "eval",
+        "--format",
+        "json",
+        "--strict-builtin-errors",
+        "--capabilities",
+        str(capabilities),
+        "--data",
+        str(module),
+        "--stdin-input",
+        f"data.{package}.evaluate",
+        stdin=json.dumps(context),
+    )
+    assert evaluated.returncode == 0, evaluated.stderr
+    (result,) = json.loads(evaluated.stdout)["result"][0]["expressions"][0]["value"]
+    return result
+
+
 STATE_DIGEST = "sha256:" + "5" * 64
 PLAN_DIGEST = "sha256:" + "6" * 64
 
@@ -119,9 +169,14 @@ def identity_record(**fields: Any) -> dict[str, Any]:
     """An identity record of one state and applied plan, with nothing listed unless ``fields`` says so."""
     record: dict[str, Any] = {
         "sources": {
-            "state": {"digest": STATE_DIGEST, "tool": "terraform", "tool_version": "1.14.0"},
+            "state": {
+                "digest": STATE_DIGEST,
+                "digest_version": "redacted-1",
+                "tool": "terraform",
+                "tool_version": "1.14.0",
+            },
             "read_from": "state_file",
-            "plan": {"digest": PLAN_DIGEST, "digest_version": "1"},
+            "plan": {"digest": PLAN_DIGEST, "digest_version": "redacted-1"},
         },
         "resolvers": [{"provider": "aws", "version": "1.0.0", "supported_resource_types": sorted(ARNS)}],
         "resolved": [],

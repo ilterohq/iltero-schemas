@@ -249,7 +249,7 @@ def test_a_refused_marker_names_only_the_markers_own_error() -> None:
 
 def test_a_refused_state_file_names_only_the_state_files_own_errors() -> None:
     apply = copy.deepcopy(APPLY)
-    apply["state"] = {"digest": APPLY["state"]["digest"], "tool": "terraform"}
+    apply["state"] = {"digest": APPLY["state"]["digest"], "digest_version": "redacted-1", "tool": "terraform"}
     with pytest.raises(ValidationError) as refused:
         Apply.model_validate(apply)
     assert [error["msg"] for error in refused.value.errors()] == ["Field required"]

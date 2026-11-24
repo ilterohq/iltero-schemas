@@ -17,12 +17,24 @@ CHECK: dict[str, Any] = json.loads(
 )["change"]["drift_check"]
 
 
+# A reading's digest as a record of a run the server opened names it.
+KEYED = "hmac-sha256:" + "a" * 64
+
+
 def _check(**changes: Any) -> dict[str, Any]:
     return {**copy.deepcopy(CHECK), **changes}
 
 
 def test_the_drift_check_of_the_verified_record_validates() -> None:
     assert DriftCheck.model_validate(CHECK).differences_count == 0
+
+
+def test_a_drift_check_names_both_readings_by_their_keyed_digests_or_neither() -> None:
+    assert CHECK["first_reading_digest"] is None and CHECK["second_reading_digest"] is None
+    keyed = DriftCheck.model_validate(
+        _check(first_reading_digest=KEYED, second_reading_digest="hmac-sha256:" + "b" * 64)
+    )
+    assert keyed.first_reading_digest == KEYED
 
 
 def test_the_readings_are_at_least_the_minimum_interval_apart_to_the_nanosecond() -> None:
@@ -51,7 +63,9 @@ DIFFERENCES = [
         ({"differences": DIFFERENCES, "differences_count": 1}, "differences_count is the number of differences"),
         ({"differences": DIFFERENCES, "differences_count": 2, "resources_read": 1}, "only a resource that was read"),
         ({"minimum_interval_seconds": 0}, "greater than 0"),
-        ({"second_reading_digest": CHECK["first_reading_digest"]}, "their digests differ"),
+        ({"first_reading_digest": KEYED, "second_reading_digest": KEYED}, "their digests differ"),
+        ({"first_reading_digest": KEYED}, "names the digests of both readings, or of neither"),
+        ({"second_reading_digest": KEYED}, "names the digests of both readings, or of neither"),
         (
             {"first_reading_only_differences": DIFFERENCES, "differences": DIFFERENCES[:1], "differences_count": 1},
             "not listed as differing in the first only",
@@ -75,6 +89,8 @@ DIFFERENCES = [
         "more than were read",
         "no interval",
         "one reading named twice",
+        "only the first reading named",
+        "only the second reading named",
         "in the latest reading and the first only",
         "first reading's differences out of order",
         "more differences in the two lists than were read",

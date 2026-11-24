@@ -19,17 +19,15 @@
     "assertion_source_digest": "sha256:3d306a8f9f94c29e5610ebde88004115d4a2d03f7d70767a1899bff64a93d0a2",
     "bundle": null,
     "checked_content": {
-      "digest": "sha256:8d36fac3ad34960b42f0dec045de153882ad04198fc9b9683e713089f920d761",
-      "digest_version": "1",
+      "digest": "sha256:f55a2f13ca1f659e2c9b0148a6dc731948d76bcbb3887eb61d087290482f60d7",
+      "digest_version": "redacted-1",
       "kind": "plan",
       "tool": "terraform"
     },
     "compiled_digest": null,
     "compiler": null,
     "evaluator": {
-      "digest": null,
       "engine": "checkov",
-      "reason": "not_executed_by_cli",
       "version": "3.3.8",
       "rule_ids": [
         "CKV_AWS_16"

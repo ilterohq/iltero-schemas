@@ -48,7 +48,7 @@ jobs:
       - run: pdm run lint
       - run: pdm run format
       - run: pdm run typecheck
-      # The trusted bundle keys may only move forward from the newest release. A
+      # The trusted signing keys may only move forward from the newest release. A
       # change to them must raise the version over the base and, as the release
       # will, the major or minor version over the newest release. A change that
       # breaks a rule is refused here, before review, not at release. The base is

@@ -45,7 +45,9 @@ WINDOWS_DEVICE_NAMES = frozenset(
 ASSERTION_ID_MAX_LENGTH = 96
 SEGMENT_MAX_LENGTH = 48
 # The areas of Iltero's own process assertions. A new area adds a value.
-ASSERTION_AREAS = frozenset({"APPROVAL", "SOURCE", "CONTENT", "DRIFT", "BUILD", "CHECKS", "PROVENANCE", "HISTORY"})
+ASSERTION_AREAS = frozenset(
+    {"APPROVAL", "SOURCE", "CONTENT", "DRIFT", "BUILD", "CHECKS", "PROVENANCE", "HISTORY", "TIMING"}
+)
 # Every target kind, as ``models.common.assertion.TargetKind`` lists them (a test holds the two together).
 TargetKindName = Literal["resource", "change", "deployment", "artifact", "assurance"]
 # How many segments the scope has, by target kind: a resource's provider and service; a process's one area.

@@ -13,7 +13,8 @@ from pydantic import ValidationError
 import iltero_schemas.models.common.context as context_module
 from iltero_schemas.canonical import change_digest
 from iltero_schemas.models.common.base import API_VERSION
-from iltero_schemas.models.common.context import PARTS, AssuranceContext, KindNotMapped
+from iltero_schemas.models.common.context import PARTS, AssuranceContext
+from iltero_schemas.models.common.context_parts import KindNotMapped
 from iltero_schemas.models.common.event import STATUS_REASONS
 from iltero_schemas.models.common.facts import NotReported, UnknownReason
 from iltero_schemas.models.common.fields import Identity
@@ -201,7 +202,10 @@ def test_an_artifact_digest_is_present_exactly_when_a_saved_plan_was_given(part:
 def test_a_plan_digest_version_other_than_its_tools_is_refused() -> None:
     document = copy.deepcopy(POST_DEPLOY)
     document["plan"]["digest_version"] = "2"
-    with pytest.raises(ValidationError, match="is not the version of the terraform plan digest rule"):
+    with pytest.raises(
+        ValidationError,
+        match="a plan digest that is not keyed names the version of the terraform redacted plan digest rule",
+    ):
         AssuranceContext.model_validate(document)
 
 
@@ -211,7 +215,7 @@ PRE_DEPLOY: dict[str, Any] = json.loads(
 MARKER = {"__unknown": True, "reason": "server_facts_unavailable"}
 
 
-@pytest.mark.parametrize("part", ["evaluations", "approvals", "exceptions"])
+@pytest.mark.parametrize("part", ["evaluations", "approvals"])
 def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
     assert PRE_DEPLOY[part] == MARKER
     AssuranceContext.model_validate(PRE_DEPLOY)
@@ -220,6 +224,21 @@ def test_a_server_fact_is_a_list_or_the_unknown_marker(part: str) -> None:
         AssuranceContext.model_validate({**PRE_DEPLOY, part: {**MARKER, "reason": "redacted"}})
     with pytest.raises(ValidationError):
         AssuranceContext.model_validate({**PRE_DEPLOY, part: {"__redacted": True}})
+
+
+def _refused_as_unknown(document: dict[str, Any], location: tuple[str, ...]) -> None:
+    with pytest.raises(ValidationError) as refused:
+        AssuranceContext.model_validate(document)
+    assert [(e["loc"], e["type"]) for e in refused.value.errors()] == [(location, "extra_forbidden")]
+
+
+def test_an_evaluation_input_carries_no_exceptions() -> None:
+    _refused_as_unknown({**PRE_DEPLOY, "exceptions": []}, ("exceptions",))
+    since = {**ASSURANCE["since_previous"], "exceptions": []}
+    _refused_as_unknown(
+        {**POST_VERIFY_CONTEXT, "assurance": {**ASSURANCE, "since_previous": since}},
+        ("assurance", "since_previous", "exceptions"),
+    )
 
 
 def test_the_commit_review_is_served_or_the_unknown_marker() -> None:
@@ -649,7 +668,6 @@ ASSURANCE: dict[str, Any] = {
         "deployments": [
             {"record": RECORD_UUID, "change_digest": "sha256:" + "6" * 64, "deployed_at": "2026-09-22T12:00:00Z"}
         ],
-        "exceptions": [],
     },
 }
 
@@ -696,7 +714,7 @@ ACCEPTED_BUILD: dict[str, Any] = {
 def _image_review(build: dict[str, Any], review: dict[str, Any]) -> dict[str, Any]:
     """The image pre-deploy vector as Iltero Platform serves it: an accepted build and a commit review."""
     scope = {**IMAGE_PRE_DEPLOY["organization_scope"], "environment": {"name": "production", "production": True}}
-    served: dict[str, Any] = {part: [] for part in ("evaluations", "approvals", "exceptions")}
+    served: dict[str, Any] = {part: [] for part in ("evaluations", "approvals")}
     change = {**IMAGE_PRE_DEPLOY["change"], "build": build}
     return {**IMAGE_PRE_DEPLOY, **served, "organization_scope": scope, "change": change, "commit_review": review}
 

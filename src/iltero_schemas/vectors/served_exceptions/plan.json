@@ -1,0 +1,84 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "ServedExceptions",
+  "metadata": {
+    "run_id": "be477ff2-92cb-561b-ae23-45f44dfb71de",
+    "stage": "plan"
+  },
+  "spec": {
+    "exceptions": [
+      {
+        "id": "exc_0001",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC",
+            "version": "1.0.0",
+            "digest": "sha256:363672bedffd12abcb8ca4dde27fc253ea5d6180994c4a781a7ab382d2e5000e"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_db_instance.payments"
+            }
+          ]
+        },
+        "valid_from": "2026-11-01T00:00:00Z",
+        "expires_at": "2027-02-01T00:00:00Z",
+        "requested_by": {
+          "provider": "iltero_pseudonym",
+          "id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b"
+        },
+        "approved_by": {
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+        },
+        "approved_at": "2026-10-30T14:12:00Z",
+        "requester_and_run_starter": "different_users",
+        "approver_and_run_starter": "different_users",
+        "reason": "The database is reached through a private link added in the next change."
+      },
+      {
+        "id": "exc_0002",
+        "status": "approved",
+        "scope": {
+          "kind": "resources",
+          "assertion": {
+            "id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED",
+            "version": "1.0.0",
+            "digest": "sha256:662db1ad89b2b03393462c174da22739ed5e8a0226f13e40cbc23282d0fd0c57"
+          },
+          "environment": "production",
+          "resources": [
+            {
+              "scheme": "terraform_address",
+              "scope": {
+                "unit": "root"
+              },
+              "value": "aws_s3_bucket.logs"
+            }
+          ]
+        },
+        "valid_from": "2026-09-01T00:00:00Z",
+        "expires_at": "2026-12-01T00:00:00Z",
+        "requested_by": {
+          "provider": "iltero_pseudonym",
+          "id": "7d1c4e2a-5b3f-4a8e-9c6d-2f1e0a9b8c7d"
+        },
+        "approved_by": {
+          "provider": "iltero_pseudonym",
+          "id": "3a9e2b7c-1d4f-4c6a-8e5b-9d0c1f2e3a4b"
+        },
+        "approved_at": "2026-08-31T09:30:00Z",
+        "requester_and_run_starter": "same_user",
+        "approver_and_run_starter": "different_users",
+        "reason": "The access logs are shared with an outside auditor until the next change moves them."
+      }
+    ]
+  }
+}

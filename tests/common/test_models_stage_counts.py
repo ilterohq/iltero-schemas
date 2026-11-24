@@ -14,6 +14,7 @@ from pydantic import ValidationError
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.coverage import Coverage, stage_outcome
 from iltero_schemas.models.common.evidence_status import EVALUATOR_ERROR_REASON
+from iltero_schemas.models.common.scanners import ScannerRequirements
 from iltero_schemas.models.common.stage_counts import evaluator_status_counts
 from iltero_schemas.models.common.verdicts import evaluator_did_not_decide_counts, evaluator_did_not_decide_gaps
 from tests.conftest import VECTORS
@@ -21,7 +22,7 @@ from tests.conftest import VECTORS
 SCANNED: dict[str, Any] = json.loads(
     (VECTORS / "records" / "iac" / "local_run_scanned.json").read_text(encoding="utf-8")
 )
-NONE: frozenset[str] = frozenset()
+NONE: ScannerRequirements = ()
 GAP = {"stage": None, "kind": "evaluator_did_not_decide", "engine": "trivy", "reason": "no_result_of_the_mapped_checks"}
 
 
@@ -37,12 +38,12 @@ def _coverage(gaps: list[dict[str, Any]]) -> Coverage:
 
 def test_an_evaluator_that_did_not_decide_beside_a_decided_verdict_is_counted_by_evaluator_and_reason() -> None:
     events = CAR.model_validate(SCANNED).events
-    assert evaluator_did_not_decide_counts(events, required_scanners=NONE) == {
+    assert evaluator_did_not_decide_counts(events, scanner_requirements=NONE) == {
         ("trivy", "no_result_of_the_mapped_checks"): 2
     }
-    assert [gap.model_dump(mode="json") for gap in evaluator_did_not_decide_gaps(events, required_scanners=NONE)] == [
-        {**GAP, "count": 2}
-    ]
+    assert [
+        gap.model_dump(mode="json") for gap in evaluator_did_not_decide_gaps(events, scanner_requirements=NONE)
+    ] == [{**GAP, "count": 2}]
 
 
 def test_an_evaluator_that_did_not_decide_is_not_counted_where_no_evaluator_decided() -> None:
@@ -56,7 +57,7 @@ def test_an_evaluator_that_did_not_decide_is_not_counted_where_no_evaluator_deci
             status="not_evaluated", status_reason=("tool_reports_only_failures" if scanner else "evaluator_unavailable")
         )
     events = CAR.model_validate(record, context={"skip_integrity_checks": True}).events
-    assert evaluator_did_not_decide_counts(events, required_scanners=NONE) == {}
+    assert evaluator_did_not_decide_counts(events, scanner_requirements=NONE) == {}
 
 
 def test_a_stage_that_leaves_out_an_evaluator_that_did_not_decide_does_not_hold() -> None:
@@ -114,7 +115,7 @@ def test_an_evaluator_that_did_not_decide_beside_a_verdict_without_a_decision_of
         if event["assertion"]["id"] == opa["assertion"]["id"] and evaluator and evaluator["engine"] == "checkov":
             event["evaluation"].update(status="not_evaluated", status_reason="scanner_version_not_allowed")
     events = CAR.model_validate(record, context={"skip_integrity_checks": True}).events
-    counts = evaluator_did_not_decide_counts(events, required_scanners=NONE)
+    counts = evaluator_did_not_decide_counts(events, scanner_requirements=NONE)
     assert counts[("checkov", "scanner_version_not_allowed")] == 1
     assert ("opa", "evaluator_crash") not in counts
 

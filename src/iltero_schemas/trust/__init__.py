@@ -1,23 +1,26 @@
-"""The public keys an assertion bundle may be signed with, shipped so trust is never fetched."""
+"""The public keys that may sign what the server serves, assertion bundles and scanner check mappings, shipped so
+trust is never fetched."""
 
 from iltero_schemas.trust.keys import (
     API_VERSION,
-    BUNDLE_KEYS,
     DEVELOPMENT_KEY_PREFIX,
+    KEY_ID_PATTERN,
+    SIGNING_KEYS,
     TRUST_FILE_DIGEST,
     TRUST_FILE_KIND,
-    BundleKey,
+    SigningKey,
     TrustFileError,
-    parse_bundle_keys,
+    parse_signing_keys,
 )
 
 __all__ = [
     "API_VERSION",
-    "BUNDLE_KEYS",
+    "SIGNING_KEYS",
     "DEVELOPMENT_KEY_PREFIX",
+    "KEY_ID_PATTERN",
     "TRUST_FILE_KIND",
     "TRUST_FILE_DIGEST",
-    "BundleKey",
+    "SigningKey",
     "TrustFileError",
-    "parse_bundle_keys",
+    "parse_signing_keys",
 ]

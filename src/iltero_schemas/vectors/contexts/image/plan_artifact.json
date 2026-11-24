@@ -55,7 +55,6 @@
   "deployment": null,
   "evaluations": null,
   "approvals": null,
-  "exceptions": null,
   "run": null,
   "drift_check": null,
   "assurance": null,
@@ -144,5 +143,8 @@
     },
     "verified_at": "2026-11-01T10:04:58Z"
   },
-  "commit_review": null
+  "commit_review": null,
+  "apply_job_facts": null,
+  "apply_job_timing": null,
+  "replan_check": null
 }

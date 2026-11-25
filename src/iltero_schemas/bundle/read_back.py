@@ -1,12 +1,12 @@
 """Reading a run's pinned bundle back, under any status of the key that signed it, without compiling it.
 
-A run pins the bundle it was served by the digest of its tarball and the key that signed it. Long after, that key may
-be retired or revoked, and a reader still shows the run's bundle. ``read_signed_bundle`` checks what the tarball and the
-trust set can show: the tarball is the pinned one, the pinned key is one the trust set holds, the tarball holds its
-manifest and assertion modules and nothing else, the manifest's revision is the digest of its metadata, and the
-signature covers exactly the tarball's files under the pinned key. It does not look at the key's status and compiles
-nothing, so its result is for showing a run's bundle only: the caller still verifies the signature with the key's
-public key, and a bundle is evaluated only through ``check.check_descriptor``.
+A run pins the bundle it was served by the digest of its tarball and the key that signed it. Long after, that key may be
+retired or revoked, and a reader still shows the run's bundle. ``read_signed_bundle`` checks what the tarball and the
+trust set can show: the tarball is the pinned one, the pinned key is one the trust set holds for signing assertion
+bundles, the tarball holds its manifest and assertion modules and nothing else, the manifest's revision is the digest of
+its metadata, and the signature covers exactly the tarball's files under the pinned key. It does not look at the key's
+status and compiles nothing, so its result is for showing a run's bundle only: the caller still verifies the signature
+with the key's public key, and a bundle is evaluated only through ``check.check_descriptor``.
 """
 
 from __future__ import annotations
@@ -19,11 +19,12 @@ from iltero_schemas.bundle.build import MANIFEST, SIGNATURES, BundleError, files
 from iltero_schemas.bundle.check import read_tarball, signature_in
 from iltero_schemas.canonical.common.encoding import digest, digest_of
 from iltero_schemas.models.common.strict_json import strict_json
-from iltero_schemas.trust import SigningKey
+from iltero_schemas.trust import KeyNotHeldError, KeyOfAnotherPurposeError, SigningKey, key_of_purpose
 
 # Why ``read_signed_bundle`` refuses a tarball, for the rules a caller tells apart.
 NOT_THE_PINNED_TARBALL = "the tarball is not the one the run pinned"
 KEY_NEVER_HELD = "the pinned key_id names a key the trust set never held"
+PINNED_KEY_OF_ANOTHER_PURPOSE = "the pinned key_id names a key that is not for signing assertion bundles"
 SIGNATURE_DOES_NOT_COVER = "the signature does not cover exactly this tarball's files under the pinned key_id"
 REVISION_NOT_ITS_METADATA = f"the revision {MANIFEST} names is not the digest of its metadata"
 
@@ -48,9 +49,12 @@ def read_signed_bundle(
     trust set ``keys``. Raises ``BundleError`` naming the first rule that fails."""
     if digest(tarball) != tarball_digest:
         raise BundleError(NOT_THE_PINNED_TARBALL)
-    key = keys.get(key_id)
-    if key is None:
-        raise BundleError(KEY_NEVER_HELD)
+    try:
+        key = key_of_purpose(keys, key_id, "check_definitions")
+    except KeyNotHeldError:
+        raise BundleError(KEY_NEVER_HELD) from None
+    except KeyOfAnotherPurposeError:
+        raise BundleError(PINNED_KEY_OF_ANOTHER_PURPOSE) from None
     files = read_tarball(tarball)
     signed, signature = signature_in(files)
     signed_files = {name: data for name, data in files.items() if name != SIGNATURES}

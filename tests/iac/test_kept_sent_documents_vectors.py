@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 
 from iltero_schemas.models.common.car import CAR
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.redaction.iac.sent_documents import MARKS_NOT_READ, NESTS_TOO_DEEP, kept_document_redaction_problems
 from iltero_schemas.vectors.kept_files import kept_files_of
 from iltero_schemas.vectors.plans import set_pointer

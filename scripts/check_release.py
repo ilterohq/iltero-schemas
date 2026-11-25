@@ -7,7 +7,7 @@ For a release tag:
 - the version is higher than every earlier release, and the newest earlier
   release is in the tag's history;
 - against that release's trusted signing keys: no key is removed; a key's
-  public key and ``valid_from`` never change; a status only moves forward
+  algorithm, public key, purpose, server and ``valid_from`` never change; a status only moves forward
   (active to retired or revoked, retired to revoked); a status date or reason,
   once written, never changes; and a release that changes the key file raises
   the major or minor version.
@@ -33,19 +33,12 @@ import tomllib
 from collections.abc import Mapping
 from pathlib import Path
 
-from iltero_schemas.trust import SigningKey, TrustFileError, parse_signing_keys
+from iltero_schemas.trust import SigningKey, TrustFileError, key_history_problems, parse_signing_keys
 
 ROOT = Path(__file__).resolve().parent.parent
 TRUST_DIR = "src/iltero_schemas/trust"
 TRUST_FILE = f"{TRUST_DIR}/signing-keys.json"
 _TAG = re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
-# The moves a key's status may make between two releases, besides staying the same.
-FORWARD = frozenset({("active", "retired"), ("active", "revoked"), ("retired", "revoked")})
-# What never changes about a listed key. Its algorithm and digest follow from these: the reader
-# accepts only ES256 and checks the digest against the key.
-FIXED = ("public_key_der", "valid_from")
-# What never changes once it is written.
-WRITE_ONCE = ("retired_at", "revoked_at", "revocation_reason")
 
 
 class ReleaseError(Exception):
@@ -83,15 +76,7 @@ def history_problems(
         if after is None:
             problems.append(f"key {key_id} was removed")
             continue
-        for field in FIXED:
-            if getattr(before, field) != getattr(after, field):
-                problems.append(f"key {key_id}: {field} changed")
-        if before.status != after.status and (before.status, after.status) not in FORWARD:
-            problems.append(f"key {key_id}: status moved from {before.status} to {after.status}")
-        for field in WRITE_ONCE:
-            written = getattr(before, field)
-            if written is not None and getattr(after, field) != written:
-                problems.append(f"key {key_id}: {field} changed after it was written")
+        problems.extend(f"key {key_id}: {problem}" for problem in key_history_problems(before, after))
     if new_tag is not None and changed and version_of(new_tag)[:2] <= version_of(old_tag)[:2]:
         problems.append(f"the trusted keys changed, so {new_tag} must raise the major or minor version of {old_tag}")
     return problems

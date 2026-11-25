@@ -166,7 +166,7 @@
   },
   {
     "name": "identities_of_a_run_the_server_opened_as_the_stage_kept_them",
-    "vector": "iac/governed_run_post_verify.json",
+    "vector": "iac/tracked_run_post_verify.json",
     "identities": {
       "set": {},
       "register_follows": false
@@ -175,7 +175,7 @@
   },
   {
     "name": "identities_of_a_run_the_server_opened_naming_the_state_by_a_plain_digest",
-    "vector": "iac/governed_run_post_verify.json",
+    "vector": "iac/tracked_run_post_verify.json",
     "identities": {
       "set": {
         "/sources/state/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
@@ -192,7 +192,7 @@
   },
   {
     "name": "identities_of_a_run_the_server_opened_naming_another_reading_than_the_second",
-    "vector": "iac/governed_run_post_verify.json",
+    "vector": "iac/tracked_run_post_verify.json",
     "identities": {
       "set": {
         "/sources/state/digest": "hmac-sha256:c65f83e6cbae2b1687f473e12f5c017d8bb8fb9dcc99f5a633bd5b885375687d",

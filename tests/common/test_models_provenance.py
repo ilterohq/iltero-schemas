@@ -14,6 +14,8 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.change_type import IAC_CHANGE_ACTIVITY, IMAGE_BUILD_ACTIVITY, IMAGE_DEPLOY_ACTIVITY
 from iltero_schemas.models.common.facts import ServerFactsUnavailable
+from iltero_schemas.models.common.provenance import SERVER_RUN_STAGE_OF_ANOTHER_BUNDLE
+from iltero_schemas.vectors.vector_signing_keys import vector_trust_data_digest
 from tests.conftest import VECTORS
 from tests.records import (
     SCANNERS,
@@ -55,7 +57,7 @@ SERVER_BUNDLE = {
 def _opened_by_the_server() -> dict[str, Any]:
     document = record(
         **{
-            "governance.run_opened_by": "server",
+            "run.opened_by": "server",
             "stages.plan.coverage.assertions_required.origin": "server_pinned",
             "coverage.assertions_required.origin": "server_pinned",
         }
@@ -68,15 +70,10 @@ def _opened_by_the_server() -> dict[str, Any]:
     return expecting_the_stages_that_need_the_server(document)
 
 
-def test_a_record_of_a_run_the_server_opened_is_self_attested_like_any_other() -> None:
-    car = CAR.model_validate(_opened_by_the_server(), context=_READER)
-    assert car.trust_level == "self_attested"
-
-
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
-        ("governance.run_opened_by", "local", "server_pinned exactly when"),
+        ("run.opened_by", "local", "server_pinned exactly when"),
         ("stages.plan.coverage.assertions_required.origin", "project_files", "server_pinned exactly when"),
     ],
     ids=["opened locally", "checks counted from the project's files"],
@@ -84,24 +81,11 @@ def test_a_record_of_a_run_the_server_opened_is_self_attested_like_any_other() -
 def test_who_opened_the_run_is_said_the_same_way_everywhere(field: str, value: str, message: str) -> None:
     document = _opened_by_the_server()
     set_path(document, field, value)
-    if document["governance"]["run_opened_by"] == "local":
+    if document["run"]["opened_by"] == "local":
         leaving_out_the_stages_that_need_the_server(document)
         with_keyed_digests(document, keyed=False)
         keep_events_files(document)
     with pytest.raises(ValidationError, match=message):
-        CAR.model_validate(document, context=_READER)
-
-
-@pytest.mark.parametrize(
-    ("field", "value"),
-    [("metadata.issuer.type", "server"), ("metadata.issuer.identity_verified", True)],
-    ids=["server", "verified"],
-)
-def test_no_record_names_the_server_as_its_issuer_or_a_verified_issuer(field: str, value: object) -> None:
-    """A record carries no signature, so whoever opened its run, it can only be the tool's own unverified claim."""
-    document = _opened_by_the_server()
-    set_path(document, field, value)
-    with pytest.raises(ValidationError, match="issuer"):
         CAR.model_validate(document, context=_READER)
 
 
@@ -114,9 +98,22 @@ def test_a_record_of_a_run_the_tool_opened_names_no_server_bundle(where: str) ->
         document["stages"]["plan"]["execution"]["bundle"] = {
             **document["stages"]["plan"]["execution"]["bundle"],
             **SERVER_BUNDLE,
+            "trust_data_digest": vector_trust_data_digest(),
         }
     with pytest.raises(ValidationError, match="names no server bundle"):
         CAR.model_validate(document)
+
+
+def test_a_stage_of_a_run_the_server_opened_that_names_a_bundle_names_the_servers_bundle() -> None:
+    """A stage of a run the server opened loads only the server's bundle, whatever its events name, so even a stage
+    that evaluated nothing cannot name the project's own assertions in its place."""
+    document = _opened_by_the_server()
+    CAR.model_validate(document, context=_READER)
+    document["stages"]["plan"]["execution"]["bundle"].update(
+        kind="local_bundle", content_digest=None, key_id=None, trust_data_digest=None
+    )
+    with pytest.raises(ValidationError, match=SERVER_RUN_STAGE_OF_ANOTHER_BUNDLE):
+        CAR.model_validate(document, context=_READER)
 
 
 def test_a_record_of_a_run_the_tool_opened_has_no_evaluations_from_a_server_bundle() -> None:
@@ -295,7 +292,7 @@ def test_a_record_of_a_run_the_server_opened_names_whether_its_environment_is_pr
 
 def test_a_served_scanner_check_mapping_is_signed_by_the_key_that_signed_its_stages_bundle() -> None:
     document = json.loads(
-        (VECTORS / "records" / "iac" / "governed_run_scanned_with_the_served_mapping.json").read_text(encoding="utf-8")
+        (VECTORS / "records" / "iac" / "tracked_run_scanned_with_the_served_mapping.json").read_text(encoding="utf-8")
     )
     CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
     document["stages"]["plan"]["execution"]["bundle"]["key_id"] = "dev-scanner-check-mapping-vectors"

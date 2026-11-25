@@ -329,9 +329,7 @@ def check_structure(car: CAR) -> None:
             raise ValueError(
                 f"the {stage.value} stage keeps approvals, or the unknown marker, exactly where its input carries them"
             )
-        server_carries_them = car.governance.run_opened_by == "server" and reads_part(
-            activity.name, stage, "apply_job_facts"
-        )
+        server_carries_them = car.run.opened_by == "server" and reads_part(activity.name, stage, "apply_job_facts")
         if (record.apply_job_facts is not None) != server_carries_them:
             raise ValueError(
                 f"the {stage.value} stage keeps the apply job's facts, or the unknown marker, exactly where its input "

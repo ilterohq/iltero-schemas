@@ -157,7 +157,7 @@
   },
   {
     "name": "input_whose_apply_job_facts_are_not_the_ones_its_stage_kept",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "record_set": {},
     "input": {
       "stage": "pre_deploy",
@@ -227,7 +227,7 @@
   },
   {
     "name": "input_of_a_run_the_server_opened_naming_its_apply_log_by_no_digest",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "record_set": {},
     "input": {
       "stage": "post_deploy",
@@ -285,7 +285,7 @@
   },
   {
     "name": "input_of_a_run_the_server_opened_about_another_deployment",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "record_set": {},
     "input": {
       "stage": "post_deploy",
@@ -343,7 +343,7 @@
   },
   {
     "name": "input_of_a_run_the_server_opened_naming_its_state_by_a_plain_digest",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "record_set": {},
     "input": {
       "stage": "post_deploy",
@@ -363,7 +363,7 @@
   },
   {
     "name": "input_of_a_run_the_server_opened_naming_its_readings_by_no_digest",
-    "vector": "iac/governed_run_post_verify.json",
+    "vector": "iac/tracked_run_post_verify.json",
     "record_set": {},
     "input": {
       "stage": "post_verify",
@@ -383,7 +383,7 @@
   },
   {
     "name": "input_of_a_run_the_server_opened_naming_its_readings_by_plain_digests",
-    "vector": "iac/governed_run_post_verify.json",
+    "vector": "iac/tracked_run_post_verify.json",
     "record_set": {},
     "input": {
       "stage": "post_verify",
@@ -403,14 +403,14 @@
   },
   {
     "name": "input_whose_replan_check_is_not_the_records",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "record_set": {},
     "input": {
       "stage": "pre_deploy",
       "carrying": "replan_check"
     },
     "set": {
-      "/replan_check/replanned_at": "2026-09-22T00:03:00Z"
+      "/replan_check/replanned_at": "2026-11-25T06:40:27Z"
     },
     "kept_as": "canonical",
     "problems": [

@@ -1,7 +1,7 @@
 [
   {
     "name": "record_as_kept",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {},
     "tarballs": "kept",
@@ -9,7 +9,7 @@
   },
   {
     "name": "no_tarball_given",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {},
     "tarballs": "none",
@@ -30,7 +30,7 @@
   },
   {
     "name": "tarball_given_under_its_entrys_digest_with_other_bytes",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {},
     "tarballs": {
@@ -54,7 +54,7 @@
   },
   {
     "name": "register_naming_another_tarball_than_the_stage",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:3ada3be3bd88bcc796ffb422c05ac5ccebe0c2dc14f6c97233e99e7fc546c69c",
@@ -72,7 +72,7 @@
   },
   {
     "name": "register_keeping_no_entry_with_the_digest_of_the_stages_tarball",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/stages/pre_deploy/execution/bundle/tarball_digest": "sha256:22b53a47bf3dbe05f21e31e9d335e970a0804b12871efc38307273c2494b4a9d",
@@ -97,7 +97,7 @@
   },
   {
     "name": "tarball_the_reader_refuses",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:af07f1fe85455fc9d27f137ab91835c54afde7d6300c01ede81ec904ccc478eb",
@@ -125,7 +125,7 @@
   },
   {
     "name": "tarball_pinned_with_a_key_not_in_the_trust_set",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:cc773a88cc2f2f73a99d386cd3e2c3c9dec4dab041d118afec5ddfd6525d1057",
@@ -161,7 +161,7 @@
   },
   {
     "name": "tarball_pinned_with_a_revoked_key",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development_key_revoked",
     "set": {},
     "tarballs": "kept",
@@ -181,8 +181,29 @@
     ]
   },
   {
+    "name": "tarball_pinned_with_a_key_of_another_purpose",
+    "vector": "iac/tracked_run_deployed.json",
+    "trust_set": "development_key_of_another_purpose",
+    "set": {},
+    "tarballs": "kept",
+    "problems": [
+      [
+        "evidence_refs.2",
+        "is the stage's served bundle tarball, and the key the stage names is not for signing assertion bundles"
+      ],
+      [
+        "evidence_refs.51",
+        "is the stage's served bundle tarball, and the key the stage names is not for signing assertion bundles"
+      ],
+      [
+        "evidence_refs.19",
+        "is the stage's served bundle tarball, and the key the stage names is not for signing assertion bundles"
+      ]
+    ]
+  },
+  {
     "name": "tarball_whose_signature_does_not_verify_under_its_key",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:5e27e23a796b4174115842f583c43b1a2ce734d82beed18cfb01abce21b20cd5",
@@ -210,7 +231,7 @@
   },
   {
     "name": "stage_naming_another_content_digest_than_its_signed_manifest",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:cc773a88cc2f2f73a99d386cd3e2c3c9dec4dab041d118afec5ddfd6525d1057",
@@ -246,7 +267,7 @@
   },
   {
     "name": "stage_naming_another_allowlist_digest_than_its_signed_manifest",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/stages/pre_deploy/execution/bundle/capabilities_digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
@@ -261,7 +282,7 @@
   },
   {
     "name": "tarball_whose_manifest_revision_is_not_its_metadata",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:052d833b9a5087bc7f72a1d47d0fe2396c624303288d371f425c8943febeca6d",
@@ -289,7 +310,7 @@
   },
   {
     "name": "tarball_whose_signature_does_not_cover_its_files",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:937fba5f8c2cefb4e9d7d1d6e31d469e0bc99663ea6a12549fd9a2a918204790",
@@ -317,7 +338,7 @@
   },
   {
     "name": "tarball_holding_no_module_of_an_assertion_its_stage_evaluated",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:c29ca45c2f3aab87ed54bf79c8874b171b7354808b6b903436915bcd97dd20cd",
@@ -355,7 +376,7 @@
   },
   {
     "name": "tarball_holding_another_module_than_its_event_ran",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/19/digest": "sha256:3b91739b46d365c38eb753b5b3d8f3c5a656b3a52416092b38d44998854877e2",
@@ -393,7 +414,7 @@
   },
   {
     "name": "event_naming_another_bundle_than_its_stage_ran_over",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/events/1/provenance/bundle/tarball_digest": "sha256:3ada3be3bd88bcc796ffb422c05ac5ccebe0c2dc14f6c97233e99e7fc546c69c"
@@ -408,7 +429,7 @@
   },
   {
     "name": "event_whose_bundle_differs_from_its_stages_only_by_its_key",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/events/1/provenance/bundle/key_id": "dev-key-not-in-the-trust-set"
@@ -423,7 +444,7 @@
   },
   {
     "name": "event_naming_a_served_bundle_in_a_stage_that_ran_over_none",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "trust_set": "development",
     "set": {
       "/stages/pre_deploy/execution": {

@@ -61,9 +61,9 @@ def test_a_file_kept_redacted_or_not_kept_is_keyed_in_a_run_the_server_opened_an
     "name",
     [
         "iac/local_run_post_verify",
-        "iac/governed_run_deployed",
-        "iac/governed_run_post_verify",
-        "image/governed_run_deploy_rolled_out",
+        "iac/tracked_run_deployed",
+        "iac/tracked_run_post_verify",
+        "image/tracked_run_deploy_rolled_out",
     ],
 )
 def test_every_record_vector_names_its_files_in_the_form_of_who_opened_its_run(name: str) -> None:

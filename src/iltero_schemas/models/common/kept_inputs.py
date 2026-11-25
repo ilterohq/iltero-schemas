@@ -87,9 +87,9 @@ def _problem(car: CAR, stage: Stage, context: AssuranceContext) -> str | None:
         kept is None or (context.apply_job_facts, context.approvals) != (kept.apply_job_facts, kept.approvals)
     ):
         return ANOTHER_APPLY_JOB
-    if form_problem(context_given_file_digests(context), car.governance.run_opened_by) is not None:
+    if form_problem(context_given_file_digests(context), car.run.opened_by) is not None:
         return GIVEN_FILE_DIGESTS_OF_ANOTHER_RUN
-    if state_form_problem(context_states(context), car.governance.run_opened_by) is not None:
+    if state_form_problem(context_states(context), car.run.opened_by) is not None:
         return STATE_DIGEST_OF_ANOTHER_RUN
     if context.deployment is not None and context.deployment != getattr(car.change, "deployment", None):
         return ANOTHER_DEPLOYMENT

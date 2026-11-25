@@ -14,8 +14,9 @@ from typing import TYPE_CHECKING, Any
 
 from iltero_schemas.change_types.common.activity import DocumentName
 from iltero_schemas.change_types.iac.change import IacChange
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.sent_documents import SentDocumentError, read_sent_document
-from iltero_schemas.models.iac.kept_files import SENT_DOCUMENT_LIMITS, KeptFiles
+from iltero_schemas.models.iac.sent_document_limits import SENT_DOCUMENT_LIMITS
 from iltero_schemas.models.iac.stage_files import sent_documents
 from iltero_schemas.models.iac.tool_names import IacTool
 from iltero_schemas.redaction.common.apply import RedactionError

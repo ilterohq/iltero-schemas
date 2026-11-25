@@ -11,7 +11,7 @@ import pytest
 
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.car import CAR
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.plan_digests import kept_plan_digest_problems
 from iltero_schemas.vectors.plans import set_pointer
 from tests.conftest import VECTORS

@@ -9,8 +9,8 @@ from pydantic import ValidationError
 
 from iltero_schemas.models.common.assertion import Stage, Target, TechnicalAssertion
 from iltero_schemas.models.common.event import AssuranceEvent
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.policy_source import PolicyEntry
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_report_evidence import digest_or_none
 
 if TYPE_CHECKING:

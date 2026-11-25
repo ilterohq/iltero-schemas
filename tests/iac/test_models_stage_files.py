@@ -12,7 +12,7 @@ from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.redaction import ExemptedPath
-from iltero_schemas.models.iac.kept_files import MAX_STAGE_SENT_DOCUMENT_BYTES, SENT_DOCUMENT_LIMITS
+from iltero_schemas.models.iac.sent_document_limits import MAX_STAGE_SENT_DOCUMENT_BYTES, SENT_DOCUMENT_LIMITS
 from iltero_schemas.models.iac.stage_files import check_stage_files, sent_documents_within_limits, stage_file_entries
 from tests.conftest import VECTORS
 from tests.records import (
@@ -31,7 +31,7 @@ def _car(document: dict[str, Any]) -> CAR:
     return CAR.model_validate(document, context={SKIP_INTEGRITY_CHECKS: True})
 
 
-def _governed_scanned() -> CAR:
+def _tracked_scanned() -> CAR:
     """The scanned record as a record of a run the server opened, with reports the Iltero CLI ran."""
     document = served(copy.deepcopy(SCANNED))
     ran_by_the_cli(document)
@@ -39,7 +39,7 @@ def _governed_scanned() -> CAR:
 
 
 def test_a_stage_of_a_run_the_server_opened_sends_its_redacted_plan_then_each_report_and_its_observations() -> None:
-    car = _governed_scanned()
+    car = _tracked_scanned()
     named = ACTIVITIES["iac_change"].named_documents(car)
     assert list(named) == [Stage.PLAN]
     scanners = car.stages[Stage.PLAN].scanners
@@ -82,7 +82,7 @@ def test_a_stage_sends_each_file_once_under_one_name() -> None:
 
 
 def test_a_scanning_stage_of_a_run_the_server_opened_lets_no_path_through_its_redaction_policy() -> None:
-    car = _governed_scanned()
+    car = _tracked_scanned()
     record = car.stages[Stage.PLAN]
     allowed = record.redaction.model_copy(
         update={"exempted": [ExemptedPath.model_validate({"path": ["a"], "reason": "it is public"})]}

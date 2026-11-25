@@ -26,6 +26,9 @@ The first release of `iltero-schemas`, the contract every Iltero tool shares.
   its signature verified by the reader's own check, and its content and allowlist digests held against the stage and
   the assertions its events ran.
 - A record package, which moves every kept file, passes every reader check its record passes.
+- A record states facts only: it names no trust level, issuer, signature, compliance determination or retention.
+- Each stage that loads the server's bundle names the digest of the trust data it checked the bundle against.
+- The record package's rewrite of a record's paths, and the record it was packaged from.
 
 ### Canonical digests
 
@@ -94,11 +97,25 @@ The first release of `iltero-schemas`, the contract every Iltero tool shares.
 - Reading a run's pinned bundle and mapping back.
 - The form of a signing key's id, published as `KEY_ID_PATTERN`.
 - A served scanner check mapping is signed by the key that signed its stage's bundle.
+- Each signing key names what it signs, check definitions or run statements, and the server it belongs to.
+- An operator trust file adds the signing keys of a self-hosted server to Iltero's.
+
+### Run statement
+
+- The run statement a server signs when a run ends, its envelope, and its verification.
+- A comparison of a record with its run statement.
 
 ### Verification report
 
-- The verification report: nineteen properties of a record, each with a state and a reason.
+- The verification report: twenty properties of a record, each with a state and a reason.
+- The verifier assigns a record's trust level from its run statement and names the key that signed it.
+- A property is verified only where a signature the verifier checked covers it.
+- Properties for the served bundle's signature and for the bundle the run was held to.
 - Six report properties about the job that applies an infrastructure change, with the results a verifier gives them.
+
+### Display words
+
+- The words every report shows, with their digest, and a function that fills their placeholders.
 
 ### Conformance vectors
 

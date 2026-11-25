@@ -25,7 +25,7 @@ from iltero_schemas.models.iac.tools.variants import KEPT_PLANNED_RESOURCE_READE
 if TYPE_CHECKING:
     from iltero_schemas.change_types.iac.change import IacChange
     from iltero_schemas.models.common.car import CAR
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 RECOUNT_NOT_MADE = (
     "names a re-plan compared with the evaluated plan, and the files given hold no redacted plan the plan stage kept "
@@ -53,7 +53,7 @@ def _plan_stage_copies(car: CAR, change: IacChange, files: KeptFiles) -> list[ob
     later stage names the plans it keeps by its role, such as ``post_deploy/applied-plan``."""
     tool = change.plan.tool
     entries = [ref for ref in car.evidence_refs if ref.collector.tool == PLAN_COLLECTORS[tool]]
-    if car.governance.run_opened_by == "server":
+    if car.run.opened_by == "server":
         return [
             files.plans[ref.digest]
             for ref in entries

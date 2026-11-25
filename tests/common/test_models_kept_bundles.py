@@ -87,9 +87,9 @@ def test_a_stage_naming_another_allowlist_digest_than_its_signed_manifest_is_lis
 
 
 def test_the_results_name_the_stages_whose_kept_bundle_passed_every_check() -> None:
-    document = json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8"))
     car = CAR.model_validate(document)
-    bundles = kept_served_bundles(document, kept_files_of("iac/governed_run_deployed"))
+    bundles = kept_served_bundles(document, kept_files_of("iac/tracked_run_deployed"))
     results = served_bundle_results(car, bundles, KEYS, verify_es256)
     assert results.problems == [] and results.verified_stages == {stage.value for stage in car.stages}
     case = _case("tarball_holding_no_module_of_an_assertion_its_stage_evaluated")

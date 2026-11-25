@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from iltero_schemas.canonical.common.encoding import CANONICALIZATION
 from iltero_schemas.change_types.common.activity import DocumentName
-from iltero_schemas.models.iac.kept_files import MAX_STAGE_SENT_DOCUMENT_BYTES, SENT_DOCUMENT_LIMITS
+from iltero_schemas.models.iac.sent_document_limits import MAX_STAGE_SENT_DOCUMENT_BYTES, SENT_DOCUMENT_LIMITS
 from iltero_schemas.models.iac.tool_names import PLAN_COLLECTORS, IacTool
 
 if TYPE_CHECKING:
@@ -78,7 +78,7 @@ def check_stage_files(car: CAR, tool: IacTool) -> None:
         for report in record.scanners.reports:
             if len(_report_entries(car, report.report_digest)) != 1:
                 raise ValueError(f"{where} keeps one entry of its {report.tool} report")
-        if car.governance.run_opened_by == "server" and record.redaction.exempted:
+        if car.run.opened_by == "server" and record.redaction.exempted:
             raise ValueError(
                 f"{where} of a run the server opened, which reads scanner reports, exempts no path from its redaction "
                 "policy"

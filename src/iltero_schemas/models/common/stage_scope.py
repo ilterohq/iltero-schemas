@@ -42,7 +42,7 @@ def check_scope(car: CAR, activity: Activity) -> None:
             f"the {stage_name(stage)} stage is supported for this record: expect it, or say who leaves it out"
         )
     by_policy = any(item.reason == "environment_policy" for item in car.out_of_scope)
-    if by_policy and car.governance.run_opened_by != "server":
+    if by_policy and car.run.opened_by != "server":
         raise ValueError("only a run the server opened has an environment policy that leaves a stage out")
     if set(left_out) | set(car.expected_stages) != set(activity.stages):
         raise ValueError("the record accounts for every stage of the lifecycle: expected, or not in scope")
@@ -54,7 +54,7 @@ def _check_stages_that_need_the_server(car: CAR, activity: Activity) -> None:
     """A run the tool opened leaves out each stage its activity says needs the server, as needing it, and no other
     stage; a run the server opened leaves out none as needing it."""
     needing = {item.stage for item in car.out_of_scope if item.reason == "needs_the_server"}
-    if needing and car.governance.run_opened_by == "server":
+    if needing and car.run.opened_by == "server":
         raise ValueError(
             "only a run the tool opened leaves a stage out as needing the server: a run the server opened supplies "
             "what every stage reads"
@@ -65,7 +65,7 @@ def _check_stages_that_need_the_server(car: CAR, activity: Activity) -> None:
             f"only the {_named(named)} needs the server" if named else "no stage of this activity needs the server"
         )
     missing = activity.stages_that_need_the_server - needing
-    if car.governance.run_opened_by != "server" and missing:
+    if car.run.opened_by != "server" and missing:
         stage = min(missing, key=_ORDER.index)
         raise ValueError(
             f"a run the tool opened leaves the {stage_name(stage)} stage out of scope as needing the server: only "
@@ -78,7 +78,7 @@ def _check_production_expects_pre_deploy(car: CAR, activity: Activity) -> None:
     leaves it out there."""
     environment = car.subject.environment
     # Only the server knows whether an environment is production: a run the tool opened keeps the unknown marker.
-    production = car.governance.run_opened_by == "server" and environment is not None and environment.production is True
+    production = car.run.opened_by == "server" and environment is not None and environment.production is True
     if production and Stage.PRE_DEPLOY in activity.stages and Stage.PRE_DEPLOY not in car.expected_stages:
         raise ValueError("a record for a production environment expects its pre-deploy stage")
 

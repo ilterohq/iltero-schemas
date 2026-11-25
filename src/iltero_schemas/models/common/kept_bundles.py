@@ -4,9 +4,9 @@ A stage of a run the server opened evaluates the assertions of the bundle the se
 tarball beside the record as an entry of its evidence register. A reader finds the entry by the tarball digest the stage
 names, the stage's own entry first (named ``<stage>/bundle.tar.gz``, ``SERVED_BUNDLE_REF_ID``), so it finds it in a
 record package too, which moves every file and keeps each entry's name and digest. The stage's own entry, when the
-register holds one, names the stage's tarball. Given the kept tarballs, its trust
-set and its signature check, it reads each back with ``bundle.read_back.read_signed_bundle``: the key the stage names is
-in the trust set, the tarball holds its manifest and modules only, the manifest's revision is the digest of its
+register holds one, names the stage's tarball. Given the kept tarballs, its trust set and its signature check, it reads
+each back with ``bundle.read_back.read_signed_bundle``: the key the stage names is in the trust set, for signing
+assertion bundles, the tarball holds its manifest and modules only, the manifest's revision is the digest of its
 metadata, and the signed bytes cover exactly its files under that key. The key must not be revoked, the signature must
 verify under it, and the content digest and the allowlist digest (``capabilities_digest``) the stage names must be the
 ones the signed manifest gives. It then checks that every event that ran over a served bundle names its stage's, and
@@ -14,18 +14,19 @@ that each such event's assertion is a module of the tarball whose digest is the 
 the bundle reader refuses is a problem, never an exception.
 
 This package holds no cryptography: the reader passes the function that verifies an ES256 signature
-(``SignatureCheck``), and the check calls it for each bundle it read back.
+(``trust.SignatureCheck``), and the check calls it for each bundle it read back.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from iltero_schemas.bundle.build import MANIFEST, BundleError
 from iltero_schemas.bundle.read_back import (
     KEY_NEVER_HELD,
+    PINNED_KEY_OF_ANOTHER_PURPOSE,
     REVISION_NOT_ITS_METADATA,
     SIGNATURE_DOES_NOT_COVER,
     ReadBackBundle,
@@ -33,7 +34,7 @@ from iltero_schemas.bundle.read_back import (
 )
 from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.models.common.strict_json import strict_json
-from iltero_schemas.trust import SigningKey
+from iltero_schemas.trust import SignatureCheck, SigningKey
 
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import CAR, ExecutionBundle
@@ -54,6 +55,9 @@ KEY_NOT_IN_THE_TRUST_SET = (
 )
 REVISION_NOT_THE_METADATA = (
     "is the stage's served bundle tarball, and the revision its manifest names is not the digest of its metadata"
+)
+KEY_OF_ANOTHER_PURPOSE = (
+    "is the stage's served bundle tarball, and the key the stage names is not for signing assertion bundles"
 )
 KEY_REVOKED = "is the stage's served bundle tarball, and the key the stage names is revoked"
 SIGNATURE_NOT_VALID = (
@@ -78,14 +82,10 @@ ANOTHER_MODULE = "is not the digest of the module the stage's kept bundle holds 
 # The problem each refusal of the bundle reader gives; any other refusal gives ``TARBALL_NOT_READABLE``.
 _REFUSALS = {
     KEY_NEVER_HELD: KEY_NOT_IN_THE_TRUST_SET,
+    PINNED_KEY_OF_ANOTHER_PURPOSE: KEY_OF_ANOTHER_PURPOSE,
     REVISION_NOT_ITS_METADATA: REVISION_NOT_THE_METADATA,
     SIGNATURE_DOES_NOT_COVER: SIGNATURE_NOT_COVERING_THE_FILES,
 }
-
-
-# Whether an ES256 signature verifies: called with the key's SubjectPublicKeyInfo DER bytes, the signed bytes and the
-# raw 64-byte ``r‖s`` signature. The reader supplies it; this package holds no cryptography.
-SignatureCheck = Callable[[bytes, bytes, bytes], bool]
 
 
 @dataclass(frozen=True)

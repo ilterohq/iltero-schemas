@@ -58,12 +58,12 @@ def _raw(name: str) -> Path:
 
 
 def test_every_record_of_a_run_the_server_opened_names_the_raw_plans_it_was_keyed_from() -> None:
-    governed = {
+    tracked = {
         f"iac/{path.name}"
         for path in (VECTORS / "records" / "iac").glob("*.json")
-        if json.loads(path.read_text(encoding="utf-8"))["governance"]["run_opened_by"] == "server"
+        if json.loads(path.read_text(encoding="utf-8"))["run"]["opened_by"] == "server"
     }
-    assert {case["record"] for case in CASES} == governed
+    assert {case["record"] for case in CASES} == tracked
     named = {case["plan"] for case in CASES} | {case["applied_plan"] for case in CASES} - {None}
     # The plans the re-plan comparison cases are edited from.
     replans = json.loads((VECTORS / "replan_differences" / "iac" / "inputs.json").read_text(encoding="utf-8"))["cases"]

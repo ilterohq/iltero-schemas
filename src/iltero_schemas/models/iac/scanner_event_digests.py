@@ -20,7 +20,7 @@ from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 if TYPE_CHECKING:
     from iltero_schemas.models.common.assertion import Stage
     from iltero_schemas.models.common.car import CAR
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 
 def scanner_event_digests(car: CAR, files: KeptFiles, stage: Stage) -> tuple[list[tuple[str, str]], frozenset[str]]:

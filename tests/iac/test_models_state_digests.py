@@ -81,7 +81,7 @@ def test_a_record_naming_its_states_in_the_other_runs_form_is_refused() -> None:
     served_change = _change(served(VERIFIED))
     with pytest.raises(ValueError, match=TOOL_RUN_STATE_FORM):
         check_change_state_digest_form(car, served_change)
-    server_car = car.model_copy(update={"governance": car.governance.model_copy(update={"run_opened_by": "server"})})
+    server_car = car.model_copy(update={"run": car.run.model_copy(update={"opened_by": "server"})})
     with pytest.raises(ValueError, match=SERVER_RUN_STATE_FORM):
         check_change_state_digest_form(server_car, change)
 

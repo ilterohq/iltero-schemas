@@ -46,7 +46,6 @@ from iltero_schemas.models.common.pinned_evaluator import evaluator_binary_resul
 from iltero_schemas.models.common.reference_time import ReferenceTime
 from iltero_schemas.models.common.served_exceptions import ServedExceptions
 from iltero_schemas.models.common.verification import VerificationReport
-from iltero_schemas.models.iac.apply_job_results import apply_job_results
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
 from iltero_schemas.models.iac.scanner_check_mapping_descriptor import ScannerCheckMappingDescriptor
@@ -56,6 +55,7 @@ from iltero_schemas.models.iac.scanner_reports.common import Source
 from iltero_schemas.models.iac.scanner_reports.trivy import read_trivy
 from iltero_schemas.vectors import VECTORS as PACKAGED_VECTORS
 from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
+from iltero_schemas.vectors.vector_reports import REPORT_VECTORS, report_source, vector_report
 from tests.conftest import (
     CHANGE_TYPES,
     SPLIT_CASE_FOLDERS,
@@ -68,11 +68,8 @@ from tests.conftest import (
 )
 from tests.records import (
     case_record,
-    valid_case_record,
 )
-from tests.server_runs import (
-    names_the_servers_bundle,
-)
+from tests.server_runs import verify_es256
 
 COMPILER = VECTORS / "compiler"
 ASSERTION_FILES = sorted(STARTER_ASSERTIONS.glob("*.yaml")) + sorted((VECTORS / "assertions").glob("*.yaml"))
@@ -104,9 +101,23 @@ DOCUMENT_MODELS: dict[str, type[BaseModel]] = {
 # Every document folder but scanner check mappings and identities, and every folder of their cases, holds one subfolder
 # per change type it has documents of; events are of IaC changes only. A document folder also holds its one
 # digests.json.
+# Folders whose digests.json refresh_vectors.py writes without a document model: the run statements, whose digests are
+# those of their payloads.
+DIGESTED_WITHOUT_A_MODEL = frozenset({"run_statements"})
 SPLIT_FOLDERS = {
     folder: set(CHANGE_TYPES)
-    for folder in ("contexts", "kept_bundles", "kept_files", "kept_inputs", "records", "reports", *SPLIT_CASE_FOLDERS)
+    for folder in (
+        "contexts",
+        "kept_bundles",
+        "kept_files",
+        "kept_inputs",
+        "records",
+        "reports",
+        "run_statements",
+        "run_statements_invalid",
+        "run_statements_valid",
+        *SPLIT_CASE_FOLDERS,
+    )
 } | {
     folder: {"iac"}
     for folder in (
@@ -282,48 +293,30 @@ def test_document_vector_is_written_as_its_model_dumps_it(folder: str, path: str
     assert canonical_bytes(document) == canonical_bytes(dumped)
 
 
-def _report_record(source: str) -> dict[str, Any]:
-    """The record a report vector is about: a ``records/`` document by its path, or the record of a ``records_valid``
-    case by ``<change type>:<case name>``."""
-    if ":" in source:
-        change_type, name = source.split(":")
-        return valid_case_record(change_type, name)
-    document: dict[str, Any] = json.loads((VECTORS / "records" / source).read_text(encoding="utf-8"))
-    return document
+@pytest.mark.parametrize(("report", "source"), REPORT_VECTORS.items(), ids=list(REPORT_VECTORS))
+def test_a_report_vector_is_the_report_the_verifier_gives_its_source(report: str, source: dict[str, Any]) -> None:
+    written = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
+    given = vector_report(report.split("/")[0], source, verify_es256)
+    assert written == given.model_dump(mode="json", by_alias=True)
 
 
-# Each report vector and the record it is about.
-REPORT_RECORDS = [
-    ("image/verification_report_build.json", "image/local_run_build_with_a_build_commit.json"),
-    ("iac/verification_report.json", "iac/local_run.json"),
-    (
-        "iac/verification_report_commit_not_reviewed.json",
-        "iac:iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check",
-    ),
-]
-# The bundle provenance a verifier gives a record that names the server's bundle, and one that does not.
-BUNDLE_PROVENANCE = {True: ("claimed_by_record", "server_bundle_named"), False: ("not_performed", "local_assertions")}
+def test_the_report_vectors_are_exactly_those_of_their_table() -> None:
+    held = {path.relative_to(VECTORS / "reports").as_posix() for path in documents("reports")}
+    assert held == set(REPORT_VECTORS)
 
 
-@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
-def test_a_report_vector_names_its_record_by_id_and_digest(report: str, source: str) -> None:
+@pytest.mark.parametrize(("report", "source"), REPORT_VECTORS.items(), ids=list(REPORT_VECTORS))
+def test_a_report_vector_names_its_record_by_id_and_digest(report: str, source: dict[str, Any]) -> None:
     named = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))
-    record = _report_record(source)
+    record = report_source(report.split("/")[0], source).record.model_dump(mode="json", by_alias=True)
     assert named["record"] == {"uuid": record["metadata"]["uuid"], "digest": digest_of(record)}
 
 
-@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
-def test_a_report_vectors_evaluator_binary_is_the_one_its_record_gives(report: str, source: str) -> None:
+@pytest.mark.parametrize(("report", "source"), REPORT_VECTORS.items(), ids=list(REPORT_VECTORS))
+def test_a_report_vectors_evaluator_binary_is_the_one_its_record_gives(report: str, source: dict[str, Any]) -> None:
     result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["evaluator_binary"]
-    events = [AssuranceEvent.model_validate(event) for event in _report_record(source)["events"]]
+    events = report_source(report.split("/")[0], source).record.events
     assert result == evaluator_binary_result(events).model_dump(mode="json")
-
-
-@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
-def test_a_report_vectors_bundle_provenance_is_the_one_its_record_gives(report: str, source: str) -> None:
-    result = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]["bundle_provenance"]
-    car = CAR.model_validate(_report_record(source))
-    assert (result["state"], result["reason"]) == BUNDLE_PROVENANCE[names_the_servers_bundle(car)]
 
 
 @pytest.mark.parametrize("path", documents("records"), ids=lambda path: path.name)
@@ -361,11 +354,13 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "run_digest_keys",
         "raw_plans",
         "raw_states",
+        "saved_plans",
         "replan_differences",
         "buildx",
         "canonical",
         "compiler",
         "contexts_invalid",
+        "display_words",
         "evaluation",
         "identities_invalid",
         "identities_valid",
@@ -386,6 +381,9 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
         "replan_recounts",
         "reports_expected",
         "reports_invalid",
+        "run_statements",
+        "run_statements_invalid",
+        "run_statements_valid",
         "scan_coverage",
         "kept_files",
         "scanner_evidence",
@@ -399,7 +397,9 @@ def test_the_vectors_hold_exactly_the_known_folders() -> None:
 @pytest.mark.parametrize("folder", sorted(SPLIT_FOLDERS))
 def test_a_split_folder_holds_only_its_change_types_subfolders(folder: str) -> None:
     entries = [
-        path for path in visible(VECTORS / folder) if not (folder in DOCUMENT_MODELS and path.name == DIGESTS_FILE)
+        path
+        for path in visible(VECTORS / folder)
+        if not ((folder in DOCUMENT_MODELS or folder in DIGESTED_WITHOUT_A_MODEL) and path.name == DIGESTS_FILE)
     ]
     assert {path.name for path in entries} == SPLIT_FOLDERS[folder]
     assert all(path.is_dir() for path in entries)
@@ -727,10 +727,3 @@ def test_a_cases_register_entry_for_a_file_of_its_record_names_that_files_size()
             if sizes.get((ref["path"], ref["digest"]), ref["size_bytes"]) != ref["size_bytes"]:
                 stale.append(f"{name}: {ref['path']}")
     assert stale == []
-
-
-@pytest.mark.parametrize(("report", "source"), REPORT_RECORDS)
-def test_a_report_vectors_apply_job_results_are_the_ones_its_record_gives(report: str, source: str) -> None:
-    properties = json.loads((VECTORS / "reports" / report).read_text(encoding="utf-8"))["properties"]
-    for name, result in apply_job_results(CAR.model_validate(_report_record(source))).items():
-        assert properties[name] == result.model_dump(mode="json"), name

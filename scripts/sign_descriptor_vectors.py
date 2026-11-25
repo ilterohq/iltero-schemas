@@ -12,7 +12,6 @@ Usage: python scripts/sign_descriptor_vectors.py
 
 from __future__ import annotations
 
-import base64
 import json
 import sys
 from pathlib import Path
@@ -22,8 +21,6 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature, encode_dss_signature
 
-from iltero_schemas.canonical import digest
-from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.scanner_check_mappings.iac.descriptor import (
     check_scanner_check_mapping_descriptor,
     descriptor,
@@ -31,7 +28,11 @@ from iltero_schemas.scanner_check_mappings.iac.descriptor import (
 )
 from iltero_schemas.signing import P256_ORDER, SIGNATURE_BYTES, base64url, from_base64url
 from iltero_schemas.trust import parse_signing_keys
-from iltero_schemas.trust.keys import TRUST_FILE_KIND
+from iltero_schemas.vectors.vector_signing_keys import (
+    DEVELOPMENT_SERVER,
+    active_key_entry,
+    development_keys_with,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 VECTORS = ROOT / "src" / "iltero_schemas" / "vectors"
@@ -74,23 +75,10 @@ def main() -> int:
     r, s = decode_dss_signature(key.sign(signing_input(mapping, key_id=KEY_ID), ec.ECDSA(hashes.SHA256())))
     signed = descriptor(mapping, key_id=KEY_ID, signature=r.to_bytes(HALF, "big") + s.to_bytes(HALF, "big"))
     written = signed.model_dump(mode="json", by_alias=True)
-    entry = {
-        "key_id": KEY_ID,
-        "algorithm": "ES256",
-        "public_key": base64.b64encode(public).decode("ascii"),
-        "spki_sha256": digest(public),
-        "status": "active",
-        "valid_from": VALID_FROM,
-        "retired_at": None,
-        "revoked_at": None,
-        "revocation_reason": None,
-    }
-    others = [kept for kept in json.loads(TRUST_FILE.read_text(encoding="utf-8"))["keys"] if kept["key_id"] != KEY_ID]
-    trust_file = {
-        "apiVersion": API_VERSION,
-        "kind": TRUST_FILE_KIND,
-        "keys": sorted([*others, entry], key=lambda kept: kept["key_id"]),
-    }
+    entry = active_key_entry(
+        public, key_id=KEY_ID, purpose="check_definitions", server=DEVELOPMENT_SERVER, valid_from=VALID_FROM
+    )
+    trust_file = development_keys_with(entry)
     # The signer checks its own output, as a server does before it serves a descriptor.
     keys = parse_signing_keys(json.dumps(trust_file).encode("utf-8"), development=True)
     checked = check_scanner_check_mapping_descriptor(signed, keys)

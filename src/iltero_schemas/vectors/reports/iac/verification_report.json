@@ -10,7 +10,16 @@
   },
   "record": {
     "uuid": "ad857659-ddba-5e8d-a9e4-75d3350af863",
-    "digest": "sha256:963103bec81ac2bcb1ef373986d56211e6c3c1d001b9f5c7e4802e66b3e63b0d"
+    "digest": "sha256:e861f9c81f9082de8762c7bb8e623bc72985cb56bef34c39981464db15a7961a"
+  },
+  "trust_level": {
+    "level": "self_attested",
+    "reason": "run_opened_locally"
+  },
+  "trust_root": null,
+  "run_statement": null,
+  "stage_trust_data_digests": {
+    "plan": null
   },
   "properties": {
     "integrity": {
@@ -28,7 +37,12 @@
       "reason": "run_opened_locally",
       "detail": null
     },
-    "bundle_provenance": {
+    "bundle_signature": {
+      "state": "not_performed",
+      "reason": "local_assertions",
+      "detail": null
+    },
+    "bundle_used": {
       "state": "not_performed",
       "reason": "local_assertions",
       "detail": null
@@ -43,7 +57,7 @@
       "reason": "no_post_deploy_stage",
       "detail": null
     },
-    "runtime_verification": {
+    "check_after_deployment": {
       "state": "not_assessed",
       "reason": "stage_pending",
       "detail": null

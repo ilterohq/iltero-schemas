@@ -26,7 +26,7 @@ def test_the_change_type_and_checked_content_of_each_activity_agree_with_its_dec
 
 def test_only_an_infrastructure_changes_pre_deploy_inputs_carry_a_part_of_the_record() -> None:
     record = CAR.model_validate(
-        json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))
+        json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8"))
     )
     assert isinstance(record.change, IacChange)
     for name, activity in ACTIVITIES.items():

@@ -47,13 +47,13 @@
     "message": "plan_age is one of the results a verifier gives that property"
   },
   {
-    "name": "replan_resource_actions_verified_on_an_unsigned_record",
+    "name": "replan_resource_actions_verified_though_no_signature_covers_it",
     "vector": "iac/verification_report_commit_not_reviewed.json",
     "set": {
       "/properties/replan_resource_actions/state": "verified"
     },
     "remove": [],
-    "message": "no property of an unsigned record is verified"
+    "message": "replan_resource_actions is one of the results a verifier gives that property"
   },
   {
     "name": "plan_age_decided_beside_a_failed_integrity",
@@ -69,7 +69,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -84,7 +89,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -167,7 +172,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -182,7 +192,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -265,7 +275,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -280,7 +295,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -363,7 +378,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -378,7 +398,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -461,7 +481,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -476,7 +501,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -559,7 +584,12 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/bundle_provenance": {
+      "/properties/bundle_signature": {
+        "state": "could_not_decide",
+        "reason": "integrity_failed",
+        "detail": null
+      },
+      "/properties/bundle_used": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -574,7 +604,7 @@
         "reason": "integrity_failed",
         "detail": null
       },
-      "/properties/runtime_verification": {
+      "/properties/check_after_deployment": {
         "state": "could_not_decide",
         "reason": "integrity_failed",
         "detail": null
@@ -642,5 +672,246 @@
     },
     "remove": [],
     "message": "when a record's integrity is not established, every other property is could_not_decide"
+  },
+  {
+    "name": "property_verified_by_a_run_statement_on_a_record_read_with_none",
+    "vector": "iac/verification_report_tracked_run_without_its_run_statement.json",
+    "set": {
+      "/properties/source_identity": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "a property is verified by a run statement only for a policy_enforced record"
+  },
+  {
+    "name": "policy_enforced_record_read_with_no_run_statement",
+    "vector": "iac/verification_report_tracked_run_without_its_run_statement.json",
+    "set": {
+      "/trust_level": {
+        "level": "policy_enforced",
+        "reason": "run_statement"
+      }
+    },
+    "remove": [],
+    "message": "a policy_enforced record is one a run statement that verified lists as accepted"
+  },
+  {
+    "name": "trust_root_named_with_no_run_statement",
+    "vector": "iac/verification_report_tracked_run_without_its_run_statement.json",
+    "set": {
+      "/trust_root": {
+        "key_id": "dev-run-statements",
+        "listed_in": "iltero",
+        "operator": null,
+        "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+      }
+    },
+    "remove": [],
+    "message": "a report names a trust root exactly when a run statement verified"
+  },
+  {
+    "name": "run_statement_problem_beside_a_policy_enforced_record",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/run_statement/problems": [
+        {
+          "reason": "another_environment",
+          "sentence": "the record's environment is not the run's"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a run statement with a problem gives a trust level whose reason says so"
+  },
+  {
+    "name": "record_the_server_refused_whose_integrity_is_claimed",
+    "vector": "iac/verification_report_record_the_server_refused.json",
+    "set": {
+      "/properties/integrity": {
+        "state": "claimed_by_record",
+        "reason": "file_digests",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "a record's integrity failed as refused_by_server exactly when its trust level reason is refused_by_server"
+  },
+  {
+    "name": "trust_root_naming_an_operator_for_a_key_iltero_lists",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/trust_root/operator": "Example Operator"
+    },
+    "remove": [],
+    "message": "a trust root names an operator exactly when an operator's trust file lists its key"
+  },
+  {
+    "name": "run_statement_that_did_not_verify_with_two_problems",
+    "vector": "iac/verification_report_run_statement_signed_with_a_revoked_key.json",
+    "set": {
+      "/run_statement/problems": [
+        {
+          "reason": "key_revoked",
+          "sentence": "the run statement's key is revoked, so nothing it signed is trusted"
+        },
+        {
+          "reason": "key_not_trusted",
+          "sentence": "the run statement's key is not one the trust set holds"
+        }
+      ]
+    },
+    "remove": [],
+    "message": "a run statement that did not verify has exactly one problem, why it does not hold"
+  },
+  {
+    "name": "run_statement_that_did_not_verify_naming_a_difference",
+    "vector": "iac/verification_report_run_statement_signed_with_a_revoked_key.json",
+    "set": {
+      "/run_statement/problems/0/reason": "another_environment"
+    },
+    "remove": [],
+    "message": "a run statement that did not verify has exactly one problem, why it does not hold"
+  },
+  {
+    "name": "trust_level_with_a_reason_no_verifier_gives",
+    "vector": "iac/verification_report_tracked_run_without_its_run_statement.json",
+    "set": {
+      "/trust_level/reason": "checked_by_hand"
+    },
+    "remove": [],
+    "message": "a trust level is one a verifier assigns, with one of its reasons"
+  },
+  {
+    "name": "no_statement_given_beside_a_run_statement",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/trust_level": {
+        "level": "self_attested",
+        "reason": "no_statement_given"
+      }
+    },
+    "remove": [],
+    "message": "a record whose trust level reason is no_statement_given was given no run statement"
+  },
+  {
+    "name": "integrity_verified_by_a_run_statement_that_does_not_hold",
+    "vector": "iac/verification_report_run_statement_signing_other_approvals.json",
+    "set": {
+      "/properties/integrity": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "a record's integrity is verified by a run statement exactly when its trust level is policy_enforced"
+  },
+  {
+    "name": "run_statement_that_does_not_hold_with_no_problem",
+    "vector": "iac/verification_report_run_statement_signing_other_approvals.json",
+    "set": {
+      "/run_statement/problems": []
+    },
+    "remove": [],
+    "message": "a run statement that does not hold has a problem the report lists"
+  },
+  {
+    "name": "run_statement_that_verified_naming_no_listing",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/run_statement/listed_as": null
+    },
+    "remove": [],
+    "message": "a run statement that verified names its digest, how it lists the record and, unless it is the statement of another run, how the run ended"
+  },
+  {
+    "name": "operator_trust_root_naming_no_operator",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/trust_root/listed_in": "operator"
+    },
+    "remove": [],
+    "message": "a trust root names an operator exactly when an operator's trust file lists its key"
+  },
+  {
+    "name": "received_plan_file_verified_by_a_run_statement_that_does_not_sign_it",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/properties/received_plan_file": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "received_plan_file is one of the results a verifier gives that property"
+  },
+  {
+    "name": "rendered_plan_verified_by_a_run_statement_that_does_not_sign_it",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/properties/rendered_plan": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "rendered_plan is one of the results a verifier gives that property"
+  },
+  {
+    "name": "evaluator_binary_verified_by_a_run_statement_that_does_not_sign_it",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/properties/evaluator_binary": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "evaluator_binary is one of the results a verifier gives that property"
+  },
+  {
+    "name": "plan_apply_match_verified_by_a_run_statement_that_does_not_sign_it",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/properties/plan_apply_match": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "plan_apply_match is one of the results a verifier gives that property"
+  },
+  {
+    "name": "scanner_reports_verified_by_a_run_statement_that_does_not_sign_it",
+    "vector": "iac/verification_report_tracked_run_with_its_run_statement.json",
+    "set": {
+      "/properties/scanner_reports": {
+        "state": "verified",
+        "reason": "run_statement",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "scanner_reports is one of the results a verifier gives that property"
+  },
+  {
+    "name": "integrity_refused_by_the_server_beside_another_trust_level_reason",
+    "vector": "iac/verification_report_run_statement_signing_other_approvals.json",
+    "set": {
+      "/properties/integrity": {
+        "state": "failed",
+        "reason": "refused_by_server",
+        "detail": null
+      }
+    },
+    "remove": [],
+    "message": "a record's integrity failed as refused_by_server exactly when its trust level reason is refused_by_server"
   }
 ]

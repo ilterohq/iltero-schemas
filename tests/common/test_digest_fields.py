@@ -107,6 +107,7 @@ DERIVED = {
     "PostponedCheck.subject_key",
     "ProposedChange.digest",
     "RecordedDeployment.change_digest",
+    "RunStatementFindings.digest",
     "Subject.key",
 }
 # A published program, bundle, configuration or trust root, by its digest.
@@ -117,6 +118,7 @@ PUBLISHED = {
     "ExecutionBundle.capabilities_digest",
     "ExecutionBundle.content_digest",
     "ExecutionBundle.tarball_digest",
+    "ExecutionBundle.trust_data_digest",
     "ExecutionEvaluator.digest",
     "OpaEvaluator.digest",
     "ScannerCheckMappingUsed.descriptor_digest",
@@ -125,6 +127,8 @@ PUBLISHED = {
     "ScannerReport.configuration_digest",
     "ScannerReport.scanner_digest",
     "TrustRoot.digest",
+    "StatementTrustRoot.trust_data_digest",
+    "VerificationReport.stage_trust_data_digests",
 }
 # A container image by its content address.
 IMAGES = {
@@ -258,12 +262,12 @@ def test_every_record_vector_names_each_file_kept_redacted_or_not_kept_and_each_
 ) -> None:
     record = json.loads(path.read_text(encoding="utf-8"))
     named = _kept_redacted_or_not_kept(record)
-    if record["governance"]["run_opened_by"] == "server":
+    if record["run"]["opened_by"] == "server":
         assert named and all(value is not None and value.startswith("hmac-sha256:") for value in named)
     else:
         assert all(value is None for value in named)
     # Each state is keyed in a run the server opened, and the digest of the redacted state in a run the tool opened.
-    prefix = "hmac-sha256:" if record["governance"]["run_opened_by"] == "server" else "sha256:"
+    prefix = "hmac-sha256:" if record["run"]["opened_by"] == "server" else "sha256:"
     assert all(state["digest"].startswith(prefix) for state in _states(record))
     # A file kept with nothing redacted is named by its own digest, plain.
     assert all(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from typing import Any
 
 import pytest
@@ -13,16 +14,20 @@ from iltero_schemas.change_types import PlanRecord
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import (
     CAR,
+    LOCAL_BUNDLE_WITH_TRUST_DATA,
     PATH_OF_TWO_DIGESTS,
     PATH_OF_TWO_FILES,
+    SERVER_BUNDLE_WITHOUT_TRUST_DATA,
     SKIP_INTEGRITY_CHECKS,
+    ExecutionBundle,
     StageRecord,
 )
 from iltero_schemas.models.common.coverage import Coverage, stage_outcome
 from iltero_schemas.models.common.fields import MAX_PATH_COMPONENTS, RAW_TEXT_MAX_BYTES, MemberPath
 from iltero_schemas.models.common.redaction import MAX_REPORTED_PATHS
 from iltero_schemas.models.common.stages import integrity_problems
-from tests.conftest import POST_DEPLOY, binding, change, identity_record, removed
+from iltero_schemas.vectors.vector_signing_keys import vector_trust_data_digest
+from tests.conftest import POST_DEPLOY, VECTORS, binding, change, identity_record, removed
 from tests.records import (
     RECORD,
     SCANNERS,
@@ -46,8 +51,8 @@ from tests.server_runs import (
 
 def test_a_record_a_run_wrote_validates() -> None:
     car = CAR.model_validate(RECORD)
-    assert car.trust_level == "self_attested" and car.all_expected_stages_reported is False
-    assert car.compliance_determination is None and iac_change(car).plan.tool == "terraform"
+    assert car.run.opened_by == "local" and car.all_expected_stages_reported is False
+    assert iac_change(car).plan.tool == "terraform"
     assert len(car.events) == car.coverage.evaluations == 5
     assert car.evidence_refs and all(not ref.path.startswith("/") for ref in car.evidence_refs)
 
@@ -84,20 +89,9 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
     ("change", "message"),
     [
         ({"coverage.evaluations": 4}, "add up to the number of evaluations"),
-        ({"trust_level": "server_governed"}, "Input should be 'self_attested'"),
-        ({"trust_level": "governed"}, "a record without a signature is self_attested"),
-        ({"trust_level": "source_authenticated"}, "a record without a signature is self_attested"),
-        ({"trust_level": "authority_accepted"}, "Input should be 'self_attested'"),
-        ({"trust_level": "assessor_reviewed"}, "Input should be 'self_attested'"),
-        ({"compliance_determination": "compliant"}, "Input should be None"),
-        ({"governance.run_opened_by": "governed"}, "Input should be 'server' or 'local'"),
+        ({"run.opened_by": "tracked"}, "Input should be 'server' or 'local'"),
         ({"change.plan.tool": "pulumi"}, "Input should be 'terraform'"),
-        (
-            {"metadata": {"uuid": "not-a-uuid", "issuer": {"type": "local", "identity_verified": False}}},
-            "String should match pattern",
-        ),
-        ({"integrity.signature": "MEUCIQ"}, "Input should be None"),
-        ({"retention_class": "soc2_730d"}, "Input should be None"),
+        ({"metadata": {"uuid": "not-a-uuid"}}, "String should match pattern"),
         (
             {"all_expected_stages_reported": True},
             "all_expected_stages_reported is true exactly when every expected stage has reported",
@@ -108,6 +102,31 @@ def test_a_cited_path_that_leaves_the_record_is_refused_in_the_record() -> None:
 def test_a_record_that_does_not_hold_together_is_refused(change: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_record(**change))
+
+
+# What a record once said about itself, which is now the verifier's or the server's to say: its trust level, whether
+# it determines compliance, who wrote it and whether that was verified, how it is bound together, and how long it is
+# kept; and where each file it cites is stored and until when.
+NO_LONGER_IN_A_RECORD = [
+    ("trust_level", "self_attested"),
+    ("compliance_determination", None),
+    ("governance", {"run_opened_by": "local"}),
+    ("integrity", {"scheme": "file_digests", "signature": None}),
+    ("expires_at", None),
+    ("retention_class", None),
+    ("retention_reason", "no_server_scope"),
+    ("metadata.issuer", {"type": "local", "identity_verified": False}),
+    ("evidence_refs.0.storage_uri", None),
+    ("evidence_refs.0.retention_until", None),
+]
+
+
+@pytest.mark.parametrize(("field", "value"), NO_LONGER_IN_A_RECORD, ids=[field for field, _ in NO_LONGER_IN_A_RECORD])
+def test_a_record_does_not_vouch_for_itself_or_say_where_or_how_long_it_is_kept(field: str, value: object) -> None:
+    document = _record()
+    set_path(document, field, value)
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        CAR.model_validate(document)
 
 
 def test_the_status_counts_name_every_status() -> None:
@@ -145,6 +164,33 @@ def test_a_stage_the_record_does_not_expect_is_refused() -> None:
 def test_a_stage_that_does_not_describe_a_real_run_is_refused(change: dict[str, Any], message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         CAR.model_validate(_record(**change))
+
+
+# The bundle the plan stage of a record of a run the server opened loaded.
+SERVED_EXECUTION_BUNDLE: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "tracked_run.json").read_text(encoding="utf-8")
+)["stages"]["plan"]["execution"]["bundle"]
+
+
+def test_a_stage_that_loads_its_projects_own_assertions_names_no_trust_data() -> None:
+    bundle = CAR.model_validate(RECORD).stages[Stage.PLAN].execution.bundle
+    assert bundle is not None and bundle.trust_data_digest is None
+    with pytest.raises(ValidationError, match=LOCAL_BUNDLE_WITH_TRUST_DATA):
+        CAR.model_validate(_record(**{"stages.plan.execution.bundle.trust_data_digest": "sha256:" + "1" * 64}))
+
+
+@pytest.mark.parametrize(
+    ("trust_data_digest", "message"),
+    [(None, SERVER_BUNDLE_WITHOUT_TRUST_DATA), ("sha256:nope", "String should match")],
+    ids=["none", "not a digest"],
+)
+def test_a_stage_that_loads_the_servers_bundle_names_the_trust_data_it_checked_it_against(
+    trust_data_digest: str | None, message: str
+) -> None:
+    bundle = ExecutionBundle.model_validate(SERVED_EXECUTION_BUNDLE)
+    assert bundle.trust_data_digest == vector_trust_data_digest()
+    with pytest.raises(ValidationError, match=message):
+        ExecutionBundle.model_validate({**SERVED_EXECUTION_BUNDLE, "trust_data_digest": trust_data_digest})
 
 
 @pytest.mark.parametrize(
@@ -526,7 +572,7 @@ def test_a_change_digest_is_the_digest_of_its_unit() -> None:
 
 def test_a_record_of_a_run_the_server_opened_names_its_environment() -> None:
     document = expecting_the_stages_that_need_the_server(
-        with_keyed_digests(_record(**{"governance.run_opened_by": "server", "subject.environment": None}))
+        with_keyed_digests(_record(**{"run.opened_by": "server", "subject.environment": None}))
     )
     for coverage in (document["coverage"], document["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"

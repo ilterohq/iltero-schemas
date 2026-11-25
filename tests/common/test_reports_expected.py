@@ -1,5 +1,5 @@
-"""The result a verifier gives one property of a record: each case names a record and the result every verifier must
-give it, so two verifiers write the same report."""
+"""The result a verifier gives one property of a record: each case names a record, and the run statement it is read
+with when it names one, and the result every verifier must give it, so two verifiers write the same report."""
 
 from __future__ import annotations
 
@@ -34,12 +34,19 @@ from iltero_schemas.models.iac.apply_job_facts import (
 )
 from iltero_schemas.models.iac.apply_job_results import apply_job_results
 from iltero_schemas.models.iac.replan_check import ReplanCheck
+from iltero_schemas.statement.reasons import RECORD_DIFFERENCES
+from iltero_schemas.vectors.paths import HAND_MADE_RECORDS
+from iltero_schemas.vectors.vector_reports import report_source, run_statement_case, vector_report
+from iltero_schemas.vectors.vector_run_statements import case_record
+from iltero_schemas.verifier import FAILED_BY_DIFFERENCE, UPGRADED_BY_RUN_STATEMENT
+from iltero_schemas.verifier.record_results import record_results
 from tests.conftest import VECTORS
 from tests.records import (
     valid_case_record,
 )
 from tests.server_runs import (
     names_the_servers_bundle,
+    verify_es256,
 )
 
 # Each case with the change type of the folder it is in.
@@ -51,6 +58,10 @@ CASES: list[dict[str, Any]] = [
 
 
 def _record(case: dict[str, Any]) -> dict[str, Any]:
+    if "run_statement_case" in case["record"]:
+        return case_record(run_statement_case(case["record"]["run_statement_case"])).model_dump(
+            mode="json", by_alias=True
+        )
     if "vector" in case["record"]:
         document: dict[str, Any] = json.loads((VECTORS / "records" / case["record"]["vector"]).read_text("utf-8"))
         return document
@@ -62,9 +73,9 @@ def test_an_expected_result_is_one_a_verifier_gives_its_property_for_a_record_th
     car = CAR.model_validate(_record(case))
     assert (case["state"], case["reason"]) in PROPERTY_RESULTS[case["property"]]
     if (case["state"], case["reason"]) == ("not_performed", "run_opened_locally"):
-        assert car.governance.run_opened_by != "server"
+        assert car.run.opened_by != "server"
     if case["reason"] == "server_facts_unavailable":
-        assert car.governance.run_opened_by == "server"
+        assert car.run.opened_by == "server"
     _the_fact_its_reason_rests_on_holds(car, case["property"], case["state"], case["reason"])
 
 
@@ -91,7 +102,7 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, state: str
             for event in car.events
         )
     if reason == "served_exceptions_not_relied_on":
-        assert car.governance.run_opened_by == "server"
+        assert car.run.opened_by == "server"
         served = [stage.served_exceptions for stage in car.stages.values() if stage.served_exceptions is not None]
         assert served and not any(used.excepted_failures for used in served)
     if reason == "served_exception_relied_on":
@@ -118,7 +129,7 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, state: str
     if reason == "local_assertions":
         assert not names_the_servers_bundle(car)
     no_saved_plan = isinstance(car.change, IacChange) and car.change.plan.artifact_digest_source == "not_provided"
-    bound_by_redacted_plan = car.governance.run_opened_by == "local" and no_saved_plan
+    bound_by_redacted_plan = car.run.opened_by == "local" and no_saved_plan
     if reason == "redacted_plan_only":
         assert bound_by_redacted_plan and Stage.POST_DEPLOY in car.stages
     if (state, reason) == ("claimed_by_record", "plan_digests_compared"):
@@ -134,7 +145,14 @@ def _the_fact_its_reason_rests_on_holds(car: CAR, property_name: str, state: str
         assert Stage.POST_DEPLOY not in car.stages
 
 
-@pytest.mark.parametrize("case", [c for c in CASES if c["property"] == "reference_time"], ids=lambda c: c["name"])
+def _alone(case: dict[str, Any]) -> bool:
+    """Whether the case reads its record alone, with no run statement and no operator's trust file."""
+    return not ("run_statement" in case or "operator_trust_file" in case or "run_statement_case" in case["record"])
+
+
+@pytest.mark.parametrize(
+    "case", [c for c in CASES if c["property"] == "reference_time" and _alone(c)], ids=lambda c: c["name"]
+)
 def test_the_expected_reference_time_is_the_weakest_source_the_record_states(case: dict[str, Any]) -> None:
     sources = {stage.reference_time.source for stage in CAR.model_validate(_record(case)).stages.values()}
     assert case["reason"] == ("runner_clock" if "runner_clock" in sources else "server")
@@ -205,8 +223,68 @@ def _the_apply_job_fact_holds(car: CAR, reason: str | None) -> None:
 
 
 @pytest.mark.parametrize(
-    "case", [c for c in CASES if c["property"] in APPLY_JOB_RESULT_ORDER], ids=lambda case: case["name"]
+    "case", [c for c in CASES if c["property"] in APPLY_JOB_RESULT_ORDER and _alone(c)], ids=lambda case: case["name"]
 )
 def test_the_expected_apply_job_result_is_the_one_the_contract_gives(case: dict[str, Any]) -> None:
     result = apply_job_results(CAR.model_validate(_record(case)))[case["property"]]
     assert (result.state, result.reason) == (case["state"], case["reason"])
+
+
+def _source(case: dict[str, Any]) -> dict[str, Any]:
+    return {key: case[key] for key in ("record", "run_statement", "operator_trust_file") if key in case}
+
+
+@pytest.mark.parametrize(
+    "case",
+    # A hand-made record keeps no file a reader could check, so its report fails its integrity and decides nothing: its
+    # expected results are the record's alone.
+    [c for c in CASES if "case" not in c["record"] and c["record"].get("vector") not in HAND_MADE_RECORDS],
+    ids=lambda case: case["name"],
+)
+def test_the_report_gives_each_expected_result_of_a_record_vector_or_run_statement_case(case: dict[str, Any]) -> None:
+    report = vector_report(case["change_type"], _source(case), verify_es256)
+    found = getattr(report.properties, case["property"])
+    assert (found.state, found.reason) == (case["state"], case["reason"])
+
+
+@pytest.mark.parametrize("case", [c for c in CASES if "case" in c["record"]], ids=lambda case: case["name"])
+def test_the_record_alone_gives_each_expected_result_of_a_records_valid_case(case: dict[str, Any]) -> None:
+    """A ``records_valid`` case keeps only the files the checks of its rule read, so its result is the one the record
+    and those files give, read with no run statement."""
+    given = report_source(case["change_type"], _source(case))
+    found = record_results(given.record, given.files, finished=False)[case["property"]]
+    assert (found.state, found.reason) == (case["state"], case["reason"])
+
+
+def test_a_run_statement_case_names_no_statement_of_its_own() -> None:
+    for case in CASES:
+        assert not ("run_statement_case" in case["record"] and "run_statement" in case), case["name"]
+
+
+# The results only a run statement, or the bundle signature, gives, each of which a case shows.
+STATEMENT_RESULTS = (
+    {(name, *after) for (name, _before), after in UPGRADED_BY_RUN_STATEMENT.items()}
+    | {(name, "failed", code) for code, names in FAILED_BY_DIFFERENCE.items() for name in names}
+    | {
+        (name, "failed", "served_part_differs")
+        for name in PROPERTY_RESULTS
+        if ("failed", "served_part_differs") in PROPERTY_RESULTS[name]
+    }
+    | {
+        ("integrity", "failed", "refused_by_server"),
+        ("exceptions", "verified", "run_statement"),
+        ("stage_completeness", "verified", "run_statement"),
+        ("stage_completeness", "failed", "run_abandoned"),
+        ("stage_completeness", "failed", "required_results_unanswered"),
+        ("stage_completeness", "not_assessed", "later_record_holds_the_later_stages"),
+        ("check_after_deployment", "not_assessed", "later_record_holds_the_later_stages"),
+        ("bundle_signature", "verified", "bundle_signature_checked"),
+        ("bundle_signature", "failed", "trust_data_differs"),
+    }
+)
+
+
+def test_every_result_a_run_statement_or_the_bundle_signature_gives_has_a_case() -> None:
+    shown = {(case["property"], case["state"], case["reason"]) for case in CASES}
+    assert STATEMENT_RESULTS - shown == set()
+    assert set(FAILED_BY_DIFFERENCE) <= RECORD_DIFFERENCES

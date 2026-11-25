@@ -1,0 +1,146 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "VerificationReport",
+  "metadata": {
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-09-22T13:10:00.000Z"
+  },
+  "record": {
+    "uuid": "33a12410-4244-5439-9b2c-56dd6516b8a7",
+    "digest": "sha256:77badae77497c37116e8a23dd7493eb97b3d476ac570129f71acd66adef5607f"
+  },
+  "trust_level": {
+    "level": "policy_enforced",
+    "reason": "run_statement"
+  },
+  "trust_root": {
+    "key_id": "dev-run-statements",
+    "listed_in": "iltero",
+    "operator": null,
+    "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+  },
+  "run_statement": {
+    "digest": "sha256:6a5d1eca6e876b99e0fcdc8050c59f0a2f7e3a2a5acac68604e4316e4b915d6a",
+    "listed_as": "subject",
+    "run": {
+      "ending": "abandoned",
+      "ending_reason": "no_upload_before_the_idle_limit",
+      "ended_at": "2026-11-25T06:45:00.000Z",
+      "unanswered_results": 0,
+      "stages_never_accepted": 1
+    },
+    "problems": [],
+    "notes": [],
+    "not_compared": []
+  },
+  "stage_trust_data_digests": {
+    "plan": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "post_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "pre_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+  },
+  "properties": {
+    "integrity": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": null
+    },
+    "source_identity": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": "the record names no repository, so only its commit is verified"
+    },
+    "approval_identity": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": null
+    },
+    "bundle_signature": {
+      "state": "verified",
+      "reason": "bundle_signature_checked",
+      "detail": null
+    },
+    "bundle_used": {
+      "state": "verified",
+      "reason": "served_and_named_by_every_accepted_result",
+      "detail": null
+    },
+    "stage_completeness": {
+      "state": "failed",
+      "reason": "stage_not_reported",
+      "detail": null
+    },
+    "plan_apply_match": {
+      "state": "claimed_by_record",
+      "reason": "plan_digests_compared",
+      "detail": null
+    },
+    "check_after_deployment": {
+      "state": "not_performed",
+      "reason": "stage_not_reported",
+      "detail": null
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "reason": null,
+      "detail": null
+    },
+    "exceptions": {
+      "state": "claimed_by_record",
+      "reason": "served_exceptions_not_relied_on",
+      "detail": null
+    },
+    "commit_review": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": null
+    },
+    "reference_time": {
+      "state": "not_performed",
+      "reason": "runner_clock",
+      "detail": null
+    },
+    "evaluator_binary": {
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
+    },
+    "scanner_reports": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
+      "detail": null
+    },
+    "plan_age": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": "210 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is 604800 seconds"
+    },
+    "apply_job_approval_order": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": "approvals received at or after the plan-stage record was received at 2026-11-25T06:39:00Z: approval-2 at 2026-11-25T06:42:00Z"
+    },
+    "received_plan_file": {
+      "state": "claimed_by_record",
+      "reason": "received_plan_file_matches",
+      "detail": null
+    },
+    "rendered_plan": {
+      "state": "claimed_by_record",
+      "reason": "rendered_plan_matches",
+      "detail": null
+    },
+    "pinned_plan": {
+      "state": "verified",
+      "reason": "pinned_and_named_by_accepted_record",
+      "detail": null
+    },
+    "replan_resource_actions": {
+      "state": "claimed_by_record",
+      "reason": "same_resource_actions",
+      "detail": null
+    }
+  }
+}

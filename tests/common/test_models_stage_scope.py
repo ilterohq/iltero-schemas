@@ -116,9 +116,7 @@ def _left_out_by_the_servers_policy(
     left_out: dict[str, Any], *, production: bool = SERVED_PRODUCTION
 ) -> dict[str, Any]:
     """A record of a run the server opened whose environment's policy left out ``left_out``'s stages."""
-    scoped = with_the_servers_production(
-        stage_record(**left_out, **{"governance.run_opened_by": "server"}), production=production
-    )
+    scoped = with_the_servers_production(stage_record(**left_out, **{"run.opened_by": "server"}), production=production)
     for coverage in (scoped["coverage"], scoped["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
     keep_no_served_exceptions(scoped)
@@ -217,7 +215,7 @@ def _tool_opened_through_pre_deploy() -> dict[str, Any]:
     """A record of a run the server opened, through its pre-deploy stage, turned into one the tool opened."""
     document = copy.deepcopy(THROUGH_PRE_DEPLOY)
     CAR.model_validate(document)
-    document["governance"]["run_opened_by"] = "local"
+    document["run"]["opened_by"] = "local"
     return document
 
 

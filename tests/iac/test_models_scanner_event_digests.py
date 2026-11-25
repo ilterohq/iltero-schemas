@@ -8,10 +8,10 @@ from iltero_schemas.canonical import canonical_bytes, digest
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.event import event_digest
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_event_digests import scanner_event_digests
-from tests.iac.test_models_scanner_results import SCANNED, _governed_scanned, kept_files
+from tests.iac.test_models_scanner_results import SCANNED, _tracked_scanned, kept_files
 from tests.server_runs import (
     SERVED_NONE,
 )
@@ -34,7 +34,7 @@ def test_a_record_whose_files_do_not_hold_names_no_scanner_decided_event() -> No
 
 
 def test_a_record_whose_served_exceptions_copy_is_not_given_names_no_scanner_decided_event() -> None:
-    record, files = _governed_scanned()
+    record, files = _tracked_scanned()
     car = CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
     # The copy of the exceptions the server served the run, none in force, as its plan stage names it.
     served = canonical_bytes({**SERVED_NONE, "metadata": {**SERVED_NONE["metadata"], "run_id": record["run"]["id"]}})

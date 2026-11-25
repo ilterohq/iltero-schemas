@@ -10,7 +10,18 @@
   },
   "record": {
     "uuid": "33a12410-4244-5439-9b2c-56dd6516b8a7",
-    "digest": "sha256:12ed09938a70069de58b0a801df4d2eefa1bd8420aed4e6cb82e28baec0adec5"
+    "digest": "sha256:bb93949a02d788d7d4e5e2431a5ad9f78ec190ad45481fead9cc7854fe9c7981"
+  },
+  "trust_level": {
+    "level": "self_attested",
+    "reason": "no_statement_given"
+  },
+  "trust_root": null,
+  "run_statement": null,
+  "stage_trust_data_digests": {
+    "plan": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "post_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "pre_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
   },
   "properties": {
     "integrity": {
@@ -28,7 +39,12 @@
       "reason": "approvals_listed",
       "detail": null
     },
-    "bundle_provenance": {
+    "bundle_signature": {
+      "state": "verified",
+      "reason": "bundle_signature_checked",
+      "detail": null
+    },
+    "bundle_used": {
       "state": "claimed_by_record",
       "reason": "server_bundle_named",
       "detail": null
@@ -43,7 +59,7 @@
       "reason": "plan_digests_compared",
       "detail": null
     },
-    "runtime_verification": {
+    "check_after_deployment": {
       "state": "not_assessed",
       "reason": "stage_pending",
       "detail": null
@@ -81,12 +97,12 @@
     "plan_age": {
       "state": "claimed_by_record",
       "reason": "plan_age_within_limit",
-      "detail": "452039 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is 604800 seconds"
+      "detail": "210 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is 604800 seconds"
     },
     "apply_job_approval_order": {
       "state": "claimed_by_record",
       "reason": "approved_after_plan_stage_record_accepted",
-      "detail": "approved at or after the plan-stage record was received at 2026-09-16T18:31:00Z: approval-2 at 2026-09-21T23:50:00Z"
+      "detail": "approvals received at or after the plan-stage record was received at 2026-11-25T06:39:00Z: approval-2 at 2026-11-25T06:42:00Z"
     },
     "received_plan_file": {
       "state": "claimed_by_record",

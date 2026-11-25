@@ -20,9 +20,9 @@
     "why": "An image build reads no scanner report."
   },
   {
-    "name": "exceptions_of_a_governed_image_deploy",
+    "name": "exceptions_of_a_tracked_image_deploy",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "exceptions",
     "state": "not_assessed",
@@ -40,9 +40,9 @@
     "why": "An image deploy applies no exception at any stage, so this comes before the run being opened locally."
   },
   {
-    "name": "plan_age_of_governed_run_deploy_rolled_out",
+    "name": "plan_age_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "plan_age",
     "state": "not_assessed",
@@ -50,9 +50,9 @@
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
   },
   {
-    "name": "apply_job_approval_order_of_governed_run_deploy_rolled_out",
+    "name": "apply_job_approval_order_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "apply_job_approval_order",
     "state": "not_assessed",
@@ -60,9 +60,9 @@
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
   },
   {
-    "name": "received_plan_file_of_governed_run_deploy_rolled_out",
+    "name": "received_plan_file_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "received_plan_file",
     "state": "not_assessed",
@@ -70,9 +70,9 @@
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
   },
   {
-    "name": "rendered_plan_of_governed_run_deploy_rolled_out",
+    "name": "rendered_plan_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "rendered_plan",
     "state": "not_assessed",
@@ -80,9 +80,9 @@
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
   },
   {
-    "name": "pinned_plan_of_governed_run_deploy_rolled_out",
+    "name": "pinned_plan_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "pinned_plan",
     "state": "not_assessed",
@@ -90,13 +90,26 @@
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
   },
   {
-    "name": "replan_resource_actions_of_governed_run_deploy_rolled_out",
+    "name": "replan_resource_actions_of_tracked_run_deploy_rolled_out",
     "record": {
-      "vector": "image/governed_run_deploy_rolled_out.json"
+      "vector": "image/tracked_run_deploy_rolled_out.json"
     },
     "property": "replan_resource_actions",
     "state": "not_assessed",
     "reason": "not_in_activity",
     "why": "The activity is image_deploy, not iac_change, though it has a pre-deploy stage."
+  },
+  {
+    "name": "integrity_of_an_image_deploy_its_run_statement_holds_for",
+    "record": {
+      "vector": "image/tracked_run_deploy_rolled_out.json"
+    },
+    "run_statement": {
+      "vector": "image/tracked_run_deploy_rolled_out.json"
+    },
+    "property": "integrity",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The run statement verified, lists the record as its unit's subject and differs from it in nothing, its build included."
   }
 ]

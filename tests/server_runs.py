@@ -30,6 +30,7 @@ from iltero_schemas.redaction.common.policy import BUILT_IN_REDACTION_POLICY
 from iltero_schemas.redaction.iac.state import redacted_state_digest
 from iltero_schemas.signing import SIGNATURE_BYTES
 from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
+from iltero_schemas.vectors.vector_signing_keys import vector_trust_data_digest
 from tests.conftest import VECTORS
 from tests.records import (
     NOT_READ_BY_THE_STAGE,
@@ -270,7 +271,7 @@ def served(document: dict[str, Any]) -> dict[str, Any]:
     """``document`` as the record of a run the server opened: its assertion sets pinned by the server, and every check
     that read facts reading them from the server."""
     served_document = with_keyed_digests(copy.deepcopy(document))
-    served_document["governance"]["run_opened_by"] = "server"
+    served_document["run"]["opened_by"] = "server"
     with_the_servers_production(served_document, production=SERVED_PRODUCTION)
     for coverage in [served_document["coverage"], *(s["coverage"] for s in served_document["stages"].values())]:
         coverage["assertions_required"]["origin"] = "server_pinned"
@@ -344,12 +345,13 @@ SERVED_MAPPING_USED: dict[str, Any] = {
 
 def from_the_servers_bundle(document: dict[str, Any]) -> None:
     """Make every assertion ``document`` evaluates one from the server's bundle, as a run the server opened requires:
-    each evaluation names the server's bundle, and each stage evaluates over it and applies only the scanner check
-    mapping the server served, whose copy the register lists in place of the copies it no longer applies."""
+    each evaluation names the server's bundle, and each stage evaluates over it, checked against the development
+    trust data, and applies only the scanner check mapping the server served, whose copy the register lists in place
+    of the copies it no longer applies."""
     for stage in document["stages"].values():
         bundle = stage["execution"].get("bundle")
         if bundle is not None:
-            bundle.update(SERVER_BUNDLE)
+            bundle.update(SERVER_BUNDLE, trust_data_digest=vector_trust_data_digest())
         scanners = stage.get("scanners")
         if scanners is None:
             continue
@@ -403,10 +405,8 @@ def keep_served_exceptions(document: dict[str, Any], served: dict[str, Any], exc
             "path": path,
             "redaction_policy": None,
             "ref_id": f"{stage.value}/served-exceptions.json",
-            "retention_until": None,
             "size_bytes": len(data),
             "source": None,
-            "storage_uri": None,
         }
     )
 

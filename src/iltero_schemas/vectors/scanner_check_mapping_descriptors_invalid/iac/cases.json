@@ -10,6 +10,16 @@
     "message": "the descriptor's key_id names a key that is not trusted, or is revoked"
   },
   {
+    "name": "descriptor_signed_by_a_key_of_another_purpose",
+    "vector": "iac/served_catalog.json",
+    "set": {
+      "/key_id": "dev-run-statements"
+    },
+    "remove": [],
+    "refused_by": "check",
+    "message": "the descriptor's key_id names a key that is not for signing scanner check mappings"
+  },
+  {
     "name": "descriptor_whose_mapping_is_not_a_scanner_check_mapping",
     "vector": "iac/served_catalog.json",
     "set": {

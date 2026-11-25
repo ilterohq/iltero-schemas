@@ -41,7 +41,7 @@ STATE_CHOSEN_FOR_ITS_FORM = {
 }
 # The record of a run the server opened through post-verify, and the captured file of each digest it keys: its state
 # (the deployment's and the identities'), its first reading and its second reading.
-KEYED_RUN = "iac/governed_run_post_verify.json"
+KEYED_RUN = "iac/tracked_run_post_verify.json"
 KEYED_FILES = {
     ("deployment", "apply", "state", "digest"): "refresh_verified.json",
     ("identity", "sources", "state", "digest"): "refresh_verified.json",
@@ -72,7 +72,7 @@ def test_every_captured_state_is_named_by_a_case_or_a_state_redaction_case() -> 
 @pytest.mark.parametrize("case", CASES, ids=lambda case: case["record"])
 def test_a_record_of_a_run_the_tool_opened_names_its_state_by_the_redacted_state_digest(case: dict[str, Any]) -> None:
     record = _record(case)
-    assert record["governance"]["run_opened_by"] == "local"
+    assert record["run"]["opened_by"] == "local"
     policy = policy_from_document(RedactionPolicyDocument.model_validate(record["redaction_policy"]))
     expected = {
         "digest": redacted_state_digest("terraform", _raw(case["state"]), policy),
@@ -96,7 +96,7 @@ def test_every_record_of_a_run_the_tool_opened_that_names_a_state_is_written_fro
         record = json.loads(path.read_text(encoding="utf-8"))
         deployment = record["change"].get("deployment")
         state = deployment["apply"]["state"] if deployment is not None and "apply" in deployment else {}
-        if record["governance"]["run_opened_by"] == "local" and "digest" in state:
+        if record["run"]["opened_by"] == "local" and "digest" in state:
             named.add(path.relative_to(VECTORS / "records").as_posix())
     assert named == {case["record"] for case in CASES}
 

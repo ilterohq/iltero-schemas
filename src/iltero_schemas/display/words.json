@@ -1,0 +1,2158 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "DisplayWords",
+  "always_shown": {
+    "compliance": {
+      "text": "A record states facts; it never establishes compliance with a framework.",
+      "placeholders": []
+    }
+  },
+  "result_statuses": {
+    "pass": {
+      "word": "Met",
+      "plain": "[ok] Met",
+      "tone": "positive",
+      "icon": "check",
+      "sentence": {
+        "text": "The assertion holds for this subject.",
+        "placeholders": []
+      }
+    },
+    "fail": {
+      "word": "Not met",
+      "plain": "[x] Not met",
+      "tone": "negative",
+      "icon": "cross",
+      "sentence": {
+        "text": "The assertion does not hold for this subject.",
+        "placeholders": []
+      }
+    },
+    "unknown": {
+      "word": "Undecided",
+      "plain": "[?] Undecided",
+      "tone": "caution",
+      "icon": "question",
+      "sentence": {
+        "text": "No evaluator could decide whether the assertion holds for this subject.",
+        "placeholders": []
+      }
+    },
+    "not_applicable": {
+      "word": "Does not apply",
+      "plain": "[-] Does not apply",
+      "tone": "neutral",
+      "icon": "dash",
+      "sentence": {
+        "text": "The assertion does not apply to this subject.",
+        "placeholders": []
+      }
+    },
+    "not_evaluated": {
+      "word": "Not checked",
+      "plain": "[ ] Not checked",
+      "tone": "caution",
+      "icon": "circle",
+      "sentence": {
+        "text": "The assertion was not checked for this subject.",
+        "placeholders": []
+      }
+    },
+    "error": {
+      "word": "Evaluator failed",
+      "plain": "[!] Evaluator failed",
+      "tone": "negative",
+      "icon": "warning",
+      "sentence": {
+        "text": "The evaluator failed before it decided the assertion for this subject.",
+        "placeholders": []
+      }
+    }
+  },
+  "status_reason_groups": {
+    "known_later": {
+      "label": "Known later",
+      "sentence": {
+        "text": "A value is known only after the deployment.",
+        "placeholders": []
+      }
+    },
+    "hidden": {
+      "label": "Hidden",
+      "sentence": {
+        "text": "A value was hidden by redaction.",
+        "placeholders": []
+      }
+    },
+    "not_supplied": {
+      "label": "Not supplied",
+      "sentence": {
+        "text": "A fact the rule needs was not supplied.",
+        "placeholders": []
+      }
+    },
+    "input_incomplete": {
+      "label": "Input incomplete",
+      "sentence": {
+        "text": "What was read was incomplete, or cannot be trusted.",
+        "placeholders": []
+      }
+    }
+  },
+  "status_reasons": {
+    "pass": {},
+    "fail": {},
+    "unknown": {
+      "deployment_log_incomplete": {
+        "group": "input_incomplete",
+        "sentence": {
+          "text": "The deployment log lost lines this assertion needs.",
+          "placeholders": []
+        }
+      },
+      "kind_unmapped": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "The resource's type has no kind this assertion can use.",
+          "placeholders": []
+        }
+      },
+      "known_after_deploy": {
+        "group": "known_later",
+        "sentence": {
+          "text": "A value it reads is only known after the deployment.",
+          "placeholders": []
+        }
+      },
+      "not_a_list": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "A value it reads as a list is not a list.",
+          "placeholders": []
+        }
+      },
+      "not_reported_by_tool": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "The tool that wrote the input did not report a value it reads, such as the commit of a build.",
+          "placeholders": []
+        }
+      },
+      "path_missing": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "A value it reads is not in the input.",
+          "placeholders": []
+        }
+      },
+      "redacted": {
+        "group": "hidden",
+        "sentence": {
+          "text": "A value it reads was hidden by redaction.",
+          "placeholders": []
+        }
+      },
+      "rendered_plan_not_sent": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "The job that applies the change did not report a plan rendered from its saved plan file.",
+          "placeholders": []
+        }
+      },
+      "replan_not_compared": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "The job that applies the change did not compare a new plan with the evaluated plan.",
+          "placeholders": []
+        }
+      },
+      "scanner_report_incomplete": {
+        "group": "input_incomplete",
+        "sentence": {
+          "text": "The scanner report is incomplete. It holds results the stage could not read, files the scanner could not parse, or an answer that is not a pass or a fail, or its summary counts results it does not list.",
+          "placeholders": []
+        }
+      },
+      "scanner_result_unresolved": {
+        "group": "input_incomplete",
+        "sentence": {
+          "text": "A scanner check failed for a name that several resources share, so the failure may be about this one.",
+          "placeholders": []
+        }
+      },
+      "server_facts_unavailable": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "It needs facts that only the server provides, such as the environment's class, the commit the continuous integration (CI) job ran on, the server's check of the build's attestation, or the facts about the job that applies an infrastructure change.",
+          "placeholders": []
+        }
+      },
+      "state_not_read": {
+        "group": "input_incomplete",
+        "sentence": {
+          "text": "It needs a fact that only the state after the apply would show, and the pipeline said the infrastructure-as-code (IaC) tool could not read that state.",
+          "placeholders": []
+        }
+      },
+      "unspecified": {
+        "group": "not_supplied",
+        "sentence": {
+          "text": "The Rego policy could not decide, and gave no reason.",
+          "placeholders": []
+        }
+      }
+    },
+    "not_applicable": {
+      "no_subject_in_scope": {
+        "group": null,
+        "sentence": {
+          "text": "Nothing in this change is in its scope.",
+          "placeholders": []
+        }
+      },
+      "when_guard_excluded": {
+        "group": null,
+        "sentence": {
+          "text": "Its condition excludes this resource.",
+          "placeholders": []
+        }
+      }
+    },
+    "not_evaluated": {
+      "credential_denied": {
+        "group": null,
+        "sentence": {
+          "text": "A credential it needs was refused.",
+          "placeholders": []
+        }
+      },
+      "evaluator_unavailable": {
+        "group": null,
+        "sentence": {
+          "text": "The evaluator is not available on this machine.",
+          "placeholders": []
+        }
+      },
+      "identity_unverified": {
+        "group": null,
+        "sentence": {
+          "text": "The resource's cloud identity could not be verified.",
+          "placeholders": []
+        }
+      },
+      "no_result_in_the_report": {
+        "group": null,
+        "sentence": {
+          "text": "The scanner report holds no result at all, so it decided none of this assertion's checks.",
+          "placeholders": []
+        }
+      },
+      "no_result_of_the_mapped_checks": {
+        "group": null,
+        "sentence": {
+          "text": "The scanner report holds no result of the checks this assertion relies on, so it says nothing about this resource.",
+          "placeholders": []
+        }
+      },
+      "no_scanner_report": {
+        "group": null,
+        "sentence": {
+          "text": "Only scanners decide it, and no scanner report given to the stage has checks for it.",
+          "placeholders": []
+        }
+      },
+      "resource_type_unsupported": {
+        "group": null,
+        "sentence": {
+          "text": "This resource type is not supported.",
+          "placeholders": []
+        }
+      },
+      "scanner_not_run": {
+        "group": null,
+        "sentence": {
+          "text": "The scanner it reads did not report.",
+          "placeholders": []
+        }
+      },
+      "scanner_version_not_allowed": {
+        "group": null,
+        "sentence": {
+          "text": "The version of the scanner that ran is not one its rule allows.",
+          "placeholders": []
+        }
+      },
+      "stage_not_run": {
+        "group": null,
+        "sentence": {
+          "text": "The stage it belongs to did not run.",
+          "placeholders": []
+        }
+      },
+      "subject_unresolved": {
+        "group": null,
+        "sentence": {
+          "text": "The resource could not be identified.",
+          "placeholders": []
+        }
+      },
+      "suppressed_in_source": {
+        "group": null,
+        "sentence": {
+          "text": "The scanner check was turned off by a comment in the source code.",
+          "placeholders": []
+        }
+      },
+      "timeout": {
+        "group": null,
+        "sentence": {
+          "text": "It did not finish in time.",
+          "placeholders": []
+        }
+      },
+      "tool_reports_only_failures": {
+        "group": null,
+        "sentence": {
+          "text": "The scanner names a resource only when a check fails, and it named no failure for this resource, so it did not decide it.",
+          "placeholders": []
+        }
+      }
+    },
+    "error": {
+      "adapter_parse_failure": {
+        "group": null,
+        "sentence": {
+          "text": "An input file could not be read.",
+          "placeholders": []
+        }
+      },
+      "bundle_verification_failed": {
+        "group": null,
+        "sentence": {
+          "text": "The assertion bundle failed its check.",
+          "placeholders": []
+        }
+      },
+      "compile_failure": {
+        "group": null,
+        "sentence": {
+          "text": "The assertion could not be compiled.",
+          "placeholders": []
+        }
+      },
+      "evaluator_crash": {
+        "group": null,
+        "sentence": {
+          "text": "The evaluator stopped with an error.",
+          "placeholders": []
+        }
+      },
+      "evaluator_memory_limit": {
+        "group": null,
+        "sentence": {
+          "text": "The evaluator ran out of memory.",
+          "placeholders": []
+        }
+      },
+      "evaluator_timeout": {
+        "group": null,
+        "sentence": {
+          "text": "The evaluator ran out of time.",
+          "placeholders": []
+        }
+      },
+      "output_contract_violation": {
+        "group": null,
+        "sentence": {
+          "text": "The Rego policy's answer was not in the expected form.",
+          "placeholders": []
+        }
+      },
+      "output_overflow": {
+        "group": null,
+        "sentence": {
+          "text": "The Rego policy's answer was too large.",
+          "placeholders": []
+        }
+      }
+    }
+  },
+  "verdicts": {
+    "met": {
+      "word": "Checks met",
+      "plain": "[ok] Checks met",
+      "tone": "positive",
+      "icon": "check",
+      "sentence": {
+        "text": "Every required check passed or did not apply.",
+        "placeholders": []
+      },
+      "reasons": {}
+    },
+    "not_met": {
+      "word": "Checks not met",
+      "plain": "[x] Checks not met",
+      "tone": "negative",
+      "icon": "cross",
+      "sentence": {
+        "text": "A required check failed.",
+        "placeholders": []
+      },
+      "reasons": {
+        "every_failure_excepted": {
+          "text": "Every required check that failed is covered by an exception the server served the run; the checks still did not pass.",
+          "placeholders": []
+        }
+      }
+    },
+    "undecided": {
+      "word": "Checks undecided",
+      "plain": "[?] Checks undecided",
+      "tone": "caution",
+      "icon": "question",
+      "sentence": {
+        "text": "A required check could not be decided.",
+        "placeholders": []
+      },
+      "reasons": {}
+    },
+    "incomplete": {
+      "word": "Checks incomplete",
+      "plain": "[ ] Checks incomplete",
+      "tone": "caution",
+      "icon": "circle",
+      "sentence": {
+        "text": "The stage could not make every required check.",
+        "placeholders": []
+      },
+      "reasons": {
+        "not_evaluated": {
+          "text": "The stage did not run every required check.",
+          "placeholders": []
+        },
+        "evaluator_failed": {
+          "text": "An evaluator failed, so the stage did not run every required check.",
+          "placeholders": []
+        }
+      }
+    }
+  },
+  "notes": {
+    "served_exception": {
+      "text": "Not met, excepted: {exception}, requested by {requester}, approved by {approver}, in force at {reference_time} by the server's clock, until {until}.",
+      "placeholders": [
+        "approver",
+        "exception",
+        "reference_time",
+        "requester",
+        "until"
+      ]
+    },
+    "project_exception": {
+      "text": "Not met, excepted by the project's own file: {exception}; the file names {approver} as approver, which nothing checks; until {until}.",
+      "placeholders": [
+        "approver",
+        "exception",
+        "until"
+      ]
+    },
+    "suppressed_in_source_excepted": {
+      "text": "Not checked: suppressed in the source, covered by the project's exception {exception}.",
+      "placeholders": [
+        "exception"
+      ]
+    },
+    "suppressed_in_source_not_excepted": {
+      "text": "Not checked: suppressed in the source, covered by no exception.",
+      "placeholders": []
+    },
+    "no_exception_in_force": {
+      "expired": {
+        "text": "Not met. Exception {exception} expired on {expires_at}.",
+        "placeholders": [
+          "exception",
+          "expires_at"
+        ]
+      },
+      "not_yet_in_force": {
+        "text": "Not met. Exception {exception} is not yet in force: it starts on {starts_at}.",
+        "placeholders": [
+          "exception",
+          "starts_at"
+        ]
+      },
+      "for_another_environment": {
+        "text": "Not met. Exception {exception} is for the environment {exception_environment}, not {environment}.",
+        "placeholders": [
+          "environment",
+          "exception",
+          "exception_environment"
+        ]
+      },
+      "run_names_no_environment": {
+        "text": "Not met. Exception {exception} is for the environment {exception_environment}, and the run names no environment.",
+        "placeholders": [
+          "exception",
+          "exception_environment"
+        ]
+      },
+      "approved_for_another_document_of_the_assertion": {
+        "text": "Not met. Exception {exception} was approved for another version of this assertion.",
+        "placeholders": [
+          "exception"
+        ]
+      },
+      "approved_after_the_reference_time": {
+        "text": "Not met. Exception {exception} was approved at {approved_at}, after the stage's reference time {reference_time}.",
+        "placeholders": [
+          "approved_at",
+          "exception",
+          "reference_time"
+        ]
+      }
+    },
+    "every_failure_excepted": {
+      "text": "Not met, every failure excepted: the gate let the pipeline go on.",
+      "placeholders": []
+    },
+    "advisory_let_through": {
+      "text": "Advisory: the gate let the pipeline go on despite results not met or undecided: {not_met} not met, {undecided} undecided.",
+      "placeholders": [
+        "not_met",
+        "undecided"
+      ]
+    },
+    "incomplete_stopped": {
+      "text": "Incomplete: a required check was not made or its evaluator failed, so the gate stopped the pipeline, even in advisory mode.",
+      "placeholders": []
+    }
+  },
+  "trust_levels": {
+    "policy_enforced": {
+      "label": "Policy-enforced",
+      "reasons": {
+        "run_statement": {
+          "text": "The server that opened the run accepted this record and signed for it: a run statement it signed with a trusted key lists this record. This says the server accepted the record, not that the change met its checks.",
+          "placeholders": []
+        }
+      }
+    },
+    "self_attested": {
+      "label": "Self-attested",
+      "reasons": {
+        "run_opened_locally": {
+          "text": "A local run, opened by the CLI, not by a server: only the record's writer vouches for it, and no server signs for it.",
+          "placeholders": []
+        },
+        "no_statement_given": {
+          "text": "The record says a server opened the run, and no run statement was given, so only the record's writer vouches for it.",
+          "placeholders": []
+        },
+        "refused_by_server": {
+          "text": "The run statement says the server refused this record.",
+          "placeholders": []
+        },
+        "run_statement_does_not_hold": {
+          "text": "The run statement given could not be verified, or does not match this record; the problems listed say why.",
+          "placeholders": []
+        },
+        "integrity_failed": {
+          "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says about itself is taken.",
+          "placeholders": []
+        }
+      }
+    }
+  },
+  "signed_by": {
+    "iltero": {
+      "text": "The run statement is signed by Iltero's key {key_id}; the list of trusted keys checked has the digest {trust_data_digest}.",
+      "placeholders": [
+        "key_id",
+        "trust_data_digest"
+      ]
+    },
+    "operator": {
+      "text": "The run statement is signed by {operator}'s server, key {key_id}, which the operator trust file {operator_file} lists ({trust_data_digest}); Iltero did not sign it.",
+      "placeholders": [
+        "key_id",
+        "operator",
+        "operator_file",
+        "trust_data_digest"
+      ]
+    }
+  },
+  "verification_states": {
+    "verified": {
+      "word": "Verified",
+      "plain": "[ok] Verified",
+      "tone": "positive",
+      "icon": "check",
+      "sentence": {
+        "text": "A signature the verifier checked covers the facts this rests on, and they show it holds.",
+        "placeholders": []
+      }
+    },
+    "failed": {
+      "word": "Failed",
+      "plain": "[x] Failed",
+      "tone": "negative",
+      "icon": "cross",
+      "sentence": {
+        "text": "The verifier checked this, and it does not hold.",
+        "placeholders": []
+      }
+    },
+    "could_not_decide": {
+      "word": "Undecided",
+      "plain": "[?] Undecided",
+      "tone": "caution",
+      "icon": "question",
+      "sentence": {
+        "text": "The verifier looked, and could not decide.",
+        "placeholders": []
+      }
+    },
+    "not_assessed": {
+      "word": "Not assessed",
+      "plain": "[-] Not assessed",
+      "tone": "neutral",
+      "icon": "dash",
+      "sentence": {
+        "text": "The verifier did not assess this for this record.",
+        "placeholders": []
+      }
+    },
+    "not_performed": {
+      "word": "Not performed",
+      "plain": "[ ] Not performed",
+      "tone": "caution",
+      "icon": "circle",
+      "sentence": {
+        "text": "The record shows the step this is about did not happen.",
+        "placeholders": []
+      }
+    },
+    "claimed_by_record": {
+      "word": "Claimed by the record",
+      "plain": "[i] Claimed by the record",
+      "tone": "neutral",
+      "icon": "info",
+      "sentence": {
+        "text": "The only evidence is the record's own claim.",
+        "placeholders": []
+      }
+    }
+  },
+  "verification_properties": {
+    "integrity": {
+      "label": "Record integrity",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The server that opened the run accepted this record and signed for it: the run statement lists its digest, and every file the record cites matches the digest it names.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "file_digests",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says about itself is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "refused_by_server",
+          "sentence": {
+            "text": "The run statement says the server refused this record.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "file_digests",
+          "sentence": {
+            "text": "The files the record cites hold the digests it names; only the record vouches for them, and anyone who can edit the files can recompute those digests.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "source_identity": {
+      "label": "Source identity",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The repository and commit are those of the continuous integration (CI) job the run statement signs for each stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "ci_job_differs",
+          "sentence": {
+            "text": "The record's repository or commit is not that of the continuous integration (CI) job the run statement signs for a stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "ci_job_held_by_server",
+          "sentence": {
+            "text": "Only the server that opened the run verified its continuous integration (CI) jobs, and no run statement that signs them was given.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server verified its continuous integration (CI) jobs.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "approval_identity": {
+      "label": "Approvals",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement signs the approvals the stage kept, so each one is an approval the server served.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the approvals is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the approvals from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_read_by_the_stage",
+          "sentence": {
+            "text": "No pre-deploy check read the approvals, so the record says nothing about them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "no_approval_served",
+          "sentence": {
+            "text": "A server opened the run, and the stage kept an empty list of approvals.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server served the approvals.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "approvals_listed",
+          "sentence": {
+            "text": "The record lists approvals; only the record says the server served them.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "bundle_signature": {
+      "label": "Bundle signature",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "bundle_signature_checked",
+          "sentence": {
+            "text": "The served bundle each stage names, as the stage kept it, is signed by an authorized key that was not revoked; that the stage ran it stays the record's word.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "bundle_of_another_server",
+          "sentence": {
+            "text": "A stage's assertion bundle is signed by a key of another server than the one the run statement names.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "trust_data_differs",
+          "sentence": {
+            "text": "A stage names another list of trusted keys than the verifier holds, so it checked its assertion bundle against other keys.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "local_assertions",
+          "sentence": {
+            "text": "The checks were the project's own, so no signed assertion bundle was used.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "bundle_used": {
+      "label": "Bundle used",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "served_and_named_by_every_accepted_result",
+          "sentence": {
+            "text": "The run statement says the server held the run to the assertion bundle every stage names; that the evaluator ran from it stays the record's word.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "bundle_differs",
+          "sentence": {
+            "text": "A stage names another assertion bundle than the one the run statement says the run was held to.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "local_assertions",
+          "sentence": {
+            "text": "The checks were the project's own, so no server held the run to an assertion bundle.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "server_bundle_named",
+          "sentence": {
+            "text": "A stage names the server's assertion bundle; only the record says the run used it, and no run statement confirms it.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "stage_completeness": {
+      "label": "Stage completeness",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement says the run left no result it required of this unit unanswered.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "expected_stages_differ",
+          "sentence": {
+            "text": "The stages the record expects are not those the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "required_assertions_differ",
+          "sentence": {
+            "text": "A stage's required assertions are not those the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "required_results_unanswered",
+          "sentence": {
+            "text": "The run closed on {ended_at}, and {unanswered_results} of the results it required were never answered.",
+            "placeholders": [
+              "ended_at",
+              "unanswered_results"
+            ]
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "run_abandoned",
+          "sentence": {
+            "text": "The run was abandoned on {ended_at}, and {unanswered_results} of the results it required were never answered.",
+            "placeholders": [
+              "ended_at",
+              "unanswered_results"
+            ]
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "stage_not_listed",
+          "sentence": {
+            "text": "A stage the record holds is not one the run statement lists.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "stage_not_reported",
+          "sentence": {
+            "text": "The record is finished, and a stage it expects never reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "later_record_holds_the_later_stages",
+          "sentence": {
+            "text": "The run statement names a later record as the one that holds the stages after this record's.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "stages_pending",
+          "sentence": {
+            "text": "The run is still in progress.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "expected_stages",
+          "sentence": {
+            "text": "Every stage the record expects reported; only the record says which stages it expects.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "plan_apply_match": {
+      "label": "Plan and apply match",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "plan_digests_compared",
+          "sentence": {
+            "text": "The digests the record names of the evaluated plan and the applied plan differ.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "binding_undecided",
+          "sentence": {
+            "text": "The record could not compare the evaluated plan with the applied plan.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity applies no plan.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "no_post_deploy_stage",
+          "sentence": {
+            "text": "No stage compared the plan that was applied.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "plan_digests_compared",
+          "sentence": {
+            "text": "The record compared the digests it names of the evaluated plan and the applied plan, and they match; only the record says so.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "redacted_plan_only",
+          "sentence": {
+            "text": "The record compared just the digests of the redacted plans, so hidden values were not compared; only the record says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "check_after_deployment": {
+      "label": "Check after deployment",
+      "results": [
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "environment_policy",
+          "sentence": {
+            "text": "The record leaves the check after deployment out, saying the environment policy does not require it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "later_record_holds_the_later_stages",
+          "sentence": {
+            "text": "The run statement names a later record as the one that holds the stages after this record's.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no stage after the deployment.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_supported",
+          "sentence": {
+            "text": "The record leaves the check after deployment out, saying the tool that made the change cannot run it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "project_config",
+          "sentence": {
+            "text": "The record leaves the check after deployment out, saying the project's configuration leaves it out.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "stage_pending",
+          "sentence": {
+            "text": "The record expects the check after deployment, and the run that would report it is still in progress.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "stage_not_reported",
+          "sentence": {
+            "text": "The record expects the check after deployment, and it was never reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "reported_by_pipeline",
+          "sentence": {
+            "text": "The pipeline reported the check after deployment; only the pipeline says it ran.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "deployment_coverage": {
+      "label": "Deployment coverage",
+      "results": [
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": null,
+          "sentence": {
+            "text": "One record cannot show deployments that left no record; that needs a list of deployments.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "exceptions": {
+      "label": "Exceptions",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement signs the stage's copy of the exceptions the server served, including who approved each one, and each one the record relied on covers its results at the stage's reference time, which the statement signs too; whether one was revoked after the server served the copy stays the server's to confirm.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "kept_exceptions_do_not_hold",
+          "sentence": {
+            "text": "An exceptions file a stage kept does not contain the exceptions the record names, or was served to another run, stage or environment.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the exceptions the server served is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity applies no exception at any stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server served exceptions.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "project_exception_relied_on",
+          "sentence": {
+            "text": "The record relied on an exception from the project's own file; only the project's own file vouches for it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "project_exceptions_file_not_relied_on",
+          "sentence": {
+            "text": "A stage applied the project's own exceptions file, and no result relied on it; only the record says so.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "served_exception_approved_by_run_starter",
+          "sentence": {
+            "text": "The record relied on an exception the server served, and the record's copy of it says the person who approved it also started the run; only the record's copy says so.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "served_exception_relied_on",
+          "sentence": {
+            "text": "The record relied on an exception the server served; only that server can confirm that it served this copy and who approved it, and whether it was revoked after it served the copy stays the server's to confirm, with or without a run statement.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "served_exceptions_not_relied_on",
+          "sentence": {
+            "text": "The plan stage applied the exceptions the server served, and no failed result relied on them; only the record says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "commit_review": {
+      "label": "Commit review",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement signs the commit review the stage kept, which says every commit the change ships was reviewed.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "build_commit_not_verified_commit",
+          "sentence": {
+            "text": "The commit the build names is not the commit the server verified.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "head_commit_before_review_starting_point",
+          "sentence": {
+            "text": "The commit the change ships comes before the commit the review starts from.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "not_reviewed",
+          "sentence": {
+            "text": "A commit the change ships was not reviewed.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "review_starting_point_not_in_history",
+          "sentence": {
+            "text": "The commit the review starts from is not in the history of the commit the change ships.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the commit review is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "source_commit_not_verified_commit",
+          "sentence": {
+            "text": "The commit the record names as its source is not the commit the server verified.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the commit review from the server, and the stage kept the marker that says the server did not give it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "too_many_commits",
+          "sentence": {
+            "text": "The change ships more commits than the commit review can cover, so it was not decided.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_read_by_the_stage",
+          "sentence": {
+            "text": "No pre-deploy check read the commit review, so the record says nothing about it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "no_review_starting_point",
+          "sentence": {
+            "text": "There was no reviewed commit to start from, so no commit was checked.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server read the commit review.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "reviewed",
+          "sentence": {
+            "text": "The commit review the stage kept says every commit the change ships was reviewed; only the record's copy says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "reference_time": {
+      "label": "Reference time",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "Every stage's reference time is the time the run statement says the server issued the stage its facts or its token.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "reference_time_differs",
+          "sentence": {
+            "text": "A stage took its time from the server, and it is not the time the run statement says the server issued the stage its facts or its token.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "runner_clock",
+          "sentence": {
+            "text": "A stage took its reference time from the clock of the machine that ran it, which nothing confirms.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "server",
+          "sentence": {
+            "text": "Every stage took its reference time from the server; only the record says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "evaluator_binary": {
+      "label": "Evaluator binary",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "other_binary_named",
+          "sentence": {
+            "text": "An evaluation names another Open Policy Agent (OPA) version, platform or binary than the one this contract pins.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "no_opa_evaluation",
+          "sentence": {
+            "text": "The record has no Open Policy Agent (OPA) evaluation.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "pinned_binary_named",
+          "sentence": {
+            "text": "Every evaluation names the binary of the Open Policy Agent (OPA) release this contract pins for its platform; only the record says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "scanner_reports": {
+      "label": "Scanner reports",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "kept_files_do_not_give_the_verdicts",
+          "sentence": {
+            "text": "A scanner's results do not follow from the files its stage kept.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "other_scanner_named",
+          "sentence": {
+            "text": "A report of a scanner the CLI ran names a release, platform or digest other than the scanner release this contract pins.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "scanner_check_mapping_differs",
+          "sentence": {
+            "text": "A stage applied another scanner check mapping, the document that says which scanner checks decide which assertion, than the one the run statement names.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "no_scanner_report",
+          "sentence": {
+            "text": "No stage read a scanner report, and the record says none required one; in a run a server opened, only that server can confirm it.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity reads no scanner report.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "scanner_requirement_not_met",
+          "sentence": {
+            "text": "A scanner the stage requires gave no usable result for a check and subject.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "ran_by_iltero_cli",
+          "sentence": {
+            "text": "Every kept report came from a scanner the CLI ran, each naming the pinned release; only the record says so.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "ran_by_pipeline",
+          "sentence": {
+            "text": "A kept report came from a scanner the pipeline ran; only the pipeline says how it ran.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "plan_age": {
+      "label": "Plan age",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement signs the facts about the job that applies the change, which show no more than the limit passed between the server accepting the plan-stage record and issuing them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "plan_older_than_limit",
+          "sentence": {
+            "text": "More than the limit passed between the server accepting the plan-stage record and issuing the facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "plan_age_within_limit",
+          "sentence": {
+            "text": "No more than the limit passed between the server accepting the plan-stage record and issuing the facts about the job that applies the change; only the record's copy of those facts says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "apply_job_approval_order": {
+      "label": "Approval order of the job that applies the change",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "run_statement",
+          "sentence": {
+            "text": "The run statement signs the facts and the approvals, which show the server received every approval at or after it accepted the plan-stage record.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "approved_before_plan_stage_record_accepted",
+          "sentence": {
+            "text": "The server received an approval of the job that applies the change before it accepted the plan-stage record.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "no_approval_after_plan_stage_record_accepted",
+          "sentence": {
+            "text": "The server received no approval of the job that applies the change at or after it accepted the plan-stage record.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "approval_not_required",
+          "sentence": {
+            "text": "The environment policy requires no approval of the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "plan_and_apply_in_one_job",
+          "sentence": {
+            "text": "The run plans and applies in one job, so there is no separate job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "approved_after_plan_stage_record_accepted",
+          "sentence": {
+            "text": "The server received every approval of the job that applies the change at or after it accepted the plan-stage record; only the record's copy of its facts says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "received_plan_file": {
+      "label": "Plan file the job that applies the change received",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "plan_file_not_sent",
+          "sentence": {
+            "text": "The job that applies the change did not report the saved plan file it received.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "received_plan_file_differs",
+          "sentence": {
+            "text": "The saved plan file the job that applies the change reported is not the one the plan stage evaluated.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "plan_and_apply_in_one_job",
+          "sentence": {
+            "text": "The run plans and applies in one job, so there is no separate job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "received_plan_file_matches",
+          "sentence": {
+            "text": "The job that applies the change reported, by its digest, the saved plan file the plan stage evaluated; only the job says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "rendered_plan": {
+      "label": "Plan the job that applies the change rendered",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "rendered_plan_differs",
+          "sentence": {
+            "text": "The plan the job that applies the change rendered from its saved plan file is not the evaluated plan.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "rendered_plan_not_sent",
+          "sentence": {
+            "text": "The job that applies the change reported no plan rendered from its saved plan file.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "plan_and_apply_in_one_job",
+          "sentence": {
+            "text": "The run plans and applies in one job, so there is no separate job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "rendered_plan_matches",
+          "sentence": {
+            "text": "The plan the job that applies the change rendered from its saved plan file is the evaluated plan; only the job says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "pinned_plan": {
+      "label": "Pinned plan",
+      "results": [
+        {
+          "state": "verified",
+          "reason": "pinned_and_named_by_accepted_record",
+          "sentence": {
+            "text": "The run statement signs the facts that say the plan the accepted record names as evaluated is the plan the server pinned; that the plan evaluated was that plan stays the record's word.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "plan_differs_from_pinned_plan",
+          "sentence": {
+            "text": "The plan the record names as evaluated is not the plan the server pinned.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "evaluated_plan_is_pinned_plan",
+          "sentence": {
+            "text": "The plan the record names as evaluated is the plan the server pinned; only the record's copy of the facts says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    },
+    "replan_resource_actions": {
+      "label": "Resource actions of the re-plan",
+      "results": [
+        {
+          "state": "failed",
+          "reason": "rendered_plan_differs",
+          "sentence": {
+            "text": "The plan the job that applies the change rendered is not the evaluated plan, so the re-plan was not compared.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "resource_actions_differ",
+          "sentence": {
+            "text": "The re-plan acts on other resources, or with other actions, than the evaluated plan.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "failed",
+          "reason": "served_part_differs",
+          "sentence": {
+            "text": "The stage's copy of the facts about the job that applies the change is not the one the run statement signs.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "integrity_failed",
+          "sentence": {
+            "text": "A file the record cites does not match the digest the record names, or the record breaks one of its own rules, so nothing the record says of this is taken.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "replan_not_compared",
+          "sentence": {
+            "text": "The job that applies the change compared no re-plan with the evaluated plan.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "could_not_decide",
+          "reason": "server_facts_unavailable",
+          "sentence": {
+            "text": "A check needed the facts about the job that applies the change from the server, and the stage kept the marker that says the server did not give them.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "not_in_activity",
+          "sentence": {
+            "text": "This activity has no pre-deploy stage.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_out_of_scope",
+          "sentence": {
+            "text": "The record leaves the pre-deploy stage out of scope.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_assessed",
+          "reason": "pre_deploy_pending",
+          "sentence": {
+            "text": "The run is still in progress, and the pre-deploy stage has not reported.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "plan_and_apply_in_one_job",
+          "sentence": {
+            "text": "The run plans and applies in one job, so there is no separate job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "not_performed",
+          "reason": "run_opened_locally",
+          "sentence": {
+            "text": "A local run, opened by the CLI, not by a server, so no server issued facts about the job that applies the change.",
+            "placeholders": []
+          }
+        },
+        {
+          "state": "claimed_by_record",
+          "reason": "same_resource_actions",
+          "sentence": {
+            "text": "The re-plan acts on the same resources, with the same actions, as the evaluated plan; only the pipeline says so.",
+            "placeholders": []
+          }
+        }
+      ]
+    }
+  },
+  "process_outcomes": {
+    "stopped": {
+      "word": "Stopped",
+      "plain": "[stop] Stopped",
+      "tone": "negative",
+      "icon": "stop",
+      "sentence": {
+        "text": "The stage stopped before it could judge the change: a usage, input, integrity or connection problem.",
+        "placeholders": []
+      }
+    }
+  }
+}

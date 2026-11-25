@@ -83,7 +83,29 @@ CHANGED: list[tuple[str, str, Any]] = [
     ("records", "/subject/project_directory", "."),
     # And the git tree of its project directory at the commit.
     ("records", "/subject/project_tree", {"id": "7e3d5a1000000000000000000000000000000000"}),
+    # Who opened the run is a fact of the run, no longer of the record's governance: here the tool on its own.
+    ("records", "/run/opened_by", "local"),
+    # A stage names the trust data it checked its bundle against: none for a stage that loads the project's own
+    # assertions.
+    ("records", "/stages/plan/execution/bundle/trust_data_digest", None),
 ]
+# What a record no longer says about itself, which is now the verifier's or the server's to say: its trust level, that
+# it determines no compliance, who opened its run (now ``run.opened_by``), how it is bound together, and how long it is
+# kept; and, of each file it cites, where it is stored and until when.
+REMOVED_RECORD_KEYS = (
+    "trust_level",
+    "compliance_determination",
+    "governance",
+    "integrity",
+    "expires_at",
+    "retention_class",
+    "retention_reason",
+)
+# Who wrote the record, a fact the record kept in its metadata.
+REMOVED_METADATA_KEYS = ("issuer",)
+REMOVED_EVIDENCE_REF_KEYS = ("storage_uri", "retention_until")
+# A baseline case's pointer, by the one it names now: who opened the run moved from the record's governance to its run.
+MOVED_POINTERS = {"/governance/run_opened_by": "/run/opened_by"}
 # Each refusal message or problem reworded since the baseline, by its old wording.
 REWORDED = {
     "is not the version of the terraform plan digest rule": (
@@ -172,6 +194,12 @@ REMOVED_CASES = {
     # A record of a run the server opened now builds on the record the Iltero CLI wrote of such a run, which already
     # names the server's bundle, so this case is record_of_a_run_the_server_opened.
     "record_of_a_run_the_server_opened_from_a_served_bundle",
+    # A record names neither who wrote it nor its trust level, nor that it determines no compliance: a verifier says
+    # how far a record can be trusted, and a record never establishes compliance with a framework.
+    "record_issued_by_the_server",
+    "record_with_a_verified_issuer",
+    "record_trust_level_above_self_attested",
+    "record_with_a_compliance_determination",
 }
 # Cases rebuilt since the baseline, each still a case: a stage lists approvals only when its results read facts from
 # the server, so an approval of another change is now listed in the record of a run the server opened; and a stage's
@@ -305,6 +333,9 @@ RENAMED_TESTS = {
     "test_a_binding_set_read_from_a_file_names_it": "test_a_scanner_check_mapping_read_from_a_file_names_it",
 }
 REMOVED_TESTS = {
+    # A record names neither its trust level nor who wrote it: a verifier says how far a record can be trusted.
+    "tests/test_models_provenance.py::test_a_record_of_a_run_the_server_opened_is_self_attested_like_any_other",
+    "tests/test_models_provenance.py::test_no_record_names_the_server_as_its_issuer_or_a_verified_issuer",
     # A project's configuration no longer leaves out an infrastructure change's approval gate: only the environment's
     # policy does.
     "tests/test_models_stages.py::test_a_record_that_leaves_the_approval_gate_out_names_the_file_that_says_so",
@@ -549,6 +580,13 @@ def _moved_record(document: dict[str, Any], name: str) -> dict[str, Any]:
             ref["size_bytes"] = REDACTION_POLICY_BYTES
     for record in moved["stages"].values():
         _reshaped_report(record["redaction"])
+    for key in REMOVED_RECORD_KEYS:
+        del moved[key]
+    for key in REMOVED_METADATA_KEYS:
+        del moved["metadata"][key]
+    for ref in moved["evidence_refs"]:
+        for key in REMOVED_EVIDENCE_REF_KEYS:
+            del ref[key]
     moved["change"] = {
         "activity": ACTIVITY,
         "digest": moved["change"]["digest"],
@@ -639,6 +677,7 @@ def _with_registered_stage(value: Any, plan: dict[str, Any]) -> Any:
 
 def _moved_pointer(pointer: str) -> str:
     """A baseline case's JSON Pointer, naming the field where it is now."""
+    pointer = MOVED_POINTERS.get(pointer, pointer)
     if any(pointer == f"/{key}" or pointer.startswith(f"/{key}/") for key in MOVED_INTO_CHANGE):
         return "/change" + pointer
     for old, new in (

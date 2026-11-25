@@ -54,7 +54,7 @@ Action = Literal["create", "update", "delete", "replace", "no-op", "forget"]
 ArtifactDigestSource = Literal["saved_plan", "not_provided"]
 # Who opened the run a record belongs to: the server, or the tool on its own.
 RunOpenedBy = Literal["server", "local"]
-# The stages a governed run passes through; ``runtime`` evaluations never belong to a run.
+# The stages a run passes through; ``runtime`` evaluations never belong to a run.
 RunStage = Literal["plan", "pre_deploy", "post_deploy", "post_verify"]
 # Whether a failed evaluation stops the pipeline (``enforcing``) or is only reported (``advisory``).
 EnforcementMode = Literal["enforcing", "advisory"]

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from datetime import timedelta
-from typing import Literal, Protocol, TypeVar
+from typing import Final, Literal, Protocol, TypeVar
 
 from iltero_schemas.assertions.paths import BUILT_IN_IDS
 from iltero_schemas.models.common.fields import Identity, parse_timestamp
@@ -36,6 +36,8 @@ NoExceptionReason = Literal[
     "not_yet_in_force",
     "expired",
 ]
+# The reason no exception covers a result when none is about its assertion and resource: nothing came close.
+NO_EXCEPTION_FOR_THE_ASSERTION_AND_RESOURCE: Final = "no_exception_for_the_assertion_and_resource"
 
 
 class AssertionTerms(Protocol):
@@ -163,7 +165,7 @@ def why_no_exception(
     """Why no exception covers the result ``exception_in_force`` is asked about; None when one does."""
     covering = [exception for exception in exceptions if covers(exception, assertion_id, identity)]
     if not covering:
-        return "no_exception_for_the_assertion_and_resource"
+        return NO_EXCEPTION_FOR_THE_ASSERTION_AND_RESOURCE
     if environment is None:
         return "run_names_no_environment"
     here = [exception for exception in covering if exception.scope.environment == environment]

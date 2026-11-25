@@ -13,7 +13,7 @@ from iltero_schemas.canonical.iac.plan import redacted_plan_digest_of_kept
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.plan_digests import check_plan_digest_form, kept_plan_digest_problems
 from tests.conftest import VECTORS
 from tests.records import kept_files_by_digest
@@ -54,7 +54,7 @@ def _plans(name: str) -> KeptFiles:
     )
 
 
-@pytest.mark.parametrize("name", ["iac/local_run_deployed", "iac/governed_run_deployed"])
+@pytest.mark.parametrize("name", ["iac/local_run_deployed", "iac/tracked_run_deployed"])
 def test_every_plan_digest_a_record_names_has_the_form_of_who_opened_its_run(name: str) -> None:
     car = CAR.model_validate(_record(name))
     check_plan_digest_form(car, _change(car))
@@ -92,7 +92,7 @@ def test_a_record_of_a_run_the_tool_opened_whose_kept_plan_is_not_given_is_liste
 
 
 def test_no_reader_recomputes_a_keyed_plan_digest() -> None:
-    car = CAR.model_validate(_record("iac/governed_run_deployed"), context=_READER)
+    car = CAR.model_validate(_record("iac/tracked_run_deployed"), context=_READER)
     files = _plans("iac/local_run_deployed")
     assert kept_plan_digest_problems(car, _change(car), dataclasses.replace(files, plans={})) == []
 

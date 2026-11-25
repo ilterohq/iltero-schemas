@@ -11,8 +11,8 @@ import pytest
 from iltero_schemas.canonical.common.encoding import canonical_bytes, digest
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.sent_documents import SentDocumentError
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.stage_files import sent_documents
 from iltero_schemas.redaction.common.apply import RedactionError
 from iltero_schemas.redaction.iac.sent_documents import (

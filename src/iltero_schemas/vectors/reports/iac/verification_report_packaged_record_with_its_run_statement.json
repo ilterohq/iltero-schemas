@@ -1,0 +1,147 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "VerificationReport",
+  "metadata": {
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-09-22T13:10:00.000Z"
+  },
+  "record": {
+    "uuid": "33a12410-4244-5439-9b2c-56dd6516b8a7",
+    "digest": "sha256:719ccda9cff471888dd7b72a788b063e12512a607c4782061a4730a2d7a10dad"
+  },
+  "trust_level": {
+    "level": "policy_enforced",
+    "reason": "run_statement"
+  },
+  "trust_root": {
+    "key_id": "dev-run-statements",
+    "listed_in": "iltero",
+    "operator": null,
+    "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+  },
+  "run_statement": {
+    "digest": "sha256:c8f80227a2dae5a440dae62f096acaacc69967fed005ed050dc253a6eac28c0a",
+    "listed_as": "subject",
+    "run": {
+      "ending": "closed",
+      "ending_reason": "closed_by_the_pipeline",
+      "ended_at": "2026-10-29T02:35:00.000Z",
+      "unanswered_results": 0,
+      "stages_never_accepted": 0
+    },
+    "problems": [],
+    "notes": [],
+    "not_compared": []
+  },
+  "stage_trust_data_digests": {
+    "plan": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "post_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "post_verify": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "pre_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+  },
+  "properties": {
+    "integrity": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": null
+    },
+    "source_identity": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": "the record names no repository, so only its commit is verified"
+    },
+    "approval_identity": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "bundle_signature": {
+      "state": "verified",
+      "reason": "bundle_signature_checked",
+      "detail": null
+    },
+    "bundle_used": {
+      "state": "verified",
+      "reason": "served_and_named_by_every_accepted_result",
+      "detail": null
+    },
+    "stage_completeness": {
+      "state": "verified",
+      "reason": "run_statement",
+      "detail": null
+    },
+    "plan_apply_match": {
+      "state": "claimed_by_record",
+      "reason": "plan_digests_compared",
+      "detail": null
+    },
+    "check_after_deployment": {
+      "state": "claimed_by_record",
+      "reason": "reported_by_pipeline",
+      "detail": null
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "reason": null,
+      "detail": null
+    },
+    "exceptions": {
+      "state": "claimed_by_record",
+      "reason": "served_exceptions_not_relied_on",
+      "detail": null
+    },
+    "commit_review": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "reference_time": {
+      "state": "not_performed",
+      "reason": "runner_clock",
+      "detail": null
+    },
+    "evaluator_binary": {
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
+    },
+    "scanner_reports": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
+      "detail": null
+    },
+    "plan_age": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "apply_job_approval_order": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "received_plan_file": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "rendered_plan": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "pinned_plan": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    },
+    "replan_resource_actions": {
+      "state": "could_not_decide",
+      "reason": "server_facts_unavailable",
+      "detail": null
+    }
+  }
+}

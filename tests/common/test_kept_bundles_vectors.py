@@ -29,7 +29,8 @@ CASES: list[dict[str, Any]] = [
 ]
 
 
-# The trust set the vectors' served bundles are read back under, and the same set with the development key revoked.
+# The trust set the vectors' served bundles are read back under, the same set with the development key revoked, and
+# the same set with every key for signing run statements.
 KEYS = vector_signing_keys()
 TRUST_SETS = {
     "development": KEYS,
@@ -38,6 +39,9 @@ TRUST_SETS = {
             key, status="revoked", revoked_at="2026-11-01T00:00:00Z", revocation_reason="key_compromised"
         )
         for key_id, key in KEYS.items()
+    },
+    "development_key_of_another_purpose": {
+        key_id: dataclasses.replace(key, purpose="run_statement") for key_id, key in KEYS.items()
     },
 }
 

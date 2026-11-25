@@ -1,5 +1,13 @@
 {
-  "iac/verification_report.json": "sha256:52f5e2900c6070e970a0fb2a03704288ac9f9ede745509f348327cc98cde9c6b",
-  "iac/verification_report_commit_not_reviewed.json": "sha256:5b34d2884179c9c206d652c72b08bcb3afdca7318c3b10ca1c765533346156dd",
-  "image/verification_report_build.json": "sha256:99096ba0b402059ab4fcf352e9555f79eb3afadc7037937a0989eccdfccf71f7"
+  "iac/verification_report.json": "sha256:e71ab2ac55370df5e45e95cca7ab30f61605a2ccc5e52006d7b3499b4553c1d8",
+  "iac/verification_report_commit_not_reviewed.json": "sha256:9ff7d08690bde9eaf634b98481f34a019ed2a72358aabf08be041d013f1ff745",
+  "iac/verification_report_packaged_record_with_its_run_statement.json": "sha256:79d8fc455b94640a681ddcfde26fe957d2d16f66c6aaf54ddbf72b9fd43c9ecb",
+  "iac/verification_report_record_the_server_refused.json": "sha256:8e95c3c3817501ff1e815f7d3a7ac8a295aef81ce1086a4fa6de618d90780c93",
+  "iac/verification_report_run_statement_signed_with_a_revoked_key.json": "sha256:6d20cecc983410551bc3094c8921b234153ed397c723923fc8fe2cdb39e29092",
+  "iac/verification_report_run_statement_signing_other_approvals.json": "sha256:639ab22e57a38f4fb70067c41d72f03055161120d1ecbad8002b0e30589cc039",
+  "iac/verification_report_run_statement_signing_parts_the_record_keeps_no_copy_of.json": "sha256:987fe86ee3346dd6865321e8def5f87fb798d70c30f091c220948c280a63fbdd",
+  "iac/verification_report_tracked_run_with_its_run_statement.json": "sha256:322667eb3b19aff53c5b2bb1a84156739eff0c7099505f8ec62f6c21f634d8b4",
+  "iac/verification_report_tracked_run_without_its_run_statement.json": "sha256:43ef66f72674b8c629e0d234f59e1024ec655219a3074e7aa8639e52a483fe9d",
+  "image/verification_report_build.json": "sha256:57e1334e91e5fada25c90c84010f32ef486cb54cff0fe3fe9efb9a48fc67f569",
+  "image/verification_report_tracked_run_deploy_with_its_run_statement.json": "sha256:84ee9c25399eeccbf7f65b19c9387bc9d3518c794fcac3256fc39cc469fd12bb"
 }

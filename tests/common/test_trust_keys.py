@@ -13,11 +13,17 @@ from iltero_schemas.canonical import digest
 from iltero_schemas.trust import (
     API_VERSION,
     DEVELOPMENT_KEY_PREFIX,
+    ILTERO_KEY_PREFIX,
     KEY_ID_PATTERN,
+    MAX_SERVER_NAME_LENGTH,
+    SERVER_NAME_PATTERN,
     SIGNING_KEYS,
     TRUST_FILE_DIGEST,
     TRUST_FILE_KIND,
+    KeyNotHeldError,
+    KeyOfAnotherPurposeError,
     TrustFileError,
+    key_of_purpose,
     parse_signing_keys,
 )
 from tests.conftest import ROOT
@@ -41,6 +47,8 @@ def _entry(key_id: str, public_key: str = KEY_A, **fields: Any) -> dict[str, Any
         "algorithm": "ES256",
         "public_key": public_key,
         "spki_sha256": digest(base64.b64decode(public_key)),
+        "purpose": "check_definitions",
+        "server": "iltero.example",
         "status": "active",
         "valid_from": VALID_FROM,
         "retired_at": None,
@@ -81,6 +89,47 @@ def test_a_valid_key_is_read_with_its_der_bytes() -> None:
     key = parse_signing_keys(_file(_entry("iltero-signing-test")), development=False)["iltero-signing-test"]
     assert key.public_key_der == base64.b64decode(KEY_A)
     assert key.algorithm == "ES256" and key.status == "active"
+    assert (key.purpose, key.server) == ("check_definitions", "iltero.example")
+
+
+def test_a_key_is_read_with_either_purpose() -> None:
+    keys = parse_signing_keys(_file(_entry("k1"), _entry("k2", KEY_B, purpose="run_statement")), development=False)
+    assert (keys["k1"].purpose, keys["k2"].purpose) == ("check_definitions", "run_statement")
+
+
+def test_one_public_key_has_one_purpose() -> None:
+    with pytest.raises(TrustFileError, match="two key ids"):
+        parse_signing_keys(_file(_entry("k1"), _entry("k2", purpose="run_statement")), development=False)
+
+
+def test_a_server_name_as_long_as_the_longest_host_name_is_read() -> None:
+    server = ".".join(["a" * 63] * 3 + ["a" * 61])
+    assert len(server) == MAX_SERVER_NAME_LENGTH
+    assert parse_signing_keys(_file(_entry("k1", server=server)), development=False)["k1"].server == server
+
+
+@pytest.mark.parametrize("server", ["development", "iltero.example", "a-1.b2.example", "0.example"])
+def test_a_server_name_is_a_lower_case_host_name(server: str) -> None:
+    assert parse_signing_keys(_file(_entry("k1", server=server)), development=False)["k1"].server == server
+    # A model field matches its pattern anywhere in the string, so the pattern itself holds the whole name.
+    assert re.search(SERVER_NAME_PATTERN, f" {server} ") is None
+
+
+def test_a_checker_takes_a_key_of_its_purpose_whatever_its_status() -> None:
+    revoked = {"status": "revoked", "revoked_at": "2026-10-01T00:00:00Z", "revocation_reason": "lost"}
+    keys = parse_signing_keys(_file(_entry("k1", **revoked)), development=False)
+    assert key_of_purpose(keys, "k1", "check_definitions") is keys["k1"]
+
+
+def test_a_checker_refuses_a_key_the_trust_set_does_not_hold() -> None:
+    with pytest.raises(KeyNotHeldError):
+        key_of_purpose(parse_signing_keys(_file(_entry("k1")), development=False), "k2", "check_definitions")
+
+
+def test_a_checker_refuses_a_key_of_another_purpose() -> None:
+    keys = parse_signing_keys(_file(_entry("k1", purpose="run_statement")), development=False)
+    with pytest.raises(KeyOfAnotherPurposeError):
+        key_of_purpose(keys, "k1", "check_definitions")
 
 
 @pytest.mark.parametrize(
@@ -173,6 +222,20 @@ def test_a_development_tool_reads_its_own_development_keys() -> None:
             "in that order",
         ),
         (_entry("k1", status=["active"]), "must be one of"),
+        (_entry("k1", purpose="period_package"), "purpose: must be one of check_definitions, run_statement"),
+        (_entry("k1", purpose=None), "purpose: must be one of"),
+        (_entry("k1", server=""), "server: must be a lower-case host name of at most 253 characters"),
+        (_entry("k1", server=".".join(["a" * 63] * 3 + ["a" * 62])), "server: must be a lower-case host name"),
+        (_entry("k1", server=" iltero.example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="iltero.example\n"), "server: must be a lower-case host name"),
+        (_entry("k1", server="Iltero.example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="iltero.example."), "server: must be a lower-case host name"),
+        (_entry("k1", server="iltero..example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="-iltero.example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="iltero-.example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="a" * 64 + ".example"), "server: must be a lower-case host name"),
+        (_entry("k1", server="iltero_example"), "server: must be a lower-case host name"),
+        (_entry("k1", server=5), "server: must be a lower-case host name"),
         (
             _entry("k1", status="revoked", revoked_at="2026-10-01T00:00:00Z", revocation_reason=5),
             "short lower-case token",
@@ -207,6 +270,20 @@ def test_a_development_tool_reads_its_own_development_keys() -> None:
         "revoked before it was valid",
         "revoked before it was retired",
         "status not a string",
+        "an unknown purpose",
+        "no purpose",
+        "an empty server",
+        "a server name too long",
+        "a server name with a space at its start",
+        "a server name ending in a line break",
+        "a server name in upper case",
+        "a server name ending in a dot",
+        "a server name with an empty label",
+        "a label starting with a dash",
+        "a label ending with a dash",
+        "a label too long",
+        "a server name with an underscore",
+        "a server name not a string",
         "reason not a string",
         "key not ascii",
         "key not a string",
@@ -237,12 +314,14 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
         (_file(kind=TRUST_FILE_KIND.lower()), "kind"),
         (_file(signature="x"), "exactly the fields"),
         (json.dumps({"apiVersion": API_VERSION, "kind": TRUST_FILE_KIND, "keys": {}}).encode(), "must be a list"),
-        (b"{", "not a JSON document"),
+        (b"{", "is a JSON document in UTF-8"),
+        (b"\xef\xbb\xbf" + _file(), "no byte order mark"),
+        (_file().replace(b'"keys": []', b'"keys": NaN'), "holds no NaN"),
         (b"[]", "exactly the fields apiVersion, kind and keys"),
         (json.dumps({"apiVersion": API_VERSION, "keys": []}).encode(), "exactly the fields"),
         (
             _file(_entry("k1")).replace(b'"status": "active"', b'"status": "revoked", "status": "active"'),
-            "appears twice",
+            "names each key once",
         ),
         (
             b'{"apiVersion": "'
@@ -250,7 +329,7 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
             + b'", "kind": "'
             + TRUST_FILE_KIND.encode()
             + b'", "keys": [], "keys": []}',
-            "appears twice",
+            "names each key once",
         ),
     ],
     ids=[
@@ -264,6 +343,8 @@ def test_a_key_that_breaks_a_rule_is_refused(entry: dict[str, Any], message: str
         "an extra field",
         "not a list",
         "not JSON",
+        "a byte order mark",
+        "a constant",
         "not an object",
         "no kind",
         "a field twice in a key",
@@ -289,3 +370,7 @@ def test_the_published_key_id_pattern_is_the_form_the_trust_file_accepts(key_id:
     assert (re.fullmatch(KEY_ID_PATTERN, key_id) is not None) is matches
     # A model field matches its pattern anywhere in the string, so the pattern itself holds the whole id.
     assert re.search(KEY_ID_PATTERN, f" {key_id} ") is None
+
+
+def test_every_key_iltero_ships_has_an_id_under_the_prefix_kept_for_iltero() -> None:
+    assert all(key_id.startswith(ILTERO_KEY_PREFIX) for key_id in SIGNING_KEYS)

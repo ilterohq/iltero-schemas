@@ -3,30 +3,26 @@
 from __future__ import annotations
 
 import base64
-import dataclasses
 import json
 from collections.abc import Mapping
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Any
 
 import pytest
 
-from iltero_schemas.ast.document import load_document
-from iltero_schemas.canonical import digest, digest_of
-from iltero_schemas.models.common.assertion import Stage
+from iltero_schemas.canonical import digest
+from iltero_schemas.change_types.common.kept_file_problems import kept_file_problems
 from iltero_schemas.models.common.car import CAR
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.kept_inputs import kept_input_problems
-from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
-from iltero_schemas.models.iac.kept_files import KeptFiles
-from iltero_schemas.models.iac.post_verify_identities import POST_VERIFY_IDENTITIES_REF_ID
 from iltero_schemas.vectors.kept_files import (
     CASE_FOLDER,
     KEPT_FILES,
     case_files_of,
     kept_files_of,
     kept_files_of_case,
-    kept_served_bundles,
 )
+from iltero_schemas.vectors.reader_files import case_reader_kept_files, reader_kept_files
 from iltero_schemas.vectors.vector_signing_keys import vector_signing_keys
 from tests.conftest import CHANGE_TYPES, VECTORS
 from tests.records import kept_files_by_digest, valid_case_record
@@ -47,22 +43,7 @@ KEPT_FILE_RECORDS = sorted(
 def reader_files(document: dict[str, Any], by_path: Mapping[str, bytes]) -> tuple[CAR, KeptFiles]:
     """The record ``document`` and the files a reader gives the checks, from the files it kept ``by_path``: whatever
     path its register names each by, as a packaged record names them too."""
-    record = CAR.model_validate(document)
-    kept = {ref.digest: by_path[ref.path] for ref in record.evidence_refs if ref.path in by_path}
-    named = {
-        event.provenance.input_digest
-        for event in record.events
-        if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
-    }
-    served = {stage.served_exceptions.digest for stage in record.stages.values() if stage.served_exceptions is not None}
-    files = dataclasses.replace(
-        _scanner_files(record, by_path, kept),
-        served_exceptions={served_digest: kept[served_digest] for served_digest in served},
-        inputs={named_digest: kept[named_digest] for named_digest in named},
-        identities=_identities(record, by_path),
-        served_bundles=kept_served_bundles(document, by_path),
-    )
-    return record, files
+    return CAR.model_validate(document), reader_kept_files(document, by_path)
 
 
 @pytest.mark.parametrize("name", KEPT_FILE_RECORDS)
@@ -84,73 +65,6 @@ def test_every_check_a_reader_makes_holds_for_a_record_whose_kept_files_the_vect
     assert all(digest(data) == named_digest for named_digest, data in kept.items())
     assert kept_input_problems(record, files.inputs) == []
     assert kept_file_problems(record, files, VECTOR_SIGNING_KEYS, verify_es256) == []
-
-
-def _identities(record: CAR, by_path: Mapping[str, bytes]) -> dict[str, bytes]:
-    """The resource identities document the record's post-verify stage kept, among the kept files ``by_path``, by the
-    digest its register entry names; empty when the stage kept none."""
-    return {
-        ref.digest: by_path[ref.path]
-        for ref in record.evidence_refs
-        if ref.ref_id == POST_VERIFY_IDENTITIES_REF_ID and ref.path in by_path
-    }
-
-
-def _scanner_files(record: CAR, by_path: Mapping[str, bytes], kept: dict[str, bytes]) -> KeptFiles:
-    """The scanner files a record's plan stage kept, among the kept files ``by_path``: its scanner check mapping copies
-    and observations by path, its reports and plan by digest, its exceptions file's bytes, and the assertion documents
-    it kept, and every plan it kept; only its kept plans and assertion documents when the stage read no scanner
-    report or the record has no plan stage."""
-    plan_stage = record.stages.get(Stage.PLAN)
-    scanners = None if plan_stage is None else plan_stage.scanners
-    # The assertion documents, and the policy entry of each rule written by hand in Rego.
-    documents = [
-        load_document(data.decode("utf-8")) if path.endswith(".yaml") else json.loads(data)
-        for path, data in by_path.items()
-        if PurePosixPath(path).parent.name == "assertions" and path.endswith((".yaml", ".policy.json"))
-    ]
-    if scanners is None:
-        # A stage that read no scanner report keeps the plan only for the checks it postponed.
-        plans = {
-            ref.digest: json.loads(kept[ref.digest])
-            for ref in record.evidence_refs
-            if ref.collector.tool == "terraform_plan" and ref.digest in kept
-        }
-        return KeptFiles(
-            scanner_check_mappings={},
-            observations={},
-            reports={},
-            plans=plans,
-            assertions={digest_of(document): document for document in documents},
-            local_exceptions={},
-            served_exceptions={},
-            inputs={},
-            identities={},
-            served_bundles={},
-        )
-    observations = {report.observations: json.loads(by_path[report.observations]) for report in scanners.reports}
-    used = scanners.local_exceptions
-    return KeptFiles(
-        scanner_check_mappings={
-            mapping.copy_path: json.loads(by_path[mapping.copy_path]) for mapping in scanners.scanner_check_mappings
-        },
-        observations=observations,
-        reports={report.report_digest: json.loads(kept[report.report_digest]) for report in scanners.reports},
-        plans={
-            **{
-                ref.digest: json.loads(kept[ref.digest])
-                for ref in record.evidence_refs
-                if ref.collector.tool == "terraform_plan" and ref.digest in kept
-            },
-            **{str(o["kept_plan_digest"]): json.loads(kept[str(o["kept_plan_digest"])]) for o in observations.values()},
-        },
-        assertions={digest_of(document): document for document in documents},
-        local_exceptions={} if used is None else {used.digest: kept[used.digest]},
-        served_exceptions={},
-        inputs={},
-        identities={},
-        served_bundles={},
-    )
 
 
 def _register(folder: str) -> list[dict[str, object]]:
@@ -239,36 +153,18 @@ def valid_case_and_files(change_type: str, name: str) -> tuple[dict[str, Any], M
 
 
 def valid_case_reader_files(document: dict[str, Any], by_path: Mapping[str, bytes]) -> tuple[CAR, KeptFiles]:
-    """A valid case's record and the files a reader gives the checks of it: its inputs, the exceptions the server
-    served it, the plans it kept, its post-verify identities and its served bundles, from the files it kept
-    ``by_path``."""
+    """A valid case's record and the files a reader gives the checks of it, from the files it kept ``by_path``; every
+    input and served copy it names is among them."""
     record = CAR.model_validate(document)
-    kept = {ref["digest"]: by_path[ref["path"]] for ref in document["evidence_refs"] if ref["path"] in by_path}
+    files = case_reader_kept_files(document, by_path)
     named = {
         event.provenance.input_digest
         for event in record.events
         if event.provenance.input_digest is not None and event.provenance.scanner_checks is None
     }
     served = {stage.served_exceptions.digest for stage in record.stages.values() if stage.served_exceptions is not None}
-    assert named <= set(kept) and served <= set(kept)
-    inputs = {input_digest: kept[input_digest] for input_digest in named}
-    assert kept_input_problems(record, inputs) == []
-    files = KeptFiles(
-        scanner_check_mappings={},
-        observations={},
-        reports={},
-        plans={
-            ref.digest: json.loads(kept[ref.digest])
-            for ref in record.evidence_refs
-            if ref.collector.tool == "terraform_plan" and ref.digest in kept
-        },
-        assertions={},
-        local_exceptions={},
-        served_exceptions={served_digest: kept[served_digest] for served_digest in served},
-        inputs=inputs,
-        identities=_identities(record, by_path),
-        served_bundles=kept_served_bundles(document, by_path),
-    )
+    assert named == set(files.inputs) and served == set(files.served_exceptions)
+    assert kept_input_problems(record, files.inputs) == []
     return record, files
 
 

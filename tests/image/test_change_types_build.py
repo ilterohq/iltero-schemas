@@ -32,6 +32,7 @@ from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
 from iltero_schemas.models.common.checked_content import CheckedImage
 from iltero_schemas.models.common.server_facts import AttestationNotSent, VerifiedAttestation
+from iltero_schemas.vectors import kept_files_of
 from tests.conftest import VECTORS
 from tests.records import (
     RECORD,
@@ -41,11 +42,28 @@ from tests.server_runs import (
     from_the_servers_bundle,
 )
 
-BUILD: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "image" / "local_run_build_with_a_build_commit.json").read_text(encoding="utf-8")
-)
-# The evaluation input the record's report check read, as its evidence register keeps it.
-BUILD_INPUT: dict[str, Any] = json.loads(
+
+def _record(name: str) -> dict[str, Any]:
+    document: dict[str, Any] = json.loads((VECTORS / "records" / "image" / f"{name}.json").read_text(encoding="utf-8"))
+    return document
+
+
+def _kept_input(document: dict[str, Any], name: str) -> dict[str, Any]:
+    """The evaluation input the record's first event read, as its evidence register keeps it."""
+    named = document["events"][0]["provenance"]["input_digest"]
+    path = next(ref["path"] for ref in document["evidence_refs"] if ref["digest"] == named)
+    kept: dict[str, Any] = json.loads(kept_files_of(f"image/{name}")[path])
+    return kept
+
+
+# A local build of one platform with a build commit and a test report, and a local build of two platforms with a scan
+# report, a test report and an attestation, each with the evaluation input its first check read.
+BUILD = _record("local_run_build_with_a_build_commit")
+BUILD_INPUT = _kept_input(BUILD, "local_run_build_with_a_build_commit")
+ATTESTED = _record("local_run_build")
+ATTESTED_INPUT = _kept_input(ATTESTED, "local_run_build")
+# An input of a build of a run the server opened, whose attestation the server verified.
+SERVER_BUILD_INPUT: dict[str, Any] = json.loads(
     (VECTORS / "contexts" / "image" / "plan_artifact.json").read_text(encoding="utf-8")
 )
 
@@ -90,8 +108,13 @@ def test_each_activity_names_the_check_that_binds_its_evaluations() -> None:
     assert IMAGE_BUILD.enforced_in_advisory_mode == frozenset()
 
 
-def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave() -> None:
-    car = CAR.model_validate(BUILD)
+@pytest.mark.parametrize(
+    ("document", "given"), [(BUILD, BUILD_INPUT), (ATTESTED, ATTESTED_INPUT)], ids=["with a build commit", "attested"]
+)
+def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave(
+    document: dict[str, Any], given: dict[str, Any]
+) -> None:
+    car = CAR.model_validate(document)
     assert isinstance(car.change, ImageBuild) and car.change.reports
     refs = {ref.ref_id: ref for ref in car.evidence_refs}
     kept = {}
@@ -99,15 +122,13 @@ def test_every_report_a_build_record_keeps_names_the_file_the_pipeline_gave() ->
         source = refs[report.evidence_ref].source
         assert source is not None
         kept[source.digest] = report.image_digest_source
-    read = {
-        report["file_digest"]: report["image_digest_source"] for report in BUILD_INPUT["tests"] + BUILD_INPUT["scans"]
-    }
-    assert read.items() <= kept.items()
+    read = {report["file_digest"]: report["image_digest_source"] for report in given["tests"] + given["scans"]}
+    assert read and read.items() <= kept.items()
 
 
 @pytest.mark.parametrize("index", [0, 1], ids=["first report", "second report"])
 def test_a_build_keeps_each_test_and_scan_report_as_the_pipeline_gave_it(index: int) -> None:
-    document = copy.deepcopy(BUILD)
+    document = copy.deepcopy(ATTESTED)
     policy = next(ref["redaction_policy"] for ref in document["evidence_refs"] if ref["redaction_policy"] is not None)
     named = document["change"]["reports"][index]["evidence_ref"]
     next(ref for ref in document["evidence_refs"] if ref["ref_id"] == named)["redaction_policy"] = policy
@@ -146,7 +167,7 @@ def test_a_local_build_is_undecided_until_a_server_verifies_its_commit() -> None
 
 def _with_provenance_event(status: str, reason: str | None) -> dict[str, Any]:
     """The local build record with its scan check's event made the signed provenance check's, of ``status``."""
-    record = copy.deepcopy(BUILD)
+    record = copy.deepcopy(ATTESTED)
     (event,) = [event for event in record["events"] if event["assertion"]["id"] == "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN"]
     event["assertion"].update(
         id=SIGNED_PROVENANCE_MATCHES_RUN_ID, digest=SHIPPED_ASSERTIONS[SIGNED_PROVENANCE_MATCHES_RUN_ID].digest
@@ -177,7 +198,7 @@ def test_a_local_build_leaves_its_signed_provenance_unknown_for_want_of_the_serv
 
 def _opened_by_server(record: dict[str, Any]) -> dict[str, Any]:
     """``record`` as a record of a run the server opened, whose evaluations read the server's facts."""
-    record["governance"]["run_opened_by"] = "server"
+    record["run"]["opened_by"] = "server"
     for coverage in (record["coverage"], record["stages"]["plan"]["coverage"]):
         coverage["assertions_required"]["origin"] = "server_pinned"
     for event in record["events"]:
@@ -207,7 +228,7 @@ def test_signed_provenance_may_pass_for_a_build_that_sent_the_server_its_attesta
 
 
 def test_a_run_the_tool_opened_sent_the_server_no_attestation() -> None:
-    record = copy.deepcopy(BUILD)
+    record = copy.deepcopy(ATTESTED)
     record["change"]["attestation"]["sent_to_server"] = True
     with pytest.raises(ValidationError, match="a run the tool opened sent the server no attestation"):
         CAR.model_validate(record, context={SKIP_INTEGRITY_CHECKS: True})
@@ -222,9 +243,9 @@ def _sent(car: CAR) -> CAR:
 
 
 def test_the_servers_answer_is_about_the_attestation_the_record_keeps() -> None:
-    kept_only = CAR.model_validate(BUILD)
+    kept_only = CAR.model_validate(ATTESTED)
     sent = _sent(kept_only)
-    verified = VerifiedAttestation.model_validate(BUILD_INPUT["attestation_outcome"])
+    verified = VerifiedAttestation.model_validate(SERVER_BUILD_INPUT["attestation_outcome"])
     kept = next(ref for ref in sent.evidence_refs if ref.ref_id == "plan/attestation.sigstore.json")
     check_attestation_outcome(sent, verified.model_copy(update={"attestation_digest": kept.digest}))
     check_attestation_outcome(kept_only, AttestationNotSent(outcome="not_sent"))
@@ -253,7 +274,7 @@ def test_a_build_names_its_raw_index_exactly_when_it_names_platform_digests() ->
 
 
 def test_a_scan_of_an_image_of_several_platforms_names_the_platform_it_scanned() -> None:
-    change = copy.deepcopy(BUILD["change"])
+    change = copy.deepcopy(ATTESTED["change"])
     on_the_index = [{**report, "image_digest": change["image"]["digest"]} for report in change["reports"]]
     with pytest.raises(ValidationError, match="a scan of an image built for several platforms names the platform"):
         ImageBuild.model_validate({**change, "reports": on_the_index})
@@ -262,9 +283,10 @@ def test_a_scan_of_an_image_of_several_platforms_names_the_platform_it_scanned()
 
 
 def test_scan_coverage_counts_the_platforms_a_scanners_own_report_names() -> None:
-    build = ImageBuild.model_validate(BUILD["change"])
+    build = ImageBuild.model_validate(ATTESTED["change"])
     first, second = build.platform_digests
-    assert scan_coverage(build) == ScanCoverage((first,), (second,))
+    # The scanner's own report names the second platform.
+    assert scan_coverage(build) == ScanCoverage((second,), (first,))
     by_pipeline = [
         report.model_copy(update={"image_digest_source": "pipeline"}) if report.format != "junit" else report
         for report in build.reports
@@ -275,14 +297,22 @@ def test_scan_coverage_counts_the_platforms_a_scanners_own_report_names() -> Non
 
 
 def test_an_attestation_is_only_ever_kept_unverified() -> None:
-    change = copy.deepcopy(BUILD["change"])
+    change = copy.deepcopy(ATTESTED["change"])
     change["attestation"]["verification"] = "verified"
     with pytest.raises(ValidationError, match="Input should be 'not_verified'"):
         ImageBuild.model_validate(change)
 
 
+# The image the build tool's metadata checks name: a repository on a registry host, with its tag.
+NAMED_IMAGE = {
+    **BUILD["change"]["image"],
+    "repository": "ghcr.io/acme/api",
+    "tag_resolution": {**BUILD["change"]["image"]["tag_resolution"], "tag": "1.4.2"},
+}
+
+
 def build_with(**changes: Any) -> ImageBuild:
-    change = copy.deepcopy(BUILD["change"])
+    change = {**copy.deepcopy(BUILD["change"]), "image": NAMED_IMAGE}
     change.update(changes)
     return ImageBuild.model_validate(change)
 
@@ -317,6 +347,6 @@ def test_a_record_names_no_build_commit_only_when_its_metadata_file_names_none()
 
 
 def test_a_docker_hub_image_given_by_its_short_name_is_the_records_repository() -> None:
-    build = build_with(image={**BUILD["change"]["image"], "repository": "docker.io/acme/api"}, reports=[])
+    build = build_with(image={**NAMED_IMAGE, "repository": "docker.io/acme/api"}, reports=[])
     assert build.build_commit is not None
     check_build_metadata(build, metadata(build.image.digest, build.build_commit.commit, "acme/api:1.4.2"))

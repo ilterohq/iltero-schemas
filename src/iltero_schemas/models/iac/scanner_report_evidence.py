@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING, Any
 from pydantic import ValidationError
 
 from iltero_schemas.canonical.common.encoding import CanonicalizationError, canonical_bytes, digest_of
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.redaction import redacted_value_counts
 from iltero_schemas.models.common.scanners import ILTERO_CLI
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_addresses import plan_resource_addresses
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
 from iltero_schemas.models.iac.scanner_reports.common import Source

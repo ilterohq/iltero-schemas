@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from iltero_schemas.models.common.assertion import Stage
     from iltero_schemas.models.common.car import CAR, StageRecord
     from iltero_schemas.models.common.event import AssuranceEvent
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 NOT_KEPT = "the record does not keep an exceptions file with the digest the stage names"
 NOT_READABLE = "is not a project's exceptions file the contract can read"

@@ -10,7 +10,7 @@ from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.common.assertion import Stage, ToolSelector
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.event import AssuranceEvent
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.plan_exclusions import named_resource_types_of_targets
 from iltero_schemas.models.iac.stage_assertions import kept_target, stage_targets
 from tests.iac.test_models_scanner_results import SCANNED, kept_files

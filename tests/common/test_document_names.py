@@ -28,7 +28,7 @@ from iltero_schemas.models.common.verification import VerificationReport
 from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
 from iltero_schemas.models.iac.scanner_observations import ScannerObservations
-from iltero_schemas.trust import TRUST_FILE_KIND
+from iltero_schemas.trust import OPERATOR_TRUST_FILE_KIND, TRUST_FILE_KIND
 from tests.common.test_models_bundle import DESCRIPTOR
 from tests.common.test_models_policy_source import CHANGE, _source
 from tests.conftest import STARTER_ASSERTIONS, VECTORS
@@ -66,8 +66,9 @@ DOCUMENTS: list[tuple[type[BaseModel], dict[str, Any], str]] = [
 ]
 IDS = [model.__name__ for model, _, _ in DOCUMENTS]
 # Every kind of the contract, the documents without a model of their own too: the bundle's description inside its
-# manifest, the trust file and a stage's events file.
-KINDS = {document["kind"] for _, document, _ in DOCUMENTS} | {BUNDLE_KIND, TRUST_FILE_KIND, EVENTS_FILE_KIND}
+# manifest, the trust files and a stage's events file.
+OTHER_KINDS = [BUNDLE_KIND, TRUST_FILE_KIND, OPERATOR_TRUST_FILE_KIND, EVENTS_FILE_KIND]
+KINDS = {document["kind"] for _, document, _ in DOCUMENTS} | set(OTHER_KINDS)
 # The documents whose fixed facts are kept in a metadata block.
 WITH_METADATA = [(model, document) for model, document, _ in DOCUMENTS if "metadata" in document]
 
@@ -83,7 +84,7 @@ def test_a_documents_module_names_its_kind_and_api_version_as_its_model_does(
 
 
 def test_no_two_documents_share_a_kind() -> None:
-    kinds = [document["kind"] for _, document, _ in DOCUMENTS] + [BUNDLE_KIND, TRUST_FILE_KIND, EVENTS_FILE_KIND]
+    kinds = [document["kind"] for _, document, _ in DOCUMENTS] + OTHER_KINDS
     assert len(set(kinds)) == len(kinds)
 
 

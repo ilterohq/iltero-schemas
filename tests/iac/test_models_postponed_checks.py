@@ -21,8 +21,8 @@ from iltero_schemas.models.common.evidence_status import (
     EvidenceStatus,
     GapReason,
 )
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.record_coverage import record_evidence_status
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.postponed_checks import (
     check_postponed_checks,
     postponable,

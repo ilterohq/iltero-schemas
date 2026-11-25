@@ -64,12 +64,12 @@
   },
   {
     "name": "image_platform_digests_name_the_index",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/platform_digests": [
-        "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
-        "sha256:69ee8b80f453ff0a8ea48c870a35316d4574dc35332036c6ce4a2db79c3531d9",
-        "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+        "sha256:516cd1b561589a55cafa9bf5a70b0021de0119f6863ee330cd5f28eb13c7d2db",
+        "sha256:6478fc1f518b0440598919a02f9f9aa093ea340511f1326095f70b904d030f8d",
+        "sha256:9dac5f2d0a787f79d20f235e3dfcfc8b149a3b9cf3e1bd2ff2c5004db9f2e96b"
       ]
     },
     "remove": [],
@@ -98,10 +98,10 @@
   },
   {
     "name": "image_index_without_platform_digests",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/platform_digests": [],
-      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+      "/change/reports/0/image_digest": "sha256:6478fc1f518b0440598919a02f9f9aa093ea340511f1326095f70b904d030f8d"
     },
     "remove": [],
     "message": "an image pushed as an index names both its raw index and its platform digests; an image pushed as one manifest names neither"
@@ -117,9 +117,9 @@
   },
   {
     "name": "image_index_of_another_image",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/16/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      "/evidence_refs/1/digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
     },
     "remove": [],
     "message": "the raw index's digest is the image's digest"
@@ -326,34 +326,34 @@
   },
   {
     "name": "image_index_of_another_file_type",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/16/media_type": "application/json"
+      "/evidence_refs/1/media_type": "application/json"
     },
     "remove": [],
     "message": "the raw index is a file of type application/vnd.docker.distribution.manifest.list.v2+json or application/vnd.oci.image.index.v1+json"
   },
   {
     "name": "image_report_not_in_the_evidence_register",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
       "/change/reports": [
         {
-          "evidence_ref": "plan/reports/junit.xml",
-          "format": "junit",
-          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
-          "image_digest_source": "pipeline"
-        },
-        {
-          "evidence_ref": "plan/reports/trivy.json",
-          "format": "trivy_json",
-          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "evidence_ref": "plan/reports/grype-image.json",
+          "format": "grype_json",
+          "image_digest": "sha256:9dac5f2d0a787f79d20f235e3dfcfc8b149a3b9cf3e1bd2ff2c5004db9f2e96b",
           "image_digest_source": "report"
         },
         {
+          "evidence_ref": "plan/reports/junit-passing.xml",
+          "format": "junit",
+          "image_digest": "sha256:6478fc1f518b0440598919a02f9f9aa093ea340511f1326095f70b904d030f8d",
+          "image_digest_source": "pipeline"
+        },
+        {
           "evidence_ref": "plan/reports/zz-missing.json",
-          "format": "trivy_json",
-          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
+          "format": "grype_json",
+          "image_digest": "sha256:516cd1b561589a55cafa9bf5a70b0021de0119f6863ee330cd5f28eb13c7d2db",
           "image_digest_source": "report"
         }
       ]
@@ -385,52 +385,46 @@
   },
   {
     "name": "image_report_without_the_digest_of_the_file_the_pipeline_gave",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/18/source": null
+      "/evidence_refs/3/source": null
     },
     "remove": [],
     "message": "a report names the file as the pipeline gave it, in its source"
   },
   {
     "name": "image_report_that_is_the_raw_index",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/change/reports": [
-        {
-          "evidence_ref": "plan/image-index.json",
-          "format": "junit",
-          "image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae",
-          "image_digest_source": "pipeline"
-        },
-        {
-          "evidence_ref": "plan/reports/trivy.json",
-          "format": "trivy_json",
-          "image_digest": "sha256:2b6eef8cba36a744a903bbceaac9f97f85bc4d2a00e5ff7243c2f0441e5fc1d7",
-          "image_digest_source": "report"
-        }
-      ]
+      "/change/reports/0/evidence_ref": "plan/image-index.json",
+      "/change/reports/0/format": "junit",
+      "/change/reports/0/image_digest": "sha256:6478fc1f518b0440598919a02f9f9aa093ea340511f1326095f70b904d030f8d",
+      "/change/reports/0/image_digest_source": "pipeline",
+      "/change/reports/1/evidence_ref": "plan/reports/grype-image.json",
+      "/change/reports/1/format": "grype_json",
+      "/change/reports/1/image_digest": "sha256:9dac5f2d0a787f79d20f235e3dfcfc8b149a3b9cf3e1bd2ff2c5004db9f2e96b",
+      "/change/reports/1/image_digest_source": "report"
     },
     "remove": [],
     "message": "the raw index, the attestation, the build tool's metadata file and each report are different files"
   },
   {
     "name": "image_scan_report_of_an_index_naming_the_index",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/change/reports/1/image_digest": "sha256:798f8e3fdc1ef9c987695b91a932470cec284ec0a94ebde96ffe70c0209196ae"
+      "/change/reports/0/image_digest": "sha256:6478fc1f518b0440598919a02f9f9aa093ea340511f1326095f70b904d030f8d"
     },
     "remove": [],
     "message": "a scan of an image built for several platforms names the platform it scanned"
   },
   {
     "name": "image_attestation_redacted",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/10/redaction_policy": {
+      "/evidence_refs/2/redaction_policy": {
+        "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913",
         "id": "iltero.redaction",
-        "version": "1",
-        "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913"
+        "version": "1"
       }
     },
     "remove": [],
@@ -438,9 +432,9 @@
   },
   {
     "name": "image_attestation_without_its_source",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/10/source": null
+      "/evidence_refs/2/source": null
     },
     "remove": [],
     "message": "the attestation names the file as the pipeline gave it, in its source"
@@ -460,25 +454,19 @@
     "name": "image_build_without_its_match_check",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/assertion/id": "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT",
-      "/stages/plan/coverage/subjects_per_assertion": {
-        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1,
-        "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
-      },
       "/coverage/subjects_per_assertion": {
-        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1,
-        "ILT.IMAGE.ARTIFACT.CHECKS.SCAN_RAN@1.0.0": 1,
-        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1
+        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1
       },
-      "/events/0/provenance/assertion_source": "local",
-      "/evidence_refs/15/digest": "sha256:662a82b74b0ec614d0aecbb095981dea7cf079d6b8684ab5e925a499d76ffdb0",
-      "/evidence_refs/15/size_bytes": 6539,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:662a82b74b0ec614d0aecbb095981dea7cf079d6b8684ab5e925a499d76ffdb0",
-        "count": 3
-      }
+      "/events/1/assertion/id": "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT",
+      "/events/1/provenance/assertion_source": "local",
+      "/evidence_refs/14/digest": "sha256:b860bdc808cb2d170a50e95bfb6a49902b474a2a59d29d37cd05f2829db1b34c",
+      "/evidence_refs/14/size_bytes": 4459,
+      "/stages/plan/coverage/subjects_per_assertion": {
+        "ILT.IMAGE.ARTIFACT.CHECKS.TESTS_RAN@1.0.0": 1,
+        "ACME.IMAGE.ARTIFACT.SOURCE.COMMIT@1.0.0": 1
+      },
+      "/stages/plan/events/digest": "sha256:b860bdc808cb2d170a50e95bfb6a49902b474a2a59d29d37cd05f2829db1b34c"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is evaluated once, at the plan stage, once it has reported"
@@ -487,13 +475,7 @@
     "name": "image_build_naming_another_match_check",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-      "/evidence_refs/15/digest": "sha256:7ece4fe5a391094f02b2ddfb92b331faaa0547674109d0dd63081b6f13cf51a6",
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:7ece4fe5a391094f02b2ddfb92b331faaa0547674109d0dd63081b6f13cf51a6",
-        "count": 3
-      }
+      "/events/1/assertion/digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is a built-in assertion: it names the document this package ships"
@@ -502,35 +484,21 @@
     "name": "image_build_of_a_local_run_claiming_its_commit_was_verified",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/evaluation/status": "pass",
-      "/events/0/evaluation/status_reason": null,
-      "/evidence_refs/15/digest": "sha256:d44c2a2167433eded59d1a275367180cc5859ec4f1294372256207e307e431a9",
-      "/evidence_refs/15/size_bytes": 6554,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:d44c2a2167433eded59d1a275367180cc5859ec4f1294372256207e307e431a9",
-        "count": 3
-      },
-      "/stages/plan/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 3,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/evaluator_status_counts/opa/pass": 2,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/coverage/status_counts/pass": 2,
+      "/coverage/status_counts/unknown": 0,
+      "/events/1/evaluation/status": "pass",
+      "/events/1/evaluation/status_reason": null,
+      "/evidence_refs/14/digest": "sha256:4b44cf1ac7586bbcdc562292d6c46b68030e90ac156c17411a0ad15930b04c60",
+      "/evidence_refs/14/size_bytes": 4474,
+      "/stages/plan/coverage/evaluator_status_counts/opa/pass": 2,
+      "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/plan/coverage/status_counts/pass": 2,
+      "/stages/plan/coverage/status_counts/unknown": 0,
+      "/stages/plan/events/digest": "sha256:4b44cf1ac7586bbcdc562292d6c46b68030e90ac156c17411a0ad15930b04c60",
+      "/stages/plan/verdict/value": "met",
+      "/verdict/value": "met"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
@@ -539,35 +507,21 @@
     "name": "image_build_of_a_local_run_whose_commit_check_failed",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/evaluation/status": "fail",
-      "/events/0/evaluation/status_reason": null,
-      "/evidence_refs/15/digest": "sha256:77cd6bbdeffef2742865b8157234742b01bb75ca5a16916054116eb2a393d94d",
-      "/evidence_refs/15/size_bytes": 6554,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:77cd6bbdeffef2742865b8157234742b01bb75ca5a16916054116eb2a393d94d",
-        "count": 3
-      },
-      "/stages/plan/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 1,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 1,
-          "unknown": 0,
-          "not_applicable": 0,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/evaluator_status_counts/opa/fail": 1,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/coverage/status_counts/fail": 1,
+      "/coverage/status_counts/unknown": 0,
+      "/events/1/evaluation/status": "fail",
+      "/events/1/evaluation/status_reason": null,
+      "/evidence_refs/14/digest": "sha256:5e8e17fb740ec2fc74ed28ae2560ad1bf4da2c714ffc512a6222a8d7d5cfd4a1",
+      "/evidence_refs/14/size_bytes": 4474,
+      "/stages/plan/coverage/evaluator_status_counts/opa/fail": 1,
+      "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/plan/coverage/status_counts/fail": 1,
+      "/stages/plan/coverage/status_counts/unknown": 0,
+      "/stages/plan/events/digest": "sha256:5e8e17fb740ec2fc74ed28ae2560ad1bf4da2c714ffc512a6222a8d7d5cfd4a1",
+      "/stages/plan/verdict/value": "not_met",
+      "/verdict/value": "not_met"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
@@ -576,14 +530,10 @@
     "name": "image_build_of_a_local_run_whose_commit_check_is_unknown_for_another_reason",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/evaluation/status_reason": "path_missing",
-      "/evidence_refs/15/digest": "sha256:4df3b6c3d8e405b9dd30b20c7759e06d23be305817efd25cb9a255e6fbf5321d",
-      "/evidence_refs/15/size_bytes": 6567,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:4df3b6c3d8e405b9dd30b20c7759e06d23be305817efd25cb9a255e6fbf5321d",
-        "count": 3
-      }
+      "/events/1/evaluation/status_reason": "path_missing",
+      "/evidence_refs/14/digest": "sha256:17fc55ac1ea0d02fa5045a3075a0c5b236b3f2f9a6084ecfa037155a6accaa92",
+      "/evidence_refs/14/size_bytes": 4487,
+      "/stages/plan/events/digest": "sha256:17fc55ac1ea0d02fa5045a3075a0c5b236b3f2f9a6084ecfa037155a6accaa92"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason server_facts_unavailable, never pass or fail, on a run the tool opened: only the server verifies the commit"
@@ -592,35 +542,21 @@
     "name": "image_build_whose_match_check_did_not_apply",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/events/0/evaluation/status": "not_applicable",
-      "/events/0/evaluation/status_reason": "when_guard_excluded",
-      "/evidence_refs/15/digest": "sha256:7355fef5c855a6e0c6aa50404d07b7089bd2476d28c5e431a379381405235914",
-      "/evidence_refs/15/size_bytes": 6581,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:7355fef5c855a6e0c6aa50404d07b7089bd2476d28c5e431a379381405235914",
-        "count": 3
-      },
-      "/stages/plan/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 1,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      },
-      "/coverage/evaluator_status_counts": {
-        "opa": {
-          "pass": 2,
-          "fail": 0,
-          "unknown": 0,
-          "not_applicable": 1,
-          "not_evaluated": 0,
-          "error": 0
-        }
-      }
+      "/coverage/evaluator_status_counts/opa/not_applicable": 1,
+      "/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/coverage/status_counts/not_applicable": 1,
+      "/coverage/status_counts/unknown": 0,
+      "/events/1/evaluation/status": "not_applicable",
+      "/events/1/evaluation/status_reason": "when_guard_excluded",
+      "/evidence_refs/14/digest": "sha256:ae08c8e46628e2e3858cdf3d06083a6013bcc0d27f6e8ea4de085bdaebc48e6e",
+      "/evidence_refs/14/size_bytes": 4501,
+      "/stages/plan/coverage/evaluator_status_counts/opa/not_applicable": 1,
+      "/stages/plan/coverage/evaluator_status_counts/opa/unknown": 0,
+      "/stages/plan/coverage/status_counts/not_applicable": 1,
+      "/stages/plan/coverage/status_counts/unknown": 0,
+      "/stages/plan/events/digest": "sha256:ae08c8e46628e2e3858cdf3d06083a6013bcc0d27f6e8ea4de085bdaebc48e6e",
+      "/stages/plan/verdict/value": "met",
+      "/verdict/value": "met"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT always applies to the plan stage's one subject"
@@ -639,21 +575,18 @@
   },
   {
     "name": "image_report_stored_unredacted_but_not_as_given",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/18/source": {
-        "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
-        "name": "junit.xml"
-      }
+      "/evidence_refs/3/source/digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
     },
     "remove": [],
     "message": "a report, when nothing redacted it, is stored as the pipeline gave it"
   },
   {
     "name": "image_report_of_another_file_type",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/18/media_type": "application/vnd.iltero.rego"
+      "/evidence_refs/3/media_type": "application/vnd.iltero.rego"
     },
     "remove": [],
     "message": "a junit report is a file of type application/xml or text/xml"
@@ -664,14 +597,9 @@
     "set": {
       "/events/0/provenance/facts_source": "server",
       "/events/1/provenance/facts_source": "server",
-      "/events/2/provenance/facts_source": "server",
-      "/evidence_refs/15/digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-      "/evidence_refs/15/size_bytes": 6585,
-      "/stages/plan/events": {
-        "path": "units/api/plan/events.json",
-        "digest": "sha256:34d5a3e399596ff9c3811490a8c36ea9539720b196e56ed7e23da8c01e7e76ca",
-        "count": 3
-      }
+      "/evidence_refs/14/digest": "sha256:7a1d2498c58df96c11a0caec6336db1a6b476d0e9868e92b356d8dc98ec02db6",
+      "/evidence_refs/14/size_bytes": 4503,
+      "/stages/plan/events/digest": "sha256:7a1d2498c58df96c11a0caec6336db1a6b476d0e9868e92b356d8dc98ec02db6"
     },
     "remove": [],
     "message": "every evaluation of a build whose run was opened by local reads its facts from none"
@@ -680,7 +608,7 @@
     "name": "image_build_commit_read_from_another_file_than_the_tag",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/change/build_commit/evidence_ref": "plan/reports/trivy.json"
+      "/change/build_commit/evidence_ref": "plan/redaction-policy.json"
     },
     "remove": [],
     "message": "the tag and the build's commit are read from one build tool's metadata file"
@@ -690,7 +618,9 @@
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/build_commit/evidence_ref": "plan/missing.json",
-      "/change/image/tag_resolution": null
+      "/change/image/tag_resolution": null,
+      "/coverage/subjects_in_scope/source_digest": "sha256:8c3ca23cefe59f4caf92af39f3117f02340bd0d554775f0f8d4aec6a5dcf5906",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:8c3ca23cefe59f4caf92af39f3117f02340bd0d554775f0f8d4aec6a5dcf5906"
     },
     "remove": [],
     "message": "change.build_commit.evidence_ref names a file of the record's evidence register"
@@ -699,9 +629,10 @@
     "name": "image_build_commit_from_a_file_of_another_type",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/change/build_commit/evidence_ref": "plan/attestation.sigstore.json",
+      "/change/build_commit/evidence_ref": "plan/image-index.json",
       "/change/image/tag_resolution": null,
-      "/change/attestation": null
+      "/change/index_evidence_ref": null,
+      "/change/platform_digests": []
     },
     "remove": [],
     "message": "the build tool's metadata file is a file of type application/json"
@@ -710,10 +641,10 @@
     "name": "image_build_commit_from_a_redacted_metadata_file",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/evidence_refs/11/redaction_policy": {
+      "/evidence_refs/0/redaction_policy": {
+        "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913",
         "id": "iltero.redaction",
-        "version": "1",
-        "digest": "sha256:b7727ae565df8cf2026b824ad24761984c907499afacfaad94bceeb9bea15913"
+        "version": "1"
       }
     },
     "remove": [],
@@ -723,7 +654,9 @@
     "name": "image_build_commit_claimed_verified",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/change/build_commit/verification": "verified"
+      "/change/build_commit/verification": "verified",
+      "/coverage/subjects_in_scope/source_digest": "sha256:c1473aad59f78309c0cb5053019896fadc53a9d4aa68df1492c0c575e9c64338",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:c1473aad59f78309c0cb5053019896fadc53a9d4aa68df1492c0c575e9c64338"
     },
     "remove": [],
     "message": "Input should be 'not_verified'"
@@ -732,7 +665,9 @@
     "name": "image_build_commit_read_from_an_image_label",
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
-      "/change/build_commit/read_from": "image_label"
+      "/change/build_commit/read_from": "image_label",
+      "/coverage/subjects_in_scope/source_digest": "sha256:50a9372238743853d890c5edb58f6d6cd6c5f827fb1cba039f5633849f3bd7d5",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:50a9372238743853d890c5edb58f6d6cd6c5f827fb1cba039f5633849f3bd7d5"
     },
     "remove": [],
     "message": "Input should be 'buildx_provenance'"
@@ -748,18 +683,18 @@
   },
   {
     "name": "image_junit_report_tied_by_the_report_itself",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/change/reports/0/image_digest_source": "report"
+      "/change/reports/1/image_digest_source": "report"
     },
     "remove": [],
     "message": "a JUnit report names no image, so only the pipeline ties it to one"
   },
   {
     "name": "image_junit_report_kept_as_json",
-    "vector": "image/local_run_build_with_a_build_commit.json",
+    "vector": "image/local_run_build.json",
     "set": {
-      "/evidence_refs/18/media_type": "application/json"
+      "/evidence_refs/3/media_type": "application/json"
     },
     "remove": [],
     "message": "a junit report is a file of type application/xml or text/xml"
@@ -769,8 +704,8 @@
     "vector": "image/local_run_build_with_a_build_commit.json",
     "set": {
       "/change/build_commit": null,
-      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8",
-      "/coverage/subjects_in_scope/source_digest": "sha256:61321698d791e269ed0fdbcb83ed155c4d3309c92f1d961c58150f392fa8d2a8"
+      "/coverage/subjects_in_scope/source_digest": "sha256:29e12aa5b28ebb9057394fd5753cba371c86289d70adf3ef45b72265c88ee40d",
+      "/stages/plan/coverage/subjects_in_scope/source_digest": "sha256:29e12aa5b28ebb9057394fd5753cba371c86289d70adf3ef45b72265c88ee40d"
     },
     "remove": [],
     "message": "ILT.IMAGE.ARTIFACT.SOURCE.BUILD_COMMIT_MATCHES_VERIFIED_COMMIT is unknown with reason not_reported_by_tool, never pass or fail, when the build names no commit"
@@ -1778,7 +1713,7 @@
   },
   {
     "name": "image_deploy_record_dropping_the_commit_review_its_check_passed_from",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/commit_review": null
     },
@@ -1787,7 +1722,7 @@
   },
   {
     "name": "image_deploy_record_whose_commit_review_check_passed_on_commits_not_reviewed",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/commit_review/outcome": "not_reviewed",
       "/stages/pre_deploy/commit_review/commits_not_reviewed": [
@@ -1803,7 +1738,7 @@
   },
   {
     "name": "image_deploy_record_keeping_a_commit_review_its_check_could_not_read",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/coverage/status_counts/pass": 4,
       "/coverage/status_counts/unknown": 1,
@@ -1833,7 +1768,7 @@
   },
   {
     "name": "image_deploy_record_whose_commit_review_check_passed_without_facts_from_the_server",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/events/1/provenance/facts_source": "none",
       "/evidence_refs/15/digest": "sha256:03e8bd72f00328dd52ad55524810cc4dfbcd1c9601a73e7bbef0b9d5bc1a5a08",
@@ -1845,7 +1780,7 @@
   },
   {
     "name": "image_deploy_record_keeping_a_commit_review_of_another_repository",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/commit_review/repository/repository_id": "7002"
     },
@@ -1854,7 +1789,7 @@
   },
   {
     "name": "image_deploy_record_keeping_a_commit_review_of_an_infrastructure_change_source_commit",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/coverage/assertions_required/value": 4,
       "/coverage/assertions_required/required_assertion_digest": "sha256:39c7b0023865aea99a74315344cde317b1498ab1abbef4050ae2a0531ed12a83",
@@ -1907,7 +1842,7 @@
   },
   {
     "name": "image_deploy_record_keeping_a_reviewed_commit_review_of_a_build_naming_another_commit",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/change/build/build_commit": "9d1f00a000000000000000000000000000000000"
     },
@@ -1916,7 +1851,7 @@
   },
   {
     "name": "image_deploy_record_keeping_the_unknown_marker_its_commit_review_check_passed_on",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/stages/pre_deploy/commit_review": {
         "__unknown": true,
@@ -1928,7 +1863,7 @@
   },
   {
     "name": "image_deploy_record_keeping_a_reviewed_commit_review_without_its_starting_point",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {},
     "remove": [
       "/stages/pre_deploy/commit_review/review_starting_point"
@@ -2014,7 +1949,7 @@
   },
   {
     "name": "image_deploy_of_a_run_the_server_opened_naming_a_reading_by_no_digest",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "set": {
       "/evidence_refs/23/source/digest": null
     },

@@ -28,9 +28,10 @@ from iltero_schemas.scanner_check_mappings.iac.descriptor import (
     signing_input,
 )
 from iltero_schemas.signing import P256_ORDER, SCANNER_CHECK_MAPPING_SIGNING_SCOPE, base64url
-from iltero_schemas.trust import parse_signing_keys
+from iltero_schemas.trust import KeyStatus
 from iltero_schemas.trust.keys import SigningKey
 from iltero_schemas.vectors.plans import remove_pointer, set_pointer
+from iltero_schemas.vectors.vector_run_statements import run_statement_vector_keys
 from tests.conftest import VECTORS
 
 FOLDER = VECTORS / "scanner_check_mapping_descriptors" / "iac"
@@ -38,8 +39,9 @@ SERVED: dict[str, Any] = json.loads((FOLDER / "served_catalog.json").read_text(e
 MAPPING: dict[str, Any] = json.loads(
     (VECTORS / "scanner_check_mappings" / "iac" / "served_catalog.json").read_text(encoding="utf-8")
 )
-# The vectors' development trust file; the key that signed the sample descriptor is one of its entries.
-KEYS = parse_signing_keys((VECTORS / "signing_keys" / "development.json").read_bytes(), development=True)
+# The vectors' development keys, those of the run statements' own file included; the key that signed the sample
+# descriptor is one of them.
+KEYS = run_statement_vector_keys()
 CASES: list[dict[str, Any]] = json.loads(
     (VECTORS / "scanner_check_mapping_descriptors_invalid" / "iac" / "cases.json").read_text(encoding="utf-8")
 )
@@ -125,6 +127,14 @@ def test_a_key_that_may_not_verify_is_refused() -> None:
         check_scanner_check_mapping_descriptor(ScannerCheckMappingDescriptor.model_validate(SERVED), revoked)
 
 
+@pytest.mark.parametrize("status", ["active", "revoked"])
+def test_a_key_of_another_purpose_is_refused_for_its_purpose_whatever_its_status(status: KeyStatus) -> None:
+    key = KEYS[SERVED["key_id"]]
+    keys = {**KEYS, key.key_id: dataclasses.replace(key, purpose="run_statement", status=status)}
+    with pytest.raises(ScannerCheckMappingDescriptorError, match="is not for signing scanner check mappings"):
+        check_scanner_check_mapping_descriptor(ScannerCheckMappingDescriptor.model_validate(SERVED), keys)
+
+
 def test_only_a_mapping_in_iltero_s_namespace_is_signed_as_served() -> None:
     with pytest.raises(ScannerCheckMappingDescriptorError, match="starts ILT.SCANNER_CHECKS."):
         signing_input({**MAPPING, "metadata": {**MAPPING["metadata"], "id": "ACME.SCANNER_CHECKS.X"}}, key_id="k1")
@@ -146,6 +156,15 @@ def test_a_served_mapping_read_back_under_a_key_other_than_its_pin_or_never_held
     with pytest.raises(ScannerCheckMappingDescriptorError, match="is not the pinned one, or names a key the trust set"):
         read_scanner_check_mapping_descriptor(
             ScannerCheckMappingDescriptor.model_validate(SERVED), key_id=pinned, keys=keys
+        )
+
+
+def test_a_runs_served_mapping_read_back_under_a_key_of_another_purpose_is_refused() -> None:
+    key = KEYS[SERVED["key_id"]]
+    keys = {**KEYS, key.key_id: dataclasses.replace(key, purpose="run_statement", status="revoked")}
+    with pytest.raises(ScannerCheckMappingDescriptorError, match="is not for signing scanner check mappings"):
+        read_scanner_check_mapping_descriptor(
+            ScannerCheckMappingDescriptor.model_validate(SERVED), key_id=key.key_id, keys=keys
         )
 
 

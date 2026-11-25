@@ -1,7 +1,7 @@
 [
   {
     "name": "record_as_kept",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "trust_set": "development",
     "set": {},
     "tarballs": "kept",
@@ -9,7 +9,7 @@
   },
   {
     "name": "tarball_holding_no_module_of_an_assertion_its_stage_evaluated",
-    "vector": "image/governed_run_deploy_rolled_out.json",
+    "vector": "image/tracked_run_deploy_rolled_out.json",
     "trust_set": "development",
     "set": {
       "/evidence_refs/4/digest": "sha256:4762d1bf536c072862fc8ab569066c6569fb73a59b6c0b8c789515d4d133fab1",

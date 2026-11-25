@@ -46,6 +46,6 @@ def check_change_given_file_digest_form(car: CAR, change: IacChange) -> None:
         named += deployment_given_file_digests(change.deployment)
     if change.drift_check is not None:
         named += drift_check_given_file_digests(change.drift_check)
-    problem = form_problem(named, car.governance.run_opened_by)
+    problem = form_problem(named, car.run.opened_by)
     if problem is not None:
         raise ValueError(problem)

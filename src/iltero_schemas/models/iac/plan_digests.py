@@ -19,7 +19,7 @@ from iltero_schemas.models.iac.tool_names import PLAN_COLLECTORS, IacTool
 if TYPE_CHECKING:
     from iltero_schemas.change_types.iac.change import IacChange
     from iltero_schemas.models.common.car import CAR
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 
 def _named_plan_digests(car: CAR, change: IacChange) -> list[str]:
@@ -41,7 +41,7 @@ def _named_plan_digests(car: CAR, change: IacChange) -> list[str]:
 def check_plan_digest_form(car: CAR, change: IacChange) -> None:
     """Raise ``ValueError`` unless every plan digest the record names is keyed exactly when the server opened the
     run. Each digest's version is its rule's, checked where the digest is named."""
-    keyed = car.governance.run_opened_by == "server"
+    keyed = car.run.opened_by == "server"
     if any(name.startswith(KEYED_DIGEST_PREFIX) != keyed for name in _named_plan_digests(car, change)):
         if keyed:
             raise ValueError("a record of a run the server opened names every plan by its keyed digest")
@@ -66,7 +66,7 @@ def kept_plan_digest_problems(car: CAR, change: IacChange, files: KeptFiles) -> 
     """In a record of a run the tool opened, the evaluated plan's and the applied plan's digests are each the digest
     of a redacted plan the record keeps, as ``files.plans`` holds it, as (where, what) pairs. A record of a run the
     server opened has no such problem: no reader recomputes a keyed digest."""
-    if car.governance.run_opened_by == "server":
+    if car.run.opened_by == "server":
         return []
     named = [("change.plan.digest", change.plan.digest, change.plan.tool)]
     if change.deployment is not None:

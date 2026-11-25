@@ -12,7 +12,7 @@ import pytest
 
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.replan_recount import (
     IN_THE_EVALUATED_PLAN,
     NOT_AFTER_THE_EVALUATED_PLAN,

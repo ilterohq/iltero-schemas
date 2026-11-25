@@ -33,6 +33,7 @@ from iltero_schemas.models.iac.resource_identities import ResourceIdentities
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping, check_project_mapping
 from iltero_schemas.scanner_check_mappings.iac.served import served_mapping_problems
 from iltero_schemas.vectors.plans import set_pointer
+from iltero_schemas.vectors.vector_signing_keys import vector_trust_data_digest
 from tests.conftest import CHANGE_TYPES, SPLIT_CASE_FOLDERS, VECTORS, documents
 
 
@@ -319,3 +320,26 @@ def test_a_record_vector_lists_the_shipped_assertion_files() -> None:
             body = shipped[assertion_id] if suffix == ".yaml" else compiled.read_bytes()
             expected = (f"sha256:{hashlib.sha256(body).hexdigest()}", len(body))
             assert (ref["digest"], ref["size_bytes"]) == expected, ref["ref_id"]
+
+
+TRUST_DATA_DIGEST = "trust_data_digest"
+
+
+def _trust_data_digests(value: Any, key: str | None = None) -> list[object]:
+    """Every value ``value`` names a trust data digest by, under that key or a JSON Pointer that ends in it."""
+    if isinstance(value, list):
+        return [found for item in value for found in _trust_data_digests(item)]
+    if not isinstance(value, dict):
+        return [value] if key is not None and key.rsplit("/", 1)[-1] == TRUST_DATA_DIGEST else []
+    return [found for name, item in value.items() for found in _trust_data_digests(item, name)]
+
+
+TRUST_DATA_FILES = sorted({*VECTORS.rglob("cases.json"), *documents("records")})
+
+
+@pytest.mark.parametrize("path", TRUST_DATA_FILES, ids=lambda path: path.relative_to(VECTORS).as_posix())
+def test_every_trust_data_digest_a_vector_names_is_the_development_trust_datas_or_null(path: Any) -> None:
+    """A vector's stage checked the server's bundle against the development keys alone, so a case or a record that
+    names trust data names the digest those keys give, or none."""
+    named = _trust_data_digests(_read(path))
+    assert [value for value in named if value not in (vector_trust_data_digest(), None)] == []

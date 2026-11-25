@@ -262,7 +262,7 @@ def _check_facts_source(car: CAR, build: ImageBuild) -> None:
     any run, it passes only for an attestation the record keeps and sent the server. The commit check never passes or
     fails without a build commit to compare, or on a run the tool opened: when it was evaluated, it is unknown for
     want of the build commit, or of the server's facts."""
-    opened_by = car.governance.run_opened_by
+    opened_by = car.run.opened_by
     expected_source = "server" if opened_by == "server" else "none"
     if any(event.provenance.facts_source != expected_source for event in car.events):
         raise ValueError(

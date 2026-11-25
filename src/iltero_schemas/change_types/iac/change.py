@@ -220,7 +220,7 @@ def _check_apply_log(car: CAR, deployment: Deployment) -> None:
             f"{collector} and kept redacted"
         )
     named = deployment.apply.source.digest
-    if car.governance.run_opened_by == "server" and (named is None or logs[0].source.digest != named):
+    if car.run.opened_by == "server" and (named is None or logs[0].source.digest != named):
         raise ValueError(
             "in a record of a run the server opened, the apply log's entry of the evidence register names the keyed "
             "digest the deployment names"
@@ -295,7 +295,7 @@ def _named_documents(car: CAR) -> Mapping[Stage, Mapping[DocumentName, tuple[str
     """For each stage of a run the server opened that reads scanner reports, the files it read them with: the redacted
     plan, each report it kept and the observations it read from each (``models.iac.stage_files``). A run the tool opened
     sends none."""
-    if car.governance.run_opened_by != "server":
+    if car.run.opened_by != "server":
         return MappingProxyType({})
     named: dict[Stage, Mapping[DocumentName, tuple[str, ...]]] = {}
     by_digest = {ref.digest: ref.ref_id for ref in car.evidence_refs}

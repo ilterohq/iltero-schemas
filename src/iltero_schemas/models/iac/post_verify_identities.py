@@ -24,7 +24,7 @@ from iltero_schemas.models.iac.state_digests import state_digest_follows_the_run
 if TYPE_CHECKING:
     from iltero_schemas.change_types.iac.change import IacChange
     from iltero_schemas.models.common.car import CAR
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 # The name (``ref_id``) of the register entry a post-verify stage keeps the resource identities it read after the
 # deployment as: the name readers find it by, which a record package keeps.
@@ -110,7 +110,7 @@ def post_verify_identities_problems(car: CAR, change: IacChange, files: KeptFile
         problems.append((where, APPLIED_PLAN_NAMED))
     if change.deployment is None or sources.state.tool != change.deployment.apply.source.tool:
         problems.append((where, ANOTHER_TOOL))
-    run_opened_by = car.governance.run_opened_by
+    run_opened_by = car.run.opened_by
     if not state_digest_follows_the_run(sources.state.digest, run_opened_by):
         if run_opened_by == "server":
             problems.append((where, REFRESH_ONLY_PLAN_NOT_NAMED_BY_A_KEYED_DIGEST))

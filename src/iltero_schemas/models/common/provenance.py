@@ -1,12 +1,12 @@
 """Who opened a record's run, and what a record of a run the tool opened may not claim.
 
 A run is opened by the server or by the tool on its own
-(``governance.run_opened_by``: ``server`` or ``local``), and a stage counts its
+(``run.opened_by``: ``server`` or ``local``), and a stage counts its
 assertions as ``server_pinned`` exactly for a run the server opened. A record of
 a run the tool opened names no server bundle, and no facts and no time from the
 server, and its review of the change's commits was never decided: only a server
-that opened the run reviews them. Every record stays self-attested: these
-labels are the writer's claims, and only the server can confirm a run it opened.
+that opened the run reviews them. These labels are the writer's claims, and
+only the server can confirm a run it opened.
 The server opens a change run for one environment, so a record of such a run
 names it; a build run belongs to no environment.
 
@@ -29,10 +29,13 @@ from iltero_schemas.models.common.scanners import ILTERO_CLI
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import CAR
 
+# Why a record of a run the server opened is refused when a stage names a bundle other than the server's.
+SERVER_RUN_STAGE_OF_ANOTHER_BUNDLE = "a stage of a run the server opened that names a bundle names the server's bundle"
+
 
 def check_provenance(car: CAR) -> None:
     """Raise ``ValueError`` unless the record's stages agree with who opened its run, and a local run claims no more."""
-    issued = car.governance.run_opened_by == "server"
+    issued = car.run.opened_by == "server"
     for stage, record in car.stages.items():
         if (record.coverage.assertions_required.origin == "server_pinned") != issued:
             raise ValueError(
@@ -74,6 +77,8 @@ def check_provenance(car: CAR) -> None:
             for report in record.scanners.reports
         ):
             raise ValueError("a record of a run the server opened keeps only scanner reports the Iltero CLI ran")
+        if any(r.execution.bundle is not None and r.execution.bundle.kind != "server" for r in car.stages.values()):
+            raise ValueError(SERVER_RUN_STAGE_OF_ANOTHER_BUNDLE)
         if any(event.provenance.assertion_source != "server_bundle" for event in car.events):
             raise ValueError(
                 "a record of a run the server opened evaluates only assertions from the server's bundle: no "

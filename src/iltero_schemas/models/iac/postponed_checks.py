@@ -42,9 +42,9 @@ from iltero_schemas.models.common.change_type import ActivityName
 from iltero_schemas.models.common.coverage_gaps import CHECKED_AFTER_DEPLOYMENT, postponed_count
 from iltero_schemas.models.common.event import AssuranceEvent, OpaEvaluator
 from iltero_schemas.models.common.fields import MAX_RESOURCES, AssertionRef, Digest, PlanDigest
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.redaction import check_value_changes
 from iltero_schemas.models.common.subjects import local_identity
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_verdicts import plan_unknown_paths
 from iltero_schemas.profiles import profile_for
 

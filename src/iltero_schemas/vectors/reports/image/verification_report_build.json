@@ -6,11 +6,20 @@
       "name": "iltero",
       "version": "0.1.0"
     },
-    "verified_at": "2026-11-01T10:10:00Z"
+    "verified_at": "2026-09-22T13:10:00.000Z"
   },
   "record": {
-    "uuid": "74c4c5b0-7808-5503-ab91-c66e38426c3d",
-    "digest": "sha256:f8312bc8ce93fedab9392ff66547d6c864c24c0c580bff889c6e1b791766c036"
+    "uuid": "5c4e4b02-a9eb-50c8-8095-49d66c10d655",
+    "digest": "sha256:0e0d7bc9f2e375c9c57e6a5af9e83810c045373876355704aec625666d0038bb"
+  },
+  "trust_level": {
+    "level": "self_attested",
+    "reason": "run_opened_locally"
+  },
+  "trust_root": null,
+  "run_statement": null,
+  "stage_trust_data_digests": {
+    "plan": null
   },
   "properties": {
     "integrity": {
@@ -28,7 +37,12 @@
       "reason": "not_in_activity",
       "detail": null
     },
-    "bundle_provenance": {
+    "bundle_signature": {
+      "state": "not_performed",
+      "reason": "local_assertions",
+      "detail": null
+    },
+    "bundle_used": {
       "state": "not_performed",
       "reason": "local_assertions",
       "detail": null
@@ -43,7 +57,7 @@
       "reason": "not_in_activity",
       "detail": null
     },
-    "runtime_verification": {
+    "check_after_deployment": {
       "state": "not_assessed",
       "reason": "not_in_activity",
       "detail": null
@@ -69,9 +83,9 @@
       "detail": null
     },
     "evaluator_binary": {
-      "state": "failed",
-      "reason": "other_binary_named",
-      "detail": "events.0.provenance.evaluator.digest is not the digest of the pinned OPA binary for its platform (2 more problems)"
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
     },
     "scanner_reports": {
       "state": "not_assessed",

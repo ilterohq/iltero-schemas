@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import dataclasses
 import gzip
 import hashlib
 import io
@@ -60,6 +61,8 @@ def _keys(status: str = "active") -> Mapping[str, SigningKey]:
         "algorithm": "ES256",
         "public_key": base64.b64encode(der).decode("ascii"),
         "spki_sha256": "sha256:" + hashlib.sha256(der).hexdigest(),
+        "purpose": "check_definitions",
+        "server": "iltero.example",
         "status": status,
         "valid_from": "2026-09-01T00:00:00Z",
         "retired_at": None,
@@ -235,6 +238,13 @@ def test_the_signed_bytes_and_signature_verify_with_the_trusted_key() -> None:
 def test_a_key_the_trust_set_does_not_allow_is_refused(status: str | None) -> None:
     with pytest.raises(BundleError, match="not trusted"):
         check_descriptor(DESCRIPTOR, {} if status is None else _keys(status))
+
+
+@pytest.mark.parametrize("status", ["active", "revoked"])
+def test_a_key_of_another_purpose_is_refused(status: str) -> None:
+    keys = {KEY_ID: dataclasses.replace(_keys(status)[KEY_ID], purpose="run_statement")}
+    with pytest.raises(BundleError, match="is not for signing assertion bundles"):
+        check_descriptor(DESCRIPTOR, keys)
 
 
 def _changed(**fields: object) -> BundleDescriptor:

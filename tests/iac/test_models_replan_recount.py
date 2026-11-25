@@ -8,7 +8,7 @@ from typing import Any
 
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.car import CAR
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.replan_check import ReplanCheck
 from iltero_schemas.models.iac.replan_recount import RECOUNT_NOT_MADE, content_name, replan_recount_problems
 from tests.conftest import VECTORS

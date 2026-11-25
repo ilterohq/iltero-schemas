@@ -9,20 +9,22 @@ from typing import Any
 
 import pytest
 
+from iltero_schemas.assertions import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID
 from iltero_schemas.canonical import canonical_bytes, digest
 from iltero_schemas.models.common import pinned_scanner
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.verification import PRE_DEPLOY_RESULT_ORDER, PropertyResult
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.report_results import (
     APPROVED_BY_RUN_STARTER,
     SERVED_EXCEPTION_RELIED_ON,
     exception_results,
+    plan_apply_match_result,
     scanner_reports_result,
 )
 from iltero_schemas.scanners.common.pin import SCANNER_PIN
 from tests.conftest import VECTORS, documents
-from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _governed_scanned, _record, kept_files
+from tests.iac.test_models_scanner_results import EVIDENCE, KEPT, SCANNED, _record, _tracked_scanned, kept_files
 from tests.records import every_kept_copy, kept_files_by_digest, valid_case_record
 
 # A run the server opened whose plan stage relies on the exceptions the server served, and one that applies them and
@@ -76,7 +78,7 @@ def test_reports_the_pipeline_ran_are_the_pipelines_word() -> None:
 
 
 def test_reports_the_iltero_cli_ran_of_a_scanner_the_pin_does_not_give_fail() -> None:
-    record, files = _governed_scanned()
+    record, files = _tracked_scanned()
     result = scanner_reports_result(_car(record), KeptFiles(**files))
     assert (result.state, result.reason) == ("failed", "other_scanner_named")
     assert result.detail is not None and "is not the pinned" in result.detail
@@ -86,7 +88,7 @@ def test_reports_the_iltero_cli_ran_of_the_pinned_scanners_are_its_word(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """With a pin that gives what the sample record names, the record's reports are its own claim."""
-    record, files = _governed_scanned()
+    record, files = _tracked_scanned()
     named = {
         report["tool"]: report
         for stage in record["stages"].values()
@@ -179,13 +181,15 @@ def test_a_record_that_relied_on_a_project_exception_says_so() -> None:
     assert exception_results(_car(record), files) == {("claimed_by_record", "project_exception_relied_on"): None}
 
 
-# The expected results of the ``exceptions`` and ``scanner_reports`` properties, each worked out from its record and
-# kept files.
+# The expected results of the ``exceptions`` and ``scanner_reports`` properties of a record read with no run
+# statement, each worked out from its record and kept files.
 EXPECTED = [
     {**case, "change_type": change_type}
     for change_type in ("iac", "image")
     for case in json.loads((VECTORS / "reports_expected" / change_type / "cases.json").read_text(encoding="utf-8"))
     if case["property"] in ("exceptions", "scanner_reports")
+    and "run_statement" not in case
+    and "run_statement_case" not in case["record"]
 ]
 
 
@@ -225,3 +229,35 @@ def test_each_expected_exception_and_scanner_reports_result_is_the_one_its_recor
         return
     holding = set(exception_results(car, files))
     assert (case["state"], case["reason"]) == next(r for r in PRE_DEPLOY_RESULT_ORDER if r in holding)
+
+
+def _deployed(status: str) -> CAR:
+    """The deployed record vector with its binding check's answer read as ``status``, unvalidated, as no record of a
+    deployment ends its binding check otherwise than in pass or fail when its plans' digests are compared."""
+    car = CAR.model_validate(json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_bytes()))
+    events = [
+        event.model_copy(update={"evaluation": event.evaluation.model_copy(update={"status": status})})
+        if event.assertion.id == APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID
+        else event
+        for event in car.events
+    ]
+    return car.model_copy(update={"events": events})
+
+
+@pytest.mark.parametrize(
+    ("status", "result"),
+    [
+        ("pass", ("claimed_by_record", "plan_digests_compared")),
+        ("fail", ("failed", "plan_digests_compared")),
+        ("unknown", ("could_not_decide", "binding_undecided")),
+    ],
+)
+def test_the_plan_apply_match_is_the_binding_checks_answer(status: str, result: tuple[str, str]) -> None:
+    found = plan_apply_match_result(_deployed(status))
+    assert (found.state, found.reason) == result
+
+
+def test_a_record_of_another_activity_has_no_plan_apply_match() -> None:
+    document = json.loads((VECTORS / "records" / "image" / "local_run_build.json").read_text(encoding="utf-8"))
+    found = plan_apply_match_result(CAR.model_validate(document))
+    assert (found.state, found.reason) == ("not_assessed", "not_in_activity")

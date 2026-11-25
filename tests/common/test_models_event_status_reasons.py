@@ -28,7 +28,7 @@ from tests.conftest import VECTORS
 # The event of each check of the sample record of a run the server opened, by its assertion id.
 SERVER_RUN_EVENTS: dict[str, dict[str, Any]] = {
     event["assertion"]["id"]: event
-    for event in json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))[
+    for event in json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8"))[
         "events"
     ]
 }

@@ -34,10 +34,10 @@ from iltero_schemas.change_types.common.registry import ACTIVITIES
 from iltero_schemas.models.common.assertion import Stage, ToolSelector
 from iltero_schemas.models.common.checked_content import CheckedPlan
 from iltero_schemas.models.common.event import AssuranceEvent
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.scanner_evaluator import NO_SCANNER_REPORT, SCANNER_NOT_RUN, ScannerEvaluator
 from iltero_schemas.models.common.stage_platform import check_one_platform_per_stage
 from iltero_schemas.models.common.subjects import local_identity
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.plan_coverage import plan_coverage_problems
 from iltero_schemas.models.iac.plan_exclusions import named_resource_types_of_targets
 from iltero_schemas.models.iac.scanner_check_mapping import (

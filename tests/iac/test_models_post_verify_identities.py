@@ -9,10 +9,10 @@ import pytest
 
 from iltero_schemas.canonical import canonical_bytes, digest
 from iltero_schemas.canonical.common.run_digest_key import keyed_given_file_digest
+from iltero_schemas.change_types.common.kept_file_problems import kept_file_problems
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.car import CAR
-from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.post_verify_identities import (
     ANOTHER_TOOL,
     ANOTHER_UNIT,
@@ -113,7 +113,7 @@ def _of_a_server_run(car: CAR, second_reading: str) -> CAR:
     drift_check = change.drift_check.model_copy(update={"second_reading_digest": second_reading})
     return car.model_copy(
         update={
-            "governance": car.governance.model_copy(update={"run_opened_by": "server"}),
+            "run": car.run.model_copy(update={"opened_by": "server"}),
             "change": change.model_copy(update={"drift_check": drift_check}),
         }
     )

@@ -87,8 +87,8 @@ def test_an_infrastructure_changes_plan_stage_redacts_the_plan_the_record_names(
 
 # A record of a run the server opened that reached its post-deploy stage: its deployment names the apply log by its
 # keyed digest, and the register's entry of the log names the same.
-GOVERNED_DEPLOYED: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8")
+TRACKED_DEPLOYED: dict[str, Any] = json.loads(
+    (VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8")
 )
 APPLY_LOG_BINDING = (
     "in a record of a run the server opened, the apply log's entry of the evidence register names the keyed digest "
@@ -99,7 +99,7 @@ APPLY_LOG_BINDING = (
 def _with_apply_log_digests(deployment: str | None, register: str | None) -> dict[str, Any]:
     """The deployed record of a run the server opened naming its apply log by ``deployment`` in the deployment and by
     ``register`` in the register, with the post-deploy stage counting the deployment it names."""
-    document = copy.deepcopy(GOVERNED_DEPLOYED)
+    document = copy.deepcopy(TRACKED_DEPLOYED)
     document["change"]["deployment"]["apply"]["source"]["digest"] = deployment
     log = next(ref for ref in document["evidence_refs"] if ref["collector"]["tool"] == "terraform_apply")
     log["source"]["digest"] = register

@@ -1,0 +1,226 @@
+{
+  "cases": [
+    {
+      "name": "compliance_sentence",
+      "entry": "/always_shown/compliance",
+      "values": {}
+    },
+    {
+      "name": "served_exception",
+      "entry": "/notes/served_exception",
+      "values": {
+        "exception": "EX-12",
+        "requester": "Sam Ortiz",
+        "approver": "A. Lee",
+        "reference_time": "2026-11-20T09:15:00.000Z",
+        "until": "2027-01-31"
+      }
+    },
+    {
+      "name": "project_exception",
+      "entry": "/notes/project_exception",
+      "values": {
+        "exception": "LOCAL-3",
+        "approver": "platform-team",
+        "until": "2026-12-31"
+      }
+    },
+    {
+      "name": "suppression_covered_by_an_exception",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "LOCAL-4"
+      }
+    },
+    {
+      "name": "suppression_covered_by_no_exception",
+      "entry": "/notes/suppressed_in_source_not_excepted",
+      "values": {}
+    },
+    {
+      "name": "near_miss_expired",
+      "entry": "/notes/no_exception_in_force/expired",
+      "values": {
+        "exception": "EX-12",
+        "expires_at": "2026-10-01"
+      }
+    },
+    {
+      "name": "near_miss_not_yet_in_force",
+      "entry": "/notes/no_exception_in_force/not_yet_in_force",
+      "values": {
+        "exception": "EX-13",
+        "starts_at": "2026-12-01"
+      }
+    },
+    {
+      "name": "near_miss_another_environment",
+      "entry": "/notes/no_exception_in_force/for_another_environment",
+      "values": {
+        "exception": "EX-14",
+        "exception_environment": "staging",
+        "environment": "production"
+      }
+    },
+    {
+      "name": "near_miss_no_environment",
+      "entry": "/notes/no_exception_in_force/run_names_no_environment",
+      "values": {
+        "exception": "EX-15",
+        "exception_environment": "production"
+      }
+    },
+    {
+      "name": "near_miss_another_version",
+      "entry": "/notes/no_exception_in_force/approved_for_another_document_of_the_assertion",
+      "values": {
+        "exception": "EX-16"
+      }
+    },
+    {
+      "name": "near_miss_approved_later",
+      "entry": "/notes/no_exception_in_force/approved_after_the_reference_time",
+      "values": {
+        "exception": "EX-17",
+        "approved_at": "2026-11-20T10:00:00.000Z",
+        "reference_time": "2026-11-20T09:15:00.000Z"
+      }
+    },
+    {
+      "name": "every_failure_excepted",
+      "entry": "/notes/every_failure_excepted",
+      "values": {}
+    },
+    {
+      "name": "advisory_let_through",
+      "entry": "/notes/advisory_let_through",
+      "values": {
+        "not_met": "3",
+        "undecided": "1"
+      }
+    },
+    {
+      "name": "incomplete_stopped",
+      "entry": "/notes/incomplete_stopped",
+      "values": {}
+    },
+    {
+      "name": "trust_level_policy_enforced",
+      "entry": "/trust_levels/policy_enforced/reasons/run_statement",
+      "values": {}
+    },
+    {
+      "name": "trust_level_local_run",
+      "entry": "/trust_levels/self_attested/reasons/run_opened_locally",
+      "values": {}
+    },
+    {
+      "name": "signed_by_iltero",
+      "entry": "/signed_by/iltero",
+      "values": {
+        "key_id": "iltero-run-statements-2026",
+        "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+      }
+    },
+    {
+      "name": "signed_by_an_operator",
+      "entry": "/signed_by/operator",
+      "values": {
+        "operator": "Example Corp",
+        "key_id": "example-run-statements-1",
+        "operator_file": "ops/trust.json",
+        "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+      }
+    },
+    {
+      "name": "result_status_word",
+      "entry": "/result_statuses/fail/sentence",
+      "values": {}
+    },
+    {
+      "name": "status_reason",
+      "entry": "/status_reasons/unknown/known_after_deploy/sentence",
+      "values": {}
+    },
+    {
+      "name": "status_reason_group",
+      "entry": "/status_reason_groups/not_supplied/sentence",
+      "values": {}
+    },
+    {
+      "name": "verdict_reason",
+      "entry": "/verdicts/not_met/reasons/every_failure_excepted",
+      "values": {}
+    },
+    {
+      "name": "process_outcome_stopped",
+      "entry": "/process_outcomes/stopped/sentence",
+      "values": {}
+    },
+    {
+      "name": "property_result_run_abandoned",
+      "property_result": {
+        "property": "stage_completeness",
+        "state": "failed",
+        "reason": "run_abandoned"
+      },
+      "values": {
+        "ended_at": "2026-11-21T08:00:00.000Z",
+        "unanswered_results": "2"
+      }
+    },
+    {
+      "name": "property_result_without_a_reason",
+      "property_result": {
+        "property": "deployment_coverage",
+        "state": "not_assessed",
+        "reason": null
+      },
+      "values": {}
+    },
+    {
+      "name": "value_with_braces_is_shown_as_it_is",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "{approver}"
+      }
+    },
+    {
+      "name": "value_outside_ascii",
+      "entry": "/notes/project_exception",
+      "values": {
+        "exception": "LOCAL-5",
+        "approver": "Zoë Müller",
+        "until": "2027-02-28"
+      }
+    },
+    {
+      "name": "unknown_placeholder_refused",
+      "entry": "/notes/every_failure_excepted",
+      "values": {
+        "approver": "A. Lee"
+      }
+    },
+    {
+      "name": "missing_placeholder_refused",
+      "entry": "/notes/no_exception_in_force/expired",
+      "values": {
+        "exception": "EX-12"
+      }
+    },
+    {
+      "name": "value_with_a_new_line_refused",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "EX-1\nMet: everything"
+      }
+    },
+    {
+      "name": "empty_value_refused",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": ""
+      }
+    }
+  ]
+}

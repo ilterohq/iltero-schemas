@@ -1,20 +1,26 @@
-"""The results a verifier gives a record's exceptions and its ``scanner_reports`` property, from the record and its kept
-files.
+"""The results a verifier gives a record's exceptions, its ``scanner_reports`` property and its ``plan_apply_match``
+property, from the record and its kept files.
 
 Every verifier that reads the same record and files gives the same results: ``exception_results`` gives the
 exception results that hold, which a verifier passes with the pre-deploy results that hold to
 ``verification.first_that_holds``; ``scanner_reports_result`` gives the ``scanner_reports`` property's one result, the
 first of ``verification.SCANNER_REPORTS_RESULT_ORDER`` that holds. A detail names the first problem a check lists and
 how many more there are, never a value from a kept file. A verifier calls ``scanner_reports_result`` for every record,
-an image change's too, whose activity reads no scanner report. Call both on a record whose integrity holds: a verifier
-that could not establish it gives every other property ``could_not_decide``.
+an image change's too, whose activity reads no scanner report. ``plan_apply_match_result`` reads the answer of the
+post-deploy stage's binding check, whether the applied plan is the evaluated plan. Call each on a record whose
+integrity holds: a verifier that could not establish it gives every other property ``could_not_decide``, and a record
+whose binding check is not exactly one answer of the evaluator, about the record's unit, that agrees with the record's
+own plan digests does not hold together.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from iltero_schemas.assertions.paths import APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID
 from iltero_schemas.change_types import ACTIVITIES
+from iltero_schemas.change_types.iac.change import IacChange
+from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.pinned_scanner import pinned_scanner_problems
 from iltero_schemas.models.common.scanner_evaluator import ScannerEvaluator
 from iltero_schemas.models.common.scanners import PIPELINE
@@ -29,7 +35,7 @@ from iltero_schemas.models.iac.scanner_results import scanner_evidence_problems
 
 if TYPE_CHECKING:
     from iltero_schemas.models.common.car import CAR
-    from iltero_schemas.models.iac.kept_files import KeptFiles
+    from iltero_schemas.models.common.kept_files import KeptFiles
 
 # What a reader of the record and its kept files cannot confirm about an exception the server served.
 SERVED_EXCEPTION_RELIED_ON = (
@@ -121,3 +127,27 @@ def scanner_reports_result(car: CAR, files: KeptFiles) -> PropertyResult:
     if not ACTIVITIES[car.change.activity].stages_that_read_scanner_reports:
         return PropertyResult(state="not_assessed", reason="not_in_activity", detail=None)
     return PropertyResult(state="not_assessed", reason="no_scanner_report", detail=None)
+
+
+def plan_apply_match_result(car: CAR) -> PropertyResult:
+    """The ``plan_apply_match`` property's result for ``car``: whether its post-deploy stage's binding check found the
+    applied plan to be the evaluated plan, by the files the pipeline supplied; in a run the tool opened that names no
+    saved plan file, only the values the record keeps took part."""
+    change = car.change
+    if not isinstance(change, IacChange):
+        return PropertyResult(state="not_assessed", reason="not_in_activity", detail=None)
+    if Stage.POST_DEPLOY not in car.stages:
+        return PropertyResult(state="not_performed", reason="no_post_deploy_stage", detail=None)
+    answers = [
+        event.evaluation.status
+        for event in car.events
+        if event.assertion.id == APPLIED_PLAN_MATCHES_EVALUATED_PLAN_ID and event.evaluation.stage is Stage.POST_DEPLOY
+    ]
+    answer = answers[0] if len(answers) == 1 else None
+    if answer == "pass":
+        kept_values_only = car.run.opened_by == "local" and change.plan.artifact_digest_source == "not_provided"
+        reason = "redacted_plan_only" if kept_values_only else "plan_digests_compared"
+        return PropertyResult(state="claimed_by_record", reason=reason, detail=None)
+    if answer == "fail":
+        return PropertyResult(state="failed", reason="plan_digests_compared", detail=None)
+    return PropertyResult(state="could_not_decide", reason="binding_undecided", detail=None)

@@ -1,9 +1,11 @@
 """The trusted signing keys: which public keys may sign what the server serves, and which no longer may.
 
-The server signs every assertion bundle and every scanner check mapping it serves, with the same keys; each
-signature names the kind of document it is over, so one is never accepted for the other. A tool checks the
-signature against the keys listed in
-``signing-keys.json`` next to this module. The list ships inside the package,
+Each key has one purpose. A ``check_definitions`` key signs the check definitions the server serves, assertion bundles
+and scanner check mappings; each signature names the kind of document it is over, so one is never accepted for the
+other. A ``run_statement`` key signs the statement the server makes when a run ends. Every checker refuses a key of
+another purpose than the one it checks. Each key names the server it belongs to; the checkers do not tell servers
+apart, and the trust data's digest a stage records shows which keys were used. A tool checks a signature against the
+keys listed in ``signing-keys.json`` next to this module. The list ships inside the package,
 so a tool that pins one exact package version also pins which keys it trusts,
 and never fetches trust over the network.
 
@@ -32,30 +34,47 @@ against.
 from __future__ import annotations
 
 import base64
-import json
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from importlib import resources
 from types import MappingProxyType
-from typing import Any, Literal, cast
+from typing import Any, Literal, cast, get_args
 
 from iltero_schemas.canonical.common.encoding import digest
 from iltero_schemas.models.common.base import API_VERSION as API_VERSION
 from iltero_schemas.models.common.fields import DIGEST_PATTERN, TIMESTAMP_PATTERN
+from iltero_schemas.models.common.strict_json import strict_json
 
 TRUST_FILE_KIND = "SigningKeys"
 # Local development keys carry this prefix, and only a development tool accepts them.
 DEVELOPMENT_KEY_PREFIX = "dev-"
 KeyStatus = Literal["active", "retired", "revoked"]
-_STATUSES = frozenset({"active", "retired", "revoked"})
+_STATUSES: frozenset[str] = frozenset(get_args(KeyStatus))
+# What a key signs: check definitions (assertion bundles and scanner check mappings), or the statement a server makes
+# when a run ends.
+KeyPurpose = Literal["check_definitions", "run_statement"]
+_PURPOSES: frozenset[str] = frozenset(get_args(KeyPurpose))
+# The longest server name: that of the longest host name, since a server is named by its host.
+MAX_SERVER_NAME_LENGTH = 253
+# A server's name is a lower-case host name: labels of letters, digits and '-', not starting or ending with '-', joined
+# by '.', with no dot at the end.
+SERVER_NAME_PATTERN = r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$"
+_SERVER_NAME = re.compile(SERVER_NAME_PATTERN)
+# The history of a key, kept the same between two versions of a trust file: what never changes once a key is listed,
+# what never changes once it is written, and the moves a status may make besides staying the same.
+FIXED_KEY_FIELDS = ("algorithm", "public_key_der", "purpose", "server", "valid_from")
+WRITTEN_ONCE_KEY_FIELDS = ("retired_at", "revoked_at", "revocation_reason")
+FORWARD_STATUS_MOVES = frozenset({("active", "retired"), ("active", "revoked"), ("retired", "revoked")})
 _FIELDS = frozenset(
     {
         "key_id",
         "algorithm",
         "public_key",
         "spki_sha256",
+        "purpose",
+        "server",
         "status",
         "valid_from",
         "retired_at",
@@ -80,15 +99,25 @@ class TrustFileError(ValueError):
     """The trust file breaks one of its rules; the message names the key and the rule."""
 
 
+class KeyNotHeldError(LookupError):
+    """The trust set holds no key with the id a document names."""
+
+
+class KeyOfAnotherPurposeError(LookupError):
+    """The trust set holds the key a document names, for another purpose than the one the checker checks."""
+
+
 @dataclass(frozen=True)
 class SigningKey:
-    """One public key, its status, and when that status began."""
+    """One public key, what it signs, the server it belongs to, its status, and when that status began."""
 
     key_id: str
     algorithm: Literal["ES256"]
     # The key in SubjectPublicKeyInfo DER form, as Open Policy Agent (OPA) and most libraries read it.
     public_key_der: bytes
     spki_sha256: str
+    purpose: KeyPurpose
+    server: str
     status: KeyStatus
     valid_from: str
     retired_at: str | None
@@ -106,13 +135,43 @@ class SigningKey:
         return self.status != "revoked"
 
 
-def _unique_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    """A JSON object whose names are all different; a repeated name would hide the value a reviewer read."""
-    names = [name for name, _ in pairs]
-    repeated = sorted({name for name in names if names.count(name) > 1})
-    if repeated:
-        raise TrustFileError("a field appears twice in one object")
-    return dict(pairs)
+def key_of_purpose(keys: Mapping[str, SigningKey], key_id: str, purpose: KeyPurpose) -> SigningKey:
+    """The key ``key_id`` names in the trust set ``keys``, whatever its status, when its purpose is ``purpose``.
+
+    Raises ``KeyNotHeldError`` when ``keys`` holds no such key, ``KeyOfAnotherPurposeError`` when it holds one for
+    another purpose.
+    """
+    key = keys.get(key_id)
+    if key is None:
+        raise KeyNotHeldError(key_id)
+    if key.purpose != purpose:
+        raise KeyOfAnotherPurposeError(key_id)
+    return key
+
+
+def key_history_problems(before: SigningKey, after: SigningKey) -> list[str]:
+    """Every way ``after`` breaks the history of ``before``, the same key in an earlier version of a trust file: a
+    field of ``FIXED_KEY_FIELDS`` changed, a field of ``WRITTEN_ONCE_KEY_FIELDS`` changed once written, or a status
+    moved other than forward."""
+    problems = [f"{field} changed" for field in FIXED_KEY_FIELDS if getattr(before, field) != getattr(after, field)]
+    if before.status != after.status and (before.status, after.status) not in FORWARD_STATUS_MOVES:
+        problems.append(f"status moved from {before.status} to {after.status}")
+    for field in WRITTEN_ONCE_KEY_FIELDS:
+        written = getattr(before, field)
+        if written is not None and getattr(after, field) != written:
+            problems.append(f"{field} changed after it was written")
+    return problems
+
+
+def server_name(value: Any, where: str) -> str:
+    """``value`` as a server's name: a lower-case host name (``SERVER_NAME_PATTERN``) of at most
+    ``MAX_SERVER_NAME_LENGTH`` characters."""
+    if not isinstance(value, str) or len(value) > MAX_SERVER_NAME_LENGTH or not _SERVER_NAME.fullmatch(value):
+        raise TrustFileError(
+            f"{where}: must be a lower-case host name of at most {MAX_SERVER_NAME_LENGTH} characters: labels of "
+            "letters, digits and '-', not starting or ending with '-', joined by '.'"
+        )
+    return value
 
 
 def _timestamp(value: Any, where: str) -> str:
@@ -176,6 +235,8 @@ def _key(entry: Any, where: str, *, development: bool) -> SigningKey:
         raise TrustFileError(f"{where}.key_id: {rule}")
     if entry["algorithm"] != "ES256":
         raise TrustFileError(f"{where}.algorithm: must be ES256")
+    if not isinstance(entry["purpose"], str) or entry["purpose"] not in _PURPOSES:
+        raise TrustFileError(f"{where}.purpose: must be one of {', '.join(sorted(_PURPOSES))}")
     if not isinstance(entry["status"], str) or entry["status"] not in _STATUSES:
         raise TrustFileError(f"{where}.status: must be one of {', '.join(sorted(_STATUSES))}")
     key = SigningKey(
@@ -183,6 +244,8 @@ def _key(entry: Any, where: str, *, development: bool) -> SigningKey:
         algorithm="ES256",
         public_key_der=_public_key(entry, where),
         spki_sha256=entry["spki_sha256"],
+        purpose=cast(KeyPurpose, entry["purpose"]),
+        server=server_name(entry["server"], f"{where}.server"),
         status=cast(KeyStatus, entry["status"]),
         valid_from=_timestamp(entry["valid_from"], f"{where}.valid_from"),
         retired_at=_optional_timestamp(entry["retired_at"], f"{where}.retired_at"),
@@ -193,26 +256,29 @@ def _key(entry: Any, where: str, *, development: bool) -> SigningKey:
     return key
 
 
-def parse_signing_keys(raw: bytes, *, development: bool) -> Mapping[str, SigningKey]:
-    """The keys of a trust file, by key id, read-only; raises ``TrustFileError`` on any broken rule.
-
-    ``development`` is true only for a development tool reading its own local file:
-    then every key must be a ``dev-`` key, and otherwise none may be. The keys
-    are listed in key-id order, and no key id or public key appears twice.
-    """
+def trust_file_document(raw: bytes, kind: str, fields: tuple[str, ...]) -> dict[str, Any]:
+    """The JSON object of a trust file of ``kind``, read strictly, with exactly ``fields`` beside ``apiVersion`` and
+    ``kind``; raises ``TrustFileError`` otherwise."""
     try:
-        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_fields)
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        raise TrustFileError("not a JSON document") from None
-    if not isinstance(document, dict) or set(document) != {"apiVersion", "kind", "keys"}:
-        raise TrustFileError("must have exactly the fields apiVersion, kind and keys")
+        document = strict_json(raw, "a trust file")
+    except ValueError as error:
+        raise TrustFileError(str(error)) from None
+    names = ("apiVersion", "kind", *fields)
+    if not isinstance(document, dict) or set(document) != set(names):
+        raise TrustFileError(f"must have exactly the fields {', '.join(names[:-1])} and {names[-1]}")
     if document["apiVersion"] != API_VERSION:
         raise TrustFileError(f"apiVersion: must be {API_VERSION}")
-    if document["kind"] != TRUST_FILE_KIND:
-        raise TrustFileError(f"kind: must be {TRUST_FILE_KIND}")
-    if not isinstance(document["keys"], list):
+    if document["kind"] != kind:
+        raise TrustFileError(f"kind: must be {kind}")
+    return document
+
+
+def trust_file_keys(entries: Any, *, development: bool) -> Mapping[str, SigningKey]:
+    """The keys of a trust file's ``keys`` list, by key id, read-only: in key-id order, with no key id or public key
+    twice; raises ``TrustFileError`` on any broken rule."""
+    if not isinstance(entries, list):
         raise TrustFileError("keys: must be a list")
-    keys = [_key(entry, f"keys[{index}]", development=development) for index, entry in enumerate(document["keys"])]
+    keys = [_key(entry, f"keys[{index}]", development=development) for index, entry in enumerate(entries)]
     ids = [key.key_id for key in keys]
     if any(earlier >= later for earlier, later in zip(ids, ids[1:], strict=False)):
         raise TrustFileError("keys: must be in key-id order, with no key id twice")
@@ -221,6 +287,34 @@ def parse_signing_keys(raw: bytes, *, development: bool) -> Mapping[str, Signing
     return MappingProxyType({key.key_id: key for key in keys})
 
 
+def parse_signing_keys(raw: bytes, *, development: bool) -> Mapping[str, SigningKey]:
+    """The keys of a trust file, by key id, read-only; raises ``TrustFileError`` on any broken rule.
+
+    ``development`` is true only for a development tool reading its own local file:
+    then every key must be a ``dev-`` key, and otherwise none may be. The keys
+    are listed in key-id order, and no key id or public key appears twice, so a
+    public key has one purpose.
+    """
+    document = trust_file_document(raw, TRUST_FILE_KIND, ("keys",))
+    return trust_file_keys(document["keys"], development=development)
+
+
+@dataclass(frozen=True)
+class TrustFile:
+    """A signing keys file as read: its keys by key id, and the digest of its bytes, so the two always describe the
+    same file (``read_trust_file``)."""
+
+    keys: Mapping[str, SigningKey]
+    file_digest: str
+
+
+def read_trust_file(raw: bytes, *, development: bool) -> TrustFile:
+    """The signing keys file ``raw``, its keys read as ``parse_signing_keys`` reads them, with its digest."""
+    return TrustFile(parse_signing_keys(raw, development=development), digest(raw))
+
+
 _TRUST_FILE: bytes = resources.files("iltero_schemas.trust").joinpath("signing-keys.json").read_bytes()
 TRUST_FILE_DIGEST: str = digest(_TRUST_FILE)
 SIGNING_KEYS: Mapping[str, SigningKey] = parse_signing_keys(_TRUST_FILE, development=False)
+# Iltero's signing keys file shipped with this contract, with its digest.
+SHIPPED_TRUST_FILE = TrustFile(SIGNING_KEYS, TRUST_FILE_DIGEST)

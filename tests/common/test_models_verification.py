@@ -1,4 +1,5 @@
-"""The verification report: nineteen properties, each with a result a verifier gives it, and no overall verdict."""
+"""The verification report: a trust level, twenty properties, each with a result a verifier gives it, and no overall
+verdict."""
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from iltero_schemas.models.common.commit_review import CommitReviewOutcome
 from iltero_schemas.models.common.facts import NotReadByTheStage, ServerFactsUnavailable
 from iltero_schemas.models.common.verification import (
     API_VERSION,
+    BUNDLE_SIGNATURE_CHECKED,
     COMMIT_REVIEW_RESULTS,
     PROPERTY_RESULTS,
     Properties,
@@ -34,21 +36,31 @@ NOT_REVIEWED_CASE = "iac_record_of_a_run_the_server_opened_keeping_its_commit_re
 NOT_REVIEWED_REPORT: dict[str, Any] = json.loads(
     (VECTORS / "reports" / "iac" / "verification_report_commit_not_reviewed.json").read_text(encoding="utf-8")
 )
+# A report of a record its run statement holds for, and one of a record the statement lists as refused.
+POLICY_ENFORCED_REPORT: dict[str, Any] = json.loads(
+    (VECTORS / "reports" / "iac" / "verification_report_tracked_run_with_its_run_statement.json").read_text(
+        encoding="utf-8"
+    )
+)
+REFUSED_REPORT: dict[str, Any] = json.loads(
+    (VECTORS / "reports" / "iac" / "verification_report_record_the_server_refused.json").read_text(encoding="utf-8")
+)
 
 
 def test_the_vector_validates_and_names_this_api_version() -> None:
     assert VerificationReport.model_validate(REPORT).api_version == API_VERSION
 
 
-def test_a_report_names_the_nineteen_properties_and_no_overall_verdict() -> None:
+def test_a_report_names_the_twenty_properties_and_no_overall_verdict() -> None:
     assert list(Properties.model_fields) == [
         "integrity",
         "source_identity",
         "approval_identity",
-        "bundle_provenance",
+        "bundle_signature",
+        "bundle_used",
         "stage_completeness",
         "plan_apply_match",
-        "runtime_verification",
+        "check_after_deployment",
         "deployment_coverage",
         "exceptions",
         "commit_review",
@@ -62,7 +74,17 @@ def test_a_report_names_the_nineteen_properties_and_no_overall_verdict() -> None
         "pinned_plan",
         "replan_resource_actions",
     ]
-    assert set(VerificationReport.model_fields) == {"api_version", "kind", "metadata", "record", "properties"}
+    assert set(VerificationReport.model_fields) == {
+        "api_version",
+        "kind",
+        "metadata",
+        "record",
+        "trust_level",
+        "trust_root",
+        "run_statement",
+        "stage_trust_data_digests",
+        "properties",
+    }
 
 
 def test_a_property_has_one_of_six_states() -> None:
@@ -93,15 +115,15 @@ def test_a_property_has_one_of_six_states() -> None:
         (lambda d: d["metadata"].update(verified_at="2026-09-22 13:10"), "String should match pattern"),
         (
             lambda d: d["properties"]["integrity"].update(state="verified", reason="file_digests"),
-            "no property of an unsigned record is verified",
+            "integrity is one of the results",
         ),
         (
-            lambda d: d["properties"]["integrity"].update(state="verified", reason=None),
-            "no property of an unsigned record is verified",
+            lambda d: d["properties"]["integrity"].update(state="verified", reason="run_statement"),
+            "verified by a run statement exactly when its trust level is policy_enforced",
         ),
         (
-            lambda d: d["properties"]["source_identity"].update(state="verified", reason="ci_job_held_by_server"),
-            "no property of an unsigned record is verified",
+            lambda d: d["properties"]["source_identity"].update(state="verified", reason="run_statement"),
+            "a property is verified by a run statement only for a policy_enforced record",
         ),
         (lambda d: d["properties"]["integrity"].update(state="failed"), "every other property is could_not_decide"),
     ],
@@ -116,8 +138,8 @@ def test_a_property_has_one_of_six_states() -> None:
         "no verification time",
         "a time not in RFC 3339",
         "integrity verified by digests",
-        "integrity verified with no reason",
-        "a source verified on an unsigned record",
+        "integrity verified with no run statement",
+        "a source verified with no run statement",
         "claims beside a failed integrity",
     ],
 )
@@ -133,6 +155,7 @@ def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
     for name in document["properties"]:
         document["properties"][name] = {"state": "could_not_decide", "reason": "integrity_failed", "detail": None}
     document["properties"]["integrity"] = {"state": "failed", "reason": "file_digests", "detail": None}
+    document["trust_level"] = {"level": "self_attested", "reason": "integrity_failed"}
     VerificationReport.model_validate(document)
 
 
@@ -150,18 +173,18 @@ def test_a_failed_integrity_with_nothing_else_taken_is_accepted() -> None:
 )
 def test_the_verification_after_deployment_is_one_of_seven_results(state: str, reason: str) -> None:
     document = copy.deepcopy(REPORT)
-    document["properties"]["runtime_verification"] = {"state": state, "reason": reason, "detail": None}
-    assert VerificationReport.model_validate(document).properties.runtime_verification.reason == reason
+    document["properties"]["check_after_deployment"] = {"state": state, "reason": reason, "detail": None}
+    assert VerificationReport.model_validate(document).properties.check_after_deployment.reason == reason
 
 
 @pytest.mark.parametrize(
     ("state", "reason", "message"),
     [
-        ("verified", "reported_by_pipeline", "no property of an unsigned record is verified"),
-        ("failed", "refused", "runtime_verification is one of the results"),
-        ("not_performed", "no_post_verify_stage", "runtime_verification is one of the results"),
-        ("not_assessed", None, "runtime_verification is one of the results"),
-        ("could_not_decide", "integrity_failed", "runtime_verification is one of the results"),
+        ("verified", "reported_by_pipeline", "check_after_deployment is one of the results"),
+        ("failed", "refused", "check_after_deployment is one of the results"),
+        ("not_performed", "no_post_verify_stage", "check_after_deployment is one of the results"),
+        ("not_assessed", None, "check_after_deployment is one of the results"),
+        ("could_not_decide", "integrity_failed", "check_after_deployment is one of the results"),
     ],
     ids=[
         "verified by the pipeline's word",
@@ -175,7 +198,7 @@ def test_a_verification_after_deployment_outside_the_seven_results_is_refused(
     state: str, reason: str | None, message: str
 ) -> None:
     document = copy.deepcopy(REPORT)
-    document["properties"]["runtime_verification"] = {"state": state, "reason": reason, "detail": None}
+    document["properties"]["check_after_deployment"] = {"state": state, "reason": reason, "detail": None}
     with pytest.raises(ValidationError, match=message):
         VerificationReport.model_validate(document)
 
@@ -185,9 +208,19 @@ RESULTS = [
 ]
 
 
+def _report_for(name: str, state: str, reason: str | None) -> dict[str, Any]:
+    """A report vector a result fits in: a refused record's for a refusal, a policy_enforced record's for a result
+    verified by its run statement, else one with no run statement."""
+    if (name, state, reason) == ("integrity", "failed", "refused_by_server"):
+        return copy.deepcopy(REFUSED_REPORT)
+    if state == "verified" and (state, reason) != BUNDLE_SIGNATURE_CHECKED:
+        return copy.deepcopy(POLICY_ENFORCED_REPORT)
+    return copy.deepcopy(REPORT)
+
+
 @pytest.mark.parametrize(("name", "state", "reason"), RESULTS, ids=[f"{n} {s} {r}" for n, s, r in RESULTS])
 def test_each_property_takes_each_result_a_verifier_gives_it(name: str, state: str, reason: str | None) -> None:
-    document = copy.deepcopy(REPORT)
+    document = _report_for(name, state, reason)
     document["properties"][name] = {"state": state, "reason": reason, "detail": None}
     VerificationReport.model_validate(document)
 

@@ -34,16 +34,16 @@ def test_an_evaluation_that_ended_in_an_error_decides_nothing_and_the_detail_say
 def test_the_plan_age_detail_says_what_passed_between_receipt_and_issue() -> None:
     result = apply_job_results(_car("plan_older_than_its_limit_fails_its_plan_age_check"))["plan_age"]
     assert result.detail == (
-        "452039 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is "
-        "86400 seconds"
+        "210 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is 60 "
+        "seconds"
     )
 
 
 def test_both_order_failures_give_the_first_and_its_detail_names_the_other() -> None:
     result = apply_job_results(_car(BEFORE))["apply_job_approval_order"]
     assert result.reason == "approved_before_plan_stage_record_accepted"
-    assert result.detail is not None and "no approval was given at or after it" in result.detail
-    assert "approval-2 at 2026-09-16T18:30:00Z" in result.detail
+    assert result.detail is not None and "no approval was received at or after it" in result.detail
+    assert "approval-2 at 2026-11-25T06:38:45Z" in result.detail
 
 
 def test_a_failed_replan_detail_names_the_count_and_the_first_address_as_the_record_keeps_it() -> None:
@@ -72,7 +72,7 @@ def test_a_detail_names_a_few_approvals_with_cut_ids_and_stays_within_its_limit(
     assert result.detail is not None and len(result.detail) <= RESULT_DETAIL_MAX_LENGTH
     # The receipt time, then one time for each approval named.
     assert result.detail.count(" at 2026-") == 1 + MAX_NAMED_APPROVALS
-    assert result.detail.endswith(f"and {256 - MAX_NAMED_APPROVALS} more; no approval was given at or after it")
+    assert result.detail.endswith(f"and {256 - MAX_NAMED_APPROVALS} more; no approval was received at or after it")
 
 
 def test_a_long_address_is_cut_in_the_detail() -> None:

@@ -2,14 +2,8 @@
   "apiVersion": "iltero.com/v1",
   "kind": "ChangeAssuranceRecord",
   "metadata": {
-    "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e",
-    "issuer": {
-      "identity_verified": false,
-      "type": "local"
-    }
+    "uuid": "99bd2000-375c-546a-8332-af2b33f13c0e"
   },
-  "trust_level": "self_attested",
-  "compliance_determination": null,
   "evidence_status": {
     "value": "has_gaps",
     "reasons": [
@@ -650,13 +644,11 @@
         "version": "1"
       },
       "ref_id": "sha256-ba88ac651ee938db5ec0f6345ea9ce2a609d33877bda11443bd010fe3751791e",
-      "retention_until": null,
       "size_bytes": 61075,
       "source": {
         "digest": null,
         "name": "plan-create.json"
-      },
-      "storage_uri": null
+      }
     },
     {
       "canonicalization": null,
@@ -674,10 +666,8 @@
         "version": "1"
       },
       "ref_id": "sha256-5293313293d22fad13cfc44b3e4b23dd3892088cb85e0e4914907a46421eaa2a",
-      "retention_until": null,
       "size_bytes": 52817,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -695,10 +685,8 @@
         "version": "1"
       },
       "ref_id": "sha256-a46e47ff32253693f80e63603c444bf6c0e154126708721f0c8e62210205645d",
-      "retention_until": null,
       "size_bytes": 12981,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -716,10 +704,8 @@
         "version": "1"
       },
       "ref_id": "sha256-c8f40fbbc5d9372485f1fa8572bcfb4531679e701f258b7d07c218b34e958fd4",
-      "retention_until": null,
       "size_bytes": 12975,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -737,10 +723,8 @@
         "version": "1"
       },
       "ref_id": "sha256-dd3d40bb23fdfccb95d5368ee92791ec29fdd0c1918c78d7e198a95a7e5385d5",
-      "retention_until": null,
       "size_bytes": 12984,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -758,10 +742,8 @@
         "version": "1"
       },
       "ref_id": "sha256-ae883a74948cbeacb31123bf117a9995b4a90d6a1710e981e9db3a2429a4b588",
-      "retention_until": null,
       "size_bytes": 12982,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -779,10 +761,8 @@
         "version": "1"
       },
       "ref_id": "sha256-68e5cc28ca1656223744471218284738fe2a1b5b3081fff160f165f34636ce85",
-      "retention_until": null,
       "size_bytes": 14920,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -796,10 +776,8 @@
       "path": "units/root/plan/redaction-policy.json",
       "redaction_policy": null,
       "ref_id": "plan/redaction-policy.json",
-      "retention_until": null,
       "size_bytes": 2229,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -813,10 +791,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.yaml",
-      "retention_until": null,
       "size_bytes": 505,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -830,10 +806,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.rego",
-      "retention_until": null,
       "size_bytes": 12679,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -847,10 +821,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.BACKUP_RETENTION@1.0.0.ast.json",
-      "retention_until": null,
       "size_bytes": 545,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -864,10 +836,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.yaml",
-      "retention_until": null,
       "size_bytes": 467,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -881,10 +851,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.rego",
-      "retention_until": null,
       "size_bytes": 12651,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -898,10 +866,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.NOT_PUBLIC@1.0.0.ast.json",
-      "retention_until": null,
       "size_bytes": 523,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -915,10 +881,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.yaml",
-      "retention_until": null,
       "size_bytes": 993,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -932,10 +896,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.rego",
-      "retention_until": null,
       "size_bytes": 13046,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -949,10 +911,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.PRODUCTION_BASELINE@1.0.0.ast.json",
-      "retention_until": null,
       "size_bytes": 1259,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -966,10 +926,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.yaml",
-      "retention_until": null,
       "size_bytes": 462,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -983,10 +941,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.rego",
-      "retention_until": null,
       "size_bytes": 12662,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -1000,10 +956,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.RDS.STORAGE_ENCRYPTED@1.0.0.ast.json",
-      "retention_until": null,
       "size_bytes": 527,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -1017,10 +971,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.yaml",
-      "retention_until": null,
       "size_bytes": 1007,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -1034,10 +986,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.rego",
-      "retention_until": null,
       "size_bytes": 13295,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -1051,10 +1001,8 @@
       "path": "units/root/plan/assertions/ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
       "redaction_policy": null,
       "ref_id": "ILT.IAC.RESOURCE.AWS.S3.PUBLIC_ACCESS_BLOCKED@1.0.0.ast.json",
-      "retention_until": null,
       "size_bytes": 1639,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": null,
@@ -1068,10 +1016,8 @@
       "path": "units/root/plan/assertions/compiled.json",
       "redaction_policy": null,
       "ref_id": "plan/compiled.json",
-      "retention_until": null,
       "size_bytes": 4720,
-      "source": null,
-      "storage_uri": null
+      "source": null
     },
     {
       "canonicalization": "RFC8785",
@@ -1085,10 +1031,8 @@
       "path": "units/root/plan/events.json",
       "redaction_policy": null,
       "ref_id": "plan/events.json",
-      "retention_until": null,
       "size_bytes": 11633,
-      "source": null,
-      "storage_uri": null
+      "source": null
     }
   ],
   "expected_stages": [
@@ -1103,18 +1047,9 @@
       "declared_in": null
     }
   ],
-  "expires_at": null,
-  "governance": {
-    "run_opened_by": "local"
-  },
-  "integrity": {
-    "scheme": "file_digests",
-    "signature": null
-  },
-  "retention_reason": "no_server_scope",
-  "retention_class": null,
   "run": {
-    "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb"
+    "id": "99b4f87b-c9e7-5eeb-a02b-9849b7f6a5fb",
+    "opened_by": "local"
   },
   "redaction_policy": {
     "id": "iltero.redaction",
@@ -1144,6 +1079,7 @@
       "execution": {
         "bundle": {
           "capabilities_digest": "sha256:f9091311d67545e5cdc6ee0c59b037a4e350487f360ce13b61746730920dfb44",
+          "trust_data_digest": null,
           "tarball_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
           "kind": "local_bundle",
           "content_digest": null,

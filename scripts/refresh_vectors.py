@@ -20,7 +20,11 @@ redaction and its check give for each case of ``vectors/redaction`` and
 ``vectors/redaction_problems``, and the redacted state and its digest for each
 state of ``redaction/iac/state_inputs.json``, inline or under ``raw_states``.
 Re-plan vectors: what ``replan_differences`` gives for each case of
-``replan_differences/iac/inputs.json``.
+``replan_differences/iac/inputs.json``. Run statement vectors: the digest of every run statement under
+``vectors/run_statements``, its payload read as a run statement first (``sign_run_statement_vectors.py`` signs them).
+Report vectors: each verification report of ``vectors.vector_reports.REPORT_VECTORS``, as
+``verifier.verification_report`` gives it for its source. Display words vectors: what ``display.render`` gives each
+case of ``display_words/inputs.json``, its text or the message it is refused with.
 Each document folder but ``identities`` keeps its documents in the ``iac/`` or
 ``image/`` subfolder of their change type; the folder's one ``digests.json`` names each
 document by its path from the folder. A ``digests.json`` this script does not
@@ -40,6 +44,7 @@ from collections.abc import Collection
 from pathlib import Path
 from typing import Any
 
+from es256 import verify_es256
 from pydantic import BaseModel
 
 from iltero_schemas.ast import parse, source_digest, to_json
@@ -78,8 +83,11 @@ from iltero_schemas.redaction.iac.plan import redact_plan, redacted_plan_digest
 from iltero_schemas.redaction.iac.replan import replan_differences
 from iltero_schemas.redaction.iac.sent_documents import document_marks_and_anchors
 from iltero_schemas.redaction.iac.state import STATE_MARK_READERS, redact_state, redacted_state_digest
+from iltero_schemas.statement import read_envelope, read_run_statement
 from iltero_schemas.vectors.plans import plan_of
 from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
+from iltero_schemas.vectors.vector_display_words import rendered_case
+from iltero_schemas.vectors.vector_reports import REPORT_VECTORS, vector_report
 
 ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "iltero_schemas"
@@ -91,6 +99,9 @@ REDACTION_VECTORS = VECTORS / "redaction"
 REDACTION_PROBLEM_VECTORS = VECTORS / "redaction_problems"
 RAW_STATES = VECTORS / "raw_states"
 REPLAN_VECTORS = VECTORS / "replan_differences" / "iac"
+RUN_STATEMENT_VECTORS = VECTORS / "run_statements"
+REPORT_VECTORS_FOLDER = VECTORS / "reports"
+DISPLAY_WORDS_VECTORS = VECTORS / "display_words"
 # Each folder holds one kind of document, and one digests.json that lists them all.
 DOCUMENT_VECTORS: dict[Path, type[BaseModel]] = {
     VECTORS / "scanner_check_mappings": ScannerCheckMapping,
@@ -316,6 +327,12 @@ def replan_vectors() -> dict[Path, bytes]:
     return {REPLAN_VECTORS / "cases.json": _dump({"cases": cases})}
 
 
+def display_word_vectors() -> dict[Path, bytes]:
+    """What ``render`` gives each case of ``display_words/inputs.json``: its text, or why it is refused."""
+    cases = json.loads((DISPLAY_WORDS_VECTORS / "inputs.json").read_text(encoding="utf-8"))["cases"]
+    return {DISPLAY_WORDS_VECTORS / "cases.json": _dump({"cases": [rendered_case(case) for case in cases]})}
+
+
 def document_files(folder: Path) -> list[Path]:
     """Every document under ``folder`` other than its digests.json files, sorted by its path from the folder; a
     hidden file or folder (a name that starts with a dot), such as a copy an editor or macOS left there, is not a
@@ -330,18 +347,44 @@ def document_files(folder: Path) -> list[Path]:
     )
 
 
-def document_vectors() -> dict[Path, bytes]:
-    """The digest of every document vector, each validated against its model first."""
+def report_vectors() -> dict[Path, bytes]:
+    """Every verification report of ``REPORT_VECTORS``, as the verifier writes it for its source."""
+    return {
+        REPORT_VECTORS_FOLDER / path: _dump(
+            vector_report(path.split("/")[0], source, verify_es256).model_dump(mode="json", by_alias=True)
+        )
+        for path, source in REPORT_VECTORS.items()
+    }
+
+
+def document_vectors(written: dict[Path, bytes]) -> dict[Path, bytes]:
+    """The digest of every document vector, each validated against its model first: as ``written`` gives it, or else
+    as it is on disk."""
     expected = {}
     for folder, model in DOCUMENT_VECTORS.items():
         # Each document by its path from the folder, the name a case gives it.
         digests = {}
-        for path in document_files(folder):
-            document = json.loads(path.read_text(encoding="utf-8"))
+        paths = sorted(
+            {*document_files(folder), *(path for path in written if path.is_relative_to(folder))},
+            key=lambda path: path.relative_to(folder).as_posix(),
+        )
+        for path in paths:
+            document = json.loads(written[path] if path in written else path.read_bytes())
             model.model_validate(document)
             digests[path.relative_to(folder).as_posix()] = digest_of(document)
         expected[folder / "digests.json"] = json.dumps(digests, indent=2).encode("utf-8") + b"\n"
     return expected
+
+
+def run_statement_vectors() -> dict[Path, bytes]:
+    """The digest of every run statement under ``vectors/run_statements``: of its payload, read as a run statement
+    first. The signature is not checked here: the tests check it."""
+    digests = {}
+    for path in document_files(RUN_STATEMENT_VECTORS):
+        payload = read_envelope(path.read_bytes()).payload
+        read_run_statement(payload)
+        digests[path.relative_to(RUN_STATEMENT_VECTORS).as_posix()] = digest(payload)
+    return {RUN_STATEMENT_VECTORS / "digests.json": json.dumps(digests, indent=2).encode("utf-8") + b"\n"}
 
 
 def unwritten_digests(vectors: Path, written: Collection[Path]) -> list[Path]:
@@ -356,9 +399,12 @@ def main(argv: list[str]) -> int:
         return 2
     expected = {COMPILER_VECTORS / name: data for name, data in compiler_vectors().items()}
     expected.update({CANONICAL_VECTORS / name: data for name, data in canonical_vectors().items()})
-    expected.update(document_vectors())
+    expected.update(report_vectors())
+    expected.update(document_vectors(expected))
     expected.update(redaction_vectors())
     expected.update(replan_vectors())
+    expected.update(run_statement_vectors())
+    expected.update(display_word_vectors())
     unwritten = unwritten_digests(VECTORS, expected)
     for path in unwritten:
         print(f"not written by this script: {path.relative_to(ROOT)}", file=sys.stderr)

@@ -76,6 +76,6 @@ def check_given_file_digest_form(car: CAR) -> None:
                 raise ValueError(PROJECT_MAPPING_COPY)
         elif ref.source.digest != ref.digest:
             raise ValueError(KEPT_AS_GIVEN)
-    problem = form_problem(redacted, car.governance.run_opened_by)
+    problem = form_problem(redacted, car.run.opened_by)
     if problem is not None:
         raise ValueError(problem)

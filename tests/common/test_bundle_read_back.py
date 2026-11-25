@@ -65,6 +65,13 @@ def test_a_key_the_trust_set_never_held_is_refused() -> None:
         _read(key_id="never-held")
 
 
+@pytest.mark.parametrize("status", ["active", "revoked"])
+def test_a_pinned_key_of_another_purpose_is_refused(status: str) -> None:
+    keys = {KEY_ID: dataclasses.replace(_keys(status)[KEY_ID], purpose="run_statement")}
+    with pytest.raises(BundleError, match="is not for signing assertion bundles"):
+        _read(keys=keys)
+
+
 def test_a_pinned_key_other_than_the_one_that_signed_is_refused() -> None:
     keys = _keys()
     other = {**keys, "other-key": dataclasses.replace(keys[KEY_ID], key_id="other-key")}

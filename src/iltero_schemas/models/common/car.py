@@ -4,19 +4,17 @@ A Change Assurance Record (CAR) is a framework-neutral record of the
 evidence, the evaluations, the approvals, the deployment and the verification
 after deployment for one change, or of the checks on one build of an artifact
 that a later change deploys. It keeps where each piece
-came from. A CAR records technical and process assurance facts. It does not,
-by itself, establish certification or compliance with a regulatory
-framework, so ``compliance_determination`` is always null.
+came from. A CAR records technical and process assurance facts. A record states
+facts; it never establishes compliance with a framework.
 
 One CAR describes one attempted change, whatever its outcome: deployed,
 failed, stopped, refused before deployment, or a plan that changes nothing.
 It is not a certificate of success. It exists even when an evaluation fails, and it
 need not reach every stage.
 
-How far a reader can trust a record is its ``trust_level``. The contract
-lists every level, so readers can see the whole scale. A record carries no
-signature in this version, so the only level it may claim is
-``self_attested``: the tool that wrote it is its only source.
+A record does not vouch for itself: it names neither its own trust level nor
+how it is bound together. How far a reader can trust it is for the verifier to
+decide.
 
 A record is read by whoever receives it, including a verifier running on
 someone else's machine against a record they were handed. So every field it
@@ -36,7 +34,7 @@ instead of failing on a missing key.
 
 from __future__ import annotations
 
-from typing import Annotated, Final, Literal, get_args
+from typing import Annotated, Literal, get_args
 
 from pydantic import Field, ValidationInfo, model_validator
 
@@ -110,30 +108,10 @@ MAX_EVIDENCE_REFS = FILES_PER_EVENT * MAX_EVENTS + len(get_args(RunStage)) * FIL
 
 
 class RecordRun(StrictModel):
+    """The run the record belongs to: its id, and who opened it, the server or the tool on its own."""
+
     id: Uuid
-
-
-class Issuer(StrictModel):
-    """Who wrote the record. Without a signature, it is the tool on the machine it ran on, never verified."""
-
-    type: Literal["local"]
-    identity_verified: Literal[False]
-
-
-class Governance(StrictModel):
-    """Who opened the run the record belongs to: the server, or the tool on its own."""
-
-    run_opened_by: RunOpenedBy
-
-
-# How far a record's facts were established, from the weakest level to the strongest.
-# self_attested: written by the tool alone. source_authenticated: the issuing service authenticated the
-# repository, CI and identity sources. governed: the issuing service enforced a declared assurance
-# profile and verified the evidence chain. Every level above self_attested needs a signature, which this
-# version of the record cannot carry.
-TrustLevel = Literal["self_attested", "source_authenticated", "governed"]
-# The only level a record without a signature may claim.
-UNSIGNED_TRUST_LEVEL: Final[TrustLevel] = "self_attested"
+    opened_by: RunOpenedBy
 
 
 class Collector(StrictModel):
@@ -161,8 +139,6 @@ class EvidenceRef(StrictModel):
     digest: Digest
     size_bytes: Count
     path: MemberPath
-    storage_uri: None
-    retention_until: None
     collected_at: Timestamp
     collector: Collector
     # The file as the pipeline gave it; null for a file the tool wrote itself.
@@ -196,10 +172,34 @@ class ExecutionEvaluator(StrictModel):
     digest: Digest
 
 
+# Why a record is refused when a stage that loaded the server's bundle names no trust data it checked it against.
+SERVER_BUNDLE_WITHOUT_TRUST_DATA = "a stage that loads the server's bundle names the trust data it checked it against"
+# Why a record is refused when a stage that loaded its project's own assertions names trust data.
+LOCAL_BUNDLE_WITH_TRUST_DATA = (
+    "a stage that loads its project's own assertions checks no signature, so it names no trust data"
+)
+
+
 class ExecutionBundle(Bundle):
-    """The bundle a stage loaded, named as an event names it, and the allowlist its programs were built under."""
+    """The bundle a stage loaded, named as an event names it, the allowlist its programs were built under, and the
+    trust data the stage checked the bundle's signature against.
+
+    ``trust_data_digest`` is ``iltero_schemas.trust.trust_data_digest`` of the signing-keys files the stage read:
+    Iltero's file alone, or Iltero's and an operator's: the keys the stage checked the bundle against, and any scanner
+    check mapping descriptor it read. A verifier compares it with the trust data it holds itself. A stage that loads its
+    project's own assertions checked no signature, so it is null there.
+    """
 
     capabilities_digest: Digest
+    trust_data_digest: Digest | None
+
+    @model_validator(mode="after")
+    def _a_server_bundle_names_its_trust_data(self) -> ExecutionBundle:
+        if self.kind == "server" and self.trust_data_digest is None:
+            raise ValueError(SERVER_BUNDLE_WITHOUT_TRUST_DATA)
+        if self.kind != "server" and self.trust_data_digest is not None:
+            raise ValueError(LOCAL_BUNDLE_WITH_TRUST_DATA)
+        return self
 
 
 class Execution(StrictModel):
@@ -281,13 +281,6 @@ class StageRecord(StrictModel):
         return self.approvals if isinstance(self.approvals, list) else []
 
 
-class Integrity(StrictModel):
-    """How the record is bound together: without a signature, by its files' digests only, and it says so."""
-
-    scheme: Literal["file_digests"]
-    signature: None
-
-
 # Why a stage of the lifecycle is not in a record's scope.
 OutOfScopeReason = Literal["project_config", "environment_policy", "not_supported", "needs_the_server"]
 
@@ -327,10 +320,9 @@ class OutOfScope(StrictModel):
 
 
 class RecordMetadata(StrictModel):
-    """The record's fixed facts: its id, and who wrote it."""
+    """The record's fixed facts: its id."""
 
     uuid: Uuid
-    issuer: Issuer
 
 
 class CAR(StrictModel):
@@ -341,11 +333,6 @@ class CAR(StrictModel):
     metadata: RecordMetadata
     run: RecordRun
     unit: Identifier
-    trust_level: TrustLevel
-    # Always null: a record never determines compliance with a framework. A view of a framework is built
-    # from records, outside them.
-    compliance_determination: None
-    governance: Governance
     subject: RecordSubject
     # The change the record is about: the body of its activity, told apart by ``activity``.
     change: Annotated[IacChange | ImageBuild | ImageDeploy, Field(discriminator="activity")]
@@ -365,10 +352,6 @@ class CAR(StrictModel):
     # scope together name every stage of the lifecycle once.
     out_of_scope: Annotated[list[OutOfScope], Field(max_length=len(Stage))]
     evidence_refs: Annotated[list[EvidenceRef], Field(max_length=MAX_EVIDENCE_REFS)]
-    integrity: Integrity
-    expires_at: None
-    retention_class: None
-    retention_reason: Literal["no_server_scope"]
 
     @property
     def outcome(self) -> StageOutcome:
@@ -397,8 +380,6 @@ class CAR(StrictModel):
         check_structure(self)
         if self.all_expected_stages_reported != (set(self.stages) == {Stage(stage) for stage in self.expected_stages}):
             raise ValueError("all_expected_stages_reported is true exactly when every expected stage has reported")
-        if self.trust_level != UNSIGNED_TRUST_LEVEL:
-            raise ValueError(f"a record without a signature is {UNSIGNED_TRUST_LEVEL}")
         if self.subject.unit != self.unit:
             raise ValueError("the record's subject is its own unit")
         check_provenance(self)

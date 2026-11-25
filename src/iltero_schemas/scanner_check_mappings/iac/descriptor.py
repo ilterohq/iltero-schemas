@@ -23,10 +23,13 @@ from iltero_schemas.models.common.base import API_VERSION
 from iltero_schemas.models.iac.scanner_check_mapping import ScannerCheckMapping
 from iltero_schemas.models.iac.scanner_check_mapping_descriptor import DESCRIPTOR_KIND, ScannerCheckMappingDescriptor
 from iltero_schemas.scanner_check_mappings.iac.paths import STARTER_MAPPING_ID
-from iltero_schemas.trust import SigningKey
+from iltero_schemas.trust import KeyNotHeldError, KeyOfAnotherPurposeError, SigningKey, key_of_purpose
 
 # A served mapping is one of Iltero's: its id is in Iltero's namespace, under this name.
 SERVED_MAPPING_ID_PREFIX = f"{ILTERO_ID_PREFIX}SCANNER_CHECKS."
+KEY_NOT_HELD = "the descriptor's key_id is not the pinned one, or names a key the trust set never held"
+KEY_NOT_TRUSTED = "the descriptor's key_id names a key that is not trusted, or is revoked"
+KEY_OF_ANOTHER_PURPOSE = "the descriptor's key_id names a key that is not for signing scanner check mappings"
 
 
 class ScannerCheckMappingDescriptorError(ValueError):
@@ -114,14 +117,17 @@ def read_scanner_check_mapping_descriptor(
     trust set ``keys``: for showing a run's mapping, not for applying one.
 
     Raises ``ScannerCheckMappingDescriptorError`` naming the first rule that fails, in this order: the key the
-    descriptor names is the pinned one and one the trust set holds, the mapping, its digest, the signature's form. The
-    caller still verifies the signature with the key's public key.
+    descriptor names is the pinned one and one the trust set holds, for signing scanner check mappings, the mapping, its
+    digest, the signature's form. The caller still verifies the signature with the key's public key.
     """
-    key = keys.get(key_id)
-    if served.key_id != key_id or key is None:
-        raise ScannerCheckMappingDescriptorError(
-            "the descriptor's key_id is not the pinned one, or names a key the trust set never held"
-        )
+    if served.key_id != key_id:
+        raise ScannerCheckMappingDescriptorError(KEY_NOT_HELD)
+    try:
+        key = key_of_purpose(keys, key_id, "check_definitions")
+    except KeyNotHeldError:
+        raise ScannerCheckMappingDescriptorError(KEY_NOT_HELD) from None
+    except KeyOfAnotherPurposeError:
+        raise ScannerCheckMappingDescriptorError(KEY_OF_ANOTHER_PURPOSE) from None
     mapping = _served_mapping(served.mapping)
     if served.digest != digest_of(served.mapping):
         raise ScannerCheckMappingDescriptorError("the descriptor's digest is not the digest of its mapping")
@@ -145,12 +151,15 @@ def check_scanner_check_mapping_descriptor(
     """Check everything about ``served`` but the signature's mathematics.
 
     ``keys`` is the trust set: ``iltero_schemas.trust.SIGNING_KEYS``, or a development tool's own set. Raises
-    ``ScannerCheckMappingDescriptorError`` naming the first rule that fails, in this order: the key, the mapping, its
-    digest, the signature's form.
+    ``ScannerCheckMappingDescriptorError`` naming the first rule that fails, in this order: the key (trusted, for
+    signing scanner check mappings, and not revoked), the mapping, its digest, the signature's form.
     """
-    key = keys.get(served.key_id)
-    if key is None or not key.can_verify:
-        raise ScannerCheckMappingDescriptorError(
-            "the descriptor's key_id names a key that is not trusted, or is revoked"
-        )
+    try:
+        key = key_of_purpose(keys, served.key_id, "check_definitions")
+    except KeyNotHeldError:
+        raise ScannerCheckMappingDescriptorError(KEY_NOT_TRUSTED) from None
+    except KeyOfAnotherPurposeError:
+        raise ScannerCheckMappingDescriptorError(KEY_OF_ANOTHER_PURPOSE) from None
+    if not key.can_verify:
+        raise ScannerCheckMappingDescriptorError(KEY_NOT_TRUSTED)
     return read_scanner_check_mapping_descriptor(served, key_id=served.key_id, keys=keys)

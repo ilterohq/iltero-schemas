@@ -14,12 +14,13 @@ from typing import Any
 import pytest
 from pydantic import BaseModel
 
+from iltero_schemas.change_types.common.kept_file_problems import kept_file_problems
 from iltero_schemas.models.common.car import CAR
 from iltero_schemas.models.common.fields import MemberPath
 from iltero_schemas.models.common.kept_bundles import served_bundle_results
-from iltero_schemas.models.iac.kept_file_problems import kept_file_problems
 from iltero_schemas.models.iac.post_verify_identities import IDENTITIES_NOT_GIVEN, POST_VERIFY_IDENTITIES_REF_ID
 from iltero_schemas.vectors.kept_files import kept_files_of
+from iltero_schemas.vectors.paths import HAND_MADE_RECORDS
 from tests.common.test_kept_bundles_vectors import CASES as KEPT_BUNDLE_CASES
 from tests.common.test_kept_bundles_vectors import case_inputs, problems_over
 from tests.common.test_kept_files_vectors import (
@@ -133,20 +134,12 @@ def packaged(document: dict[str, Any], by_path: Mapping[str, bytes]) -> tuple[di
     return record, {moved[path]: data for path, data in by_path.items() if path in moved}
 
 
-# The records whose files the vectors do not keep, so no package of them can be written: each is checked as a record
+# The hand-made records keep none of their files, so no package of them can be written: each is checked as a record
 # only.
-WITHOUT_KEPT_FILES = frozenset(
-    {
-        "iac/local_run_on_placeholders",
-        "iac/local_run_postponed_storage_encryption",
-        "iac/local_run_state_not_read_from_a_damaged_apply_log",
-        "image/local_run_build_with_a_build_commit",
-    }
-)
 PACKAGEABLE = sorted(
     f"{path.parent.name}/{path.stem}"
     for path in (VECTORS / "records").glob("*/*.json")
-    if f"{path.parent.name}/{path.stem}" not in WITHOUT_KEPT_FILES
+    if f"{path.parent.name}/{path.name}" not in HAND_MADE_RECORDS
 )
 
 
@@ -156,7 +149,7 @@ def test_every_record_but_those_without_kept_files_keeps_every_file_its_register
         assert {ref["path"] for ref in document["evidence_refs"]} <= set(kept_files_of(name)), name
 
 
-POST_VERIFY = "iac/governed_run_post_verify"
+POST_VERIFY = "iac/tracked_run_post_verify"
 
 
 def test_a_packaged_record_of_a_run_the_server_opened_through_post_verify_is_checked_in_full() -> None:

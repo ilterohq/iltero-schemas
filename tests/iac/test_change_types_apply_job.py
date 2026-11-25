@@ -46,11 +46,11 @@ from iltero_schemas.models.iac.deployment import Superseded
 from tests.conftest import VECTORS, evaluate_with_opa
 
 DEPLOYED = CAR.model_validate(
-    json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))
+    json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8"))
 )
 WITHOUT_SERVER_FACTS = CAR.model_validate(
     json.loads(
-        (VECTORS / "records" / "iac" / "governed_run_deployed_without_server_facts.json").read_text(encoding="utf-8")
+        (VECTORS / "records" / "iac" / "tracked_run_deployed_without_server_facts.json").read_text(encoding="utf-8")
     )
 )
 
@@ -172,7 +172,7 @@ def test_a_record_of_a_run_that_applies_later_holds_each_check_of_the_apply_job_
 
 
 DEPLOYED_DOCUMENT: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8")
 )
 
 

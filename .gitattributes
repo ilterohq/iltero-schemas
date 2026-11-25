@@ -6,3 +6,5 @@ tests/vectors/** -text
 src/iltero_schemas/scanners/common/*.json -text
 src/iltero_schemas/scanners/common/*.txt -text
 src/iltero_schemas/scanners/common/locks/** -text
+# A saved plan file is a zip archive, kept byte for byte so its digest is the one its record names.
+src/iltero_schemas/vectors/saved_plans/** -text

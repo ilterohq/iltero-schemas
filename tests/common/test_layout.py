@@ -29,7 +29,7 @@ SPLIT_LAYERS = {
     PACKAGE / "models": {"providers"},
     PACKAGE / "scanner_check_mappings": set(),
     PACKAGE / "scanners": set(),
-    ROOT / "tests": {"baseline", "conftest.py", "exceptions.py", "records.py", "server_runs.py"},
+    ROOT / "tests": {"baseline", "conftest.py", "exceptions.py", "records.py", "server_runs.py", "statements.py"},
 }
 # Vector folders of one kind of document, such as Sigstore attestations: a file name inside them, like
 # image_signature, describes the document, not a change type.

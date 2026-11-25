@@ -7,7 +7,8 @@ evaluates anything:
    ``minimum_cli_version``. This package does not check that, because it does not
    know the tool's version.
 1. It calls :func:`check_descriptor`. That takes the key the descriptor names
-   from the trust set and refuses a key that may not verify. It refuses a
+   from the trust set and refuses a key that may not verify, or that is not
+   for signing assertion bundles. It refuses a
    bundle built by another compiler version or under another allowlist. It rebuilds the bundle from the
    assertion sources the descriptor carries, with this package's compiler, and
    requires the tarball to hold exactly those files, byte for byte, and a
@@ -51,7 +52,7 @@ from iltero_schemas.compiler import COMPILER_VERSION
 from iltero_schemas.models.common.bundle import MAX_BUNDLE_ASSERTIONS, BundleDescriptor
 from iltero_schemas.opa.capabilities import CAPABILITIES_DIGEST
 from iltero_schemas.signing import SIGNATURE_BYTES
-from iltero_schemas.trust import SigningKey
+from iltero_schemas.trust import KeyNotHeldError, KeyOfAnotherPurposeError, SigningKey, key_of_purpose
 
 # The tar entry types OPA loads as files; it skips every other type, so no other is accepted here either.
 _PLAIN_FILE = (tarfile.REGTYPE, tarfile.AREGTYPE)
@@ -59,6 +60,8 @@ _PLAIN_FILE = (tarfile.REGTYPE, tarfile.AREGTYPE)
 MAX_MEMBERS = MAX_BUNDLE_ASSERTIONS + 2
 # Far more than 1024 modules and their manifest take unpacked.
 MAX_UNPACKED_BYTES = 64 * 1024 * 1024
+KEY_NOT_TRUSTED = "the descriptor's key_id names a key not trusted to verify bundles"
+KEY_OF_ANOTHER_PURPOSE = "the descriptor's key_id names a key that is not for signing assertion bundles"
 
 
 @dataclass(frozen=True)
@@ -153,9 +156,14 @@ def check_descriptor(descriptor: BundleDescriptor, keys: Mapping[str, SigningKey
     development tool's own set. Raises ``BundleError`` naming the first rule
     that fails; returns the key and the files that passed.
     """
-    key = keys.get(descriptor.key_id)
-    if key is None or not key.can_verify:
-        raise BundleError("the descriptor's key_id names a key not trusted to verify bundles")
+    try:
+        key = key_of_purpose(keys, descriptor.key_id, "check_definitions")
+    except KeyNotHeldError:
+        raise BundleError(KEY_NOT_TRUSTED) from None
+    except KeyOfAnotherPurposeError:
+        raise BundleError(KEY_OF_ANOTHER_PURPOSE) from None
+    if not key.can_verify:
+        raise BundleError(KEY_NOT_TRUSTED)
     if descriptor.compiler_version != COMPILER_VERSION:
         raise BundleError(f"the bundle was compiled by another compiler version; this package's is {COMPILER_VERSION}")
     if descriptor.capabilities_digest != CAPABILITIES_DIGEST:

@@ -143,7 +143,7 @@ def test_each_scanner_file_a_stage_keeps_is_an_entry_of_its_own(named: str) -> N
 
 
 def test_a_stage_that_reads_no_scanner_report_keeps_none() -> None:
-    document = json.loads((VECTORS / "records" / "iac" / "governed_run_deployed.json").read_text(encoding="utf-8"))
+    document = json.loads((VECTORS / "records" / "iac" / "tracked_run_deployed.json").read_text(encoding="utf-8"))
     scanners = copy.deepcopy(SCANNERS)
     scanners["scanner_check_mappings"][0]["copy_path"] = "units/root/pre_deploy/pre-deploy-scanner-check-mapping.json"
     document["stages"]["pre_deploy"]["scanners"] = scanners
@@ -237,7 +237,7 @@ def test_a_stages_copy_of_the_served_exceptions_is_a_canonical_entry_of_its_own(
 # A record of a run the server opened whose plan stage read a Checkov report: its register names the file the pipeline
 # gave by its keyed digest, on the report as the stage kept it and on the observations read from it.
 SCANNED_SERVED: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "iac" / "governed_run_scanned_with_the_served_mapping.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "iac" / "tracked_run_scanned_with_the_served_mapping.json").read_text(encoding="utf-8")
 )
 OTHER_KEYED = "hmac-sha256:" + "0" * 64
 

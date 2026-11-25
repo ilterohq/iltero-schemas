@@ -31,7 +31,7 @@ def check_register(car: CAR) -> None:
     misread: list[tuple[Stage, str]] = []
     scanner_digests: set[str] = set()
     # Only a run the server opened names the file each report was redacted from by its digest.
-    compared = car.governance.run_opened_by == "server"
+    compared = car.run.opened_by == "server"
     for stage, record in car.stages.items():
         if (record.events.path, record.events.digest) not in kept:
             raise ValueError(f"the {stage.value} stage's events file is an entry of the evidence register")

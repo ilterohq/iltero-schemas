@@ -136,7 +136,7 @@ def _check_files_read(car: CAR, deploy: ImageDeploy, check: ImageDriftCheck) -> 
 
 
 def _opened_by_server(car: CAR) -> bool:
-    return car.governance.run_opened_by == "server"
+    return car.run.opened_by == "server"
 
 
 def _check_accepted_build_check(car: CAR) -> None:

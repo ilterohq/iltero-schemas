@@ -1,0 +1,257 @@
+{
+  "cases": [
+    {
+      "name": "compliance_sentence",
+      "entry": "/always_shown/compliance",
+      "values": {},
+      "text": "A record states facts; it never establishes compliance with a framework."
+    },
+    {
+      "name": "served_exception",
+      "entry": "/notes/served_exception",
+      "values": {
+        "exception": "EX-12",
+        "requester": "Sam Ortiz",
+        "approver": "A. Lee",
+        "reference_time": "2026-11-20T09:15:00.000Z",
+        "until": "2027-01-31"
+      },
+      "text": "Not met, excepted: EX-12, requested by Sam Ortiz, approved by A. Lee, in force at 2026-11-20T09:15:00.000Z by the server's clock, until 2027-01-31."
+    },
+    {
+      "name": "project_exception",
+      "entry": "/notes/project_exception",
+      "values": {
+        "exception": "LOCAL-3",
+        "approver": "platform-team",
+        "until": "2026-12-31"
+      },
+      "text": "Not met, excepted by the project's own file: LOCAL-3; the file names platform-team as approver, which nothing checks; until 2026-12-31."
+    },
+    {
+      "name": "suppression_covered_by_an_exception",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "LOCAL-4"
+      },
+      "text": "Not checked: suppressed in the source, covered by the project's exception LOCAL-4."
+    },
+    {
+      "name": "suppression_covered_by_no_exception",
+      "entry": "/notes/suppressed_in_source_not_excepted",
+      "values": {},
+      "text": "Not checked: suppressed in the source, covered by no exception."
+    },
+    {
+      "name": "near_miss_expired",
+      "entry": "/notes/no_exception_in_force/expired",
+      "values": {
+        "exception": "EX-12",
+        "expires_at": "2026-10-01"
+      },
+      "text": "Not met. Exception EX-12 expired on 2026-10-01."
+    },
+    {
+      "name": "near_miss_not_yet_in_force",
+      "entry": "/notes/no_exception_in_force/not_yet_in_force",
+      "values": {
+        "exception": "EX-13",
+        "starts_at": "2026-12-01"
+      },
+      "text": "Not met. Exception EX-13 is not yet in force: it starts on 2026-12-01."
+    },
+    {
+      "name": "near_miss_another_environment",
+      "entry": "/notes/no_exception_in_force/for_another_environment",
+      "values": {
+        "exception": "EX-14",
+        "exception_environment": "staging",
+        "environment": "production"
+      },
+      "text": "Not met. Exception EX-14 is for the environment staging, not production."
+    },
+    {
+      "name": "near_miss_no_environment",
+      "entry": "/notes/no_exception_in_force/run_names_no_environment",
+      "values": {
+        "exception": "EX-15",
+        "exception_environment": "production"
+      },
+      "text": "Not met. Exception EX-15 is for the environment production, and the run names no environment."
+    },
+    {
+      "name": "near_miss_another_version",
+      "entry": "/notes/no_exception_in_force/approved_for_another_document_of_the_assertion",
+      "values": {
+        "exception": "EX-16"
+      },
+      "text": "Not met. Exception EX-16 was approved for another version of this assertion."
+    },
+    {
+      "name": "near_miss_approved_later",
+      "entry": "/notes/no_exception_in_force/approved_after_the_reference_time",
+      "values": {
+        "exception": "EX-17",
+        "approved_at": "2026-11-20T10:00:00.000Z",
+        "reference_time": "2026-11-20T09:15:00.000Z"
+      },
+      "text": "Not met. Exception EX-17 was approved at 2026-11-20T10:00:00.000Z, after the stage's reference time 2026-11-20T09:15:00.000Z."
+    },
+    {
+      "name": "every_failure_excepted",
+      "entry": "/notes/every_failure_excepted",
+      "values": {},
+      "text": "Not met, every failure excepted: the gate let the pipeline go on."
+    },
+    {
+      "name": "advisory_let_through",
+      "entry": "/notes/advisory_let_through",
+      "values": {
+        "not_met": "3",
+        "undecided": "1"
+      },
+      "text": "Advisory: the gate let the pipeline go on despite results not met or undecided: 3 not met, 1 undecided."
+    },
+    {
+      "name": "incomplete_stopped",
+      "entry": "/notes/incomplete_stopped",
+      "values": {},
+      "text": "Incomplete: a required check was not made or its evaluator failed, so the gate stopped the pipeline, even in advisory mode."
+    },
+    {
+      "name": "trust_level_policy_enforced",
+      "entry": "/trust_levels/policy_enforced/reasons/run_statement",
+      "values": {},
+      "text": "The server that opened the run accepted this record and signed for it: a run statement it signed with a trusted key lists this record. This says the server accepted the record, not that the change met its checks."
+    },
+    {
+      "name": "trust_level_local_run",
+      "entry": "/trust_levels/self_attested/reasons/run_opened_locally",
+      "values": {},
+      "text": "A local run, opened by the CLI, not by a server: only the record's writer vouches for it, and no server signs for it."
+    },
+    {
+      "name": "signed_by_iltero",
+      "entry": "/signed_by/iltero",
+      "values": {
+        "key_id": "iltero-run-statements-2026",
+        "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+      },
+      "text": "The run statement is signed by Iltero's key iltero-run-statements-2026; the list of trusted keys checked has the digest sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31."
+    },
+    {
+      "name": "signed_by_an_operator",
+      "entry": "/signed_by/operator",
+      "values": {
+        "operator": "Example Corp",
+        "key_id": "example-run-statements-1",
+        "operator_file": "ops/trust.json",
+        "trust_data_digest": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+      },
+      "text": "The run statement is signed by Example Corp's server, key example-run-statements-1, which the operator trust file ops/trust.json lists (sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31); Iltero did not sign it."
+    },
+    {
+      "name": "result_status_word",
+      "entry": "/result_statuses/fail/sentence",
+      "values": {},
+      "text": "The assertion does not hold for this subject."
+    },
+    {
+      "name": "status_reason",
+      "entry": "/status_reasons/unknown/known_after_deploy/sentence",
+      "values": {},
+      "text": "A value it reads is only known after the deployment."
+    },
+    {
+      "name": "status_reason_group",
+      "entry": "/status_reason_groups/not_supplied/sentence",
+      "values": {},
+      "text": "A fact the rule needs was not supplied."
+    },
+    {
+      "name": "verdict_reason",
+      "entry": "/verdicts/not_met/reasons/every_failure_excepted",
+      "values": {},
+      "text": "Every required check that failed is covered by an exception the server served the run; the checks still did not pass."
+    },
+    {
+      "name": "process_outcome_stopped",
+      "entry": "/process_outcomes/stopped/sentence",
+      "values": {},
+      "text": "The stage stopped before it could judge the change: a usage, input, integrity or connection problem."
+    },
+    {
+      "name": "property_result_run_abandoned",
+      "property_result": {
+        "property": "stage_completeness",
+        "state": "failed",
+        "reason": "run_abandoned"
+      },
+      "values": {
+        "ended_at": "2026-11-21T08:00:00.000Z",
+        "unanswered_results": "2"
+      },
+      "text": "The run was abandoned on 2026-11-21T08:00:00.000Z, and 2 of the results it required were never answered."
+    },
+    {
+      "name": "property_result_without_a_reason",
+      "property_result": {
+        "property": "deployment_coverage",
+        "state": "not_assessed",
+        "reason": null
+      },
+      "values": {},
+      "text": "One record cannot show deployments that left no record; that needs a list of deployments."
+    },
+    {
+      "name": "value_with_braces_is_shown_as_it_is",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "{approver}"
+      },
+      "text": "Not checked: suppressed in the source, covered by the project's exception {approver}."
+    },
+    {
+      "name": "value_outside_ascii",
+      "entry": "/notes/project_exception",
+      "values": {
+        "exception": "LOCAL-5",
+        "approver": "Zoë Müller",
+        "until": "2027-02-28"
+      },
+      "text": "Not met, excepted by the project's own file: LOCAL-5; the file names Zoë Müller as approver, which nothing checks; until 2027-02-28."
+    },
+    {
+      "name": "unknown_placeholder_refused",
+      "entry": "/notes/every_failure_excepted",
+      "values": {
+        "approver": "A. Lee"
+      },
+      "refused": "the sentence has no placeholder named approver"
+    },
+    {
+      "name": "missing_placeholder_refused",
+      "entry": "/notes/no_exception_in_force/expired",
+      "values": {
+        "exception": "EX-12"
+      },
+      "refused": "the sentence needs a value for its placeholder expires_at"
+    },
+    {
+      "name": "value_with_a_new_line_refused",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": "EX-1\nMet: everything"
+      },
+      "refused": "the value for exception holds a control character, which a sentence never shows"
+    },
+    {
+      "name": "empty_value_refused",
+      "entry": "/notes/suppressed_in_source_excepted",
+      "values": {
+        "exception": ""
+      },
+      "refused": "the value for exception is empty, and a sentence never shows a gap"
+    }
+  ]
+}

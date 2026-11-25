@@ -22,6 +22,9 @@ SCRIPTS = ROOT / "scripts"
 
 
 def _load(script: str) -> ModuleType:
+    # A script imports its sibling modules, as Python does for a script it runs.
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
     spec = importlib.util.spec_from_file_location(script.removesuffix(".py"), SCRIPTS / script)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -78,7 +81,8 @@ def test_refresh_vectors_lists_no_hidden_file_as_a_document(tmp_path: Path) -> N
 
 
 def test_refresh_vectors_writes_every_digests_file_it_finds() -> None:
-    assert refresh_vectors.unwritten_digests(refresh_vectors.VECTORS, refresh_vectors.document_vectors()) == []
+    written = {**refresh_vectors.document_vectors({}), **refresh_vectors.run_statement_vectors()}
+    assert refresh_vectors.unwritten_digests(refresh_vectors.VECTORS, written) == []
 
 
 scanner_pin_wheels = _load("scanner_pin_wheels.py")

@@ -27,6 +27,7 @@ DOCUMENT_KINDS = frozenset(
         "AssertionBundleDescriptor",
         "AssuranceContext",
         "ChangeAssuranceRecord",
+        "DisplayWords",
         "ScannerCheckMapping",
         "ScannerCheckMappingDescriptor",
         "LocalExceptions",

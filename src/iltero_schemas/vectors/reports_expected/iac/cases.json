@@ -32,7 +32,7 @@
   {
     "name": "approvals_a_server_opened_run_needed_and_did_not_get",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "approval_identity",
     "state": "could_not_decide",
@@ -120,24 +120,44 @@
     "why": "The environment's policy left the pre-deploy stage out of scope, so the record reads no approval."
   },
   {
-    "name": "bundle_provenance_of_a_run_the_tool_opened",
+    "name": "bundle_used_of_a_run_the_tool_opened",
     "record": {
       "vector": "iac/local_run.json"
     },
-    "property": "bundle_provenance",
+    "property": "bundle_used",
     "state": "not_performed",
     "reason": "local_assertions",
-    "why": "The run the tool opened evaluated the assertions it was given locally, so no stage names the server's bundle."
+    "why": "No stage names the server's bundle: the checks were the project's own."
   },
   {
-    "name": "bundle_provenance_of_a_server_opened_run",
+    "name": "bundle_signature_of_a_run_the_tool_opened",
+    "record": {
+      "vector": "iac/local_run.json"
+    },
+    "property": "bundle_signature",
+    "state": "not_performed",
+    "reason": "local_assertions",
+    "why": "No stage names the server's bundle, so no bundle signature was checked."
+  },
+  {
+    "name": "bundle_used_of_a_server_opened_run",
     "record": {
       "case": "iac_record_of_a_run_the_server_opened_keeping_its_commit_review_without_a_commit_review_check"
     },
-    "property": "bundle_provenance",
+    "property": "bundle_used",
     "state": "claimed_by_record",
     "reason": "server_bundle_named",
-    "why": "A run the server opened evaluates only assertions from the server's bundle, and each stage names it."
+    "why": "A stage names the server's bundle, and no run statement says the server held the run to it."
+  },
+  {
+    "name": "bundle_signature_of_a_run_the_server_opened_whose_kept_bundles_read_back",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "bundle_signature",
+    "state": "verified",
+    "reason": "bundle_signature_checked",
+    "why": "Every stage that names the server's bundle kept its tarball, which read back under a key of the trust set, its signature verified, and names the trust data the reader holds."
   },
   {
     "name": "exceptions_of_a_server_opened_run_relying_on_an_exception_its_run_starter_approved_with_pre_deploy_pending",
@@ -180,9 +200,9 @@
     "why": "A group of scanners the plan stage requires gave only gaps for a check and subject, so the scan the run required did not happen for it."
   },
   {
-    "name": "exceptions_of_a_governed_run_relying_on_no_served_exception",
+    "name": "exceptions_of_a_tracked_run_relying_on_no_served_exception",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "exceptions",
     "state": "claimed_by_record",
@@ -190,9 +210,9 @@
     "why": "The server opened the run, its plan stage applied the exceptions the server served it, and no failed result relies on one."
   },
   {
-    "name": "exceptions_of_a_governed_run_relying_on_served_exceptions",
+    "name": "exceptions_of_a_tracked_run_relying_on_served_exceptions",
     "record": {
-      "vector": "iac/governed_run_every_failure_excepted.json"
+      "vector": "iac/tracked_run_every_failure_excepted.json"
     },
     "property": "exceptions",
     "state": "claimed_by_record",
@@ -200,9 +220,9 @@
     "why": "The plan stage names failed results exceptions the server served cover, the kept copy gives them, and no one who approved them started the run."
   },
   {
-    "name": "scanner_reports_of_a_governed_run_with_no_scanner_report",
+    "name": "scanner_reports_of_a_tracked_run_with_no_scanner_report",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "scanner_reports",
     "state": "not_assessed",
@@ -210,9 +230,9 @@
     "why": "No stage of the run the server opened read a scanner report, and none requires one; only the server confirms that."
   },
   {
-    "name": "approvals_of_a_governed_run_the_server_served_an_approval_for",
+    "name": "approvals_of_a_tracked_run_the_server_served_an_approval_for",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "approval_identity",
     "state": "claimed_by_record",
@@ -220,9 +240,9 @@
     "why": "The pre-deploy stage of the run the server opened lists the approval the server served."
   },
   {
-    "name": "commit_review_of_a_governed_run_whose_commits_were_reviewed",
+    "name": "commit_review_of_a_tracked_run_whose_commits_were_reviewed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "commit_review",
     "state": "claimed_by_record",
@@ -230,9 +250,9 @@
     "why": "The pre-deploy stage kept the commit review the server served, and every commit it counts was reviewed."
   },
   {
-    "name": "approvals_of_a_governed_run_whose_server_facts_were_unavailable",
+    "name": "approvals_of_a_tracked_run_whose_server_facts_were_unavailable",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "approval_identity",
     "state": "could_not_decide",
@@ -240,9 +260,9 @@
     "why": "The server opened the run, its approval check needed the approvals, and the stage kept the unknown marker in their place."
   },
   {
-    "name": "commit_review_of_a_governed_run_whose_server_facts_were_unavailable",
+    "name": "commit_review_of_a_tracked_run_whose_server_facts_were_unavailable",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "commit_review",
     "state": "could_not_decide",
@@ -250,9 +270,9 @@
     "why": "The server opened the run, its commit review check needed the review, and the stage kept the unknown marker in its place."
   },
   {
-    "name": "reference_time_of_a_governed_plan_with_a_check_undecided",
+    "name": "reference_time_of_a_tracked_plan_with_a_check_undecided",
     "record": {
-      "vector": "iac/governed_run_every_failure_excepted_one_check_undecided.json"
+      "vector": "iac/tracked_run_every_failure_excepted_one_check_undecided.json"
     },
     "property": "reference_time",
     "state": "claimed_by_record",
@@ -292,7 +312,7 @@
   {
     "name": "plan_match_of_a_run_the_server_opened",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "plan_apply_match",
     "state": "claimed_by_record",
@@ -302,7 +322,7 @@
   {
     "name": "plan_match_of_a_run_the_server_opened_with_no_saved_plan_file",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "plan_apply_match",
     "state": "claimed_by_record",
@@ -320,9 +340,9 @@
     "why": "No post-deploy stage reported, so no stage compared the applied plan."
   },
   {
-    "name": "plan_age_of_governed_run_deployed",
+    "name": "plan_age_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "plan_age",
     "state": "claimed_by_record",
@@ -330,9 +350,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "apply_job_approval_order_of_governed_run_deployed",
+    "name": "apply_job_approval_order_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "apply_job_approval_order",
     "state": "claimed_by_record",
@@ -340,9 +360,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "received_plan_file_of_governed_run_deployed",
+    "name": "received_plan_file_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "received_plan_file",
     "state": "claimed_by_record",
@@ -350,9 +370,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "rendered_plan_of_governed_run_deployed",
+    "name": "rendered_plan_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "rendered_plan",
     "state": "claimed_by_record",
@@ -360,9 +380,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "pinned_plan_of_governed_run_deployed",
+    "name": "pinned_plan_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "pinned_plan",
     "state": "claimed_by_record",
@@ -370,9 +390,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "replan_resource_actions_of_governed_run_deployed",
+    "name": "replan_resource_actions_of_tracked_run_deployed",
     "record": {
-      "vector": "iac/governed_run_deployed.json"
+      "vector": "iac/tracked_run_deployed.json"
     },
     "property": "replan_resource_actions",
     "state": "claimed_by_record",
@@ -380,9 +400,9 @@
     "why": "The pre-deploy stage kept the apply job's facts, and every comparison holds: the facts are the server's word, and the re-plan the pipeline's, so the best result is the record's claim."
   },
   {
-    "name": "plan_age_of_governed_run_deployed_without_server_facts",
+    "name": "plan_age_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "plan_age",
     "state": "could_not_decide",
@@ -390,9 +410,9 @@
     "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
   },
   {
-    "name": "apply_job_approval_order_of_governed_run_deployed_without_server_facts",
+    "name": "apply_job_approval_order_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "apply_job_approval_order",
     "state": "could_not_decide",
@@ -400,9 +420,9 @@
     "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
   },
   {
-    "name": "received_plan_file_of_governed_run_deployed_without_server_facts",
+    "name": "received_plan_file_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "received_plan_file",
     "state": "could_not_decide",
@@ -410,9 +430,9 @@
     "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
   },
   {
-    "name": "rendered_plan_of_governed_run_deployed_without_server_facts",
+    "name": "rendered_plan_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "rendered_plan",
     "state": "could_not_decide",
@@ -420,9 +440,9 @@
     "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
   },
   {
-    "name": "pinned_plan_of_governed_run_deployed_without_server_facts",
+    "name": "pinned_plan_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "pinned_plan",
     "state": "could_not_decide",
@@ -430,9 +450,9 @@
     "why": "The pre-deploy stage kept the unknown marker for the apply job's facts."
   },
   {
-    "name": "replan_resource_actions_of_governed_run_deployed_without_server_facts",
+    "name": "replan_resource_actions_of_tracked_run_deployed_without_server_facts",
     "record": {
-      "vector": "iac/governed_run_deployed_without_server_facts.json"
+      "vector": "iac/tracked_run_deployed_without_server_facts.json"
     },
     "property": "replan_resource_actions",
     "state": "could_not_decide",
@@ -500,9 +520,9 @@
     "why": "The tool opened the run, so no server gave apply job facts."
   },
   {
-    "name": "plan_age_of_governed_run",
+    "name": "plan_age_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "plan_age",
     "state": "not_assessed",
@@ -510,9 +530,9 @@
     "why": "The run that would report the pre-deploy stage is still in progress."
   },
   {
-    "name": "apply_job_approval_order_of_governed_run",
+    "name": "apply_job_approval_order_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "apply_job_approval_order",
     "state": "not_assessed",
@@ -520,9 +540,9 @@
     "why": "The run that would report the pre-deploy stage is still in progress."
   },
   {
-    "name": "received_plan_file_of_governed_run",
+    "name": "received_plan_file_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "received_plan_file",
     "state": "not_assessed",
@@ -530,9 +550,9 @@
     "why": "The run that would report the pre-deploy stage is still in progress."
   },
   {
-    "name": "rendered_plan_of_governed_run",
+    "name": "rendered_plan_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "rendered_plan",
     "state": "not_assessed",
@@ -540,9 +560,9 @@
     "why": "The run that would report the pre-deploy stage is still in progress."
   },
   {
-    "name": "pinned_plan_of_governed_run",
+    "name": "pinned_plan_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "pinned_plan",
     "state": "not_assessed",
@@ -550,9 +570,9 @@
     "why": "The run that would report the pre-deploy stage is still in progress."
   },
   {
-    "name": "replan_resource_actions_of_governed_run",
+    "name": "replan_resource_actions_of_tracked_run",
     "record": {
-      "vector": "iac/governed_run.json"
+      "vector": "iac/tracked_run.json"
     },
     "property": "replan_resource_actions",
     "state": "not_assessed",
@@ -828,5 +848,425 @@
     "state": "claimed_by_record",
     "reason": "plan_age_within_limit",
     "why": "The plan-age evaluation ended in an error, which decides nothing: the result is read from the facts kept, and its detail says so."
+  },
+  {
+    "name": "integrity_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "integrity",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The run statement verified, lists the record as its unit's subject and differs from it in nothing, and every file the record cites holds the digest it names."
+  },
+  {
+    "name": "integrity_of_a_record_the_server_refused",
+    "record": {
+      "run_statement_case": "iac/statement_listing_the_record_as_refused"
+    },
+    "property": "integrity",
+    "state": "failed",
+    "reason": "refused_by_server",
+    "why": "The run statement lists the record's digest as a record the server refused."
+  },
+  {
+    "name": "source_identity_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "source_identity",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The record's commit and repository are those of the CI job the run statement signs for each stage."
+  },
+  {
+    "name": "source_identity_of_a_record_whose_commit_is_not_its_ci_jobs",
+    "record": {
+      "run_statement_case": "iac/statement_whose_ci_job_names_another_commit"
+    },
+    "property": "source_identity",
+    "state": "failed",
+    "reason": "ci_job_differs",
+    "why": "The run statement signs a CI job of another commit for a stage of the record."
+  },
+  {
+    "name": "approvals_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "approval_identity",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The pre-deploy stage's copy of its approvals hashes to the digest the run statement signs."
+  },
+  {
+    "name": "approvals_whose_copy_is_not_the_signed_one",
+    "record": {
+      "run_statement_case": "iac/statement_whose_approvals_digest_differs"
+    },
+    "property": "approval_identity",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of its approvals is not the one the run statement signs."
+  },
+  {
+    "name": "bundle_signature_of_a_stage_that_checked_other_trust_data",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "operator_trust_file": true,
+    "property": "bundle_signature",
+    "state": "failed",
+    "reason": "trust_data_differs",
+    "why": "The reader also holds an operator's trust file, so the trust data it holds is not the trust data the stages checked their bundle against."
+  },
+  {
+    "name": "bundle_signature_of_a_bundle_another_server_signed",
+    "record": {
+      "run_statement_case": "iac/statement_signed_by_another_server_over_a_record_whose_bundle_is_the_development_servers"
+    },
+    "property": "bundle_signature",
+    "state": "failed",
+    "reason": "bundle_of_another_server",
+    "why": "The run statement names another server than the one whose key signed the stages' bundle."
+  },
+  {
+    "name": "bundle_used_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "bundle_used",
+    "state": "verified",
+    "reason": "served_and_named_by_every_accepted_result",
+    "why": "The run statement's settings name the bundle every stage of the record names."
+  },
+  {
+    "name": "bundle_used_other_than_the_run_settings",
+    "record": {
+      "run_statement_case": "iac/statement_naming_another_bundle"
+    },
+    "property": "bundle_used",
+    "state": "failed",
+    "reason": "bundle_differs",
+    "why": "The run statement's settings name another bundle than the stages of the record."
+  },
+  {
+    "name": "stage_completeness_of_a_finished_run_its_run_statement_holds_for",
+    "record": {
+      "run_statement_case": "iac/packaged_record_against_its_statement"
+    },
+    "property": "stage_completeness",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The run statement lists no result left unanswered and no expected stage without an accepted record."
+  },
+  {
+    "name": "stage_completeness_of_a_final_record_missing_a_stage",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "stage_not_reported",
+    "why": "The run statement holds for the record, its unit's subject, which lacks its post-verify stage: the run ended, so the stage will never be reported, and the statement verifies nothing of a stage the record does not hold."
+  },
+  {
+    "name": "stage_completeness_of_a_closed_run_with_a_result_unanswered",
+    "record": {
+      "run_statement_case": "iac/statement_of_a_closed_run_naming_a_result_no_accepted_record_answered"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "required_results_unanswered",
+    "why": "The run closed, and its statement lists a required result no accepted record answered."
+  },
+  {
+    "name": "stage_completeness_of_a_closed_run_whose_final_record_lacks_a_stage",
+    "record": {
+      "run_statement_case": "iac/statement_of_a_closed_run_naming_an_expected_stage_never_accepted"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "stage_not_reported",
+    "why": "The run closed with an expected stage that accepted no record, and the record, its unit's subject, lacks that stage."
+  },
+  {
+    "name": "stage_completeness_of_other_expected_stages_than_the_run_settings",
+    "record": {
+      "run_statement_case": "iac/statement_with_other_expected_stages"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "expected_stages_differ",
+    "why": "The record's expected stages are not those of the run's settings."
+  },
+  {
+    "name": "stage_completeness_of_other_required_assertions_than_the_run_settings",
+    "record": {
+      "run_statement_case": "iac/statement_with_other_required_assertions"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "required_assertions_differ",
+    "why": "A stage's required assertions are not those of the run's settings."
+  },
+  {
+    "name": "check_after_deployment_of_a_run_that_ended_without_it",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "check_after_deployment",
+    "state": "not_performed",
+    "reason": "stage_not_reported",
+    "why": "The run statement says the run ended, and the record, its unit's subject, has no post-verify stage."
+  },
+  {
+    "name": "exceptions_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_every_failure_excepted.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_every_failure_excepted.json"
+    },
+    "property": "exceptions",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The plan stage relied on exceptions the server served, and its copy of them hashes to the digest the run statement signs."
+  },
+  {
+    "name": "exceptions_whose_copy_is_not_the_signed_one",
+    "record": {
+      "run_statement_case": "iac/statement_whose_served_exceptions_digest_differs"
+    },
+    "property": "exceptions",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The plan stage's copy of the exceptions the server served is not the one the run statement signs."
+  },
+  {
+    "name": "commit_review_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "commit_review",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The pre-deploy stage kept a reviewed commit review whose copy hashes to the digest the run statement signs."
+  },
+  {
+    "name": "commit_review_whose_copy_is_not_the_signed_one",
+    "record": {
+      "run_statement_case": "iac/statement_whose_commit_review_digest_differs"
+    },
+    "property": "commit_review",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of its commit review is not the one the run statement signs."
+  },
+  {
+    "name": "reference_time_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_every_failure_excepted_one_check_undecided.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_every_failure_excepted_one_check_undecided.json"
+    },
+    "property": "reference_time",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "Every stage took the time the server gave, which the run statement signs as when it issued the stage its facts or its token."
+  },
+  {
+    "name": "reference_time_other_than_the_signed_one",
+    "record": {
+      "run_statement_case": "iac/statement_whose_facts_were_issued_at_another_time"
+    },
+    "property": "reference_time",
+    "state": "failed",
+    "reason": "reference_time_differs",
+    "why": "A stage took its time from the server, and the run statement says the server issued its facts at another time."
+  },
+  {
+    "name": "plan_age_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "plan_age",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The pre-deploy stage's copy of the apply job's facts hashes to the digest the run statement signs, and its times are within the limit."
+  },
+  {
+    "name": "plan_age_whose_facts_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_apply_job_facts_digest_differs"
+    },
+    "property": "plan_age",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of the apply job's facts is not the one the run statement signs."
+  },
+  {
+    "name": "apply_job_approval_order_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "apply_job_approval_order",
+    "state": "verified",
+    "reason": "run_statement",
+    "why": "The copies of the apply job's facts and of the approvals hash to the digests the run statement signs, and every approval was received after the plan-stage record."
+  },
+  {
+    "name": "apply_job_approval_order_whose_approvals_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_approvals_digest_differs"
+    },
+    "property": "apply_job_approval_order",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of its approvals is not the one the run statement signs."
+  },
+  {
+    "name": "pinned_plan_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "pinned_plan",
+    "state": "verified",
+    "reason": "pinned_and_named_by_accepted_record",
+    "why": "The run statement signs the facts that pin the plan the accepted record names."
+  },
+  {
+    "name": "pinned_plan_whose_facts_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_apply_job_facts_digest_differs"
+    },
+    "property": "pinned_plan",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of the apply job's facts is not the one the run statement signs."
+  },
+  {
+    "name": "received_plan_file_whose_facts_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_apply_job_facts_digest_differs"
+    },
+    "property": "received_plan_file",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of the apply job's facts is not the one the run statement signs."
+  },
+  {
+    "name": "rendered_plan_whose_facts_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_apply_job_facts_digest_differs"
+    },
+    "property": "rendered_plan",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of the apply job's facts is not the one the run statement signs."
+  },
+  {
+    "name": "replan_resource_actions_whose_facts_are_not_the_signed_ones",
+    "record": {
+      "run_statement_case": "iac/statement_whose_apply_job_facts_digest_differs"
+    },
+    "property": "replan_resource_actions",
+    "state": "failed",
+    "reason": "served_part_differs",
+    "why": "The pre-deploy stage's copy of the apply job's facts is not the one the run statement signs."
+  },
+  {
+    "name": "received_plan_file_of_a_record_its_run_statement_holds_for",
+    "record": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "run_statement": {
+      "vector": "iac/tracked_run_deployed.json"
+    },
+    "property": "received_plan_file",
+    "state": "claimed_by_record",
+    "reason": "received_plan_file_matches",
+    "why": "The run statement signs the facts, but the received plan file's digest is what the apply job reported: it stays the record's claim."
+  },
+  {
+    "name": "stage_completeness_of_an_abandoned_run_with_a_result_unanswered",
+    "record": {
+      "run_statement_case": "iac/statement_of_an_abandoned_run_naming_a_result_no_accepted_record_answered"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "run_abandoned",
+    "why": "The record reports every stage it expects, and the run was abandoned with a required result no accepted record answered."
+  },
+  {
+    "name": "stage_completeness_of_a_record_a_later_record_replaced",
+    "record": {
+      "run_statement_case": "iac/statement_of_a_run_whose_later_stage_a_later_record_holds"
+    },
+    "property": "stage_completeness",
+    "state": "not_assessed",
+    "reason": "later_record_holds_the_later_stages",
+    "why": "The record counts at its last stage, and the run statement names a later record that holds the post-verify stage: the statement verifies nothing of a stage this record does not hold."
+  },
+  {
+    "name": "check_after_deployment_of_a_record_a_later_record_replaced",
+    "record": {
+      "run_statement_case": "iac/statement_of_a_run_whose_later_stage_a_later_record_holds"
+    },
+    "property": "check_after_deployment",
+    "state": "not_assessed",
+    "reason": "later_record_holds_the_later_stages",
+    "why": "The post-verify stage is held by the later record the run statement names, not by this one."
+  },
+  {
+    "name": "stage_completeness_of_a_stage_the_statement_does_not_list",
+    "record": {
+      "run_statement_case": "iac/statement_listing_no_plan_stage"
+    },
+    "property": "stage_completeness",
+    "state": "failed",
+    "reason": "stage_not_listed",
+    "why": "The run statement lists no plan stage for the record's unit."
+  },
+  {
+    "name": "scanner_reports_of_another_served_scanner_check_mapping",
+    "record": {
+      "run_statement_case": "iac/statement_naming_another_scanner_check_mapping"
+    },
+    "property": "scanner_reports",
+    "state": "failed",
+    "reason": "scanner_check_mapping_differs",
+    "why": "A stage applied another served scanner check mapping than the run statement's settings."
   }
 ]

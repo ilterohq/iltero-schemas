@@ -29,7 +29,7 @@ from iltero_schemas.profiles import reads_part
 from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING, SHIPPED_MAPPING_DIGEST
 from iltero_schemas.scanners.iac.runs import scanner_configuration_digest
 from iltero_schemas.vectors.kept_files import case_files_of, kept_files_of
-from iltero_schemas.vectors.plans import remove_pointer, set_pointer
+from iltero_schemas.vectors.record_cases import case_document, valid_case
 from iltero_schemas.vectors.run_digest_key import vector_run_digest_key
 from tests.conftest import VECTORS
 
@@ -53,7 +53,7 @@ DEPLOYED: dict[str, Any] = json.loads(
 # A record of a run the server opened that reached its post-deploy stage through a pre-deploy stage whose facts from the
 # server were unavailable, which the Iltero CLI wrote. Only a run the server opened has a pre-deploy stage.
 THROUGH_PRE_DEPLOY: dict[str, Any] = json.loads(
-    (VECTORS / "records" / "iac" / "governed_run_deployed_without_server_facts.json").read_text(encoding="utf-8")
+    (VECTORS / "records" / "iac" / "tracked_run_deployed_without_server_facts.json").read_text(encoding="utf-8")
 )
 
 
@@ -361,7 +361,7 @@ def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> Non
     scanners = document["stages"][stage]["scanners"]
     # A run the tool opened names no digest of the file a report was redacted from; one the server opened, its keyed
     # digest.
-    keyed = document["governance"]["run_opened_by"] == "server"
+    keyed = document["run"]["opened_by"] == "server"
     given_file_digest = keyed_given_file_digest("sha256:" + "e" * 64, vector_run_digest_key()) if keyed else None
     policy, given = template["redaction_policy"], {"name": "scanner-report.json", "digest": given_file_digest}
     files: list[tuple[str, str, Any, Any, str]] = []
@@ -384,18 +384,12 @@ def keep_the_scanner_files(document: dict[str, Any], stage: str = "plan") -> Non
 
 def case_record(case: dict[str, Any]) -> dict[str, Any]:
     """The record a record case names, its values set and then removed."""
-    document: dict[str, Any] = json.loads((VECTORS / "records" / case["vector"]).read_text(encoding="utf-8"))
-    for pointer, value in case["set"].items():
-        set_pointer(document, pointer, copy.deepcopy(value))
-    for pointer in case["remove"]:
-        remove_pointer(document, pointer)
-    return document
+    return case_document(case)
 
 
 def valid_case_record(change_type: str, name: str) -> dict[str, Any]:
     """The record of the ``records_valid`` case ``name`` of ``change_type``, its values set."""
-    cases = json.loads((VECTORS / "records_valid" / change_type / "cases.json").read_text(encoding="utf-8"))
-    return case_record(next(c for c in cases if c["name"] == name))
+    return case_document(valid_case(change_type, name))
 
 
 def every_kept_copy(file_name: str) -> list[bytes]:
@@ -433,7 +427,7 @@ def stage_record(stages: dict[str, dict[str, Any]] | None = None, /, **changes: 
         set_path(document, dotted, value)
     if "expected_stages" in changes and "out_of_scope" not in changes:
         expected = set(changes["expected_stages"])
-        tool_opened = document["governance"]["run_opened_by"] == "local"
+        tool_opened = document["run"]["opened_by"] == "local"
         document["out_of_scope"] = [
             {"stage": stage.value, "reason": "needs_the_server", "declared_in": None}
             if tool_opened and stage in IAC_CHANGE.stages_that_need_the_server

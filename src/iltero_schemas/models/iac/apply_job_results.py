@@ -33,6 +33,7 @@ from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.checked_content import checked_plan
 from iltero_schemas.models.common.facts import ServerFactsUnavailable
+from iltero_schemas.models.common.pre_deploy_results import pre_deploy_holding
 from iltero_schemas.models.common.verification import (
     APPLY_JOB_RESULT_ORDER,
     PropertyResult,
@@ -88,17 +89,11 @@ def _cut(text: str, length: int) -> str:
 
 def _before_the_stage(car: CAR) -> tuple[VerificationState, str] | None:
     """The pre-deploy result that holds for every one of the six properties, when one does: the first of
-    ``PRE_DEPLOY_RESULT_ORDER`` among them."""
-    holding: set[tuple[VerificationState, str]] = set()
+    ``PRE_DEPLOY_RESULT_ORDER`` among them. They are about an infrastructure change's apply job, so a record of another
+    activity, even one with a pre-deploy stage, is not_in_activity."""
+    holding = pre_deploy_holding(car)
     if car.change.activity != "iac_change":
         holding.add(("not_assessed", "not_in_activity"))
-    # A run the tool opened leaves the pre-deploy stage out as needing the server: that is run_opened_locally.
-    if any(item.stage == Stage.PRE_DEPLOY and item.reason != "needs_the_server" for item in car.out_of_scope):
-        holding.add(("not_assessed", "pre_deploy_out_of_scope"))
-    if car.governance.run_opened_by != "server":
-        holding.add(("not_performed", "run_opened_locally"))
-    if Stage.PRE_DEPLOY not in car.stages:
-        holding.add(("not_assessed", "pre_deploy_pending"))
     return first_that_holds(holding)
 
 
@@ -127,13 +122,13 @@ def _order(status: str, facts: ApplyJobFacts, approvals: list[Approval] | Server
         return (
             "claimed_by_record",
             "approved_after_plan_stage_record_accepted",
-            f"approved at or after {received}: {_named(after)}",
+            f"approvals received at or after {received}: {_named(after)}",
         )
     if before:
-        also = "; no approval was given at or after it" if not after else ""
-        detail = f"approved before {received}: {_named(before)}{also}"
+        also = "; no approval was received at or after it" if not after else ""
+        detail = f"approvals received before {received}: {_named(before)}{also}"
         return "failed", "approved_before_plan_stage_record_accepted", detail
-    return "failed", "no_approval_after_plan_stage_record_accepted", f"no approval at or after {received}"
+    return "failed", "no_approval_after_plan_stage_record_accepted", f"no approval received at or after {received}"
 
 
 def _replan(status: str, change: IacChange, facts: ApplyJobFacts) -> Result:

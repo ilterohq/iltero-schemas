@@ -14,7 +14,7 @@ from typing import Any
 
 import rfc8785
 
-# Recorded in every integrity block that cites these bytes.
+# Named by every entry of a record's evidence register that cites these bytes.
 CANONICALIZATION = "RFC8785"
 DIGEST_PREFIX = "sha256:"
 

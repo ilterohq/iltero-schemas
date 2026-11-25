@@ -12,7 +12,7 @@ import pytest
 from iltero_schemas.canonical import canonical_bytes, digest
 from iltero_schemas.change_types.iac.change import IacChange
 from iltero_schemas.models.common.car import CAR
-from iltero_schemas.models.iac.kept_files import KeptFiles
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.iac.post_verify_identities import (
     POST_VERIFY_IDENTITIES_REF_ID,
     post_verify_identities_problems,

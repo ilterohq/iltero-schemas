@@ -193,7 +193,7 @@ def test_an_input_whose_drift_check_is_not_the_one_the_post_verify_stage_counts_
 
 @pytest.mark.parametrize(
     ("name", "value"),
-    [("iac/local_run_deployed", "hmac-sha256:" + "a" * 64), ("iac/governed_run_deployed", None)],
+    [("iac/local_run_deployed", "hmac-sha256:" + "a" * 64), ("iac/tracked_run_deployed", None)],
     ids=["keyed in a run the tool opened", "null in a run the server opened"],
 )
 def test_an_input_naming_a_file_kept_redacted_or_not_kept_in_the_form_of_another_run_is_listed(
@@ -257,7 +257,7 @@ def test_an_input_larger_than_an_input_may_be_is_listed_unread() -> None:
 
 
 def test_an_input_whose_apply_job_facts_or_approvals_are_not_the_ones_its_stage_kept_is_listed() -> None:
-    name = "iac/governed_run_deployed"
+    name = "iac/tracked_run_deployed"
     record = json.loads((VECTORS / "records" / f"{name}.json").read_text(encoding="utf-8"))
     kept = kept_files_by_digest(name)
     assert kept_input_problems(CAR.model_validate(record), kept) == []

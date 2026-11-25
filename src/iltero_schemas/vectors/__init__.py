@@ -2,6 +2,6 @@
 ``kept_files``)."""
 
 from iltero_schemas.vectors.kept_files import case_files_of, kept_files_of, kept_files_of_case
-from iltero_schemas.vectors.paths import VECTORS
+from iltero_schemas.vectors.paths import HAND_MADE_RECORDS, VECTORS
 
-__all__ = ["VECTORS", "case_files_of", "kept_files_of", "kept_files_of_case"]
+__all__ = ["HAND_MADE_RECORDS", "VECTORS", "case_files_of", "kept_files_of", "kept_files_of_case"]

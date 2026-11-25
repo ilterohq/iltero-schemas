@@ -58,6 +58,6 @@ def check_change_state_digest_form(car: CAR, change: IacChange) -> None:
     states = deployment_states(change.deployment) if change.deployment is not None else []
     if change.identity is not None:
         states.append(change.identity.sources.state)
-    problem = state_form_problem(states, car.governance.run_opened_by)
+    problem = state_form_problem(states, car.run.opened_by)
     if problem is not None:
         raise ValueError(problem)

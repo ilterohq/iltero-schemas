@@ -12,6 +12,7 @@ import pytest
 
 from iltero_schemas.canonical.common.encoding import canonical_bytes, digest
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.served_exceptions import MAX_SERVED_EXCEPTIONS_BYTES
 from iltero_schemas.models.iac.exception_evidence import (
     LEFT_OUT,
@@ -23,7 +24,6 @@ from iltero_schemas.models.iac.exception_evidence import (
     local_exception_problems,
     served_exception_problems,
 )
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.vectors.plans import set_pointer
 from tests.conftest import VECTORS, documents
 from tests.exceptions import EXCEPTION, FILE_BYTES, FILE_DIGEST, applying_exceptions, suppressed

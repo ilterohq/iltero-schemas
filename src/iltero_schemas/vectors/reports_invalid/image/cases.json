@@ -1,12 +1,13 @@
 [
   {
-    "name": "stage_completeness_verified_on_an_unsigned_record",
+    "name": "stage_completeness_verified_on_a_record_read_with_no_run_statement",
     "vector": "image/verification_report_build.json",
     "set": {
-      "/properties/stage_completeness/state": "verified"
+      "/properties/stage_completeness/state": "verified",
+      "/properties/stage_completeness/reason": "run_statement"
     },
     "remove": [],
-    "message": "no property of an unsigned record is verified"
+    "message": "a property is verified by a run statement only for a policy_enforced record"
   },
   {
     "name": "approval_identity_with_a_reason_no_verifier_gives",

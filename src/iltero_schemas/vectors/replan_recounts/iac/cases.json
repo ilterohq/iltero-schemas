@@ -1,7 +1,7 @@
 [
   {
     "name": "replan_recounted_from_the_kept_plan",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {},
     "plans": {
       "set": {}
@@ -10,7 +10,7 @@
   },
   {
     "name": "replan_recounted_where_the_reader_is_given_no_kept_plan",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {},
     "plans": null,
     "problems": [
@@ -22,7 +22,7 @@
   },
   {
     "name": "replan_counting_other_resources_than_the_kept_plan_acts_on",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/change/replan_check/evaluated_plan_resources": 12,
       "/change/replan_check/replan_resources": 12
@@ -39,9 +39,9 @@
   },
   {
     "name": "replan_made_no_later_than_the_time_in_the_kept_plan",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
-      "/change/replan_check/replanned_at": "2026-09-16T18:29:00Z"
+      "/change/replan_check/replanned_at": "2026-11-25T06:38:26Z"
     },
     "plans": {
       "set": {}
@@ -55,7 +55,7 @@
   },
   {
     "name": "replan_naming_as_changed_a_resource_the_kept_plan_does_not_act_on",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/change/replan_check/differences": [
         {
@@ -78,7 +78,7 @@
   },
   {
     "name": "replan_naming_as_added_a_resource_the_kept_plan_acts_on",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/change/replan_check/differences": [
         {
@@ -102,7 +102,7 @@
   },
   {
     "name": "replan_naming_as_changed_a_resource_the_kept_plan_names_by_a_marker",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/change/replan_check/differences": [
         {
@@ -134,7 +134,7 @@
   },
   {
     "name": "replan_recounted_from_a_kept_plan_naming_no_time",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {},
     "plans": {
       "set": {
@@ -150,11 +150,11 @@
   },
   {
     "name": "replan_recounted_where_the_reader_is_given_only_the_applied_plan",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:30:00.000Z",
+        "collected_at": "2026-11-25T06:45:00.000Z",
         "collector": {
           "tool": "terraform_plan",
           "version": "0.1.0"
@@ -168,13 +168,11 @@
           "version": "1"
         },
         "ref_id": "post_deploy/applied-plan",
-        "retention_until": null,
         "size_bytes": 16301,
         "source": {
-          "digest": "hmac-sha256:d3cd09d5278cb48c1d3b98ec439828daa88acc0dbe641e95103088912364e2df",
+          "digest": "hmac-sha256:100c79dd1ff0b1f96afdb86462a3414c32b2573025ca77ce5e19b914e147a9fb",
           "name": "create.plan.json"
-        },
-        "storage_uri": null
+        }
       }
     },
     "plans": {
@@ -195,11 +193,11 @@
   },
   {
     "name": "replan_recounted_where_two_entries_name_themselves_by_their_digest",
-    "vector": "iac/governed_run_deployed.json",
+    "vector": "iac/tracked_run_deployed.json",
     "set": {
       "/evidence_refs/-": {
         "canonicalization": "RFC8785",
-        "collected_at": "2026-09-22T00:30:00.000Z",
+        "collected_at": "2026-11-25T06:45:00.000Z",
         "collector": {
           "tool": "terraform_plan",
           "version": "0.1.0"
@@ -213,13 +211,11 @@
           "version": "1"
         },
         "ref_id": "sha256-6d64ba3ed02032e4de016f0c4869887e5c3fb4784036e7a3982ef6202f4222ed",
-        "retention_until": null,
         "size_bytes": 16301,
         "source": {
-          "digest": "hmac-sha256:d3cd09d5278cb48c1d3b98ec439828daa88acc0dbe641e95103088912364e2df",
+          "digest": "hmac-sha256:100c79dd1ff0b1f96afdb86462a3414c32b2573025ca77ce5e19b914e147a9fb",
           "name": "create.plan.json"
-        },
-        "storage_uri": null
+        }
       }
     },
     "plans": {

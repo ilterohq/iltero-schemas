@@ -1,10 +1,10 @@
 [
-  {"record": "iac/governed_run.json", "plan": "plan_create.json", "applied_plan": null},
-  {"record": "iac/governed_run_deployed.json", "plan": "apply_create.json", "applied_plan": "apply_create.json"},
-  {"record": "iac/governed_run_deployed_without_server_facts.json", "plan": "apply_create.json", "applied_plan": "apply_create.json"},
-  {"record": "iac/governed_run_every_failure_excepted.json", "plan": "plan_create.json", "applied_plan": null},
-  {"record": "iac/governed_run_every_failure_excepted_one_check_undecided.json", "plan": "plan_shapes.json", "applied_plan": null},
-  {"record": "iac/governed_run_post_verify.json", "plan": "refresh_verified.json", "applied_plan": "refresh_verified.json"},
-  {"record": "iac/governed_run_post_verify_packaged.json", "plan": "refresh_verified.json", "applied_plan": "refresh_verified.json"},
-  {"record": "iac/governed_run_scanned_with_the_served_mapping.json", "plan": "plan_create.json", "applied_plan": null}
+  {"record": "iac/tracked_run.json", "plan": "plan_create.json", "applied_plan": null},
+  {"record": "iac/tracked_run_deployed.json", "plan": "apply_create_saved.json", "applied_plan": "apply_create_saved.json"},
+  {"record": "iac/tracked_run_deployed_without_server_facts.json", "plan": "apply_create.json", "applied_plan": "apply_create.json"},
+  {"record": "iac/tracked_run_every_failure_excepted.json", "plan": "plan_create.json", "applied_plan": null},
+  {"record": "iac/tracked_run_every_failure_excepted_one_check_undecided.json", "plan": "plan_shapes.json", "applied_plan": null},
+  {"record": "iac/tracked_run_post_verify.json", "plan": "refresh_verified.json", "applied_plan": "refresh_verified.json"},
+  {"record": "iac/tracked_run_post_verify_packaged.json", "plan": "refresh_verified.json", "applied_plan": "refresh_verified.json"},
+  {"record": "iac/tracked_run_scanned_with_the_served_mapping.json", "plan": "plan_create.json", "applied_plan": null}
 ]

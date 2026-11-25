@@ -1,0 +1,128 @@
+{
+  "apiVersion": "iltero.com/v1",
+  "kind": "VerificationReport",
+  "metadata": {
+    "verifier": {
+      "name": "iltero",
+      "version": "0.1.0"
+    },
+    "verified_at": "2026-09-22T13:10:00.000Z"
+  },
+  "record": {
+    "uuid": "33a12410-4244-5439-9b2c-56dd6516b8a7",
+    "digest": "sha256:77badae77497c37116e8a23dd7493eb97b3d476ac570129f71acd66adef5607f"
+  },
+  "trust_level": {
+    "level": "self_attested",
+    "reason": "no_statement_given"
+  },
+  "trust_root": null,
+  "run_statement": null,
+  "stage_trust_data_digests": {
+    "plan": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "post_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31",
+    "pre_deploy": "sha256:137190538f14ad01e1c691ce3a2fa94063b308f5c5d3f9cd6d4eaffc51b82b31"
+  },
+  "properties": {
+    "integrity": {
+      "state": "claimed_by_record",
+      "reason": "file_digests",
+      "detail": null
+    },
+    "source_identity": {
+      "state": "not_assessed",
+      "reason": "ci_job_held_by_server",
+      "detail": null
+    },
+    "approval_identity": {
+      "state": "claimed_by_record",
+      "reason": "approvals_listed",
+      "detail": null
+    },
+    "bundle_signature": {
+      "state": "verified",
+      "reason": "bundle_signature_checked",
+      "detail": null
+    },
+    "bundle_used": {
+      "state": "claimed_by_record",
+      "reason": "server_bundle_named",
+      "detail": null
+    },
+    "stage_completeness": {
+      "state": "not_assessed",
+      "reason": "stages_pending",
+      "detail": null
+    },
+    "plan_apply_match": {
+      "state": "claimed_by_record",
+      "reason": "plan_digests_compared",
+      "detail": null
+    },
+    "check_after_deployment": {
+      "state": "not_assessed",
+      "reason": "stage_pending",
+      "detail": null
+    },
+    "deployment_coverage": {
+      "state": "not_assessed",
+      "reason": null,
+      "detail": null
+    },
+    "exceptions": {
+      "state": "claimed_by_record",
+      "reason": "served_exceptions_not_relied_on",
+      "detail": null
+    },
+    "commit_review": {
+      "state": "claimed_by_record",
+      "reason": "reviewed",
+      "detail": null
+    },
+    "reference_time": {
+      "state": "not_performed",
+      "reason": "runner_clock",
+      "detail": null
+    },
+    "evaluator_binary": {
+      "state": "claimed_by_record",
+      "reason": "pinned_binary_named",
+      "detail": null
+    },
+    "scanner_reports": {
+      "state": "not_assessed",
+      "reason": "no_scanner_report",
+      "detail": null
+    },
+    "plan_age": {
+      "state": "claimed_by_record",
+      "reason": "plan_age_within_limit",
+      "detail": "210 seconds passed between the server receiving the plan-stage record and issuing the facts; the limit is 604800 seconds"
+    },
+    "apply_job_approval_order": {
+      "state": "claimed_by_record",
+      "reason": "approved_after_plan_stage_record_accepted",
+      "detail": "approvals received at or after the plan-stage record was received at 2026-11-25T06:39:00Z: approval-2 at 2026-11-25T06:42:00Z"
+    },
+    "received_plan_file": {
+      "state": "claimed_by_record",
+      "reason": "received_plan_file_matches",
+      "detail": null
+    },
+    "rendered_plan": {
+      "state": "claimed_by_record",
+      "reason": "rendered_plan_matches",
+      "detail": null
+    },
+    "pinned_plan": {
+      "state": "claimed_by_record",
+      "reason": "evaluated_plan_is_pinned_plan",
+      "detail": null
+    },
+    "replan_resource_actions": {
+      "state": "claimed_by_record",
+      "reason": "same_resource_actions",
+      "detail": null
+    }
+  }
+}

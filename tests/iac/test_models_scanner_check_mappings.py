@@ -14,9 +14,9 @@ from iltero_schemas.ast.document import load_document
 from iltero_schemas.canonical import digest_of
 from iltero_schemas.models.common.assertion import Stage
 from iltero_schemas.models.common.car import CAR, SKIP_INTEGRITY_CHECKS
+from iltero_schemas.models.common.kept_files import KeptFiles
 from iltero_schemas.models.common.stage_scanners import ScannerCheckMappingUsed
 from iltero_schemas.models.iac import scanner_results
-from iltero_schemas.models.iac.kept_files import KeptFiles
 from iltero_schemas.models.iac.scanner_results import scanner_checks_by_digest
 from iltero_schemas.scanner_check_mappings.iac.load import load_scanner_check_mapping
 from iltero_schemas.scanner_check_mappings.iac.shipped import SHIPPED_MAPPING
